@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -14,7 +15,9 @@ import com.woocommerce.android.databinding.FragmentComponentDetailsBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.QueryType
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ComponentOptions
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,8 +27,10 @@ import org.wordpress.android.util.PhotonUtils
 class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_details) {
     val viewModel: ComponentDetailsViewModel by viewModels()
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     private val skeletonView = SkeletonView()
-    override fun getFragmentTitle() = resources.getString(R.string.product_component_settings)
 
     private val componentsOptionsListAdapter: ComponentOptionsListAdapter by lazy { ComponentOptionsListAdapter() }
 
@@ -74,6 +79,16 @@ class ComponentDetailsFragment : BaseFragment(R.layout.fragment_component_detail
                 binding.componentDetailsRefreshLayout.isRefreshing = it
             }
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_component_settings),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
+        )
     }
 
     private fun showComponentOptionsInfo(componentOptions: ComponentOptions, binding: FragmentComponentDetailsBinding) {

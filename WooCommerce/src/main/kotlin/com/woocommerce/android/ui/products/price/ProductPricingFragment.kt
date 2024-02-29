@@ -8,7 +8,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.databinding.FragmentProductPricingBinding
 import com.woocommerce.android.extensions.capitalize
@@ -28,6 +27,7 @@ import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItem
 import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -80,6 +80,15 @@ class ProductPricingFragment :
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProductPricingBinding.bind(view)
         initSubscriptionViews()
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_price),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    onExit()
+                }
+            }
+        )
         setupObservers(viewModel)
     }
 
@@ -87,8 +96,6 @@ class ProductPricingFragment :
         super.onDestroyView()
         _binding = null
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_price)
 
     private fun setupObservers(viewModel: ProductPricingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -200,13 +207,12 @@ class ProductPricingFragment :
         with(binding.scheduleSaleStartDate) {
             setClickListener {
                 startDatePickerDialog = displayDatePickerDialog(
-                    binding.scheduleSaleStartDate,
-                    OnDateSetListener { _, selectedYear, selectedMonth, dayOfMonth ->
-                        val selectedDate = dateUtils.getDateAtStartOfDay(selectedYear, selectedMonth, dayOfMonth)
+                    binding.scheduleSaleStartDate
+                ) { _, selectedYear, selectedMonth, dayOfMonth ->
+                    val selectedDate = dateUtils.getDateAtStartOfDay(selectedYear, selectedMonth, dayOfMonth)
 
-                        viewModel.onDataChanged(saleStartDate = selectedDate)
-                    }
-                )
+                    viewModel.onDataChanged(saleStartDate = selectedDate)
+                }
             }
         }
 
@@ -215,7 +221,7 @@ class ProductPricingFragment :
             setClickListener {
                 endDatePickerDialog = displayDatePickerDialog(
                     binding.scheduleSaleEndDate,
-                    OnDateSetListener { _, selectedYear, selectedMonth, dayOfMonth ->
+                    { _, selectedYear, selectedMonth, dayOfMonth ->
                         val selectedDate = dateUtils.getDateAtStartOfDay(selectedYear, selectedMonth, dayOfMonth)
 
                         viewModel.onDataChanged(saleEndDate = selectedDate)
@@ -236,7 +242,7 @@ class ProductPricingFragment :
                 setClickListener {
                     productTaxStatusSelectorDialog = ProductItemSelectorDialog.newInstance(
                         this@ProductPricingFragment, RequestCodes.PRODUCT_TAX_STATUS,
-                        getString(string.product_tax_status), ProductTaxStatus.toMap(requireContext()),
+                        getString(R.string.product_tax_status), ProductTaxStatus.toMap(requireContext()),
                         getText()
                     ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
                 }
@@ -290,7 +296,7 @@ class ProductPricingFragment :
                 productTaxClassSelectorDialog = ProductItemSelectorDialog.newInstance(
                     this@ProductPricingFragment,
                     RequestCodes.PRODUCT_TAX_CLASS,
-                    getString(string.product_tax_class),
+                    getString(R.string.product_tax_class),
                     taxClasses.map { it.slug to it.name }.toMap(),
                     binding.productTaxClass.getText()
                 ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }

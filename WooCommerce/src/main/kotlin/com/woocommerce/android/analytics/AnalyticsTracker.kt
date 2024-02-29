@@ -170,6 +170,8 @@ class AnalyticsTracker private constructor(
         const val KEY_STATE = "state"
         const val KEY_HAS_CHANGED_DATA = "has_changed_data"
         const val KEY_STATUS = "status"
+        const val KEY_PRODUCT = "product"
+        const val KEY_CUSTOMER = "customer"
         const val KEY_TOTAL_DURATION = "total_duration"
         const val KEY_TOTAL_COMPLETED_ORDERS = "total_completed_orders"
         const val KEY_SEARCH = "search"
@@ -216,8 +218,12 @@ class AnalyticsTracker private constructor(
         const val KEY_PRODUCT_ADDED_VIA = "added_via"
         const val KEY_SCANNING_FAILURE_REASON = "reason"
         const val KEY_CATEGORY = "category"
+        const val KEY_START_PAYMENT_FLOW = "start_payment_flow"
+        const val KEY_HORIZONTAL_SIZE_CLASS = "horizontal_size_class"
 
         const val KEY_SORT_ORDER = "order"
+        const val VALUE_DEVICE_TYPE_REGULAR = "regular"
+        const val VALUE_DEVICE_TYPE_COMPACT = "compact"
         const val VALUE_SORT_NAME_ASC = "name,ascending"
         const val VALUE_SORT_NAME_DESC = "name,descending"
         const val VALUE_SORT_DATE_ASC = "date,ascending"
@@ -610,6 +616,10 @@ class AnalyticsTracker private constructor(
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"
         const val KEY_BLAZE_STEP = "step"
+        const val KEY_BLAZE_DURATION = "duration"
+        const val KEY_BLAZE_TOTAL_BUDGET = "total_budget"
+        const val KEY_BLAZE_IS_AI_CONTENT = "is_ai_suggested_ad_content"
+        const val KEY_BLAZE_ERROR = "blaze_creation_error"
 
         const val PRODUCT_TYPES = "product_types"
         const val HAS_ADDONS = "has_addons"

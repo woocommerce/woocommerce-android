@@ -2,14 +2,13 @@ package com.woocommerce.android.ui.blaze.creation.destination
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_DESTINATION_SAVE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.util.getBaseUrl
-import com.woocommerce.android.util.parseParameters
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.ResourceProvider
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,26 +21,33 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     selectedSite: SelectedSite,
     productDetailRepository: ProductDetailRepository,
-    private val resourceProvider: ResourceProvider
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationAdDestinationFragmentArgs by savedStateHandle.navArgs()
-    private val productUrl = requireNotNull(productDetailRepository.getProduct(navArgs.productId))
-        .permalink
+    private val productUrl = requireNotNull(productDetailRepository.getProduct(navArgs.productId)).permalink
+    private val initialDestinationValues: ViewState
 
     private val _viewState = MutableStateFlow(
         ViewState(
-            productUrl = productUrl.trim('/'),
-            siteUrl = selectedSite.get().url.trim('/'),
-            destinationUrl = navArgs.targetUrl.getBaseUrl() + "?a=b&c=d",
-            parameters = getParameters(navArgs.targetUrl),
+            productUrl = productUrl,
+            siteUrl = selectedSite.get().url,
+            targetUrl = navArgs.destinationParameters.targetUrl,
+            parameters = navArgs.destinationParameters.parameters,
             isUrlDialogVisible = false
         )
     )
 
     val viewState = _viewState.asLiveData()
 
+    init {
+        initialDestinationValues = _viewState.value
+    }
+
     fun onBackPressed() {
-        triggerEvent(Exit)
+        if (initialDestinationValues != _viewState.value) {
+            analyticsTrackerWrapper.track(stat = BLAZE_CREATION_EDIT_DESTINATION_SAVE_TAPPED)
+        }
+        triggerEvent(ExitWithResult(DestinationParameters(_viewState.value.targetUrl, _viewState.value.parameters)))
     }
 
     fun onUrlPropertyTapped() {
@@ -50,48 +56,30 @@ class BlazeCampaignCreationAdDestinationViewModel @Inject constructor(
 
     fun onParameterPropertyTapped() {
         triggerEvent(
-            NavigateToParametersScreen(getTargetUrl(_viewState.value.destinationUrl, _viewState.value.parameters))
+            NavigateToParametersScreen(DestinationParameters(_viewState.value.targetUrl, _viewState.value.parameters))
         )
     }
 
-    fun onTargetUrlUpdated(targetUrl: String) {
+    fun onDestinationParametersUpdated(targetUrl: String, parameters: Map<String, String>? = null) {
         _viewState.update {
             it.copy(
-                destinationUrl = targetUrl.getBaseUrl(),
-                parameters = getParameters(targetUrl),
+                targetUrl = targetUrl,
+                parameters = parameters ?: it.parameters,
+                isUrlDialogVisible = false
             )
-        }
-    }
-
-    fun onDestinationUrlChanged(destinationUrl: String) {
-        _viewState.value = _viewState.value.copy(
-            destinationUrl = destinationUrl,
-            isUrlDialogVisible = false
-        )
-    }
-
-    private fun getParameters(url: String): String {
-        return url.parseParameters().entries.joinToString(separator = "\n")
-            .ifBlank {
-                resourceProvider.getString(R.string.blaze_campaign_edit_ad_destination_empty_parameters_message)
-            }
-    }
-
-    private fun getTargetUrl(baseUrl: String, parameters: String): String {
-        return if (parameters.isEmpty()) {
-            baseUrl
-        } else {
-            "$baseUrl?${parameters.replace("\n", "&")}"
         }
     }
 
     data class ViewState(
         val productUrl: String,
         val siteUrl: String,
-        val destinationUrl: String,
-        val parameters: String,
+        val targetUrl: String,
+        val parameters: Map<String, String>,
         val isUrlDialogVisible: Boolean
-    )
+    ) {
+        val joinedParameters: String
+            get() = parameters.entries.joinToString(separator = "\n")
+    }
 
-    data class NavigateToParametersScreen(val url: String) : MultiLiveEvent.Event()
+    data class NavigateToParametersScreen(val destinationParameters: DestinationParameters) : MultiLiveEvent.Event()
 }

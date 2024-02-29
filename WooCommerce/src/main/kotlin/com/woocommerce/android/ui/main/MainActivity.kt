@@ -34,6 +34,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentManager.FragmentLifecycleCallbacks
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.NavHostFragment
 import com.automattic.android.tracks.crashlogging.CrashLogging
@@ -46,11 +47,15 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_COMPACT
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_REGULAR
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.help.HelpActivity
@@ -61,6 +66,7 @@ import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.InfoScreenFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.login.LoginActivity
@@ -94,6 +100,7 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
@@ -101,6 +108,7 @@ import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.products.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -115,6 +123,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
 import org.wordpress.android.util.NetworkUtils
+import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.abs
@@ -712,7 +721,15 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
-        AnalyticsTracker.track(stat)
+        when (navPos) {
+            ORDERS -> {
+                val property = mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString())
+                AnalyticsTracker.track(stat, property)
+            }
+            else -> {
+                AnalyticsTracker.track(stat)
+            }
+        }
 
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
@@ -726,7 +743,15 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
         }
-        AnalyticsTracker.track(stat)
+        when (navPos) {
+            ORDERS -> {
+                val property = mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString())
+                AnalyticsTracker.track(stat, property)
+            }
+            else -> {
+                AnalyticsTracker.track(stat)
+            }
+        }
 
         // if we're at the root scroll the active fragment to the top
         // TODO bring back clearing the backstack when the navgraphs are fixed to support multiple backstacks:
@@ -740,6 +765,13 @@ class MainActivity :
         }
     }
     // endregion
+
+    private fun deviceTypeToAnalyticsString(): String {
+        if (isTablet()) {
+            return VALUE_DEVICE_TYPE_REGULAR
+        }
+        return VALUE_DEVICE_TYPE_COMPACT
+    }
 
     // region Fragment Processing
     private fun initFragment(savedInstanceState: Bundle?) {
@@ -901,8 +933,30 @@ class MainActivity :
 
     private fun navigateToWebView(event: ViewUrlInWebView) {
         navController.navigate(
-            NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url)
+            NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                urlToLoad = event.url
+            )
         )
+    }
+
+    @Suppress("LongParameterList")
+    fun navigateToGlobalInfoScreenFragment(
+        screenTitle: Int,
+        heading: Int,
+        message: Int,
+        linkTitle: Int,
+        imageResource: Int,
+        linkAction: InfoScreenFragment.InfoScreenLinkAction
+    ) {
+        val action = NavGraphMainDirections.actionGlobalInfoScreenFragment(
+            screenTitle = screenTitle,
+            heading = heading,
+            message = message,
+            linkTitle = linkTitle,
+            imageResource = imageResource,
+            linkAction = linkAction
+        )
+        navController.navigate(action)
     }
 
     private fun showOrderDetail(event: ViewOrderDetail) {
@@ -946,7 +1000,7 @@ class MainActivity :
 
     override fun showProductDetail(remoteProductId: Long, enableTrash: Boolean) {
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId = remoteProductId,
+            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(action)
@@ -957,7 +1011,7 @@ class MainActivity :
         val extras = FragmentNavigatorExtras(sharedView to productCardDetailTransitionName)
 
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            remoteProductId = remoteProductId,
+            mode = ProductDetailFragment.Mode.ShowProduct(remoteProductId),
             isTrashEnabled = enableTrash
         )
         navController.navigateSafely(directions = action, extras = extras)
@@ -974,7 +1028,7 @@ class MainActivity :
     override fun showAddProduct(imageUris: List<String>) {
         showBottomNav()
         val action = NavGraphMainDirections.actionGlobalProductDetailFragment(
-            isAddProduct = true,
+            mode = ProductDetailFragment.Mode.AddNewProduct,
             images = imageUris.toTypedArray()
         )
         navController.navigateSafely(action)
@@ -1112,10 +1166,28 @@ class MainActivity :
         navController.navigateSafely(action)
     }
 
+    fun showOrderCreation(
+        mode: OrderCreateEditViewModel.Mode,
+        giftCardCode: String?,
+        giftCardAmount: BigDecimal?
+    ) {
+        NavGraphMainDirections.actionGlobalToOrdercreationfragment(
+            mode = mode,
+            barcodeFormat = null,
+            giftCardCode = giftCardCode,
+            giftCardAmount = giftCardAmount,
+            sku = null,
+        ).apply {
+            navController.navigateSafely(this)
+        }
+    }
+
     override fun showOrderDetail(
         orderId: Long,
+        navHostFragment: NavHostFragment?,
         remoteNoteId: Long,
-        launchedFromNotification: Boolean
+        launchedFromNotification: Boolean,
+        startPaymentsFlow: Boolean,
     ) {
         if (launchedFromNotification) {
             binding.bottomNav.currentPosition = ORDERS
@@ -1128,8 +1200,22 @@ class MainActivity :
             arrayOf(orderId).toLongArray(),
             remoteNoteId
         )
+        navHostFragment?.navController?.let { navController ->
+            val bundle = OrderDetailFragmentArgs(
+                orderId,
+                longArrayOf(orderId),
+                remoteNoteId,
+                startPaymentsFlow
+            ).toBundle()
+            navController.navigate(
+                R.id.orderDetailFragment,
+                bundle,
+                navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
+            )
+        } ?: run {
+            navController.navigateSafely(action)
+        }
         crashLogging.recordEvent("Opening order $orderId")
-        navController.navigateSafely(action)
     }
 
     override fun showOrderDetailWithSharedTransition(

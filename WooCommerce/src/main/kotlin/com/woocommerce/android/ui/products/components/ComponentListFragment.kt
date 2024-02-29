@@ -11,6 +11,8 @@ import com.woocommerce.android.databinding.FragmentComponentListBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,7 +22,8 @@ class ComponentListFragment :
     ComponentsListAdapter.OnComponentClickListener {
     val viewModel: ComponentListViewModel by viewModels()
 
-    override fun getFragmentTitle() = resources.getString(R.string.product_components)
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,6 +58,16 @@ class ComponentListFragment :
                 else -> event.isHandled = false
             }
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_components),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
+        )
     }
 
     override fun onComponentClickListener(component: Component) {

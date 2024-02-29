@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.orders
 
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.common.InfoScreenFragment.InfoScreenLinkAction.LearnMoreAboutShippingLabels
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AIThankYouNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderNote
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.AddOrderShipmentTracking
@@ -115,7 +115,7 @@ class OrderNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
             is ViewCreateShippingLabelInfo -> {
-                val action = NavGraphMainDirections.actionGlobalInfoScreenFragment(
+                (fragment.activity as? MainActivity)?.navigateToGlobalInfoScreenFragment(
                     screenTitle = R.string.shipping_label_more_information_title,
                     heading = R.string.shipping_label_more_information_heading,
                     message = R.string.shipping_label_more_information_message,
@@ -123,7 +123,6 @@ class OrderNavigator @Inject constructor() {
                     imageResource = R.drawable.img_print_with_phone,
                     linkAction = LearnMoreAboutShippingLabels
                 )
-                fragment.findNavController().navigateSafely(action)
             }
             is ViewShippingLabelFormatOptions -> {
                 val action = PrintShippingLabelFragmentDirections
@@ -180,14 +179,11 @@ class OrderNavigator @Inject constructor() {
                     ).let { fragment.findNavController().navigateSafely(it) }
             }
             is EditOrder -> {
-                OrderDetailFragmentDirections
-                    .actionOrderDetailFragmentToOrderCreationFragment(
-                        OrderCreateEditViewModel.Mode.Edit(target.orderId),
-                        sku = null,
-                        barcodeFormat = null,
-                        giftCardCode = target.giftCard,
-                        giftCardAmount = target.appliedDiscount
-                    ).let { fragment.findNavController().navigateSafely(it) }
+                (fragment.activity as? MainActivity)?.showOrderCreation(
+                    OrderCreateEditViewModel.Mode.Edit(target.orderId),
+                    target.giftCard,
+                    target.appliedDiscount
+                )
             }
             is OrderNavigationTarget.ShowOrder -> {
                 OrderDetailFragmentDirections

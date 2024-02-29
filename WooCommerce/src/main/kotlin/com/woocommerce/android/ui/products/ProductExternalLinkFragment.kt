@@ -6,8 +6,10 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductExternalLinkBinding
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils
 
@@ -15,6 +17,9 @@ import org.wordpress.android.util.ActivityUtils
 class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_product_external_link) {
     private var _binding: FragmentProductExternalLinkBinding? = null
     private val binding get() = _binding!!
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onResume() {
         super.onResume()
@@ -40,14 +45,22 @@ class ProductExternalLinkFragment : BaseProductFragment(R.layout.fragment_produc
         binding.productButtonText.setOnTextChangedListener {
             viewModel.updateProductDraft(buttonText = it.toString())
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_external_link),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    onRequestAllowBackPress()
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_external_link)
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.event.observe(viewLifecycleOwner) { event ->

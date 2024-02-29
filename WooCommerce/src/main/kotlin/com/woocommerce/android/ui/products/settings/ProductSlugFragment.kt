@@ -2,10 +2,12 @@ package com.woocommerce.android.ui.products.settings
 
 import android.os.Bundle
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductSlugBinding
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 
 /**
  * Settings screen which enables editing a product's slug
@@ -26,6 +28,16 @@ class ProductSlugFragment : BaseProductSettingsFragment(R.layout.fragment_produc
         _binding = FragmentProductSlugBinding.bind(view)
 
         binding.editSlug.text = navArgs.slug
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_slug),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {
@@ -48,6 +60,4 @@ class ProductSlugFragment : BaseProductSettingsFragment(R.layout.fragment_produc
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_slug)
 }

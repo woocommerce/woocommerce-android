@@ -604,6 +604,53 @@ class OrderListViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible).isEqualTo(false)
         }
 
+    @Test
+    fun `when fetching orders for the first time fails with timeout, then trigger a retry event`() = testBlocking {
+        // given
+        var lastReceivedEvent: Event? = null
+        val listError = MutableLiveData(null as ListStore.ListError?)
+        whenever(pagedListWrapper.listError).doReturn(listError)
+        whenever(pagedListWrapper.fetchFirstPage()) doAnswer {
+            listError.value = ListStore.ListError(ListStore.ListErrorType.TIMEOUT_ERROR)
+        }
+        viewModel.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        // when
+        viewModel.loadOrders()
+
+        // then
+        assertThat(lastReceivedEvent).isEqualTo(OrderListEvent.RetryLoadingOrders)
+    }
+
+    @Test
+    fun `when retrying to fetch orders fails with timeout, then display the troubleshooting banner`() = testBlocking {
+        // given
+        var lastReceivedEvent: Event? = null
+        var shouldDisplayTroubleshootingBanner: Boolean? = null
+        val listError = MutableLiveData(null as ListStore.ListError?)
+        whenever(pagedListWrapper.listError).doReturn(listError)
+        whenever(pagedListWrapper.fetchFirstPage()) doAnswer {
+            listError.value = ListStore.ListError(ListStore.ListErrorType.TIMEOUT_ERROR)
+        }
+        viewModel.event.observeForever {
+            lastReceivedEvent = it
+        }
+        viewModel.viewStateLiveData.observeForever { _, new ->
+            shouldDisplayTroubleshootingBanner = new.shouldDisplayTroubleshootingBanner
+        }
+
+        // when
+        viewModel.loadOrders()
+        assertThat(lastReceivedEvent).isEqualTo(OrderListEvent.RetryLoadingOrders)
+        assertThat(shouldDisplayTroubleshootingBanner).isFalse
+        viewModel.fetchOrdersAndOrderDependencies()
+
+        // then
+        assertThat(shouldDisplayTroubleshootingBanner).isTrue
+    }
+
     // region barcode scanner
 
     @Test

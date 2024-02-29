@@ -5,8 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.woocommerce.android.datastore.DataStoreType.ANALYTICS
 import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_CONFIGURATION
+import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_UI_CACHE
 import com.woocommerce.android.datastore.DataStoreType.TRACKER
 import com.woocommerce.android.di.AppCoroutineScope
 import dagger.Module
@@ -35,7 +35,7 @@ class DataStoreModule {
 
     @Provides
     @Singleton
-    @DataStoreQualifier(ANALYTICS)
+    @DataStoreQualifier(ANALYTICS_UI_CACHE)
     fun provideAnalyticsDataStore(
         appContext: Context,
         @AppCoroutineScope appCoroutineScope: CoroutineScope

@@ -5,10 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurface"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/minor_100">
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        tools:title="@string/app_name" />
 
     <CheckedTextView
+        android:layout_marginTop="@dimen/minor_100"
         android:id="@+id/btnPublishedPrivately"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

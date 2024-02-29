@@ -8,6 +8,7 @@ import android.view.View
 import androidx.core.view.MenuProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
@@ -52,7 +53,7 @@ class OrderCreateEditCustomerAddFragment :
     }
 
     private val sharedViewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
-    private val addressViewModel by fixedHiltNavGraphViewModels<AddressViewModel>(R.id.nav_graph_order_creations)
+    private val addressViewModel by viewModels<AddressViewModel>()
 
     private val editingOfAddedCustomer: OrderCreateEditCustomerAddFragmentArgs by navArgs()
 

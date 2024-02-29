@@ -4,10 +4,9 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.TypedValue
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -28,6 +27,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEve
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Appending
 import com.woocommerce.android.ui.products.variations.attributes.AddAttributeTermsViewModel.LoadingState.Loading
 import com.woocommerce.android.ui.products.variations.attributes.AttributeTermsListAdapter.OnTermListener
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.DraggableItemTouchHelper
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,7 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint
  * local (product-based) attributes, the second is a list of terms from global (store-wide) attributes
  */
 @AndroidEntryPoint
-class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms), MenuProvider {
+class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attribute_terms) {
     companion object {
         const val TAG: String = "AddAttributeTermsFragment"
         private const val LIST_STATE_KEY_ASSIGNED = "list_state_assigned"
@@ -140,8 +140,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         setupResultHandlers()
         getAttributeTerms()
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
-
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_CONFIRM_REMOVE_DIALOG_SHOWING)) {
                 confirmRemoveAttribute()
@@ -168,11 +166,12 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
         _binding = null
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_attribute_terms, menu)
+    private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.inflateMenu(R.menu.menu_attribute_terms)
+        onPrepareMenu(toolbar.menu)
     }
 
-    override fun onPrepareMenu(menu: Menu) {
+    private fun onPrepareMenu(menu: Menu) {
         /**
          * we only want to show the Next menu item if we're under the creation of
          * the first variation for a Variable Product
@@ -193,7 +192,7 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             !navArgs.isVariationCreation
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_remove -> {
                 confirmRemoveAttribute()
@@ -282,6 +281,17 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             }
             true
         }
+
+        setupTabletSecondPaneToolbar(
+            title = attributeName,
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitProductAddAttributeTerms)
+                }
+                onCreateMenu(toolbar)
+            }
+        )
     }
 
     private fun initializeRecycler(
@@ -343,8 +353,6 @@ class AddAttributeTermsFragment : BaseProductFragment(R.layout.fragment_add_attr
             }
         }
     }
-
-    override fun getFragmentTitle() = attributeName
 
     /**
      * Show the list of terms already assigned to the product attribute
