@@ -14,15 +14,20 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class UpdateProductStockStatusFragment : DialogFragment() {
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: UpdateProductStockStatusViewModel by viewModels()
+
     companion object {
         const val UPDATE_STOCK_STATUS_EXIT_STATE_KEY = "update_stock_status_exit_state_key"
+        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
+        private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,6 +48,23 @@ class UpdateProductStockStatusFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupObservers()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (isTabletLandscape()) {
+            dialog?.window?.setLayout(
+                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
+                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
+            )
+        }
+    }
+
+    private fun isTabletLandscape(): Boolean {
+        val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
+        val isLandscape = DisplayUtils.isLandscape(context)
+
+        return isTablet && isLandscape
     }
 
     private fun setupObservers() {
