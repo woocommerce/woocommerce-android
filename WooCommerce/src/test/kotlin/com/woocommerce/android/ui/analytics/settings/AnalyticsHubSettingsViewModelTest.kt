@@ -264,8 +264,8 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
             verify(tracker).track(
                 AnalyticsEvent.ANALYTICS_HUB_SETTINGS_SAVED,
                 mapOf(
-                    AnalyticsTracker.KEY_ENABLED_CARDS to expectedEnableCards,
-                    AnalyticsTracker.KEY_DISABLED_CARDS to expectedDisabledCards,
+                    AnalyticsTracker.KEY_ENABLED_CARDS to expectedEnableCards.joinToString(","),
+                    AnalyticsTracker.KEY_DISABLED_CARDS to expectedDisabledCards.joinToString(","),
                 )
             )
         }

@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.joinToString
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
@@ -106,8 +107,8 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         tracker.track(
             AnalyticsEvent.ANALYTICS_HUB_SETTINGS_SAVED,
             mapOf(
-                AnalyticsTracker.KEY_ENABLED_CARDS to enabledCards,
-                AnalyticsTracker.KEY_DISABLED_CARDS to disabledCards,
+                AnalyticsTracker.KEY_ENABLED_CARDS to enabledCards.joinToString(","),
+                AnalyticsTracker.KEY_DISABLED_CARDS to disabledCards.joinToString(","),
             )
         )
     }
