@@ -14,5 +14,4 @@ interface TargetSelectionViewModel {
     fun onSearchItemTapped(item: SearchItem) = Unit
     fun onSearchActiveStateChanged(isActive: Boolean) = Unit
     fun onSearchQueryChanged(query: String) = Unit
-    fun onRetrySearchTapped() = Unit
 }
