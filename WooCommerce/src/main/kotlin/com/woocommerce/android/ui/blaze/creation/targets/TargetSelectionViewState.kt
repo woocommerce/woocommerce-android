@@ -54,9 +54,6 @@ data class TargetSelectionViewState(
         object NoResults : SearchState()
 
         @Parcelize
-        object Error : SearchState()
-
-        @Parcelize
         data class Results(val resultItems: List<SearchItem>) : SearchState() {
             @Parcelize
             data class SearchItem(

@@ -45,14 +45,17 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Hidden
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Inactive
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.NoResults
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Ready
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Results
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Results.SearchItem
+import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Searching
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SelectionItem
 import com.woocommerce.android.ui.compose.component.MultiSelectAllItemsButton
 import com.woocommerce.android.ui.compose.component.MultiSelectList
 import com.woocommerce.android.ui.compose.component.Toolbar
-import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -68,8 +71,7 @@ fun BlazeCampaignTargetSelectionScreen(viewModel: TargetSelectionViewModel) {
             onSearchItemTapped = viewModel::onSearchItemTapped,
             onAllButtonTapped = viewModel::onAllButtonTapped,
             onSearchQueryChanged = viewModel::onSearchQueryChanged,
-            onSearchActiveStateChanged = viewModel::onSearchActiveStateChanged,
-            onRetrySearchTapped = viewModel::onRetrySearchTapped
+            onSearchActiveStateChanged = viewModel::onSearchActiveStateChanged
         )
     }
 }
@@ -83,8 +85,7 @@ private fun TargetSelectionScreen(
     onSearchItemTapped: (SearchItem) -> Unit,
     onAllButtonTapped: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
-    onSearchActiveStateChanged: (Boolean) -> Unit,
-    onRetrySearchTapped: () -> Unit
+    onSearchActiveStateChanged: (Boolean) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -97,7 +98,7 @@ private fun TargetSelectionScreen(
                 onNavigationButtonClick = onBackPressed,
                 navigationIcon = Filled.ArrowBack,
                 actions = {
-                    if (state.searchState is SearchState.Hidden || state.searchState is Inactive) {
+                    if (state.searchState is Hidden || state.searchState is Inactive) {
                         WCTextButton(
                             onClick = onSaveTapped,
                             enabled = state.isSaveButtonEnabled,
@@ -109,17 +110,14 @@ private fun TargetSelectionScreen(
         },
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
-            .clickable(
-                indication = null,
-                interactionSource = interactionSource
-            ) { focusManager.clearFocus() } // Clear focus when clicked outside
+            .clickable(indication = null, interactionSource = interactionSource) { focusManager.clearFocus() } // Clear focus when clicked outside
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
         ) {
-            if (state.searchState != SearchState.Hidden) {
+            if (state.searchState != Hidden) {
                 val searchQuery = remember { mutableStateOf(state.searchQuery) }
                 val newLineRegex = Regex("[\n\r]")
 
@@ -148,20 +146,14 @@ private fun TargetSelectionScreen(
             }
 
             when (state.searchState) {
-                is SearchState.Searching,
-                is SearchState.Results,
-                is SearchState.NoResults,
-                is SearchState.Ready,
-                is SearchState.Error -> {
+                is Searching, is Results, is NoResults, is Ready -> {
                     SearchList(
-                        state = state.searchState,
+                        state = state,
                         focusManager = focusManager,
                         onSearchItemTapped = onSearchItemTapped,
-                        onRetrySearchTapped = onRetrySearchTapped,
                         modifier = Modifier.weight(1f)
                     )
                 }
-
                 else -> {
                     MultiSelectList(
                         items = state.items,
@@ -185,14 +177,13 @@ private fun TargetSelectionScreen(
 
 @Composable
 private fun SearchList(
-    state: SearchState,
+    state: TargetSelectionViewState,
     focusManager: FocusManager,
     onSearchItemTapped: (SearchItem) -> Unit,
-    onRetrySearchTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (state) {
-        is SearchState.Searching -> {
+    when (state.searchState) {
+        is Searching -> {
             Box(
                 modifier = modifier
                     .fillMaxSize()
@@ -205,12 +196,11 @@ private fun SearchList(
                 )
             }
         }
-
-        is SearchState.Results -> {
+        is Results -> {
             LazyColumn(
                 modifier = modifier
             ) {
-                items(state.resultItems) { item ->
+                items(state.searchState.resultItems) { item ->
                     SearchListItem(
                         item = item,
                         onItemTapped = {
@@ -222,31 +212,11 @@ private fun SearchList(
                 }
             }
         }
-
-        is SearchState.NoResults -> {
+        is NoResults -> {
             val image = painterResource(id = R.drawable.search_failed_illustration)
             val message = stringResource(id = string.blaze_campaign_creation_location_search_failed_message)
             ImageWithMessage(modifier, image, message)
         }
-
-        is SearchState.Error -> {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(
-                    space = dimensionResource(id = dimen.major_100),
-                    alignment = Alignment.CenterVertically
-                ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = modifier
-            ) {
-                ImageWithMessage(
-                    modifier = Modifier.fillMaxWidth(),
-                    image = painterResource(id = R.drawable.search_failed_illustration),
-                    message = stringResource(id = string.blaze_campaign_creation_location_search_failed_message)
-                )
-                WCColoredButton(onClick = onRetrySearchTapped, text = stringResource(id = R.string.retry))
-            }
-        }
-
         else -> {
             val image = painterResource(id = R.drawable.search_illustration)
             val message = stringResource(id = string.blaze_campaign_creation_location_search_message)
@@ -341,7 +311,7 @@ fun PreviewTargetSelectionScreen() {
             ),
             title = "Title",
             searchQuery = "",
-            searchState = SearchState.Searching
+            searchState = Searching
         ),
         onBackPressed = { /*TODO*/ },
         onSaveTapped = { /*TODO*/ },
@@ -349,7 +319,6 @@ fun PreviewTargetSelectionScreen() {
         onSearchItemTapped = {},
         onAllButtonTapped = {},
         onSearchQueryChanged = {},
-        onSearchActiveStateChanged = {},
-        onRetrySearchTapped = {}
+        onSearchActiveStateChanged = {}
     )
 }
