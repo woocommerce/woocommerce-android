@@ -74,6 +74,7 @@ import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
+import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
@@ -92,6 +93,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -217,7 +219,6 @@ class OrderDetailFragment :
         binding.customFieldsCard.customFieldsButton.setOnClickListener {
             viewModel.onCustomFieldsButtonClicked()
         }
-
         binding.orderDetailsAICard.aiThankYouNoteButton.setOnClickListener {
             viewModel.onAIThankYouNoteButtonClicked()
         }
@@ -418,6 +419,8 @@ class OrderDetailFragment :
             showGiftCards(it, viewModel.order.currency)
         }
 
+        setupOrderAttributionInfoCard(viewModel.orderAttributionInfo)
+
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> {
@@ -474,6 +477,20 @@ class OrderDetailFragment :
             giftCardSummaries = giftCardSummaries,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currencyCode)
         )
+    }
+
+    private fun setupOrderAttributionInfoCard(orderAttributionInfo: LiveData<OrderAttributionInfo>) {
+        binding.orderDetailOrderAttributionInfo.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                orderAttributionInfo.observeAsState().value?.let {
+                    WooThemeWithBackground {
+                        OrderDetailAttributionInfoView(attributionInfo = it)
+                    }
+                }
+            }
+        }
     }
 
     private fun navigateToInstallWcShippingFlow() {
