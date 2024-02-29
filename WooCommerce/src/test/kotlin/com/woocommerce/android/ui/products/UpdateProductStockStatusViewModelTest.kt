@@ -23,16 +23,6 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: UpdateProductStockStatusViewModel
 
-    private fun setupViewModel(selectedProductIds: List<Long>) {
-        viewModel = UpdateProductStockStatusViewModel(
-            savedStateHandle = UpdateProductStockStatusFragmentArgs(
-                selectedProductIds = selectedProductIds.toLongArray()
-            ).toSavedStateHandle(),
-            productListRepository = productListRepository,
-            analyticsTracker = analyticsTracker
-        )
-    }
-
     @Test
     fun `given product ids,  when viewModel is initialized, then it loads product stock statuses`() = testBlocking {
         // Given
@@ -50,7 +40,7 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given mixed stock statuses, When viewModel is initialized, Then ui state reflects mixed status`() =
+    fun `given mixed stock statuses, when viewModel is initialized, then ui state reflects mixed status`() =
         testBlocking {
             // Given
             val stockStatusInfos = listOf(
@@ -226,6 +216,16 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         // Then
         assertThat(state?.productsToUpdateCount).isEqualTo(1)
         assertThat(state?.ignoredProductsCount).isEqualTo(1)
+    }
+
+    private fun setupViewModel(selectedProductIds: List<Long>) {
+        viewModel = UpdateProductStockStatusViewModel(
+            savedStateHandle = UpdateProductStockStatusFragmentArgs(
+                selectedProductIds = selectedProductIds.toLongArray()
+            ).toSavedStateHandle(),
+            productListRepository = productListRepository,
+            analyticsTracker = analyticsTracker
+        )
     }
 
     private suspend fun mockBulkUpdateStockStatus(
