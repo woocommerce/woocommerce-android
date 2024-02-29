@@ -16,6 +16,7 @@
     <include app:graph="@navigation/nav_graph_site_picker" />
     <include app:graph="@navigation/nav_graph_domain_change" />
     <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
+    <include app:graph="@navigation/nav_graph_order_creations"/>
 
     <fragment
         android:id="@+id/dashboard"
@@ -93,6 +94,10 @@
         android:name="com.woocommerce.android.ui.orders.list.OrderListFragment"
         android:label="fragment_order_list"
         tools:layout="@layout/fragment_order_list">
+        <argument
+            android:name="orderId"
+            app:argType="long"
+            android:defaultValue="-1L"/>
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders">
@@ -200,7 +205,7 @@
     <fragment
         android:id="@+id/scanToUpdateInventory"
         android:name="com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryBarcodeScannerFragment"
-        android:label="scan_to_update_inventory"/>
+        android:label="scan_to_update_inventory" />
     <fragment
         android:id="@+id/reviews"
         android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
@@ -325,16 +330,43 @@
     </fragment>
 
     <action
+        android:id="@+id/action_global_to_ordercreationfragment"
+        app:destination="@id/nav_graph_order_creations">
+        <argument
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        <argument
+            android:name="sku"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="barcodeFormat"
+            app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
+            app:nullable="true"/>
+        <argument
+            android:name="couponEditResult"
+            app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <argument
+            android:name="giftCardCode"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <argument
+            android:name="giftCardAmount"
+            app:argType="java.math.BigDecimal"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+
+    </action>
+
+    <action
         android:id="@+id/action_global_productDetailFragment"
         app:destination="@id/nav_graph_products">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
-            android:name="isAddProduct"
-            android:defaultValue="false"
-            app:argType="boolean" />
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"
@@ -346,8 +378,8 @@
         <argument
             android:name="images"
             android:defaultValue="@null"
-            app:nullable="true"
-            app:argType="string[]" />
+            app:argType="string[]"
+            app:nullable="true" />
         <argument
             android:name="source"
             android:defaultValue="PRODUCT_TAB"

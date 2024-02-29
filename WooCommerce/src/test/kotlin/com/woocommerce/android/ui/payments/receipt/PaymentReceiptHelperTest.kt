@@ -114,6 +114,30 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given version 8_7_0_10 site and saved url, when getReceiptUrl, then url returned`() = testBlocking {
+        // GIVEN
+        val site = selectedSite.get()
+        val plugin = mock<SitePluginModel> {
+            on { version }.thenReturn("8.7.0.10")
+        }
+        whenever(
+            wooCommerceStore.getSitePlugin(
+                selectedSite.get(),
+                WooCommerceStore.WooPlugin.WOO_CORE
+            )
+        ).thenReturn(plugin)
+        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
+            WooPayload(OrderReceiptResponse("url", "date"))
+        )
+
+        // WHEN
+        val result = helper.getReceiptUrl(1)
+
+        // THEN
+        assertThat(result.getOrThrow()).isEqualTo("url")
+    }
+
+    @Test
     fun `given version 8_7_0 site and remote call fails, when getReceiptUrl, then failure returned`() = testBlocking {
         // GIVEN
         val site = selectedSite.get()

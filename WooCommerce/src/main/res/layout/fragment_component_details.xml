@@ -1,182 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/componentDetailsRefreshLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        tools:title="@string/app_name" />
+
+    <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+        android:id="@+id/componentDetailsRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/componentDetails"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/notice"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_default="wrap"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0"
-            app:layout_constraintVertical_chainStyle="packed">
+            android:layout_height="match_parent">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/componentDetails"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/notice"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_default="wrap"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0"
+                app:layout_constraintVertical_chainStyle="packed">
 
-                <com.google.android.material.card.MaterialCardView
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:elevation="@dimen/minor_10">
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-                    <androidx.appcompat.widget.LinearLayoutCompat
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:elevation="@dimen/minor_10">
 
-                        <com.woocommerce.android.widgets.BorderedImageView
-                            android:id="@+id/componentImage"
-                            android:layout_width="wrap_content"
-                            android:layout_height="@dimen/image_major_120"
-                            android:layout_gravity="start"
-                            android:layout_margin="@dimen/major_100"
-                            android:adjustViewBounds="true"
-                            android:contentDescription="@string/product_image_content_description"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            tools:layout_width="@dimen/image_major_120"
-                            tools:src="@drawable/ic_product" />
-
-                        <com.google.android.material.divider.MaterialDivider
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp" />
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/componentTitle"
-                            style="@style/Woo.TextView.Headline6"
+                        <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/major_100"
-                            android:ellipsize="end"
-                            android:maxLines="2"
-                            tools:text="This is the name" />
+                            android:orientation="vertical">
 
-                        <com.google.android.material.divider.MaterialDivider
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp" />
+                            <com.woocommerce.android.widgets.BorderedImageView
+                                android:id="@+id/componentImage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/image_major_120"
+                                android:layout_gravity="start"
+                                android:layout_margin="@dimen/major_100"
+                                android:adjustViewBounds="true"
+                                android:contentDescription="@string/product_image_content_description"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:layout_width="@dimen/image_major_120"
+                                tools:src="@drawable/ic_product" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            style="@style/Woo.TextView.Subtitle1"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/major_100"
-                            android:text="@string/product_description" />
+                            <com.google.android.material.divider.MaterialDivider
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/componentDescription"
-                            style="@style/Woo.Card.Body"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="start"
-                            android:layout_marginBottom="@dimen/major_100"
-                            android:ellipsize="end"
-                            android:lineSpacingExtra="@dimen/minor_25"
-                            android:textAlignment="viewStart"
-                            tools:text="textPropertyValue thil wrap." />
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/componentTitle"
+                                style="@style/Woo.TextView.Headline6"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/major_100"
+                                android:ellipsize="end"
+                                android:maxLines="2"
+                                tools:text="This is the name" />
 
-                    </androidx.appcompat.widget.LinearLayoutCompat>
+                            <com.google.android.material.divider.MaterialDivider
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp" />
 
-                </com.google.android.material.card.MaterialCardView>
+                            <com.google.android.material.textview.MaterialTextView
+                                style="@style/Woo.TextView.Subtitle1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/major_100"
+                                android:text="@string/product_description" />
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/componentOptionsSection"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/minor_100"
-                    android:elevation="@dimen/minor_10">
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/componentDescription"
+                                style="@style/Woo.Card.Body"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start"
+                                android:layout_marginBottom="@dimen/major_100"
+                                android:ellipsize="end"
+                                android:lineSpacingExtra="@dimen/minor_25"
+                                android:textAlignment="viewStart"
+                                tools:text="textPropertyValue thil wrap." />
 
-                    <androidx.appcompat.widget.LinearLayoutCompat
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/componentOptionsSection"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingBottom="@dimen/minor_100">
+                        android:layout_marginTop="@dimen/minor_100"
+                        android:elevation="@dimen/minor_10">
 
-                        <com.google.android.material.textview.MaterialTextView
-                            style="@style/Woo.Card.Header"
+                        <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/major_100"
-                            android:text="@string/component_options" />
+                            android:orientation="vertical"
+                            android:paddingBottom="@dimen/minor_100">
 
-                        <View
-                            style="@style/Woo.Divider"
-                            android:layout_marginStart="@dimen/major_100"
-                            android:layout_marginBottom="@dimen/major_75" />
+                            <com.google.android.material.textview.MaterialTextView
+                                style="@style/Woo.Card.Header"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/major_100"
+                                android:text="@string/component_options" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/componentOptionsType"
-                            style="@style/Woo.Card.Title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/minor_50"
-                            tools:text="Products" />
+                            <View
+                                style="@style/Woo.Divider"
+                                android:layout_marginStart="@dimen/major_100"
+                                android:layout_marginBottom="@dimen/major_75" />
 
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/componentOptionsRecycler"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/major_150"
-                            tools:itemCount="2"
-                            tools:listitem="@layout/component_option_item_view" />
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/componentOptionsType"
+                                style="@style/Woo.Card.Title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/minor_50"
+                                tools:text="Products" />
 
-                        <View
-                            android:id="@+id/componentOptionsRecyclerDivider"
-                            style="@style/Woo.Divider"
-                            android:layout_marginStart="@dimen/major_100"
-                            android:layout_marginBottom="@dimen/major_75" />
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/componentOptionsRecycler"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/major_150"
+                                tools:itemCount="2"
+                                tools:listitem="@layout/component_option_item_view" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/componentOptionsDefaultLabel"
-                            style="@style/Woo.Card.Title"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/minor_50"
-                            android:text="@string/component_default_option" />
+                            <View
+                                android:id="@+id/componentOptionsRecyclerDivider"
+                                style="@style/Woo.Divider"
+                                android:layout_marginStart="@dimen/major_100"
+                                android:layout_marginBottom="@dimen/major_75" />
 
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/componentOptionsDefault"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="@dimen/major_100"
-                            android:layout_marginTop="@dimen/minor_100"
-                            android:layout_marginBottom="@dimen/minor_50"
-                            tools:text="This is the name of the default option" />
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/componentOptionsDefaultLabel"
+                                style="@style/Woo.Card.Title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="@dimen/minor_50"
+                                android:text="@string/component_default_option" />
 
-                    </androidx.appcompat.widget.LinearLayoutCompat>
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/componentOptionsDefault"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="@dimen/major_100"
+                                android:layout_marginTop="@dimen/minor_100"
+                                android:layout_marginBottom="@dimen/minor_50"
+                                tools:text="This is the name of the default option" />
 
-                </com.google.android.material.card.MaterialCardView>
-            </androidx.appcompat.widget.LinearLayoutCompat>
-        </androidx.core.widget.NestedScrollView>
+                        </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/notice"
-            style="@style/Woo.TextView.Caption"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_100"
-            android:layout_marginEnd="@dimen/major_100"
-            android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
-            android:drawablePadding="@dimen/minor_100"
-            android:gravity="center_vertical"
-            android:text="@string/component_products_info_notice"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/componentDetails" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.core.widget.NestedScrollView>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/notice"
+                style="@style/Woo.TextView.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/major_100"
+                android:layout_marginTop="@dimen/minor_100"
+                android:layout_marginEnd="@dimen/major_100"
+                android:drawableStart="@drawable/ic_deprecated_info_outline_24dp"
+                android:drawablePadding="@dimen/minor_100"
+                android:gravity="center_vertical"
+                android:text="@string/component_products_info_notice"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/componentDetails" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+</LinearLayout>

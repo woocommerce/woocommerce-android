@@ -8,6 +8,7 @@ import androidx.annotation.LayoutRes
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -19,6 +20,9 @@ abstract class BaseProductEditorFragment(@LayoutRes private val layoutRes: Int) 
     BaseFragment(), BackPressListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     companion object {
         const val KEY_SHIPPING_DIALOG_RESULT = "key_shipping_dialog_result"

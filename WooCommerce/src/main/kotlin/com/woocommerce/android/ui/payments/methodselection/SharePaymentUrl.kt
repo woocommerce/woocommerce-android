@@ -40,6 +40,8 @@ data class NavigateToTapToPaySummary(
     val order: Order
 ) : MultiLiveEvent.Event()
 
-object NavigateBackToOrderList : MultiLiveEvent.Event()
+data class NavigateBackToOrderList(
+    val order: Order
+) : MultiLiveEvent.Event()
 
 data class OpenGenericWebView(val url: String) : MultiLiveEvent.Event()

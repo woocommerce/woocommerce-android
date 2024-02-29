@@ -424,7 +424,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
             when (cardReaderPaymentFlowParam.paymentType) {
                 SIMPLE -> NavigateBackToHub(CardReadersHub())
                 TRY_TAP_TO_PAY -> NavigateToTapToPaySummary(order.first())
-                ORDER, ORDER_CREATION -> NavigateBackToOrderList
+                ORDER, ORDER_CREATION -> NavigateBackToOrderList(order.first())
             }
         )
     }

@@ -1,0 +1,2 @@
+17.4:
+Üçüncü taraf Güvenlik Anahtarı sağlayıcıları için destek sunmaktan heyecan duyuyoruz. Bu güncelleme, WordPress.com kullanıcılarının hesaplarının güvenliğini yönetme şekline daha fazla esneklik ve rahatlık sağlamak için tasarlanmıştır. Parolalardan kaynaklanan yorgunluğa elveda demeye ve daha sorunsuz, güvenli bir oturum açma deneyimine merhaba demeye hazırlanın!

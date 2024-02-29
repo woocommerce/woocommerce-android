@@ -1,122 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        tools:title="@string/app_name" />
 
-        <com.woocommerce.android.widgets.WCElevatedLinearLayout
+    <ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/productStatus"
+            <com.woocommerce.android.widgets.WCElevatedLinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:optionTitle="@string/product_status"
-                tools:optionValue="Draft" />
+                android:orientation="vertical">
 
-            <View style="@style/Woo.Divider.TitleAligned" />
+                <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                    android:id="@+id/productStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:optionTitle="@string/product_status"
+                    tools:optionValue="Draft" />
 
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/productVisibility"
+                <View style="@style/Woo.Divider.TitleAligned" />
+
+                <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                    android:id="@+id/productVisibility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:optionTitle="@string/product_visibility"
+                    tools:optionValue="Draft" />
+
+                <View style="@style/Woo.Divider.TitleAligned" />
+
+                <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                    android:id="@+id/productCatalogVisibility"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:optionTitle="@string/product_catalog_visibility"
+                    tools:optionValue="Shop only" />
+
+                <View
+                    android:id="@+id/productIsVirtualDivider"
+                    style="@style/Woo.Divider.TitleAligned" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/productIsVirtual"
+                    style="@style/Widget.Woo.Settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/major_100"
+                    android:text="@string/product_is_virtual" />
+
+                <View
+                    android:id="@+id/productIsDownloadableDivider"
+                    style="@style/Woo.Divider.TitleAligned" />
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/productIsDownloadable"
+                    style="@style/Widget.Woo.Settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/major_100"
+                    android:text="@string/product_is_downloadable" />
+            </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+
+            <com.woocommerce.android.widgets.WCElevatedLinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:optionTitle="@string/product_visibility"
-                tools:optionValue="Draft" />
+                android:layout_marginTop="@dimen/minor_100"
+                android:orientation="vertical">
 
-            <View style="@style/Woo.Divider.TitleAligned" />
+                <com.google.android.material.textview.MaterialTextView
+                    style="@style/Widget.Woo.Settings.CategoryHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/major_100"
+                    android:text="@string/more_options"
+                    android:textColor="@color/color_on_surface_disabled" />
 
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/productCatalogVisibility"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:optionTitle="@string/product_catalog_visibility"
-                tools:optionValue="Shop only" />
+                <View style="@style/Woo.Divider.TitleAligned" />
 
-            <View android:id="@+id/productIsVirtualDivider" style="@style/Woo.Divider.TitleAligned" />
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/productReviewsAllowed"
+                    style="@style/Widget.Woo.Settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/major_100"
+                    android:text="@string/product_enable_reviews" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/productIsVirtual"
-                style="@style/Widget.Woo.Settings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/major_100"
-                android:text="@string/product_is_virtual" />
+                <View
+                    android:id="@+id/productReviewsAllowedDivider"
+                    style="@style/Woo.Divider.TitleAligned" />
 
-            <View android:id="@+id/productIsDownloadableDivider" style="@style/Woo.Divider.TitleAligned" />
+                <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                    android:id="@+id/productSlug"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:optionTitle="@string/product_slug"
+                    tools:optionValue="Slug" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/productIsDownloadable"
-                style="@style/Widget.Woo.Settings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/major_100"
-                android:text="@string/product_is_downloadable" />
-        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+                <View style="@style/Woo.Divider.TitleAligned" />
 
-        <com.woocommerce.android.widgets.WCElevatedLinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/minor_100"
-            android:orientation="vertical">
+                <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                    android:id="@+id/productPurchaseNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:optionTitle="@string/product_purchase_note"
+                    app:optionValueMaxLines="2"
+                    tools:optionValue="Purchase note" />
 
-            <com.google.android.material.textview.MaterialTextView
-                style="@style/Widget.Woo.Settings.CategoryHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/major_100"
-                android:text="@string/more_options"
-                android:textColor="@color/color_on_surface_disabled" />
+                <View style="@style/Woo.Divider.TitleAligned" />
 
-            <View style="@style/Woo.Divider.TitleAligned" />
+                <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                    android:id="@+id/productMenuOrder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:optionTitle="@string/product_menu_order"
+                    tools:optionValue="0" />
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/productReviewsAllowed"
-                style="@style/Widget.Woo.Settings"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/major_100"
-                android:text="@string/product_enable_reviews" />
+                <View style="@style/Woo.Divider" />
 
-            <View
-                android:id="@+id/productReviewsAllowedDivider"
-                style="@style/Woo.Divider.TitleAligned" />
-
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/productSlug"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:optionTitle="@string/product_slug"
-                tools:optionValue="Slug" />
-
-            <View style="@style/Woo.Divider.TitleAligned" />
-
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/productPurchaseNote"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:optionTitle="@string/product_purchase_note"
-                app:optionValueMaxLines="2"
-                tools:optionValue="Purchase note" />
-
-            <View style="@style/Woo.Divider.TitleAligned" />
-
-            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
-                android:id="@+id/productMenuOrder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:optionTitle="@string/product_menu_order"
-                tools:optionValue="0" />
-
-            <View style="@style/Woo.Divider" />
-
-        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
-    </LinearLayout>
-</ScrollView>
+            </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

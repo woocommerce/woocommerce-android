@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
@@ -59,8 +60,6 @@ class ParentCategoryListFragment :
         viewModel.fetchParentCategories()
     }
 
-    override fun getFragmentTitle() = getString(R.string.product_add_category)
-
     @Suppress("DEPRECATION")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -82,6 +81,16 @@ class ParentCategoryListFragment :
                 viewModel.refreshParentCategories()
             }
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_add_category),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
+        )
     }
 
     private fun setupObservers(viewModel: AddProductCategoryViewModel) {

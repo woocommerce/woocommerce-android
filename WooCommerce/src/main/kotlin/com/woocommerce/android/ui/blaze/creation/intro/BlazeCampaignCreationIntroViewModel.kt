@@ -1,6 +1,12 @@
 package com.woocommerce.android.ui.blaze.creation.intro
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_DISPLAYED
+import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_LEARN_MORE_TAPPED
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -20,11 +26,16 @@ import javax.inject.Inject
 class BlazeCampaignCreationIntroViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val productListRepository: ProductListRepository,
-    private val coroutineDispatchers: CoroutineDispatchers
+    private val coroutineDispatchers: CoroutineDispatchers,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs: BlazeCampaignCreationIntroFragmentArgs by savedStateHandle.navArgs()
     fun onContinueClick() {
         suspend fun getPublishedProducts() = withContext(coroutineDispatchers.io) {
+            analyticsTracker.track(
+                stat = BLAZE_ENTRY_POINT_TAPPED,
+                properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.INTRO_VIEW.trackingName)
+            )
             productListRepository.getProductList(
                 productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
                 sortType = ProductSorting.DATE_DESC,
@@ -33,11 +44,16 @@ class BlazeCampaignCreationIntroViewModel @Inject constructor(
 
         launch {
             if (navArgs.productId != -1L) {
-                triggerEvent(ShowCampaignCreationForm(navArgs.productId))
+                triggerEvent(ShowCampaignCreationForm(navArgs.productId, BlazeFlowSource.INTRO_VIEW))
             } else {
                 val products = getPublishedProducts()
                 when {
-                    products.size == 1 -> triggerEvent(ShowCampaignCreationForm(products.first().remoteId))
+                    products.size == 1 -> triggerEvent(
+                        ShowCampaignCreationForm(
+                            products.first().remoteId, BlazeFlowSource.INTRO_VIEW
+                        )
+                    )
+
                     products.isNotEmpty() -> triggerEvent(ShowProductSelector)
                     else -> {
                         WooLog.w(WooLog.T.BLAZE, "No products available to create a campaign")
@@ -48,14 +64,25 @@ class BlazeCampaignCreationIntroViewModel @Inject constructor(
         }
     }
 
+    init {
+        analyticsTracker.track(
+            stat = BLAZE_INTRO_DISPLAYED,
+            properties = mapOf(AnalyticsTracker.KEY_BLAZE_SOURCE to navArgs.source.trackingName)
+        )
+    }
+
     fun onDismissClick() {
         triggerEvent(Exit)
     }
 
     fun onProductSelected(productId: Long) {
-        triggerEvent(ShowCampaignCreationForm(productId))
+        triggerEvent(ShowCampaignCreationForm(productId, BlazeFlowSource.INTRO_VIEW))
+    }
+
+    fun onLearnMoreClick() {
+        analyticsTracker.track(stat = BLAZE_INTRO_LEARN_MORE_TAPPED)
     }
 
     object ShowProductSelector : MultiLiveEvent.Event()
-    data class ShowCampaignCreationForm(val productId: Long) : MultiLiveEvent.Event()
+    data class ShowCampaignCreationForm(val productId: Long, val source: BlazeFlowSource) : MultiLiveEvent.Event()
 }

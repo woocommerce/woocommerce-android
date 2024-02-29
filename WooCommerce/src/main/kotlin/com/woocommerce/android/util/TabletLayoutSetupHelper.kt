@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import org.wordpress.android.util.DisplayUtils
@@ -14,22 +15,38 @@ import javax.inject.Inject
 
 class TabletLayoutSetupHelper @Inject constructor(
     private val context: Context,
+    private val isTabletLogicNeeded: IsTabletLogicNeeded,
 ) : DefaultLifecycleObserver {
     private var screen: Screen? = null
 
-    fun onViewCreated(screen: Screen) {
-        if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) return
+    private lateinit var navHostFragment: NavHostFragment
 
+    fun onViewCreated(screen: Screen) {
         this.screen = screen
         screen.lifecycleKeeper.addObserver(this)
+
+        if (isTabletLogicNeeded()) {
+            initNavFragment(screen.secondPaneNavigation)
+            adjustUIForScreenSize(screen.twoPaneLayoutGuideline)
+        }
     }
 
-    override fun onCreate(owner: LifecycleOwner) {
-        if (!FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) return
-
-        if (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)) {
-            initNavFragment(screen!!.secondPaneNavigation)
-            adjustUIForScreenSize(screen!!.twoPaneLayoutGuideline)
+    fun onItemClicked(
+        tabletNavigateTo: () -> Pair<Int, Bundle>,
+        navigateWithPhoneNavigation: () -> Unit
+    ) {
+        if (isTabletLogicNeeded()) {
+            val navOptions = NavOptions.Builder()
+                .setPopUpTo(navHostFragment.navController.graph.startDestinationId, true)
+                .build()
+            val navigationData = tabletNavigateTo()
+            navHostFragment.navController.navigate(
+                resId = navigationData.first,
+                args = navigationData.second,
+                navOptions = navOptions
+            )
+        } else {
+            navigateWithPhoneNavigation()
         }
     }
 
@@ -41,9 +58,9 @@ class TabletLayoutSetupHelper @Inject constructor(
     private fun initNavFragment(navigation: Screen.Navigation) {
         val fragmentManager = navigation.fragmentManager
         val navGraphId = navigation.navGraphId
-        val bundle = navigation.bundle
+        val bundle = navigation.initialBundle
 
-        val navHostFragment = NavHostFragment.create(navGraphId, bundle)
+        navHostFragment = NavHostFragment.create(navGraphId, bundle)
 
         fragmentManager.beginTransaction()
             .replace(R.id.detail_nav_container, navHostFragment)
@@ -55,9 +72,11 @@ class TabletLayoutSetupHelper @Inject constructor(
             DisplayUtils.isTablet(context) -> {
                 twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
             }
+
             DisplayUtils.isXLargeTablet(context) -> {
                 twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
             }
+
             else -> twoPaneLayoutGuideline.setGuidelinePercent(1.0f)
         }
     }
@@ -75,7 +94,11 @@ class TabletLayoutSetupHelper @Inject constructor(
         data class Navigation(
             val fragmentManager: FragmentManager,
             val navGraphId: Int,
-            val bundle: Bundle?
+            val initialBundle: Bundle?
         )
     }
+}
+
+class IsTabletLogicNeeded @Inject constructor(private val isTablet: IsTablet) {
+    operator fun invoke() = isTablet() && FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()
 }
