@@ -87,6 +87,7 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
+import com.woocommerce.android.ui.compose.DeviceType
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
@@ -281,6 +282,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
+                onRecalculateButtonClicked = { onTotalsSectionRecalculateButtonClicked() },
                 onExpandCollapseClicked = { onExpandCollapseTotalsClicked() },
                 onHeightChanged = { onTotalsSectionHeightChanged(it) }
             )
@@ -415,6 +417,10 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onDeviceConfigurationChanged(deviceType: DeviceType) {
+        viewState = viewState.copy(deviceType = deviceType)
     }
 
     fun selectCustomAmount(customAmount: CustomAmountUIModel) {
@@ -1213,6 +1219,17 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onItemsSelectionChanged() {
+        viewState = viewState.copy(isRecalculateNeeded = true)
+    }
+
+    private fun onTotalsSectionRecalculateButtonClicked() {
+        // TODO track analytics event
+        triggerEvent(OnSelectedProductsSyncRequested)
+        viewState = viewState.copy(isRecalculateNeeded = false)
+        // TODO update anything else?
+    }
+
     private fun trackOrderCreationSuccess() {
         tracker.track(
             ORDER_CREATION_SUCCESS,
@@ -1307,7 +1324,11 @@ class OrderCreateEditViewModel @Inject constructor(
                                 _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
                                 triggerEvent(OnCouponRejectedByBackend)
                             } else {
-                                viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                                viewState = viewState.copy(
+                                    isUpdatingOrderDraft = false,
+                                    showOrderUpdateSnackbar = true,
+                                    isRecalculateNeeded = viewState.deviceType == DeviceType.Tablet
+                                )
                             }
                             trackOrderSyncFailed(updateStatus.throwable)
                         }
@@ -1820,6 +1841,8 @@ class OrderCreateEditViewModel @Inject constructor(
         val taxRateSelectorButtonState: TaxRateSelectorButtonState = TaxRateSelectorButtonState(),
         val productsSectionState: ProductsSectionState = ProductsSectionState(),
         val customAmountSectionState: CustomAmountSectionState = CustomAmountSectionState(),
+        val deviceType: DeviceType = DeviceType.Phone,
+        val isRecalculateNeeded: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
@@ -1895,6 +1918,8 @@ data class OnTotalsSectionHeightChanged(
 data class OnCustomAmountTypeSelected(
     val type: CustomAmountType
 ) : Event()
+
+object OnSelectedProductsSyncRequested : Event()
 
 @Parcelize
 data class CustomAmountUIModel(

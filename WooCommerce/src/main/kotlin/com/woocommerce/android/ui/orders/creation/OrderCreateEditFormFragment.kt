@@ -35,10 +35,12 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationAdditionalInfoCollectionSectionBinding
+import com.woocommerce.android.extensions.deviceType
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isNotNullOrEmpty
+import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -96,6 +98,8 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
@@ -152,16 +156,23 @@ class OrderCreateEditFormFragment :
         sharedViewModel.updateSelectedItems(viewModel.selectedItems.value ?: emptyList())
         lifecycleScope.launch {
             viewModel.selectedItems.asFlow()
+                .drop(1)
+                .dropWhile {
+                    sharedViewModel.selectedItems.value.containsAll(it) &&
+                            it.size == sharedViewModel.selectedItems.value.size
+                }
+                .distinctUntilChanged()
                 .collect {
                     sharedViewModel.updateSelectedItems(it)
                 }
         }
         sharedViewModelUpdateJob = lifecycleScope.launch {
             sharedViewModel.selectedItems
+                .drop(1)
                 .debounce(500)
                 .distinctUntilChanged()
                 .collect {
-                    viewModel.onProductsSelected(it)
+                    viewModel.onItemsSelectionChanged()
                 }
         }
     }
@@ -178,6 +189,7 @@ class OrderCreateEditFormFragment :
             viewModel.onCouponAdded(it)
         }
         handleTaxRateSelectionResult()
+        viewModel.onDeviceConfigurationChanged(deviceType)
     }
 
     private fun handleTaxRateSelectionResult() {
@@ -427,7 +439,7 @@ class OrderCreateEditFormFragment :
 
         observeViewStateChanges(binding)
 
-        viewModel.event.observe(viewLifecycleOwner, { handleViewModelEvents(it, binding) })
+        viewModel.event.observe(viewLifecycleOwner) { handleViewModelEvents(it, binding) }
     }
 
     @Suppress("LongMethod")
@@ -1108,6 +1120,10 @@ class OrderCreateEditFormFragment :
 
             is OnTotalsSectionHeightChanged -> {
                 binding.scrollView.setPadding(0, 0, 0, event.newHeight)
+            }
+
+            is OnSelectedProductsSyncRequested -> {
+                if (isTablet()) sharedViewModel.selectedItems.value.let { viewModel.onProductsSelected(it) }
             }
 
             is Exit -> findNavController().navigateUp()
