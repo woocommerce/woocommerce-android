@@ -212,4 +212,30 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
         assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
         assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
     }
+
+    @Test
+    fun `when an order change event is triggered, then the card's order is the expected`() = testBlocking {
+        val configuration = listOf(
+            AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
+            AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
+            AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
+        )
+        val expected = listOf(
+            AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true),
+            AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false),
+            AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
+        )
+        whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
+
+        var viewState: AnalyticsHubSettingsViewState? = null
+        sut.viewStateData.observeForever { _, new -> viewState = new }
+
+        advanceTimeBy(501)
+
+        sut.onOrderChange(0, 2)
+
+        // The save button is disabled when the configuration doesn't have any change
+        assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
+        assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
+    }
 }
