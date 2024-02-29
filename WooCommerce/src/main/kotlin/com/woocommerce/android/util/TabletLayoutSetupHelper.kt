@@ -3,12 +3,13 @@ package com.woocommerce.android.util
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.Guideline
+import androidx.core.view.children
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
@@ -19,18 +20,24 @@ import javax.inject.Inject
 class TabletLayoutSetupHelper @Inject constructor(
     private val context: Context,
     private val isTabletLogicNeeded: IsTabletLogicNeeded,
-) : DefaultLifecycleObserver {
+) : FragmentManager.FragmentLifecycleCallbacks() {
     private var screen: Screen? = null
+    private var navHostFragment: NavHostFragment? = null
 
-    private lateinit var navHostFragment: NavHostFragment
-
-    fun onViewCreated(screen: Screen) {
-        this.screen = screen
-        screen.lifecycleKeeper.addObserver(this)
-
+    fun onFragmentCreate(screen: Screen) {
         if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
-            initNavFragment(screen.secondPaneNavigation)
-            adjustUIForScreenSize(screen)
+            if (isTabletLogicNeeded()) {
+                this.screen = screen
+                initNavFragment(screen.secondPaneNavigation)
+
+                screen.secondPaneNavigation.fragmentManager.registerFragmentLifecycleCallbacks(this, true)
+            }
+        }
+    }
+
+    override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
+        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
+            adjustUIForScreenSize(screen!!)
         }
     }
 
@@ -40,10 +47,12 @@ class TabletLayoutSetupHelper @Inject constructor(
     ) {
         if (isTabletLogicNeeded()) {
             val navOptions = NavOptions.Builder()
-                .setPopUpTo(navHostFragment.navController.graph.startDestinationId, true)
+                .setPopUpTo(navHostFragment!!.navController.graph.startDestinationId, true)
+                .setEnterAnim(R.anim.activity_fade_in)
+                .setExitAnim(R.anim.activity_fade_out)
                 .build()
             val navigationData = tabletNavigateTo()
-            navHostFragment.navController.navigate(
+            navHostFragment!!.navController.navigate(
                 resId = navigationData.first,
                 args = navigationData.second,
                 navOptions = navOptions
@@ -53,9 +62,46 @@ class TabletLayoutSetupHelper @Inject constructor(
         }
     }
 
-    override fun onDestroy(owner: LifecycleOwner) {
-        screen!!.lifecycleKeeper.removeObserver(this)
-        screen = null
+    private fun setDetailsMargins(rootView: View) {
+        if (isTabletLogicNeeded()) {
+            if (rootView !is ViewGroup) return
+
+            val isSmallTablet = context.isDisplaySmallerThan720
+            val isPortrait = !DisplayUtils.isLandscape(context)
+            val windowWidth = DisplayUtils.getWindowPixelWidth(context)
+            rootView.children.filter { it !is Toolbar }.forEach { viewToApplyMargins ->
+                val layoutParams = viewToApplyMargins.layoutParams as MarginLayoutParams
+
+                if (isSmallTablet && isPortrait) {
+                    val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
+                    layoutParams.setMargins(
+                        marginHorizontal,
+                        layoutParams.topMargin,
+                        marginHorizontal,
+                        layoutParams.bottomMargin
+                    )
+                } else {
+                    val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
+                    layoutParams.setMargins(
+                        marginHorizontal,
+                        layoutParams.topMargin,
+                        marginHorizontal,
+                        layoutParams.bottomMargin
+                    )
+                }
+
+                viewToApplyMargins.layoutParams = layoutParams
+            }
+        }
+    }
+
+    override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
+        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
+            screen!!.secondPaneNavigation.fragmentManager.unregisterFragmentLifecycleCallbacks(this)
+
+            navHostFragment = null
+            screen = null
+        }
     }
 
     private fun initNavFragment(navigation: Screen.Navigation) {
@@ -65,13 +111,14 @@ class TabletLayoutSetupHelper @Inject constructor(
 
         val existingFragment = fragmentManager.findFragmentById(R.id.detail_nav_container)
 
-        if (existingFragment == null) {
-            navHostFragment = NavHostFragment.create(navGraphId, bundle)
-            fragmentManager.beginTransaction()
-                .replace(R.id.detail_nav_container, navHostFragment)
-                .commit()
+        navHostFragment = if (existingFragment == null) {
+            NavHostFragment.create(navGraphId, bundle).apply {
+                fragmentManager.beginTransaction()
+                    .replace(R.id.detail_nav_container, this)
+                    .commit()
+            }
         } else {
-            navHostFragment = existingFragment as NavHostFragment
+            existingFragment as NavHostFragment
         }
     }
 
@@ -94,6 +141,7 @@ class TabletLayoutSetupHelper @Inject constructor(
         }
         screen.listPaneContainer.visibility = View.VISIBLE
         screen.detailPaneContainer.visibility = View.VISIBLE
+        setDetailsMargins(screen.detailPaneContainer)
     }
 
     private fun adjustLayoutForNonTablet(screen: Screen) {
@@ -125,11 +173,11 @@ class TabletLayoutSetupHelper @Inject constructor(
     }
 
     interface Screen {
+        val fragment: Fragment
         val twoPaneLayoutGuideline: Guideline
         val listPaneContainer: View
         val detailPaneContainer: View
         val secondPaneNavigation: Navigation
-        val lifecycleKeeper: Lifecycle
 
         val twoPanesWereShownBeforeConfigChange: Boolean
 

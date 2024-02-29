@@ -11,8 +11,8 @@ import androidx.core.view.MenuCompat
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -120,9 +120,8 @@ class ProductListFragment :
     override val detailPaneContainer: View
         get() = binding.detailNavContainer
     override var twoPanesWereShownBeforeConfigChange: Boolean = false
-    override val lifecycleKeeper: Lifecycle
-        get() = viewLifecycleOwner.lifecycle
-
+    override val fragment: Fragment
+        get() = this
     override val secondPaneNavigation
         get() = TabletLayoutSetupHelper.Screen.Navigation(
             childFragmentManager,
@@ -143,6 +142,12 @@ class ProductListFragment :
         enterTransition = fadeThroughTransition
         exitTransition = fadeThroughTransition
         reenterTransition = fadeThroughTransition
+
+        twoPanesWereShownBeforeConfigChange = savedInstanceState?.getBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            false
+        ) ?: false
+        tabletLayoutSetupHelper.onFragmentCreate(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -151,12 +156,6 @@ class ProductListFragment :
         postponeEnterTransition()
 
         _binding = FragmentProductListBinding.bind(view)
-
-        twoPanesWereShownBeforeConfigChange = savedInstanceState?.getBoolean(
-            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
-            false
-        ) ?: false
-        tabletLayoutSetupHelper.onViewCreated(this)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
