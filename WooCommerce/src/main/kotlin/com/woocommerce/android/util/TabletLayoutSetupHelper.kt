@@ -1,9 +1,9 @@
 package com.woocommerce.android.util
 
 import android.content.Context
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.constraintlayout.widget.Guideline
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -12,6 +12,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isDisplaySmallerThan720
+import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 class TabletLayoutSetupHelper @Inject constructor(
@@ -82,8 +84,8 @@ class TabletLayoutSetupHelper @Inject constructor(
     }
 
     private fun adjustLayoutForTablet(screen: Screen) {
-        val isSmallTablet = !context.resources.getBoolean(R.bool.is_at_least_720sw)
-        val isPortrait = context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        val isSmallTablet = context.isDisplaySmallerThan720
+        val isPortrait = !DisplayUtils.isLandscape(context)
 
         if (isSmallTablet && isPortrait) {
             screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
@@ -117,6 +119,9 @@ class TabletLayoutSetupHelper @Inject constructor(
     private companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
         private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.40f
+
+        private const val MARGINS_FOR_TABLET: Float = 0.1F
+        private const val MARGINS_FOR_SMALL_TABLET_PORTRAIT: Float = 0.025F
     }
 
     interface Screen {
