@@ -23,6 +23,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -67,6 +68,19 @@ private fun UpdateProductStockStatusScreen(
     onNavigationUpClicked: () -> Unit,
     onUpdateClicked: () -> Unit
 ) {
+    val borderWidth = 1.dp
+    val borderColor = colorResource(id = R.color.divider_color)
+
+    val statusMessage = when (currentStockStatusState) {
+        is Mixed ->
+            stringResource(id = R.string.product_update_stock_status_current_status_mixed)
+
+        is Common -> stringResource(
+            id = R.string.product_update_stock_status_current_status_single,
+            stringResource(currentStockStatusState.status.stringResource)
+        )
+    }
+
     Scaffold(
         topBar = {
             Toolbar(
@@ -84,8 +98,8 @@ private fun UpdateProductStockStatusScreen(
         },
         backgroundColor = MaterialTheme.colors.surface
     ) { innerPadding ->
-        Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
         Column(modifier = Modifier.padding(innerPadding)) {
+            Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_150)))
             StockStatusDropdown(
                 currentProductStockStatus = currentProductStockStatus,
                 stockStatuses = stockStatuses,
@@ -96,15 +110,6 @@ private fun UpdateProductStockStatusScreen(
                     .align(Alignment.CenterHorizontally)
             )
 
-            val statusMessage = when (currentStockStatusState) {
-                is Mixed ->
-                    stringResource(id = R.string.product_update_stock_status_current_status_mixed)
-
-                is Common -> stringResource(
-                    id = R.string.product_update_stock_status_current_status_single,
-                    stringResource(currentStockStatusState.status.stringResource)
-                )
-            }
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
 
             Text(
@@ -118,7 +123,7 @@ private fun UpdateProductStockStatusScreen(
 
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
 
-            Divider(color = colorResource(id = R.color.inverted_surface_overlay))
+            Divider(color = borderColor, thickness = borderWidth)
 
             Text(
                 text = buildString {
@@ -150,7 +155,7 @@ private fun UpdateProductStockStatusScreen(
                 textAlign = TextAlign.Center
             )
 
-            Divider(color = colorResource(id = R.color.inverted_surface_overlay))
+            Divider(color = borderColor, thickness = borderWidth)
         }
 
         if (isProgressDialogVisible) {
