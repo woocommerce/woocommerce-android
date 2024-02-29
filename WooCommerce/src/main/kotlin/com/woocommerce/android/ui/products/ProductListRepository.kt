@@ -11,7 +11,8 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.*
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.ProductStockStatusInfo
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusResult
 import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
