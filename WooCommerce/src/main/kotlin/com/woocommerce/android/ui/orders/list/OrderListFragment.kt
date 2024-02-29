@@ -605,6 +605,9 @@ class OrderListFragment :
             new.isErrorFetchingDataBannerVisible.takeIfNotEqualTo(old?.isErrorFetchingDataBannerVisible) {
                 displayErrorParsingOrdersCard(it)
             }
+            new.shouldDisplayTroubleshootingBanner.takeIfNotEqualTo(old?.shouldDisplayTroubleshootingBanner) {
+                displayTimeoutErrorCard(it)
+            }
         }
     }
 
@@ -924,21 +927,47 @@ class OrderListFragment :
     }
 
     private fun displayErrorParsingOrdersCard(show: Boolean) {
+        displayErrorTroubleshootingCard(
+            show = show,
+            title = getString(R.string.orderlist_parsing_error_title),
+            message = getString(R.string.orderlist_parsing_error_message),
+            troubleshootingClick = { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
+            supportContactClick = { openSupportRequestScreen() }
+        )
+    }
+
+    private fun displayTimeoutErrorCard(show: Boolean) {
+        displayErrorTroubleshootingCard(
+            show = show,
+            title = getString(R.string.orderlist_timeout_error_title),
+            message = getString(R.string.orderlist_timeout_error_message),
+            troubleshootingClick = { /* Call Connectivity tool */ },
+            supportContactClick = { openSupportRequestScreen() }
+        )
+    }
+
+    private fun displayErrorTroubleshootingCard(
+        show: Boolean,
+        title: String,
+        message: String,
+        troubleshootingClick: () -> Unit,
+        supportContactClick: () -> Unit
+    ) {
         TransitionManager.beginDelayedTransition(binding.orderListViewRoot)
         if (!show) {
-            binding.errorParsingOrdersCard.isVisible = false
+            binding.errorTroubleshootingCard.isVisible = false
             return
         }
 
-        binding.errorParsingOrdersCard.isVisible = true
-        binding.errorParsingOrdersCard.initView(
-            getString(R.string.orderlist_parsing_error_title),
-            getString(R.string.orderlist_parsing_error_message),
-            getString(R.string.error_troubleshooting),
-            getString(R.string.support_contact),
-            true,
-            { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
-            { openSupportRequestScreen() }
+        binding.errorTroubleshootingCard.isVisible = true
+        binding.errorTroubleshootingCard.initView(
+            title = title,
+            message = message,
+            isExpanded = true,
+            mainActionText = getString(R.string.error_troubleshooting),
+            secondaryActionText = getString(R.string.support_contact),
+            mainActionClick = troubleshootingClick,
+            secondaryActionClick = supportContactClick
         )
     }
 
