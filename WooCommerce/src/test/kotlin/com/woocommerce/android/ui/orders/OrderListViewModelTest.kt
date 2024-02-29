@@ -39,6 +39,7 @@ import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
@@ -606,6 +607,20 @@ class OrderListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when fetching orders for the first time fails with timeout, then trigger a retry event`() = testBlocking {
+        // given
+        var lastReceivedEvent: Event? = null
+        whenever(pagedListWrapper.listError).doReturn(
+            MutableLiveData(ListStore.ListError(ListStore.ListErrorType.TIMEOUT_ERROR))
+        )
+        viewModel.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        // when
+        viewModel.loadOrders()
+
+        // then
+        assertThat(lastReceivedEvent).isEqualTo(OrderListEvent.RetryLoadingOrders)
     }
 
     @Test
