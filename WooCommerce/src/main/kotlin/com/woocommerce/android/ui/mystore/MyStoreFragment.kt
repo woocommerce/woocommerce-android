@@ -20,6 +20,8 @@ import androidx.lifecycle.withCreated
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.transition.MaterialElevationScale
@@ -42,6 +44,8 @@ import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragment
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragment.Companion
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
@@ -60,6 +64,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShareStore
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
@@ -87,6 +92,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -210,6 +216,10 @@ class MyStoreFragment :
         prepareJetpackBenefitsBanner()
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
+
+        binding.myStoreStats.customRangeButton.setOnClickListener {
+            myStoreViewModel.onAddCustomRangeClicked()
+        }
 
         binding.statsScrollView.scrollStartEvents()
             .onEach { usageTracksEventEmitter.interacted() }
@@ -456,6 +466,8 @@ class MyStoreFragment :
                         MyStoreFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
                     )
 
+                is OpenDatePicker -> showDateRangePicker()
+
                 else -> event.isHandled = false
             }
         }
@@ -637,6 +649,23 @@ class MyStoreFragment :
     private fun showChartSkeleton(show: Boolean) {
         binding.myStoreStats.showErrorView(false)
         binding.myStoreStats.showSkeleton(show)
+    }
+
+    private fun showDateRangePicker() {
+        val datePicker =
+            MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
+                .setSelection(androidx.core.util.Pair(System.currentTimeMillis(), System.currentTimeMillis()))
+                .setCalendarConstraints(
+                    CalendarConstraints.Builder()
+                        .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
+                        .build()
+                )
+                .build()
+        datePicker.show(parentFragmentManager, AnalyticsHubFragment.DATE_PICKER_FRAGMENT_TAG)
+        datePicker.addOnPositiveButtonClickListener {
+            myStoreViewModel.onCustomRangeSelected(Date(it?.first ?: 0L), Date(it.second ?: 0L))
+        }
     }
 
     /**

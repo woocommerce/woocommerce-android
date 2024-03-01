@@ -25,6 +25,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
@@ -40,6 +41,7 @@ import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.TimezoneProvider
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -65,6 +67,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
+import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -426,10 +429,18 @@ class MyStoreViewModel @Inject constructor(
         StatsGranularity.YEARS -> SelectionType.YEAR_TO_DATE
     }
 
+    fun onCustomRangeSelected(fromDate: Date, toDate: Date) {
+        WooLog.i(WooLog.T.DASHBOARD, "Custom range selected: $fromDate - $toDate")
+    }
+
+    fun onAddCustomRangeClicked() {
+        triggerEvent(OpenDatePicker)
+    }
+
     sealed class RevenueStatsViewState {
-        object Loading : RevenueStatsViewState()
-        object GenericError : RevenueStatsViewState()
-        object PluginNotActiveError : RevenueStatsViewState()
+        data object Loading : RevenueStatsViewState()
+        data object GenericError : RevenueStatsViewState()
+        data object PluginNotActiveError : RevenueStatsViewState()
         data class Content(
             val revenueStats: RevenueStatsUiModel?,
             val granularity: StatsGranularity
@@ -437,7 +448,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     sealed class VisitorStatsViewState {
-        object Error : VisitorStatsViewState()
+        data object Error : VisitorStatsViewState()
         data class Unavailable(
             val benefitsBanner: JetpackBenefitsBannerUiModel
         ) : VisitorStatsViewState()
@@ -454,8 +465,8 @@ class MyStoreViewModel @Inject constructor(
     )
 
     sealed class OrderState {
-        object Empty : OrderState()
-        object AtLeastOne : OrderState()
+        data object Empty : OrderState()
+        data object AtLeastOne : OrderState()
     }
 
     data class AppbarState(
@@ -469,11 +480,13 @@ class MyStoreViewModel @Inject constructor(
 
         data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
 
-        object ShowPrivacyBanner : MyStoreEvent()
+        data object ShowPrivacyBanner : MyStoreEvent()
 
-        object ShowAIProductDescriptionDialog : MyStoreEvent()
+        data object ShowAIProductDescriptionDialog : MyStoreEvent()
 
         data class ShareStore(val storeUrl: String) : MyStoreEvent()
+
+        data object OpenDatePicker : MyStoreEvent()
     }
 
     data class RefreshState(private val isForced: Boolean = false) {
