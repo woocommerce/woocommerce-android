@@ -28,9 +28,9 @@ class TabletLayoutSetupHelper @Inject constructor(
     fun onRootFragmentCreated(screen: Screen) {
         if (isTabletLogicNeeded()) {
             this@TabletLayoutSetupHelper.screen = screen
-            initNavFragment(screen.navigation)
+            initNavFragment(screen)
 
-            screen.navigation.parentFragmentManager.registerFragmentLifecycleCallbacks(
+            screen.listFragment.parentFragmentManager.registerFragmentLifecycleCallbacks(
                 object : FragmentManager.FragmentLifecycleCallbacks() {
                     override fun onFragmentViewCreated(
                         fm: FragmentManager,
@@ -38,17 +38,21 @@ class TabletLayoutSetupHelper @Inject constructor(
                         v: View,
                         savedInstanceState: Bundle?
                     ) {
-                        adjustUIForScreenSize(screen)
+                        if (f == screen.listFragment) {
+                            adjustUIForScreenSize(screen)
+                        }
                     }
 
                     override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
-                        this@TabletLayoutSetupHelper.screen = null
-                        navHostFragment = null
+                        if (f == screen.listFragment) {
+                            this@TabletLayoutSetupHelper.screen = null
+                            navHostFragment = null
+                        }
                     }
                 }, false
             )
 
-            screen.navigation.childFragmentManager.registerFragmentLifecycleCallbacks(
+            screen.listFragment.childFragmentManager.registerFragmentLifecycleCallbacks(
                 object : FragmentManager.FragmentLifecycleCallbacks() {
                     override fun onFragmentViewCreated(
                         fm: FragmentManager,
@@ -56,8 +60,7 @@ class TabletLayoutSetupHelper @Inject constructor(
                         v: View,
                         savedInstanceState: Bundle?
                     ) {
-                        if (f != navHostFragment!!) {
-                            println("setDetailsMargins called with rootView: $f")
+                        if (f != navHostFragment) {
                             setDetailsMargins(v)
                         }
                     }
@@ -120,10 +123,10 @@ class TabletLayoutSetupHelper @Inject constructor(
         }
     }
 
-    private fun initNavFragment(navigation: Screen.Navigation) {
-        val fragmentManager = navigation.childFragmentManager
-        val navGraphId = navigation.detailsNavGraphId
-        val bundle = navigation.detailsInitialBundle
+    private fun initNavFragment(screen: Screen) {
+        val fragmentManager = screen.listFragment.childFragmentManager
+        val navGraphId = screen.navigation.detailsNavGraphId
+        val bundle = screen.navigation.detailsInitialBundle
 
         val existingFragment = fragmentManager.findFragmentById(R.id.detail_nav_container)
 
@@ -196,9 +199,9 @@ class TabletLayoutSetupHelper @Inject constructor(
 
         val twoPanesWereShownBeforeConfigChange: Boolean
 
+        val listFragment: Fragment
+
         data class Navigation(
-            val parentFragmentManager: FragmentManager,
-            val childFragmentManager: FragmentManager,
             val detailsNavGraphId: Int,
             val detailsInitialBundle: Bundle?
         )
