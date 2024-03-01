@@ -543,7 +543,6 @@ class MyStoreFragment :
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
-        removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         super.onDestroyView()
         _binding = null
@@ -577,7 +576,6 @@ class MyStoreFragment :
     private fun updateStatsAvailabilityError() {
         binding.myStoreRefreshLayout.visibility = View.GONE
         WooAnimUtils.fadeIn(binding.statsErrorScrollView)
-        removeTabLayoutFromAppBar()
         showChartSkeleton(false)
     }
 
@@ -712,10 +710,6 @@ class MyStoreFragment :
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show
-    }
-
-    private fun removeTabLayoutFromAppBar() {
-        binding.myStoreStatsContainer.removeView(tabLayout)
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
