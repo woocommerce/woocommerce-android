@@ -379,7 +379,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given no blaze campaigns, when user clicks on blaze, then start campaign creation`() = testBlocking {
         setup {
             whenever(blazeCampaignsStore.getBlazeCampaigns(any()))
-                .thenReturn(BlazeCampaignsModel(emptyList(), 0, 0, 0))
+                .thenReturn(BlazeCampaignsModel(emptyList(), skipped = 0, totalItems = 0))
         }
 
         val state = viewModel.moreMenuViewState.captureValues().last()
@@ -395,7 +395,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given existing blaze campaigns, when user clicks on blaze, then show campaigns list`() = testBlocking {
         setup {
             whenever(blazeCampaignsStore.getBlazeCampaigns(any()))
-                .thenReturn(BlazeCampaignsModel(listOf(mock()), 0, 1, 1))
+                .thenReturn(BlazeCampaignsModel(listOf(mock()), skipped = 0, totalItems = 1))
         }
 
         val state = viewModel.moreMenuViewState.captureValues().last()
