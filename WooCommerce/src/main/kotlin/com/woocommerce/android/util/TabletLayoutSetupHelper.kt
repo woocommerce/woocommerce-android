@@ -91,6 +91,7 @@ class TabletLayoutSetupHelper @Inject constructor(
         }
     }
 
+    @Suppress("NestedBlockDepth")
     private fun setDetailsMargins(rootView: View) {
         if (isTablet()) {
             if (rootView !is ViewGroup) return
@@ -99,21 +100,22 @@ class TabletLayoutSetupHelper @Inject constructor(
             val isPortrait = !DisplayUtils.isLandscape(context)
             val windowWidth = DisplayUtils.getWindowPixelWidth(context)
             rootView.children.filter { it !is Toolbar }.forEach { viewToApplyMargins ->
-                val layoutParams = viewToApplyMargins.layoutParams as MarginLayoutParams
+                val layoutParams = viewToApplyMargins.layoutParams
+                if (layoutParams is MarginLayoutParams) {
+                    if (isSmallTablet && isPortrait) {
+                        val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
+                        layoutParams.setMargins(
+                            marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
+                        )
+                    } else {
+                        val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
+                        layoutParams.setMargins(
+                            marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
+                        )
+                    }
 
-                if (isSmallTablet && isPortrait) {
-                    val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
-                    layoutParams.setMargins(
-                        marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
-                    )
-                } else {
-                    val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
-                    layoutParams.setMargins(
-                        marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
-                    )
+                    viewToApplyMargins.layoutParams = layoutParams
                 }
-
-                viewToApplyMargins.layoutParams = layoutParams
             }
         }
     }
