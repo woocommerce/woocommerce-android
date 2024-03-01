@@ -16,13 +16,13 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.util.IsTabletLogicNeeded
+import com.woocommerce.android.util.IsTablet
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class ProductListToolbarHelper @Inject constructor(
     private val activity: Activity,
-    private val isTabletLogicNeeded: IsTabletLogicNeeded,
+    private val isTablet: IsTablet,
 ) : DefaultLifecycleObserver,
     MenuItem.OnActionExpandListener,
     SearchView.OnQueryTextListener,
@@ -41,7 +41,7 @@ class ProductListToolbarHelper @Inject constructor(
             owner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (isTabletLogicNeeded()) {
+                    if (isTablet()) {
                         if (binding?.detailNavContainer?.findNavController()?.popBackStack() != true) {
                             fragment?.findNavController()?.popBackStack()
                         }

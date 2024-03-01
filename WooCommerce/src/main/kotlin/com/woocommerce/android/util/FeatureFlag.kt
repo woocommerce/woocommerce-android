@@ -8,7 +8,6 @@ import android.content.Context
 enum class FeatureFlag {
     DB_DOWNGRADE,
     MORE_MENU_INBOX,
-    BETTER_TABLETS_SUPPORT_PRODUCTS,
     WC_SHIPPING_BANNER,
     IAP_FOR_STORE_CREATION,
     BETTER_CUSTOMER_SEARCH_M2,
@@ -22,7 +21,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            BETTER_TABLETS_SUPPORT_PRODUCTS,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
