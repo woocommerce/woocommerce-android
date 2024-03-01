@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 20:54:03+0000
+Translation-Revision-Date: 2024-02-27 11:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="order_creation_payment_shipping_tax_label">Налог на доставку</string>
+    <string name="customize_analytics">Настроить аналитику</string>
     <string name="blaze_campaign_creation_error">Что-то пошло не так.\nНе удалось создать кампанию.</string>
     <string name="blaze_campaign_creation_error_media_fetch">Не удалось получить сведения об изображении кампании</string>
     <string name="blaze_campaign_creation_error_media_upload">Не удалось загрузить изображение кампании.</string>
@@ -38,7 +40,6 @@ Language: ru
     <string name="blaze_campaign_preview_missing_image_dialog_text">Добавьте изображение для кампании Blaze</string>
     <string name="drag_handle">Перетащить указатель</string>
     <string name="analytic_cards">Карты аналитики</string>
-    <string name="manage_analytics">Управление аналитикой</string>
     <string name="see_report">Смотреть отчет</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Главная страница сайта</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">URL-адрес товара</string>

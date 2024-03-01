@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 11:54:04+0000
+Translation-Revision-Date: 2024-02-27 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="order_creation_payment_shipping_tax_label">配送税费</string>
+    <string name="customize_analytics">定制分析功能</string>
     <string name="blaze_campaign_creation_error">有点不太对劲。\n我们无法创建您的广告活动。</string>
     <string name="blaze_campaign_creation_error_media_fetch">获取广告活动图片详细信息失败</string>
     <string name="blaze_campaign_creation_error_media_upload">上传广告活动图片失败。</string>
@@ -38,7 +40,6 @@ Language: zh_CN
     <string name="blaze_campaign_budget_error_fetching_forecast">预估展示次数失败。 重试？</string>
     <string name="drag_handle">拖动手柄</string>
     <string name="analytic_cards">分析卡</string>
-    <string name="manage_analytics">管理分析</string>
     <string name="see_report">查看报告</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">站点主页</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">产品 URL</string>
