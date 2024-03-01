@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.blaze.campaigs
 
-import android.icu.text.DecimalFormat
-import android.icu.text.DecimalFormatSymbols
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
@@ -16,6 +14,7 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
-import java.util.Locale
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -40,7 +38,8 @@ class BlazeCampaignListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeUrlsHelper: BlazeUrlsHelper,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LOADING_TRANSITION_DELAY = 200L
@@ -136,8 +135,7 @@ class BlazeCampaignListViewModel @Inject constructor(
                     ),
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_budget,
-                        value = DecimalFormat("#.##", DecimalFormatSymbols(Locale.getDefault()))
-                            .format(campaignEntity.totalBudget)
+                        value = currencyFormatter.formatCurrencyRounded(campaignEntity.totalBudget)
                     )
                 )
             ),
