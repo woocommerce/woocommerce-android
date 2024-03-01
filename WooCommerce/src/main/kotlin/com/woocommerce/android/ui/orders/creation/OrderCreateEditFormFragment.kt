@@ -93,7 +93,6 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
@@ -133,8 +132,6 @@ class OrderCreateEditFormFragment :
         get() = (this as? RecyclerView)
             ?.run { adapter as? OrderCreateEditCustomAmountAdapter }
 
-    private var sharedViewModelUpdateJob: Job? = null
-
     override fun onStart() {
         super.onStart()
         val navController =
@@ -169,7 +166,7 @@ class OrderCreateEditFormFragment :
         lifecycleScope.launch {
             viewModel.selectedItems.collect(sharedViewModel::updateSelectedItems)
         }
-        sharedViewModelUpdateJob = lifecycleScope.launch {
+        lifecycleScope.launch {
             sharedViewModel.selectedItems.collect(viewModel::onItemsSelectionChanged)
         }
     }
@@ -200,7 +197,6 @@ class OrderCreateEditFormFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
-        sharedViewModelUpdateJob?.cancel()
         sharedViewModel.updateSelectedItems(emptyList())
     }
 
