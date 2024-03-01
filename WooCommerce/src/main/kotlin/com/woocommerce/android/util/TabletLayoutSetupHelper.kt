@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.Guideline
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
@@ -20,24 +21,36 @@ import javax.inject.Inject
 class TabletLayoutSetupHelper @Inject constructor(
     private val context: Context,
     private val isTabletLogicNeeded: IsTabletLogicNeeded,
-) : FragmentManager.FragmentLifecycleCallbacks() {
+) : DefaultLifecycleObserver {
     private var screen: Screen? = null
     private var navHostFragment: NavHostFragment? = null
 
-    fun onFragmentCreate(screen: Screen) {
-        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
-            if (isTabletLogicNeeded()) {
-                this.screen = screen
-                initNavFragment(screen.secondPaneNavigation)
+    fun onRootFragmentCreated(screen: Screen) {
+        if (isTabletLogicNeeded()) {
+            this@TabletLayoutSetupHelper.screen = screen
+            initNavFragment(screen.secondPaneNavigation)
 
-                screen.secondPaneNavigation.fragmentManager.registerFragmentLifecycleCallbacks(this, true)
-            }
-        }
-    }
+            screen.fragment.parentFragmentManager.registerFragmentLifecycleCallbacks(
+                object : FragmentManager.FragmentLifecycleCallbacks() {
+                    override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
+                        this@TabletLayoutSetupHelper.screen = null
+                        navHostFragment = null
+                    }
+                }, false
+            )
 
-    override fun onFragmentViewCreated(fm: FragmentManager, f: Fragment, v: View, savedInstanceState: Bundle?) {
-        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
-            adjustUIForScreenSize(screen!!)
+            screen.secondPaneNavigation.fragmentManager.registerFragmentLifecycleCallbacks(
+                object : FragmentManager.FragmentLifecycleCallbacks() {
+                    override fun onFragmentViewCreated(
+                        fm: FragmentManager,
+                        f: Fragment,
+                        v: View,
+                        savedInstanceState: Bundle?
+                    ) {
+                        adjustUIForScreenSize(screen)
+                    }
+                }, false
+            )
         }
     }
 
@@ -92,15 +105,6 @@ class TabletLayoutSetupHelper @Inject constructor(
 
                 viewToApplyMargins.layoutParams = layoutParams
             }
-        }
-    }
-
-    override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
-        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
-            screen!!.secondPaneNavigation.fragmentManager.unregisterFragmentLifecycleCallbacks(this)
-
-            navHostFragment = null
-            screen = null
         }
     }
 

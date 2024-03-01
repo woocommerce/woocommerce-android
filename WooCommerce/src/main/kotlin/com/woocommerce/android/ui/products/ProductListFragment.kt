@@ -147,7 +147,7 @@ class ProductListFragment :
             TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
             false
         ) ?: false
-        tabletLayoutSetupHelper.onFragmentCreate(this)
+        tabletLayoutSetupHelper.onRootFragmentCreated(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
