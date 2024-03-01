@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.model.Product as ModelProduct
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
@@ -147,13 +148,9 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
@@ -173,7 +170,6 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
-import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -209,7 +205,6 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         val EMPTY_BIG_DECIMAL = -Double.MAX_VALUE.toBigDecimal()
         const val MAX_PRODUCT_QUANTITY = 100_000
-        private const val DEBOUNCE_MS = 500L
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
     }
@@ -1225,10 +1220,8 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     private fun onTotalsSectionRecalculateButtonClicked() {
-        // TODO track analytics event
         triggerEvent(OnSelectedProductsSyncRequested)
         viewState = viewState.copy(isRecalculateNeeded = false)
-        // TODO update anything else?
     }
 
     private fun trackOrderCreationSuccess() {
@@ -1292,7 +1285,6 @@ class OrderCreateEditViewModel @Inject constructor(
     /**
      * Monitor order changes, and update the remote draft to update price totals
      */
-    @OptIn(FlowPreview::class)
     private fun monitorOrderChanges() {
         viewModelScope.launch {
             val changes =
@@ -1304,13 +1296,9 @@ class OrderCreateEditViewModel @Inject constructor(
                     // the application does not send notifications or synchronize its status on other devices.
                     _orderDraft.map { order -> order.copy(status = orderCreationStatus) }
                 }
-                    .distinctUntilChanged()
                     .map {
                         sanitizeUnsyncedOrderItemsData(it)
                     }
-                    .debounce(DEBOUNCE_MS)
-                    .buffer(1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-
             syncStrategy.syncOrderChanges(changes, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
