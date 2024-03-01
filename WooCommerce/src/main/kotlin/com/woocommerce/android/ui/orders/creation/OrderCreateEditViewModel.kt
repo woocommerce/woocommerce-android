@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation
 
-import com.woocommerce.android.model.Product as ModelProduct
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
@@ -8,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
@@ -150,6 +150,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -170,6 +171,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
+import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -293,7 +295,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         .asLiveData()
 
-    val selectedItems: LiveData<List<SelectedItem>> = orderDraft.map { order ->
+    val selectedItems: StateFlow<List<SelectedItem>> = orderDraft.map { order ->
         order.items.map { item ->
             if (item.isVariation) {
                 SelectedItem.ProductVariation(item.productId, item.variationId)
@@ -301,7 +303,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 Product(item.productId)
             }
         }
-    }.distinctUntilChanged()
+    }.distinctUntilChanged().asFlow().toStateFlow(emptyList())
 
     val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
         .map { order -> order.feesLines }
@@ -1215,8 +1217,10 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onItemsSelectionChanged() {
-        viewState = viewState.copy(isRecalculateNeeded = true)
+    fun onItemsSelectionChanged(selectedItems: List<SelectedItem>) {
+        if (this.selectedItems.value != selectedItems) {
+            viewState = viewState.copy(isRecalculateNeeded = true)
+        }
     }
 
     private fun onTotalsSectionRecalculateButtonClicked() {

@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -94,11 +93,7 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.dropWhile
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
@@ -140,39 +135,17 @@ class OrderCreateEditFormFragment :
 
     private var sharedViewModelUpdateJob: Job? = null
 
-    @OptIn(FlowPreview::class)
     override fun onStart() {
         super.onStart()
         val navController =
             childFragmentManager.findFragmentById(R.id.product_selector_nav_container)?.findNavController()
         val args = ProductSelectorFragmentArgs(
             selectionHandling = ProductSelectorViewModel.SelectionHandling.NORMAL,
-            selectedItems = viewModel.selectedItems.value?.toTypedArray() ?: emptyArray(),
+            selectedItems = viewModel.selectedItems.value.toTypedArray(),
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             selectionMode = ProductSelectorViewModel.SelectionMode.LIVE,
         )
         navController?.setGraph(R.navigation.nav_graph_product_selector, args.toBundle())
-        sharedViewModel.updateSelectedItems(viewModel.selectedItems.value ?: emptyList())
-        lifecycleScope.launch {
-            viewModel.selectedItems.asFlow()
-                .drop(1)
-                .dropWhile {
-                    sharedViewModel.selectedItems.value.containsAll(it) &&
-                        it.size == sharedViewModel.selectedItems.value.size
-                }
-                .distinctUntilChanged()
-                .collect {
-                    sharedViewModel.updateSelectedItems(it)
-                }
-        }
-        sharedViewModelUpdateJob = lifecycleScope.launch {
-            sharedViewModel.selectedItems
-                .drop(1)
-                .distinctUntilChanged()
-                .collect {
-                    viewModel.onItemsSelectionChanged()
-                }
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -188,6 +161,17 @@ class OrderCreateEditFormFragment :
         }
         handleTaxRateSelectionResult()
         viewModel.onDeviceConfigurationChanged(deviceType)
+        if (isTablet()) syncSelectedItems()
+    }
+
+    private fun syncSelectedItems() {
+        sharedViewModel.updateSelectedItems(viewModel.selectedItems.value)
+        lifecycleScope.launch {
+            viewModel.selectedItems.collect(sharedViewModel::updateSelectedItems)
+        }
+        sharedViewModelUpdateJob = lifecycleScope.launch {
+            sharedViewModel.selectedItems.collect(viewModel::onItemsSelectionChanged)
+        }
     }
 
     private fun handleTaxRateSelectionResult() {
