@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation
 
-import com.woocommerce.android.model.Product as ModelProduct
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
@@ -8,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
@@ -87,6 +87,7 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
+import com.woocommerce.android.ui.compose.DeviceType
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
@@ -147,13 +148,10 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
@@ -173,6 +171,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
+import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -281,6 +280,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
+                onRecalculateButtonClicked = { onTotalsSectionRecalculateButtonClicked() },
                 onExpandCollapseClicked = { onExpandCollapseTotalsClicked() },
                 onHeightChanged = { onTotalsSectionHeightChanged(it) }
             )
@@ -295,7 +295,7 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         .asLiveData()
 
-    val selectedItems: LiveData<List<SelectedItem>> = orderDraft.map { order ->
+    val selectedItems: StateFlow<List<SelectedItem>> = orderDraft.map { order ->
         order.items.map { item ->
             if (item.isVariation) {
                 SelectedItem.ProductVariation(item.productId, item.variationId)
@@ -303,7 +303,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 Product(item.productId)
             }
         }
-    }.distinctUntilChanged()
+    }.distinctUntilChanged().asFlow().toStateFlow(emptyList())
 
     val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
         .map { order -> order.feesLines }
@@ -415,6 +415,10 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onDeviceConfigurationChanged(deviceType: DeviceType) {
+        viewState = viewState.copy(deviceType = deviceType)
     }
 
     fun selectCustomAmount(customAmount: CustomAmountUIModel) {
@@ -1213,6 +1217,17 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onItemsSelectionChanged(selectedItems: List<SelectedItem>) {
+        if (this.selectedItems.value != selectedItems) {
+            viewState = viewState.copy(isRecalculateNeeded = true)
+        }
+    }
+
+    private fun onTotalsSectionRecalculateButtonClicked() {
+        triggerEvent(OnSelectedProductsSyncRequested)
+        viewState = viewState.copy(isRecalculateNeeded = false)
+    }
+
     private fun trackOrderCreationSuccess() {
         tracker.track(
             ORDER_CREATION_SUCCESS,
@@ -1274,7 +1289,6 @@ class OrderCreateEditViewModel @Inject constructor(
     /**
      * Monitor order changes, and update the remote draft to update price totals
      */
-    @OptIn(FlowPreview::class)
     private fun monitorOrderChanges() {
         viewModelScope.launch {
             val changes =
@@ -1286,13 +1300,9 @@ class OrderCreateEditViewModel @Inject constructor(
                     // the application does not send notifications or synchronize its status on other devices.
                     _orderDraft.map { order -> order.copy(status = orderCreationStatus) }
                 }
-                    .distinctUntilChanged()
                     .map {
                         sanitizeUnsyncedOrderItemsData(it)
                     }
-                    .debounce(500)
-                    .buffer(1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-
             syncStrategy.syncOrderChanges(changes, retryOrderDraftUpdateTrigger)
                 .collect { updateStatus ->
                     when (updateStatus) {
@@ -1307,7 +1317,11 @@ class OrderCreateEditViewModel @Inject constructor(
                                 _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
                                 triggerEvent(OnCouponRejectedByBackend)
                             } else {
-                                viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                                viewState = viewState.copy(
+                                    isUpdatingOrderDraft = false,
+                                    showOrderUpdateSnackbar = true,
+                                    isRecalculateNeeded = viewState.deviceType == DeviceType.Tablet
+                                )
                             }
                             trackOrderSyncFailed(updateStatus.throwable)
                         }
@@ -1820,6 +1834,8 @@ class OrderCreateEditViewModel @Inject constructor(
         val taxRateSelectorButtonState: TaxRateSelectorButtonState = TaxRateSelectorButtonState(),
         val productsSectionState: ProductsSectionState = ProductsSectionState(),
         val customAmountSectionState: CustomAmountSectionState = CustomAmountSectionState(),
+        val deviceType: DeviceType = DeviceType.Phone,
+        val isRecalculateNeeded: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
@@ -1895,6 +1911,8 @@ data class OnTotalsSectionHeightChanged(
 data class OnCustomAmountTypeSelected(
     val type: CustomAmountType
 ) : Event()
+
+object OnSelectedProductsSyncRequested : Event()
 
 @Parcelize
 data class CustomAmountUIModel(
