@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.blaze.creation.destination
 
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationViewModel.NavigateToParametersScreen
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.captureValues
@@ -20,15 +22,20 @@ import kotlin.test.Test
 class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val product = mock<Product>()
 
     private lateinit var viewModel: BlazeCampaignCreationAdDestinationViewModel
 
     fun setup(url: String, productId: Long) {
         viewModel = BlazeCampaignCreationAdDestinationViewModel(
-            savedStateHandle = BlazeCampaignCreationAdDestinationFragmentArgs(url, productId).toSavedStateHandle(),
+            savedStateHandle = BlazeCampaignCreationAdDestinationFragmentArgs(
+                productId,
+                DestinationParameters(url, emptyMap())
+            ).toSavedStateHandle(),
             selectedSite = selectedSite,
-            productDetailRepository = productDetailRepository
+            productDetailRepository = productDetailRepository,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
@@ -57,7 +64,7 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
 
         val viewState = viewModel.viewState.captureValues().last()
         assertThat(viewState.isUrlDialogVisible).isTrue()
-        assertThat(viewState.destinationUrl).isEqualTo(viewState.productUrl)
+        assertThat(viewState.targetUrl).isEqualTo(viewState.productUrl)
     }
 
     @Test
@@ -68,35 +75,38 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
         viewModel.onParameterPropertyTapped()
 
         val event = viewModel.event.value
-        assertThat(event).isEqualTo(NavigateToParametersScreen(url))
+        assertThat(event).isEqualTo(
+            NavigateToParametersScreen(
+                destinationParameters = DestinationParameters(url, emptyMap())
+            )
+        )
     }
 
     @Test
     fun `when target url is updated, then view state is updated`() = testBlocking {
         val url = "https://woo.com?productId=1"
         val base = "https://cnn.com"
-        val params = "a=b&c=d"
+        val params = mapOf("a" to "b", "c" to "d")
         setup(url, productId = 1L)
 
-        viewModel.onTargetUrlUpdated("$base?$params")
+        viewModel.onDestinationParametersUpdated(base, params)
 
         val viewState = viewModel.viewState.captureValues().last()
-        assertThat(viewState.destinationUrl).isEqualTo(base)
-        assertThat(viewState.parameters).isEqualTo(params.replace("&", "\n"))
+        assertThat(viewState.targetUrl).isEqualTo(base)
+        assertThat(viewState.parameters).isEqualTo(params)
     }
 
     @Test
     fun `when destination url is changed, then view state is updated and url dialog is not visible`() = testBlocking {
-        val params = "a=b&c=d"
-        val url = "https://woo.com?$params"
+        val url = "https://woo.com"
         val url2 = "https://cnn.com"
         setup(url, productId = 1L)
 
-        viewModel.onDestinationUrlChanged(url2)
+        viewModel.onDestinationParametersUpdated(url2)
 
         val viewState = viewModel.viewState.captureValues().last()
-        assertThat(viewState.destinationUrl).isEqualTo(url2)
-        assertThat(viewState.parameters).isEqualTo(params.replace("&", "\n"))
+        assertThat(viewState.targetUrl).isEqualTo(url2)
+        assertThat(viewState.targetUrl).isEqualTo(url2)
         assertThat(viewState.isUrlDialogVisible).isFalse()
     }
 }

@@ -13,9 +13,7 @@ import com.woocommerce.android.ui.blaze.Location
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Hidden
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Inactive
-import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.NoResults
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Ready
-import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Results
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Results.SearchItem
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SearchState.Searching
 import com.woocommerce.android.ui.blaze.creation.targets.TargetSelectionViewState.SelectionItem
@@ -27,10 +25,12 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
@@ -54,6 +54,7 @@ class BlazeCampaignTargetLocationSelectionViewModel @Inject constructor(
         initialValue = navArgs.locations.map { TargetLocation(it, true) }
     )
     private val searchQuery = savedStateHandle.getStateFlow(viewModelScope, initialValue = "")
+    private val searchTrigger = MutableSharedFlow<Boolean>(extraBufferCapacity = 1)
 
     override val viewState = combine(
         items,
@@ -75,35 +76,45 @@ class BlazeCampaignTargetLocationSelectionViewModel @Inject constructor(
     }
 
     private suspend fun fetchLocations(query: String) = blazeRepository.fetchLocations(query)
-        .getOrNull()
-        ?.asSequence()
-        ?.filterNot { location ->
-            location.id in items.value.map { it.location.id }
-        }?.map { location ->
-            SearchItem(
-                id = location.id.toString(),
-                title = location.name,
-                subtitle = location.parent,
-                type = location.type
-            )
-        }?.toList() ?: emptyList()
+        .map { locations ->
+            locations.asSequence()
+                .filterNot { location ->
+                    location.id in items.value.map { it.location.id }
+                }.map { location ->
+                    SearchItem(
+                        id = location.id.toString(),
+                        title = location.name,
+                        subtitle = location.parent,
+                        type = location.type
+                    )
+                }.toList()
+        }
 
     private fun observeSearchQuery() {
-        searchQuery
-            .debounce { query -> if (query.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS }
-            .onEach { query ->
+        combine(
+            searchTrigger.onStart { emit(false) },
+            searchQuery
+        ) { fromTrigger, query -> Pair(fromTrigger, query) }
+            .debounce { (fromTrigger, query) ->
+                if (fromTrigger || query.isEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+            }
+            .onEach { (_, query) ->
                 if (query.length > 2) {
                     searchState.update { Searching }
 
-                    val items = fetchLocations(query)
-
-                    searchState.update {
-                        if (items.isEmpty()) {
-                            NoResults
-                        } else {
-                            Results(items)
+                    val state = fetchLocations(query).fold(
+                        onSuccess = {
+                            if (it.isEmpty()) {
+                                SearchState.NoResults
+                            } else {
+                                SearchState.Results(it)
+                            }
+                        },
+                        onFailure = {
+                            SearchState.Error
                         }
-                    }
+                    )
+                    searchState.update { state }
                 } else {
                     searchState.update { Ready }
                 }
@@ -168,6 +179,10 @@ class BlazeCampaignTargetLocationSelectionViewModel @Inject constructor(
             isActive -> searchState.update { Ready }
             else -> searchState.update { Inactive }
         }
+    }
+
+    override fun onRetrySearchTapped() {
+        searchTrigger.tryEmit(true)
     }
 
     @Parcelize

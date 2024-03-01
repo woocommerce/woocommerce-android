@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics.hub.informationcard
 
-sealed class AnalyticsHubInformationViewState {
+interface AnalyticsCardViewState
+sealed class AnalyticsHubInformationViewState : AnalyticsCardViewState {
     object HiddenState : AnalyticsHubInformationViewState()
     object LoadingViewState : AnalyticsHubInformationViewState()
     data class NoDataState(val message: String) : AnalyticsHubInformationViewState()

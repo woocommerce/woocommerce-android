@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.model.AnalyticCardConfiguration
+import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsSettingsDataStore
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsSettingsResourcesRepository
@@ -27,10 +28,10 @@ class ObserveAnalyticsCardsConfigurationTest : BaseUnitTest() {
     @Test
     fun `when there is NO saved configuration, the default configuration is retrieved`() = testBlocking {
         val defaultConfiguration = listOf(
-            AnalyticCardConfiguration(1, "Revenue", true),
-            AnalyticCardConfiguration(2, "Orders", true),
-            AnalyticCardConfiguration(3, "Visitors", true),
-            AnalyticCardConfiguration(4, "Products", true)
+            AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
+            AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
+            AnalyticCardConfiguration(AnalyticsCards.Session, "Visitors", true),
+            AnalyticCardConfiguration(AnalyticsCards.Products, "Products", true)
         )
         whenever(resourcesRepository.getDefaultAnalyticsCardsConfiguration()).thenReturn(defaultConfiguration)
         whenever(settingsDataStore.observeCardsConfiguration()).thenReturn(flowOf(null))
@@ -43,17 +44,17 @@ class ObserveAnalyticsCardsConfigurationTest : BaseUnitTest() {
     @Test
     fun `when there is a configuration saved, the saved configuration is retrieved`() = testBlocking {
         val defaultConfiguration = listOf(
-            AnalyticCardConfiguration(1, "Revenue", true),
-            AnalyticCardConfiguration(2, "Orders", true),
-            AnalyticCardConfiguration(3, "Visitors", true),
-            AnalyticCardConfiguration(4, "Products", true)
+            AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
+            AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
+            AnalyticCardConfiguration(AnalyticsCards.Session, "Visitors", true),
+            AnalyticCardConfiguration(AnalyticsCards.Products, "Products", true)
         )
 
         val savedConfiguration = listOf(
-            AnalyticCardConfiguration(3, "Visitors", true),
-            AnalyticCardConfiguration(2, "Orders", true),
-            AnalyticCardConfiguration(4, "Products", true),
-            AnalyticCardConfiguration(1, "Revenue", false),
+            AnalyticCardConfiguration(AnalyticsCards.Session, "Visitors", true),
+            AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
+            AnalyticCardConfiguration(AnalyticsCards.Products, "Products", true),
+            AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", false),
         )
 
         whenever(resourcesRepository.getDefaultAnalyticsCardsConfiguration()).thenReturn(defaultConfiguration)

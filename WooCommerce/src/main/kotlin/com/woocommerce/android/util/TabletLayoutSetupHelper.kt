@@ -77,11 +77,16 @@ class TabletLayoutSetupHelper @Inject constructor(
     ) {
         if (isTabletLogicNeeded()) {
             val navOptions =
-                NavOptions.Builder().setPopUpTo(navHostFragment!!.navController.graph.startDestinationId, true)
-                    .setEnterAnim(R.anim.activity_fade_in).setExitAnim(R.anim.activity_fade_out).build()
+                NavOptions.Builder()
+                    .setPopUpTo(navHostFragment!!.navController.graph.startDestinationId, true)
+                    .setEnterAnim(R.anim.activity_fade_in)
+                    .setExitAnim(R.anim.activity_fade_out)
+                    .build()
             val navigationData = tabletNavigateTo()
             navHostFragment!!.navController.navigate(
-                resId = navigationData.first, args = navigationData.second, navOptions = navOptions
+                resId = navigationData.first,
+                args = navigationData.second,
+                navOptions = navOptions
             )
         } else {
             navigateWithPhoneNavigation()
@@ -124,7 +129,10 @@ class TabletLayoutSetupHelper @Inject constructor(
 
         navHostFragment = if (existingFragment == null) {
             NavHostFragment.create(navGraphId, bundle).apply {
-                fragmentManager.beginTransaction().replace(R.id.detail_nav_container, this).commit()
+                fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.detail_nav_container, this)
+                    .commit()
             }
         } else {
             existingFragment as NavHostFragment

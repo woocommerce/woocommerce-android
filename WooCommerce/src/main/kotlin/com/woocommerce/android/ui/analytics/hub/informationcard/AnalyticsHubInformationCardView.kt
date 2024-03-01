@@ -31,7 +31,9 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
             is LoadingViewState -> setSkeleton()
             is DataViewState -> setDataViewState(viewState)
             is NoDataState -> setNoDataViewState(viewState)
-            is HiddenState -> {}
+            is HiddenState -> {
+                visibility = View.GONE
+            }
         }
     }
 

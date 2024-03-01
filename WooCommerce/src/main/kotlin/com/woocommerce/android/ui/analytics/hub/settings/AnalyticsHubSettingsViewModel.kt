@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.analytics.hub.settings
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.AnalyticCardConfiguration
+import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -86,8 +87,8 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         }
     }
 
-    fun onSelectionChange(id: Int, isSelected: Boolean) {
-        updateSelection(id, isSelected)
+    fun onSelectionChange(card: AnalyticsCards, isSelected: Boolean) {
+        updateSelection(card, isSelected)
         checkVisibleCards()
         viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
             cardsConfiguration = draftConfiguration,
@@ -96,10 +97,10 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         )
     }
 
-    private fun updateSelection(id: Int, isSelected: Boolean) {
-        draftConfiguration = draftConfiguration.map { card ->
-            if (card.id == id) card.copy(isVisible = isSelected)
-            else card
+    private fun updateSelection(card: AnalyticsCards, isSelected: Boolean) {
+        draftConfiguration = draftConfiguration.map { cardConfiguration ->
+            if (cardConfiguration.card == card) cardConfiguration.copy(isVisible = isSelected)
+            else cardConfiguration
         }
     }
 
@@ -109,6 +110,15 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
             if (visibleCards == 1 && card.isVisible) card.copy(isEnabled = false)
             else card.copy(isEnabled = true)
         }
+    }
+
+    fun onOrderChange(fromIndex: Int, toIndex: Int) {
+        draftConfiguration = draftConfiguration.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+        viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
+            cardsConfiguration = draftConfiguration,
+            showDiscardDialog = false,
+            isSaveButtonEnabled = hasChanges()
+        )
     }
 }
 
@@ -125,7 +135,7 @@ sealed class AnalyticsHubSettingsViewState : Parcelable {
 
 @Parcelize
 data class AnalyticCardConfigurationUI(
-    val id: Int,
+    val card: AnalyticsCards,
     val title: String,
     val isVisible: Boolean = true,
     val isEnabled: Boolean = true
@@ -133,7 +143,7 @@ data class AnalyticCardConfigurationUI(
 
 fun AnalyticCardConfiguration.toConfigurationUI(): AnalyticCardConfigurationUI {
     return AnalyticCardConfigurationUI(
-        id = this.id,
+        card = this.card,
         title = this.title,
         isVisible = this.isVisible,
         isEnabled = true
@@ -142,7 +152,7 @@ fun AnalyticCardConfiguration.toConfigurationUI(): AnalyticCardConfigurationUI {
 
 fun AnalyticCardConfigurationUI.toConfigurationModel(): AnalyticCardConfiguration {
     return AnalyticCardConfiguration(
-        id = this.id,
+        card = this.card,
         title = this.title,
         isVisible = this.isVisible,
     )
