@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -15,13 +16,16 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignsModel
 import org.wordpress.android.fluxc.network.rest.wpcom.blaze.BlazeCampaignsError
 import org.wordpress.android.fluxc.network.rest.wpcom.blaze.BlazeCampaignsErrorType.INVALID_RESPONSE
+import org.wordpress.android.fluxc.network.rest.wpcom.blaze.BlazeCampaignsUtils
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore.BlazeCampaignsResult
@@ -34,14 +38,17 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val siteModel: SiteModel = mock()
-    private val campaignsEntityFlow = flow { emit(emptyList<BlazeCampaignEntity>()) }
+    private val campaignsEntityFlow = flow { emit(listOf(BLAZE_CAMPAIGN_ENTITY)) }
+    private val currencyFormatter: CurrencyFormatter = mock()
+
     private lateinit var viewModel: BlazeCampaignListViewModel
 
     @Before
     fun setup() = testBlocking {
         whenever(selectedSite.get()).thenReturn(siteModel)
+        whenever(currencyFormatter.formatCurrencyRounded(TOTAL_BUDGET)).thenReturn(TOTAL_BUDGET.toString())
         whenever(blazeCampaignsStore.observeBlazeCampaigns(selectedSite.get())).thenReturn(campaignsEntityFlow)
-        whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any()))
+        whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any(), any(), any(), eq(null)))
             .thenReturn(BlazeCampaignsResult(EMPTY_BLAZE_CAMPAIGN_MODEL))
     }
 
@@ -53,8 +60,8 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen loaded, fetch campaigns for first page`() = testBlocking {
-        whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any()))
+    fun `when screen loaded, fetch campaigns for first batch`() = testBlocking {
+        whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any(), any(), any(), eq(null)))
             .thenReturn(BlazeCampaignsResult(EMPTY_BLAZE_CAMPAIGN_MODEL))
 
         createViewModel()
@@ -66,23 +73,23 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given 2 pages of campaigns, when reaching end of the list, fetch next page`() =
-        testBlocking {
-            whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any()))
-                .thenReturn(BlazeCampaignsResult(BLAZE_CAMPAIGN_MODEL_2_PAGES))
-            createViewModel()
+    fun `given one item was fetched, when loading more, then skip the first item and load next`() = testBlocking {
+        whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any(), any(), any(), eq(null)))
+            .thenReturn(BlazeCampaignsResult(BLAZE_CAMPAIGN_MODEL_1_OUT_OF_2_ITEMS))
+        createViewModel()
+        viewModel.state.captureValues().last()
 
-            viewModel.onLoadMoreCampaigns()
+        viewModel.onLoadMoreCampaigns()
 
-            verify(blazeCampaignsStore).fetchBlazeCampaigns(
-                siteModel,
-                skip = 1
-            )
-        }
+        verify(blazeCampaignsStore).fetchBlazeCampaigns(
+            siteModel,
+            skip = 1
+        )
+    }
 
     @Test
     fun `given fetching campaigns fails, when reaching end of the list, then show error snackbar`() = testBlocking {
-        whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any()))
+        whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any(), any(), any(), eq(null)))
             .thenReturn(BlazeCampaignsResult(BlazeCampaignsError(INVALID_RESPONSE)))
         createViewModel()
 
@@ -142,17 +149,61 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             blazeUrlsHelper = blazeUrlsHelper,
             appPrefsWrapper = appPrefsWrapper,
-            analyticsTrackerWrapper = analyticsTrackerWrapper
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
+            currencyFormatter = currencyFormatter
         )
     }
 
     private companion object {
+        const val CAMPAIGN_ID = 1234
+        const val TITLE = "title"
+        const val IMAGE_URL = "imageUrl"
+        const val CREATED_AT = "2023-06-02T00:00:00.000Z"
+        const val END_DATE = "2023-06-02T00:00:00.000Z"
+        const val UI_STATUS = "rejected"
+        const val IMPRESSIONS = 0L
+        const val CLICKS = 0L
+        const val TOTAL_BUDGET = 100.0
+        const val SPENT_BUDGET = 0.0
+        const val TARGET_URN = "urn:wpcom:post:199247490:9"
+
+        val BLAZE_CAMPAIGN_MODEL = BlazeCampaignModel(
+            campaignId = CAMPAIGN_ID,
+            title = TITLE,
+            imageUrl = IMAGE_URL,
+            createdAt = BlazeCampaignsUtils.stringToDate(CREATED_AT),
+            endDate = BlazeCampaignsUtils.stringToDate(END_DATE),
+            uiStatus = UI_STATUS,
+            impressions = IMPRESSIONS,
+            clicks = CLICKS,
+            targetUrn = TARGET_URN,
+            totalBudget = TOTAL_BUDGET,
+            spentBudget = SPENT_BUDGET,
+        )
         val EMPTY_BLAZE_CAMPAIGN_MODEL = BlazeCampaignsModel(
-            campaigns = emptyList(),
+            campaigns = listOf(BLAZE_CAMPAIGN_MODEL),
             skipped = 0,
             totalItems = 1,
         )
-        val BLAZE_CAMPAIGN_MODEL_2_PAGES = EMPTY_BLAZE_CAMPAIGN_MODEL
-            .copy(totalItems = 2)
+        val BLAZE_CAMPAIGN_MODEL_1_OUT_OF_2_ITEMS = EMPTY_BLAZE_CAMPAIGN_MODEL
+            .copy(
+                campaigns = listOf(BLAZE_CAMPAIGN_MODEL.copy(campaignId = 1)),
+                totalItems = 2
+            )
+
+        private val BLAZE_CAMPAIGN_ENTITY = BlazeCampaignEntity(
+            siteId = 1234,
+            campaignId = CAMPAIGN_ID,
+            title = TITLE,
+            imageUrl = IMAGE_URL,
+            createdAt = BlazeCampaignsUtils.stringToDate(CREATED_AT),
+            endDate = BlazeCampaignsUtils.stringToDate(END_DATE),
+            uiStatus = UI_STATUS,
+            impressions = IMPRESSIONS,
+            clicks = CLICKS,
+            targetUrn = TARGET_URN,
+            totalBudget = TOTAL_BUDGET,
+            spentBudget = SPENT_BUDGET
+        )
     }
 }
