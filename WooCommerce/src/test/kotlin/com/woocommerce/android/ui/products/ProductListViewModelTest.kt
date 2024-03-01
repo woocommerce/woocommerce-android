@@ -20,7 +20,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
-import com.woocommerce.android.util.IsTabletLogicNeeded
+import com.woocommerce.android.util.IsTablet
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -53,7 +53,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val isTabletLogicNeeded: IsTabletLogicNeeded = mock()
+    private val isTablet: IsTablet = mock()
 
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
@@ -74,7 +74,7 @@ class ProductListViewModelTest : BaseUnitTest() {
                 analyticsTracker,
                 selectedSite,
                 wooCommerceStore,
-                isTabletLogicNeeded,
+                isTablet,
             )
         )
     }
