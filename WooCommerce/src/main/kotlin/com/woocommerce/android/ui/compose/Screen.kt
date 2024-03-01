@@ -40,7 +40,4 @@ data class Screen(
     }
 }
 
-enum class DeviceType {
-    Phone,
-    Tablet,
-}
+enum class DeviceType { Phone, Tablet, }
