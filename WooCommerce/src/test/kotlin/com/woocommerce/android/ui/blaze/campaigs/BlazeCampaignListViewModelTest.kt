@@ -61,7 +61,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
 
         verify(blazeCampaignsStore).fetchBlazeCampaigns(
             siteModel,
-            page = 1
+            skip = 0
         )
     }
 
@@ -76,7 +76,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
 
             verify(blazeCampaignsStore).fetchBlazeCampaigns(
                 siteModel,
-                page = 2
+                skip = 1
             )
         }
 
@@ -149,11 +149,10 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     private companion object {
         val EMPTY_BLAZE_CAMPAIGN_MODEL = BlazeCampaignsModel(
             campaigns = emptyList(),
-            page = 1,
+            skipped = 0,
             totalItems = 1,
-            totalPages = 1
         )
         val BLAZE_CAMPAIGN_MODEL_2_PAGES = EMPTY_BLAZE_CAMPAIGN_MODEL
-            .copy(totalPages = 2)
+            .copy(totalItems = 2)
     }
 }
