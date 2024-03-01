@@ -19,6 +19,6 @@ val OrderAttributionInfo.origin
         "organic" -> OrderAttributionOrigin.Organic(source)
         "typein" -> OrderAttributionOrigin.Direct
         "admin" -> OrderAttributionOrigin.Admin
-        "mobile" -> OrderAttributionOrigin.Mobile
+        "mobile_app" -> OrderAttributionOrigin.Mobile
         else -> OrderAttributionOrigin.Unknown
     }
