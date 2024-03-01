@@ -121,6 +121,8 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val chartUserInteractions = MutableSharedFlow<Unit>()
     private lateinit var chartUserInteractionsJob: Job
 
+    val tabLayout = binding.statsTabLayout
+
     @Suppress("LongParameterList")
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -157,6 +159,15 @@ class MyStoreStatsView @JvmOverloads constructor(
                 .debounce(EVENT_EMITTER_INTERACTION_DEBOUNCE)
                 .collect { usageTracksEventEmitter.interacted() }
         }
+
+        // Create tabs and add to appbar
+        StatsGranularity.entries.forEach { granularity ->
+            val tab = tabLayout.newTab().apply {
+                setText(getStringForGranularity(granularity))
+                tag = granularity
+            }
+            tabLayout.addTab(tab)
+        }
     }
 
     override fun onDetachedFromWindow() {
@@ -177,7 +188,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(
-                binding.myStoreStatsLinearLayout,
+                binding.statsContainer,
                 R.layout.skeleton_dashboard_stats,
                 delayed = true
             )

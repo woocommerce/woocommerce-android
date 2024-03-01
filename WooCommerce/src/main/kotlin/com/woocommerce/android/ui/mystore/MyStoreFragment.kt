@@ -141,10 +141,6 @@ class MyStoreFragment :
 
     private var errorSnackbar: Snackbar? = null
 
-    private var _tabLayout: TabLayout? = null
-    private val tabLayout
-        get() = _tabLayout!!
-
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
 
@@ -156,6 +152,9 @@ class MyStoreFragment :
 
     private var isEmptyViewVisible: Boolean = false
     private var wasPreviouslyStopped = false
+
+    private val tabLayout: TabLayout
+        get() = binding.myStoreStats.tabLayout
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
@@ -188,16 +187,6 @@ class MyStoreFragment :
             binding.myStoreStats.clearStatsHeaderValues()
             binding.myStoreStats.clearChartData()
             refreshJitm()
-        }
-
-        // Create tabs and add to appbar
-        initTabLayout()
-        StatsGranularity.values().forEach { granularity ->
-            val tab = tabLayout.newTab().apply {
-                setText(binding.myStoreStats.getStringForGranularity(granularity))
-                tag = granularity
-            }
-            tabLayout.addTab(tab)
         }
 
         binding.myStoreStats.initView(
@@ -403,7 +392,7 @@ class MyStoreFragment :
 
         myStoreViewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
-                val index = StatsGranularity.values().indexOf(activeGranularity)
+                val index = StatsGranularity.entries.indexOf(activeGranularity)
                 // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
                 handler.postDelayed({ tabLayout.getTabAt(index)?.select() }, 300)
             }
@@ -535,11 +524,6 @@ class MyStoreFragment :
         }
     }
 
-    private fun initTabLayout() {
-        _tabLayout = TabLayout(requireContext(), null, attr.scrollableTabStyle)
-        addStatsGranularityTabs()
-    }
-
     override fun onResume() {
         super.onResume()
         handleFeedbackRequestCardState()
@@ -561,7 +545,6 @@ class MyStoreFragment :
         handler.removeCallbacksAndMessages(null)
         removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
-        _tabLayout = null
         super.onDestroyView()
         _binding = null
     }
@@ -572,9 +555,10 @@ class MyStoreFragment :
     }
 
     private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
-        addStatsGranularityTabs()
         binding.myStoreStats.showErrorView(false)
         showChartSkeleton(false)
+
+        tabLayout.isVisible = AppPrefs.isV4StatsSupported()
 
         binding.myStoreStats.updateView(revenueStatsModel)
 
@@ -724,22 +708,10 @@ class MyStoreFragment :
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
         }
-        tabLayout.visibility = dashboardVisibility
+        tabLayout.isVisible = !show && AppPrefs.isV4StatsSupported()
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show
-    }
-
-    private fun addStatsGranularityTabs() {
-        val indexOfMyStoreStatsView = binding.myStoreStatsContainer.indexOfChild(binding.myStoreStats)
-        binding.myStoreStatsContainer
-            .takeIf { !it.children.contains(tabLayout) }
-            ?.takeIf { AppPrefs.isV4StatsSupported() }
-            ?.addView(
-                tabLayout,
-                indexOfMyStoreStatsView,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            )
     }
 
     private fun removeTabLayoutFromAppBar() {
