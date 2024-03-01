@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
+import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -41,15 +42,20 @@ class UpdateAnalyticsHubStats @Inject constructor(
     suspend operator fun invoke(
         rangeSelection: StatsTimeRangeSelection,
         scope: CoroutineScope,
-        forceUpdate: Boolean = false
+        forceUpdate: Boolean = false,
+        visibleCards: List<AnalyticsCards> = AnalyticsCards.entries,
     ): Flow<AnalyticsHubUpdateState> {
-        _ordersState.update { OrdersState.Loading }
-        _revenueState.update { RevenueState.Loading }
-        _productsState.update { ProductsState.Loading }
-        visitorsCountState.update { VisitorsState.Loading }
+        visibleCards.forEach { card ->
+            when (card) {
+                AnalyticsCards.Revenue -> _revenueState.update { RevenueState.Loading }
+                AnalyticsCards.Orders -> _ordersState.update { OrdersState.Loading }
+                AnalyticsCards.Products -> _productsState.update { ProductsState.Loading }
+                AnalyticsCards.Session -> visitorsCountState.update { VisitorsState.Loading }
+            }
+        }
 
         withFetchStrategyFrom(rangeSelection, forceUpdate) { fetchStrategy ->
-            updateStatsData(scope, rangeSelection, fetchStrategy)
+            updateStatsData(scope, rangeSelection, fetchStrategy, visibleCards)
         }
 
         return fullStatsRequestState
@@ -58,17 +64,51 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private suspend fun updateStatsData(
         scope: CoroutineScope,
         rangeSelection: StatsTimeRangeSelection,
-        fetchStrategy: FetchStrategy
+        fetchStrategy: FetchStrategy,
+        visibleCards: List<AnalyticsCards>
     ) {
-        awaitAll(
-            scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy),
-            scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy),
-            scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy),
-            scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
-        )
+        val asyncCalls = visibleCards.map { card ->
+            when (card) {
+                AnalyticsCards.Revenue -> scope.fetchRevenueDataAsync(rangeSelection, fetchStrategy)
+                AnalyticsCards.Orders -> scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy)
+                AnalyticsCards.Products -> scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
+                AnalyticsCards.Session -> scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy)
+            }
+        }
+
+        asyncCalls.awaitAll()
 
         if (fetchStrategy == FetchStrategy.ForceNew) {
-            analyticsUpdateDataStore.storeLastAnalyticsUpdate(rangeSelection)
+            storeLastAnalyticsUpdate(visibleCards, rangeSelection)
+        }
+    }
+
+    private suspend fun storeLastAnalyticsUpdate(
+        visibleCards: List<AnalyticsCards>,
+        rangeSelection: StatsTimeRangeSelection
+    ) {
+        visibleCards.forEach { card ->
+            when (card) {
+                AnalyticsCards.Revenue -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.REVENUE
+                )
+
+                AnalyticsCards.Orders -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.ORDERS
+                )
+
+                AnalyticsCards.Products -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+                )
+
+                AnalyticsCards.Session -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
+            }
         }
     }
 
