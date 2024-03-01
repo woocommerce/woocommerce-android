@@ -49,7 +49,6 @@ class BlazeCampaignListViewModel @Inject constructor(
     private val navArgs: BlazeCampaignListFragmentArgs by savedStateHandle.navArgs()
 
     private var totalItems = 0
-    private var numberOfItemsLoaded = 0
     private val isLoadingMore = MutableStateFlow(false)
     private val isCampaignCelebrationShown = MutableStateFlow(false)
 
@@ -63,7 +62,6 @@ class BlazeCampaignListViewModel @Inject constructor(
         }.map { it.value },
         isCampaignCelebrationShown
     ) { campaigns, loadingMore, isBlazeCelebrationScreenShown ->
-        numberOfItemsLoaded = campaigns.size
         BlazeCampaignListState(
             campaigns = campaigns.map { mapToUiState(it) },
             onAddNewCampaignClicked = { onAddNewCampaignClicked() },
@@ -77,11 +75,12 @@ class BlazeCampaignListViewModel @Inject constructor(
             showCampaignCelebrationIfNeeded()
         }
         launch {
-            loadCampaigns(numberOfItemsLoaded)
+            loadCampaigns(skip = 0)
         }
     }
 
-    fun onEndOfTheListReached() {
+    fun onLoadMoreCampaigns() {
+        val numberOfItemsLoaded = state.value?.campaigns?.size ?: 0
         if (!isLoadingMore.value && numberOfItemsLoaded < totalItems) {
             launch {
                 isLoadingMore.value = true
@@ -95,12 +94,12 @@ class BlazeCampaignListViewModel @Inject constructor(
         isCampaignCelebrationShown.value = false
     }
 
-    private suspend fun loadCampaigns(itemsAlreadyLoaded: Int) {
-        val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), itemsAlreadyLoaded)
+    private suspend fun loadCampaigns(skip: Int) {
+        val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), skip)
         if (result.isError || result.model == null) {
             triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
         } else {
-            totalItems = result.model?.totalItems ?: 1
+            totalItems = result.model?.totalItems ?: 0
         }
     }
 

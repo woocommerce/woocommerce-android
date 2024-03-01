@@ -72,7 +72,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
                 .thenReturn(BlazeCampaignsResult(BLAZE_CAMPAIGN_MODEL_2_PAGES))
             createViewModel()
 
-            viewModel.onEndOfTheListReached()
+            viewModel.onLoadMoreCampaigns()
 
             verify(blazeCampaignsStore).fetchBlazeCampaigns(
                 siteModel,
@@ -86,7 +86,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             .thenReturn(BlazeCampaignsResult(BlazeCampaignsError(INVALID_RESPONSE)))
         createViewModel()
 
-        viewModel.onEndOfTheListReached()
+        viewModel.onLoadMoreCampaigns()
         val errorEvent = viewModel.event.captureValues().filterIsInstance<Event.ShowSnackbar>().last()
 
         Assertions.assertThat(errorEvent.message).isEqualTo(R.string.blaze_campaign_list_error_fetching_campaigns)
