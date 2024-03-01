@@ -14,9 +14,22 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@color/color_surface"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/custom_range_button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/custom_range_button"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/my_store_custom_range_content_description"
+            android:padding="@dimen/major_75"
+            app:layout_constrainedHeight="@id/stats_tab_layout"
+            app:layout_constraintBottom_toBottomOf="@id/stats_tab_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/stats_tab_layout"
+            android:src="@drawable/ic_calendar_add" />
 
         <include
             android:id="@+id/stats_view_row"
