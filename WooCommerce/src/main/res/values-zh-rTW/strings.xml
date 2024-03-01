@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 11:54:04+0000
+Translation-Revision-Date: 2024-02-27 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="order_creation_payment_shipping_tax_label">貨運稅</string>
+    <string name="customize_analytics">自訂分析工具</string>
     <string name="blaze_campaign_creation_error">發生問題。\n我們無法建立你的行銷活動。</string>
     <string name="blaze_campaign_creation_error_media_fetch">無法擷取行銷活動圖片的詳細資料</string>
     <string name="blaze_campaign_creation_error_media_upload">無法上傳行銷活動圖片。</string>
@@ -38,7 +40,6 @@ Language: zh_TW
     <string name="blaze_campaign_preview_missing_image_dialog_text">請新增 Blaze 行銷活動用的圖片</string>
     <string name="drag_handle">拖曳控點</string>
     <string name="analytic_cards">分析卡片</string>
-    <string name="manage_analytics">管理分析</string>
     <string name="see_report">查看報告</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">網站首頁</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">商品 URL</string>
