@@ -44,13 +44,12 @@ class BlazeCampaignListViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LOADING_TRANSITION_DELAY = 200L
-        private const val CENTS_TO_UNITS = 100f
     }
 
     private val navArgs: BlazeCampaignListFragmentArgs by savedStateHandle.navArgs()
 
-    private var totalPages = 1
-    private var currentPage = 1
+    private var totalItems = 0
+    private var numberOfItemsLoaded = 0
     private val isLoadingMore = MutableStateFlow(false)
     private val isCampaignCelebrationShown = MutableStateFlow(false)
 
@@ -77,15 +76,15 @@ class BlazeCampaignListViewModel @Inject constructor(
             showCampaignCelebrationIfNeeded()
         }
         launch {
-            loadCampaignsFor(currentPage)
+            loadCampaigns(numberOfItemsLoaded)
         }
     }
 
     fun onEndOfTheListReached() {
-        if (!isLoadingMore.value && currentPage + 1 <= totalPages) {
+        if (!isLoadingMore.value && numberOfItemsLoaded < totalItems) {
             launch {
                 isLoadingMore.value = true
-                loadCampaignsFor(++currentPage)
+                loadCampaigns(numberOfItemsLoaded)
                 isLoadingMore.value = false
             }
         }
@@ -95,12 +94,13 @@ class BlazeCampaignListViewModel @Inject constructor(
         isCampaignCelebrationShown.value = false
     }
 
-    private suspend fun loadCampaignsFor(page: Int) {
-        val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
+    private suspend fun loadCampaigns(itemsAlreadyLoaded: Int) {
+        val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), itemsAlreadyLoaded)
         if (result.isError || result.model == null) {
             triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
         } else {
-            totalPages = result.model?.totalPages ?: 1
+            numberOfItemsLoaded = result.model?.campaigns?.size ?: 0
+            totalItems = result.model?.totalItems ?: 1
         }
     }
 
@@ -138,7 +138,7 @@ class BlazeCampaignListViewModel @Inject constructor(
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_budget,
                         value = DecimalFormat("#.##", DecimalFormatSymbols(Locale.getDefault()))
-                            .format(campaignEntity.budgetCents / CENTS_TO_UNITS)
+                            .format(campaignEntity.totalBudget)
                     )
                 )
             ),
