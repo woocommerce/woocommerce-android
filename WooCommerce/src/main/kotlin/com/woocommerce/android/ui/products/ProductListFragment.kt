@@ -11,7 +11,6 @@ import androidx.core.view.MenuCompat
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
@@ -120,13 +119,12 @@ class ProductListFragment :
     override val detailPaneContainer: View
         get() = binding.detailNavContainer
     override var twoPanesWereShownBeforeConfigChange: Boolean = false
-    override val fragment: Fragment
-        get() = this
-    override val secondPaneNavigation
+    override val navigation
         get() = TabletLayoutSetupHelper.Screen.Navigation(
-            childFragmentManager,
-            R.navigation.nav_graph_products,
-            ProductDetailFragmentArgs(
+            parentFragmentManager = parentFragmentManager,
+            childFragmentManager = childFragmentManager,
+            detailsNavGraphId = R.navigation.nav_graph_products,
+            detailsInitialBundle = ProductDetailFragmentArgs(
                 mode = ProductDetailFragment.Mode.Loading,
             ).toBundle()
         )
