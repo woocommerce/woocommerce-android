@@ -63,6 +63,7 @@ class BlazeCampaignListViewModel @Inject constructor(
         }.map { it.value },
         isCampaignCelebrationShown
     ) { campaigns, loadingMore, isBlazeCelebrationScreenShown ->
+        numberOfItemsLoaded = campaigns.size
         BlazeCampaignListState(
             campaigns = campaigns.map { mapToUiState(it) },
             onAddNewCampaignClicked = { onAddNewCampaignClicked() },
@@ -99,7 +100,6 @@ class BlazeCampaignListViewModel @Inject constructor(
         if (result.isError || result.model == null) {
             triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
         } else {
-            numberOfItemsLoaded = result.model?.campaigns?.size ?: 0
             totalItems = result.model?.totalItems ?: 1
         }
     }
