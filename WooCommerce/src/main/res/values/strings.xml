@@ -483,6 +483,8 @@
     <string name="orderlist_parsing_error_title">We couldn\'t load your data.</string>
     <string name="orderlist_parsing_error_message">This could be related to a conflict with a plugin. Please try again later or reach out to us and we\'ll be happy to assist you!</string>
     <string name="error_troubleshooting">Troubleshooting</string>
+    <string name="orderlist_timeout_error_title">Your site is taking a long time to respond</string>
+    <string name="orderlist_timeout_error_message">Please try again later or reach out to us and we\'ll be happy to assist you</string>
 
     <!--
          Simple Payments
@@ -763,6 +765,8 @@
     <string name="orderdetail_call_or_message_contentdesc">Call or message customer</string>
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Contact using WhatsApp</string>
+    <string name="orderdetail_message_customer_using_telegram">Contact using Telegram</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
@@ -3917,7 +3921,8 @@
     <string name="blaze_campaign_creation_product_selector_title">Ready to promote</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Promote</string>
     <string name="blaze_campaign_creation_location_search_message">Start typing country, state or city to see available options</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">No location found.\nPlease try again.</string>
+    <string name="blaze_campaign_creation_location_search_no_results_message">No location found.\nPlease try again.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Searching failed.\nPlease try again</string>
 
     <!--
     Blaze edit ad destination

@@ -20,7 +20,10 @@ import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
+import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
+import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState
+import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
@@ -133,10 +136,31 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         binding.analyticsDateSelectorCard.updatePreviousRange(viewState.analyticsDateRangeSelectorState.previousRange)
         binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsDateSelectorCard.updateLastUpdateTimestamp(viewState.lastUpdateTimestamp)
-        binding.analyticsRevenueCard.updateInformation(viewState.revenueState)
-        binding.analyticsOrdersCard.updateInformation(viewState.ordersState)
-        binding.analyticsProductsCard.updateInformation(viewState.productsState)
-        binding.analyticsVisitorsCard.updateInformation(viewState.sessionState)
+        viewState.cards
+            .run { this as? AnalyticsHubCardViewState.CardsState }
+            ?.cardsState?.map {
+                when (it.key) {
+                    AnalyticsCards.Revenue -> {
+                        val state = it.value as AnalyticsHubInformationViewState
+                        binding.analyticsRevenueCard.updateInformation(state)
+                    }
+
+                    AnalyticsCards.Orders -> {
+                        val state = it.value as AnalyticsHubInformationViewState
+                        binding.analyticsOrdersCard.updateInformation(state)
+                    }
+
+                    AnalyticsCards.Products -> {
+                        val state = it.value as AnalyticsHubListViewState
+                        binding.analyticsProductsCard.updateInformation(state)
+                    }
+
+                    AnalyticsCards.Session -> {
+                        val state = it.value as AnalyticsHubInformationViewState
+                        binding.analyticsVisitorsCard.updateInformation(state)
+                    }
+                }
+            }
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
         displayFeedbackBanner(viewState.showFeedBackBanner)
     }

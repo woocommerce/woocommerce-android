@@ -549,7 +549,7 @@ class OrderListFragment :
                     actionText = event.actionText,
                     action = event.action
                 )
-
+                is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
                 else -> event.isHandled = false
             }
         }

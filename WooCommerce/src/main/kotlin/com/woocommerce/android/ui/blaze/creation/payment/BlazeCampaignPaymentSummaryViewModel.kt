@@ -5,14 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_FAILED
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -26,9 +25,14 @@ import javax.inject.Inject
 class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val blazeRepository: BlazeRepository,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    currencyFormatter: CurrencyFormatter,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs = BlazeCampaignPaymentSummaryFragmentArgs.fromSavedStateHandle(savedStateHandle)
+    private val budgetFormatted = currencyFormatter.formatCurrency(
+        amount = navArgs.campaignDetails.budget.totalBudget.toBigDecimal(),
+        currencyCode = navArgs.campaignDetails.budget.currencyCode
+    )
 
     private val selectedPaymentMethodId = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
@@ -45,7 +49,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         campaignCreationState
     ) { selectedPaymentMethodId, paymentMethodState, campaignCreationState ->
         ViewState(
-            budget = navArgs.campaignDetails.budget,
+            budgetFormatted = budgetFormatted,
             paymentMethodsState = paymentMethodState,
             selectedPaymentMethodId = selectedPaymentMethodId,
             campaignCreationState = campaignCreationState
@@ -107,7 +111,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
         if (campaignCreationState.value == CampaignCreationState.Loading) {
             return
         }
-        analyticsTrackerWrapper.track(stat = BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
+        analyticsTrackerWrapper.track(stat = AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
 
         launch {
             campaignCreationState.value = CampaignCreationState.Loading
@@ -117,7 +121,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     campaignCreationState.value = null
-                    analyticsTrackerWrapper.track(stat = BLAZE_CAMPAIGN_CREATION_SUCCESS)
+                    analyticsTrackerWrapper.track(stat = AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
                     triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
                 },
                 onFailure = {
@@ -131,7 +135,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
                         else -> R.string.blaze_campaign_creation_error
                     }
                     analyticsTrackerWrapper.track(
-                        stat = BLAZE_CAMPAIGN_CREATION_FAILED,
+                        stat = AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_FAILED,
                         properties = mapOf(
                             AnalyticsTracker.KEY_BLAZE_ERROR to it.message
                         )
@@ -143,7 +147,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val budget: BlazeRepository.Budget,
+        val budgetFormatted: String,
         val paymentMethodsState: PaymentMethodsState,
         private val selectedPaymentMethodId: String?,
         val campaignCreationState: CampaignCreationState? = null
