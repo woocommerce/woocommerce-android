@@ -26,7 +26,7 @@ class TabletLayoutSetupHelper @Inject constructor(
     private var navHostFragment: NavHostFragment? = null
 
     fun onRootFragmentCreated(screen: Screen) {
-        if (isTabletLogicNeeded()) {
+        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
             this@TabletLayoutSetupHelper.screen = screen
             initNavFragment(screen)
 
