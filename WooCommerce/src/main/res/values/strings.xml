@@ -36,6 +36,7 @@
     <string name="products_total">Products total</string>
     <string name="discount">Discount</string>
     <string name="details">Details</string>
+    <string name="show_details">Show Details</string>
     <string name="hide_details">Hide Details</string>
     <string name="retry">Retry</string>
     <string name="undo">Undo</string>
@@ -892,6 +893,21 @@
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
     <string name="order_detail_payment_header">PAYMENT TOTALS</string>
     <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
+    <string name="order_detail_attribution_header">Order attribution</string>
+    <string name="order_detail_attribution_origin">Origin</string>
+    <string name="order_detail_attribution_organic_origin">Organic: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Referral: %1$s</string>
+    <string name="order_detail_attribution_utm_origin">Source: %1$s</string>
+    <string name="order_detail_attribution_direct_origin">Direct</string>
+    <string name="order_detail_attribution_admin_origin">Web admin</string>
+    <string name="order_detail_attribution_mobile_origin">Mobile App</string>
+    <string name="order_detail_attribution_unknown_origin">Unknown</string>
+    <string name="order_detail_attribution_source_type">Source type</string>
+    <string name="order_detail_attribution_source">Source</string>
+    <string name="order_detail_attribution_medium">Medium</string>
+    <string name="order_detail_attribution_campaign">Medium</string>
+    <string name="order_detail_attribution_device_type">Device type</string>
+    <string name="order_detail_attribution_session_page_views">Session page views</string>
 
     <!--
         Shipping label Refunds
