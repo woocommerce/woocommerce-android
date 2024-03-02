@@ -1,1 +1,4 @@
-We're thrilled to roll out a shiny new update that marks our first leap towards jazzing up order management on tablets! This update brings a slicker interface, turning the task of managing orders into a breeze on your tablet. Keep your eyes peeled for more enhancements as we keep working to make your experience even cooler!
+- [**] Orders can be filtered now using specific customers or products [https://github.com/woocommerce/woocommerce-android/pull/10927]
+- [*] Orders: Merchants can now contact their customers through WhatsApp and Telegram apps. [https://github.com/woocommerce/woocommerce-android/pull/10936]
+- [**] Orders: Show the order attribution info in the order detail screen. [https://github.com/woocommerce/woocommerce-android/pull/10981]
+
