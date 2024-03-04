@@ -102,7 +102,7 @@ class BlazeCampaignListViewModel @Inject constructor(
         }
     }
 
-    private fun onCampaignClicked(campaignId: Int) {
+    private fun onCampaignClicked(campaignId: String) {
         val url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId)
         analyticsTrackerWrapper.track(
             stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
