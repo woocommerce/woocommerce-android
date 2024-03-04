@@ -1398,14 +1398,18 @@ class ProductDetailViewModel @Inject constructor(
                     val properties = mapOf(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
                         AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules,
-                        AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsTabletValue(isTablet()).deviceTypeToAnalyticsString,
+                        AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
+                            IsTabletValue(isTablet()).deviceTypeToAnalyticsString,
                     )
                     tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
                 }
             } ?: run {
                 tracker.track(
                     AnalyticsEvent.PRODUCT_DETAIL_LOADED,
-                    mapOf(AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsTabletValue(isTablet()).deviceTypeToAnalyticsString)
+                    mapOf(
+                        AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
+                            IsTabletValue(isTablet()).deviceTypeToAnalyticsString
+                    )
                 )
             }
             hasTrackedProductDetailLoaded = true
