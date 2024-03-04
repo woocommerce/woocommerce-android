@@ -71,6 +71,7 @@ fun OrderConnectivityToolScreen(
         Spacer(modifier = modifier.weight(1f))
         Button(
             modifier = modifier.fillMaxWidth(),
+            enabled = isContactSupportButtonEnabled,
             onClick = {},
         ) {
             Text("Contact Support")
