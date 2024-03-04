@@ -1,9 +1,13 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+17.7
+-----
+- [*] Products: Fixed a bug when after configuration change product's search results are lost [https://github.com/woocommerce/woocommerce-android/pull/10995]
 
 17.6
 -----
 - [**] Orders can be filtered now using specific customers or products [https://github.com/woocommerce/woocommerce-android/pull/10927]
 - [*] Orders: Merchants can now contact their customers through WhatsApp and Telegram apps. [https://github.com/woocommerce/woocommerce-android/pull/10936]
+- [**] Orders: Show the order attribution info in the order detail screen. [https://github.com/woocommerce/woocommerce-android/pull/10981]
 
 17.5
 -----
