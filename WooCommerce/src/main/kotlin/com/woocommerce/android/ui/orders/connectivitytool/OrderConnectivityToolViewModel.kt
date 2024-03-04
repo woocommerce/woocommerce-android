@@ -16,7 +16,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 class OrderConnectivityToolViewModel @Inject constructor(
@@ -28,24 +27,19 @@ class OrderConnectivityToolViewModel @Inject constructor(
     )
     val viewState = _viewState.asLiveData()
 
-    private val connectivityTests = listOf(
-        InternetConnectionTest,
-        WordPressConnectionTest,
-        StoreConnectionTest,
-        StoreOrdersTest
-    )
-
     init {
         launch {
-            connectivityTests.forEach { test ->
-                test.run().collect {
-                    _viewState.value = when (test) {
-                        InternetConnectionTest -> _viewState.value.copy(internetConnectionTestStatus = it)
-                        WordPressConnectionTest -> _viewState.value.copy(wordpressConnectionTestStatus = it)
-                        StoreConnectionTest -> _viewState.value.copy(storeConnectionTestStatus = it)
-                        StoreOrdersTest -> _viewState.value.copy(storeOrdersTestStatus = it)
-                    }
-                }
+            InternetConnectionTest.run().collect {
+                _viewState.value = _viewState.value.copy(internetConnectionTestStatus = it)
+            }
+            WordPressConnectionTest.run().collect {
+                _viewState.value = _viewState.value.copy(wordpressConnectionTestStatus = it)
+            }
+            StoreConnectionTest.run().collect {
+                _viewState.value = _viewState.value.copy(storeConnectionTestStatus = it)
+            }
+            StoreOrdersTest.run().collect {
+                _viewState.value = _viewState.value.copy(storeOrdersTestStatus = it)
             }
         }
     }
