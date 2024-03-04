@@ -3,6 +3,10 @@
 -----
 - [*] Products: Fixed a bug when after configuration change product's search results are lost [https://github.com/woocommerce/woocommerce-android/pull/10995]
 
+17.7
+-----
+
+
 17.6
 -----
 - [**] Orders can be filtered now using specific customers or products [https://github.com/woocommerce/woocommerce-android/pull/10927]
