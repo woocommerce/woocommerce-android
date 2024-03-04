@@ -34,10 +34,10 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
 @Composable
 fun OrderConnectivityToolScreen(
     isContactSupportButtonEnabled: Boolean,
-    internetConnectionTestStatus : ConnectivityTestStatus,
-    wordpressConnectionTestStatus : ConnectivityTestStatus,
-    storeConnectionTestStatus : ConnectivityTestStatus,
-    storeOrdersTestStatus : ConnectivityTestStatus,
+    internetConnectionTestStatus: ConnectivityTestStatus,
+    wordpressConnectionTestStatus: ConnectivityTestStatus,
+    storeConnectionTestStatus: ConnectivityTestStatus,
+    storeOrdersTestStatus: ConnectivityTestStatus,
     modifier: Modifier = Modifier
 ) {
     Column(

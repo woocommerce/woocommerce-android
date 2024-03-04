@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
 import com.woocommerce.android.util.BuildConfigWrapper
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.store.WhatsNewStore
+import javax.inject.Inject
 
 class WordPressConnectionTestUseCase @Inject constructor(
     private val whatsNewStore: WhatsNewStore,
