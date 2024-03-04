@@ -73,6 +73,7 @@ import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
+import com.woocommerce.android.util.FeatureFlag
 
 @AndroidEntryPoint
 @Suppress("LargeClass")
@@ -937,13 +938,15 @@ class OrderListFragment :
     }
 
     private fun displayTimeoutErrorCard(show: Boolean) {
-        displayErrorTroubleshootingCard(
-            show = show,
-            title = getString(R.string.orderlist_timeout_error_title),
-            message = getString(R.string.orderlist_timeout_error_message),
-            troubleshootingClick = { /* Call Connectivity tool */ },
-            supportContactClick = { openSupportRequestScreen() }
-        )
+        if (FeatureFlag.CONNECTIVITY_TOOL.isEnabled()) {
+            displayErrorTroubleshootingCard(
+                show = show,
+                title = getString(R.string.orderlist_timeout_error_title),
+                message = getString(R.string.orderlist_timeout_error_message),
+                troubleshootingClick = { /* Call Connectivity tool */ },
+                supportContactClick = { openSupportRequestScreen() }
+            )
+        }
     }
 
     private fun displayErrorTroubleshootingCard(
