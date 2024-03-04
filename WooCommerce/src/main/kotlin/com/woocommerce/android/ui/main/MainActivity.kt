@@ -721,15 +721,7 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
-        when (navPos) {
-            ORDERS -> {
-                val property = mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString())
-                AnalyticsTracker.track(stat, property)
-            }
-            else -> {
-                AnalyticsTracker.track(stat)
-            }
-        }
+        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString()))
 
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
