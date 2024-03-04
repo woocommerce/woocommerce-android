@@ -535,6 +535,7 @@
 
     <include app:graph="@navigation/nav_graph_add_product_category" />
     <include app:graph="@navigation/nav_graph_product_settings" />
+    <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
 
     <action
         android:id="@+id/action_productDetailFragment_to_productSettingsFragment"
