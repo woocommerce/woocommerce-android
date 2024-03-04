@@ -21,6 +21,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
@@ -33,6 +35,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
+import com.woocommerce.android.util.IsTablet
 import com.woocommerce.android.util.IsTabletLogicNeeded
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -70,7 +73,8 @@ class ProductListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val isTabletLogicNeeded: IsTabletLogicNeeded
+    private val isTabletLogicNeeded: IsTabletLogicNeeded,
+    private val isTablet: IsTablet,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -439,6 +443,11 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onOpenProduct(productId: Long, sharedView: View?) {
+        analyticsTracker.track(
+            AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsTabletValue(isTablet()).deviceTypeToAnalyticsString)
+        )
+
         val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == openedProduct } ?: 0
         openedProduct = productId
         val newPositionInList = _productList.value?.indexOfFirst { it.remoteId == productId } ?: 0
