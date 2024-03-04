@@ -39,6 +39,7 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
+import com.woocommerce.android.extensions.isDisplaySmallerThan720
 import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -232,7 +233,7 @@ class OrderDetailFragment :
     private fun isOrderListFragmentNotVisible() = parentFragment?.parentFragment !is OrderListFragment
 
     private fun setMarginsIfTablet() {
-        val isSmallTablet = !resources.getBoolean(R.bool.is_at_least_720sw)
+        val isSmallTablet = requireContext().isDisplaySmallerThan720
         val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
         if (isTablet()) {
