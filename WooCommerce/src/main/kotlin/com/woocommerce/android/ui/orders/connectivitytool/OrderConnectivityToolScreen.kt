@@ -21,13 +21,21 @@ import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolV
 fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     OrderConnectivityToolScreen(
-        isContactSupportButtonEnabled = viewState?.isContactSupportEnabled ?: false
+        isContactSupportButtonEnabled = viewState?.isContactSupportEnabled ?: false,
+        internetConnectionTestStatus = viewState?.internetConnectionTestStatus ?: NotStarted,
+        wordpressConnectionTestStatus = viewState?.wordpressConnectionTestStatus ?: NotStarted,
+        storeConnectionTestStatus = viewState?.storeConnectionTestStatus ?: NotStarted,
+        storeOrdersTestStatus = viewState?.storeOrdersTestStatus ?: NotStarted
     )
 }
 
 @Composable
 fun OrderConnectivityToolScreen(
     isContactSupportButtonEnabled: Boolean,
+    internetConnectionTestStatus : ConnectivityTestStatus,
+    wordpressConnectionTestStatus : ConnectivityTestStatus,
+    storeConnectionTestStatus : ConnectivityTestStatus,
+    storeOrdersTestStatus : ConnectivityTestStatus,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -38,22 +46,22 @@ fun OrderConnectivityToolScreen(
         ConnectivityTestRow(
             testTitle = "Internet Connection",
             errorMessage = "No internet connection",
-            testStatus = NotStarted
+            testStatus = internetConnectionTestStatus
         )
         ConnectivityTestRow(
             testTitle = "WordPress Connection",
             errorMessage = "WordPress connection failed",
-            testStatus = InProgress
+            testStatus = wordpressConnectionTestStatus
         )
         ConnectivityTestRow(
             testTitle = "Store Connection",
             errorMessage = "Store connection failed",
-            testStatus = Failure
+            testStatus = storeConnectionTestStatus
         )
         ConnectivityTestRow(
             testTitle = "Store Orders",
             errorMessage = "Store orders failed",
-            testStatus = NotStarted
+            testStatus = storeOrdersTestStatus
         )
     }
 }
