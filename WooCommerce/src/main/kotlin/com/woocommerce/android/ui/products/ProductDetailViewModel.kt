@@ -322,6 +322,9 @@ class ProductDetailViewModel @Inject constructor(
     val isTrashEnabled: Boolean
         get() = !isProductUnderCreation && navArgs.isTrashEnabled
 
+    val isAddNewProductFlow: Boolean
+        get() = navArgs.mode == ProductDetailFragment.Mode.AddNewProduct
+
     /**
      * Provides the currencyCode for views who requires display prices
      */

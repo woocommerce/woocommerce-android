@@ -69,7 +69,13 @@ class ProductDetailsToolbarHelper @Inject constructor(
 
         toolbar.navigationIcon =
             when {
-                isTablet() -> null
+                isTablet() -> {
+                    if (viewModel?.isAddNewProductFlow == true) {
+                        AppCompatResources.getDrawable(activity, R.drawable.ic_back_24dp)
+                    } else {
+                        null
+                    }
+                }
                 fragment?.findNavController()?.hasBackStackEntry(R.id.products) == true -> {
                     AppCompatResources.getDrawable(activity, R.drawable.ic_back_24dp)
                 }
