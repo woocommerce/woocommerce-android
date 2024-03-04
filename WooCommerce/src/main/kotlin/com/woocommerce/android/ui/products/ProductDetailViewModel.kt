@@ -15,6 +15,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
@@ -72,6 +74,7 @@ import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.IsTablet
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -139,6 +142,7 @@ class ProductDetailViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
+    private val isTablet: IsTablet,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -1393,12 +1397,16 @@ class ProductDetailViewModel @Inject constructor(
                     val hasQuantityRules = getProductQuantityRules(product.remoteId) != null
                     val properties = mapOf(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
-                        AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules
+                        AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules,
+                        AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsTabletValue(isTablet()).deviceTypeToAnalyticsString,
                     )
                     tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
                 }
             } ?: run {
-                tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED)
+                tracker.track(
+                    AnalyticsEvent.PRODUCT_DETAIL_LOADED,
+                    mapOf(AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsTabletValue(isTablet()).deviceTypeToAnalyticsString)
+                )
             }
             hasTrackedProductDetailLoaded = true
         }
