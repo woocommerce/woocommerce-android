@@ -8,11 +8,16 @@ import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolV
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTest.StoreOrdersTest
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTest.WordPressConnectionTest
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.NotStarted
+import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionTestUseCase
+import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionTestUseCase
+import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersTestUseCase
+import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionTestUseCase
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 
 class OrderConnectivityToolViewModel @Inject constructor(
     savedState: SavedStateHandle
@@ -23,30 +28,26 @@ class OrderConnectivityToolViewModel @Inject constructor(
     )
     val viewState = _viewState.asLiveData()
 
+    private val connectivityTests = listOf(
+        InternetConnectionTest,
+        WordPressConnectionTest,
+        StoreConnectionTest,
+        StoreOrdersTest
+    )
+
     init {
-        listOf(
-            InternetConnectionTest,
-            WordPressConnectionTest,
-            StoreConnectionTest,
-            StoreOrdersTest
-        ).forEach { test ->
+        launch {
+            connectivityTests.forEach { test ->
+                test.run().collect {
+                    _viewState.value = when (test) {
+                        InternetConnectionTest -> _viewState.value.copy(internetConnectionTestStatus = it)
+                        WordPressConnectionTest -> _viewState.value.copy(wordpressConnectionTestStatus = it)
+                        StoreConnectionTest -> _viewState.value.copy(storeConnectionTestStatus = it)
+                        StoreOrdersTest -> _viewState.value.copy(storeOrdersTestStatus = it)
+                    }
+                }
+            }
         }
-    }
-
-    fun runInternetConnectionTest(): Boolean {
-        return true
-    }
-
-    fun runWordPressConnectionTest(): Boolean {
-        return true
-    }
-
-    fun runStoreConnectionTest(): Boolean {
-        return true
-    }
-
-    fun runStoreOrdersTest(): Boolean {
-        return true
     }
 
     data class ViewState(
@@ -61,36 +62,16 @@ class OrderConnectivityToolViewModel @Inject constructor(
         fun run() = action.invoke()
 
         data object InternetConnectionTest : ConnectivityTest(
-            action = {
-                flow {
-                    emit(ConnectivityTestStatus.InProgress)
-                    emit(ConnectivityTestStatus.Success)
-                }
-            }
+            action = { InternetConnectionTestUseCase().invoke() }
         )
         data object WordPressConnectionTest : ConnectivityTest(
-            action = {
-                flow {
-                    emit(ConnectivityTestStatus.InProgress)
-                    emit(ConnectivityTestStatus.Success)
-                }
-            }
+            action = { WordPressConnectionTestUseCase().invoke() }
         )
         data object StoreConnectionTest : ConnectivityTest(
-            action = {
-                flow {
-                    emit(ConnectivityTestStatus.InProgress)
-                    emit(ConnectivityTestStatus.Success)
-                }
-            }
+            action = { StoreConnectionTestUseCase().invoke() }
         )
         data object StoreOrdersTest : ConnectivityTest(
-            action = {
-                flow {
-                    emit(ConnectivityTestStatus.InProgress)
-                    emit(ConnectivityTestStatus.Success)
-                }
-            }
+            action = { StoreOrdersTestUseCase().invoke() }
         )
     }
 
