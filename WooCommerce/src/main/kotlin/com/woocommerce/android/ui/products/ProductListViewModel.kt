@@ -218,7 +218,12 @@ class ProductListViewModel @Inject constructor(
 
     fun onAddProductButtonClicked() {
         launch {
-            AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED)
+            AnalyticsTracker.track(
+                AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
+                mapOf(
+                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsTabletValue(isTablet()).deviceTypeToAnalyticsString
+                )
+            )
             triggerEvent(ShowAddProductBottomSheet)
         }
     }
