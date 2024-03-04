@@ -48,14 +48,12 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_COMPACT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_REGULAR
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.help.HelpActivity
@@ -721,7 +719,7 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
-        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString()))
+        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
 
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
@@ -735,7 +733,7 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
         }
-        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString()))
+        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
 
         // if we're at the root scroll the active fragment to the top
         // TODO bring back clearing the backstack when the navgraphs are fixed to support multiple backstacks:
@@ -749,13 +747,6 @@ class MainActivity :
         }
     }
     // endregion
-
-    private fun deviceTypeToAnalyticsString(): String {
-        if (isTablet()) {
-            return VALUE_DEVICE_TYPE_REGULAR
-        }
-        return VALUE_DEVICE_TYPE_COMPACT
-    }
 
     // region Fragment Processing
     private fun initFragment(savedInstanceState: Bundle?) {
