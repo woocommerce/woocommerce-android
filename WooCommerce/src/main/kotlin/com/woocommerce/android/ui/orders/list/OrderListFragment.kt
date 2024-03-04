@@ -549,7 +549,6 @@ class OrderListFragment :
                     action = event.action
                 )
                 is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
-                is OrderListViewModel.OrderListEvent.OpenConnectivityTool -> openConnectivityTool()
                 else -> event.isHandled = false
             }
         }

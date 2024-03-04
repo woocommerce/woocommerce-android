@@ -807,7 +807,6 @@ class OrderListViewModel @Inject constructor(
         data class VMKilledWhenScanningInProgress(@StringRes val message: Int) : Event()
 
         data object RetryLoadingOrders : OrderListEvent()
-        data object OpenConnectivityTool: OrderListEvent()
     }
 
     @Parcelize
