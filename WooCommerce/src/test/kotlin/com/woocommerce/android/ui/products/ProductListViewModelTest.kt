@@ -641,4 +641,38 @@ class ProductListViewModelTest : BaseUnitTest() {
             mapOf("horizontal_size_class" to "compact")
         )
     }
+
+    @Test
+    fun `give tablet, when onAddProductButtonClicked invoked, then horizontal_size_class regular tracked`() = testBlocking {
+        // given
+        whenever(isTablet()).thenReturn(true)
+
+        createViewModel()
+
+        // when
+        viewModel.onAddProductButtonClicked()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
+            mapOf("horizontal_size_class" to "regular")
+        )
+    }
+
+    @Test
+    fun `give phone, when onAddProductButtonClicked invoked, then horizontal_size_class compact tracked`() = testBlocking {
+        // given
+        whenever(isTablet()).thenReturn(false)
+
+        createViewModel()
+
+        // when
+        viewModel.onAddProductButtonClicked()
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
+            mapOf("horizontal_size_class" to "compact")
+        )
+    }
 }
