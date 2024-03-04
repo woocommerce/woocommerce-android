@@ -27,7 +27,10 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
@@ -349,7 +352,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         sut(testRangeSelection, this)
 
         // Then
-        verify(analyticsDataStore).storeLastAnalyticsUpdate(testRangeSelection)
+        verify(analyticsDataStore, atLeast(1)).storeLastAnalyticsUpdate(eq(testRangeSelection), any())
     }
 
     @Test

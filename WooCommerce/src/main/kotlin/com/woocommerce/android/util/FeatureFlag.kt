@@ -15,6 +15,7 @@ enum class FeatureFlag {
     ORDER_CREATION_AUTO_TAX_RATE,
     BLAZE_I3,
     EXPANDED_ANALYTIC_HUB_M2,
+    CUSTOM_RANGE_ANALYTICS,
     CONNECTIVITY_TOOL;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -30,6 +31,7 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE,
             BLAZE_I3,
             EXPANDED_ANALYTIC_HUB_M2,
+            CUSTOM_RANGE_ANALYTICS,
             CONNECTIVITY_TOOL-> PackageUtils.isDebugBuild()
 
             IAP_FOR_STORE_CREATION -> false
