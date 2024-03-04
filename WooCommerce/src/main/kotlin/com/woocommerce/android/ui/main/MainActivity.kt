@@ -735,15 +735,7 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
         }
-        when (navPos) {
-            ORDERS -> {
-                val property = mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString())
-                AnalyticsTracker.track(stat, property)
-            }
-            else -> {
-                AnalyticsTracker.track(stat)
-            }
-        }
+        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString()))
 
         // if we're at the root scroll the active fragment to the top
         // TODO bring back clearing the backstack when the navgraphs are fixed to support multiple backstacks:
