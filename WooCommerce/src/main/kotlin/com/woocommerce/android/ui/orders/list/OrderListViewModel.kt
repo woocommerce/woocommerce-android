@@ -806,7 +806,8 @@ class OrderListViewModel @Inject constructor(
 
         data class VMKilledWhenScanningInProgress(@StringRes val message: Int) : Event()
 
-        object RetryLoadingOrders : OrderListEvent()
+        data object RetryLoadingOrders : OrderListEvent()
+        data object OpenConnectivityTool: OrderListEvent()
     }
 
     @Parcelize
@@ -817,7 +818,7 @@ class OrderListViewModel @Inject constructor(
         val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean = false,
         val jitmEnabled: Boolean = false,
         val isErrorFetchingDataBannerVisible: Boolean = false,
-        val shouldDisplayTroubleshootingBanner: Boolean = false
+        val shouldDisplayTroubleshootingBanner: Boolean = true
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0

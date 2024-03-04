@@ -549,6 +549,7 @@ class OrderListFragment :
                     action = event.action
                 )
                 is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
+                is OrderListViewModel.OrderListEvent.OpenConnectivityTool -> openConnectivityTool()
                 else -> event.isHandled = false
             }
         }
@@ -685,6 +686,12 @@ class OrderListFragment :
                 code,
                 barcodeFormat,
             )
+        )
+    }
+
+    private fun openConnectivityTool() {
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToOrderConnectivityToolFragment()
         )
     }
 
@@ -941,7 +948,7 @@ class OrderListFragment :
             show = show,
             title = getString(R.string.orderlist_timeout_error_title),
             message = getString(R.string.orderlist_timeout_error_message),
-            troubleshootingClick = { /* Call Connectivity tool */ },
+            troubleshootingClick = { openConnectivityTool() },
             supportContactClick = { openSupportRequestScreen() }
         )
     }
