@@ -33,6 +33,22 @@ class OrderConnectivityToolViewModel @Inject constructor(
         }
     }
 
+    fun runInternetConnectionTest(): Boolean {
+        return true
+    }
+
+    fun runWordPressConnectionTest(): Boolean {
+        return true
+    }
+
+    fun runStoreConnectionTest(): Boolean {
+        return true
+    }
+
+    fun runStoreOrdersTest(): Boolean {
+        return true
+    }
+
     data class ViewState(
         val isContactSupportEnabled: Boolean = false,
         val internetConnectionTestStatus: ConnectivityTestStatus = NotStarted,
@@ -41,7 +57,9 @@ class OrderConnectivityToolViewModel @Inject constructor(
         val storeOrdersTestStatus: ConnectivityTestStatus = NotStarted
     )
 
-    sealed class ConnectivityTest(action: () -> Flow<ConnectivityTestStatus>) {
+    sealed class ConnectivityTest(val action: () -> Flow<ConnectivityTestStatus>) {
+        fun run() = action.invoke()
+
         data object InternetConnectionTest : ConnectivityTest(
             action = {
                 flow {
