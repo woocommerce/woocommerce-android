@@ -11,6 +11,8 @@ import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConn
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class OrderConnectivityToolViewModel @Inject constructor(
@@ -28,18 +30,21 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     init {
         launch {
-            internetConnectionTest().collect {
+            internetConnectionTest().onEach {
                 _viewState.value = _viewState.value.copy(internetConnectionTestStatus = it)
-            }
-            wordPressConnectionTest().collect {
+            }.launchIn(viewModelScope)
+
+            wordPressConnectionTest().onEach {
                 _viewState.value = _viewState.value.copy(wordpressConnectionTestStatus = it)
-            }
-            storeConnectionTest().collect {
+            }.launchIn(viewModelScope)
+
+            storeConnectionTest().onEach {
                 _viewState.value = _viewState.value.copy(storeConnectionTestStatus = it)
-            }
-            storeOrdersTest().collect {
+            }.launchIn(viewModelScope)
+
+            storeOrdersTest().onEach {
                 _viewState.value = _viewState.value.copy(storeOrdersTestStatus = it)
-            }
+            }.launchIn(viewModelScope)
         }
     }
 
