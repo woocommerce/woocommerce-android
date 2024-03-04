@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,21 +50,31 @@ fun OrderConnectivityToolScreen(
             errorMessage = "No internet connection",
             testStatus = internetConnectionTestStatus
         )
+        Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
             testTitle = "WordPress Connection",
             errorMessage = "WordPress connection failed",
             testStatus = wordpressConnectionTestStatus
         )
+        Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
             testTitle = "Store Connection",
             errorMessage = "Store connection failed",
             testStatus = storeConnectionTestStatus
         )
+        Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
             testTitle = "Store Orders",
             errorMessage = "Store orders failed",
             testStatus = storeOrdersTestStatus
         )
+        Spacer(modifier = modifier.weight(1f))
+        Button(
+            modifier = modifier.fillMaxWidth(),
+            onClick = {},
+        ) {
+            Text("Contact Support")
+        }
     }
 }
 
