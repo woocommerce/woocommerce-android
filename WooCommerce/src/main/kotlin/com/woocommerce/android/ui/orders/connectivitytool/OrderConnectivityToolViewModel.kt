@@ -19,4 +19,18 @@ class OrderConnectivityToolViewModel @Inject constructor(
     data class ViewState(
         val isContactSupportEnabled: Boolean = false
     )
+
+    sealed class ConnectivityTest {
+        data object InternetConnectionTest : ConnectivityTest()
+        data object WordPressConnectionTest : ConnectivityTest()
+        data object StoreConnectionTest : ConnectivityTest()
+        data object StoreOrdersTest : ConnectivityTest()
+    }
+
+    enum class ConnectivityTestStatus {
+        NotStarted,
+        InProgress,
+        Success,
+        Failure
+    }
 }
