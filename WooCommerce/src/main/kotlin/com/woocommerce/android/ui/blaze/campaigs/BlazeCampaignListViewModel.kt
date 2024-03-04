@@ -74,16 +74,16 @@ class BlazeCampaignListViewModel @Inject constructor(
             showCampaignCelebrationIfNeeded()
         }
         launch {
-            loadCampaigns(skip = 0)
+            loadCampaigns(offset = 0)
         }
     }
 
     fun onLoadMoreCampaigns() {
-        val numberOfItemsLoaded = state.value?.campaigns?.size ?: 0
-        if (!isLoadingMore.value && numberOfItemsLoaded < totalItems) {
+        val offset = state.value?.campaigns?.size ?: 0
+        if (!isLoadingMore.value && offset < totalItems) {
             launch {
                 isLoadingMore.value = true
-                loadCampaigns(numberOfItemsLoaded)
+                loadCampaigns(offset)
                 isLoadingMore.value = false
             }
         }
@@ -93,8 +93,8 @@ class BlazeCampaignListViewModel @Inject constructor(
         isCampaignCelebrationShown.value = false
     }
 
-    private suspend fun loadCampaigns(skip: Int) {
-        val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), skip)
+    private suspend fun loadCampaigns(offset: Int) {
+        val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), offset)
         if (result.isError || result.model == null) {
             triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
         } else {
