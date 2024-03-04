@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE
 import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED
@@ -20,6 +21,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.util.IsTablet
 import com.woocommerce.android.util.IsTabletLogicNeeded
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -54,6 +56,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val isTabletLogicNeeded: IsTabletLogicNeeded = mock()
+    private val isTablet: IsTablet = mock()
 
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
@@ -75,6 +78,7 @@ class ProductListViewModelTest : BaseUnitTest() {
                 selectedSite,
                 wooCommerceStore,
                 isTabletLogicNeeded,
+                isTablet,
             )
         )
     }
@@ -602,5 +606,39 @@ class ProductListViewModelTest : BaseUnitTest() {
         // We delayed the message waiting the resume animation to complete
         advanceUntilIdle()
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
+    }
+
+    @Test
+    fun `give tablet, when onOpenProduct invoked, then horizontal_size_class regular tracked`() = testBlocking {
+        // given
+        whenever(isTablet()).thenReturn(true)
+
+        createViewModel()
+
+        // when
+        viewModel.onOpenProduct(1L, null)
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED,
+            mapOf("horizontal_size_class" to "regular")
+        )
+    }
+
+    @Test
+    fun `give phone, when onOpenProduct invoked, then horizontal_size_class compact tracked`() = testBlocking {
+        // given
+        whenever(isTablet()).thenReturn(false)
+
+        createViewModel()
+
+        // when
+        viewModel.onOpenProduct(1L, null)
+
+        // then
+        verify(analyticsTracker).track(
+            AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED,
+            mapOf("horizontal_size_class" to "compact")
+        )
     }
 }
