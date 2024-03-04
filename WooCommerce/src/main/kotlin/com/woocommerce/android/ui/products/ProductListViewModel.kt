@@ -442,8 +442,8 @@ class ProductListViewModel @Inject constructor(
         if (products.isNotEmpty() && isTabletLogicNeeded()) {
             if (openedProduct == null) {
                 openedProduct = products.first().remoteId
+                onOpenProduct(openedProduct!!, null)
             }
-            onOpenProduct(openedProduct!!, null)
         }
     }
 
