@@ -75,13 +75,13 @@ class ProductListToolbarHelper @Inject constructor(
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
+        disableSearchListeners()
         fragment = null
         searchMenuItem = null
         scanBarcodeMenuItem = null
         searchView = null
         viewModel = null
         binding = null
-        disableSearchListeners()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean =
@@ -138,7 +138,6 @@ class ProductListToolbarHelper @Inject constructor(
         toolbar.navigationIcon = null
 
         searchMenuItem = toolbar.menu.findItem(R.id.menu_search)
-        searchMenuItem?.setOnActionExpandListener(this)
 
         searchView = searchMenuItem?.actionView as SearchView
         searchView?.queryHint = activity.getString(R.string.product_search_hint)
@@ -146,7 +145,11 @@ class ProductListToolbarHelper @Inject constructor(
 
         scanBarcodeMenuItem = toolbar.menu.findItem(R.id.menu_scan_barcode)
 
-        refreshOptionsMenu()
+        // We want to refresh the options menu after the toolbar has been inflated
+        // Otherwise, logic in it will be executed before the toolbar is in restored state after configuration change
+        toolbar.post {
+            refreshOptionsMenu()
+        }
     }
 
     private fun refreshOptionsMenu() {
@@ -155,8 +158,10 @@ class ProductListToolbarHelper @Inject constructor(
             if (menuItem.isVisible != showSearch) menuItem.isVisible = showSearch
 
             val isSearchActive = viewModel?.viewStateLiveData?.liveData?.value?.isSearchActive == true
-            if (menuItem.isActionViewExpanded != isSearchActive) {
-                if (isSearchActive) {
+            if (isSearchActive) {
+                if (menuItem.isActionViewExpanded) {
+                    enableSearchListeners()
+                } else {
                     disableSearchListeners()
                     menuItem.expandActionView()
                     val queryHint = getSearchQueryHint()
