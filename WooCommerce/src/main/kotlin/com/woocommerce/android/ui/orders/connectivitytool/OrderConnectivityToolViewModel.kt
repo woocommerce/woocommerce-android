@@ -6,9 +6,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionTestUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersTestUseCase
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionTestUseCase
+import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
+import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
+import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,9 +21,9 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderConnectivityToolViewModel @Inject constructor(
     private val internetConnectionCheck: InternetConnectionCheckUseCase,
-    private val wordPressConnectionTest: WordPressConnectionTestUseCase,
-    private val storeConnectionTest: StoreConnectionTestUseCase,
-    private val storeOrdersTest: StoreOrdersTestUseCase,
+    private val wordPressConnectionCheck: WordPressConnectionCheckUseCase,
+    private val storeConnectionCheck: StoreConnectionCheckUseCase,
+    private val storeOrdersCheck: StoreOrdersCheckUseCase,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val _viewState = savedState.getStateFlow(
@@ -38,15 +38,15 @@ class OrderConnectivityToolViewModel @Inject constructor(
                 _viewState.value = _viewState.value.copy(internetConnectionTestStatus = it)
             }.launchIn(viewModelScope)
 
-            wordPressConnectionTest().onEach {
+            wordPressConnectionCheck().onEach {
                 _viewState.value = _viewState.value.copy(wordpressConnectionTestStatus = it)
             }.launchIn(viewModelScope)
 
-            storeConnectionTest().onEach {
+            storeConnectionCheck().onEach {
                 _viewState.value = _viewState.value.copy(storeConnectionTestStatus = it)
             }.launchIn(viewModelScope)
 
-            storeOrdersTest().onEach {
+            storeOrdersCheck().onEach {
                 _viewState.value = _viewState.value.copy(storeOrdersTestStatus = it)
             }.launchIn(viewModelScope)
         }

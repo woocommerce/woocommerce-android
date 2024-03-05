@@ -7,18 +7,21 @@ import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolV
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import javax.inject.Inject
 
-class StoreConnectionTestUseCase @Inject constructor(
-    private val wooCommerceStore: WooCommerceStore,
+class StoreOrdersCheckUseCase @Inject constructor(
+    private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite
 ) {
     operator fun invoke(): Flow<ConnectivityTestStatus> = flow {
         emit(InProgress)
-        wooCommerceStore.fetchSSR(selectedSite.get())
-            .takeIf { it.isError }
-            ?.let { emit(Failure) }
-            ?: emit(Success)
+        orderStore.fetchHasOrders(
+            site = selectedSite.get(),
+            status = null
+        ).takeIf { it is HasOrdersResult.Success }?.let {
+            emit(Success)
+        } ?: emit(Failure)
     }
 }

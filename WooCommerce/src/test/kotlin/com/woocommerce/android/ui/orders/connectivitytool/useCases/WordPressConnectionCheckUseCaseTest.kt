@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
@@ -20,8 +19,8 @@ import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewErrorType
 import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewFetchError
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WordPressConnectionTestUseCaseTest : BaseUnitTest() {
-    private lateinit var sut: WordPressConnectionTestUseCase
+class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
+    private lateinit var sut: WordPressConnectionCheckUseCase
     private lateinit var whatsNewStore: WhatsNewStore
     private lateinit var buildConfigWrapper: BuildConfigWrapper
 
@@ -29,7 +28,7 @@ class WordPressConnectionTestUseCaseTest : BaseUnitTest() {
     fun setUp() {
         whatsNewStore = mock()
         buildConfigWrapper = mock()
-        sut = WordPressConnectionTestUseCase(whatsNewStore, buildConfigWrapper)
+        sut = WordPressConnectionCheckUseCase(whatsNewStore, buildConfigWrapper)
     }
 
     @Test
