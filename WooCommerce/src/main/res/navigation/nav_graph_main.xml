@@ -216,7 +216,7 @@
     <dialog
         android:id="@+id/updateStockStatusFragment"
         android:name="com.woocommerce.android.ui.products.UpdateProductStockStatusFragment"
-        android:label="Update Stock Status">
+        android:label="UpdateProductStockStatusFragment">
         <argument
             android:name="selectedProductIds"
             app:argType="long[]"/>
