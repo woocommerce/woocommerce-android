@@ -32,7 +32,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     )
     val viewState = _viewState.asLiveData()
 
-    init {
+    fun startConnectionTests() {
         launch {
             internetConnectionTest().onEach {
                 _viewState.value = _viewState.value.copy(internetConnectionTestStatus = it)
