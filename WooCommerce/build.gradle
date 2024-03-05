@@ -27,6 +27,7 @@ sentry {
     autoInstallation {
         enabled = false
     }
+    includeDependenciesReport = false
 }
 
 repositories {
