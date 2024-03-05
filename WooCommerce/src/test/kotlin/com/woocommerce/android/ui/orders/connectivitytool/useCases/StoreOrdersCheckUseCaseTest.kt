@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -33,7 +35,7 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `when fetchHasOrders returns success then emit Success`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<OrderConnectivityToolViewModel.ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityTestStatus>()
         whenever(orderStore.fetchHasOrders(
             site = selectedSite.get(),
             status = null
@@ -51,7 +53,7 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `when fetchHasOrders returns failure then emit Failure`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<OrderConnectivityToolViewModel.ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityTestStatus>()
         whenever(orderStore.fetchHasOrders(
             site = selectedSite.get(),
             status = null
@@ -63,6 +65,6 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure))
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure))
     }
 }
