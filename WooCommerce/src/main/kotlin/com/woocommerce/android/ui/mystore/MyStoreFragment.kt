@@ -18,8 +18,6 @@ import androidx.lifecycle.withCreated
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.transition.MaterialElevationScale
@@ -37,11 +35,11 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
@@ -462,7 +460,9 @@ class MyStoreFragment :
                         MyStoreFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
                     )
 
-                is OpenDatePicker -> showDateRangePicker()
+                is OpenDatePicker -> showDateRangePicker { start, end ->
+                    myStoreViewModel.onCustomRangeSelected(Date(start), Date(end))
+                }
 
                 else -> event.isHandled = false
             }
@@ -645,23 +645,6 @@ class MyStoreFragment :
     private fun showChartSkeleton(show: Boolean) {
         binding.myStoreStats.showErrorView(false)
         binding.myStoreStats.showSkeleton(show)
-    }
-
-    private fun showDateRangePicker() {
-        val datePicker =
-            MaterialDatePicker.Builder.dateRangePicker()
-                .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
-                .setSelection(androidx.core.util.Pair(System.currentTimeMillis(), System.currentTimeMillis()))
-                .setCalendarConstraints(
-                    CalendarConstraints.Builder()
-                        .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
-                        .build()
-                )
-                .build()
-        datePicker.show(parentFragmentManager, AnalyticsHubFragment.DATE_PICKER_FRAGMENT_TAG)
-        datePicker.addOnPositiveButtonClickListener {
-            myStoreViewModel.onCustomRangeSelected(Date(it?.first ?: 0L), Date(it.second ?: 0L))
-        }
     }
 
     /**
