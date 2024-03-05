@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.connectivitytool.useCases
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -40,5 +41,20 @@ class InternetConnectionCheckUseCaseTest : BaseUnitTest() {
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(InProgress, Success))
+    }
+
+    @Test
+    fun `when network is not connected then emit Failure`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        whenever(networkStatus.isConnected()).thenReturn(false)
+
+        // When
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure))
     }
 }
