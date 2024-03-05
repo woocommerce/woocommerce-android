@@ -39,20 +39,24 @@ class UpdateProductStockStatusViewModel @Inject constructor(
             resourceProvider: ResourceProvider
         ): String {
             return buildString {
-                append(
-                    resourceProvider.getString(
-                        R.string.product_update_stock_status_update_count,
-                        productsToUpdateCount
-                    )
-                )
+                val updateMessage = if (productsToUpdateCount == 1) {
+                    resourceProvider.getString(R.string.product_update_stock_status_update_count_singular)
+                } else {
+                    resourceProvider.getString(R.string.product_update_stock_status_update_count, productsToUpdateCount)
+                }
+                append(updateMessage)
+
                 if (ignoredProductsCount > 0) {
                     append(" ")
-                    append(
+                    val ignoreMessage = if (ignoredProductsCount == 1) {
+                        resourceProvider.getString(R.string.product_update_stock_status_ignored_count_singular)
+                    } else {
                         resourceProvider.getString(
                             R.string.product_update_stock_status_ignored_count,
                             ignoredProductsCount
                         )
-                    )
+                    }
+                    append(ignoreMessage)
                 }
             }
         }
@@ -177,6 +181,4 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         Error,
         NoChange
     }
-
-
 }

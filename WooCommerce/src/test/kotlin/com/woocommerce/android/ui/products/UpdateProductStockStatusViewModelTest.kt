@@ -27,10 +27,22 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: UpdateProductStockStatusViewModel
     private val resourceProvider: ResourceProvider = mock {
+        on { getString(any()) } doAnswer { invocation ->
+            when (invocation.arguments[0] as Int) {
+                R.string.product_update_stock_status_update_count_singular -> {
+                    "Stock status will be updated for 1 product."
+                }
+
+                R.string.product_update_stock_status_ignored_count_singular -> {
+                    "1 product with managed stock quantity will be ignored."
+                }
+
+                else -> "Unexpected resource ID"
+            }
+        }
         on { getString(any(), any()) } doAnswer { invocation ->
             val resourceId = invocation.arguments[0] as Int
-            val formatArg =
-                invocation.arguments[1] as Int
+            val formatArg = invocation.arguments[1] as Int
             when (resourceId) {
                 R.string.product_update_stock_status_update_count -> {
                     "Stock status will be updated for $formatArg products."
