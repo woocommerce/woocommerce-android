@@ -192,7 +192,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(
-                binding.statsContainer,
+                binding.statsContent,
                 R.layout.skeleton_dashboard_stats,
                 delayed = true
             )
