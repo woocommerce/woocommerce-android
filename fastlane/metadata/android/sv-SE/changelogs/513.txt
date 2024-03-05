@@ -1,2 +1,0 @@
-17.4:
-Vi är glada över att kunna erbjuda stöd för tredjepartsleverantörer av säkerhetsnycklar. Den här uppdateringen är utformad för att ge WordPress.com-användare mer flexibilitet och bekvämlighet när de hanterar säkerheten för sina konton. Säg adjö till lösenordströttheten och hej till en smidigare och säkrare inloggningsupplevelse!

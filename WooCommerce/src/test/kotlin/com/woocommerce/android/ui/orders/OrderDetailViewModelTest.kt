@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -68,6 +69,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -2146,5 +2148,23 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         assertThat(viewModel.orderNavigationIsEnabled()).isFalse
+    }
+
+    @Test
+    fun `when order attribution is loaded, then update state`() = testBlocking {
+        val attribution = OrderAttributionInfo(
+            sourceType = "referral",
+            source = "Woo.com"
+        )
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+        whenever(orderDetailRepository.getOrderAttributionInfo(ORDER_ID)).thenReturn(attribution)
+
+        createViewModel()
+        viewModel.start()
+
+        val attributionState = viewModel.orderAttributionInfo.getOrAwaitValue()
+
+        assertThat(attributionState).isEqualTo(attribution)
     }
 }

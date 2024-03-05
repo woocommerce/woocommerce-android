@@ -80,7 +80,11 @@ class ProductDetailsToolbarHelper @Inject constructor(
             }
 
         toolbar.setNavigationOnClickListener {
-            fragment?.findNavController()?.navigateUp()
+            if (fragment?.findNavController()?.popBackStack(R.id.products, false) == false) {
+                // in case the back stack is empty, indicating that the ProductDetailsFragment is shown in details pane
+                // of the ProductListFragment, we need to propagate back press to the parent fragment manually.
+                fragment?.requireActivity()?.onBackPressedDispatcher?.onBackPressed()
+            }
         }
 
         // change the font color of the trash menu item to red, and only show it if it should be enabled

@@ -2,14 +2,13 @@ package com.woocommerce.android.ui.products.variations
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.distinctUntilChanged
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -46,6 +45,7 @@ import com.woocommerce.android.ui.products.subscriptions.ProductSubscriptionFree
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.variations.attributes.edit.EditVariationAttributesFragment.Companion.KEY_VARIATION_ATTRIBUTES_RESULT
 import com.woocommerce.android.util.Optional
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
@@ -64,7 +64,6 @@ class VariationDetailFragment :
     BaseFragment(R.layout.fragment_variation_detail),
     BackPressListener,
     OnGalleryImageInteractionListener,
-    MenuProvider,
     DialogInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
@@ -81,7 +80,7 @@ class VariationDetailFragment :
     private var variationName = ""
         set(value) {
             field = value
-            updateActivityTitle()
+            _binding?.toolbar?.title = value
         }
 
     private val skeletonView = SkeletonView()
@@ -101,9 +100,20 @@ class VariationDetailFragment :
 
         reattachDialogInteractionListener()
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         initializeViews(savedInstanceState)
         initializeViewModel()
+        setupTabletSecondPaneToolbar(
+            title = variationName,
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    if (onRequestAllowBackPress()) {
+                        findNavController().navigateUp()
+                    }
+                }
+                onCreateMenu(toolbar)
+            }
+        )
     }
 
     private fun reattachDialogInteractionListener() {
@@ -128,17 +138,18 @@ class VariationDetailFragment :
         progressDialog?.dismiss()
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_variation_detail_fragment, menu)
-        doneOrUpdateMenuItem = menu.findItem(R.id.menu_done)
+    private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.inflateMenu(R.menu.menu_variation_detail_fragment)
+        doneOrUpdateMenuItem = toolbar.menu.findItem(R.id.menu_done)
+        onPrepareMenu()
     }
 
-    override fun onPrepareMenu(menu: Menu) {
+    private fun onPrepareMenu() {
         doneOrUpdateMenuItem?.isVisible = viewModel.variationViewStateData.liveData.value?.isDoneButtonVisible ?: false
         doneOrUpdateMenuItem?.isEnabled = viewModel.variationViewStateData.liveData.value?.isDoneButtonEnabled ?: true
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 AnalyticsTracker.track(PRODUCT_VARIATION_UPDATE_BUTTON_TAPPED)
@@ -399,6 +410,4 @@ class VariationDetailFragment :
             false
         }
     }
-
-    override fun getFragmentTitle() = variationName
 }
