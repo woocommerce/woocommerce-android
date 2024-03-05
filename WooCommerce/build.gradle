@@ -1,3 +1,4 @@
+import io.sentry.android.gradle.extensions.InstrumentationFeature
 import se.bjurr.violations.comments.github.plugin.gradle.ViolationCommentsToGitHubTask
 import se.bjurr.violations.lib.model.SEVERITY
 
@@ -14,9 +15,11 @@ plugins {
 }
 
 sentry {
+    includeSourceContext = true
+    autoUploadSourceContext = true
     tracingInstrumentation {
         enabled = true
-        features = [io.sentry.android.gradle.extensions.InstrumentationFeature.DATABASE]
+        features = [InstrumentationFeature.DATABASE]
         logcat {
             enabled = false
         }
