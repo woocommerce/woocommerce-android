@@ -9,6 +9,7 @@ import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
+import com.woocommerce.android.model.OrderAttributionOrigin
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
@@ -57,9 +58,17 @@ class OrderCreateEditRepository @Inject constructor(
             giftCard = giftCard,
         )
         val result = if (order.id == 0L) {
-            orderUpdateStore.createOrder(selectedSite.get(), request)
+            orderUpdateStore.createOrder(
+                site = selectedSite.get(),
+                createOrderRequest = request,
+                attributionSourceType = OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE
+            )
         } else {
-            orderUpdateStore.updateOrder(selectedSite.get(), order.id, request)
+            orderUpdateStore.updateOrder(
+                site = selectedSite.get(),
+                orderId = order.id,
+                updateRequest = request
+            )
         }
 
         return when {
@@ -120,9 +129,17 @@ class OrderCreateEditRepository @Inject constructor(
         )
 
         val result = if (order.id == 0L) {
-            orderUpdateStore.createOrder(selectedSite.get(), request)
+            orderUpdateStore.createOrder(
+                site = selectedSite.get(),
+                createOrderRequest = request,
+                attributionSourceType = OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE
+            )
         } else {
-            orderUpdateStore.updateOrder(selectedSite.get(), order.id, request)
+            orderUpdateStore.updateOrder(
+                site = selectedSite.get(),
+                orderId = order.id,
+                updateRequest = request
+            )
         }
 
         return when {
