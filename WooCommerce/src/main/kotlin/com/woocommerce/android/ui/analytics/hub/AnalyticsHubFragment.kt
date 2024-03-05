@@ -12,24 +12,21 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.MaterialDatePicker
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
-import com.woocommerce.android.model.AnalyticsCards
+import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.MarginTopItemDecoration
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -60,9 +57,7 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         super.onViewCreated(view, savedInstanceState)
         bind(view)
         setupResultHandlers(viewModel)
-        if (FeatureFlag.EXPANDED_ANALYTIC_HUB_M2.isEnabled()) {
-            setupMenu()
-        }
+        setupMenu()
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.viewState.flowWithLifecycle(lifecycle).collect { newState -> handleStateChange(newState) }
@@ -87,12 +82,24 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
     private fun handleEvent(event: MultiLiveEvent.Event) {
         when (event) {
             is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+
             is AnalyticsViewEvent.OpenWPComWebView -> findNavController()
                 .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
 
-            is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(event.fromMillis, event.toMillis)
+            is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(
+                event.fromMillis,
+                event.toMillis
+            ) { start, end ->
+                viewModel.onCustomRangeSelected(Date(start), Date(end))
+            }
+
             is AnalyticsViewEvent.OpenDateRangeSelector -> openDateRangeSelector()
+
             is AnalyticsViewEvent.SendFeedback -> sendFeedback()
+
+            is AnalyticsViewEvent.OpenSettings -> findNavController()
+                .navigateSafely(AnalyticsHubFragmentDirections.actionAnalyticsToAnalyticsSettings())
+
             else -> event.isHandled = false
         }
     }
@@ -122,12 +129,14 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
     private fun bind(view: View) {
         _binding = FragmentAnalyticsBinding.bind(view)
         binding.analyticsDateSelectorCard.setOnClickListener { viewModel.onDateRangeSelectorClick() }
-        binding.analyticsOrdersCard.onSeeReportClickListener = { url -> viewModel.onSeeReport(url, ReportCard.Orders) }
-        binding.analyticsRevenueCard.onSeeReportClickListener = { url ->
-            viewModel.onSeeReport(url, ReportCard.Revenue)
+        val cardsAdapter = AnalyticsHubCardsAdapter().apply {
+            onSeeReport = viewModel::onSeeReport
         }
-        binding.analyticsProductsCard.onSeeReportClickListener = { url ->
-            viewModel.onSeeReport(url, ReportCard.Products)
+        binding.cards.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = cardsAdapter
+            isNestedScrollingEnabled = false
+            addItemDecoration(MarginTopItemDecoration(R.dimen.major_100, requireContext()))
         }
     }
 
@@ -136,53 +145,18 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         binding.analyticsDateSelectorCard.updatePreviousRange(viewState.analyticsDateRangeSelectorState.previousRange)
         binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsDateSelectorCard.updateLastUpdateTimestamp(viewState.lastUpdateTimestamp)
-        viewState.cards
-            .run { this as? AnalyticsHubCardViewState.CardsState }
-            ?.cardsState?.map {
-                when (it.key) {
-                    AnalyticsCards.Revenue -> {
-                        val state = it.value as AnalyticsHubInformationViewState
-                        binding.analyticsRevenueCard.updateInformation(state)
-                    }
-
-                    AnalyticsCards.Orders -> {
-                        val state = it.value as AnalyticsHubInformationViewState
-                        binding.analyticsOrdersCard.updateInformation(state)
-                    }
-
-                    AnalyticsCards.Products -> {
-                        val state = it.value as AnalyticsHubListViewState
-                        binding.analyticsProductsCard.updateInformation(state)
-                    }
-
-                    AnalyticsCards.Session -> {
-                        val state = it.value as AnalyticsHubInformationViewState
-                        binding.analyticsVisitorsCard.updateInformation(state)
-                    }
-                }
+        when (viewState.cards) {
+            is AnalyticsHubCardViewState.CardsState -> {
+                (binding.cards.adapter as AnalyticsHubCardsAdapter).cardList = viewState.cards.cardsState
             }
+
+            else -> {}
+        }
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
         displayFeedbackBanner(viewState.showFeedBackBanner)
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.viewState.value.analyticsDateRangeSelectorState
-
-    private fun showDateRangePicker(fromMillis: Long, toMillis: Long) {
-        val datePicker =
-            MaterialDatePicker.Builder.dateRangePicker()
-                .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
-                .setSelection(androidx.core.util.Pair(fromMillis, toMillis))
-                .setCalendarConstraints(
-                    CalendarConstraints.Builder()
-                        .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
-                        .build()
-                )
-                .build()
-        datePicker.show(parentFragmentManager, DATE_PICKER_FRAGMENT_TAG)
-        datePicker.addOnPositiveButtonClickListener {
-            viewModel.onCustomRangeSelected(Date(it?.first ?: 0L), Date(it.second ?: 0L))
-        }
-    }
 
     private fun displayFeedbackBanner(isVisible: Boolean) {
         binding.analyticsHubFeedbackBanner.isVisible = isVisible
@@ -208,8 +182,7 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
 
                 override fun onMenuItemSelected(item: MenuItem): Boolean {
                     if (item.itemId == R.id.menu_settings) {
-                        findNavController()
-                            .navigateSafely(AnalyticsHubFragmentDirections.actionAnalyticsToAnalyticsSettings())
+                        viewModel.onOpenSettings()
                         return true
                     }
 

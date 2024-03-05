@@ -14,7 +14,6 @@ enum class FeatureFlag {
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     BLAZE_I3,
-    EXPANDED_ANALYTIC_HUB_M2,
     CUSTOM_RANGE_ANALYTICS,
     CONNECTIVITY_TOOL;
 
@@ -30,7 +29,6 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
             BLAZE_I3,
-            EXPANDED_ANALYTIC_HUB_M2,
             CUSTOM_RANGE_ANALYTICS,
             CONNECTIVITY_TOOL-> PackageUtils.isDebugBuild()
 

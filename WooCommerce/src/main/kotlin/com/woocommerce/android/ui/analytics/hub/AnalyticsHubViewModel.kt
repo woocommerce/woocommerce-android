@@ -17,15 +17,13 @@ import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsCardViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.DataViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.HiddenState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
@@ -62,10 +60,9 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState as ProductsViewState
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.HiddenState as ProductsHiddenDataState
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ProductsViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(
@@ -156,47 +153,31 @@ class AnalyticsHubViewModel @Inject constructor(
     private fun observeConfigurationChanges() {
         launch {
             observeAnalyticsCardsConfiguration().collect { configuration ->
-                val cardsState = mutableMapOf<AnalyticsCards, AnalyticsCardViewState>()
                 cancelCardsObservation()
-                configuration.forEach { cardConfiguration ->
-                    when (cardConfiguration.card) {
-                        AnalyticsCards.Revenue -> {
-                            if (cardConfiguration.isVisible) {
-                                cardsState[AnalyticsCards.Revenue] = LoadingViewState
+                val cardsState =
+                    configuration.filter { cardConfiguration -> cardConfiguration.isVisible }.map { cardConfiguration ->
+                        when (cardConfiguration.card) {
+                            AnalyticsCards.Revenue -> {
                                 observeRevenueChanges()
-                            } else {
-                                cardsState[AnalyticsCards.Revenue] = HiddenState
+                                LoadingViewState(cardConfiguration.card)
                             }
-                        }
 
-                        AnalyticsCards.Orders -> {
-                            if (cardConfiguration.isVisible) {
-                                cardsState[AnalyticsCards.Orders] = LoadingViewState
+                            AnalyticsCards.Orders -> {
                                 observeOrdersStatChanges()
-                            } else {
-                                cardsState[AnalyticsCards.Orders] = HiddenState
+                                LoadingViewState(cardConfiguration.card)
                             }
-                        }
 
-                        AnalyticsCards.Products -> {
-                            if (cardConfiguration.isVisible) {
-                                cardsState[AnalyticsCards.Products] = LoadingProductsViewState
+                            AnalyticsCards.Products -> {
                                 observeProductsChanges()
-                            } else {
-                                cardsState[AnalyticsCards.Products] = ProductsHiddenDataState
+                                LoadingProductsViewState(cardConfiguration.card)
                             }
-                        }
 
-                        AnalyticsCards.Session -> {
-                            if (cardConfiguration.isVisible) {
-                                cardsState[AnalyticsCards.Session] = LoadingViewState
+                            AnalyticsCards.Session -> {
                                 observeSessionChanges()
-                            } else {
-                                cardsState[AnalyticsCards.Session] = HiddenState
+                                LoadingViewState(cardConfiguration.card)
                             }
                         }
                     }
-                }
                 mutableState.update { viewState ->
                     viewState.copy(cards = AnalyticsHubCardViewState.CardsState(cardsState))
                 }
@@ -301,11 +282,11 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is OrdersState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_orders_no_data)
-                    updateCardStatus(AnalyticsCards.Orders, NoDataState(message))
+                    updateCardStatus(AnalyticsCards.Orders, NoDataState(AnalyticsCards.Orders, message))
                 }
 
                 is OrdersState.Loading -> {
-                    updateCardStatus(AnalyticsCards.Orders, LoadingViewState)
+                    updateCardStatus(AnalyticsCards.Orders, LoadingViewState(AnalyticsCards.Orders))
                 }
             }
         }
@@ -324,11 +305,11 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is SessionState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_session_no_data)
-                    updateCardStatus(AnalyticsCards.Session, NoDataState(message))
+                    updateCardStatus(AnalyticsCards.Session, NoDataState(AnalyticsCards.Session, message))
                 }
 
                 is SessionState.Loading -> {
-                    updateCardStatus(AnalyticsCards.Session, LoadingViewState)
+                    updateCardStatus(AnalyticsCards.Session, LoadingViewState(AnalyticsCards.Session))
                 }
             }
         }
@@ -347,11 +328,11 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is ProductsState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_products_no_data)
-                    updateCardStatus(AnalyticsCards.Products, ProductsNoDataState(message))
+                    updateCardStatus(AnalyticsCards.Products, ProductsNoDataState(AnalyticsCards.Products, message))
                 }
 
                 is ProductsState.Loading -> {
-                    updateCardStatus(AnalyticsCards.Products, LoadingProductsViewState)
+                    updateCardStatus(AnalyticsCards.Products, LoadingProductsViewState(AnalyticsCards.Products))
                 }
             }
         }
@@ -370,11 +351,11 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is RevenueState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_revenue_no_data)
-                    updateCardStatus(AnalyticsCards.Revenue, NoDataState(message))
+                    updateCardStatus(AnalyticsCards.Revenue, NoDataState(AnalyticsCards.Revenue, message))
                 }
 
                 is RevenueState.Loading -> {
-                    updateCardStatus(AnalyticsCards.Revenue, LoadingViewState)
+                    updateCardStatus(AnalyticsCards.Revenue, LoadingViewState(AnalyticsCards.Revenue))
                 }
             }
         }
@@ -384,14 +365,16 @@ class AnalyticsHubViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun updateCardStatus(card: AnalyticsCards, state: AnalyticsCardViewState) {
+    private fun updateCardStatus(card: AnalyticsCards, newState: AnalyticsCardViewState) {
         val cardsInformation = mutableState.value.cards
-        if (
-            cardsInformation is AnalyticsHubCardViewState.CardsState &&
-            cardsInformation.cardsState.containsKey(card)
-        ) {
-            val updatedCardState = cardsInformation.cardsState.toMutableMap()
-            updatedCardState[card] = state
+        if (cardsInformation is AnalyticsHubCardViewState.CardsState) {
+            val updatedCardState = cardsInformation.cardsState.toMutableList().map { state ->
+                if (state.card == card) {
+                    newState
+                } else {
+                    state
+                }
+            }
             val updatedInfo = cardsInformation.copy(cardsState = updatedCardState)
             mutableState.update { viewState ->
                 viewState.copy(cards = updatedInfo)
@@ -422,6 +405,7 @@ class AnalyticsHubViewModel @Inject constructor(
     private fun buildSessionViewState(
         stats: SessionStat
     ) = DataViewState(
+        card = AnalyticsCards.Session,
         title = resourceProvider.getString(R.string.analytics_session_card_title),
         leftSection = AnalyticsHubInformationSectionViewState(
             resourceProvider.getString(R.string.analytics_visitors_subtitle),
@@ -440,6 +424,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun buildRevenueDataViewState(revenueStat: RevenueStat) =
         DataViewState(
+            card = AnalyticsCards.Revenue,
             title = resourceProvider.getString(R.string.analytics_revenue_card_title),
             leftSection = AnalyticsHubInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_sales_title),
@@ -461,6 +446,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private fun buildOrdersDataViewState(ordersStats: OrdersStat) =
         DataViewState(
+            card = AnalyticsCards.Orders,
             title = resourceProvider.getString(R.string.analytics_orders_card_title),
             leftSection = AnalyticsHubInformationSectionViewState(
                 resourceProvider.getString(R.string.analytics_total_orders_title),
@@ -493,6 +479,7 @@ class AnalyticsHubViewModel @Inject constructor(
         val delta = productsStat.itemsSoldDelta
         val products = productsStat.products
         return ProductsViewState.DataViewState(
+            card = AnalyticsCards.Products,
             title = resourceProvider.getString(R.string.analytics_products_card_title),
             subTitle = resourceProvider.getString(R.string.analytics_products_list_items_sold),
             subTitleValue = itemsSold.toString(),
@@ -575,6 +562,20 @@ class AnalyticsHubViewModel @Inject constructor(
         productObservationJob?.cancel()
         sessionObservationJob?.cancel()
     }
+
+    fun onOpenSettings() {
+        tracker.track(AnalyticsEvent.ANALYTICS_HUB_SETTINGS_OPENED)
+        triggerEvent(AnalyticsViewEvent.OpenSettings)
+    }
 }
 
 enum class ReportCard { Revenue, Orders, Products }
+
+fun AnalyticsCards.toReportCard(): ReportCard? {
+    return when (this) {
+        AnalyticsCards.Revenue -> ReportCard.Revenue
+        AnalyticsCards.Orders -> ReportCard.Orders
+        AnalyticsCards.Products -> ReportCard.Products
+        else -> null
+    }
+}

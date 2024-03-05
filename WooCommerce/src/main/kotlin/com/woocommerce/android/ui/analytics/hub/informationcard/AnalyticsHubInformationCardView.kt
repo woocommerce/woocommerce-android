@@ -7,13 +7,15 @@ import android.view.View
 import com.google.android.material.card.MaterialCardView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.AnalyticsInformationCardViewBinding
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.DataViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.HiddenState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.LoadingViewState
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.ReportCard
+import com.woocommerce.android.ui.analytics.hub.toReportCard
 import com.woocommerce.android.widgets.SkeletonView
 
-typealias SeeReportClickListener = (url: String) -> Unit
+typealias SeeReportClickListener = (url: String, card: ReportCard) -> Unit
 
 class AnalyticsHubInformationCardView @JvmOverloads constructor(
     ctx: Context,
@@ -26,14 +28,10 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
     var onSeeReportClickListener: SeeReportClickListener? = null
 
     internal fun updateInformation(viewState: AnalyticsHubInformationViewState) {
-        visibility = if (viewState is HiddenState) View.GONE else View.VISIBLE
         when (viewState) {
             is LoadingViewState -> setSkeleton()
             is DataViewState -> setDataViewState(viewState)
             is NoDataState -> setNoDataViewState(viewState)
-            is HiddenState -> {
-                visibility = View.GONE
-            }
         }
     }
 
@@ -58,7 +56,10 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
         if (viewState.reportUrl != null) {
             binding.reportGroup.visibility = VISIBLE
             binding.reportText.setOnClickListener {
-                onSeeReportClickListener?.let { it(viewState.reportUrl) }
+                onSeeReportClickListener?.let {
+                    val card = viewState.card.toReportCard()
+                    if (card != null) it(viewState.reportUrl, card)
+                }
             }
         } else {
             binding.reportGroup.visibility = GONE

@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.analytics.settings
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
@@ -27,6 +30,7 @@ import kotlin.test.assertEquals
 class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
     private val saveAnalyticsCardsConfiguration: SaveAnalyticsCardsConfiguration = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
     private val savedState: SavedStateHandle = SavedStateHandle()
 
     private lateinit var sut: AnalyticsHubSettingsViewModel
@@ -42,6 +46,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
         sut = AnalyticsHubSettingsViewModel(
             observeAnalyticsCardsConfiguration = observeAnalyticsCardsConfiguration,
             saveAnalyticsCardsConfiguration = saveAnalyticsCardsConfiguration,
+            tracker = tracker,
             savedState = savedState
         )
     }
@@ -238,4 +243,30 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
         assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
         assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
     }
+
+    @Test
+    fun `when the save button is pressed, then analytics save event is triggered with the expected params`() =
+        testBlocking {
+            val configuration = listOf(
+                AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
+                AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
+                AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
+            )
+
+            val expectedEnableCards = configuration.filter { it.isVisible }.map { it.card.name.lowercase() }
+            val expectedDisabledCards = configuration.filter { it.isVisible.not() }.map { it.card.name.lowercase() }
+
+            whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
+
+            advanceTimeBy(501)
+
+            sut.onSaveChanges()
+            verify(tracker).track(
+                AnalyticsEvent.ANALYTICS_HUB_SETTINGS_SAVED,
+                mapOf(
+                    AnalyticsTracker.KEY_ENABLED_CARDS to expectedEnableCards.joinToString(","),
+                    AnalyticsTracker.KEY_DISABLED_CARDS to expectedDisabledCards.joinToString(","),
+                )
+            )
+        }
 }
