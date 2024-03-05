@@ -980,6 +980,17 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `when update analytics settings is pressed then the event is tracked`() = testBlocking {
+        whenever(observeLastUpdate.invoke(any())).thenReturn(flowOf())
+        configureSuccessfulStatsResponse()
+
+        sut = givenAViewModel()
+
+        sut.onOpenSettings()
+        verify(tracker).track(AnalyticsEvent.ANALYTICS_HUB_SETTINGS_OPENED)
+    }
+
     private fun givenAResourceProvider(): ResourceProvider = mock {
         on { getString(any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { invMock -> invMock.arguments[0].toString() }

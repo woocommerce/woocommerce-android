@@ -562,6 +562,11 @@ class AnalyticsHubViewModel @Inject constructor(
         productObservationJob?.cancel()
         sessionObservationJob?.cancel()
     }
+
+    fun onOpenSettings() {
+        tracker.track(AnalyticsEvent.ANALYTICS_HUB_SETTINGS_OPENED)
+        triggerEvent(AnalyticsViewEvent.OpenSettings)
+    }
 }
 
 enum class ReportCard { Revenue, Orders, Products }
