@@ -38,6 +38,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.isDisplaySmallerThan720
 import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -66,6 +67,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -292,7 +294,7 @@ class OrderListFragment :
     }
 
     private fun adjustLayoutForTablet() {
-        val isSmallTablet = !resources.getBoolean(R.bool.is_at_least_720sw)
+        val isSmallTablet = requireContext().isDisplaySmallerThan720
         val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
         if (isSmallTablet && isPortrait) {
@@ -943,13 +945,15 @@ class OrderListFragment :
     }
 
     private fun displayTimeoutErrorCard(show: Boolean) {
-        displayErrorTroubleshootingCard(
-            show = show,
-            title = getString(R.string.orderlist_timeout_error_title),
-            message = getString(R.string.orderlist_timeout_error_message),
-            troubleshootingClick = { openConnectivityTool() },
-            supportContactClick = { openSupportRequestScreen() }
-        )
+        if (FeatureFlag.CONNECTIVITY_TOOL.isEnabled()) {
+            displayErrorTroubleshootingCard(
+                show = show,
+                title = getString(R.string.orderlist_timeout_error_title),
+                message = getString(R.string.orderlist_timeout_error_message),
+                troubleshootingClick = { openConnectivityTool() },
+                supportContactClick = { openSupportRequestScreen() }
+            )
+        }
     }
 
     private fun displayErrorTroubleshootingCard(

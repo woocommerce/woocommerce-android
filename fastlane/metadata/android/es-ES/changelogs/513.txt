@@ -1,2 +1,0 @@
-17.4:
-Nos alegra contarte que ya ofrecemos compatibilidad para otros proveedores de Passkey. Esta actualización está diseñada para que los usuarios de WordPress.com gestionen la seguridad de sus cuentas de forma más versátil y fácil. Despídete del tedio de las contraseñas y prepárate para una experiencia de acceso segura más amena.

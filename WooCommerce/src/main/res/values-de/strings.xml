@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 09:54:04+0000
+Translation-Revision-Date: 2024-02-27 17:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="order_creation_payment_shipping_tax_label">Versandsteuer</string>
+    <string name="customize_analytics">Analysen anpassen</string>
     <string name="blaze_campaign_creation_error">Etwas stimmt nicht.\nDeine Kampagne konnte nicht erstellt werden.</string>
     <string name="blaze_campaign_creation_error_media_fetch">Kampagnenbilddetails konnten nicht abgerufen werden</string>
     <string name="blaze_campaign_creation_error_media_upload">Das Kampagnenbild konnte nicht hochgeladen werden.</string>
@@ -38,7 +40,6 @@ Language: de
     <string name="blaze_campaign_preview_missing_image_dialog_text">Bitte füge ein Bild für die Blaze-Kampagne hinzu</string>
     <string name="drag_handle">Ziehpunkt</string>
     <string name="analytic_cards">Analysekarten</string>
-    <string name="manage_analytics">Analysen verwalten</string>
     <string name="see_report">Bericht anzeigen</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Die Startseite der Website</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">Die Produkt-URL</string>

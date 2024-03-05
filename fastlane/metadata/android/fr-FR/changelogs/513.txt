@@ -1,2 +1,0 @@
-17.4 :
-Nous sommes ravis de proposer la prise en charge des fournisseurs tiers de clés d’accès. Grâce à cette mise à jour, les utilisateurs de WordPress.com peuvent gérer la sécurité de leur compte plus commodément et avec une plus grande fluidité. Préparez-vous à dire adieu aux fastidieux mots de passe et à découvrir une connexion fluide et sécurisée !

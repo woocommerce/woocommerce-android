@@ -5,13 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/productDetailToolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name" />
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/productDetail_root"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fitsSystemWindows="false"
         android:focusableInTouchMode="true"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productDetailToolbar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/productDetail_addMoreContainer"
@@ -23,18 +34,6 @@
             android:layout_height="wrap_content"
             android:fitsSystemWindows="false"
             app:elevation="@dimen/minor_00">
-
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/productDetailToolbar"
-                style="@style/Widget.Woo.Toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/toolbar_height"
-                android:elevation="@dimen/appbar_elevation"
-                app:layout_collapseMode="pin"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:title="@string/app_name" />
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"

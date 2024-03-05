@@ -7,13 +7,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
 import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.filters.OrderFilterCategoriesFragment.Companion.KEY_UPDATED_FILTER_OPTIONS
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterOptionAdapter
@@ -132,23 +131,8 @@ class OrderFilterOptionsFragment :
             startDateMillis > 0 -> endDateMillis
             else -> System.currentTimeMillis()
         }
-        showDateRangePicker(selectedStartMillis, selectedEndMillis)
-    }
-
-    private fun showDateRangePicker(selectedStartMillis: Long, selectedEndMillis: Long) {
-        val datePicker =
-            MaterialDatePicker.Builder.dateRangePicker()
-                .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
-                .setSelection(androidx.core.util.Pair(selectedStartMillis, selectedEndMillis))
-                .setCalendarConstraints(
-                    CalendarConstraints.Builder()
-                        .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
-                        .build()
-                )
-                .build()
-        datePicker.show(parentFragmentManager, DATE_PICKER_FRAGMENT_TAG)
-        datePicker.addOnPositiveButtonClickListener {
-            viewModel.onCustomDateRangeChanged(it.first, it.second)
+        showDateRangePicker(selectedStartMillis, selectedEndMillis) { start, end ->
+            viewModel.onCustomDateRangeChanged(start, end)
         }
     }
 

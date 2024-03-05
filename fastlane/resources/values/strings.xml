@@ -36,6 +36,7 @@
     <string name="products_total">Products total</string>
     <string name="discount">Discount</string>
     <string name="details">Details</string>
+    <string name="show_details">Show Details</string>
     <string name="hide_details">Hide Details</string>
     <string name="retry">Retry</string>
     <string name="undo">Undo</string>
@@ -483,6 +484,8 @@
     <string name="orderlist_parsing_error_title">We couldn\'t load your data.</string>
     <string name="orderlist_parsing_error_message">This could be related to a conflict with a plugin. Please try again later or reach out to us and we\'ll be happy to assist you!</string>
     <string name="error_troubleshooting">Troubleshooting</string>
+    <string name="orderlist_timeout_error_title">Your site is taking a long time to respond</string>
+    <string name="orderlist_timeout_error_message">Please try again later or reach out to us and we\'ll be happy to assist you</string>
 
     <!--
          Simple Payments
@@ -644,6 +647,8 @@
     <string name="order_creation_collect_payment_button">Collect Payment</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
     <string name="order_creation_payment_shipping_tax_label">Shipping Tax</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
+    <string name="customer_picker_guest">Guest</string>
 
     <!--
          Barcode Scanning
@@ -723,6 +728,9 @@
     <string name="orderfilters_default_filter_value">All</string>
     <string name="orderfilters_order_status_filter">Order Status</string>
     <string name="orderfilters_date_range_filter">Date Range</string>
+    <string name="orderfilters_product_filter">Product</string>
+    <string name="orderfilters_customer_filter">Customer</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">Id: %d</string>
     <string name="orderfilters_filter_option_item_selected">Selected filter option</string>
     <string name="orderfilters_filter_order_status_options_title">Order Status</string>
     <string name="orderfilters_filter_date_range_options_title">Date Range</string>
@@ -758,6 +766,8 @@
     <string name="orderdetail_call_or_message_contentdesc">Call or message customer</string>
     <string name="orderdetail_call_customer">Call</string>
     <string name="orderdetail_message_customer">Message</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Contact using WhatsApp</string>
+    <string name="orderdetail_message_customer_using_telegram">Contact using Telegram</string>
     <string name="orderdetail_product_lineitem_qty_and_price">%1$s x %2$s</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
     <string name="orderdetail_product_lineitem_tax">Tax:</string>
@@ -883,6 +893,21 @@
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
     <string name="order_detail_payment_header">PAYMENT TOTALS</string>
     <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
+    <string name="order_detail_attribution_header">Order attribution</string>
+    <string name="order_detail_attribution_origin">Origin</string>
+    <string name="order_detail_attribution_organic_origin">Organic: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Referral: %1$s</string>
+    <string name="order_detail_attribution_utm_origin">Source: %1$s</string>
+    <string name="order_detail_attribution_direct_origin">Direct</string>
+    <string name="order_detail_attribution_admin_origin">Web admin</string>
+    <string name="order_detail_attribution_mobile_origin">Mobile App</string>
+    <string name="order_detail_attribution_unknown_origin">Unknown</string>
+    <string name="order_detail_attribution_source_type">Source type</string>
+    <string name="order_detail_attribution_source">Source</string>
+    <string name="order_detail_attribution_medium">Medium</string>
+    <string name="order_detail_attribution_campaign">Medium</string>
+    <string name="order_detail_attribution_device_type">Device type</string>
+    <string name="order_detail_attribution_session_page_views">Session page views</string>
 
     <!--
         Shipping label Refunds
@@ -3912,7 +3937,8 @@
     <string name="blaze_campaign_creation_product_selector_title">Ready to promote</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Promote</string>
     <string name="blaze_campaign_creation_location_search_message">Start typing country, state or city to see available options</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">No location found.\nPlease try again.</string>
+    <string name="blaze_campaign_creation_location_search_no_results_message">No location found.\nPlease try again.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Searching failed.\nPlease try again</string>
 
     <!--
     Blaze edit ad destination
