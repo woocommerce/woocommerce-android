@@ -14,6 +14,8 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
+import org.wordpress.android.fluxc.store.WCOrderStore.OrderError
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
@@ -35,7 +37,7 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
         whenever(orderStore.fetchHasOrders(
             site = selectedSite.get(),
             status = null
-        )).thenReturn(WCOrderStore.HasOrdersResult.Success(hasOrders = true))
+        )).thenReturn(HasOrdersResult.Success(hasOrders = true))
 
         // When
         sut.invoke().onEach {
@@ -44,5 +46,23 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(InProgress, Success))
+    }
+
+    @Test
+    fun `when fetchHasOrders returns failure then emit Failure`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<OrderConnectivityToolViewModel.ConnectivityTestStatus>()
+        whenever(orderStore.fetchHasOrders(
+            site = selectedSite.get(),
+            status = null
+        )).thenReturn(HasOrdersResult.Failure(OrderError()))
+
+        // When
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure))
     }
 }
