@@ -71,7 +71,7 @@ class AIProductDescriptionDialogFragment : DialogFragment() {
         if (isTabletLandscape()) {
             requireDialog().window!!.setLayout(
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
+                ViewGroup.LayoutParams.WRAP_CONTENT
             )
         }
     }
