@@ -5,7 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.NotStarted
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionTestUseCase
+import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionTestUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersTestUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionTestUseCase
@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrderConnectivityToolViewModel @Inject constructor(
-    private val internetConnectionTest: InternetConnectionTestUseCase,
+    private val internetConnectionCheck: InternetConnectionCheckUseCase,
     private val wordPressConnectionTest: WordPressConnectionTestUseCase,
     private val storeConnectionTest: StoreConnectionTestUseCase,
     private val storeOrdersTest: StoreOrdersTestUseCase,
@@ -34,7 +34,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     fun startConnectionTests() {
         launch {
-            internetConnectionTest().onEach {
+            internetConnectionCheck().onEach {
                 _viewState.value = _viewState.value.copy(internetConnectionTestStatus = it)
             }.launchIn(viewModelScope)
 

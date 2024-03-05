@@ -2,10 +2,9 @@ package com.woocommerce.android.ui.orders.connectivitytool
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
-import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionTestUseCase
+import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionTestUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersTestUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionTestUseCase
@@ -21,7 +20,7 @@ import org.mockito.kotlin.whenever
 @OptIn(ExperimentalCoroutinesApi::class)
 class OrderConnectivityToolViewModelTest : BaseUnitTest() {
     private lateinit var sut: OrderConnectivityToolViewModel
-    private lateinit var internetConnectionTest: InternetConnectionTestUseCase
+    private lateinit var internetConnectionTest: InternetConnectionCheckUseCase
     private lateinit var wordPressConnectionTest: WordPressConnectionTestUseCase
     private lateinit var storeConnectionTest: StoreConnectionTestUseCase
     private lateinit var storeOrdersTest: StoreOrdersTestUseCase
@@ -37,7 +36,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         whenever(storeConnectionTest()).thenReturn(flowOf())
         whenever(storeOrdersTest()).thenReturn(flowOf())
         sut = OrderConnectivityToolViewModel(
-            internetConnectionTest = internetConnectionTest,
+            internetConnectionCheck = internetConnectionTest,
             wordPressConnectionTest = wordPressConnectionTest,
             storeConnectionTest = storeConnectionTest,
             storeOrdersTest = storeOrdersTest,

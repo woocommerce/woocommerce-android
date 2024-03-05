@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class InternetConnectionTestUseCase @Inject constructor(
+class InternetConnectionCheckUseCase @Inject constructor(
     private val networkStatus: NetworkStatus
 ) {
     operator fun invoke(): Flow<ConnectivityTestStatus> = flow {
