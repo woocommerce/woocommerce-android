@@ -59,16 +59,49 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when wordPressConnectionTest use case starts, then update ViewState as expected`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        whenever(wordPressConnectionTest()).thenReturn(flowOf(Success))
+        sut.viewState.observeForever {
+            stateEvents.add(it.wordpressConnectionTestStatus)
+        }
 
+        // When
+        sut.startConnectionTests()
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
     }
 
     @Test
     fun `when storeConnectionTest use case starts, then update ViewState as expected`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        whenever(storeConnectionTest()).thenReturn(flowOf(Success))
+        sut.viewState.observeForever {
+            stateEvents.add(it.storeConnectionTestStatus)
+        }
 
+        // When
+        sut.startConnectionTests()
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
     }
 
     @Test
     fun `when storeOrdersTest use case starts, then update ViewState as expected`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        whenever(storeOrdersTest()).thenReturn(flowOf(Success))
+        sut.viewState.observeForever {
+            stateEvents.add(it.storeOrdersTestStatus)
+        }
 
+        // When
+        sut.startConnectionTests()
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
     }
 }
