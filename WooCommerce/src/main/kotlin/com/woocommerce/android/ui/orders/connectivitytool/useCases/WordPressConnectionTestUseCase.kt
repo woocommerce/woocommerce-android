@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
 import com.woocommerce.android.util.BuildConfigWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -12,12 +15,12 @@ class WordPressConnectionTestUseCase @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper
 ) {
     operator fun invoke(): Flow<ConnectivityTestStatus> = flow {
-        emit(ConnectivityTestStatus.InProgress)
+        emit(InProgress)
         whatsNewStore.fetchRemoteAnnouncements(
             versionName = buildConfigWrapper.versionName,
             appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
         ).fetchError?.let {
-            emit(ConnectivityTestStatus.Failure)
-        } ?: emit(ConnectivityTestStatus.Success)
+            emit(Failure)
+        } ?: emit(Success)
     }
 }
