@@ -208,9 +208,6 @@
             app:exitAnim="@null"
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out">
-            <argument
-                android:name="selectedProductIds"
-                app:argType="long[]"/>
         </action>
     </fragment>
     <dialog
