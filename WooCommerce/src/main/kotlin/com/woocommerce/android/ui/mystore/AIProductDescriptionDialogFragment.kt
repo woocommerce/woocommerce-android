@@ -23,7 +23,6 @@ import org.wordpress.android.util.DisplayUtils
 class AIProductDescriptionDialogFragment : DialogFragment() {
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
-        private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
 
     private val viewModel: AIProductDescriptionDialogViewModel by viewModels()
