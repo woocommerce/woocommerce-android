@@ -28,7 +28,6 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.MarginTopItemDecoration
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -59,9 +58,7 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         super.onViewCreated(view, savedInstanceState)
         bind(view)
         setupResultHandlers(viewModel)
-        if (FeatureFlag.EXPANDED_ANALYTIC_HUB_M2.isEnabled()) {
-            setupMenu()
-        }
+        setupMenu()
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.viewState.flowWithLifecycle(lifecycle).collect { newState -> handleStateChange(newState) }
