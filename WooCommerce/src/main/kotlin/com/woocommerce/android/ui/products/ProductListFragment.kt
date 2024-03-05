@@ -122,6 +122,9 @@ class ProductListFragment :
     override var twoPanesWereShownBeforeConfigChange: Boolean = false
     override val listFragment: Fragment
         get() = this
+
+    override val detailPaneContainerId: Int
+        get() = R.id.detail_nav_container
     override val navigation
         get() = TabletLayoutSetupHelper.Screen.Navigation(
             detailsNavGraphId = R.navigation.nav_graph_products,

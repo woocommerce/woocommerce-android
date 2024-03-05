@@ -13,9 +13,11 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
+import androidx.constraintlayout.widget.Guideline
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
@@ -67,6 +69,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.TabletLayoutSetupHelper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -82,12 +85,13 @@ class OrderListFragment :
     OnQueryTextListener,
     OnActionExpandListener,
     OrderListListener,
-    SwipeToComplete.OnSwipeListener {
+    SwipeToComplete.OnSwipeListener, TabletLayoutSetupHelper.Screen {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
         const val STATE_KEY_IS_SEARCHING = "is_searching"
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
+        private const val TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY = "non_root_navigation_in_detail_pane"
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
@@ -110,6 +114,28 @@ class OrderListFragment :
 
     private val viewModel: OrderListViewModel by viewModels()
     private var snackBar: Snackbar? = null
+
+    override val twoPaneLayoutGuideline: Guideline
+        get() = binding.twoPaneLayoutGuideline
+    override val listPaneContainer: View
+        get() = binding.listPaneContainer
+    override val detailPaneContainer: View
+        get() = binding.detailPaneContainer
+    override val navigation: TabletLayoutSetupHelper.Screen.Navigation
+        get() = TabletLayoutSetupHelper.Screen.Navigation(
+            detailsNavGraphId = R.navigation.nav_graph_orders,
+            detailsInitialBundle = null
+        )
+    override var twoPanesWereShownBeforeConfigChange: Boolean = false
+
+    override val listFragment: Fragment
+        get() = this
+
+    override val detailPaneContainerId: Int
+        get() = R.id.detailPaneContainer
+
+    @Inject
+    lateinit var tabletLayoutSetupHelper: TabletLayoutSetupHelper
 
     override fun onStop() {
         snackBar?.dismiss()
@@ -181,6 +207,12 @@ class OrderListFragment :
                 }
             }
         )
+
+        twoPanesWereShownBeforeConfigChange = savedInstanceState?.getBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            false
+        ) ?: false
+        tabletLayoutSetupHelper.onRootFragmentCreated(this)
 
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
@@ -347,6 +379,10 @@ class OrderListFragment :
             val currentDestinationId = navHostFragment?.navController?.currentDestination?.id
             outState.putInt(CURRENT_NAV_DESTINATION, currentDestinationId ?: -1)
         }
+        outState.putBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            _binding?.detailPaneContainer?.isVisible == true && _binding?.listPaneContainer?.isVisible == true
+        )
     }
 
     override fun onDestroyView() {

@@ -127,13 +127,13 @@ class TabletLayoutSetupHelper @Inject constructor(
         val navGraphId = screen.navigation.detailsNavGraphId
         val bundle = screen.navigation.detailsInitialBundle
 
-        val existingFragment = fragmentManager.findFragmentById(R.id.detail_nav_container)
+        val existingFragment = fragmentManager.findFragmentById(screen.detailPaneContainerId)
 
         navHostFragment = if (existingFragment == null) {
             NavHostFragment.create(navGraphId, bundle).apply {
                 fragmentManager
                     .beginTransaction()
-                    .replace(R.id.detail_nav_container, this)
+                    .replace(screen.detailPaneContainerId, this)
                     .commit()
             }
         } else {
@@ -194,6 +194,7 @@ class TabletLayoutSetupHelper @Inject constructor(
         val twoPaneLayoutGuideline: Guideline
         val listPaneContainer: View
         val detailPaneContainer: View
+        val detailPaneContainerId: Int
 
         val navigation: Navigation
 
