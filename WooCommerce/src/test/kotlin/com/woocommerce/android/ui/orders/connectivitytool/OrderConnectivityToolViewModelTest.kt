@@ -32,6 +32,10 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         wordPressConnectionTest = mock()
         storeConnectionTest = mock()
         storeOrdersTest = mock()
+        whenever(internetConnectionTest()).thenReturn(flowOf())
+        whenever(wordPressConnectionTest()).thenReturn(flowOf())
+        whenever(storeConnectionTest()).thenReturn(flowOf())
+        whenever(storeOrdersTest()).thenReturn(flowOf())
         sut = OrderConnectivityToolViewModel(
             internetConnectionTest = internetConnectionTest,
             wordPressConnectionTest = wordPressConnectionTest,
