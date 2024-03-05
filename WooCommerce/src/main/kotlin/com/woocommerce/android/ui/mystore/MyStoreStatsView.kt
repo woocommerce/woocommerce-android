@@ -38,6 +38,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.roundToTheNextPowerOfTen
@@ -121,6 +122,9 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val chartUserInteractions = MutableSharedFlow<Unit>()
     private lateinit var chartUserInteractionsJob: Job
 
+    val tabLayout = binding.statsTabLayout
+    val customRangeButton = binding.customRangeButton
+
     @Suppress("LongParameterList")
     fun initView(
         period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
@@ -137,6 +141,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         this.currencyFormatter = currencyFormatter
         this.usageTracksEventEmitter = usageTracksEventEmitter
         this.coroutineScope = lifecycleScope
+
+        customRangeButton.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
 
         initChart()
 
@@ -156,6 +162,15 @@ class MyStoreStatsView @JvmOverloads constructor(
             chartUserInteractions
                 .debounce(EVENT_EMITTER_INTERACTION_DEBOUNCE)
                 .collect { usageTracksEventEmitter.interacted() }
+        }
+
+        // Create tabs and add to appbar
+        StatsGranularity.entries.forEach { granularity ->
+            val tab = tabLayout.newTab().apply {
+                setText(getStringForGranularity(granularity))
+                tag = granularity
+            }
+            tabLayout.addTab(tab)
         }
     }
 
@@ -177,7 +192,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     fun showSkeleton(show: Boolean) {
         if (show) {
             skeletonView.show(
-                binding.myStoreStatsLinearLayout,
+                binding.statsContent,
                 R.layout.skeleton_dashboard_stats,
                 delayed = true
             )
