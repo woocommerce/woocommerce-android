@@ -26,7 +26,24 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: UpdateProductStockStatusViewModel
-    private lateinit var resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any(), any()) } doAnswer { invocation ->
+            val resourceId = invocation.arguments[0] as Int
+            val formatArg =
+                invocation.arguments[1] as Int
+            when (resourceId) {
+                R.string.product_update_stock_status_update_count -> {
+                    "Stock status will be updated for $formatArg products."
+                }
+
+                R.string.product_update_stock_status_ignored_count -> {
+                    "$formatArg products with managed stock quantity will be ignored."
+                }
+
+                else -> "Default String with $formatArg"
+            }
+        }
+    }
 
     @Test
     fun `given mixed stock statuses, when viewModel is initialized, then ui state reflects mixed status`() =
@@ -177,10 +194,6 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
             ProductStockStatusInfo(productId = 2L, stockStatus = ProductStockStatus.OutOfStock, manageStock = false)
         )
         mockFetchStockStatusesWithManageStock(stockStatusInfos)
-        val expectedMessage = "2 products will be updated."
-        whenever(resourceProvider.getString(R.string.product_update_stock_status_update_count, 2)).thenReturn(
-            expectedMessage
-        )
         setupViewModel(stockStatusInfos.map { it.productId })
 
         // When
@@ -188,6 +201,7 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         viewModel.viewState.observeForever { state = it }
 
         // Then
+        val expectedMessage = "Stock status will be updated for 2 products."
         assertThat(state?.statusMessage).isEqualTo(expectedMessage)
     }
 
@@ -199,19 +213,6 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
             ProductStockStatusInfo(productId = 2L, stockStatus = ProductStockStatus.OutOfStock, manageStock = true)
         )
         mockFetchStockStatusesWithManageStock(stockStatusInfos)
-        val expectedMessage = "1 product will be updated. 1 product will be ignored."
-        whenever(
-            resourceProvider.getString(
-                R.string.product_update_stock_status_update_count,
-                1
-            )
-        ).thenReturn("1 product will be updated.")
-        whenever(
-            resourceProvider.getString(
-                R.string.product_update_stock_status_ignored_count,
-                1
-            )
-        ).thenReturn("1 product will be ignored.")
         setupViewModel(stockStatusInfos.map { it.productId })
 
         // When
@@ -219,20 +220,12 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         viewModel.viewState.observeForever { state = it }
 
         // Then
+        val expectedMessage =
+            "Stock status will be updated for 1 product. 1 product with managed stock quantity will be ignored."
         assertThat(state?.statusMessage).isEqualTo(expectedMessage)
     }
 
     private fun setupViewModel(selectedProductIds: List<Long>) {
-        resourceProvider = mock {
-            on { getString(R.string.product_update_stock_status_update_count, any()) } doAnswer { invocation ->
-                val count = invocation.arguments[1] as Int
-                "$count products will be updated."
-            }
-            on { getString(R.string.product_update_stock_status_ignored_count, any()) } doAnswer { invocation ->
-                val count = invocation.arguments[1] as Int
-                "$count products will be ignored."
-            }
-        }
         viewModel = UpdateProductStockStatusViewModel(
             savedStateHandle = UpdateProductStockStatusFragmentArgs(
                 selectedProductIds = selectedProductIds.toLongArray()
