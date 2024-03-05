@@ -15,11 +15,11 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class AnalyticsSettingsDataStore @Inject constructor(
-    @DataStoreQualifier(DataStoreType.ANALYTICS) private val dataStore: DataStore<Preferences>,
+    @DataStoreQualifier(DataStoreType.ANALYTICS_CONFIGURATION) private val dataStore: DataStore<Preferences>,
     private val gson: Gson,
     private val selectedSite: SelectedSite
 ) {
-    private fun getCardsConfigurationKey() = "${selectedSite.getOrNull() ?: ""}AnalyticsCardsConfiguration"
+    private fun getCardsConfigurationKey() = "${selectedSite.getOrNull()?.siteId ?: ""}AnalyticsCardsConfiguration"
     private val configurationType = object : TypeToken<List<AnalyticCardConfiguration>>() {}.type
 
     fun observeCardsConfiguration(): Flow<List<AnalyticCardConfiguration>?> {
