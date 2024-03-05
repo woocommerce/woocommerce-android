@@ -68,12 +68,12 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
 
         verify(blazeCampaignsStore).fetchBlazeCampaigns(
             siteModel,
-            skip = 0
+            offset = 0
         )
     }
 
     @Test
-    fun `given one item was fetched, when loading more, then skip the first item and load next`() = testBlocking {
+    fun `given one item was fetched, when loading more, then offset the first item and load next`() = testBlocking {
         whenever(blazeCampaignsStore.fetchBlazeCampaigns(any(), any(), any(), any(), eq(null)))
             .thenReturn(BlazeCampaignsResult(BLAZE_CAMPAIGN_MODEL_1_OUT_OF_2_ITEMS))
         createViewModel()
@@ -83,7 +83,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
 
         verify(blazeCampaignsStore).fetchBlazeCampaigns(
             siteModel,
-            skip = 1
+            offset = 1
         )
     }
 
@@ -155,11 +155,11 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
     }
 
     private companion object {
-        const val CAMPAIGN_ID = 1234
+        const val CAMPAIGN_ID = "1234"
         const val TITLE = "title"
         const val IMAGE_URL = "imageUrl"
         const val CREATED_AT = "2023-06-02T00:00:00.000Z"
-        const val END_DATE = "2023-06-02T00:00:00.000Z"
+        const val DURATION_DAYS = 10
         const val UI_STATUS = "rejected"
         const val IMPRESSIONS = 0L
         const val CLICKS = 0L
@@ -171,8 +171,8 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             campaignId = CAMPAIGN_ID,
             title = TITLE,
             imageUrl = IMAGE_URL,
-            createdAt = BlazeCampaignsUtils.stringToDate(CREATED_AT),
-            endDate = BlazeCampaignsUtils.stringToDate(END_DATE),
+            startTime = BlazeCampaignsUtils.stringToDate(CREATED_AT),
+            durationInDays = DURATION_DAYS,
             uiStatus = UI_STATUS,
             impressions = IMPRESSIONS,
             clicks = CLICKS,
@@ -187,7 +187,7 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
         )
         val BLAZE_CAMPAIGN_MODEL_1_OUT_OF_2_ITEMS = EMPTY_BLAZE_CAMPAIGN_MODEL
             .copy(
-                campaigns = listOf(BLAZE_CAMPAIGN_MODEL.copy(campaignId = 1)),
+                campaigns = listOf(BLAZE_CAMPAIGN_MODEL.copy(campaignId = "1")),
                 totalItems = 2
             )
 
@@ -196,8 +196,8 @@ class BlazeCampaignListViewModelTest : BaseUnitTest() {
             campaignId = CAMPAIGN_ID,
             title = TITLE,
             imageUrl = IMAGE_URL,
-            createdAt = BlazeCampaignsUtils.stringToDate(CREATED_AT),
-            endDate = BlazeCampaignsUtils.stringToDate(END_DATE),
+            startTime = BlazeCampaignsUtils.stringToDate(CREATED_AT),
+            durationInDays = DURATION_DAYS,
             uiStatus = UI_STATUS,
             impressions = IMPRESSIONS,
             clicks = CLICKS,
