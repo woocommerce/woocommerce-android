@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
@@ -21,7 +22,8 @@ import javax.inject.Inject
 class UpdateProductStockStatusViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val productListRepository: ProductListRepository,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val resourceProvider: ResourceProvider,
 ) : ScopedViewModel(savedStateHandle) {
 
     companion object {
@@ -30,6 +32,30 @@ class UpdateProductStockStatusViewModel @Inject constructor(
             ProductStockStatus.OutOfStock,
             ProductStockStatus.OnBackorder
         )
+
+        private fun buildStatusMessage(
+            productsToUpdateCount: Int,
+            ignoredProductsCount: Int,
+            resourceProvider: ResourceProvider
+        ): String {
+            return buildString {
+                append(
+                    resourceProvider.getString(
+                        R.string.product_update_stock_status_update_count,
+                        productsToUpdateCount
+                    )
+                )
+                if (ignoredProductsCount > 0) {
+                    append(" ")
+                    append(
+                        resourceProvider.getString(
+                            R.string.product_update_stock_status_ignored_count,
+                            ignoredProductsCount
+                        )
+                    )
+                }
+            }
+        }
     }
 
     private val navArgs: UpdateProductStockStatusFragmentArgs by savedStateHandle.navArgs()
@@ -45,13 +71,13 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         loadProductStockStatuses(navArgs.selectedProductIds.toList())
     }
 
-    fun setCurrentStockStatus(newStatus: ProductStockStatus) {
+    fun onStockStatusSelected(newStatus: ProductStockStatus) {
         stockStatusUiState.update { currentState ->
             currentState.copy(currentProductStockStatus = newStatus)
         }
     }
 
-    fun updateStockStatusForProducts() {
+    fun onDoneButtonClicked() {
         analyticsTracker.track(AnalyticsEvent.PRODUCT_STOCK_STATUSES_UPDATE_DONE_TAPPED)
 
         viewModelScope.launch {
@@ -71,11 +97,13 @@ class UpdateProductStockStatusViewModel @Inject constructor(
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
                     triggerEvent(MultiLiveEvent.Event.ExitWithResult(UpdateStockStatusExitState.Success))
                 }
+
                 is UpdateStockStatusResult.Error -> {
                     val snackText = R.string.product_update_stock_status_error
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
                     triggerEvent(MultiLiveEvent.Event.ExitWithResult(UpdateStockStatusExitState.Error))
                 }
+
                 is UpdateStockStatusResult.IsManagedProducts -> {
                     val snackText = R.string.product_update_stock_status_managed_products
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
@@ -92,6 +120,8 @@ class UpdateProductStockStatusViewModel @Inject constructor(
             val productsToUpdateCount = stockStatusInfos.count { !it.manageStock }
             val ignoredProductsCount = stockStatusInfos.size - productsToUpdateCount
 
+            val statusMessage = buildStatusMessage(productsToUpdateCount, ignoredProductsCount, resourceProvider)
+
             val stockStatusState = if (distinctStatuses.size > 1) {
                 StockStatusState.Mixed
             } else {
@@ -100,8 +130,7 @@ class UpdateProductStockStatusViewModel @Inject constructor(
 
             stockStatusUiState.update {
                 it.copy(
-                    productsToUpdateCount = productsToUpdateCount,
-                    ignoredProductsCount = ignoredProductsCount,
+                    statusMessage = statusMessage,
                     currentStockStatusState = stockStatusState
                 )
             }
@@ -114,8 +143,7 @@ class UpdateProductStockStatusViewModel @Inject constructor(
 
     @Parcelize
     data class UpdateStockStatusUiState(
-        val productsToUpdateCount: Int = 0,
-        val ignoredProductsCount: Int = 0,
+        val statusMessage: String = "",
         val isProgressDialogVisible: Boolean = false,
         val currentProductStockStatus: ProductStockStatus = ProductStockStatus.InStock,
         val stockStockStatuses: List<ProductStockStatus> = AVAILABLE_STOCK_STATUSES,
@@ -149,4 +177,6 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         Error,
         NoChange
     }
+
+
 }

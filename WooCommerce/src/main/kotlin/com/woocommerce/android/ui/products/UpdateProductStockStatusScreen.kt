@@ -41,17 +41,16 @@ fun UpdateProductStockStatusScreen(viewModel: UpdateProductStockStatusViewModel)
 
     UpdateProductStockStatusScreen(
         currentStockStatusState = uiState.currentStockStatusState,
-        productsToUpdateCount = uiState.productsToUpdateCount,
-        ignoredProductsCount = uiState.ignoredProductsCount,
+        statusMessage = uiState.statusMessage,
         currentProductStockStatus = uiState.currentProductStockStatus,
         stockStatuses = uiState.stockStockStatuses,
         isProgressDialogVisible = uiState.isProgressDialogVisible,
         onStockStatusChanged = { newStatus ->
-            viewModel.setCurrentStockStatus(newStatus)
+            viewModel.onStockStatusSelected(newStatus)
         },
         onNavigationUpClicked = { viewModel.onBackPressed() },
         onUpdateClicked = {
-            viewModel.updateStockStatusForProducts()
+            viewModel.onDoneButtonClicked()
         }
     )
 }
@@ -59,8 +58,7 @@ fun UpdateProductStockStatusScreen(viewModel: UpdateProductStockStatusViewModel)
 @Composable
 private fun UpdateProductStockStatusScreen(
     currentStockStatusState: StockStatusState,
-    productsToUpdateCount: Int,
-    ignoredProductsCount: Int,
+    statusMessage: String,
     currentProductStockStatus: ProductStockStatus,
     stockStatuses: List<ProductStockStatus>,
     isProgressDialogVisible: Boolean,
@@ -71,7 +69,7 @@ private fun UpdateProductStockStatusScreen(
     val borderWidth = 1.dp
     val borderColor = colorResource(id = R.color.divider_color)
 
-    val statusMessage = when (currentStockStatusState) {
+    val currentStockStatusMessage = when (currentStockStatusState) {
         is Mixed ->
             stringResource(id = R.string.product_update_stock_status_current_status_mixed)
 
@@ -113,7 +111,7 @@ private fun UpdateProductStockStatusScreen(
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
 
             Text(
-                text = statusMessage,
+                text = currentStockStatusMessage,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(start = dimensionResource(id = R.dimen.major_75)),
@@ -126,23 +124,7 @@ private fun UpdateProductStockStatusScreen(
             Divider(color = borderColor, thickness = borderWidth)
 
             Text(
-                text = buildString {
-                    append(
-                        stringResource(
-                            id = R.string.product_update_stock_status_update_count,
-                            productsToUpdateCount
-                        )
-                    )
-                    if (ignoredProductsCount > 0) {
-                        append(" ")
-                        append(
-                            stringResource(
-                                id = R.string.product_update_stock_status_ignored_count,
-                                ignoredProductsCount
-                            )
-                        )
-                    }
-                },
+                text = statusMessage,
                 style = MaterialTheme.typography.subtitle2,
                 color = colorResource(id = R.color.color_on_surface_disabled),
                 modifier = Modifier
@@ -205,8 +187,7 @@ private fun UpdateProductStockStatusSingleStatusPreview() {
     WooThemeWithBackground {
         UpdateProductStockStatusScreen(
             currentStockStatusState = Common(ProductStockStatus.InStock),
-            productsToUpdateCount = 10,
-            ignoredProductsCount = 0,
+            statusMessage = "5 products will be updated.",
             currentProductStockStatus = ProductStockStatus.InStock,
             isProgressDialogVisible = false,
             stockStatuses = AVAILABLE_STOCK_STATUSES,
@@ -224,8 +205,7 @@ private fun UpdateProductStockStatusMixedStatusPreview() {
     WooThemeWithBackground {
         UpdateProductStockStatusScreen(
             currentStockStatusState = Mixed,
-            productsToUpdateCount = 10,
-            ignoredProductsCount = 0,
+            statusMessage = "5 products will be updated.",
             currentProductStockStatus = ProductStockStatus.InStock,
             stockStatuses = AVAILABLE_STOCK_STATUSES,
             isProgressDialogVisible = false,
@@ -243,8 +223,7 @@ private fun UpdateProductStockStatusIgnoredProductsPreview() {
     WooThemeWithBackground {
         UpdateProductStockStatusScreen(
             currentStockStatusState = Common(ProductStockStatus.OutOfStock),
-            productsToUpdateCount = 1,
-            ignoredProductsCount = 1,
+            statusMessage = "5 products will be updated.",
             currentProductStockStatus = ProductStockStatus.OutOfStock,
             isProgressDialogVisible = false,
             stockStatuses = AVAILABLE_STOCK_STATUSES,

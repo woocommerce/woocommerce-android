@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products
 
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.ProductStockStatusInfo
@@ -9,8 +10,11 @@ import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Upd
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusUiState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -22,22 +26,7 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: UpdateProductStockStatusViewModel
-
-    @Test
-    fun `given product ids,  when viewModel is initialized, then it loads product stock statuses`() = testBlocking {
-        // Given
-        val selectedProductIds = listOf(1L, 2L)
-        mockFetchStockStatuses(selectedProductIds, ProductStockStatus.InStock, false)
-
-        // When
-        setupViewModel(selectedProductIds)
-
-        var state: UpdateStockStatusUiState? = null
-        viewModel.viewState.observeForever { state = it }
-
-        // Then
-        assertThat(state?.productsToUpdateCount).isEqualTo(selectedProductIds.size)
-    }
+    private lateinit var resourceProvider: ResourceProvider
 
     @Test
     fun `given mixed stock statuses, when viewModel is initialized, then ui state reflects mixed status`() =
@@ -87,7 +76,7 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
             val newStockStatus = ProductStockStatus.OutOfStock
 
             // When
-            viewModel.setCurrentStockStatus(newStockStatus)
+            viewModel.onStockStatusSelected(newStockStatus)
 
             var state: UpdateStockStatusUiState? = null
             viewModel.viewState.observeForever { state = it }
@@ -105,7 +94,7 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
             setupViewModel(selectedProductIds)
 
             // When
-            viewModel.updateStockStatusForProducts()
+            viewModel.onDoneButtonClicked()
 
             // Then
             verify(analyticsTracker).track(AnalyticsEvent.PRODUCT_STOCK_STATUSES_UPDATE_DONE_TAPPED)
@@ -124,7 +113,7 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         viewModel.event.observeForever { event = it }
 
         // When
-        viewModel.updateStockStatusForProducts()
+        viewModel.onDoneButtonClicked()
 
         // Then
         assertThat(event).isInstanceOf(MultiLiveEvent.Event.ExitWithResult::class.java)
@@ -145,7 +134,7 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         viewModel.event.observeForever { event = it }
 
         // When
-        viewModel.updateStockStatusForProducts()
+        viewModel.onDoneButtonClicked()
 
         // Then
         assertThat(event).isInstanceOf(MultiLiveEvent.Event.ExitWithResult::class.java)
@@ -171,7 +160,7 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
             viewModel.event.observeForever { event = it }
 
             // When
-            viewModel.updateStockStatusForProducts()
+            viewModel.onDoneButtonClicked()
 
             // Then
             assertThat(event).isInstanceOf(MultiLiveEvent.Event.ExitWithResult::class.java)
@@ -181,13 +170,17 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when all products are eligible for update, correct products count is shown`() = testBlocking {
+    fun `when all products are eligible for update, correct status message is shown`() = testBlocking {
         // Given
         val stockStatusInfos = listOf(
             ProductStockStatusInfo(productId = 1L, stockStatus = ProductStockStatus.InStock, manageStock = false),
             ProductStockStatusInfo(productId = 2L, stockStatus = ProductStockStatus.OutOfStock, manageStock = false)
         )
         mockFetchStockStatusesWithManageStock(stockStatusInfos)
+        val expectedMessage = "2 products will be updated."
+        whenever(resourceProvider.getString(R.string.product_update_stock_status_update_count, 2)).thenReturn(
+            expectedMessage
+        )
         setupViewModel(stockStatusInfos.map { it.productId })
 
         // When
@@ -195,18 +188,30 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         viewModel.viewState.observeForever { state = it }
 
         // Then
-        assertThat(state?.productsToUpdateCount).isEqualTo(2)
-        assertThat(state?.ignoredProductsCount).isEqualTo(0)
+        assertThat(state?.statusMessage).isEqualTo(expectedMessage)
     }
 
     @Test
-    fun `when some products have managed stock, correct products count and ignored count are shown`() = testBlocking {
+    fun `when some products have managed stock, correct status message is shown`() = testBlocking {
         // Given
         val stockStatusInfos = listOf(
             ProductStockStatusInfo(productId = 1L, stockStatus = ProductStockStatus.InStock, manageStock = false),
             ProductStockStatusInfo(productId = 2L, stockStatus = ProductStockStatus.OutOfStock, manageStock = true)
         )
         mockFetchStockStatusesWithManageStock(stockStatusInfos)
+        val expectedMessage = "1 product will be updated. 1 product will be ignored."
+        whenever(
+            resourceProvider.getString(
+                R.string.product_update_stock_status_update_count,
+                1
+            )
+        ).thenReturn("1 product will be updated.")
+        whenever(
+            resourceProvider.getString(
+                R.string.product_update_stock_status_ignored_count,
+                1
+            )
+        ).thenReturn("1 product will be ignored.")
         setupViewModel(stockStatusInfos.map { it.productId })
 
         // When
@@ -214,17 +219,27 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         viewModel.viewState.observeForever { state = it }
 
         // Then
-        assertThat(state?.productsToUpdateCount).isEqualTo(1)
-        assertThat(state?.ignoredProductsCount).isEqualTo(1)
+        assertThat(state?.statusMessage).isEqualTo(expectedMessage)
     }
 
     private fun setupViewModel(selectedProductIds: List<Long>) {
+        resourceProvider = mock {
+            on { getString(R.string.product_update_stock_status_update_count, any()) } doAnswer { invocation ->
+                val count = invocation.arguments[1] as Int
+                "$count products will be updated."
+            }
+            on { getString(R.string.product_update_stock_status_ignored_count, any()) } doAnswer { invocation ->
+                val count = invocation.arguments[1] as Int
+                "$count products will be ignored."
+            }
+        }
         viewModel = UpdateProductStockStatusViewModel(
             savedStateHandle = UpdateProductStockStatusFragmentArgs(
                 selectedProductIds = selectedProductIds.toLongArray()
             ).toSavedStateHandle(),
             productListRepository = productListRepository,
-            analyticsTracker = analyticsTracker
+            analyticsTracker = analyticsTracker,
+            resourceProvider = resourceProvider
         )
     }
 
