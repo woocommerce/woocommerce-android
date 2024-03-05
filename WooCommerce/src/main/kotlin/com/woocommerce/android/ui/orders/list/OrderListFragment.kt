@@ -85,7 +85,8 @@ class OrderListFragment :
     OnQueryTextListener,
     OnActionExpandListener,
     OrderListListener,
-    SwipeToComplete.OnSwipeListener, TabletLayoutSetupHelper.Screen {
+    SwipeToComplete.OnSwipeListener,
+    TabletLayoutSetupHelper.Screen {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
