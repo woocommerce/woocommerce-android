@@ -111,6 +111,9 @@ class MyStoreViewModel @Inject constructor(
     private var _lastUpdateStats = MutableLiveData<Long?>()
     val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
 
+    private var _customDateRange = MutableLiveData<Pair<Date, Date>?>()
+    val customDateRange: LiveData<Pair<Date, Date>?> = _customDateRange
+
     private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
     val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
 
@@ -188,11 +191,19 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    fun onStatsGranularityChanged(granularity: StatsGranularity) {
+    fun onStatsGranularityChanged(granularity: StatsGranularity?) {
         usageTracksEventEmitter.interacted()
-        _activeStatsGranularity.update { granularity }
-        launch {
-            appPrefsWrapper.setActiveStatsGranularity(granularity.name)
+
+        if (granularity != null) {
+            _activeStatsGranularity.update { granularity }
+            launch {
+                appPrefsWrapper.setActiveStatsGranularity(granularity.name)
+            }
+        } else {
+            WooLog.i(
+                WooLog.T.DASHBOARD,
+                message = "Custom range selected: ${customDateRange.value?.first} - ${customDateRange.value?.second}"
+            )
         }
     }
 
@@ -430,7 +441,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(fromDate: Date, toDate: Date) {
-        WooLog.i(WooLog.T.DASHBOARD, "Custom range selected: $fromDate - $toDate")
+        _customDateRange.value = Pair(fromDate, toDate)
     }
 
     fun onAddCustomRangeClicked() {
