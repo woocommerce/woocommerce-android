@@ -199,6 +199,24 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         }
 
     @Test
+    fun `when one product is eligible for update, correct singular status message is shown`() = testBlocking {
+        // Given
+        val stockStatusInfos = listOf(
+            ProductStockStatusInfo(productId = 1L, stockStatus = ProductStockStatus.InStock, manageStock = false)
+        )
+        mockFetchStockStatusesWithManageStock(stockStatusInfos)
+        setupViewModel(stockStatusInfos.map { it.productId })
+
+        // When
+        var state: UpdateStockStatusUiState? = null
+        viewModel.viewState.observeForever { state = it }
+
+        // Then
+        val expectedMessage = "Stock status will be updated for 1 product."
+        assertThat(state?.statusMessage).isEqualTo(expectedMessage)
+    }
+
+    @Test
     fun `when all products are eligible for update, correct status message is shown`() = testBlocking {
         // Given
         val stockStatusInfos = listOf(
@@ -236,6 +254,28 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
             "Stock status will be updated for 1 product. 1 product with managed stock quantity will be ignored."
         assertThat(state?.statusMessage).isEqualTo(expectedMessage)
     }
+
+    @Test
+    fun `when one product is eligible for update and multiple are ignored, correct status messages are shown`() =
+        testBlocking {
+            // Given
+            val stockStatusInfos = listOf(
+                ProductStockStatusInfo(productId = 1L, stockStatus = ProductStockStatus.InStock, manageStock = false),
+                ProductStockStatusInfo(productId = 2L, stockStatus = ProductStockStatus.OutOfStock, manageStock = true),
+                ProductStockStatusInfo(productId = 3L, stockStatus = ProductStockStatus.OutOfStock, manageStock = true)
+            )
+            mockFetchStockStatusesWithManageStock(stockStatusInfos)
+            setupViewModel(stockStatusInfos.map { it.productId })
+
+            // When
+            var state: UpdateStockStatusUiState? = null
+            viewModel.viewState.observeForever { state = it }
+
+            // Then
+            val expectedMessage =
+                "Stock status will be updated for 1 product. 2 products with managed stock quantity will be ignored."
+            assertThat(state?.statusMessage).isEqualTo(expectedMessage)
+        }
 
     private fun setupViewModel(selectedProductIds: List<Long>) {
         viewModel = UpdateProductStockStatusViewModel(
