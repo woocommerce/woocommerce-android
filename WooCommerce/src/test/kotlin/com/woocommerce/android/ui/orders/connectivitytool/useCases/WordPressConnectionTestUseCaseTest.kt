@@ -4,12 +4,12 @@ import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolV
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.test.runBlockingTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -56,7 +56,22 @@ class WordPressConnectionTestUseCaseTest : BaseUnitTest() {
 
     @Test
     fun `when fetchRemoteAnnouncements returns no error then emit Success`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val response = WhatsNewStore.OnWhatsNewFetched()
+        whenever(buildConfigWrapper.versionName).thenReturn("1.0.0")
+        whenever(whatsNewStore.fetchRemoteAnnouncements(
+            versionName = "1.0.0",
+            appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
+        )).thenReturn(response)
 
+        // When
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Success))
     }
 }
 
