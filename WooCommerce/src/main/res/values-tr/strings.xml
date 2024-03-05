@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 15:54:03+0000
+Translation-Revision-Date: 2024-02-27 13:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="order_creation_payment_shipping_tax_label">Gönderim Vergisi</string>
+    <string name="customize_analytics">Analizleri Özelleştir</string>
     <string name="blaze_campaign_creation_error">Bir sorun var.\nKampanyanız oluşturulamadı.</string>
     <string name="blaze_campaign_creation_error_media_fetch">Kampanya görseli detayları alınamadı</string>
     <string name="blaze_campaign_creation_error_media_upload">Kampanya görseli yüklenemedi.</string>
@@ -38,7 +40,6 @@ Language: tr
     <string name="blaze_campaign_preview_missing_image_dialog_text">Lütfen Blaze kampanyası için bir görsel ekleyin</string>
     <string name="drag_handle">Tutamağı sürükleyin</string>
     <string name="analytic_cards">Analiz Kartları</string>
-    <string name="manage_analytics">Analizleri Yönet</string>
     <string name="see_report">Raporu Göster</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Site ana sayfası</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">Ürün URL\'si</string>

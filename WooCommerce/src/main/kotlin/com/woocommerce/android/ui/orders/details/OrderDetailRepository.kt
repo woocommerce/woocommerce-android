@@ -26,6 +26,7 @@ import com.woocommerce.android.util.WooLog.T.ORDERS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
@@ -310,6 +311,10 @@ class OrderDetailRepository @Inject constructor(
     suspend fun orderHasMetadata(orderId: Long) = orderStore.hasDisplayableOrderMetadata(orderId, selectedSite.get())
 
     suspend fun getOrderMetadata(orderId: Long) = orderStore.getDisplayableOrderMetadata(orderId, selectedSite.get())
+
+    suspend fun getOrderAttributionInfo(orderId: Long) = OrderAttributionInfo(
+        orderStore.getOrderMetadata(orderId, selectedSite.get())
+    )
 
     companion object {
         const val PRODUCT_SUBSCRIPTION_TYPE = "subscription"

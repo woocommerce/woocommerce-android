@@ -660,6 +660,10 @@ class AnalyticsTracker private constructor(
         const val KEY_THEME_PICKER_LAYOUT_PREVIEW = "layout"
         const val KEY_THEME_PICKER_PAGE_PREVIEW = "page"
 
+        // Analytics Hub Settings
+        const val KEY_ENABLED_CARDS = "enabled_cards"
+        const val KEY_DISABLED_CARDS = "disabled_cards"
+
         var sendUsageStats: Boolean = true
             set(value) {
                 if (value != field) {
