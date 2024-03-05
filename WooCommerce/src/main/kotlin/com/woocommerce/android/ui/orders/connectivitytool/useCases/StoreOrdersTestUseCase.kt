@@ -7,9 +7,9 @@ import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolV
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
+import javax.inject.Inject
 
 class StoreOrdersTestUseCase @Inject constructor(
     private val orderStore: WCOrderStore,

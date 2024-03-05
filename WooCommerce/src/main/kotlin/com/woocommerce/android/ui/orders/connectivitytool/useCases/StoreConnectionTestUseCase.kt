@@ -7,14 +7,13 @@ import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolV
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import javax.inject.Inject
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import javax.inject.Inject
 
 class StoreConnectionTestUseCase @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite
-
-    ) {
+) {
     operator fun invoke(): Flow<ConnectivityTestStatus> = flow {
         emit(InProgress)
         wooCommerceStore.fetchSSR(selectedSite.get())
