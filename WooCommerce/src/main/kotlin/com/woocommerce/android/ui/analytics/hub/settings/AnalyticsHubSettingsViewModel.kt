@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.analytics.hub.settings
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
@@ -19,6 +22,7 @@ import javax.inject.Inject
 class AnalyticsHubSettingsViewModel @Inject constructor(
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
     private val saveAnalyticsCardsConfiguration: SaveAnalyticsCardsConfiguration,
+    private val tracker: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -82,9 +86,30 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
             viewState = AnalyticsHubSettingsViewState.Loading
             val configuration = draftConfiguration.map { it.toConfigurationModel() }
             saveAnalyticsCardsConfiguration(configuration)
+            trackSettingsSaved(configuration)
             delay(LOADING_DELAY_MS)
             triggerEvent(MultiLiveEvent.Event.Exit)
         }
+    }
+
+    private fun trackSettingsSaved(configuration: List<AnalyticCardConfiguration>) {
+        val enabledCards = mutableListOf<String>()
+        val disabledCards = mutableListOf<String>()
+        configuration.forEach { cardConfiguration ->
+            val cardName = cardConfiguration.card.name.lowercase()
+            if (cardConfiguration.isVisible) {
+                enabledCards.add(cardName)
+            } else {
+                disabledCards.add(cardName)
+            }
+        }
+        tracker.track(
+            AnalyticsEvent.ANALYTICS_HUB_SETTINGS_SAVED,
+            mapOf(
+                AnalyticsTracker.KEY_ENABLED_CARDS to enabledCards.joinToString(","),
+                AnalyticsTracker.KEY_DISABLED_CARDS to disabledCards.joinToString(","),
+            )
+        )
     }
 
     fun onSelectionChange(card: AnalyticsCards, isSelected: Boolean) {
