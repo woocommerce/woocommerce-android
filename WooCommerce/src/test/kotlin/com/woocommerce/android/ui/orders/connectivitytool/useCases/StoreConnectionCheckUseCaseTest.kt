@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
@@ -10,7 +9,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -40,10 +38,12 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchSSR returns an error then emit Failure`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityTestStatus>()
-        val response = WooResult<WCSSRModel>(WooError(
-            type = WooErrorType.GENERIC_ERROR,
-            original = BaseRequest.GenericErrorType.NETWORK_ERROR
-        ))
+        val response = WooResult<WCSSRModel>(
+            WooError(
+                type = WooErrorType.GENERIC_ERROR,
+                original = BaseRequest.GenericErrorType.NETWORK_ERROR
+            )
+        )
         whenever(wooCommerceStore.fetchSSR(selectedSite.get())).thenReturn(response)
 
         // When

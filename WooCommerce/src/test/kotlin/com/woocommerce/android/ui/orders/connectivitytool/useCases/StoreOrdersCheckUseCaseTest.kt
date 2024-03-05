@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
@@ -36,10 +35,12 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchHasOrders returns success then emit Success`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityTestStatus>()
-        whenever(orderStore.fetchHasOrders(
-            site = selectedSite.get(),
-            status = null
-        )).thenReturn(HasOrdersResult.Success(hasOrders = true))
+        whenever(
+            orderStore.fetchHasOrders(
+                site = selectedSite.get(),
+                status = null
+            )
+        ).thenReturn(HasOrdersResult.Success(hasOrders = true))
 
         // When
         sut.invoke().onEach {
@@ -54,10 +55,12 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
     fun `when fetchHasOrders returns failure then emit Failure`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<ConnectivityTestStatus>()
-        whenever(orderStore.fetchHasOrders(
-            site = selectedSite.get(),
-            status = null
-        )).thenReturn(HasOrdersResult.Failure(OrderError()))
+        whenever(
+            orderStore.fetchHasOrders(
+                site = selectedSite.get(),
+                status = null
+            )
+        ).thenReturn(HasOrdersResult.Failure(OrderError()))
 
         // When
         sut.invoke().onEach {

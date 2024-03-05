@@ -39,10 +39,12 @@ class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
             fetchError = WhatsNewFetchError(WhatsNewErrorType.GENERIC_ERROR)
         )
         whenever(buildConfigWrapper.versionName).thenReturn("1.0.0")
-        whenever(whatsNewStore.fetchRemoteAnnouncements(
-            versionName = "1.0.0",
-            appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
-        )).thenReturn(response)
+        whenever(
+            whatsNewStore.fetchRemoteAnnouncements(
+                versionName = "1.0.0",
+                appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
+            )
+        ).thenReturn(response)
 
         // When
         sut.invoke().onEach {
@@ -59,10 +61,12 @@ class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
         val stateEvents = mutableListOf<ConnectivityTestStatus>()
         val response = WhatsNewStore.OnWhatsNewFetched()
         whenever(buildConfigWrapper.versionName).thenReturn("1.0.0")
-        whenever(whatsNewStore.fetchRemoteAnnouncements(
-            versionName = "1.0.0",
-            appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
-        )).thenReturn(response)
+        whenever(
+            whatsNewStore.fetchRemoteAnnouncements(
+                versionName = "1.0.0",
+                appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
+            )
+        ).thenReturn(response)
 
         // When
         sut.invoke().onEach {
@@ -73,4 +77,3 @@ class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
         assertThat(stateEvents).isEqualTo(listOf(InProgress, Success))
     }
 }
-
