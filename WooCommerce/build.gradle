@@ -28,6 +28,11 @@ sentry {
         enabled = false
     }
     includeDependenciesReport = false
+    /* Sentry won't send source context or add performance instrumentations for debug builds
+    so we can save build times. Sending events will still work in debug builds
+    (if enabled in WCCrashLoggingDataProvider).
+    */
+    ignoredBuildTypes = ["debug"]
 }
 
 repositories {
