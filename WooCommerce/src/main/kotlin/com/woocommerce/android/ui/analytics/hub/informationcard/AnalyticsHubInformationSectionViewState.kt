@@ -5,7 +5,7 @@ data class AnalyticsHubInformationSectionViewState(
     val value: String,
     val delta: Int?,
     val chartInfo: List<Float>
-) : AnalyticsCardViewState {
+) {
     val sign: String
         get() = when {
             delta == null -> ""

@@ -12,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.woocommerce.android.NavGraphMainDirections
@@ -20,13 +21,11 @@ import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
-import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
-import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationViewState
-import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListViewState
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.MarginTopItemDecoration
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -122,12 +121,14 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
     private fun bind(view: View) {
         _binding = FragmentAnalyticsBinding.bind(view)
         binding.analyticsDateSelectorCard.setOnClickListener { viewModel.onDateRangeSelectorClick() }
-        binding.analyticsOrdersCard.onSeeReportClickListener = { url -> viewModel.onSeeReport(url, ReportCard.Orders) }
-        binding.analyticsRevenueCard.onSeeReportClickListener = { url ->
-            viewModel.onSeeReport(url, ReportCard.Revenue)
+        val cardsAdapter = AnalyticsHubCardsAdapter().apply {
+            onSeeReport = viewModel::onSeeReport
         }
-        binding.analyticsProductsCard.onSeeReportClickListener = { url ->
-            viewModel.onSeeReport(url, ReportCard.Products)
+        binding.cards.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = cardsAdapter
+            isNestedScrollingEnabled = false
+            addItemDecoration(MarginTopItemDecoration(R.dimen.major_100, requireContext()))
         }
     }
 
@@ -136,31 +137,13 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
         binding.analyticsDateSelectorCard.updatePreviousRange(viewState.analyticsDateRangeSelectorState.previousRange)
         binding.analyticsDateSelectorCard.updateCurrentRange(viewState.analyticsDateRangeSelectorState.currentRange)
         binding.analyticsDateSelectorCard.updateLastUpdateTimestamp(viewState.lastUpdateTimestamp)
-        viewState.cards
-            .run { this as? AnalyticsHubCardViewState.CardsState }
-            ?.cardsState?.map {
-                when (it.key) {
-                    AnalyticsCards.Revenue -> {
-                        val state = it.value as AnalyticsHubInformationViewState
-                        binding.analyticsRevenueCard.updateInformation(state)
-                    }
-
-                    AnalyticsCards.Orders -> {
-                        val state = it.value as AnalyticsHubInformationViewState
-                        binding.analyticsOrdersCard.updateInformation(state)
-                    }
-
-                    AnalyticsCards.Products -> {
-                        val state = it.value as AnalyticsHubListViewState
-                        binding.analyticsProductsCard.updateInformation(state)
-                    }
-
-                    AnalyticsCards.Session -> {
-                        val state = it.value as AnalyticsHubInformationViewState
-                        binding.analyticsVisitorsCard.updateInformation(state)
-                    }
-                }
+        when (viewState.cards) {
+            is AnalyticsHubCardViewState.CardsState -> {
+                (binding.cards.adapter as AnalyticsHubCardsAdapter).cardList = viewState.cards.cardsState
             }
+
+            else -> {}
+        }
         binding.analyticsRefreshLayout.isRefreshing = viewState.refreshIndicator == ShowIndicator
         displayFeedbackBanner(viewState.showFeedBackBanner)
     }
