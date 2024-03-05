@@ -117,7 +117,7 @@ ext {
     mediapickerVersion = '0.3.0'
     wordPressLoginVersion = '1.13.0'
     aboutAutomatticVersion = '0.0.6'
-    automatticTracksVersion = '3.2.0'
+    automatticTracksVersion = '201-f1004d879b8245a5780282c39a67f34e1735961b'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
     stripeTerminalVersion = '3.1.1'
