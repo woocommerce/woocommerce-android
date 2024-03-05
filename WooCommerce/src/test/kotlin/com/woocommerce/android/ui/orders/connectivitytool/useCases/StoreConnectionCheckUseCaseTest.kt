@@ -5,11 +5,13 @@ import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolV
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -50,6 +52,22 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        Assertions.assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure))
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure))
+    }
+
+    @Test
+    fun `when fetchSSR returns no error then emit Success`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val response = WooResult(WCSSRModel(remoteSiteId = 123L))
+        whenever(wooCommerceStore.fetchSSR(selectedSite.get())).thenReturn(response)
+
+        // When
+        sut.invoke().onEach {
+            stateEvents.add(it)
+        }.launchIn(this)
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Success))
     }
 }
