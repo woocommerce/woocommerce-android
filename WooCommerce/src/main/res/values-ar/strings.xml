@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-19 19:54:04+0000
+Translation-Revision-Date: 2024-02-27 22:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="order_creation_payment_shipping_tax_label">ضريبة الشحن</string>
+    <string name="customize_analytics">تخصيص التحليلات</string>
     <string name="blaze_campaign_creation_error">هناك شيء ليس صحيحًا تمامًا.\nتعذر علينا إنشاء حملتك.</string>
     <string name="blaze_campaign_creation_error_media_fetch">فشل إحضار تفاصيل صورة الحملة</string>
     <string name="blaze_campaign_creation_error_media_upload">فشل رفع صورة الحملة.</string>
@@ -38,7 +40,6 @@ Language: ar
     <string name="blaze_campaign_preview_missing_image_dialog_text">ترجى إضافة صورة لحملة Blaze</string>
     <string name="drag_handle">سحب المقبض</string>
     <string name="analytic_cards">بطاقات تحليلية</string>
-    <string name="manage_analytics">إدارة التحليلات</string>
     <string name="see_report">الاطلاع على التقرير</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">الصفحة الرئيسية للموقع</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">عنوان URL للمنتج</string>

@@ -11,8 +11,8 @@ import androidx.core.view.MenuCompat
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -69,6 +69,7 @@ class ProductListFragment :
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+        private const val TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY = "non_root_navigation_in_detail_pane"
     }
 
     @Inject
@@ -114,15 +115,17 @@ class ProductListFragment :
 
     override val twoPaneLayoutGuideline
         get() = binding.twoPaneLayoutGuideline
-
-    override val lifecycleKeeper: Lifecycle
-        get() = viewLifecycleOwner.lifecycle
-
-    override val secondPaneNavigation
+    override val listPaneContainer: View
+        get() = binding.productsRefreshLayout
+    override val detailPaneContainer: View
+        get() = binding.detailNavContainer
+    override var twoPanesWereShownBeforeConfigChange: Boolean = false
+    override val listFragment: Fragment
+        get() = this
+    override val navigation
         get() = TabletLayoutSetupHelper.Screen.Navigation(
-            childFragmentManager,
-            R.navigation.nav_graph_products,
-            ProductDetailFragmentArgs(
+            detailsNavGraphId = R.navigation.nav_graph_products,
+            detailsInitialBundle = ProductDetailFragmentArgs(
                 mode = ProductDetailFragment.Mode.Loading,
             ).toBundle()
         )
@@ -138,6 +141,12 @@ class ProductListFragment :
         enterTransition = fadeThroughTransition
         exitTransition = fadeThroughTransition
         reenterTransition = fadeThroughTransition
+
+        twoPanesWereShownBeforeConfigChange = savedInstanceState?.getBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            false
+        ) ?: false
+        tabletLayoutSetupHelper.onRootFragmentCreated(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -146,8 +155,6 @@ class ProductListFragment :
         postponeEnterTransition()
 
         _binding = FragmentProductListBinding.bind(view)
-
-        tabletLayoutSetupHelper.onViewCreated(this)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
@@ -240,6 +247,10 @@ class ProductListFragment :
 
     override fun onSaveInstanceState(outState: Bundle) {
         tracker?.onSaveInstanceState(outState)
+        outState.putBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            _binding?.detailNavContainer?.isVisible == true && _binding?.productsRefreshLayout?.isVisible == true
+        )
         super.onSaveInstanceState(outState)
     }
 
@@ -338,7 +349,7 @@ class ProductListFragment :
                 is SelectProducts -> tracker?.setItemsSelected(event.productsIds, true)
                 is ShowUpdateDialog -> handleUpdateDialogs(event)
                 is OpenProduct -> {
-                    tabletLayoutSetupHelper.onItemClicked(
+                    tabletLayoutSetupHelper.openItemDetails(
                         tabletNavigateTo = {
                             productAdapter.notifyItemChanged(event.oldPosition)
                             productAdapter.notifyItemChanged(event.newPosition)

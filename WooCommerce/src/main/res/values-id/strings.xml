@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 09:54:04+0000
+Translation-Revision-Date: 2024-02-27 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="order_creation_payment_shipping_tax_label">Pajak Pengiriman</string>
+    <string name="customize_analytics">Sesuaikan Analitik</string>
     <string name="blaze_campaign_creation_error">Terjadi kesalahan.\nKami tidak bisa membuat kampanye Anda.</string>
     <string name="blaze_campaign_creation_error_media_fetch">Gagal mengambil detail gambar kampanye</string>
     <string name="blaze_campaign_creation_error_media_upload">Gagal mengunggah gambar kampanye.</string>
@@ -38,7 +40,6 @@ Language: id
     <string name="blaze_campaign_preview_missing_image_dialog_text">Tambahkan gambar untuk kampanye Blaze</string>
     <string name="drag_handle">Handle seret</string>
     <string name="analytic_cards">Kartu Analitik</string>
-    <string name="manage_analytics">Kelola Analitik</string>
     <string name="see_report">Lihat Laporan</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Beranda situs</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">URL produk</string>

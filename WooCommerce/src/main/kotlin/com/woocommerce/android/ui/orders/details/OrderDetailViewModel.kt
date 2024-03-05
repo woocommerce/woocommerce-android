@@ -12,7 +12,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -70,6 +69,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
@@ -148,6 +148,9 @@ class OrderDetailViewModel @Inject constructor(
 
     private val _subscriptions = MutableLiveData<List<Subscription>>()
     val subscriptions: LiveData<List<Subscription>> = _subscriptions
+
+    private val _orderAttributionInfo = MutableLiveData<OrderAttributionInfo>()
+    val orderAttributionInfo: LiveData<OrderAttributionInfo> = _orderAttributionInfo
 
     private var isFetchingData = false
 
@@ -795,6 +798,8 @@ class OrderDetailViewModel @Inject constructor(
         if (shipmentTracking.isVisible) {
             _shipmentTrackings.value = shipmentTracking.list
         }
+
+        _orderAttributionInfo.value = orderDetailRepository.getOrderAttributionInfo(navArgs.orderId)
 
         val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
 
