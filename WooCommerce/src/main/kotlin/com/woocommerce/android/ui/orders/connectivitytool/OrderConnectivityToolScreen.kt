@@ -65,25 +65,25 @@ fun OrderConnectivityToolScreen(
             .fillMaxSize()
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
-        ConnectivityTestRow(
+        ConnectivityCheckCard(
             checkTitle = R.string.orderlist_connectivity_tool_internet_check_title,
             iconDrawable = R.drawable.ic_cloud,
             errorMessage = "No internet connection",
             testStatus = internetConnectionTestStatus
         )
-        ConnectivityTestRow(
+        ConnectivityCheckCard(
             checkTitle = R.string.orderlist_connectivity_tool_wordpress_check_title,
             iconDrawable = R.drawable.ic_cloud,
             errorMessage = "WordPress connection failed",
             testStatus = wordpressConnectionTestStatus
         )
-        ConnectivityTestRow(
+        ConnectivityCheckCard(
             checkTitle = R.string.orderlist_connectivity_tool_store_check_title,
             iconDrawable = R.drawable.ic_cloud,
             errorMessage = "Store connection failed",
             testStatus = storeConnectionTestStatus
         )
-        ConnectivityTestRow(
+        ConnectivityCheckCard(
             checkTitle = R.string.orderlist_connectivity_tool_store_orders_check_title,
             iconDrawable = R.drawable.ic_cloud,
             errorMessage = "Store orders failed",
@@ -101,7 +101,7 @@ fun OrderConnectivityToolScreen(
 }
 
 @Composable
-fun ConnectivityTestRow(
+fun ConnectivityCheckCard(
     @StringRes checkTitle: Int,
     @DrawableRes iconDrawable: Int,
     errorMessage: String,
