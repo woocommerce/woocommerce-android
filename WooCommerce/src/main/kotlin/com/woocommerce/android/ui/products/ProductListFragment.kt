@@ -357,13 +357,13 @@ class ProductListFragment :
                             productAdapter.notifyItemChanged(event.oldPosition)
                             productAdapter.notifyItemChanged(event.newPosition)
                             R.id.nav_graph_products to ProductDetailFragmentArgs(
-                                mode = ProductDetailFragment.Mode.ShowProduct(-1),
+                                mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
                                 isTrashEnabled = true,
                             ).toBundle()
                         },
                         navigateWithPhoneNavigation = {
                             binding.addProductButton.hide()
-                            onProductClick(-1, event.sharedView)
+                            onProductClick(event.productId, event.sharedView)
                         }
                     )
                 }
