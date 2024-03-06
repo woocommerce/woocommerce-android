@@ -63,25 +63,25 @@ fun OrderConnectivityToolScreen(
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         ConnectivityTestRow(
-            checkTitle = "Internet Connection",
+            checkTitle = R.string.orderlist_connectivity_tool_internet_check_title,
             errorMessage = "No internet connection",
             testStatus = internetConnectionTestStatus
         )
         Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
-            checkTitle = "WordPress Connection",
+            checkTitle = R.string.orderlist_connectivity_tool_wordpress_check_title,
             errorMessage = "WordPress connection failed",
             testStatus = wordpressConnectionTestStatus
         )
         Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
-            checkTitle = "Store Connection",
+            checkTitle = R.string.orderlist_connectivity_tool_store_check_title,
             errorMessage = "Store connection failed",
             testStatus = storeConnectionTestStatus
         )
         Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
-            checkTitle = "Store Orders",
+            checkTitle = R.string.orderlist_connectivity_tool_store_orders_check_title,
             errorMessage = "Store orders failed",
             testStatus = storeOrdersTestStatus
         )
