@@ -100,6 +100,9 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private val fadeHandler = Handler(Looper.getMainLooper())
 
+    private val statsCustomDateRangeTextView
+        get() = binding.statsViewRow.statsCustomDateRangeTextView
+
     private val statsDateValue
         get() = binding.statsViewRow.statsDateTextView
 
@@ -311,6 +314,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                     val endDate = endInterval?.let { getDateValue(it, granularity) }
                     String.format(Locale.getDefault(), "%s – %s", startDate, endDate)
                 }
+
                 else -> {
                     startDate
                 }
