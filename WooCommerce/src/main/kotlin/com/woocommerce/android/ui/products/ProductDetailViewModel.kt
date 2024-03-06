@@ -2516,11 +2516,13 @@ class ProductDetailViewModel @Inject constructor(
         @Parcelize
         sealed class AuxiliaryState : Parcelable {
             @Parcelize
-            data object Loading: AuxiliaryState()
+            data object Loading : AuxiliaryState()
+
             @Parcelize
-            data object None: AuxiliaryState()
+            data object None : AuxiliaryState()
+
             @Parcelize
-            data class Error(@StringRes val message: Int): AuxiliaryState()
+            data class Error(@StringRes val message: Int) : AuxiliaryState()
         }
     }
 
