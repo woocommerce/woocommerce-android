@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,24 +67,28 @@ fun OrderConnectivityToolScreen(
     ) {
         ConnectivityTestRow(
             checkTitle = R.string.orderlist_connectivity_tool_internet_check_title,
+            iconDrawable = R.drawable.ic_cloud,
             errorMessage = "No internet connection",
             testStatus = internetConnectionTestStatus
         )
         Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
             checkTitle = R.string.orderlist_connectivity_tool_wordpress_check_title,
+            iconDrawable = R.drawable.ic_cloud,
             errorMessage = "WordPress connection failed",
             testStatus = wordpressConnectionTestStatus
         )
         Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
             checkTitle = R.string.orderlist_connectivity_tool_store_check_title,
+            iconDrawable = R.drawable.ic_cloud,
             errorMessage = "Store connection failed",
             testStatus = storeConnectionTestStatus
         )
         Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
             checkTitle = R.string.orderlist_connectivity_tool_store_orders_check_title,
+            iconDrawable = R.drawable.ic_cloud,
             errorMessage = "Store orders failed",
             testStatus = storeOrdersTestStatus
         )
@@ -103,43 +110,49 @@ fun ConnectivityTestRow(
     errorMessage: String,
     testStatus: ConnectivityCheckStatus
 ) {
-    Column {
-        Row {
-            Box(
-                modifier = Modifier
-                    .size(dimensionResource(id = R.dimen.major_250))
-                    .clip(CircleShape)
-                    .background(colorResource(id = R.color.more_menu_button_icon_background))
-            ) {
-                Image(
-                    painter = painterResource(id = iconDrawable),
-                    contentDescription = stringResource(id = checkTitle),
+    Card(
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
+        modifier = Modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_75)))
+    ) {
+        Column {
+            Row {
+                Box(
                     modifier = Modifier
-                        .size(dimensionResource(id = R.dimen.major_125))
-                        .align(Alignment.Center)
-                )
+                        .size(dimensionResource(id = R.dimen.major_250))
+                        .clip(CircleShape)
+                        .background(colorResource(id = R.color.more_menu_button_icon_background))
+                ) {
+                    Image(
+                        painter = painterResource(id = iconDrawable),
+                        contentDescription = stringResource(id = checkTitle),
+                        modifier = Modifier
+                            .size(dimensionResource(id = R.dimen.major_125))
+                            .align(Alignment.Center)
+                    )
+                }
+                Spacer(modifier = Modifier.weight(1f))
+                Text(stringResource(id = checkTitle))
+                Spacer(modifier = Modifier.weight(1f))
+                when (testStatus) {
+                    NotStarted -> null
+                    InProgress -> null
+                    Failure -> R.drawable.ic_rounded_chcekbox_checked
+                    Success -> R.drawable.ic_rounded_chcekbox_partially_checked
+                }?.let {
+                    Image(
+                        painter = painterResource(id = it),
+                        contentDescription = null
+                    )
+                }
             }
-            Spacer(modifier = Modifier.weight(1f))
-            Text(stringResource(id = checkTitle))
-            Spacer(modifier = Modifier.weight(1f))
-            when (testStatus) {
-                NotStarted -> null
-                InProgress -> null
-                Failure -> R.drawable.ic_rounded_chcekbox_checked
-                Success -> R.drawable.ic_rounded_chcekbox_partially_checked
-            }?.let {
-                Image(
-                    painter = painterResource(id = it),
-                    contentDescription = null
-                )
+
+            if (testStatus == Failure) {
+                Row {
+                    Text(errorMessage)
+                }
             }
         }
 
-        if (testStatus == Failure) {
-            Row {
-                Text(errorMessage)
-            }
-        }
     }
 }
 
