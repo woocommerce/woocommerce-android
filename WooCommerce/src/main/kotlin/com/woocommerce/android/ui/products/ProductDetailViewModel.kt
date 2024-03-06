@@ -1983,7 +1983,8 @@ class ProductDetailViewModel @Inject constructor(
         loadProductTaxAndShippingClassDependencies(updatedDraft)
 
         viewState = viewState.copy(
-            productDraft = updatedDraft
+            productDraft = updatedDraft,
+            auxiliaryState = ProductDetailViewState.AuxiliaryState.None
         )
         storedProduct.value = productToUpdateFrom
     }

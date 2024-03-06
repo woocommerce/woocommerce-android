@@ -57,6 +57,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -304,6 +305,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays the product detail view correctly`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
 
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -314,20 +316,37 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on fetch product error`() = testBlocking {
+    fun `given nothing returned from repo, when view model started, the error status emitted`() = testBlocking {
         whenever(productRepository.fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)).thenReturn(null)
         whenever(productRepository.getProductAsync(PRODUCT_REMOTE_ID)).thenReturn(null)
-
-        var snackbar: ShowSnackbar? = null
-        viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
-        }
 
         viewModel.start()
 
         verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
 
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_fetch_product_error))
+        assertThat(viewModel.getProduct().productDraft).isNull()
+        assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(ProductDetailViewState.AuxiliaryState.Error(
+            R.string.product_detail_fetch_product_error
+        ))
+    }
+
+    @Test
+    fun `given nothing returned from repo with INVALID_PRODUCT_ID error, when view model started, the error status emitted with invalid id text`()
+    = testBlocking {
+        whenever(productRepository.fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)).thenReturn(null)
+        whenever(productRepository.getProductAsync(PRODUCT_REMOTE_ID)).thenReturn(null)
+        whenever(productRepository.lastFetchProductErrorType).thenReturn(
+            WCProductStore.ProductErrorType.INVALID_PRODUCT_ID
+        )
+
+        viewModel.start()
+
+        verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
+
+        assertThat(viewModel.getProduct().productDraft).isNull()
+        assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(ProductDetailViewState.AuxiliaryState.Error(
+            R.string.product_detail_fetch_product_invalid_id_error
+        ))
     }
 
     @Test
@@ -351,6 +370,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product detail skeleton correctly`() = testBlocking {
         doReturn(null).whenever(productRepository).getProductAsync(any())
+        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
 
         val auxiliaryStates = ArrayList<ProductDetailViewState.AuxiliaryState>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
@@ -360,15 +380,16 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         assertThat(auxiliaryStates).containsExactly(
+            ProductDetailViewState.AuxiliaryState.Error(R.string.product_detail_fetch_product_error),
             ProductDetailViewState.AuxiliaryState.Loading,
             ProductDetailViewState.AuxiliaryState.None,
-            ProductDetailViewState.AuxiliaryState.Loading,
         )
     }
 
     @Test
     fun `Displays the updated product detail view correctly`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
 
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -386,6 +407,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `When update product price is null, product detail view displayed correctly`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
 
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -408,6 +430,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `When update product price is zero, product detail view displayed correctly`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
 
         var productData: ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -972,6 +995,22 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         setup()
 
         assertThat(productsDraft?.images?.map { it.source }).isEqualTo(uris.toList())
+    }
+
+    @Test
+    fun `give empty mode, when viewmodel init, then error with product not selected message emitted`() = testBlocking {
+        // GIVEN
+        val mode = ProductDetailFragment.Mode.Empty
+        savedState = ProductDetailFragmentArgs(mode).toSavedStateHandle()
+        doReturn(product).whenever(productRepository).getProductAsync(any())
+
+        // WHEN
+        setup()
+
+        // THEN
+        assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
+            ProductDetailViewState.AuxiliaryState.Error(R.string.product_detail_product_not_selected)
+        )
     }
 
     private val productsDraft
