@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Success
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
@@ -34,7 +34,7 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `when fetchHasOrders returns success then emit Success`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(
             orderStore.fetchHasOrders(
                 site = selectedSite.get(),
@@ -54,7 +54,7 @@ class StoreOrdersCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `when fetchHasOrders returns failure then emit Failure`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(
             orderStore.fetchHasOrders(
                 site = selectedSite.get(),

@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders.connectivitytool
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.NotStarted
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Success
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
@@ -47,7 +47,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
     @Test
     fun `when internetConnectionTest use case starts, then update ViewState as expected`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
         sut.viewState.observeForever {
             stateEvents.add(it.internetConnectionCheckStatus)
@@ -63,7 +63,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
     @Test
     fun `when wordPressConnectionTest use case starts, then update ViewState as expected`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
         sut.viewState.observeForever {
             stateEvents.add(it.wordpressConnectionCheckStatus)
@@ -79,7 +79,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
     @Test
     fun `when storeConnectionTest use case starts, then update ViewState as expected`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
         sut.viewState.observeForever {
             stateEvents.add(it.storeConnectionCheckStatus)
@@ -95,7 +95,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
     @Test
     fun `when storeOrdersTest use case starts, then update ViewState as expected`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
         sut.viewState.observeForever {
             stateEvents.add(it.storeOrdersCheckStatus)

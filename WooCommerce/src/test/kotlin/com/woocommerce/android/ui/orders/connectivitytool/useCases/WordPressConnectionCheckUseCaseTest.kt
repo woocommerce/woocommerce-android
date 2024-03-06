@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Success
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,7 +34,7 @@ class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `when fetchRemoteAnnouncements returns an error then emit Failure`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WhatsNewStore.OnWhatsNewFetched(
             fetchError = WhatsNewFetchError(WhatsNewErrorType.GENERIC_ERROR)
         )
@@ -58,7 +58,7 @@ class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `when fetchRemoteAnnouncements returns no error then emit Success`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WhatsNewStore.OnWhatsNewFetched()
         whenever(buildConfigWrapper.versionName).thenReturn("1.0.0")
         whenever(

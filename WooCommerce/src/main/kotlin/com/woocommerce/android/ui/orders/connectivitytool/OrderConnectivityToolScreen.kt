@@ -14,10 +14,10 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.NotStarted
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.NotStarted
 
 @Composable
 fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
@@ -35,10 +35,10 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
 @Composable
 fun OrderConnectivityToolScreen(
     isContactSupportButtonEnabled: Boolean,
-    internetConnectionTestStatus: ConnectivityTestStatus,
-    wordpressConnectionTestStatus: ConnectivityTestStatus,
-    storeConnectionTestStatus: ConnectivityTestStatus,
-    storeOrdersTestStatus: ConnectivityTestStatus,
+    internetConnectionTestStatus: ConnectivityCheckStatus,
+    wordpressConnectionTestStatus: ConnectivityCheckStatus,
+    storeConnectionTestStatus: ConnectivityCheckStatus,
+    storeOrdersTestStatus: ConnectivityCheckStatus,
     onContactSupportClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -85,7 +85,7 @@ fun OrderConnectivityToolScreen(
 fun ConnectivityTestRow(
     testTitle: String,
     errorMessage: String,
-    testStatus: ConnectivityTestStatus
+    testStatus: ConnectivityCheckStatus
 ) {
     Column {
         Row {

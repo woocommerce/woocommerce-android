@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.NotStarted
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
-import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class OrderConnectivityToolViewModel @Inject constructor(
@@ -28,28 +27,28 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val _checkStatus = savedState.getStateFlow(
+    private val checkStatus = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = CheckStatus()
     )
-    val viewState = _checkStatus.asLiveData()
+    val viewState = checkStatus.asLiveData()
 
     fun startConnectionTests() {
         launch {
             internetConnectionCheck().onEach {
-                _checkStatus.value = _checkStatus.value.copy(internetConnectionCheckStatus = it)
+                checkStatus.value = checkStatus.value.copy(internetConnectionCheckStatus = it)
             }.launchIn(viewModelScope)
 
             wordPressConnectionCheck().onEach {
-                _checkStatus.value = _checkStatus.value.copy(wordpressConnectionCheckStatus = it)
+                checkStatus.value = checkStatus.value.copy(wordpressConnectionCheckStatus = it)
             }.launchIn(viewModelScope)
 
             storeConnectionCheck().onEach {
-                _checkStatus.value = _checkStatus.value.copy(storeConnectionCheckStatus = it)
+                checkStatus.value = checkStatus.value.copy(storeConnectionCheckStatus = it)
             }.launchIn(viewModelScope)
 
             storeOrdersCheck().onEach {
-                _checkStatus.value = _checkStatus.value.copy(storeOrdersCheckStatus = it)
+                checkStatus.value = checkStatus.value.copy(storeOrdersCheckStatus = it)
             }.launchIn(viewModelScope)
         }
     }
@@ -58,10 +57,10 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     @Parcelize
     data class CheckStatus(
-        val internetConnectionCheckStatus: ConnectivityTestStatus = NotStarted,
-        val wordpressConnectionCheckStatus: ConnectivityTestStatus = NotStarted,
-        val storeConnectionCheckStatus: ConnectivityTestStatus = NotStarted,
-        val storeOrdersCheckStatus: ConnectivityTestStatus = NotStarted
+        val internetConnectionCheckStatus: ConnectivityCheckStatus = NotStarted,
+        val wordpressConnectionCheckStatus: ConnectivityCheckStatus = NotStarted,
+        val storeConnectionCheckStatus: ConnectivityCheckStatus = NotStarted,
+        val storeOrdersCheckStatus: ConnectivityCheckStatus = NotStarted
     ) : Parcelable {
         val isCheckFinished
             get() = internetConnectionCheckStatus.isFinished() &&
@@ -70,7 +69,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
                 storeOrdersCheckStatus.isFinished()
     }
 
-    enum class ConnectivityTestStatus {
+    enum class ConnectivityCheckStatus {
         NotStarted,
         InProgress,
         Success,

@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.Success
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Success
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn
@@ -37,7 +37,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `when fetchSSR returns an error then emit Failure`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WooResult<WCSSRModel>(
             WooError(
                 type = WooErrorType.GENERIC_ERROR,
@@ -58,7 +58,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
     @Test
     fun `when fetchSSR returns no error then emit Success`() = testBlocking {
         // Given
-        val stateEvents = mutableListOf<ConnectivityTestStatus>()
+        val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WooResult(WCSSRModel(remoteSiteId = 123L))
         whenever(wooCommerceStore.fetchSSR(selectedSite.get())).thenReturn(response)
 
