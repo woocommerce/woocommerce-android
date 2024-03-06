@@ -445,7 +445,12 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onAddCustomRangeClicked() {
-        triggerEvent(OpenDatePicker)
+        triggerEvent(
+            OpenDatePicker(
+                fromDate = customDateRange.value?.first ?: Date(),
+                toDate = customDateRange.value?.second ?: Date()
+            )
+        )
     }
 
     sealed class RevenueStatsViewState {
@@ -497,7 +502,7 @@ class MyStoreViewModel @Inject constructor(
 
         data class ShareStore(val storeUrl: String) : MyStoreEvent()
 
-        data object OpenDatePicker : MyStoreEvent()
+        data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MyStoreEvent()
     }
 
     data class RefreshState(private val isForced: Boolean = false) {

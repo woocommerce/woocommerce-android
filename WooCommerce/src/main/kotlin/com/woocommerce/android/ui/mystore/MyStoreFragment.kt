@@ -466,7 +466,10 @@ class MyStoreFragment :
                         MyStoreFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
                     )
 
-                is OpenDatePicker -> showDateRangePicker { start, end ->
+                is OpenDatePicker -> showDateRangePicker(
+                    fromMillis = event.fromDate.time,
+                    toMillis = event.toDate.time
+                ) { start, end ->
                     myStoreViewModel.onCustomRangeSelected(Date(start), Date(end))
                 }
 
