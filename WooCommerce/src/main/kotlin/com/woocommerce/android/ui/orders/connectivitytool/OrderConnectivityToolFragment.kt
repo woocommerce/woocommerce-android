@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,4 +28,6 @@ class OrderConnectivityToolFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.startConnectionTests()
     }
+
+    override fun getFragmentTitle() = getString(R.string.orderlist_connectivity_tool_title)
 }
