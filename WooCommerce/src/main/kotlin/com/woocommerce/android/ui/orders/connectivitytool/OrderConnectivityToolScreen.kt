@@ -71,21 +71,18 @@ fun OrderConnectivityToolScreen(
             errorMessage = "No internet connection",
             testStatus = internetConnectionTestStatus
         )
-        Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
             checkTitle = R.string.orderlist_connectivity_tool_wordpress_check_title,
             iconDrawable = R.drawable.ic_cloud,
             errorMessage = "WordPress connection failed",
             testStatus = wordpressConnectionTestStatus
         )
-        Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
             checkTitle = R.string.orderlist_connectivity_tool_store_check_title,
             iconDrawable = R.drawable.ic_cloud,
             errorMessage = "Store connection failed",
             testStatus = storeConnectionTestStatus
         )
-        Spacer(modifier = modifier.weight(1f))
         ConnectivityTestRow(
             checkTitle = R.string.orderlist_connectivity_tool_store_orders_check_title,
             iconDrawable = R.drawable.ic_cloud,
@@ -136,8 +133,8 @@ fun ConnectivityTestRow(
                 when (testStatus) {
                     NotStarted -> null
                     InProgress -> null
-                    Failure -> R.drawable.ic_rounded_chcekbox_checked
-                    Success -> R.drawable.ic_rounded_chcekbox_partially_checked
+                    Success -> R.drawable.ic_rounded_chcekbox_checked
+                    Failure -> R.drawable.ic_rounded_chcekbox_partially_checked
                 }?.let {
                     Image(
                         painter = painterResource(id = it),
@@ -147,8 +144,11 @@ fun ConnectivityTestRow(
             }
 
             if (testStatus == Failure) {
-                Row {
+                Column {
                     Text(errorMessage)
+                    Button(onClick = { /*TODO*/ }) {
+                        Text("Read More")
+                    }
                 }
             }
         }
