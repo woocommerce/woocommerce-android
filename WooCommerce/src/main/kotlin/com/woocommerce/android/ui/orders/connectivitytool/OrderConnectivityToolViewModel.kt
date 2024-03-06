@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class OrderConnectivityToolViewModel @Inject constructor(
@@ -26,40 +28,50 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val _viewState = savedState.getStateFlow(
+    private val _checkStatus = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = ViewState()
+        initialValue = CheckStatus()
     )
-    val viewState = _viewState.asLiveData()
+
+    val isContactSupportEnabled = _checkStatus
+        .map { it.isIdle }
+        .asLiveData()
+
+    val viewState = _checkStatus.asLiveData()
 
     fun startConnectionTests() {
         launch {
             internetConnectionCheck().onEach {
-                _viewState.value = _viewState.value.copy(internetConnectionTestStatus = it)
+                _checkStatus.value = _checkStatus.value.copy(internetConnectionTestStatus = it)
             }.launchIn(viewModelScope)
 
             wordPressConnectionCheck().onEach {
-                _viewState.value = _viewState.value.copy(wordpressConnectionTestStatus = it)
+                _checkStatus.value = _checkStatus.value.copy(wordpressConnectionTestStatus = it)
             }.launchIn(viewModelScope)
 
             storeConnectionCheck().onEach {
-                _viewState.value = _viewState.value.copy(storeConnectionTestStatus = it)
+                _checkStatus.value = _checkStatus.value.copy(storeConnectionTestStatus = it)
             }.launchIn(viewModelScope)
 
             storeOrdersCheck().onEach {
-                _viewState.value = _viewState.value.copy(storeOrdersTestStatus = it)
+                _checkStatus.value = _checkStatus.value.copy(storeOrdersTestStatus = it)
             }.launchIn(viewModelScope)
         }
     }
 
     @Parcelize
-    data class ViewState(
-        val isContactSupportEnabled: Boolean = false,
+    data class CheckStatus(
         val internetConnectionTestStatus: ConnectivityTestStatus = NotStarted,
         val wordpressConnectionTestStatus: ConnectivityTestStatus = NotStarted,
         val storeConnectionTestStatus: ConnectivityTestStatus = NotStarted,
         val storeOrdersTestStatus: ConnectivityTestStatus = NotStarted
-    ) : Parcelable
+    ) : Parcelable {
+        val isIdle
+            get() = internetConnectionTestStatus != InProgress &&
+                wordpressConnectionTestStatus != InProgress &&
+                storeConnectionTestStatus != InProgress &&
+                storeOrdersTestStatus != InProgress
+    }
 
     enum class ConnectivityTestStatus {
         NotStarted,
