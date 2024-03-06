@@ -1,56 +1,87 @@
-<?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/myStoreStats_linearLayout"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/stats_view_row"
-            layout="@layout/dashboard_main_stats_row" />
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/stats_tab_layout"
+            style="@style/Woo.TabLayout.Scrollable"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/color_surface"
+            app:layout_constraintEnd_toStartOf="@id/custom_range_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <FrameLayout
-            android:id="@+id/chart_container"
-            android:layout_width="match_parent"
-            android:layout_height="200dp">
+        <ImageButton
+            android:id="@+id/custom_range_button"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="@string/my_store_custom_range_content_description"
+            android:padding="@dimen/major_75"
+            app:layout_constrainedHeight="@id/stats_tab_layout"
+            app:layout_constraintBottom_toBottomOf="@id/stats_tab_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/stats_tab_layout"
+            android:src="@drawable/ic_calendar_add" />
 
-            <com.woocommerce.android.ui.mystore.DashboardStatsLineChart
-                android:id="@+id/chart"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="@dimen/major_100"
-                android:layout_marginTop="@dimen/major_75"
-                android:layout_marginEnd="@dimen/major_100"
-                android:layout_marginBottom="@dimen/major_75" />
-
-            <ImageView
-                android:id="@+id/dashboard_stats_error"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:contentDescription="@string/dashboard_stats_error_content_description"
-                android:visibility="gone"
-                app:srcCompat="@drawable/ic_woo_error_state"
-                tools:visibility="visible" />
-        </FrameLayout>
-
-        <Button
-            android:id="@+id/view_analytics_button"
-            style="@style/Woo.Button.Outlined"
+        <LinearLayout
+            android:id="@+id/stats_content"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_100"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/minor_100"
-            android:text="@string/analytics_see_more"
-            />
-    </LinearLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stats_tab_layout">
+
+            <include
+                android:id="@+id/stats_view_row"
+                layout="@layout/dashboard_main_stats_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/major_100" />
+
+            <FrameLayout
+                android:id="@+id/chart_container"
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <com.woocommerce.android.ui.mystore.DashboardStatsLineChart
+                    android:id="@+id/chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    android:layout_marginVertical="@dimen/major_75" />
+
+                <ImageView
+                    android:id="@+id/dashboard_stats_error"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/dashboard_stats_error_content_description"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/ic_woo_error_state"
+                    tools:visibility="visible" />
+
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/view_analytics_button"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/major_100"
+                android:layout_marginVertical="@dimen/minor_100"
+                android:text="@string/analytics_see_more" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </merge>

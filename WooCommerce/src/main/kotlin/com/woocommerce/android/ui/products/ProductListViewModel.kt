@@ -97,7 +97,7 @@ class ProductListViewModel @Inject constructor(
     private var selectedCategoryName: String? = null
     private var searchJob: Job? = null
     private var loadJob: Job? = null
-    private var openedProduct: Long?
+    private var openedProductId: Long?
         get() = savedState[KEY_PRODUCT_OPENED]
         set(value) = savedState.set(KEY_PRODUCT_OPENED, value)
 
@@ -276,6 +276,9 @@ class ProductListViewModel @Inject constructor(
             ArrayList<Long>().also { it.add(id) }
         }
         val products = productRepository.getProductList(productFilterOptions, excludedProductIds)
+
+        resetOpenProductIfNotInList(products)
+
         _productList.value = products
 
         viewState = viewState.copy(
@@ -284,6 +287,11 @@ class ProductListViewModel @Inject constructor(
             isAddProductButtonVisible = products.isNotEmpty() && !isSelecting(),
             displaySortAndFilterCard = products.isNotEmpty() || productFilterOptions.isNotEmpty()
         )
+    }
+
+    private fun resetOpenProductIfNotInList(products: List<Product>) {
+        val isOpenProductInTheList = products.firstOrNull { openedProductId == it.remoteId } != null
+        if (!isOpenProductInTheList) openedProductId = null
     }
 
     @Suppress("LongMethod")
@@ -430,17 +438,21 @@ class ProductListViewModel @Inject constructor(
     }
 
     private fun openFirstLoadedProductOnTablet(products: List<Product>) {
-        if (products.isNotEmpty() && isTablet()) {
-            if (openedProduct == null) {
-                openedProduct = products.first().remoteId
-                onOpenProduct(openedProduct!!, null)
+        if (isTablet()) {
+            if (products.isNotEmpty()) {
+                if (openedProductId == null) {
+                    openedProductId = products.first().remoteId
+                    onOpenProduct(openedProductId!!, null)
+                }
+            } else {
+                triggerEvent(ProductListEvent.OpenEmptyProduct)
             }
         }
     }
 
     fun onOpenProduct(productId: Long, sharedView: View?) {
-        val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == openedProduct } ?: 0
-        openedProduct = productId
+        val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == openedProductId } ?: 0
+        openedProductId = productId
         val newPositionInList = _productList.value?.indexOfFirst { it.remoteId == productId } ?: 0
         triggerEvent(
             ProductListEvent.OpenProduct(
@@ -452,7 +464,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    fun isProductHighlighted(productId: Long) = if (isTablet()) productId == openedProduct else false
+    fun isProductHighlighted(productId: Long) = if (isTablet()) productId == openedProductId else false
 
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
@@ -716,9 +728,9 @@ class ProductListViewModel @Inject constructor(
     }
 
     sealed class ProductListEvent : Event() {
-        object ScrollToTop : ProductListEvent()
-        object ShowAddProductBottomSheet : ProductListEvent()
-        object ShowProductSortingBottomSheet : ProductListEvent()
+        data object ScrollToTop : ProductListEvent()
+        data object ShowAddProductBottomSheet : ProductListEvent()
+        data object ShowProductSortingBottomSheet : ProductListEvent()
         data class ShowProductFilterScreen(
             val stockStatusFilter: String?,
             val productTypeFilter: String?,
@@ -739,6 +751,8 @@ class ProductListViewModel @Inject constructor(
             val newPosition: Int,
             val sharedView: View?
         ) : ProductListEvent()
+
+        data object OpenEmptyProduct : ProductListEvent()
     }
 
     enum class ProductListState { Selecting, Browsing }

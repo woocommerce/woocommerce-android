@@ -390,6 +390,7 @@
     <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
+    <string name="my_store_custom_range_content_description">Add custom date range stats</string>
 
     <!--
         Sign Up Flow
@@ -1782,6 +1783,7 @@
     <string name="product_add_image_content_description">Add image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
     <string name="product_detail_fetch_product_invalid_id_error">Product not found</string>
+    <string name="product_detail_product_not_selected">Product not selected</string>
     <string name="product_variants_fetch_product_variants_error">Error fetching product variations</string>
     <string name="product_name">Title</string>
     <string name="product_purchase_note">Purchase note</string>
