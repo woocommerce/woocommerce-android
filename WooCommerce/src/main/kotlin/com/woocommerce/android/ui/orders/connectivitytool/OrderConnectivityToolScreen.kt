@@ -95,7 +95,7 @@ fun OrderConnectivityToolScreen(
             enabled = isContactSupportButtonEnabled,
             onClick = { onContactSupportClicked() },
         ) {
-            Text("Contact Support")
+            Text(stringResource(id = R.string.orderlist_connectivity_tool_contact_support_action))
         }
     }
 }
@@ -147,7 +147,7 @@ fun ConnectivityTestRow(
                 Column {
                     Text(errorMessage)
                     Button(onClick = { /*TODO*/ }) {
-                        Text("Read More")
+                        Text(stringResource(id = R.string.orderlist_connectivity_tool_read_more_action))
                     }
                 }
             }
