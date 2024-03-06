@@ -29,7 +29,7 @@ class OrderConnectivityToolFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.event.observeForever {
+        viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 is OpenSupportRequest -> openSupportRequestScreen()
             }
