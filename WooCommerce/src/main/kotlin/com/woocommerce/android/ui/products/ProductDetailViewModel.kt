@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -75,7 +76,6 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -361,7 +361,7 @@ class ProductDetailViewModel @Inject constructor(
             }
 
             is ProductDetailFragment.Mode.Loading -> {
-                viewState = viewState.copy(isSkeletonShown = true)
+                viewState = viewState.copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.Loading)
             }
         }
     }
@@ -393,7 +393,7 @@ class ProductDetailViewModel @Inject constructor(
                         viewState.productDraft?.remoteId ?: mode.remoteProductId
                     )
                 } else {
-                    viewState = viewState.copy(isSkeletonShown = true)
+                    viewState = viewState.copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.Loading)
                 }
             }
         }
@@ -1374,10 +1374,9 @@ class ProductDetailViewModel @Inject constructor(
                     fetchProductPassword(remoteProductId)
                 }
             } else {
-                viewState = viewState.copy(isSkeletonShown = true)
+                viewState = viewState.copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.Loading)
                 fetchProduct(remoteProductId)
             }
-            viewState = viewState.copy(isSkeletonShown = false)
             trackProductDetailLoaded()
         }
     }
@@ -1473,15 +1472,22 @@ class ProductDetailViewModel @Inject constructor(
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {
-                if (productRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID) {
-                    triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_invalid_id_error))
+                viewState = if (productRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID) {
+                    viewState.copy(
+                        auxiliaryState = ProductDetailViewState.AuxiliaryState.Error(
+                            R.string.product_detail_fetch_product_invalid_id_error
+                        )
+                    )
                 } else {
-                    triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_error))
+                    viewState.copy(
+                        auxiliaryState = ProductDetailViewState.AuxiliaryState.Error(
+                            R.string.product_detail_fetch_product_error
+                        )
+                    )
                 }
-                triggerEvent(Exit)
             }
         } else {
-            viewState = viewState.copy(isSkeletonShown = false)
+            viewState = viewState.copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.None)
         }
     }
 
@@ -2494,7 +2500,7 @@ class ProductDetailViewModel @Inject constructor(
     @Parcelize
     data class ProductDetailViewState(
         val productDraft: Product? = null,
-        val isSkeletonShown: Boolean? = null,
+        val auxiliaryState: AuxiliaryState = AuxiliaryState.None,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
         val storedPassword: String? = null,
@@ -2506,6 +2512,16 @@ class ProductDetailViewModel @Inject constructor(
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
+
+        @Parcelize
+        sealed class AuxiliaryState : Parcelable {
+            @Parcelize
+            data object Loading: AuxiliaryState()
+            @Parcelize
+            data object None: AuxiliaryState()
+            @Parcelize
+            data class Error(@StringRes val message: Int): AuxiliaryState()
+        }
     }
 
     @Parcelize

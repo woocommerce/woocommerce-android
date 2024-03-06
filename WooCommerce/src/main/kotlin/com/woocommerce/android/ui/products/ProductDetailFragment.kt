@@ -47,6 +47,9 @@ import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragme
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Loading
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAiProductCreationSurveyBottomSheet
@@ -287,7 +290,7 @@ class ProductDetailFragment :
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
+            new.auxiliaryState.takeIfNotEqualTo(old?.auxiliaryState) { showAuxiliaryState(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 if (it) {
                     showProgressDialog(R.string.product_save_dialog_title, R.string.product_update_dialog_message)
@@ -415,6 +418,10 @@ class ProductDetailFragment :
      *  Triggered when the view modal updates or creates an order that doesn't already have linked products
      */
     private fun showProductDetails(product: Product) {
+        binding.productErrorStateContainer.isVisible = false
+        binding.productDetailRoot.isVisible = true
+        binding.productDetailAddMoreContainer.isVisible = true
+
         productName = updateProductNameFromDetails(product)
         productId = product.remoteId
 
@@ -468,11 +475,24 @@ class ProductDetailFragment :
         }
     }
 
-    private fun showSkeleton(show: Boolean) {
-        if (show) {
+    private fun showAuxiliaryState(auxiliaryState: ProductDetailViewModel.ProductDetailViewState.AuxiliaryState) {
+        if (auxiliaryState == Loading) {
             skeletonView.show(binding.appBarLayout, R.layout.skeleton_product_detail, delayed = true)
         } else {
             skeletonView.hide()
+            when (auxiliaryState) {
+                Loading, None -> {
+                    binding.productErrorStateContainer.isVisible = false
+                }
+                is Error -> {
+                    binding.productErrorStateContainer.isVisible = true
+                    binding.productDetailRoot.isVisible = false
+                    binding.productDetailAddMoreContainer.isVisible = false
+
+                    binding.productDetailsErrorImage.contentDescription = getString(auxiliaryState.message)
+                    binding.productDetailsErrorText.text = getString(auxiliaryState.message)
+                }
+            }
         }
     }
 

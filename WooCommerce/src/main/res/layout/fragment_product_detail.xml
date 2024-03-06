@@ -1,5 +1,4 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -22,10 +21,10 @@
         android:layout_height="0dp"
         android:fitsSystemWindows="false"
         android:focusableInTouchMode="true"
-        app:layout_constraintTop_toBottomOf="@+id/productDetailToolbar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/productDetail_addMoreContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productDetailToolbar"
         tools:context="com.woocommerce.android.ui.products.ProductDetailFragment">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -39,8 +38,8 @@
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fitsSystemWindows="false"
                 android:background="@color/color_elevation_overlay_01"
+                android:fitsSystemWindows="false"
                 app:contentScrim="@color/color_elevation_overlay_01"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
@@ -55,10 +54,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/image_major_120"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="@dimen/major_100"
-                        android:layout_marginBottom="@dimen/major_100"
                         android:layout_marginStart="@dimen/minor_100"
+                        android:layout_marginTop="@dimen/major_100"
                         android:layout_marginEnd="@dimen/minor_100"
+                        android:layout_marginBottom="@dimen/major_100"
                         app:isGridView="false"
                         app:showAddImageIcon="true" />
 
@@ -75,9 +74,9 @@
                             style="@style/Woo.TextView.Body2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_gravity="center"
                             android:drawableTop="@drawable/ic_gridicons_add_image"
                             android:drawablePadding="@dimen/minor_100"
-                            android:layout_gravity="center"
                             android:text="@string/product_image_add" />
 
                     </FrameLayout>
@@ -181,6 +180,45 @@
                 app:icon="@drawable/ic_add"
                 app:iconPadding="@dimen/major_100" />
         </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/productErrorStateContainer"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_height="0dp"
+        android:fitsSystemWindows="false"
+        android:focusableInTouchMode="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/productDetailToolbar"
+        tools:context="com.woocommerce.android.ui.products.ProductDetailFragment">
+
+        <ImageView
+            android:id="@+id/productDetailsErrorImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/img_woo_generic_error"
+            app:layout_constraintBottom_toTopOf="@+id/productDetailsErrorText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/productDetailsErrorText"
+            style="@style/Woo.TextView.Headline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/major_200"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productDetailsErrorImage"
+            tools:text="Error message" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
