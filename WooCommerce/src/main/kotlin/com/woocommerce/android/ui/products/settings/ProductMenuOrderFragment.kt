@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.products.settings
 
 import android.os.Bundle
 import android.view.View
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -35,7 +34,7 @@ class ProductMenuOrderFragment : BaseProductSettingsFragment(R.layout.fragment_p
             onMenuItemSelected = { _ -> false },
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
-                    findNavController().navigateUp()
+                    onRequestAllowBackPress()
                 }
             }
         )
