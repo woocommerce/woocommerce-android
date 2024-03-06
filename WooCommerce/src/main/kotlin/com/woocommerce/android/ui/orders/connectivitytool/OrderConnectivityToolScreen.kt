@@ -13,11 +13,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Success
 
 @Composable
 fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
@@ -106,4 +108,17 @@ fun ConnectivityTestRow(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun OrderConnectivityToolScreenPreview() {
+    OrderConnectivityToolScreen(
+        isContactSupportButtonEnabled = true,
+        internetConnectionTestStatus = NotStarted,
+        wordpressConnectionTestStatus = InProgress,
+        storeConnectionTestStatus = Failure,
+        storeOrdersTestStatus = Success,
+        onContactSupportClicked = {}
+    )
 }
