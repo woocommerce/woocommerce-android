@@ -20,6 +20,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.FILTER_RESULTS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.GROUPED_PRODUCT_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
+import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_DETAILS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.ORDER_LIST_FILTERED
@@ -44,6 +45,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         ORDER_LIST_CREATE_TEST_ORDER,
         ORDER_LIST_LOADING,
         ORDER_LIST_FILTERED,
+        ORDER_DETAILS,
         PRODUCT_LIST,
         REVIEW_LIST,
         UNREAD_FILTERED_REVIEW_LIST,
@@ -143,6 +145,14 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
                 message = null
                 buttonText = null
                 drawableId = R.drawable.img_empty_search
+            }
+
+            ORDER_DETAILS -> {
+                isTitleBold = true
+                title = context.getString(R.string.empty_order_detail_title)
+                message = context.getString(R.string.empty_order_detail_message)
+                buttonText = null
+                drawableId = R.drawable.img_empty_orders_no_orders
             }
 
             PRODUCT_LIST -> {

@@ -196,9 +196,7 @@ class OrderDetailViewModel @Inject constructor(
                 } ?: fetchOrder(showSkeleton = true)
             }
         } else {
-            viewState = viewState.copy(
-                isOrderDetailSkeletonShown = true
-            )
+            viewState = viewState.copy(isOrderDetailEmpty = true)
         }
     }
 

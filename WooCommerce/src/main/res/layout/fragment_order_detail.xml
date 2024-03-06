@@ -26,8 +26,15 @@
 
         <View
             android:id="@+id/app_bar_divider"
-            android:layout_gravity="bottom"
-            style="@style/Woo.Divider" />
+            style="@style/Woo.Divider"
+            android:layout_gravity="bottom" />
+
+
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollView"

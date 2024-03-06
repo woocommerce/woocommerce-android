@@ -4089,4 +4089,7 @@
     <string name="order_configuration_product_selection_control">Product selection</string>
     <string name="disabled">Disabled</string>
     <string name="see_report">See Report</string>
+
+    <string name="empty_order_detail_title">No Order Details Yet</string>
+    <string name="empty_order_detail_message">Your order details will show here when you\'ve made an order.</string>
 </resources>

@@ -93,6 +93,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.util.DisplayUtils
@@ -395,6 +396,7 @@ class OrderDetailFragment :
             new.isAIThankYouNoteButtonShown.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
                 binding.orderDetailsAICard.isVisible = it
             }
+            new.isOrderDetailEmpty.takeIfNotEqualTo(old?.isOrderDetailEmpty) { showEmptyView(it) }
         }
 
         viewModel.orderNotes.observe(viewLifecycleOwner) {
@@ -803,6 +805,16 @@ class OrderDetailFragment :
         ).also {
             it.addCallback(dismissCallback)
             it.show()
+        }
+    }
+
+    private fun showEmptyView(show: Boolean) {
+        if (show) {
+            binding.orderDetailContainer.visibility = View.GONE
+            binding.emptyView.show(WCEmptyView.EmptyViewType.ORDER_DETAILS)
+        } else {
+            binding.emptyView.hide()
+            binding.orderDetailContainer.visibility = View.VISIBLE
         }
     }
 
