@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.content.res.Configuration
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -867,13 +868,34 @@ class OrderListFragment :
                 (activity as? MainActivity)?.hideBottomNav()
             }, HANDLER_DELAY)
         }
+        WPActivityUtils.showKeyboard(searchView)
+
     }
 
     private fun checkOrientation() {
         val isLandscape = DisplayUtils.isLandscape(context)
-        if (isLandscape && isSearching) {
+        if (isLandscape && isSearching && isKeyboardOpen()) {
             searchView?.post { searchView?.clearFocus() }
         }
+    }
+
+    private fun isKeyboardOpen(): Boolean {
+        val activityRootView = activity?.findViewById<View>(android.R.id.content)
+        val visibleThreshold = 150.dpToPx()
+
+        if (activityRootView != null) {
+            val rect = Rect()
+            activityRootView.getWindowVisibleDisplayFrame(rect)
+            val heightDiff = activityRootView.height - rect.height()
+
+            return heightDiff > visibleThreshold
+        }
+        return false
+    }
+
+    private fun Int.dpToPx(): Int {
+        val density = resources.displayMetrics.density
+        return (this * density).toInt()
     }
     // endregion
 
