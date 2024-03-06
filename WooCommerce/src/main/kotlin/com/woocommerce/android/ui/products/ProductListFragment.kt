@@ -12,6 +12,7 @@ import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
@@ -89,6 +90,8 @@ class ProductListFragment :
 
     @Inject
     lateinit var productListToolbar: ProductListToolbarHelper
+
+    private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
 
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
@@ -367,6 +370,14 @@ class ProductListFragment :
                 else -> event.isHandled = false
             }
         }
+
+        productsCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductTrashed -> {
+                    trashProduct(event.productId)
+                }
+            }
+        }
     }
 
     private fun handleUpdateDialogs(event: ShowUpdateDialog) {
@@ -444,14 +455,6 @@ class ProductListFragment :
     }
 
     private fun setupResultHandlers() {
-        handleResult<Bundle>(ProductDetailFragment.KEY_PRODUCT_DETAIL_RESULT) { bundle ->
-            if (bundle.getBoolean(ProductDetailFragment.KEY_PRODUCT_DETAIL_DID_TRASH)) {
-                // User chose to trash from product detail, but we do the actual trashing here
-                // so we can show a snackbar enabling the user to undo the trashing.
-                val remoteProductId = bundle.getLong(ProductDetailFragment.KEY_REMOTE_PRODUCT_ID)
-                trashProduct(remoteProductId)
-            }
-        }
         handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
             productListViewModel.onFiltersChanged(
                 stockStatus = result.stockStatus,

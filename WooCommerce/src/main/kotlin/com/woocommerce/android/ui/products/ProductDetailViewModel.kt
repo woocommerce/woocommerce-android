@@ -76,7 +76,6 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -490,14 +489,14 @@ class ProductDetailViewModel @Inject constructor(
         if (checkConnection() && !viewState.isConfirmingTrash) {
             triggerEvent(
                 ShowDialog(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    positiveBtnAction = { _, _ ->
                         tracker.track(AnalyticsEvent.PRODUCT_DETAIL_PRODUCT_DELETED)
                         viewState = viewState.copy(isConfirmingTrash = false)
                         viewState.productDraft?.let { product ->
-                            triggerEvent(ExitWithResult(product.remoteId))
+                            triggerEvent(TrashProduct(product.remoteId))
                         }
                     },
-                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    negativeBtnAction = { _, _ ->
                         viewState = viewState.copy(isConfirmingTrash = false)
                     },
                     messageId = R.string.product_confirm_trash,
@@ -2478,6 +2477,8 @@ class ProductDetailViewModel @Inject constructor(
     ) : Event()
 
     object ShowAiProductCreationSurveyBottomSheet : Event()
+
+    data class TrashProduct(val productId: Long) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

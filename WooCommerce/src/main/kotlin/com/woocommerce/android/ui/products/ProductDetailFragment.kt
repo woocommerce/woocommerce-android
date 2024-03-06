@@ -8,6 +8,7 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +28,6 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowBlazeCreat
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductError
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowDuplicateProductInProgress
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowLinkedProductPromoBanner
+import com.woocommerce.android.ui.products.ProductDetailViewModel.TrashProduct
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
@@ -71,7 +72,6 @@ import com.woocommerce.android.ui.promobanner.PromoBanner
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.WooAnimUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -88,10 +88,6 @@ class ProductDetailFragment :
     OnGalleryImageInteractionListener {
     companion object {
         private const val LIST_STATE_KEY = "list_state"
-
-        const val KEY_PRODUCT_DETAIL_RESULT = "product_detail_result"
-        const val KEY_PRODUCT_DETAIL_DID_TRASH = "product_detail_did_trash"
-        const val KEY_REMOTE_PRODUCT_ID = "remote_product_id"
     }
 
     private var productName = ""
@@ -121,6 +117,8 @@ class ProductDetailFragment :
         get() = AppBarStatus.Hidden
 
     @Inject lateinit var crashLogging: CrashLogging
+
+    private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -328,13 +326,13 @@ class ProductDetailFragment :
             when (event) {
                 is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is RefreshMenu -> toolbarHelper.setupToolbar()
-                is ExitWithResult<*> -> {
-                    navigateBackWithResult(
-                        KEY_PRODUCT_DETAIL_RESULT,
-                        Bundle().also {
-                            it.putLong(KEY_REMOTE_PRODUCT_ID, event.data as Long)
-                            it.putBoolean(KEY_PRODUCT_DETAIL_DID_TRASH, true)
-                        }
+
+                is TrashProduct -> {
+                    if (findNavController().previousBackStackEntry != null) {
+                        findNavController().popBackStack()
+                    }
+                    productsCommunicationViewModel.pushEvent(
+                        ProductsCommunicationViewModel.CommunicationEvent.ProductTrashed(event.productId)
                     )
                 }
 
