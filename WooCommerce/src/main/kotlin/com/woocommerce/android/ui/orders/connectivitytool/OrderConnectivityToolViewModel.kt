@@ -34,7 +34,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     )
 
     val isContactSupportEnabled = _checkStatus
-        .map { it.isIdle }
+        .map { it.isCheckFinished }
         .asLiveData()
 
     val viewState = _checkStatus.asLiveData()
@@ -66,17 +66,19 @@ class OrderConnectivityToolViewModel @Inject constructor(
         val storeConnectionTestStatus: ConnectivityTestStatus = NotStarted,
         val storeOrdersTestStatus: ConnectivityTestStatus = NotStarted
     ) : Parcelable {
-        val isIdle
-            get() = internetConnectionTestStatus != InProgress &&
-                wordpressConnectionTestStatus != InProgress &&
-                storeConnectionTestStatus != InProgress &&
-                storeOrdersTestStatus != InProgress
+        val isCheckFinished
+            get() = internetConnectionTestStatus.isFinished() &&
+                wordpressConnectionTestStatus.isFinished() &&
+                storeConnectionTestStatus.isFinished() &&
+                storeOrdersTestStatus.isFinished()
     }
 
     enum class ConnectivityTestStatus {
         NotStarted,
         InProgress,
         Success,
-        Failure
+        Failure;
+
+        fun isFinished() = this == Success || this == Failure
     }
 }
