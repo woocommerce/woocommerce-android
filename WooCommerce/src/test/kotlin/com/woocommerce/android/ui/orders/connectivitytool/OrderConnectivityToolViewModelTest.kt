@@ -5,11 +5,13 @@ import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolV
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenSupportRequest
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -145,5 +147,18 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(false, false))
+    }
+
+    @Test
+    fun `when onContactSupportClicked is called, then trigger OpenSupportRequest event`() {
+        // Given
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        sut.event.observeForever { events.add(it) }
+
+        // When
+        sut.onContactSupportClicked()
+
+        // Then
+        assertThat(events).isEqualTo(listOf(OpenSupportRequest))
     }
 }
