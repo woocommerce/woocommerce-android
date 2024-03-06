@@ -91,9 +91,9 @@ fun OrderConnectivityToolScreen(
         )
         Spacer(modifier = modifier.weight(1f))
         Button(
-            modifier = modifier.fillMaxWidth(),
             enabled = isContactSupportButtonEnabled,
             onClick = { onContactSupportClicked() },
+            modifier = modifier.fillMaxWidth()
         ) {
             Text(stringResource(id = R.string.orderlist_connectivity_tool_contact_support_action))
         }
@@ -105,20 +105,21 @@ fun ConnectivityTestRow(
     @StringRes checkTitle: Int,
     @DrawableRes iconDrawable: Int,
     errorMessage: String,
-    testStatus: ConnectivityCheckStatus
+    testStatus: ConnectivityCheckStatus,
+    modifier: Modifier = Modifier
 ) {
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
-        modifier = Modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_75)))
+        modifier = modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_75)))
     ) {
         Column(
-            modifier = Modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_75)))
+            modifier = modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_75)))
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    modifier = Modifier
+                    modifier = modifier
                         .size(dimensionResource(id = R.dimen.major_250))
                         .clip(CircleShape)
                         .background(colorResource(id = R.color.more_menu_button_icon_background))
@@ -126,16 +127,16 @@ fun ConnectivityTestRow(
                     Image(
                         painter = painterResource(id = iconDrawable),
                         contentDescription = stringResource(id = checkTitle),
-                        modifier = Modifier
+                        modifier = modifier
                             .size(dimensionResource(id = R.dimen.major_150))
                             .align(Alignment.Center)
                     )
                 }
                 Text(
                     text = stringResource(id = checkTitle),
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
+                    modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100))
                 )
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = modifier.weight(1f))
                 when (testStatus) {
                     NotStarted -> null
                     InProgress -> null
@@ -152,15 +153,16 @@ fun ConnectivityTestRow(
             if (testStatus == Failure) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
+                    modifier = modifier
                         .padding(top = dimensionResource(id = R.dimen.major_100))
                         .fillMaxWidth()
                 ) {
                     Text(errorMessage)
-                    Button(onClick = { /*TODO*/ }) {
-                        Box(Modifier.fillMaxWidth()) {
-                            Text(stringResource(id = R.string.orderlist_connectivity_tool_read_more_action))
-                        }
+                    Button(
+                        onClick = { /*TODO*/ },
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(id = R.string.orderlist_connectivity_tool_read_more_action))
                     }
                 }
             }
