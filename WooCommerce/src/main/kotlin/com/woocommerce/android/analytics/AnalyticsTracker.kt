@@ -550,15 +550,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_STATUS = "status"
         const val KEY_SELECTED_PRODUCTS_COUNT = "selected_products_count"
 
-        // -- IPP feedback banner
-        const val KEY_IPP_BANNER_CAMPAIGN_NAME = "campaign"
-        const val KEY_IPP_BANNER_SOURCE = "source"
-        const val KEY_IPP_BANNER_REMIND_LATER = "remind_later"
-        const val VALUE_IPP_BANNER_SOURCE_ORDER_LIST = "order_list"
-        const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NEWBIE = "ipp_not_user"
-        const val VALUE_IPP_BANNER_CAMPAIGN_NAME_BEGINNER = "ipp_new_user"
-        const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NINJA = "ipp_power_user"
-
         // -- IPP Learn More Link
         const val IPP_LEARN_MORE_SOURCE = "source"
 
