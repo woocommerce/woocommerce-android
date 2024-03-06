@@ -1006,7 +1006,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         // GIVEN
         val mode = ProductDetailFragment.Mode.Empty
         savedState = ProductDetailFragmentArgs(mode).toSavedStateHandle()
-        doReturn(product).whenever(productRepository).getProductAsync(any())
 
         // WHEN
         setup()
