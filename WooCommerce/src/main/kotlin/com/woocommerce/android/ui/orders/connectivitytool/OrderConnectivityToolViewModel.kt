@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityTestStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
@@ -42,35 +41,35 @@ class OrderConnectivityToolViewModel @Inject constructor(
     fun startConnectionTests() {
         launch {
             internetConnectionCheck().onEach {
-                _checkStatus.value = _checkStatus.value.copy(internetConnectionTestStatus = it)
+                _checkStatus.value = _checkStatus.value.copy(internetConnectionCheckStatus = it)
             }.launchIn(viewModelScope)
 
             wordPressConnectionCheck().onEach {
-                _checkStatus.value = _checkStatus.value.copy(wordpressConnectionTestStatus = it)
+                _checkStatus.value = _checkStatus.value.copy(wordpressConnectionCheckStatus = it)
             }.launchIn(viewModelScope)
 
             storeConnectionCheck().onEach {
-                _checkStatus.value = _checkStatus.value.copy(storeConnectionTestStatus = it)
+                _checkStatus.value = _checkStatus.value.copy(storeConnectionCheckStatus = it)
             }.launchIn(viewModelScope)
 
             storeOrdersCheck().onEach {
-                _checkStatus.value = _checkStatus.value.copy(storeOrdersTestStatus = it)
+                _checkStatus.value = _checkStatus.value.copy(storeOrdersCheckStatus = it)
             }.launchIn(viewModelScope)
         }
     }
 
     @Parcelize
     data class CheckStatus(
-        val internetConnectionTestStatus: ConnectivityTestStatus = NotStarted,
-        val wordpressConnectionTestStatus: ConnectivityTestStatus = NotStarted,
-        val storeConnectionTestStatus: ConnectivityTestStatus = NotStarted,
-        val storeOrdersTestStatus: ConnectivityTestStatus = NotStarted
+        val internetConnectionCheckStatus: ConnectivityTestStatus = NotStarted,
+        val wordpressConnectionCheckStatus: ConnectivityTestStatus = NotStarted,
+        val storeConnectionCheckStatus: ConnectivityTestStatus = NotStarted,
+        val storeOrdersCheckStatus: ConnectivityTestStatus = NotStarted
     ) : Parcelable {
         val isCheckFinished
-            get() = internetConnectionTestStatus.isFinished() &&
-                wordpressConnectionTestStatus.isFinished() &&
-                storeConnectionTestStatus.isFinished() &&
-                storeOrdersTestStatus.isFinished()
+            get() = internetConnectionCheckStatus.isFinished() &&
+                wordpressConnectionCheckStatus.isFinished() &&
+                storeConnectionCheckStatus.isFinished() &&
+                storeOrdersCheckStatus.isFinished()
     }
 
     enum class ConnectivityTestStatus {

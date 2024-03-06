@@ -24,10 +24,10 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     OrderConnectivityToolScreen(
         isContactSupportButtonEnabled = viewState?.isContactSupportEnabled ?: false,
-        internetConnectionTestStatus = viewState?.internetConnectionTestStatus ?: NotStarted,
-        wordpressConnectionTestStatus = viewState?.wordpressConnectionTestStatus ?: NotStarted,
-        storeConnectionTestStatus = viewState?.storeConnectionTestStatus ?: NotStarted,
-        storeOrdersTestStatus = viewState?.storeOrdersTestStatus ?: NotStarted
+        internetConnectionTestStatus = viewState?.internetConnectionCheckStatus ?: NotStarted,
+        wordpressConnectionTestStatus = viewState?.wordpressConnectionCheckStatus ?: NotStarted,
+        storeConnectionTestStatus = viewState?.storeConnectionCheckStatus ?: NotStarted,
+        storeOrdersTestStatus = viewState?.storeOrdersCheckStatus ?: NotStarted
     )
 }
 

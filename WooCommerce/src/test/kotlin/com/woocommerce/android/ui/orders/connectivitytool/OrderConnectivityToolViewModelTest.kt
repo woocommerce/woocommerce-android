@@ -50,7 +50,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         val stateEvents = mutableListOf<ConnectivityTestStatus>()
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
         sut.viewState.observeForever {
-            stateEvents.add(it.internetConnectionTestStatus)
+            stateEvents.add(it.internetConnectionCheckStatus)
         }
 
         // When
@@ -66,7 +66,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         val stateEvents = mutableListOf<ConnectivityTestStatus>()
         whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
         sut.viewState.observeForever {
-            stateEvents.add(it.wordpressConnectionTestStatus)
+            stateEvents.add(it.wordpressConnectionCheckStatus)
         }
 
         // When
@@ -82,7 +82,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         val stateEvents = mutableListOf<ConnectivityTestStatus>()
         whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
         sut.viewState.observeForever {
-            stateEvents.add(it.storeConnectionTestStatus)
+            stateEvents.add(it.storeConnectionCheckStatus)
         }
 
         // When
@@ -98,7 +98,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         val stateEvents = mutableListOf<ConnectivityTestStatus>()
         whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
         sut.viewState.observeForever {
-            stateEvents.add(it.storeOrdersTestStatus)
+            stateEvents.add(it.storeOrdersCheckStatus)
         }
 
         // When
