@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConne
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionCheckUseCase
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,6 +54,8 @@ class OrderConnectivityToolViewModel @Inject constructor(
         }
     }
 
+    fun onContactSupportClicked() { triggerEvent(OpenSupportRequest) }
+
     @Parcelize
     data class CheckStatus(
         val internetConnectionCheckStatus: ConnectivityTestStatus = NotStarted,
@@ -75,4 +78,6 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
         fun isFinished() = this == Success || this == Failure
     }
+
+    object OpenSupportRequest : MultiLiveEvent.Event()
 }
