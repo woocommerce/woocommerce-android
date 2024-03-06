@@ -111,8 +111,12 @@ fun ConnectivityTestRow(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
         modifier = Modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_75)))
     ) {
-        Column {
-            Row {
+        Column(
+            modifier = Modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_75)))
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Box(
                     modifier = Modifier
                         .size(dimensionResource(id = R.dimen.major_250))
@@ -123,12 +127,14 @@ fun ConnectivityTestRow(
                         painter = painterResource(id = iconDrawable),
                         contentDescription = stringResource(id = checkTitle),
                         modifier = Modifier
-                            .size(dimensionResource(id = R.dimen.major_125))
+                            .size(dimensionResource(id = R.dimen.major_150))
                             .align(Alignment.Center)
                     )
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                Text(stringResource(id = checkTitle))
+                Text(
+                    text = stringResource(id = checkTitle),
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 when (testStatus) {
                     NotStarted -> null
@@ -144,10 +150,17 @@ fun ConnectivityTestRow(
             }
 
             if (testStatus == Failure) {
-                Column {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(top = dimensionResource(id = R.dimen.major_100))
+                        .fillMaxWidth()
+                ) {
                     Text(errorMessage)
                     Button(onClick = { /*TODO*/ }) {
-                        Text(stringResource(id = R.string.orderlist_connectivity_tool_read_more_action))
+                        Box(Modifier.fillMaxWidth()) {
+                            Text(stringResource(id = R.string.orderlist_connectivity_tool_read_more_action))
+                        }
                     }
                 }
             }
