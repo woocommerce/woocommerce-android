@@ -23,7 +23,7 @@ import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolV
 fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     OrderConnectivityToolScreen(
-        isContactSupportButtonEnabled = viewState?.isContactSupportEnabled ?: false,
+        isContactSupportButtonEnabled = viewState?.isCheckFinished ?: false,
         internetConnectionTestStatus = viewState?.internetConnectionCheckStatus ?: NotStarted,
         wordpressConnectionTestStatus = viewState?.wordpressConnectionCheckStatus ?: NotStarted,
         storeConnectionTestStatus = viewState?.storeConnectionCheckStatus ?: NotStarted,
@@ -72,7 +72,7 @@ fun OrderConnectivityToolScreen(
         Button(
             modifier = modifier.fillMaxWidth(),
             enabled = isContactSupportButtonEnabled,
-            onClick = {},
+            onClick = {  },
         ) {
             Text("Contact Support")
         }

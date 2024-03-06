@@ -31,11 +31,6 @@ class OrderConnectivityToolViewModel @Inject constructor(
         scope = viewModelScope,
         initialValue = CheckStatus()
     )
-
-    val isContactSupportEnabled = _checkStatus
-        .map { it.isCheckFinished }
-        .asLiveData()
-
     val viewState = _checkStatus.asLiveData()
 
     fun startConnectionTests() {
