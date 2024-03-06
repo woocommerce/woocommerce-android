@@ -363,10 +363,13 @@ class ProductDetailViewModel @Inject constructor(
             is ProductDetailFragment.Mode.Loading -> {
                 viewState = viewState.copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.Loading)
             }
+
             is ProductDetailFragment.Mode.Empty -> {
-                viewState = viewState.copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.Error(
-                    R.string.product_detail_product_not_selected
-                ))
+                viewState = viewState.copy(
+                    auxiliaryState = ProductDetailViewState.AuxiliaryState.Error(
+                        R.string.product_detail_product_not_selected
+                    )
+                )
             }
         }
     }
@@ -392,8 +395,7 @@ class ProductDetailViewModel @Inject constructor(
             if (isAddFlowEntryPoint && !isProductStoredAtSite) {
                 storedProduct.value = createDefaultProductForAddFlow()
             } else {
-                val mode = navArgs.mode
-                when (mode) {
+                when (val mode = navArgs.mode) {
                     is ProductDetailFragment.Mode.ShowProduct -> {
                         storedProduct.value = productRepository.getProductAsync(
                             viewState.productDraft?.remoteId ?: mode.remoteProductId
