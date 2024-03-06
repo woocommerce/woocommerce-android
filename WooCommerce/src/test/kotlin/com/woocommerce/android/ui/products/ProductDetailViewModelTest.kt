@@ -135,7 +135,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private val productWithParameters = ProductDetailViewState(
         productDraft = product,
-        isSkeletonShown = false,
+        auxiliaryState = ProductDetailViewState.AuxiliaryState.None,
         uploadingImageUris = emptyList(),
         showBottomSheetButton = true
     )
@@ -352,14 +352,18 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Shows and hides product detail skeleton correctly`() = testBlocking {
         doReturn(null).whenever(productRepository).getProductAsync(any())
 
-        val isSkeletonShown = ArrayList<Boolean>()
+        val auxiliaryStates = ArrayList<ProductDetailViewState.AuxiliaryState>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
-            new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { isSkeletonShown.add(it) }
+            new.auxiliaryState.takeIfNotEqualTo(old?.auxiliaryState) { auxiliaryStates.add(it) }
         }
 
         viewModel.start()
 
-        assertThat(isSkeletonShown).containsExactly(false, true, false)
+        assertThat(auxiliaryStates).containsExactly(
+            ProductDetailViewState.AuxiliaryState.Loading,
+            ProductDetailViewState.AuxiliaryState.None,
+            ProductDetailViewState.AuxiliaryState.Loading,
+        )
     }
 
     @Test
