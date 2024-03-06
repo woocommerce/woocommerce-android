@@ -200,6 +200,8 @@ class MyStoreStatsView @JvmOverloads constructor(
         customRange = customDateRange
         customRangeButton.isVisible = customDateRange == null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
         customRangeTab.view.isVisible = customDateRange != null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
+        tabLayout.selectTab(customRangeTab)
+        tabLayout.scrollX = tabLayout.width
     }
 
     fun showSkeleton(show: Boolean) {
