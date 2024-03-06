@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.connectivitytool
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Success
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
@@ -106,5 +107,43 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
+    }
+
+    @Test
+    fun `when all checks are finished, then isContactSupportButtonEnabled is true`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<Boolean>()
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
+        sut.viewState.observeForever {
+            stateEvents.add(it.isCheckFinished)
+        }
+
+        // When
+        sut.startConnectionTests()
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(false, true))
+    }
+
+    @Test
+    fun `when checks are still running, then isContactSupportButtonEnabled is false`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<Boolean>()
+        whenever(internetConnectionCheck()).thenReturn(flowOf(InProgress))
+        whenever(wordPressConnectionCheck()).thenReturn(flowOf(InProgress))
+        whenever(storeConnectionCheck()).thenReturn(flowOf(InProgress))
+        whenever(storeOrdersCheck()).thenReturn(flowOf(InProgress))
+        sut.viewState.observeForever {
+            stateEvents.add(it.isCheckFinished)
+        }
+
+        // When
+        sut.startConnectionTests()
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(false, false))
     }
 }
