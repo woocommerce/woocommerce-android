@@ -27,6 +27,7 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
         internetConnectionTestStatus = viewState?.internetConnectionCheckStatus ?: NotStarted,
         wordpressConnectionTestStatus = viewState?.wordpressConnectionCheckStatus ?: NotStarted,
         storeConnectionTestStatus = viewState?.storeConnectionCheckStatus ?: NotStarted,
+        onContactSupportClicked = viewModel::onContactSupportClicked,
         storeOrdersTestStatus = viewState?.storeOrdersCheckStatus ?: NotStarted
     )
 }
@@ -38,6 +39,7 @@ fun OrderConnectivityToolScreen(
     wordpressConnectionTestStatus: ConnectivityTestStatus,
     storeConnectionTestStatus: ConnectivityTestStatus,
     storeOrdersTestStatus: ConnectivityTestStatus,
+    onContactSupportClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -72,7 +74,7 @@ fun OrderConnectivityToolScreen(
         Button(
             modifier = modifier.fillMaxWidth(),
             enabled = isContactSupportButtonEnabled,
-            onClick = {  },
+            onClick = { onContactSupportClicked() },
         ) {
             Text("Contact Support")
         }
