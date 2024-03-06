@@ -479,7 +479,6 @@ class ProductListFragment :
 
         val callback = object : Snackbar.Callback() {
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                super.onDismissed(transientBottomBar, event)
                 pendingTrashProductId = null
                 if (trashProductCancelled) {
                     productListViewModel.reloadProductsFromDb()
