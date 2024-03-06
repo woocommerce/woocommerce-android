@@ -325,29 +325,33 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
 
         assertThat(viewModel.getProduct().productDraft).isNull()
-        assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(ProductDetailViewState.AuxiliaryState.Error(
-            R.string.product_detail_fetch_product_error
-        ))
+        assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
+            ProductDetailViewState.AuxiliaryState.Error(
+                R.string.product_detail_fetch_product_error
+            )
+        )
     }
 
     @Test
-    fun `given nothing returned from repo with INVALID_PRODUCT_ID error, when view model started, the error status emitted with invalid id text`()
-    = testBlocking {
-        whenever(productRepository.fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)).thenReturn(null)
-        whenever(productRepository.getProductAsync(PRODUCT_REMOTE_ID)).thenReturn(null)
-        whenever(productRepository.lastFetchProductErrorType).thenReturn(
-            WCProductStore.ProductErrorType.INVALID_PRODUCT_ID
-        )
+    fun `given nothing returned from repo with INVALID_PRODUCT_ID error, when view model started, the error status emitted with invalid id text`() =
+        testBlocking {
+            whenever(productRepository.fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)).thenReturn(null)
+            whenever(productRepository.getProductAsync(PRODUCT_REMOTE_ID)).thenReturn(null)
+            whenever(productRepository.lastFetchProductErrorType).thenReturn(
+                WCProductStore.ProductErrorType.INVALID_PRODUCT_ID
+            )
 
-        viewModel.start()
+            viewModel.start()
 
-        verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
+            verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
 
-        assertThat(viewModel.getProduct().productDraft).isNull()
-        assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(ProductDetailViewState.AuxiliaryState.Error(
-            R.string.product_detail_fetch_product_invalid_id_error
-        ))
-    }
+            assertThat(viewModel.getProduct().productDraft).isNull()
+            assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
+                ProductDetailViewState.AuxiliaryState.Error(
+                    R.string.product_detail_fetch_product_invalid_id_error
+                )
+            )
+        }
 
     @Test
     fun `Do not fetch product from api when not connected`() = testBlocking {
