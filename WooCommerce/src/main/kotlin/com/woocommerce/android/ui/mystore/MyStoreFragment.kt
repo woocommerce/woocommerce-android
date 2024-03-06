@@ -214,6 +214,9 @@ class MyStoreFragment :
         binding.myStoreStats.customRangeButton.setOnClickListener {
             myStoreViewModel.onAddCustomRangeClicked()
         }
+        binding.myStoreStats.customRangeLabel.setOnClickListener {
+            myStoreViewModel.onAddCustomRangeClicked()
+        }
 
         binding.statsScrollView.scrollStartEvents()
             .onEach { usageTracksEventEmitter.interacted() }

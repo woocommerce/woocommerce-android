@@ -35,6 +35,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_GRANULAR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_RANGE
 import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.convertedFrom
+import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
 import com.woocommerce.android.util.CurrencyFormatter
@@ -103,9 +104,6 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private val fadeHandler = Handler(Looper.getMainLooper())
 
-    private val statsCustomDateRangeTextView
-        get() = binding.statsViewRow.statsCustomDateRangeTextView
-
     private val statsDateValue
         get() = binding.statsViewRow.statsDateTextView
 
@@ -128,6 +126,8 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val chartUserInteractions = MutableSharedFlow<Unit>()
     private lateinit var chartUserInteractionsJob: Job
 
+    val customRangeLabel
+        get() = binding.statsViewRow.statsCustomDateRangeTextView
     val customRangeButton = binding.customRangeButton
     val tabLayout = binding.statsTabLayout
     private lateinit var customRangeTab: Tab
@@ -205,6 +205,10 @@ class MyStoreStatsView @JvmOverloads constructor(
         customRangeTab.view.isVisible = customDateRange != null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
         tabLayout.selectTab(customRangeTab)
         tabLayout.scrollX = tabLayout.width
+
+        customRangeLabel.text =
+            "${customDateRange?.first?.formatToMMMddYYYY()} - ${customDateRange?.second?.formatToMMMddYYYY()}"
+        customRangeLabel.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
     }
 
     fun showSkeleton(show: Boolean) {
