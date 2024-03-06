@@ -575,6 +575,9 @@ class ProductDetailFragment :
         data object Loading : Mode()
 
         @Parcelize
+        data object Empty : Mode()
+
+        @Parcelize
         data class ShowProduct(val remoteProductId: Long) : Mode()
 
         @Parcelize

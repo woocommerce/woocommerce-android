@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenEmptyProduct
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenProduct
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
@@ -364,6 +365,19 @@ class ProductListFragment :
                         navigateWithPhoneNavigation = {
                             binding.addProductButton.hide()
                             onProductClick(event.productId, event.sharedView)
+                        }
+                    )
+                }
+                is OpenEmptyProduct -> {
+                    tabletLayoutSetupHelper.openItemDetails(
+                        tabletNavigateTo = {
+                            R.id.nav_graph_products to ProductDetailFragmentArgs(
+                                mode = ProductDetailFragment.Mode.Empty,
+                                isTrashEnabled = true,
+                            ).toBundle()
+                        },
+                        navigateWithPhoneNavigation = {
+                            error("Should not be invoked on a phone")
                         }
                     )
                 }

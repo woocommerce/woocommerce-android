@@ -438,10 +438,14 @@ class ProductListViewModel @Inject constructor(
     }
 
     private fun openFirstLoadedProductOnTablet(products: List<Product>) {
-        if (products.isNotEmpty() && isTabletLogicNeeded()) {
-            if (openedProductId == null) {
+        if (products.isNotEmpty()) {
+            if (isTabletLogicNeeded() && openedProductId == null) {
                 openedProductId = products.first().remoteId
                 onOpenProduct(openedProductId!!, null)
+            }
+        } else {
+            if (isTabletLogicNeeded()) {
+                triggerEvent(ProductListEvent.OpenEmptyProduct)
             }
         }
     }
@@ -724,9 +728,9 @@ class ProductListViewModel @Inject constructor(
     }
 
     sealed class ProductListEvent : Event() {
-        object ScrollToTop : ProductListEvent()
-        object ShowAddProductBottomSheet : ProductListEvent()
-        object ShowProductSortingBottomSheet : ProductListEvent()
+        data object ScrollToTop : ProductListEvent()
+        data object ShowAddProductBottomSheet : ProductListEvent()
+        data object ShowProductSortingBottomSheet : ProductListEvent()
         data class ShowProductFilterScreen(
             val stockStatusFilter: String?,
             val productTypeFilter: String?,
@@ -747,6 +751,8 @@ class ProductListViewModel @Inject constructor(
             val newPosition: Int,
             val sharedView: View?
         ) : ProductListEvent()
+
+        data object OpenEmptyProduct : ProductListEvent()
     }
 
     enum class ProductListState { Selecting, Browsing }
