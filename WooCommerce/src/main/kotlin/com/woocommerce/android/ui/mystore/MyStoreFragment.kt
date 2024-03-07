@@ -40,6 +40,7 @@ import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
@@ -83,7 +84,6 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
 import java.util.Date
@@ -97,11 +97,7 @@ class MyStoreFragment :
     MenuProvider {
     companion object {
         val TAG: String = MyStoreFragment::class.java.simpleName
-
         fun newInstance() = MyStoreFragment()
-
-        val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
-
         private const val JITM_FRAGMENT_TAG = "jitm_fragment"
     }
 
@@ -158,7 +154,8 @@ class MyStoreFragment :
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            myStoreViewModel.onStatsGranularityChanged(tab.tag as? StatsGranularity)
+            myStoreViewModel.onStatsGranularityChanged(tab.tag as? SelectionType ?: SelectionType.TODAY)
+            tabLayout.selectTab(tab)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -190,7 +187,7 @@ class MyStoreFragment :
         }
 
         binding.myStoreStats.initView(
-            myStoreViewModel.activeStatsGranularity.value ?: DEFAULT_STATS_GRANULARITY,
+            myStoreViewModel.getInitialStatsTimeRangeSelection(),
             selectedSite,
             dateUtils,
             currencyFormatter,
@@ -397,14 +394,18 @@ class MyStoreFragment :
     private fun setupStateObservers() {
         myStoreViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
-        myStoreViewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
-            if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
-                val index = StatsGranularity.entries.indexOf(activeGranularity)
-                // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
-                handler.postDelayed({ tabLayout.getTabAt(index)?.select() }, 300)
+        myStoreViewModel.selectionTypeRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
+            // TODO REMOVE THIS COMMENTED CODE AFTER TESTING TABS ARE UPDATED CORRECTLY
+//            if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
+//                val index = StatsGranularity.entries.indexOf(activeGranularity)
+//                // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
+//                handler.postDelayed({ tabLayout.getTabAt(index)?.select() }, 300)
+//            }
+            binding.myStoreStats.loadDashboardStats(statsTimeRangeSelection)
+            binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection)
+            if (statsTimeRangeSelection.selectionType == SelectionType.CUSTOM) {
+                binding.myStoreStats.updateCustomDateRange(statsTimeRangeSelection)
             }
-            binding.myStoreStats.loadDashboardStats(activeGranularity)
-            binding.myStoreTopPerformers.onDateGranularityChanged(activeGranularity)
         }
         myStoreViewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
             when (revenueStats) {
@@ -431,9 +432,6 @@ class MyStoreFragment :
                 topPerformers.isError -> showTopPerformersError()
                 else -> showTopPerformers(topPerformers.topPerformers)
             }
-        }
-        myStoreViewModel.customDateRange.observe(viewLifecycleOwner) { dateRange ->
-            binding.myStoreStats.updateCustomDateRange(dateRange)
         }
         myStoreViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
             when (newValue) {
@@ -579,7 +577,7 @@ class MyStoreFragment :
         binding.myStoreStats.updateView(revenueStatsModel)
 
         // update the stats today widget if we're viewing today's stats
-        if (myStoreViewModel.activeStatsGranularity.value == StatsGranularity.DAYS) {
+        if (myStoreViewModel.selectionTypeRange.value?.selectionType == SelectionType.TODAY) {
             (activity as? MainActivity)?.updateStatsWidgets()
         }
     }
