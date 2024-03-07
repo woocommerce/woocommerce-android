@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.connectivitytool
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
@@ -114,10 +115,6 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
     fun `when all checks are finished, then isCheckFinished is true`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<Boolean>()
-        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
         sut.isCheckFinished.observeForever {
             stateEvents.add(it)
         }
@@ -127,6 +124,22 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(false, false, false, false, true))
+    }
+
+    @Test
+    fun `when one check fails, then isCheckFinished is true`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<Boolean>()
+        whenever(storeConnectionCheck()).thenReturn(flowOf(Failure))
+        sut.isCheckFinished.observeForever {
+            stateEvents.add(it)
+        }
+
+        // When
+        sut.startConnectionTests()
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(false, false, false, true))
     }
 
     @Test
