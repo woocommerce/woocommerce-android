@@ -26,8 +26,6 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -263,13 +261,11 @@ class AnalyticsRepository @Inject constructor(
     private suspend fun getVisitorsCount(
         rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
-    ): Result<Map<String, Int>> = coroutineScope {
-        statsRepository.fetchVisitorStats(
-            range = rangeSelection.currentRange,
-            granularity = getGranularity(rangeSelection.selectionType),
-            fetchStrategy is ForceNew,
-        ).single()
-    }
+    ): Result<Map<String, Int>> = statsRepository.fetchVisitorStats(
+        range = rangeSelection.currentRange,
+        granularity = getGranularity(rangeSelection.selectionType),
+        fetchStrategy is ForceNew,
+    )
 
     private fun getGranularity(selectionType: SelectionType) =
         when (selectionType) {
@@ -299,7 +295,6 @@ class AnalyticsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> {
         if (fetchStrategy == Saved) {
             statsRepository.getRevenueStatsById(revenueRangeId)
-                .flowOn(dispatchers.io).single()
                 .takeIf { it.isSuccess && it.getOrNull() != null }
                 ?.let { return it }
         }
@@ -309,7 +304,7 @@ class AnalyticsRepository @Inject constructor(
             granularity = granularity,
             forced = fetchStrategy is ForceNew,
             revenueRangeId = revenueRangeId
-        ).flowOn(dispatchers.io).single().mapCatching { it }
+        ).mapCatching { it }
     }
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode

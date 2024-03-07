@@ -55,11 +55,14 @@ class GetWidgetStats @Inject constructor(
                         includeVisitorStats = areVisitorStatsSupported,
                         site = siteModel
                     )
-                    if (fetchedStats.isError) {
-                        WidgetStatsResult.WidgetStatsFailure(fetchedStats.error.message)
-                    } else {
-                        WidgetStatsResult.WidgetStats(fetchedStats.model!!)
-                    }
+                    fetchedStats.fold(
+                        onSuccess = { stats ->
+                            WidgetStatsResult.WidgetStats(stats)
+                        },
+                        onFailure = { error ->
+                            WidgetStatsResult.WidgetStatsFailure(error.message)
+                        }
+                    )
                 }
             }
         }

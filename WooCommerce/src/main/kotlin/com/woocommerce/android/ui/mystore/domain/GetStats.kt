@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
@@ -97,32 +96,32 @@ class GetStats @Inject constructor(
         )
         if (forceRefresh.not()) {
             statsRepository.getRevenueStatsById(revenueRangeId)
-                .single()
                 .takeIf { it.isSuccess && it.getOrNull() != null }
                 ?.let { return flowOf(LoadStatsResult.RevenueStatsSuccess(it.getOrNull())) }
         }
 
-        return statsRepository.fetchRevenueStats(
+        val revenueStatsResult = statsRepository.fetchRevenueStats(
             range = rangeSelection.currentRange,
             granularity = granularity.fixRevenueGranularity(),
             forced = forceRefresh,
             revenueRangeId = revenueRangeId
-        ).transform { result ->
+        ).let { result ->
             result.fold(
                 onSuccess = { stats ->
                     appPrefsWrapper.setV4StatsSupported(true)
-                    emit(LoadStatsResult.RevenueStatsSuccess(stats))
+                    LoadStatsResult.RevenueStatsSuccess(stats)
                 },
                 onFailure = {
                     if (isPluginNotActiveError(it)) {
                         appPrefsWrapper.setV4StatsSupported(false)
-                        emit(LoadStatsResult.PluginNotActive)
+                        LoadStatsResult.PluginNotActive
                     } else {
-                        emit(LoadStatsResult.RevenueStatsError)
+                        LoadStatsResult.RevenueStatsError
                     }
                 }
             )
         }
+        return flowOf(revenueStatsResult)
     }
 
     private suspend fun visitorStats(
@@ -141,17 +140,18 @@ class GetStats @Inject constructor(
                     else -> this
                 }
 
-                statsRepository.fetchVisitorStats(
+                val result = statsRepository.fetchVisitorStats(
                     range = rangeSelection.currentRange,
                     granularity = granularity.fixVisitorsGranularity(),
                     forced = forceRefresh
                 )
-                    .transform { result ->
+                    .let { result ->
                         result.fold(
-                            onSuccess = { stats -> emit(LoadStatsResult.VisitorsStatsSuccess(stats)) },
-                            onFailure = { emit(LoadStatsResult.VisitorsStatsError) }
+                            onSuccess = { stats -> LoadStatsResult.VisitorsStatsSuccess(stats) },
+                            onFailure = { LoadStatsResult.VisitorsStatsError }
                         )
                     }
+                flowOf(result)
             }
 
             else -> selectedSite.connectionType?.let {
