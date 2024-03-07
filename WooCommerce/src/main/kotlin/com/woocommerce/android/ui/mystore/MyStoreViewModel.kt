@@ -61,7 +61,6 @@ import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import org.wordpress.android.util.FormatUtils
@@ -191,7 +190,7 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    fun onStatsGranularityChanged(granularity: StatsGranularity?) {
+    fun onStatsGranularityChanged(granularity: SelectionType?) {
         usageTracksEventEmitter.interacted()
 
         if (granularity != null) {
@@ -225,7 +224,7 @@ class MyStoreViewModel @Inject constructor(
     fun onViewAnalyticsClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         val targetPeriod = when (val state = revenueStatsState.value) {
-            is RevenueStatsViewState.Content -> state.granularity.toAnalyticTimePeriod()
+            is RevenueStatsViewState.Content -> state.granularity
             else -> SelectionType.TODAY
         }
         triggerEvent(MyStoreEvent.OpenAnalytics(targetPeriod))
@@ -238,7 +237,7 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadStoreStats(granularity: StatsGranularity, forceRefresh: Boolean) {
+    private suspend fun loadStoreStats(granularity: SelectionType, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) {
             _revenueStatsState.value = RevenueStatsViewState.Content(null, granularity)
             _visitorStatsState.value = VisitorStatsViewState.Content(emptyMap())
@@ -277,7 +276,7 @@ class MyStoreViewModel @Inject constructor(
 
     private fun onRevenueStatsSuccess(
         it: RevenueStatsSuccess,
-        selectedGranularity: StatsGranularity
+        selectedGranularity: SelectionType
     ) {
         _revenueStatsState.value = RevenueStatsViewState.Content(
             it.stats?.toStoreStatsUiModel(),
@@ -314,7 +313,7 @@ class MyStoreViewModel @Inject constructor(
         _visitorStatsState.value = VisitorStatsViewState.Unavailable(benefitsBanner)
     }
 
-    private suspend fun loadTopPerformersStats(granularity: StatsGranularity, forceRefresh: Boolean) {
+    private suspend fun loadTopPerformersStats(granularity: SelectionType, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) return
 
         _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
@@ -434,13 +433,6 @@ class MyStoreViewModel @Inject constructor(
         }.getOrDefault(SelectionType.TODAY)
     }
 
-    private fun StatsGranularity.toAnalyticTimePeriod() = when (this) {
-        StatsGranularity.DAYS -> SelectionType.TODAY
-        StatsGranularity.WEEKS -> SelectionType.WEEK_TO_DATE
-        StatsGranularity.MONTHS -> SelectionType.MONTH_TO_DATE
-        StatsGranularity.YEARS -> SelectionType.YEAR_TO_DATE
-    }
-
     fun onCustomRangeSelected(fromDate: Date, toDate: Date) {
         _customDateRange.value = Pair(fromDate, toDate)
     }
@@ -460,7 +452,7 @@ class MyStoreViewModel @Inject constructor(
         data object PluginNotActiveError : RevenueStatsViewState()
         data class Content(
             val revenueStats: RevenueStatsUiModel?,
-            val granularity: StatsGranularity
+            val granularity: SelectionType
         ) : RevenueStatsViewState()
     }
 
