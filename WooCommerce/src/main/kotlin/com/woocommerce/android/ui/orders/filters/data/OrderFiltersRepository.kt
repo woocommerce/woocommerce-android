@@ -24,7 +24,7 @@ class OrderFiltersRepository @Inject constructor(
 
     init {
         selectedSite.observe()
-            .distinctUntilChanged { old, new -> old?.id == new?.id}
+            .distinctUntilChanged { old, new -> old?.id == new?.id }
             .onEach {
                 productFilter = null
                 customerFilter = null
