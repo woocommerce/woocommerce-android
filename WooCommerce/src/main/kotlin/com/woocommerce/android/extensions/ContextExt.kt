@@ -12,6 +12,7 @@ import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.util.SystemVersionUtils
+import org.wordpress.android.util.DisplayUtils
 
 fun Context.getColorCompat(@ColorRes colorRes: Int) = ContextCompat.getColor(this, colorRes)
 
@@ -46,3 +47,5 @@ val Context.physicalScreenHeightInPx: Int
 
 val Context.isDisplaySmallerThan720: Boolean
     get() = !resources.getBoolean(R.bool.is_at_least_720sw)
+
+fun Context.isTablet() = DisplayUtils.isTablet(this) || DisplayUtils.isXLargeTablet(this)

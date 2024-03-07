@@ -158,7 +158,7 @@ class MyStoreFragment :
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            myStoreViewModel.onStatsGranularityChanged(tab.tag as StatsGranularity)
+            myStoreViewModel.onStatsGranularityChanged(tab.tag as? StatsGranularity)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -428,6 +428,9 @@ class MyStoreFragment :
                 topPerformers.isError -> showTopPerformersError()
                 else -> showTopPerformers(topPerformers.topPerformers)
             }
+        }
+        myStoreViewModel.customDateRange.observe(viewLifecycleOwner) { dateRange ->
+            binding.myStoreStats.updateCustomDateRange(dateRange)
         }
         myStoreViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
             when (newValue) {

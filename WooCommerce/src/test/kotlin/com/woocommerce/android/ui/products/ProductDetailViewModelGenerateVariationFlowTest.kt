@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.IsTablet
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -73,6 +74,8 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     private val addonRepository: AddonRepository = mock()
 
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
+    private val isTablet: IsTablet = mock()
+
     private lateinit var viewModel: ProductDetailViewModel
 
     @Before
@@ -114,6 +117,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                 isBlazeEnabled = mock(),
                 blazeUrlsHelper = mock(),
                 isProductCurrentlyPromoted = mock(),
+                isTablet = isTablet,
             )
         )
 
