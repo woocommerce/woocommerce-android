@@ -154,23 +154,6 @@ fun ConnectivityCheckCard(
                     )
                 }
             }
-
-            if (testStatus == Failure) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier
-                        .padding(top = dimensionResource(id = R.dimen.major_100))
-                        .fillMaxWidth()
-                ) {
-                    Text(errorMessage)
-                    Button(
-                        onClick = { /*TODO*/ },
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(id = R.string.orderlist_connectivity_tool_read_more_action))
-                    }
-                }
-            }
         }
     }
 }
