@@ -39,19 +39,31 @@ class OrderConnectivityToolViewModel @Inject constructor(
     fun startConnectionTests() {
         launch {
             internetConnectionCheck().onEach {
-                checkStatus.value = checkStatus.value.copy(internetConnectionCheckData = it)
+                val checkData = checkStatus.value.internetConnectionCheckData.copy(
+                    connectivityCheckStatus = it
+                )
+                checkStatus.value = checkStatus.value.copy(internetConnectionCheckData = checkData)
             }.launchIn(viewModelScope)
 
             wordPressConnectionCheck().onEach {
-                checkStatus.value = checkStatus.value.copy(wordpressConnectionCheckData = it)
+                val checkData = checkStatus.value.wordpressConnectionCheckData.copy(
+                    connectivityCheckStatus = it
+                )
+                checkStatus.value = checkStatus.value.copy(wordpressConnectionCheckData = checkData)
             }.launchIn(viewModelScope)
 
             storeConnectionCheck().onEach {
-                checkStatus.value = checkStatus.value.copy(storeConnectionCheckData = it)
+                val checkData = checkStatus.value.storeConnectionCheckData.copy(
+                    connectivityCheckStatus = it
+                )
+                checkStatus.value = checkStatus.value.copy(storeConnectionCheckData = checkData)
             }.launchIn(viewModelScope)
 
             storeOrdersCheck().onEach {
-                checkStatus.value = checkStatus.value.copy(storeOrdersCheckData = it)
+                val checkData = checkStatus.value.storeOrdersCheckData.copy(
+                    connectivityCheckStatus = it
+                )
+                checkStatus.value = checkStatus.value.copy(storeOrdersCheckData = checkData)
             }.launchIn(viewModelScope)
         }
     }

@@ -34,6 +34,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
@@ -44,21 +48,21 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     OrderConnectivityToolScreen(
         isContactSupportButtonEnabled = viewState?.isCheckFinished ?: false,
-        internetConnectionTestStatus = viewState?.internetConnectionCheckData ?: NotStarted,
-        wordpressConnectionTestStatus = viewState?.wordpressConnectionCheckData ?: NotStarted,
-        storeConnectionTestStatus = viewState?.storeConnectionCheckData ?: NotStarted,
-        onContactSupportClicked = viewModel::onContactSupportClicked,
-        storeOrdersTestStatus = viewState?.storeOrdersCheckData ?: NotStarted
+        internetConnectionCheckData = viewState?.internetConnectionCheckData,
+        wordpressConnectionCheckData = viewState?.wordpressConnectionCheckData,
+        storeConnectionCheckData = viewState?.storeConnectionCheckData,
+        storeOrdersCheckData = viewState?.storeOrdersCheckData,
+        onContactSupportClicked = viewModel::onContactSupportClicked
     )
 }
 
 @Composable
 fun OrderConnectivityToolScreen(
     isContactSupportButtonEnabled: Boolean,
-    internetConnectionTestStatus: ConnectivityCheckStatus,
-    wordpressConnectionTestStatus: ConnectivityCheckStatus,
-    storeConnectionTestStatus: ConnectivityCheckStatus,
-    storeOrdersTestStatus: ConnectivityCheckStatus,
+    internetConnectionCheckData: InternetConnectivityCheckData?,
+    wordpressConnectionCheckData: WordPressConnectivityCheckData?,
+    storeConnectionCheckData: StoreConnectivityCheckData?,
+    storeOrdersCheckData: StoreOrdersConnectivityCheckData?,
     onContactSupportClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -67,30 +71,38 @@ fun OrderConnectivityToolScreen(
             .fillMaxSize()
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
-        ConnectivityCheckCard(
-            checkTitle = R.string.orderlist_connectivity_tool_internet_check_title,
-            iconDrawable = R.drawable.ic_wifi,
-            errorMessage = "No internet connection",
-            testStatus = internetConnectionTestStatus
-        )
-        ConnectivityCheckCard(
-            checkTitle = R.string.orderlist_connectivity_tool_wordpress_check_title,
-            iconDrawable = R.drawable.ic_storage,
-            errorMessage = "WordPress connection failed",
-            testStatus = wordpressConnectionTestStatus
-        )
-        ConnectivityCheckCard(
-            checkTitle = R.string.orderlist_connectivity_tool_store_check_title,
-            iconDrawable = R.drawable.ic_more_menu_store,
-            errorMessage = "Store connection failed",
-            testStatus = storeConnectionTestStatus
-        )
-        ConnectivityCheckCard(
-            checkTitle = R.string.orderlist_connectivity_tool_store_orders_check_title,
-            iconDrawable = R.drawable.ic_clipboard,
-            errorMessage = "Store orders failed",
-            testStatus = storeOrdersTestStatus
-        )
+        internetConnectionCheckData?.let {
+            ConnectivityCheckCard(
+                checkTitle = it.title,
+                iconDrawable = it.icon,
+                suggestion = it.suggestion,
+                testStatus = it.connectivityCheckStatus
+            )
+        }
+        wordpressConnectionCheckData?.let {
+            ConnectivityCheckCard(
+                checkTitle = it.title,
+                iconDrawable = it.icon,
+                suggestion = it.suggestion,
+                testStatus = it.connectivityCheckStatus
+            )
+        }
+        storeConnectionCheckData?.let {
+            ConnectivityCheckCard(
+                checkTitle = it.title,
+                iconDrawable = it.icon,
+                suggestion = it.suggestion,
+                testStatus = it.connectivityCheckStatus
+            )
+        }
+        storeOrdersCheckData?.let {
+            ConnectivityCheckCard(
+                checkTitle = it.title,
+                iconDrawable = it.icon,
+                suggestion = it.suggestion,
+                testStatus = it.connectivityCheckStatus
+            )
+        }
         Spacer(modifier = modifier.weight(1f))
         Button(
             enabled = isContactSupportButtonEnabled,
@@ -107,7 +119,7 @@ fun ConnectivityCheckCard(
     modifier: Modifier = Modifier,
     @StringRes checkTitle: Int,
     @DrawableRes iconDrawable: Int,
-    errorMessage: String,
+    @StringRes suggestion: Int,
     testStatus: ConnectivityCheckStatus,
     shouldDisplayErrorSection: Boolean = false
 ) {
@@ -162,7 +174,7 @@ fun ConnectivityCheckCard(
                         .padding(top = dimensionResource(id = R.dimen.major_100))
                         .fillMaxWidth()
                 ) {
-                    Text(errorMessage)
+                    Text(stringResource(id = suggestion))
                     Button(
                         onClick = { /*TODO*/ },
                         modifier = modifier.fillMaxWidth()
@@ -193,10 +205,16 @@ fun OrderConnectivityToolScreenPreview() {
     WooThemeWithBackground {
         OrderConnectivityToolScreen(
             isContactSupportButtonEnabled = true,
-            internetConnectionTestStatus = NotStarted,
-            wordpressConnectionTestStatus = InProgress,
-            storeConnectionTestStatus = Failure,
-            storeOrdersTestStatus = Success,
+            internetConnectionCheckData = InternetConnectivityCheckData(),
+            wordpressConnectionCheckData = WordPressConnectivityCheckData(
+                connectivityCheckStatus = InProgress
+            ),
+            storeConnectionCheckData = StoreConnectivityCheckData(
+                connectivityCheckStatus = Failure
+            ),
+            storeOrdersCheckData = StoreOrdersConnectivityCheckData(
+                connectivityCheckStatus = Success
+            ),
             onContactSupportClicked = {}
         )
     }

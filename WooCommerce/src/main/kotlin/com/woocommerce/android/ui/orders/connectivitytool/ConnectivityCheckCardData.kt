@@ -20,7 +20,7 @@ sealed class ConnectivityCheckCardData(
     val isFinished: Boolean
         get() = connectivityCheckStatus.isFinished()
 
-    class InternetConnectivityCheckData(
+    data class InternetConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted
     ) : ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_internet_check_title,
@@ -29,7 +29,7 @@ sealed class ConnectivityCheckCardData(
         connectivityCheckStatus = connectivityCheckStatus
     )
 
-    class WordPressConnectivityCheckData(
+    data class WordPressConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted
     ) : ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_wordpress_check_title,
@@ -38,7 +38,7 @@ sealed class ConnectivityCheckCardData(
         connectivityCheckStatus = connectivityCheckStatus
     )
 
-    class StoreConnectivityCheckData(
+    data class StoreConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
         override val readMoreAction: OnReadMoreClicked? = null
     ) : ConnectivityCheckCardData(
@@ -49,7 +49,7 @@ sealed class ConnectivityCheckCardData(
         readMoreAction = readMoreAction
     )
 
-    class StoreOrdersConnectivityCheckData(
+    data class StoreOrdersConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
         override val readMoreAction: OnReadMoreClicked? = null
     ) : ConnectivityCheckCardData(
