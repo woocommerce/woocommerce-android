@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardD
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.Finished
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.InternetCheck
@@ -67,6 +68,15 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     val isCheckFinished = stateMachine.map { it == Finished }.asLiveData()
 
+    private val nextStep
+        get() = when (stateMachine.value) {
+            InternetCheck -> WordPressCheck
+            WordPressCheck -> StoreCheck
+            StoreCheck -> StoreOrdersCheck
+            StoreOrdersCheck -> Finished
+            Finished -> throw IllegalStateException("Cannot move to next state from Finished")
+        }
+
     fun startConnectionTests() {
         launch {
             stateMachine.collect {
@@ -81,10 +91,12 @@ class OrderConnectivityToolViewModel @Inject constructor(
         }
     }
 
+    fun onContactSupportClicked() { triggerEvent(OpenSupportRequest) }
+
     private fun startInternetCheck() {
         internetConnectionCheck().onEach { status ->
             internetCheckFlow.update {
-                if (status == Success) stateMachine.update { WordPressCheck }
+                status.startNextCheck()
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
@@ -93,7 +105,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private fun startWordPressCheck() {
         wordPressConnectionCheck().onEach { status ->
             wordpressCheckFlow.update {
-                if (status == Success) stateMachine.update { StoreCheck }
+                status.startNextCheck()
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
@@ -102,7 +114,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private fun startStoreCheck() {
         storeConnectionCheck().onEach { status ->
             storeCheckFlow.update {
-                if (status == Success) stateMachine.update { StoreOrdersCheck }
+                status.startNextCheck()
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
@@ -110,14 +122,24 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     private fun startStoreOrdersCheck() {
         storeOrdersCheck().onEach { status ->
-            if (status.isFinished()) stateMachine.update { Finished }
+            status.startNextCheck()
             ordersCheckFlow.update {
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
     }
 
-    fun onContactSupportClicked() { triggerEvent(OpenSupportRequest) }
+    private fun ConnectivityCheckStatus.startNextCheck() {
+        if (stateMachine.value == Finished) return
+
+        stateMachine.update {
+            when (this) {
+                Success -> nextStep
+                Failure -> Finished
+                else -> it
+            }
+        }
+    }
 
     object OpenSupportRequest : MultiLiveEvent.Event()
 
