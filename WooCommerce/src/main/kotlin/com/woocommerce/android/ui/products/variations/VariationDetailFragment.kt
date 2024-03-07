@@ -61,7 +61,7 @@ import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
-open class VariationDetailFragment :
+class VariationDetailFragment :
     BaseFragment(R.layout.fragment_variation_detail),
     BackPressListener,
     OnGalleryImageInteractionListener,
