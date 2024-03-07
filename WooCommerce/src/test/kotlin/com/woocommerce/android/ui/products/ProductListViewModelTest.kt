@@ -35,6 +35,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.internal.verification.AtLeast
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
@@ -606,6 +607,23 @@ class ProductListViewModelTest : BaseUnitTest() {
         // We delayed the message waiting the resume animation to complete
         advanceUntilIdle()
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
+    }
+
+    @Test
+    fun `given open product id excluded, when reloadProductsFromDb, then value of it reseted`() = testBlocking {
+        // GIVEN
+        val openProductId = 1L
+        savedStateHandle["key_product_opened"] = openProductId
+        whenever(productRepository.getProductList(any(), anyOrNull(), anyOrNull())).thenReturn(
+            listOf(ProductTestUtils.generateProduct(productId = 2L))
+        )
+
+        // WHEN
+        createViewModel()
+        viewModel.reloadProductsFromDb(excludeProductId = openProductId)
+
+        // THEN
+        assertThat(savedStateHandle.get<Long>("key_product_opened")).isNull()
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -78,8 +79,6 @@ import com.woocommerce.android.util.IsTablet
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.LaunchUrlInChromeTab
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -369,7 +368,15 @@ class ProductDetailViewModel @Inject constructor(
             }
 
             is ProductDetailFragment.Mode.Loading -> {
-                viewState = viewState.copy(isSkeletonShown = true)
+                viewState = viewState.copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.Loading)
+            }
+
+            is ProductDetailFragment.Mode.Empty -> {
+                viewState = viewState.copy(
+                    auxiliaryState = ProductDetailViewState.AuxiliaryState.Error(
+                        R.string.product_detail_product_not_selected
+                    )
+                )
             }
         }
     }
@@ -395,13 +402,24 @@ class ProductDetailViewModel @Inject constructor(
             if (isAddFlowEntryPoint && !isProductStoredAtSite) {
                 storedProduct.value = createDefaultProductForAddFlow()
             } else {
-                val mode = navArgs.mode
-                if (mode is ProductDetailFragment.Mode.ShowProduct) {
-                    storedProduct.value = productRepository.getProductAsync(
-                        viewState.productDraft?.remoteId ?: mode.remoteProductId
-                    )
-                } else {
-                    viewState = viewState.copy(isSkeletonShown = true)
+                when (val mode = navArgs.mode) {
+                    is ProductDetailFragment.Mode.ShowProduct -> {
+                        storedProduct.value = productRepository.getProductAsync(
+                            viewState.productDraft?.remoteId ?: mode.remoteProductId
+                        )
+                    }
+
+                    ProductDetailFragment.Mode.Loading -> {
+                        viewState = viewState.copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.Loading)
+                    }
+
+                    ProductDetailFragment.Mode.Empty ->
+                        viewState = viewState.copy(
+                            auxiliaryState = ProductDetailViewState.AuxiliaryState.Error(
+                                R.string.product_detail_product_not_selected
+                            )
+                        )
+                    is ProductDetailFragment.Mode.AddNewProduct -> Unit
                 }
             }
         }
@@ -497,14 +515,14 @@ class ProductDetailViewModel @Inject constructor(
         if (checkConnection() && !viewState.isConfirmingTrash) {
             triggerEvent(
                 ShowDialog(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    positiveBtnAction = { _, _ ->
                         tracker.track(AnalyticsEvent.PRODUCT_DETAIL_PRODUCT_DELETED)
                         viewState = viewState.copy(isConfirmingTrash = false)
                         viewState.productDraft?.let { product ->
-                            triggerEvent(ExitWithResult(product.remoteId))
+                            triggerEvent(TrashProduct(product.remoteId))
                         }
                     },
-                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    negativeBtnAction = { _, _ ->
                         viewState = viewState.copy(isConfirmingTrash = false)
                     },
                     messageId = R.string.product_confirm_trash,
@@ -1382,10 +1400,9 @@ class ProductDetailViewModel @Inject constructor(
                     fetchProductPassword(remoteProductId)
                 }
             } else {
-                viewState = viewState.copy(isSkeletonShown = true)
+                viewState = viewState.copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.Loading)
                 fetchProduct(remoteProductId)
             }
-            viewState = viewState.copy(isSkeletonShown = false)
             trackProductDetailLoaded()
         }
     }
@@ -1489,15 +1506,22 @@ class ProductDetailViewModel @Inject constructor(
             if (fetchedProduct != null) {
                 updateProductState(fetchedProduct)
             } else {
-                if (productRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID) {
-                    triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_invalid_id_error))
+                viewState = if (productRepository.lastFetchProductErrorType == ProductErrorType.INVALID_PRODUCT_ID) {
+                    viewState.copy(
+                        auxiliaryState = ProductDetailViewState.AuxiliaryState.Error(
+                            R.string.product_detail_fetch_product_invalid_id_error
+                        )
+                    )
                 } else {
-                    triggerEvent(ShowSnackbar(R.string.product_detail_fetch_product_error))
+                    viewState.copy(
+                        auxiliaryState = ProductDetailViewState.AuxiliaryState.Error(
+                            R.string.product_detail_fetch_product_error
+                        )
+                    )
                 }
-                triggerEvent(Exit)
             }
         } else {
-            viewState = viewState.copy(isSkeletonShown = false)
+            viewState = viewState.copy(auxiliaryState = ProductDetailViewState.AuxiliaryState.None)
         }
     }
 
@@ -1974,7 +1998,8 @@ class ProductDetailViewModel @Inject constructor(
         loadProductTaxAndShippingClassDependencies(updatedDraft)
 
         viewState = viewState.copy(
-            productDraft = updatedDraft
+            productDraft = updatedDraft,
+            auxiliaryState = ProductDetailViewState.AuxiliaryState.None
         )
         storedProduct.value = productToUpdateFrom
     }
@@ -2494,6 +2519,8 @@ class ProductDetailViewModel @Inject constructor(
 
     object ShowAiProductCreationSurveyBottomSheet : Event()
 
+    data class TrashProduct(val productId: Long) : Event()
+
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.
      * [storedProduct.value] is the [Product] model that is fetched from the API and available in the local db.
@@ -2508,7 +2535,7 @@ class ProductDetailViewModel @Inject constructor(
     @Parcelize
     data class ProductDetailViewState(
         val productDraft: Product? = null,
-        val isSkeletonShown: Boolean? = null,
+        val auxiliaryState: AuxiliaryState = AuxiliaryState.None,
         val uploadingImageUris: List<Uri>? = null,
         val isProgressDialogShown: Boolean? = null,
         val storedPassword: String? = null,
@@ -2520,6 +2547,18 @@ class ProductDetailViewModel @Inject constructor(
     ) : Parcelable {
         val isPasswordChanged: Boolean
             get() = storedPassword != draftPassword
+
+        @Parcelize
+        sealed class AuxiliaryState : Parcelable {
+            @Parcelize
+            data object Loading : AuxiliaryState()
+
+            @Parcelize
+            data object None : AuxiliaryState()
+
+            @Parcelize
+            data class Error(@StringRes val message: Int) : AuxiliaryState()
+        }
     }
 
     @Parcelize
