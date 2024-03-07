@@ -11,7 +11,8 @@ import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -353,20 +354,15 @@ class OrderDetailViewModel @Inject constructor(
     } ?: false
 
     fun onCollectPaymentClicked(isTablet: Boolean = false) {
-        paymentsFlowTracker.trackCollectPaymentTapped(deviceTypeToAnalyticsString(isTablet))
+        paymentsFlowTracker.trackCollectPaymentTapped(
+            IsTabletValue(isTablet).deviceTypeToAnalyticsString
+        )
         triggerEvent(
             StartPaymentFlow(
                 orderId = navArgs.orderId,
                 paymentTypeFlow = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
             )
         )
-    }
-
-    private fun deviceTypeToAnalyticsString(isTablet: Boolean): String {
-        if (isTablet) {
-            return AnalyticsTracker.VALUE_DEVICE_TYPE_REGULAR
-        }
-        return AnalyticsTracker.VALUE_DEVICE_TYPE_COMPACT
     }
 
     fun onSeeReceiptClicked() {
