@@ -57,7 +57,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
@@ -73,7 +73,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
@@ -89,7 +89,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
@@ -105,7 +105,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
@@ -120,7 +120,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(false, false, false, false, true))
@@ -136,7 +136,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(false, false, false, true))
@@ -153,7 +153,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(false, false))

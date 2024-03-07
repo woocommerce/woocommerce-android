@@ -101,7 +101,7 @@ fun ConnectivityCheckCard(
             checkTitle = it.title,
             iconDrawable = it.icon,
             suggestion = it.suggestion,
-            testStatus = it.connectivityCheckStatus,
+            checkStatus = it.connectivityCheckStatus,
             onReadMoreClicked = it.readMoreAction ?: {},
             shouldDisplayReadMoreButton = it.readMoreAction != null
         )
@@ -114,7 +114,7 @@ fun ConnectivityCheckCard(
     @StringRes checkTitle: Int,
     @DrawableRes iconDrawable: Int,
     @StringRes suggestion: Int,
-    testStatus: ConnectivityCheckStatus,
+    checkStatus: ConnectivityCheckStatus,
     onReadMoreClicked: () -> Unit,
     shouldDisplayReadMoreButton: Boolean = false
 ) {
@@ -147,7 +147,7 @@ fun ConnectivityCheckCard(
                     modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100))
                 )
                 Spacer(modifier = modifier.weight(1f))
-                when (testStatus) {
+                when (checkStatus) {
                     is InProgress -> CircularProgressIndicator(
                         modifier = modifier.size(dimensionResource(id = R.dimen.major_200))
                     )
@@ -163,7 +163,7 @@ fun ConnectivityCheckCard(
                 }
             }
 
-            if (testStatus is Failure) {
+            if (checkStatus is Failure) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = modifier
@@ -171,7 +171,7 @@ fun ConnectivityCheckCard(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = stringResource(id = testStatus.error?.message ?: suggestion),
+                        text = stringResource(id = checkStatus.error?.message ?: suggestion),
                         color = colorResource(id = R.color.woo_red_50)
                     )
                     if (shouldDisplayReadMoreButton) {

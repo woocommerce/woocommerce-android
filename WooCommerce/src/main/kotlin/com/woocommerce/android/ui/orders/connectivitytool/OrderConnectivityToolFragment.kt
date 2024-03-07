@@ -37,7 +37,7 @@ class OrderConnectivityToolFragment : BaseFragment() {
                 is OpenSupportRequest -> openSupportRequestScreen()
             }
         }
-        viewModel.startConnectionTests()
+        viewModel.startConnectionChecks()
     }
 
     override fun getFragmentTitle() = getString(R.string.orderlist_connectivity_tool_title)

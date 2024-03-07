@@ -77,7 +77,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
             Finished -> throw IllegalStateException("Cannot move to next state from Finished")
         }
 
-    fun startConnectionTests() {
+    fun startConnectionChecks() {
         launch {
             stateMachine.collect {
                 when (it) {
