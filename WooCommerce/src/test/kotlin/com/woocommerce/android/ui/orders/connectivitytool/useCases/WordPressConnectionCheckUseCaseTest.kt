@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
