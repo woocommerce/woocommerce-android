@@ -21,9 +21,9 @@ class CreateUpdateOrder @Inject constructor(
         const val DEBOUNCE_DURATION_MS = 500L
     }
 
-    private fun createOrUpdateDraft(order: Order) = flow {
+    private fun createOrUpdateOrder(order: Order) = flow {
         emit(OrderUpdateStatus.Ongoing)
-        orderCreateEditRepository.createOrUpdateDraft(order)
+        orderCreateEditRepository.createOrUpdateOrder(order)
             .fold(
                 onSuccess = { emit(OrderUpdateStatus.Succeeded(it)) },
                 onFailure = { emit(OrderUpdateStatus.Failed(it)) }
@@ -50,7 +50,7 @@ class CreateUpdateOrder @Inject constructor(
                 }
                 debouncedChanges
                     .combine(retryTrigger.onStart { emit(Unit) }) { draft, _ -> draft }
-                    .flatMapLatest { createOrUpdateDraft(it) }
+                    .flatMapLatest { createOrUpdateOrder(it) }
                     .onStart { emit(OrderUpdateStatus.PendingDebounce) }
                     .distinctUntilChanged()
             }

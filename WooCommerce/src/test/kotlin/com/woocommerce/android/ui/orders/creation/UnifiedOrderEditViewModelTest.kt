@@ -149,7 +149,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
         }
         orderCreateEditRepository = mock {
-            onBlocking { placeOrder(defaultOrderValue) } doReturn Result.success(defaultOrderValue)
+            onBlocking { createOrUpdateOrder(defaultOrderValue) } doReturn Result.success(defaultOrderValue)
         }
         orderDetailRepository = mock {
             on { getOrderStatusOptions() } doReturn orderStatusList
