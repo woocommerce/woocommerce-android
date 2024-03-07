@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -174,7 +175,7 @@ fun ConnectivityCheckCard(
                         color = colorResource(id = R.color.woo_red_50)
                     )
                     if (shouldDisplayReadMoreButton) {
-                        Button(
+                        OutlinedButton(
                             onClick = onReadMoreClicked,
                             modifier = modifier.fillMaxWidth()
                         ) {
@@ -212,7 +213,8 @@ fun OrderConnectivityToolScreenPreview() {
                 connectivityCheckStatus = Success
             ),
             storeConnectionCheckData = StoreConnectivityCheckData(
-                connectivityCheckStatus = Failure
+                connectivityCheckStatus = Failure,
+                readMoreAction = {}
             ),
             storeOrdersCheckData = StoreOrdersConnectivityCheckData(
                 connectivityCheckStatus = InProgress
