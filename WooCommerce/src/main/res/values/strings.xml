@@ -487,6 +487,7 @@
     <string name="error_troubleshooting">Troubleshooting</string>
     <string name="orderlist_timeout_error_title">Your site is taking a long time to respond</string>
     <string name="orderlist_timeout_error_message">Please try again later or reach out to us and we\'ll be happy to assist you</string>
+    <string name="orderlist_connectivity_tool_title">Connectivity Test</string>
 
     <!--
          Simple Payments
