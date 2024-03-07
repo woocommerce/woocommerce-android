@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardD
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.Finished
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.InternetCheck
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.StoreCheck
@@ -83,7 +84,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private fun startInternetCheck() {
         internetConnectionCheck().onEach { status ->
             internetCheckFlow.update {
-                if (status.isFinished()) stateMachine.update { WordPressCheck }
+                if (status == Success) stateMachine.update { WordPressCheck }
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
@@ -92,7 +93,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private fun startWordPressCheck() {
         wordPressConnectionCheck().onEach { status ->
             wordpressCheckFlow.update {
-                if (status.isFinished()) stateMachine.update { StoreCheck }
+                if (status == Success) stateMachine.update { StoreCheck }
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
@@ -101,7 +102,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private fun startStoreCheck() {
         storeConnectionCheck().onEach { status ->
             storeCheckFlow.update {
-                if (status.isFinished()) stateMachine.update { StoreOrdersCheck }
+                if (status == Success) stateMachine.update { StoreOrdersCheck }
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
