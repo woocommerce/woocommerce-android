@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YEAR_TO_DATE
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -57,7 +58,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.DisplayUtils
-import java.util.Date
 import java.util.Locale
 import kotlin.math.round
 
@@ -171,18 +171,19 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
 
         // Create tabs and add to appbar
-        SelectionType.entries.forEach { granularity ->
-            val tab = tabLayout.newTab().apply {
-                setText(getStringForGranularity(granularity))
-                tag = granularity
+        SUPPORTED_RANGES_ON_MY_STORE_TAB
+            .filter { !FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled() && it == CUSTOM }
+            .forEach { rangeType ->
+                val tab = tabLayout.newTab().apply {
+                    setText(getStringForGranularity(rangeType))
+                    tag = rangeType
+                }
+                if (rangeType == CUSTOM) {
+                    tab.view.isVisible = false
+                    customRangeTab = tab
+                }
+                tabLayout.addTab(tab)
             }
-            tabLayout.addTab(tab)
-        }
-        customRangeTab = tabLayout.newTab().apply {
-            setText(R.string.orderfilters_date_range_filter_custom_range)
-            view.isVisible = false
-        }
-        tabLayout.addTab(customRangeTab)
     }
 
     override fun onDetachedFromWindow() {
@@ -201,21 +202,15 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun updateCustomDateRange(selectedTimeRange: StatsTimeRangeSelection) {
-        customRangeButton.isVisible = selectedTimeRange.selectionType == CUSTOM
-            && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
         statsTimeRangeSelection = selectedTimeRange
-        customRangeTab.view.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
+        customRangeButton.isVisible = false
+
+        customRangeTab.view.isVisible = true
         tabLayout.selectTab(customRangeTab)
         tabLayout.scrollX = tabLayout.width
 
-        customRangeLabel.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
+        customRangeLabel.isVisible = true
         customRangeLabel.text = selectedTimeRange.currentRangeDescription
-    }
-
-    @Suppress("UNUSED_PARAMETER")
-    private fun getGranularityLabelFromCustomRange(customDateRange: Pair<Date, Date>): CharSequence {
-        // TODO use function to extract granularity from custom date range
-        return resources.getString(R.string.my_store_custom_range_by_granularity, "days")
     }
 
     fun showSkeleton(show: Boolean) {
@@ -647,6 +642,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             WEEK_TO_DATE -> R.string.this_week
             MONTH_TO_DATE -> R.string.this_month
             YEAR_TO_DATE -> R.string.this_year
+            CUSTOM -> R.string.orderfilters_date_range_filter_custom_range
             else -> error("Unsupported range value used in my store tab: $rangeType")
         }
     }
