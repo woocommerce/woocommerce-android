@@ -19,8 +19,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class OrderConnectivityToolViewModel @Inject constructor(
@@ -30,59 +31,68 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val checkStatus = savedState.getStateFlow(
+    private val internetCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = CheckStatus()
+        initialValue = InternetConnectivityCheckData()
     )
-    val viewState = checkStatus.asLiveData()
+    val internetCheckData = internetCheckFlow.asLiveData()
+
+    private val wordpressCheckFlow = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = WordPressConnectivityCheckData()
+    )
+    val wordpressCheckData = wordpressCheckFlow.asLiveData()
+
+    private val storeCheckFlow = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = StoreConnectivityCheckData()
+    )
+    val storeCheckData = storeCheckFlow.asLiveData()
+
+    private val ordersCheckFlow = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = StoreOrdersConnectivityCheckData()
+    )
+    val storeOrdersCheckData = ordersCheckFlow.asLiveData()
+
+    val isCheckFinished = combine(
+        internetCheckFlow,
+        wordpressCheckFlow,
+        storeCheckFlow,
+        ordersCheckFlow
+    ) { internet, wordpress, store, orders ->
+        internet.isFinished && wordpress.isFinished && store.isFinished && orders.isFinished
+    }.asLiveData()
 
     fun startConnectionTests() {
         launch {
-            internetConnectionCheck().onEach {
-                val checkData = checkStatus.value.internetConnectionCheckData.copy(
-                    connectivityCheckStatus = it
-                )
-                checkStatus.value = checkStatus.value.copy(internetConnectionCheckData = checkData)
+            internetConnectionCheck().onEach { status ->
+                internetCheckFlow.update {
+                    it.copy(connectivityCheckStatus = status)
+                }
             }.launchIn(viewModelScope)
 
-            wordPressConnectionCheck().onEach {
-                val checkData = checkStatus.value.wordpressConnectionCheckData.copy(
-                    connectivityCheckStatus = it
-                )
-                checkStatus.value = checkStatus.value.copy(wordpressConnectionCheckData = checkData)
+            wordPressConnectionCheck().onEach { status ->
+                wordpressCheckFlow.update {
+                    it.copy(connectivityCheckStatus = status)
+                }
             }.launchIn(viewModelScope)
 
-            storeConnectionCheck().onEach {
-                val checkData = checkStatus.value.storeConnectionCheckData.copy(
-                    connectivityCheckStatus = it
-                )
-                checkStatus.value = checkStatus.value.copy(storeConnectionCheckData = checkData)
+            storeConnectionCheck().onEach { status ->
+                storeCheckFlow.update {
+                    it.copy(connectivityCheckStatus = status)
+                }
             }.launchIn(viewModelScope)
 
-            storeOrdersCheck().onEach {
-                val checkData = checkStatus.value.storeOrdersCheckData.copy(
-                    connectivityCheckStatus = it
-                )
-                checkStatus.value = checkStatus.value.copy(storeOrdersCheckData = checkData)
+            storeOrdersCheck().onEach { status ->
+                ordersCheckFlow.update {
+                    it.copy(connectivityCheckStatus = status)
+                }
             }.launchIn(viewModelScope)
         }
     }
 
     fun onContactSupportClicked() { triggerEvent(OpenSupportRequest) }
-
-    @Parcelize
-    data class CheckStatus(
-        val internetConnectionCheckData: InternetConnectivityCheckData = InternetConnectivityCheckData(),
-        val wordpressConnectionCheckData: WordPressConnectivityCheckData = WordPressConnectivityCheckData(),
-        val storeConnectionCheckData: StoreConnectivityCheckData = StoreConnectivityCheckData(),
-        val storeOrdersCheckData: StoreOrdersConnectivityCheckData = StoreOrdersConnectivityCheckData()
-    ) : Parcelable {
-        val isCheckFinished
-            get() = internetConnectionCheckData.isFinished &&
-                wordpressConnectionCheckData.isFinished &&
-                storeConnectionCheckData.isFinished &&
-                storeOrdersCheckData.isFinished
-    }
 
     object OpenSupportRequest : MultiLiveEvent.Event()
 }

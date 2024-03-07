@@ -7,7 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
 import kotlinx.parcelize.Parcelize
 
-typealias OnReadMoreClicked = (url: String) -> Unit
+typealias OnReadMoreClicked = () -> Unit
 
 @Parcelize
 sealed class ConnectivityCheckCardData(
