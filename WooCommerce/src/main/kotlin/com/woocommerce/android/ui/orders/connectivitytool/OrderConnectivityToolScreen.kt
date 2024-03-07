@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.connectivitytool
 
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -24,6 +25,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -138,14 +140,15 @@ fun ConnectivityCheckCard(
                 )
                 Spacer(modifier = modifier.weight(1f))
                 when (testStatus) {
-                    NotStarted -> null
-                    InProgress -> null
-                    Success -> R.drawable.ic_rounded_chcekbox_checked
-                    Failure -> R.drawable.ic_rounded_chcekbox_partially_checked
-                }?.let {
-                    Image(
-                        painter = painterResource(id = it),
-                        contentDescription = null
+                    NotStarted -> {}
+                    InProgress -> {}
+                    Success -> ResultIcon(
+                        icon = R.drawable.ic_rounded_chcekbox_checked,
+                        color = R.color.woo_green_50
+                    )
+                    Failure -> ResultIcon(
+                        icon = R.drawable.ic_rounded_chcekbox_partially_checked,
+                        color = R.color.woo_red_50
                     )
                 }
             }
@@ -167,8 +170,19 @@ fun ConnectivityCheckCard(
                 }
             }
         }
-
     }
+}
+
+@Composable
+fun ResultIcon(
+    @DrawableRes icon: Int,
+    @ColorRes color: Int
+) {
+    Image(
+        painter = painterResource(id = icon),
+        colorFilter = ColorFilter.tint(colorResource(id = color)),
+        contentDescription = null
+    )
 }
 
 @Preview
