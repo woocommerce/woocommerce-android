@@ -5,6 +5,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
+import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
@@ -47,8 +49,8 @@ class GetStats @Inject constructor(
             shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
             hasOrders(),
-            revenueStats(selectionRange, granularity, shouldRefreshRevenue),
-            visitorStats(selectionRange, granularity, shouldRefreshRevenue)
+            revenueStats(selectionRange, shouldRefreshRevenue),
+            visitorStats(selectionRange, shouldRefreshRevenue)
         ).onEach { result ->
             if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
@@ -77,18 +79,8 @@ class GetStats @Inject constructor(
 
     private suspend fun revenueStats(
         rangeSelection: StatsTimeRangeSelection,
-        granularity: StatsGranularity,
         forceRefresh: Boolean
     ): Flow<LoadStatsResult> {
-        // This is a temporary fix until we update the ViewModel to use the new date range selection
-        // and offer the correct granularities
-        fun StatsGranularity.fixRevenueGranularity() = when (this) {
-            StatsGranularity.YEARS -> StatsGranularity.MONTHS
-            StatsGranularity.MONTHS, StatsGranularity.WEEKS -> StatsGranularity.DAYS
-            StatsGranularity.DAYS -> StatsGranularity.HOURS
-            else -> this
-        }
-
         val revenueRangeId = rangeSelection.selectionType.identifier.asRevenueRangeId(
             startDate = rangeSelection.currentRange.start,
             endDate = rangeSelection.currentRange.end
@@ -101,7 +93,7 @@ class GetStats @Inject constructor(
 
         val revenueStatsResult = statsRepository.fetchRevenueStats(
             range = rangeSelection.currentRange,
-            granularity = granularity.fixRevenueGranularity(),
+            granularity = rangeSelection.revenueStatsGranularity,
             forced = forceRefresh,
             revenueRangeId = revenueRangeId
         ).let { result ->
@@ -125,23 +117,14 @@ class GetStats @Inject constructor(
 
     private suspend fun visitorStats(
         rangeSelection: StatsTimeRangeSelection,
-        granularity: StatsGranularity,
         forceRefresh: Boolean
     ): Flow<LoadStatsResult> {
         // Visitor stats are only available for Jetpack connected sites
         return when (selectedSite.connectionType) {
             SiteConnectionType.Jetpack -> {
-                // This is a temporary fix until we update the ViewModel to use the new date range selection
-                // and offer the correct granularities
-                fun StatsGranularity.fixVisitorsGranularity() = when (this) {
-                    StatsGranularity.YEARS -> StatsGranularity.MONTHS
-                    StatsGranularity.MONTHS, StatsGranularity.WEEKS -> StatsGranularity.DAYS
-                    else -> this
-                }
-
                 val result = statsRepository.fetchVisitorStats(
                     range = rangeSelection.currentRange,
-                    granularity = granularity.fixVisitorsGranularity(),
+                    granularity = rangeSelection.visitorStatsGranularity,
                     forced = forceRefresh
                 )
                     .let { result ->

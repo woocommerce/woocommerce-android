@@ -4,6 +4,8 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
+import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.domain.asRangeSelection
@@ -50,8 +52,8 @@ class GetWidgetStats @Inject constructor(
                     // Fetch stats, always force to refresh data.
                     val fetchedStats = statsRepository.fetchStats(
                         range = rangeSelection.currentRange,
-                        revenueStatsGranularity = granularity.fixRevenueGranularity(),
-                        visitorStatsGranularity = granularity.fixVisitorsGranularity(),
+                        revenueStatsGranularity = rangeSelection.revenueStatsGranularity,
+                        visitorStatsGranularity = rangeSelection.visitorStatsGranularity,
                         forced = true,
                         includeVisitorStats = areVisitorStatsSupported,
                         site = siteModel
@@ -100,22 +102,5 @@ class GetWidgetStats @Inject constructor(
                 revenueGross = grossRevenue
             }
         }
-    }
-
-    // This is temporary until we the widgets code is updated to use actual ranges, for now the granularities are
-    // used to determine the range.
-    private fun StatsGranularity.fixRevenueGranularity() = when (this) {
-        StatsGranularity.YEARS -> StatsGranularity.MONTHS
-        StatsGranularity.MONTHS, StatsGranularity.WEEKS -> StatsGranularity.DAYS
-        StatsGranularity.DAYS -> StatsGranularity.HOURS
-        else -> this
-    }
-
-    // This is temporary until we the widgets code is updated to use actual ranges, for now the granularities are
-    // used to determine the range.
-    private fun StatsGranularity.fixVisitorsGranularity() = when (this) {
-        StatsGranularity.YEARS -> StatsGranularity.MONTHS
-        StatsGranularity.MONTHS, StatsGranularity.WEEKS -> StatsGranularity.DAYS
-        else -> this
     }
 }

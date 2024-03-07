@@ -16,10 +16,8 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Revenue
 import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.MONTH_TO_DATE
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YEAR_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
+import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
 import kotlinx.coroutines.Deferred
@@ -30,10 +28,6 @@ import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.DAYS
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.MONTHS
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.WEEKS
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.YEARS
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlin.math.round
@@ -195,7 +189,6 @@ class AnalyticsRepository @Inject constructor(
         rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
-        val granularity = getGranularity(rangeSelection.selectionType)
         val currentPeriod = rangeSelection.currentRange
         val startDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
@@ -207,7 +200,14 @@ class AnalyticsRepository @Inject constructor(
                 AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
-                    result = async { loadRevenueStats(currentPeriod, granularity, statsIdentifier, fetchStrategy) }
+                    result = async {
+                        loadRevenueStats(
+                            range = currentPeriod,
+                            granularity = rangeSelection.revenueStatsGranularity,
+                            revenueRangeId = statsIdentifier,
+                            fetchStrategy = fetchStrategy
+                        )
+                    }
                 ).let { revenueStatsCache[statsIdentifier] = it }
             }
         }
@@ -218,7 +218,6 @@ class AnalyticsRepository @Inject constructor(
         rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): Result<WCRevenueStatsModel?> = coroutineScope {
-        val granularity = getGranularity(rangeSelection.selectionType)
         val previousPeriod = rangeSelection.previousRange
         val startDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
         val endDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
@@ -230,7 +229,14 @@ class AnalyticsRepository @Inject constructor(
                 AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
-                    result = async { loadRevenueStats(previousPeriod, granularity, statsIdentifier, fetchStrategy) }
+                    result = async {
+                        loadRevenueStats(
+                            range = previousPeriod,
+                            granularity = rangeSelection.revenueStatsGranularity,
+                            revenueRangeId = statsIdentifier,
+                            fetchStrategy = fetchStrategy
+                        )
+                    }
                 ).let { revenueStatsCache[statsIdentifier] = it }
             }
         }
@@ -261,19 +267,9 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = statsRepository.fetchVisitorStats(
         range = rangeSelection.currentRange,
-        granularity = getGranularity(rangeSelection.selectionType),
+        granularity = rangeSelection.visitorStatsGranularity,
         fetchStrategy is ForceNew,
     )
-
-    private fun getGranularity(selectionType: SelectionType) =
-        when (selectionType) {
-            TODAY, SelectionType.YESTERDAY -> DAYS
-            SelectionType.LAST_WEEK, WEEK_TO_DATE -> WEEKS
-            SelectionType.LAST_MONTH, MONTH_TO_DATE -> MONTHS
-            SelectionType.LAST_QUARTER, SelectionType.QUARTER_TO_DATE -> MONTHS
-            SelectionType.LAST_YEAR, YEAR_TO_DATE -> YEARS
-            SelectionType.CUSTOM -> DAYS
-        }
 
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {
         previousVal <= ZERO_VALUE -> DeltaPercentage.NotExist
