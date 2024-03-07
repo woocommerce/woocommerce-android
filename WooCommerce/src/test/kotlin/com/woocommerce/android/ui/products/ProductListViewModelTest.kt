@@ -56,7 +56,6 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val isTablet: IsTablet = mock()
-    private val isTablet: IsTablet = mock()
 
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
@@ -77,7 +76,6 @@ class ProductListViewModelTest : BaseUnitTest() {
                 analyticsTracker,
                 selectedSite,
                 wooCommerceStore,
-                isTablet,
                 isTablet,
             )
         )
