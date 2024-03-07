@@ -24,13 +24,17 @@ class StoreOrdersCheckUseCase @Inject constructor(
         orderStore.fetchHasOrders(
             site = selectedSite.get(),
             status = null
-        ).run { this as? HasOrdersResult.Failure }?.let { result ->
-            when (result.error.type) {
-                TIMEOUT_ERROR -> Failure(FailureType.TIMEOUT)
-                PARSE_ERROR -> Failure(FailureType.PARSE)
-                PLUGIN_NOT_ACTIVE -> Failure(FailureType.JETPACK)
-                else -> Failure(FailureType.GENERIC)
-            }.let { emit(it) }
-        } ?: emit(Success)
+        ).run { this as? HasOrdersResult.Failure }
+        ?.parseError()
+        ?.let { emit(it) }
+        ?: emit(Success)
     }
+
+    private fun HasOrdersResult.Failure.parseError() =
+        when (error.type) {
+            TIMEOUT_ERROR -> Failure(FailureType.TIMEOUT)
+            PARSE_ERROR -> Failure(FailureType.PARSE)
+            PLUGIN_NOT_ACTIVE -> Failure(FailureType.JETPACK)
+            else -> Failure(FailureType.GENERIC)
+        }
 }
