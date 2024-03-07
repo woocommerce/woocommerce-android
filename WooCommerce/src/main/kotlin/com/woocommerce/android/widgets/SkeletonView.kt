@@ -19,8 +19,8 @@ class SkeletonView {
     private val parentView: ViewGroup
         get() = _parentView!!
 
-    private var _actualView: ViewGroup? = null
-    private val actualView: ViewGroup
+    private var _actualView: View? = null
+    private val actualView: View
         get() = _actualView!!
 
     private lateinit var skeletonView: View
@@ -39,7 +39,7 @@ class SkeletonView {
      * @param delayed Whether to show the skeleton after a brief delay, which avoids the skeleton appearing
      * and then immediately disappearing if the network request completes very quickly
      */
-    fun show(viewActual: ViewGroup, viewSkeleton: View, delayed: Boolean = false) {
+    fun show(viewActual: View, viewSkeleton: View, delayed: Boolean = false) {
         if (isShowing) { return }
 
         val viewParent = viewActual.parent ?: throw IllegalStateException("Source view isn't attached")
@@ -88,7 +88,7 @@ class SkeletonView {
     /**
      * Wrapper for show() which accepts a layoutId for the skeleton view
      */
-    fun show(viewActual: ViewGroup, @LayoutRes layoutId: Int, delayed: Boolean = false) {
+    fun show(viewActual: View, @LayoutRes layoutId: Int, delayed: Boolean = false) {
         if (isShowing) { return }
 
         val viewParent = viewActual.parent ?: throw IllegalStateException("Source view isn't attached")

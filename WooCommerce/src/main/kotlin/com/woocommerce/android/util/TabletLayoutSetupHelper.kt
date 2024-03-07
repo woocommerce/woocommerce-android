@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isDisplaySmallerThan720
 import org.wordpress.android.util.DisplayUtils
@@ -27,7 +28,7 @@ class TabletLayoutSetupHelper @Inject constructor(
 
     fun onRootFragmentCreated(screen: Screen) {
         if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
-            this@TabletLayoutSetupHelper.screen = screen
+            this.screen = screen
             initNavFragment(screen)
 
             screen.listFragment.parentFragmentManager.registerFragmentLifecycleCallbacks(
@@ -61,7 +62,7 @@ class TabletLayoutSetupHelper @Inject constructor(
                         v: View,
                         savedInstanceState: Bundle?
                     ) {
-                        if (f != navHostFragment) {
+                        if (f != navHostFragment && f !is BottomSheetDialogFragment) {
                             setDetailsMargins(v)
                         }
                     }
