@@ -5,7 +5,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
-import java.io.Serializable
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
@@ -21,46 +20,46 @@ sealed class ConnectivityCheckCardData(
     @Parcelize
     data class InternetConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted
-    ) : ConnectivityCheckCardData(
+    ) : Parcelable, ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_internet_check_title,
         suggestion = R.string.orderlist_connectivity_tool_internet_check_suggestion,
         icon = R.drawable.ic_wifi,
         connectivityCheckStatus = connectivityCheckStatus
-    ), Parcelable
+    )
 
     @Parcelize
     data class WordPressConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted
-    ) : ConnectivityCheckCardData(
+    ) : Parcelable, ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_wordpress_check_title,
         suggestion = R.string.orderlist_connectivity_tool_wordpress_check_suggestion,
         icon = R.drawable.ic_storage,
         connectivityCheckStatus = connectivityCheckStatus
-    ), Parcelable
+    )
 
     @Parcelize
     data class StoreConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
         override val readMoreAction: OnReadMoreClicked? = null
-    ) : ConnectivityCheckCardData(
+    ) : Parcelable, ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_check_title,
         suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
         icon = R.drawable.ic_more_menu_store,
         connectivityCheckStatus = connectivityCheckStatus,
         readMoreAction = readMoreAction
-    ), Parcelable
+    )
 
     @Parcelize
     data class StoreOrdersConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
         @IgnoredOnParcel override val readMoreAction: OnReadMoreClicked? = null
-    ) : ConnectivityCheckCardData(
+    ) : Parcelable, ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_orders_check_title,
         suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
         icon = R.drawable.ic_clipboard,
         connectivityCheckStatus = connectivityCheckStatus,
         readMoreAction = readMoreAction
-    ), Parcelable
+    )
 }
 
 @Parcelize
@@ -69,11 +68,11 @@ sealed class ConnectivityCheckStatus : Parcelable {
     data object InProgress : ConnectivityCheckStatus()
     data object Success : ConnectivityCheckStatus()
     @Parcelize
-    data class Failure(val error: FailureType? = null) : ConnectivityCheckStatus(), Parcelable, Serializable
+    data class Failure(val error: FailureType? = null) : ConnectivityCheckStatus(), Parcelable
 }
 
 @Parcelize
-enum class FailureType(val message: Int) : Parcelable, Serializable {
+enum class FailureType(val message: Int) : Parcelable {
     TIMEOUT(R.string.orderlist_connectivity_tool_timeout_error_suggestion),
     PARSE(R.string.orderlist_connectivity_tool_parsing_error_suggestion),
     JETPACK(R.string.orderlist_connectivity_tool_jetpack_error_suggestion),
