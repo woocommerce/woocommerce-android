@@ -33,10 +33,10 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         wordPressConnectionCheck = mock()
         storeConnectionCheck = mock()
         storeOrdersCheck = mock()
-        whenever(internetConnectionCheck()).thenReturn(flowOf())
-        whenever(wordPressConnectionCheck()).thenReturn(flowOf())
-        whenever(storeConnectionCheck()).thenReturn(flowOf())
-        whenever(storeOrdersCheck()).thenReturn(flowOf())
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
         sut = OrderConnectivityToolViewModel(
             internetConnectionCheck = internetConnectionCheck,
             wordPressConnectionCheck = wordPressConnectionCheck,
@@ -126,17 +126,15 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         sut.startConnectionTests()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(false, true))
+        assertThat(stateEvents).isEqualTo(listOf(false, false, false, false, true))
     }
 
     @Test
     fun `when checks are still running, then isCheckFinished is false`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<Boolean>()
-        whenever(internetConnectionCheck()).thenReturn(flowOf(InProgress))
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
         whenever(wordPressConnectionCheck()).thenReturn(flowOf(InProgress))
-        whenever(storeConnectionCheck()).thenReturn(flowOf(InProgress))
-        whenever(storeOrdersCheck()).thenReturn(flowOf(InProgress))
         sut.isCheckFinished.observeForever {
             stateEvents.add(it)
         }
