@@ -141,7 +141,15 @@ class OrderConnectivityToolViewModel @Inject constructor(
         }
     }
 
+    private fun handleLearnMoreClick(failureType: FailureType) {
+        when (failureType) {
+            FailureType.JETPACK -> triggerEvent(OpenWebView(jetpackTroubleshootingUrl))
+            else -> triggerEvent(OpenWebView(genericTroubleshootingUrl))
+        }
+    }
+
     object OpenSupportRequest : MultiLiveEvent.Event()
+    data class OpenWebView(val url: String) : MultiLiveEvent.Event()
 
     enum class ConnectivityCheckStep {
         InternetCheck,
@@ -149,5 +157,10 @@ class OrderConnectivityToolViewModel @Inject constructor(
         StoreCheck,
         StoreOrdersCheck,
         Finished
+    }
+
+    companion object {
+        const val jetpackTroubleshootingUrl = ""
+        const val genericTroubleshootingUrl = ""
     }
 }
