@@ -37,6 +37,7 @@ import org.wordpress.android.util.DisplayUtils
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private val binding = WcEmptyViewBinding.inflate(LayoutInflater.from(context), this, true)
+    private var forceShowImage: Boolean = false
 
     enum class EmptyViewType {
         DASHBOARD,
@@ -69,14 +70,17 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
      * Hide the image in landscape since there isn't enough room for it on most devices
      */
     private fun checkOrientation() {
-        binding.emptyViewImage.isVisible = !DisplayUtils.isLandscape(context)
+        binding.emptyViewImage.isVisible = forceShowImage || !DisplayUtils.isLandscape(context)
     }
 
     fun show(
         type: EmptyViewType,
         searchQueryOrFilter: String? = null,
+        forceShowImage: Boolean = false,
         onButtonClick: (() -> Unit)? = null
     ) {
+        this.forceShowImage = forceShowImage
+
         checkOrientation()
 
         // if empty view is already showing and it's a different type, fade out the existing view before fading in
@@ -85,7 +89,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             val durationMs = Duration.SHORT.toMillis(context) + 50L
             Handler(Looper.getMainLooper()).postDelayed(
                 {
-                    show(type, searchQueryOrFilter, onButtonClick)
+                    show(type, searchQueryOrFilter, forceShowImage, onButtonClick)
                 },
                 durationMs
             )
