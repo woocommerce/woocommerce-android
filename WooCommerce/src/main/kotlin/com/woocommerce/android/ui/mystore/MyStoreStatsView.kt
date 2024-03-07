@@ -169,12 +169,12 @@ class MyStoreStatsView @JvmOverloads constructor(
         StatsGranularity.entries
             .filterNot { it == HOURS }
             .forEach { granularity ->
-            val tab = tabLayout.newTab().apply {
-                setText(getStringForGranularity(granularity))
-                tag = granularity
+                val tab = tabLayout.newTab().apply {
+                    setText(getStringForGranularity(granularity))
+                    tag = granularity
+                }
+                tabLayout.addTab(tab)
             }
-            tabLayout.addTab(tab)
-        }
     }
 
     override fun onDetachedFromWindow() {

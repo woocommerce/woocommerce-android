@@ -21,9 +21,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -321,36 +318,6 @@ class StatsRepository @Inject constructor(
         val currentWooCoreVersion =
             wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version ?: "0.0"
         return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEADERBOARD_REPORT_MIN_WC_VERSION) >= 0
-    }
-
-    private fun OrderStatsError?.toWooError(): WooError {
-        if (this == null) {
-            return WooError(
-                type = WooErrorType.TIMEOUT,
-                original = BaseRequest.GenericErrorType.TIMEOUT,
-                message = "Timeout"
-            )
-        }
-
-        val type = when (this.type) {
-            WCStatsStore.OrderStatsErrorType.RESPONSE_NULL -> WooErrorType.INVALID_RESPONSE
-            WCStatsStore.OrderStatsErrorType.INVALID_PARAM -> WooErrorType.INVALID_PARAM
-            WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE -> WooErrorType.PLUGIN_NOT_ACTIVE
-            WCStatsStore.OrderStatsErrorType.GENERIC_ERROR -> WooErrorType.GENERIC_ERROR
-        }
-
-        val original = when (this.type) {
-            WCStatsStore.OrderStatsErrorType.RESPONSE_NULL -> BaseRequest.GenericErrorType.INVALID_RESPONSE
-            WCStatsStore.OrderStatsErrorType.INVALID_PARAM -> BaseRequest.GenericErrorType.INVALID_RESPONSE
-            WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE -> BaseRequest.GenericErrorType.NOT_FOUND
-            WCStatsStore.OrderStatsErrorType.GENERIC_ERROR -> BaseRequest.GenericErrorType.UNKNOWN
-        }
-
-        return WooError(
-            type = type,
-            original = original,
-            message = this.message
-        )
     }
 }
 
