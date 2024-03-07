@@ -319,7 +319,7 @@ class ProductDetailViewModel @Inject constructor(
      * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
      */
     val isProductUnderCreation: Boolean
-        get() = this.isAddNewProductFlow and isProductStoredAtSite.not()
+        get() = isAddNewProductFlow and isProductStoredAtSite.not()
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
