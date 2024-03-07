@@ -134,8 +134,8 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
         stateMachine.update {
             when (this) {
-                Success -> nextStep
-                Failure -> Finished
+                is Success -> nextStep
+                is Failure -> Finished
                 else -> it
             }
         }

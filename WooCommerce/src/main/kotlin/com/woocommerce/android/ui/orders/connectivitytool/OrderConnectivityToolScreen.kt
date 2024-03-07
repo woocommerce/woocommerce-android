@@ -148,14 +148,14 @@ fun ConnectivityCheckCard(
                 )
                 Spacer(modifier = modifier.weight(1f))
                 when (testStatus) {
-                    InProgress -> CircularProgressIndicator(
+                    is InProgress -> CircularProgressIndicator(
                         modifier = modifier.size(dimensionResource(id = R.dimen.major_200))
                     )
-                    Success -> ResultIcon(
+                    is Success -> ResultIcon(
                         icon = R.drawable.ic_rounded_chcekbox_checked,
                         color = R.color.woo_green_50
                     )
-                    Failure -> ResultIcon(
+                    is Failure -> ResultIcon(
                         icon = R.drawable.ic_rounded_chcekbox_partially_checked,
                         color = R.color.woo_red_50
                     )
@@ -163,7 +163,7 @@ fun ConnectivityCheckCard(
                 }
             }
 
-            if (testStatus == Failure) {
+            if (testStatus is Failure) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = modifier
@@ -213,7 +213,7 @@ fun OrderConnectivityToolScreenPreview() {
                 connectivityCheckStatus = Success
             ),
             storeConnectionCheckData = StoreConnectivityCheckData(
-                connectivityCheckStatus = Failure,
+                connectivityCheckStatus = Failure(),
                 readMoreAction = {}
             ),
             storeOrdersCheckData = StoreOrdersConnectivityCheckData(

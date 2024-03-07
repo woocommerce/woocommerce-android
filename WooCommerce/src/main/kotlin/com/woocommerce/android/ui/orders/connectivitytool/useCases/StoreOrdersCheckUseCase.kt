@@ -22,6 +22,6 @@ class StoreOrdersCheckUseCase @Inject constructor(
             status = null
         ).takeIf { it is HasOrdersResult.Success }?.let {
             emit(Success)
-        } ?: emit(Failure)
+        } ?: emit(Failure())
     }
 }

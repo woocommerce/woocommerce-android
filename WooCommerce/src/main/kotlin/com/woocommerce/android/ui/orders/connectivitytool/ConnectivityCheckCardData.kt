@@ -63,11 +63,12 @@ sealed class ConnectivityCheckCardData(
     )
 }
 
-enum class ConnectivityCheckStatus {
-    NotStarted,
-    InProgress,
-    Success,
-    Failure;
+@Parcelize
+sealed class ConnectivityCheckStatus: Parcelable {
+    data object NotStarted: ConnectivityCheckStatus()
+    data object InProgress: ConnectivityCheckStatus()
+    data object Success: ConnectivityCheckStatus()
+    data class Failure(val error: Throwable? = null): ConnectivityCheckStatus()
 
-    fun isFinished() = this == Success || this == Failure
+    fun isFinished() = this is Success || this is Failure
 }

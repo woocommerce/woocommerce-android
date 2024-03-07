@@ -130,7 +130,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
     fun `when one check fails, then isCheckFinished is true`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<Boolean>()
-        whenever(storeConnectionCheck()).thenReturn(flowOf(Failure))
+        whenever(storeConnectionCheck()).thenReturn(flowOf(Failure()))
         sut.isCheckFinished.observeForever {
             stateEvents.add(it)
         }

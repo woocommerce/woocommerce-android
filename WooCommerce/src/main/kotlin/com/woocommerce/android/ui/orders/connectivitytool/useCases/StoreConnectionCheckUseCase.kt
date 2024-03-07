@@ -18,7 +18,7 @@ class StoreConnectionCheckUseCase @Inject constructor(
         emit(InProgress)
         wooCommerceStore.fetchSSR(selectedSite.get())
             .takeIf { it.isError }
-            ?.let { emit(Failure) }
+            ?.let { emit(Failure()) }
             ?: emit(Success)
     }
 }

@@ -20,7 +20,7 @@ class WordPressConnectionCheckUseCase @Inject constructor(
             versionName = buildConfigWrapper.versionName,
             appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
         ).fetchError?.let {
-            emit(Failure)
+            emit(Failure())
         } ?: emit(Success)
     }
 }

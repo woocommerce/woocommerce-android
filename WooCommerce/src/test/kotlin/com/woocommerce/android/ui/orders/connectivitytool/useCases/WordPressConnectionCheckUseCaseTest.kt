@@ -52,7 +52,7 @@ class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure))
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure()))
     }
 
     @Test
