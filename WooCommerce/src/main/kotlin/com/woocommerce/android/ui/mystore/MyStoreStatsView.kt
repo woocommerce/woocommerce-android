@@ -214,7 +214,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
-    @Suppress("unused")
+    @Suppress("UNUSED_PARAMETER")
     private fun getGranularityLabelFromCustomRange(customDateRange: Pair<Date, Date>): CharSequence {
         // TODO use function to extract granularity from custom date range
         return resources.getString(R.string.my_store_custom_range_by_granularity, "days")
