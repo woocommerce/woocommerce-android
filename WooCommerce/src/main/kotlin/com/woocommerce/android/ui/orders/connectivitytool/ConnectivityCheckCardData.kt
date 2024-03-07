@@ -12,8 +12,8 @@ typealias OnReadMoreClicked = () -> Unit
 @Parcelize
 sealed class ConnectivityCheckCardData(
     @StringRes val title: Int,
+    @StringRes val suggestion: Int,
     @DrawableRes val icon: Int,
-    @StringRes open val suggestion: Int,
     open val connectivityCheckStatus: ConnectivityCheckStatus,
     open val readMoreAction: OnReadMoreClicked? = null
 ) : Parcelable {
@@ -39,24 +39,22 @@ sealed class ConnectivityCheckCardData(
     )
 
     data class StoreConnectivityCheckData(
-        override val suggestion: Int = R.string.orderlist_connectivity_tool_generic_error_suggestion,
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
         override val readMoreAction: OnReadMoreClicked? = null
     ) : ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_check_title,
-        suggestion = suggestion,
+        suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
         icon = R.drawable.ic_more_menu_store,
         connectivityCheckStatus = connectivityCheckStatus,
         readMoreAction = readMoreAction
     )
 
     data class StoreOrdersConnectivityCheckData(
-        override val suggestion: Int = R.string.orderlist_connectivity_tool_generic_error_suggestion,
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
         override val readMoreAction: OnReadMoreClicked? = null
     ) : ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_orders_check_title,
-        suggestion = suggestion,
+        suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
         icon = R.drawable.ic_clipboard,
         connectivityCheckStatus = connectivityCheckStatus,
         readMoreAction = readMoreAction
