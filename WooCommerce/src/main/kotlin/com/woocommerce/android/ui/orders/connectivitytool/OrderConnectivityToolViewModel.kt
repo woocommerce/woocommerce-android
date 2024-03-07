@@ -7,6 +7,11 @@ import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardD
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.Finished
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.InternetCheck
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.StoreCheck
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.StoreOrdersCheck
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.WordPressCheck
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
@@ -30,6 +35,11 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    private val stateMachine = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = InternetCheck
+    )
+
     private val internetCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = InternetConnectivityCheckData()
@@ -65,33 +75,59 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     fun startConnectionTests() {
         launch {
-            internetConnectionCheck().onEach { status ->
-                internetCheckFlow.update {
-                    it.copy(connectivityCheckStatus = status)
+            stateMachine.collect {
+                when (it) {
+                    InternetCheck -> startInternetCheck()
+                    WordPressCheck -> startWordPressCheck()
+                    StoreCheck -> startStoreCheck()
+                    StoreOrdersCheck -> startStoreOrdersCheck()
+                    Finished -> { /* No-op */ }
                 }
-            }.launchIn(viewModelScope)
-
-            wordPressConnectionCheck().onEach { status ->
-                wordpressCheckFlow.update {
-                    it.copy(connectivityCheckStatus = status)
-                }
-            }.launchIn(viewModelScope)
-
-            storeConnectionCheck().onEach { status ->
-                storeCheckFlow.update {
-                    it.copy(connectivityCheckStatus = status)
-                }
-            }.launchIn(viewModelScope)
-
-            storeOrdersCheck().onEach { status ->
-                ordersCheckFlow.update {
-                    it.copy(connectivityCheckStatus = status)
-                }
-            }.launchIn(viewModelScope)
+            }
         }
+    }
+
+    private fun startStoreOrdersCheck() {
+        storeOrdersCheck().onEach { status ->
+            ordersCheckFlow.update {
+                it.copy(connectivityCheckStatus = status)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun startStoreCheck() {
+        storeConnectionCheck().onEach { status ->
+            storeCheckFlow.update {
+                it.copy(connectivityCheckStatus = status)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun startWordPressCheck() {
+        wordPressConnectionCheck().onEach { status ->
+            wordpressCheckFlow.update {
+                it.copy(connectivityCheckStatus = status)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun startInternetCheck() {
+        internetConnectionCheck().onEach { status ->
+            internetCheckFlow.update {
+                it.copy(connectivityCheckStatus = status)
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun onContactSupportClicked() { triggerEvent(OpenSupportRequest) }
 
     object OpenSupportRequest : MultiLiveEvent.Event()
+
+    enum class ConnectivityCheckStep {
+        InternetCheck,
+        WordPressCheck,
+        StoreCheck,
+        StoreOrdersCheck,
+        Finished
+    }
 }
