@@ -20,7 +20,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -81,17 +80,10 @@ class OrderConnectivityToolViewModel @Inject constructor(
         }
     }
 
-    private fun startStoreOrdersCheck() {
-        storeOrdersCheck().onEach { status ->
-            ordersCheckFlow.update {
-                it.copy(connectivityCheckStatus = status)
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    private fun startStoreCheck() {
-        storeConnectionCheck().onEach { status ->
-            storeCheckFlow.update {
+    private fun startInternetCheck() {
+        internetConnectionCheck().onEach { status ->
+            internetCheckFlow.update {
+                if (status.isFinished()) stateMachine.update { WordPressCheck }
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
@@ -100,14 +92,25 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private fun startWordPressCheck() {
         wordPressConnectionCheck().onEach { status ->
             wordpressCheckFlow.update {
+                if (status.isFinished()) stateMachine.update { StoreCheck }
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
     }
 
-    private fun startInternetCheck() {
-        internetConnectionCheck().onEach { status ->
-            internetCheckFlow.update {
+    private fun startStoreCheck() {
+        storeConnectionCheck().onEach { status ->
+            storeCheckFlow.update {
+                if (status.isFinished()) stateMachine.update { StoreOrdersCheck }
+                it.copy(connectivityCheckStatus = status)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun startStoreOrdersCheck() {
+        storeOrdersCheck().onEach { status ->
+            if (status.isFinished()) stateMachine.update { Finished }
+            ordersCheckFlow.update {
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
