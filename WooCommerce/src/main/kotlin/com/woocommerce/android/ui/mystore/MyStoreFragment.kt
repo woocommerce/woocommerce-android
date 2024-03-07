@@ -464,7 +464,7 @@ class MyStoreFragment :
                     )
 
                 is OpenDatePicker -> showDateRangePicker { start, end ->
-                    myStoreViewModel.onCustomRangeSelected(Date(start), Date(end))
+                    myStoreViewModel.onCustomRangeSelected(start, end)
                 }
 
                 else -> event.isHandled = false
