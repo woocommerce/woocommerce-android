@@ -70,25 +70,25 @@ fun OrderConnectivityToolScreen(
     ) {
         ConnectivityCheckCard(
             checkTitle = R.string.orderlist_connectivity_tool_internet_check_title,
-            iconDrawable = R.drawable.ic_cloud,
+            iconDrawable = R.drawable.ic_wifi,
             errorMessage = "No internet connection",
             testStatus = internetConnectionTestStatus
         )
         ConnectivityCheckCard(
             checkTitle = R.string.orderlist_connectivity_tool_wordpress_check_title,
-            iconDrawable = R.drawable.ic_cloud,
+            iconDrawable = R.drawable.ic_storage,
             errorMessage = "WordPress connection failed",
             testStatus = wordpressConnectionTestStatus
         )
         ConnectivityCheckCard(
             checkTitle = R.string.orderlist_connectivity_tool_store_check_title,
-            iconDrawable = R.drawable.ic_cloud,
+            iconDrawable = R.drawable.ic_more_menu_store,
             errorMessage = "Store connection failed",
             testStatus = storeConnectionTestStatus
         )
         ConnectivityCheckCard(
             checkTitle = R.string.orderlist_connectivity_tool_store_orders_check_title,
-            iconDrawable = R.drawable.ic_cloud,
+            iconDrawable = R.drawable.ic_clipboard,
             errorMessage = "Store orders failed",
             testStatus = storeOrdersTestStatus
         )
@@ -131,7 +131,7 @@ fun ConnectivityCheckCard(
                         painter = painterResource(id = iconDrawable),
                         contentDescription = stringResource(id = checkTitle),
                         modifier = modifier
-                            .size(dimensionResource(id = R.dimen.major_150))
+                            .size(dimensionResource(id = R.dimen.major_125))
                             .align(Alignment.Center)
                     )
                 }
