@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
@@ -162,17 +161,6 @@ class GetStats @Inject constructor(
 
     private fun isPluginNotActiveError(error: Throwable): Boolean =
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
-
-    private val StatsGranularity.statsDateRange
-        get() = asRangeSelection(
-            dateUtils = dateUtils,
-            locale = localeProvider.provideLocale()
-        ).let {
-            Pair(
-                it.currentRange.start.formatToYYYYmmDDhhmmss(),
-                it.currentRange.end.formatToYYYYmmDDhhmmss()
-            )
-        }
 
     private suspend fun shouldUpdateStats(
         selectionRange: StatsTimeRangeSelection,

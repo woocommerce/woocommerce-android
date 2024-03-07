@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YEAR_TO_DATE
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
-import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -43,8 +42,7 @@ import kotlin.math.round
 class AnalyticsRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore,
-    private val dispatchers: CoroutineDispatchers,
+    private val wooCommerceStore: WooCommerceStore
 ) {
     private val getCurrentRevenueMutex = Mutex()
     private val getPreviousRevenueMutex = Mutex()
