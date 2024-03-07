@@ -95,7 +95,8 @@ fun ConnectivityCheckCard(
             checkTitle = it.title,
             iconDrawable = it.icon,
             suggestion = it.suggestion,
-            testStatus = it.connectivityCheckStatus
+            testStatus = it.connectivityCheckStatus,
+            shouldDisplayReadMoreButton = it.readMoreAction != null
         )
     }
 }
@@ -107,7 +108,7 @@ fun ConnectivityCheckCard(
     @DrawableRes iconDrawable: Int,
     @StringRes suggestion: Int,
     testStatus: ConnectivityCheckStatus,
-    shouldDisplayErrorSection: Boolean = false
+    shouldDisplayReadMoreButton: Boolean = false
 ) {
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
@@ -153,7 +154,7 @@ fun ConnectivityCheckCard(
                 }
             }
 
-            if (testStatus == Failure && shouldDisplayErrorSection) {
+            if (testStatus == Failure && shouldDisplayReadMoreButton) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = modifier
