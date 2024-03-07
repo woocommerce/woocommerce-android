@@ -95,8 +95,8 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     private fun startInternetCheck() {
         internetConnectionCheck().onEach { status ->
+            status.startNextCheck()
             internetCheckFlow.update {
-                status.startNextCheck()
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
@@ -104,8 +104,8 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     private fun startWordPressCheck() {
         wordPressConnectionCheck().onEach { status ->
+            status.startNextCheck()
             wordpressCheckFlow.update {
-                status.startNextCheck()
                 it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
@@ -113,9 +113,12 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     private fun startStoreCheck() {
         storeConnectionCheck().onEach { status ->
+            status.startNextCheck()
             storeCheckFlow.update {
-                status.startNextCheck()
-                it.copy(connectivityCheckStatus = status)
+                if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
+                    handleLearnMoreClick(status.error ?: FailureType.GENERIC)
+                })
+                else it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
     }
@@ -124,7 +127,10 @@ class OrderConnectivityToolViewModel @Inject constructor(
         storeOrdersCheck().onEach { status ->
             status.startNextCheck()
             ordersCheckFlow.update {
-                it.copy(connectivityCheckStatus = status)
+                if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
+                    handleLearnMoreClick(status.error ?: FailureType.GENERIC)
+                })
+                else it.copy(connectivityCheckStatus = status)
             }
         }.launchIn(viewModelScope)
     }
