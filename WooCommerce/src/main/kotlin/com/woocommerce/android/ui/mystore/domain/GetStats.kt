@@ -49,8 +49,8 @@ class GetStats @Inject constructor(
             shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
             hasOrders(),
-            revenueStats(shouldRefreshRevenue, granularity),
-            visitorStats(shouldRefreshVisitors, granularity)
+            revenueStats(selectionRange, granularity, shouldRefreshRevenue),
+            visitorStats(selectionRange, granularity, shouldRefreshRevenue)
         ).onEach { result ->
             if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
@@ -77,11 +77,20 @@ class GetStats @Inject constructor(
                 }
             }
 
-    private suspend fun revenueStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val rangeSelection = granularity.asRangeSelection(
-            dateUtils = dateUtils,
-            locale = localeProvider.provideLocale()
-        )
+    private suspend fun revenueStats(
+        rangeSelection: StatsTimeRangeSelection,
+        granularity: StatsGranularity,
+        forceRefresh: Boolean
+    ): Flow<LoadStatsResult> {
+        // This is a temporary fix until we update the ViewModel to use the new date range selection
+        // and offer the correct granularities
+        fun StatsGranularity.fixRevenueGranularity() = when (this) {
+            StatsGranularity.YEARS -> StatsGranularity.MONTHS
+            StatsGranularity.MONTHS, StatsGranularity.WEEKS -> StatsGranularity.DAYS
+            StatsGranularity.DAYS -> StatsGranularity.HOURS
+            else -> this
+        }
+
         val revenueRangeId = rangeSelection.selectionType.identifier.asRevenueRangeId(
             startDate = rangeSelection.currentRange.start,
             endDate = rangeSelection.currentRange.end
@@ -93,15 +102,11 @@ class GetStats @Inject constructor(
                 ?.let { return flowOf(LoadStatsResult.RevenueStatsSuccess(it.getOrNull())) }
         }
 
-        val startDate = rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss()
-        val endDate = rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss()
-
         return statsRepository.fetchRevenueStats(
-            granularity,
-            forceRefresh,
-            startDate,
-            endDate,
-            revenueRangeId
+            range = rangeSelection.currentRange,
+            granularity = granularity.fixRevenueGranularity(),
+            forced = forceRefresh,
+            revenueRangeId = revenueRangeId
         ).transform { result ->
             result.fold(
                 onSuccess = { stats ->
@@ -120,12 +125,27 @@ class GetStats @Inject constructor(
         }
     }
 
-    private suspend fun visitorStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val (startDate, endDate) = granularity.statsDateRange
+    private suspend fun visitorStats(
+        rangeSelection: StatsTimeRangeSelection,
+        granularity: StatsGranularity,
+        forceRefresh: Boolean
+    ): Flow<LoadStatsResult> {
         // Visitor stats are only available for Jetpack connected sites
         return when (selectedSite.connectionType) {
             SiteConnectionType.Jetpack -> {
-                statsRepository.fetchVisitorStats(granularity, forceRefresh, startDate, endDate)
+                // This is a temporary fix until we update the ViewModel to use the new date range selection
+                // and offer the correct granularities
+                fun StatsGranularity.fixVisitorsGranularity() = when (this) {
+                    StatsGranularity.YEARS -> StatsGranularity.MONTHS
+                    StatsGranularity.MONTHS, StatsGranularity.WEEKS -> StatsGranularity.DAYS
+                    else -> this
+                }
+
+                statsRepository.fetchVisitorStats(
+                    range = rangeSelection.currentRange,
+                    granularity = granularity.fixVisitorsGranularity(),
+                    forced = forceRefresh
+                )
                     .transform { result ->
                         result.fold(
                             onSuccess = { stats -> emit(LoadStatsResult.VisitorsStatsSuccess(stats)) },

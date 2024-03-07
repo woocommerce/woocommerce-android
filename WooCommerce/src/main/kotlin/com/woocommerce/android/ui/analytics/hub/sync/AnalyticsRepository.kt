@@ -211,7 +211,7 @@ class AnalyticsRepository @Inject constructor(
                 AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
-                    result = async { loadRevenueStats(startDate, endDate, granularity, statsIdentifier, fetchStrategy) }
+                    result = async { loadRevenueStats(currentPeriod, granularity, statsIdentifier, fetchStrategy) }
                 ).let { revenueStatsCache[statsIdentifier] = it }
             }
         }
@@ -234,7 +234,7 @@ class AnalyticsRepository @Inject constructor(
                 AnalyticsStatsResultWrapper(
                     startDate = startDate,
                     endDate = endDate,
-                    result = async { loadRevenueStats(startDate, endDate, granularity, statsIdentifier, fetchStrategy) }
+                    result = async { loadRevenueStats(previousPeriod, granularity, statsIdentifier, fetchStrategy) }
                 ).let { revenueStatsCache[statsIdentifier] = it }
             }
         }
@@ -265,10 +265,9 @@ class AnalyticsRepository @Inject constructor(
         fetchStrategy: FetchStrategy
     ): Result<Map<String, Int>> = coroutineScope {
         statsRepository.fetchVisitorStats(
-            getGranularity(rangeSelection.selectionType),
+            range = rangeSelection.currentRange,
+            granularity = getGranularity(rangeSelection.selectionType),
             fetchStrategy is ForceNew,
-            rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss(),
-            rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss()
         ).single()
     }
 
@@ -293,8 +292,7 @@ class AnalyticsRepository @Inject constructor(
         this?.let { fetchStrategy == ForceNew && it.result.isCompleted } ?: true
 
     private suspend fun loadRevenueStats(
-        startDate: String,
-        endDate: String,
+        range: AnalyticsHubTimeRange,
         granularity: StatsGranularity,
         revenueRangeId: String,
         fetchStrategy: FetchStrategy
@@ -307,11 +305,10 @@ class AnalyticsRepository @Inject constructor(
         }
 
         return statsRepository.fetchRevenueStats(
-            granularity,
-            fetchStrategy is ForceNew,
-            startDate,
-            endDate,
-            revenueRangeId
+            range = range,
+            granularity = granularity,
+            forced = fetchStrategy is ForceNew,
+            revenueRangeId = revenueRangeId
         ).flowOn(dispatchers.io).single().mapCatching { it }
     }
 

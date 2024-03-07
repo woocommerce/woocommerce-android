@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.mystore.data
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.formatToYYYYmmDD
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.CompletableDeferred
@@ -53,10 +55,9 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun fetchRevenueStats(
+        range: AnalyticsHubTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
-        startDate: String = "",
-        endDate: String = "",
         revenueRangeId: String = ""
     ): Flow<Result<WCRevenueStatsModel?>> =
         flow {
@@ -64,8 +65,8 @@ class StatsRepository @Inject constructor(
                 FetchRevenueStatsPayload(
                     site = selectedSite.get(),
                     granularity = granularity,
-                    startDate = startDate,
-                    endDate = endDate,
+                    startDate = range.start.formatToYYYYmmDDhhmmss(),
+                    endDate = range.end.formatToYYYYmmDDhhmmss(),
                     forced = forced,
                     revenueRangeId = revenueRangeId
                 )
@@ -97,13 +98,18 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun fetchVisitorStats(
+        range: AnalyticsHubTimeRange,
         granularity: StatsGranularity,
-        forced: Boolean,
-        startDate: String = "",
-        endDate: String = "",
+        forced: Boolean
     ): Flow<Result<Map<String, Int>>> =
         flow {
-            val visitsPayload = FetchNewVisitorStatsPayload(selectedSite.get(), granularity, forced, startDate, endDate)
+            val visitsPayload = FetchNewVisitorStatsPayload(
+                site = selectedSite.get(),
+                granularity = granularity,
+                startDate = range.start.formatToYYYYmmDDhhmmss(),
+                endDate = range.end.formatToYYYYmmDDhhmmss(),
+                forced = forced
+            )
             val result = wcStatsStore.fetchNewVisitorStats(visitsPayload)
             if (!result.isError) {
                 val visitorStats = wcStatsStore.getNewVisitorStats(
@@ -121,10 +127,13 @@ class StatsRepository @Inject constructor(
         }
 
     fun observeTopPerformers(
-        granularity: StatsGranularity,
+        range: AnalyticsHubTimeRange,
     ): Flow<List<TopPerformerProductEntity>> {
         val siteModel = selectedSite.get()
-        val datePeriod = granularity.datePeriod(siteModel)
+        val datePeriod = DateUtils.getDatePeriod(
+            startDate = range.start.formatToYYYYmmDDhhmmss(),
+            endDate = range.end.formatToYYYYmmDDhhmmss()
+        )
         return wcLeaderboardsStore
             .observeTopPerformerProducts(siteModel, datePeriod)
             .flowOn(Dispatchers.IO)
@@ -141,17 +150,13 @@ class StatsRepository @Inject constructor(
 
     suspend fun fetchTopPerformerProducts(
         forceRefresh: Boolean,
-        granularity: StatsGranularity,
+        range: AnalyticsHubTimeRange,
         quantity: Int
     ): Result<Unit> {
-        val siteModel = selectedSite.get()
-        val startDate = granularity.startDateTime(siteModel)
-        val endDate = granularity.endDateTime(siteModel)
-
         return fetchTopPerformerProducts(
             forceRefresh = forceRefresh,
-            startDate = startDate,
-            endDate = endDate,
+            startDate = range.start.formatToYYYYmmDDhhmmss(),
+            endDate = range.end.formatToYYYYmmDDhhmmss(),
             quantity = quantity
         )
     }
@@ -208,6 +213,7 @@ class StatsRepository @Inject constructor(
             is WCOrderStore.HasOrdersResult.Success -> {
                 emit(Result.success(!result.hasOrders))
             }
+
             is WCOrderStore.HasOrdersResult.Failure, null -> {
                 val errorMessage = (result as? WCOrderStore.HasOrdersResult.Failure)?.error?.message ?: "Timeout"
                 WooLog.e(
@@ -227,6 +233,7 @@ class StatsRepository @Inject constructor(
     )
 
     private suspend fun fetchRevenueStats(
+        range: AnalyticsHubTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
         site: SiteModel = selectedSite.get()
@@ -234,6 +241,8 @@ class StatsRepository @Inject constructor(
         val statsPayload = FetchRevenueStatsPayload(
             site = site,
             granularity = granularity,
+            startDate = range.start.formatToYYYYmmDD(),
+            endDate = range.end.formatToYYYYmmDD(),
             forced = forced
         )
 
@@ -258,6 +267,7 @@ class StatsRepository @Inject constructor(
     }
 
     private suspend fun fetchVisitorStats(
+        range: AnalyticsHubTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
         site: SiteModel = selectedSite.get()
@@ -265,6 +275,8 @@ class StatsRepository @Inject constructor(
         val visitsPayload = FetchNewVisitorStatsPayload(
             site = site,
             granularity = granularity,
+            startDate = range.start.formatToYYYYmmDDhhmmss(),
+            endDate = range.end.formatToYYYYmmDDhhmmss(),
             forced = forced
         )
 
@@ -291,6 +303,7 @@ class StatsRepository @Inject constructor(
      * will be handled as null and only errors fetching the revenue stats will be processed.
      */
     suspend fun fetchStats(
+        range: AnalyticsHubTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
         includeVisitorStats: Boolean,
@@ -299,6 +312,7 @@ class StatsRepository @Inject constructor(
         val fetchVisitorStats = if (includeVisitorStats) {
             async {
                 fetchVisitorStats(
+                    range = range,
                     granularity = granularity,
                     forced = forced,
                     site = site
@@ -310,6 +324,7 @@ class StatsRepository @Inject constructor(
 
         val fetchRevenueStats = async {
             fetchRevenueStats(
+                range = range,
                 granularity = granularity,
                 forced = forced,
                 site = site

@@ -6,7 +6,10 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository
+import com.woocommerce.android.ui.mystore.domain.asRangeSelection
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -18,7 +21,9 @@ class GetWidgetStats @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val dateUtils: DateUtils,
+    private val localeProvider: LocaleProvider
 ) {
     suspend operator fun invoke(
         granularity: WCStatsStore.StatsGranularity,
@@ -37,8 +42,14 @@ class GetWidgetStats @Inject constructor(
                 else -> {
                     val areVisitorStatsSupported = siteModel.connectionType == SiteConnectionType.Jetpack
 
+                    val rangeSelection = granularity.asRangeSelection(
+                        dateUtils = dateUtils,
+                        locale = localeProvider.provideLocale()
+                    )
+
                     // Fetch stats, always force to refresh data.
                     val fetchedStats = statsRepository.fetchStats(
+                        range = rangeSelection.currentRange,
                         granularity = granularity,
                         forced = true,
                         includeVisitorStats = areVisitorStatsSupported,
