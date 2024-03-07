@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.flow.map
 
 @HiltViewModel
 class OrderConnectivityToolViewModel @Inject constructor(
@@ -64,14 +65,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     )
     val storeOrdersCheckData = ordersCheckFlow.asLiveData()
 
-    val isCheckFinished = combine(
-        internetCheckFlow,
-        wordpressCheckFlow,
-        storeCheckFlow,
-        ordersCheckFlow
-    ) { internet, wordpress, store, orders ->
-        internet.isFinished && wordpress.isFinished && store.isFinished && orders.isFinished
-    }.asLiveData()
+    val isCheckFinished = stateMachine.map { it == Finished }.asLiveData()
 
     fun startConnectionTests() {
         launch {
