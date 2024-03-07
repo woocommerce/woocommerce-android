@@ -17,9 +17,6 @@ sealed class ConnectivityCheckCardData(
     open val connectivityCheckStatus: ConnectivityCheckStatus,
     open val readMoreAction: OnReadMoreClicked? = null
 ) : Parcelable {
-    val isFinished: Boolean
-        get() = connectivityCheckStatus.isFinished()
-
     data class InternetConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted
     ) : ConnectivityCheckCardData(
@@ -66,12 +63,12 @@ sealed class ConnectivityCheckStatus : Parcelable {
     data object NotStarted : ConnectivityCheckStatus()
     data object InProgress : ConnectivityCheckStatus()
     data object Success : ConnectivityCheckStatus()
-    data class Failure(val error: FailureType? = null) : ConnectivityCheckStatus()
-
-    fun isFinished() = this is Success || this is Failure
+    @Parcelize
+    data class Failure(val error: FailureType? = null) : ConnectivityCheckStatus(), Parcelable
 }
 
-enum class FailureType(val message: Int) {
+@Parcelize
+enum class FailureType(val message: Int) : Parcelable {
     TIMEOUT(R.string.orderlist_connectivity_tool_timeout_error_suggestion),
     PARSE(R.string.orderlist_connectivity_tool_parsing_error_suggestion),
     JETPACK(R.string.orderlist_connectivity_tool_jetpack_error_suggestion),
