@@ -2024,7 +2024,10 @@ class ProductDetailViewModel @Inject constructor(
             draftChanges
                 .distinctUntilChanged { old, new -> old?.remoteId == new?.remoteId }
                 .map { getRemoteProductId() }
-                .filter { productId -> productId != DEFAULT_ADD_NEW_PRODUCT_ID || this@ProductDetailViewModel.isAddNewProductFlow }
+                .filter { productId ->
+                    productId != DEFAULT_ADD_NEW_PRODUCT_ID ||
+                        this@ProductDetailViewModel.isAddNewProductFlow
+                }
                 .collectLatest { productId ->
                     mediaFileUploadHandler.observeCurrentUploads(productId)
                         .map { list -> list.map { it.toUri() } }
