@@ -75,6 +75,8 @@ import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersEmpty
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoading
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
@@ -357,10 +359,11 @@ class OrderDetailFragment :
     private fun setupOrdersCommunicationObservers(ordersCommunicationViewModel: OrdersCommunicationViewModel) {
         ordersCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OrdersCommunicationViewModel.CommunicationEvent.OrdersEmpty -> {
+                is OrdersEmpty -> {
                     viewModel.showEmptyView()
                 }
-                is OrdersCommunicationViewModel.CommunicationEvent.OrdersLoading -> {
+
+                is OrdersLoading -> {
                     viewModel.showLoadingView()
                 }
 
