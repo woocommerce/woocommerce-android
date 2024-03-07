@@ -71,38 +71,10 @@ fun OrderConnectivityToolScreen(
             .fillMaxSize()
             .padding(dimensionResource(id = R.dimen.major_100))
     ) {
-        internetConnectionCheckData?.let {
-            ConnectivityCheckCard(
-                checkTitle = it.title,
-                iconDrawable = it.icon,
-                suggestion = it.suggestion,
-                testStatus = it.connectivityCheckStatus
-            )
-        }
-        wordpressConnectionCheckData?.let {
-            ConnectivityCheckCard(
-                checkTitle = it.title,
-                iconDrawable = it.icon,
-                suggestion = it.suggestion,
-                testStatus = it.connectivityCheckStatus
-            )
-        }
-        storeConnectionCheckData?.let {
-            ConnectivityCheckCard(
-                checkTitle = it.title,
-                iconDrawable = it.icon,
-                suggestion = it.suggestion,
-                testStatus = it.connectivityCheckStatus
-            )
-        }
-        storeOrdersCheckData?.let {
-            ConnectivityCheckCard(
-                checkTitle = it.title,
-                iconDrawable = it.icon,
-                suggestion = it.suggestion,
-                testStatus = it.connectivityCheckStatus
-            )
-        }
+        ConnectivityCheckCard(internetConnectionCheckData)
+        ConnectivityCheckCard(wordpressConnectionCheckData)
+        ConnectivityCheckCard(storeConnectionCheckData)
+        ConnectivityCheckCard(storeOrdersCheckData)
         Spacer(modifier = modifier.weight(1f))
         Button(
             enabled = isContactSupportButtonEnabled,
@@ -111,6 +83,20 @@ fun OrderConnectivityToolScreen(
         ) {
             Text(stringResource(id = R.string.orderlist_connectivity_tool_contact_support_action))
         }
+    }
+}
+
+@Composable
+fun ConnectivityCheckCard(
+    cardData: ConnectivityCheckCardData?
+) {
+    cardData?.let {
+        ConnectivityCheckCard(
+            checkTitle = it.title,
+            iconDrawable = it.icon,
+            suggestion = it.suggestion,
+            testStatus = it.connectivityCheckStatus
+        )
     }
 }
 
