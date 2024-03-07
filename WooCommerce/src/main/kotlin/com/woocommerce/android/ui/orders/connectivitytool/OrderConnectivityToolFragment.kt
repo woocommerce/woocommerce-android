@@ -11,6 +11,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenSupportRequest
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,7 +23,9 @@ class OrderConnectivityToolFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                OrderConnectivityToolScreen(viewModel = viewModel)
+                WooThemeWithBackground {
+                    OrderConnectivityToolScreen(viewModel = viewModel)
+                }
             }
         }
     }

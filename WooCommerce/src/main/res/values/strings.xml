@@ -488,6 +488,12 @@
     <string name="orderlist_timeout_error_title">Your site is taking a long time to respond</string>
     <string name="orderlist_timeout_error_message">Please try again later or reach out to us and we\'ll be happy to assist you</string>
     <string name="orderlist_connectivity_tool_title">Connectivity Test</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Internet Connection</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com servers</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Your site</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Your site orders</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Contact Support</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Read More</string>
 
     <!--
          Simple Payments
