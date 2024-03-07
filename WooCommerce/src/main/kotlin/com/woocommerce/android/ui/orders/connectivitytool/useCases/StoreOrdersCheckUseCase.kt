@@ -21,13 +21,11 @@ class StoreOrdersCheckUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        orderStore.fetchHasOrders(
-            site = selectedSite.get(),
-            status = null
-        ).run { this as? HasOrdersResult.Failure }
-        ?.parseError()
-        ?.let { emit(it) }
-        ?: emit(Success)
+        orderStore.fetchHasOrders(selectedSite.get(), null)
+            .run { this as? HasOrdersResult.Failure }
+            ?.parseError()
+            ?.let { emit(it) }
+            ?: emit(Success)
     }
 
     private fun HasOrdersResult.Failure.parseError() =

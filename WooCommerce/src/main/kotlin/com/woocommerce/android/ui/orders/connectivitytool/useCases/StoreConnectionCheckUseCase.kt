@@ -8,11 +8,11 @@ import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatu
 import com.woocommerce.android.ui.orders.connectivitytool.FailureType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.wordpress.android.fluxc.model.WCSSRModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import org.wordpress.android.fluxc.model.WCSSRModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 
 class StoreConnectionCheckUseCase @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
