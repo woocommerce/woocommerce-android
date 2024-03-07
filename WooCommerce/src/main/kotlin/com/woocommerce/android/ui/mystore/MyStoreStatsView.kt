@@ -200,15 +200,24 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun updateCustomDateRange(customDateRange: Pair<Date, Date>?) {
-        customRange = customDateRange
         customRangeButton.isVisible = customDateRange == null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
-        customRangeTab.view.isVisible = customDateRange != null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
-        tabLayout.selectTab(customRangeTab)
-        tabLayout.scrollX = tabLayout.width
 
-        customRangeLabel.text =
-            "${customDateRange?.first?.formatToMMMddYYYY()} - ${customDateRange?.second?.formatToMMMddYYYY()}"
-        customRangeLabel.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
+        customDateRange?.let { range ->
+            customRange = range
+            customRangeTab.view.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
+            tabLayout.selectTab(customRangeTab)
+            tabLayout.scrollX = tabLayout.width
+
+            customRangeLabel.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
+            customRangeLabel.text = "${range.first.formatToMMMddYYYY()} - ${range.second.formatToMMMddYYYY()}"
+            statsDateValue.text = getGranularityLabelFromCustomRange(range)
+        }
+    }
+
+    @Suppress("unused")
+    private fun getGranularityLabelFromCustomRange(customDateRange: Pair<Date, Date>): CharSequence {
+        // TODO use function to extract granularity from custom date range
+        return resources.getString(R.string.my_store_custom_range_by_granularity, "days")
     }
 
     fun showSkeleton(show: Boolean) {
