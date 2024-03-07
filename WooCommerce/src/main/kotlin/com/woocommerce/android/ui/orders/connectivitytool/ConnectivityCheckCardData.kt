@@ -64,11 +64,11 @@ sealed class ConnectivityCheckCardData(
 }
 
 @Parcelize
-sealed class ConnectivityCheckStatus: Parcelable {
-    data object NotStarted: ConnectivityCheckStatus()
-    data object InProgress: ConnectivityCheckStatus()
-    data object Success: ConnectivityCheckStatus()
-    data class Failure(val error: FailureType? = null): ConnectivityCheckStatus()
+sealed class ConnectivityCheckStatus : Parcelable {
+    data object NotStarted : ConnectivityCheckStatus()
+    data object InProgress : ConnectivityCheckStatus()
+    data object Success : ConnectivityCheckStatus()
+    data class Failure(val error: FailureType? = null) : ConnectivityCheckStatus()
 
     fun isFinished() = this is Success || this is Failure
 }
