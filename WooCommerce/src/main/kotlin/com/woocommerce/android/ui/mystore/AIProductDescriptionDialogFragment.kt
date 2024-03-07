@@ -23,7 +23,6 @@ import org.wordpress.android.util.DisplayUtils
 class AIProductDescriptionDialogFragment : DialogFragment() {
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
-        private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
     }
 
     private val viewModel: AIProductDescriptionDialogViewModel by viewModels()
@@ -71,7 +70,7 @@ class AIProductDescriptionDialogFragment : DialogFragment() {
         if (isTabletLandscape()) {
             requireDialog().window!!.setLayout(
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
+                ViewGroup.LayoutParams.WRAP_CONTENT
             )
         }
     }

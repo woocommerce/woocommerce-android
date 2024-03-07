@@ -14,6 +14,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -117,7 +118,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         // Given a site using a version that doesn't support AUTO_DRAFT
         whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
             .thenReturn(SitePluginModel().apply { version = "6.2.0" })
-        whenever(orderUpdateStore.createOrder(any(), any()))
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
         val order = Order.getEmptyOrder(Date(), Date()).copy(
@@ -148,7 +149,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         // Given a site using a version that support AUTO_DRAFT
         whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
             .thenReturn(SitePluginModel().apply { version = OrderCreateEditRepository.AUTO_DRAFT_SUPPORTED_VERSION })
-        whenever(orderUpdateStore.createOrder(any(), any()))
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
         val order = Order.getEmptyOrder(Date(), Date()).copy(
