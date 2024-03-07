@@ -34,22 +34,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.NotStarted
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
 
 @Composable
 fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     OrderConnectivityToolScreen(
         isContactSupportButtonEnabled = viewState?.isCheckFinished ?: false,
-        internetConnectionTestStatus = viewState?.internetConnectionCheckStatus ?: NotStarted,
-        wordpressConnectionTestStatus = viewState?.wordpressConnectionCheckStatus ?: NotStarted,
-        storeConnectionTestStatus = viewState?.storeConnectionCheckStatus ?: NotStarted,
+        internetConnectionTestStatus = viewState?.internetConnectionCheckData ?: NotStarted,
+        wordpressConnectionTestStatus = viewState?.wordpressConnectionCheckData ?: NotStarted,
+        storeConnectionTestStatus = viewState?.storeConnectionCheckData ?: NotStarted,
         onContactSupportClicked = viewModel::onContactSupportClicked,
-        storeOrdersTestStatus = viewState?.storeOrdersCheckStatus ?: NotStarted
+        storeOrdersTestStatus = viewState?.storeOrdersCheckData ?: NotStarted
     )
 }
 

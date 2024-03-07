@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
 import kotlinx.parcelize.Parcelize
 
 typealias OnReadMoreClicked = (url: String) -> Unit
@@ -16,8 +17,11 @@ sealed class ConnectivityCheckCardData(
     open val connectivityCheckStatus: ConnectivityCheckStatus,
     open val readMoreAction: OnReadMoreClicked? = null
 ) : Parcelable {
+    val isFinished: Boolean
+        get() = connectivityCheckStatus.isFinished()
+
     class InternetConnectivityCheckData(
-        override val connectivityCheckStatus: ConnectivityCheckStatus
+        override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted
     ) : ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_internet_check_title,
         suggestion = R.string.orderlist_connectivity_tool_internet_check_suggestion,
@@ -26,7 +30,7 @@ sealed class ConnectivityCheckCardData(
     )
 
     class WordPressConnectivityCheckData(
-        override val connectivityCheckStatus: ConnectivityCheckStatus
+        override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted
     ) : ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_wordpress_check_title,
         suggestion = R.string.orderlist_connectivity_tool_wordpress_check_suggestion,
@@ -35,8 +39,8 @@ sealed class ConnectivityCheckCardData(
     )
 
     class StoreConnectivityCheckData(
-        override val connectivityCheckStatus: ConnectivityCheckStatus,
-        override val readMoreAction: OnReadMoreClicked
+        override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
+        override val readMoreAction: OnReadMoreClicked? = null
     ) : ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_check_title,
         suggestion = R.string.orderlist_connectivity_tool_store_check_suggestion,
@@ -46,8 +50,8 @@ sealed class ConnectivityCheckCardData(
     )
 
     class StoreOrdersConnectivityCheckData(
-        override val connectivityCheckStatus: ConnectivityCheckStatus,
-        override val readMoreAction: OnReadMoreClicked
+        override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
+        override val readMoreAction: OnReadMoreClicked? = null
     ) : ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_orders_check_title,
         suggestion = R.string.orderlist_connectivity_tool_store_orders_check_suggestion,
