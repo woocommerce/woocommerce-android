@@ -427,10 +427,11 @@ class MyStoreViewModel @Inject constructor(
             0
         )
 
-    private fun getSelectedStatsGranularityIfAny(): StatsGranularity {
+    private fun getSelectedStatsGranularityIfAny(): SelectionType {
         val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity()
-        return runCatching { StatsGranularity.valueOf(previouslySelectedGranularity.uppercase()) }
-            .getOrDefault(StatsGranularity.DAYS)
+        return runCatching {
+            SelectionType.fromOrThrow(previouslySelectedGranularity)
+        }.getOrDefault(SelectionType.TODAY)
     }
 
     private fun StatsGranularity.toAnalyticTimePeriod() = when (this) {

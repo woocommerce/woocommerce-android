@@ -172,6 +172,10 @@ class StatsTimeRangeSelection private constructor(
                 return values().firstOrNull { it.toString() == description } ?: CUSTOM
             }
 
+            fun fromOrThrow(identifier: String): SelectionType {
+                return values().first { it.identifier == identifier }
+            }
+
             val names: Array<String>
                 get() = values().map { it.name }.toTypedArray()
         }
