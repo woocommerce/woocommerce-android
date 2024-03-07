@@ -399,7 +399,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun initializeStoredProductAfterRestoration() {
         launch {
-            if (this@ProductDetailViewModel.isAddNewProductFlow && !isProductStoredAtSite) {
+            if (isAddNewProductFlow && !isProductStoredAtSite) {
                 storedProduct.value = createDefaultProductForAddFlow()
             } else {
                 when (val mode = navArgs.mode) {
@@ -2024,10 +2024,7 @@ class ProductDetailViewModel @Inject constructor(
             draftChanges
                 .distinctUntilChanged { old, new -> old?.remoteId == new?.remoteId }
                 .map { getRemoteProductId() }
-                .filter { productId ->
-                    productId != DEFAULT_ADD_NEW_PRODUCT_ID ||
-                        this@ProductDetailViewModel.isAddNewProductFlow
-                }
+                .filter { productId -> productId != DEFAULT_ADD_NEW_PRODUCT_ID || isAddNewProductFlow }
                 .collectLatest { productId ->
                     mediaFileUploadHandler.observeCurrentUploads(productId)
                         .map { list -> list.map { it.toUri() } }
