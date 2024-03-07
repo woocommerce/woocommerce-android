@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
@@ -73,6 +74,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
@@ -111,6 +113,7 @@ class OrderDetailFragment :
 
     private val viewModel: OrderDetailViewModel by viewModels()
     private val orderEditingViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    private val ordersCommunicationViewModel: OrdersCommunicationViewModel by activityViewModels()
 
     @Inject
     lateinit var navigator: OrderNavigator
@@ -210,6 +213,7 @@ class OrderDetailFragment :
         setupObservers(viewModel)
         setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
+        setupOrdersCommunicationObservers(ordersCommunicationViewModel)
 
         binding.orderDetailOrderStatus.initView(mode = Mode.OrderEdit) {
             viewModel.onEditOrderStatusSelected()
@@ -348,6 +352,17 @@ class OrderDetailFragment :
     override fun openOrderProductVariationDetail(remoteProductId: Long, remoteVariationId: Long) {
         AnalyticsTracker.track(ORDER_DETAIL_PRODUCT_TAPPED)
         (activity as? MainNavigationRouter)?.showProductVariationDetail(remoteProductId, remoteVariationId)
+    }
+
+    private fun setupOrdersCommunicationObservers(ordersCommunicationViewModel: OrdersCommunicationViewModel) {
+        ordersCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OrdersCommunicationViewModel.CommunicationEvent.OrdersEmpty -> {
+                    viewModel.showEmptyView()
+                }
+                else -> event.isHandled = false
+            }
+        }
     }
 
     private fun setupObservers(viewModel: OrderDetailViewModel) {
@@ -818,7 +833,6 @@ class OrderDetailFragment :
             )
         } else {
             binding.emptyView.hide()
-            binding.orderDetailContainer.visibility = View.VISIBLE
         }
     }
 

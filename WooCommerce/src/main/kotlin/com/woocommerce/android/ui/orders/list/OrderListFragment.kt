@@ -60,6 +60,8 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersEmpty
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -110,6 +112,8 @@ class OrderListFragment :
     lateinit var feedbackPrefs: FeedbackPrefs
 
     private val viewModel: OrderListViewModel by viewModels()
+    private val ordersCommunicationViewModel: OrdersCommunicationViewModel by activityViewModels()
+
     private var snackBar: Snackbar? = null
 
     override fun onStop() {
@@ -563,6 +567,8 @@ class OrderListFragment :
                     }
 
                     EmptyViewType.ORDER_LIST -> {
+                        ordersCommunicationViewModel.pushEvent(OrdersEmpty)
+
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
