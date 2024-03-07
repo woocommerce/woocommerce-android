@@ -171,7 +171,7 @@ fun ConnectivityCheckCard(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = stringResource(id = suggestion),
+                        text = stringResource(id = testStatus.error?.message ?: suggestion),
                         color = colorResource(id = R.color.woo_red_50)
                     )
                     if (shouldDisplayReadMoreButton) {

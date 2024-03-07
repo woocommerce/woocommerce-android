@@ -5,7 +5,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
-import com.woocommerce.android.ui.orders.connectivitytool.FailureType.GENERIC
 import kotlinx.parcelize.Parcelize
 
 typealias OnReadMoreClicked = () -> Unit
@@ -69,7 +68,7 @@ sealed class ConnectivityCheckStatus: Parcelable {
     data object NotStarted: ConnectivityCheckStatus()
     data object InProgress: ConnectivityCheckStatus()
     data object Success: ConnectivityCheckStatus()
-    data class Failure(val error: FailureType = GENERIC): ConnectivityCheckStatus()
+    data class Failure(val error: FailureType? = null): ConnectivityCheckStatus()
 
     fun isFinished() = this is Success || this is Failure
 }
