@@ -105,11 +105,12 @@ fun OrderConnectivityToolScreen(
 
 @Composable
 fun ConnectivityCheckCard(
+    modifier: Modifier = Modifier,
     @StringRes checkTitle: Int,
     @DrawableRes iconDrawable: Int,
     errorMessage: String,
     testStatus: ConnectivityCheckStatus,
-    modifier: Modifier = Modifier
+    shouldDisplayErrorSection: Boolean = false
 ) {
     Card(
         shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
@@ -152,6 +153,23 @@ fun ConnectivityCheckCard(
                         icon = R.drawable.ic_rounded_chcekbox_partially_checked,
                         color = R.color.woo_red_50
                     )
+                }
+            }
+
+            if (testStatus == Failure && shouldDisplayErrorSection) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = modifier
+                        .padding(top = dimensionResource(id = R.dimen.major_100))
+                        .fillMaxWidth()
+                ) {
+                    Text(errorMessage)
+                    Button(
+                        onClick = { /*TODO*/ },
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(id = R.string.orderlist_connectivity_tool_read_more_action))
+                    }
                 }
             }
         }
