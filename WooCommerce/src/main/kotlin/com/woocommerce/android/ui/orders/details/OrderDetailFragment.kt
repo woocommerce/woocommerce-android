@@ -835,7 +835,7 @@ class OrderDetailFragment :
             binding.orderDetailContainer.visibility = View.GONE
             binding.emptyView.show(
                 WCEmptyView.EmptyViewType.ORDER_DETAILS,
-                forceShowImage = true,
+                showImageInBothOrientations = true,
                 backgroundColorResId = R.color.default_window_background
             )
         } else {

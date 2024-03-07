@@ -40,7 +40,7 @@ import org.wordpress.android.util.DisplayUtils
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private val binding = WcEmptyViewBinding.inflate(LayoutInflater.from(context), this, true)
-    private var forceShowImage: Boolean = false
+    private var showImageInBothOrientations: Boolean = false
 
     enum class EmptyViewType {
         DASHBOARD,
@@ -73,17 +73,17 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
      * Hide the image in landscape since there isn't enough room for it on most devices
      */
     private fun checkOrientation() {
-        binding.emptyViewImage.isVisible = forceShowImage || !DisplayUtils.isLandscape(context)
+        binding.emptyViewImage.isVisible = showImageInBothOrientations || !DisplayUtils.isLandscape(context)
     }
 
     fun show(
         type: EmptyViewType,
         searchQueryOrFilter: String? = null,
-        forceShowImage: Boolean = false,
+        showImageInBothOrientations: Boolean = false,
         @ColorRes backgroundColorResId: Int? = null,
         onButtonClick: (() -> Unit)? = null
     ) {
-        this.forceShowImage = forceShowImage
+        this.showImageInBothOrientations = showImageInBothOrientations
 
         checkOrientation()
 
@@ -98,7 +98,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             val durationMs = Duration.SHORT.toMillis(context) + 50L
             Handler(Looper.getMainLooper()).postDelayed(
                 {
-                    show(type, searchQueryOrFilter, forceShowImage, backgroundColorResId,onButtonClick)
+                    show(type, searchQueryOrFilter, showImageInBothOrientations, backgroundColorResId,onButtonClick)
                 },
                 durationMs
             )
