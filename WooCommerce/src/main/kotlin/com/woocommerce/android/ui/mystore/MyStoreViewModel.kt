@@ -427,6 +427,7 @@ class MyStoreViewModel @Inject constructor(
         StatsGranularity.WEEKS -> SelectionType.WEEK_TO_DATE
         StatsGranularity.MONTHS -> SelectionType.MONTH_TO_DATE
         StatsGranularity.YEARS -> SelectionType.YEAR_TO_DATE
+        StatsGranularity.HOURS -> error("Hours shouldn't be used now")
     }
 
     fun onCustomRangeSelected(fromDate: Date, toDate: Date) {
