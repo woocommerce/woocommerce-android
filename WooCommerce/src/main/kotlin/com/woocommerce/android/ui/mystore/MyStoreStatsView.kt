@@ -26,6 +26,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.tabs.TabLayout.Tab
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -52,6 +53,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.HOURS
 import org.wordpress.android.util.DisplayUtils
+import java.util.Date
 import java.util.Locale
 import kotlin.math.round
 
@@ -80,6 +82,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
+    private var customRange: Pair<Date, Date>? = null
 
     private var skeletonView = SkeletonView()
 
@@ -123,8 +126,9 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val chartUserInteractions = MutableSharedFlow<Unit>()
     private lateinit var chartUserInteractionsJob: Job
 
-    val tabLayout = binding.statsTabLayout
     val customRangeButton = binding.customRangeButton
+    val tabLayout = binding.statsTabLayout
+    private lateinit var customRangeTab: Tab
 
     @Suppress("LongParameterList")
     fun initView(
@@ -142,8 +146,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         this.currencyFormatter = currencyFormatter
         this.usageTracksEventEmitter = usageTracksEventEmitter
         this.coroutineScope = lifecycleScope
-
-        customRangeButton.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
 
         initChart()
 
@@ -175,6 +177,11 @@ class MyStoreStatsView @JvmOverloads constructor(
                 }
                 tabLayout.addTab(tab)
             }
+        customRangeTab = tabLayout.newTab().apply {
+            setText(R.string.orderfilters_date_range_filter_custom_range)
+            view.isVisible = false
+        }
+        tabLayout.addTab(customRangeTab)
     }
 
     override fun onDetachedFromWindow() {
@@ -190,6 +197,14 @@ class MyStoreStatsView @JvmOverloads constructor(
             mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase())
         )
         isRequestingStats = true
+    }
+
+    fun updateCustomDateRange(customDateRange: Pair<Date, Date>?) {
+        customRange = customDateRange
+        customRangeButton.isVisible = customDateRange == null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
+        customRangeTab.view.isVisible = customDateRange != null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
+        tabLayout.selectTab(customRangeTab)
+        tabLayout.scrollX = tabLayout.width
     }
 
     fun showSkeleton(show: Boolean) {

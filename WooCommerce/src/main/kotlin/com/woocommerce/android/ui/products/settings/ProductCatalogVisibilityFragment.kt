@@ -6,7 +6,6 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.widget.CheckedTextView
 import androidx.annotation.IdRes
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -55,7 +54,7 @@ class ProductCatalogVisibilityFragment :
             onMenuItemSelected = { _ -> false },
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
-                    findNavController().navigateUp()
+                    onRequestAllowBackPress()
                 }
             }
         )

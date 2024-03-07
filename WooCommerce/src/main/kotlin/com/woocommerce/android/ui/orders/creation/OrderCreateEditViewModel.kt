@@ -74,8 +74,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_C
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_CARD
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Address.Companion.EMPTY
@@ -151,7 +152,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -1739,7 +1739,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
         val productCount = products.value?.count() ?: 0
         return buildMap {
-            put(KEY_HORIZONTAL_SIZE_CLASS, deviceTypeToAnalyticsString(isTablet))
+            put(KEY_HORIZONTAL_SIZE_CLASS, IsTabletValue(isTablet).deviceTypeToAnalyticsString)
             put(KEY_STATUS, _orderDraft.value.status)
             putIfNotNull(PRODUCT_TYPES to productTypes)
             put(KEY_PRODUCT_COUNT, productCount)
@@ -1750,13 +1750,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 put(KEY_CUSTOM_AMOUNTS_COUNT, _orderDraft.value.feesLines.size)
             }
         }
-    }
-
-    private fun deviceTypeToAnalyticsString(isTablet: Boolean): String {
-        if (isTablet) {
-            return AnalyticsTracker.VALUE_DEVICE_TYPE_REGULAR
-        }
-        return AnalyticsTracker.VALUE_DEVICE_TYPE_COMPACT
     }
 
     private fun trackGiftCardCTAAvailable() {

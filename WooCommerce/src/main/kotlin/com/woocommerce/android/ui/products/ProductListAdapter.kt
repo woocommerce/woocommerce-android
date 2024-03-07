@@ -5,8 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.ListAdapter
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.ProductListItemBinding
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.util.CurrencyFormatter
@@ -49,7 +47,6 @@ class ProductListAdapter(
         )
 
         holder.itemView.setOnClickListener {
-            AnalyticsTracker.track(PRODUCT_LIST_PRODUCT_TAPPED)
             clickListener?.invoke(product.remoteId, holder.itemView)
         }
 
