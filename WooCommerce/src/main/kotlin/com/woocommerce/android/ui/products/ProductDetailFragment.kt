@@ -578,7 +578,10 @@ class ProductDetailFragment :
         data object Empty : Mode()
 
         @Parcelize
-        data class ShowProduct(val remoteProductId: Long) : Mode()
+        data class ShowProduct(
+            val remoteProductId: Long,
+            val afterGeneratedWithAi: Boolean = false,
+        ) : Mode()
 
         @Parcelize
         data object AddNewProduct : Mode()

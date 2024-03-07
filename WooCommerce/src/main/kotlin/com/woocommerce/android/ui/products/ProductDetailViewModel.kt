@@ -309,8 +309,11 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
      */
-    val isAddNewProductFlow: Boolean
+    private val isAddNewProductFlow: Boolean
         get() = navArgs.mode == ProductDetailFragment.Mode.AddNewProduct
+
+    val startMode: ProductDetailFragment.Mode
+        get() = navArgs.mode
 
     /**
      * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.

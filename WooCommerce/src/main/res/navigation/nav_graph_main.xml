@@ -372,10 +372,6 @@
             android:defaultValue="false"
             app:argType="boolean" />
         <argument
-            android:name="isAIContent"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <argument
             android:name="images"
             android:defaultValue="@null"
             app:argType="string[]"
