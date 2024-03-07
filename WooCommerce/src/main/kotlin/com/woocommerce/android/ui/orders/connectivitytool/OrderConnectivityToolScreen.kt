@@ -147,7 +147,7 @@ fun ConnectivityCheckCard(
                 )
                 Spacer(modifier = modifier.weight(1f))
                 when (testStatus) {
-                    NotStarted, InProgress -> CircularProgressIndicator(
+                    InProgress -> CircularProgressIndicator(
                         modifier = modifier.size(dimensionResource(id = R.dimen.major_200))
                     )
                     Success -> ResultIcon(
@@ -158,6 +158,7 @@ fun ConnectivityCheckCard(
                         icon = R.drawable.ic_rounded_chcekbox_partially_checked,
                         color = R.color.woo_red_50
                     )
+                    NotStarted -> { /* Do nothing */ }
                 }
             }
 
@@ -168,7 +169,10 @@ fun ConnectivityCheckCard(
                         .padding(top = dimensionResource(id = R.dimen.major_100))
                         .fillMaxWidth()
                 ) {
-                    Text(stringResource(id = suggestion))
+                    Text(
+                        text = stringResource(id = suggestion),
+                        color = colorResource(id = R.color.woo_red_50)
+                    )
                     if (shouldDisplayReadMoreButton) {
                         Button(
                             onClick = onReadMoreClicked,
@@ -201,15 +205,17 @@ fun OrderConnectivityToolScreenPreview() {
     WooThemeWithBackground {
         OrderConnectivityToolScreen(
             isContactSupportButtonEnabled = true,
-            internetConnectionCheckData = InternetConnectivityCheckData(),
+            internetConnectionCheckData = InternetConnectivityCheckData(
+                connectivityCheckStatus = NotStarted
+            ),
             wordpressConnectionCheckData = WordPressConnectivityCheckData(
-                connectivityCheckStatus = InProgress
+                connectivityCheckStatus = Success
             ),
             storeConnectionCheckData = StoreConnectivityCheckData(
                 connectivityCheckStatus = Failure
             ),
             storeOrdersCheckData = StoreOrdersConnectivityCheckData(
-                connectivityCheckStatus = Success
+                connectivityCheckStatus = InProgress
             ),
             onContactSupportClicked = {}
         )
