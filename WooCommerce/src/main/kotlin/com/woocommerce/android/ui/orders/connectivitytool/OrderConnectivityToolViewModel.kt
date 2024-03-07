@@ -116,7 +116,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
             status.startNextCheck()
             storeCheckFlow.update {
                 if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
-                    handleLearnMoreClick(status.error ?: FailureType.GENERIC)
+                    handleReadMoreClick(status.error ?: FailureType.GENERIC)
                 })
                 else it.copy(connectivityCheckStatus = status)
             }
@@ -128,7 +128,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
             status.startNextCheck()
             ordersCheckFlow.update {
                 if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
-                    handleLearnMoreClick(status.error ?: FailureType.GENERIC)
+                    handleReadMoreClick(status.error ?: FailureType.GENERIC)
                 })
                 else it.copy(connectivityCheckStatus = status)
             }
@@ -147,7 +147,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
         }
     }
 
-    private fun handleLearnMoreClick(failureType: FailureType) {
+    private fun handleReadMoreClick(failureType: FailureType) {
         when (failureType) {
             FailureType.JETPACK -> triggerEvent(OpenWebView(jetpackTroubleshootingUrl))
             else -> triggerEvent(OpenWebView(genericTroubleshootingUrl))
@@ -166,7 +166,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     }
 
     companion object {
-        const val jetpackTroubleshootingUrl = ""
-        const val genericTroubleshootingUrl = ""
+        const val jetpackTroubleshootingUrl = "https://jetpack.com/support/reconnecting-reinstalling-jetpack/"
+        const val genericTroubleshootingUrl = "https://woo.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
     }
 }
