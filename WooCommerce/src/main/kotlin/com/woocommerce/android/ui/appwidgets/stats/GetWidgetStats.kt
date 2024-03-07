@@ -13,7 +13,7 @@ import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.store.WCStatsStore
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
 class GetWidgetStats @Inject constructor(
@@ -26,7 +26,7 @@ class GetWidgetStats @Inject constructor(
     private val localeProvider: LocaleProvider
 ) {
     suspend operator fun invoke(
-        granularity: WCStatsStore.StatsGranularity,
+        granularity: StatsGranularity,
         siteModel: SiteModel?
     ): WidgetStatsResult {
         return withContext(coroutineDispatchers.io) {
@@ -50,7 +50,8 @@ class GetWidgetStats @Inject constructor(
                     // Fetch stats, always force to refresh data.
                     val fetchedStats = statsRepository.fetchStats(
                         range = rangeSelection.currentRange,
-                        granularity = granularity,
+                        revenueStatsGranularity = granularity.fixRevenueGranularity(),
+                        visitorStatsGranularity = granularity.fixVisitorsGranularity(),
                         forced = true,
                         includeVisitorStats = areVisitorStatsSupported,
                         site = siteModel
@@ -99,5 +100,22 @@ class GetWidgetStats @Inject constructor(
                 revenueGross = grossRevenue
             }
         }
+    }
+
+    // This is temporary until we the widgets code is updated to use actual ranges, for now the granularities are
+    // used to determine the range.
+    private fun StatsGranularity.fixRevenueGranularity() = when (this) {
+        StatsGranularity.YEARS -> StatsGranularity.MONTHS
+        StatsGranularity.MONTHS, StatsGranularity.WEEKS -> StatsGranularity.DAYS
+        StatsGranularity.DAYS -> StatsGranularity.HOURS
+        else -> this
+    }
+
+    // This is temporary until we the widgets code is updated to use actual ranges, for now the granularities are
+    // used to determine the range.
+    private fun StatsGranularity.fixVisitorsGranularity() = when (this) {
+        StatsGranularity.YEARS -> StatsGranularity.MONTHS
+        StatsGranularity.MONTHS, StatsGranularity.WEEKS -> StatsGranularity.DAYS
+        else -> this
     }
 }
