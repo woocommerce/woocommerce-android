@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -140,8 +141,9 @@ fun ConnectivityCheckCard(
                 )
                 Spacer(modifier = modifier.weight(1f))
                 when (testStatus) {
-                    NotStarted -> {}
-                    InProgress -> {}
+                    NotStarted, InProgress -> CircularProgressIndicator(
+                        modifier = modifier.size(dimensionResource(id = R.dimen.major_200))
+                    )
                     Success -> ResultIcon(
                         icon = R.drawable.ic_rounded_chcekbox_checked,
                         color = R.color.woo_green_50
