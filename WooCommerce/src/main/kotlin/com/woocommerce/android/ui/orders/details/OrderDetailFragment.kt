@@ -360,6 +360,10 @@ class OrderDetailFragment :
                 is OrdersCommunicationViewModel.CommunicationEvent.OrdersEmpty -> {
                     viewModel.showEmptyView()
                 }
+                is OrdersCommunicationViewModel.CommunicationEvent.OrdersLoading -> {
+                    viewModel.showLoadingView()
+                }
+
                 else -> event.isHandled = false
             }
         }

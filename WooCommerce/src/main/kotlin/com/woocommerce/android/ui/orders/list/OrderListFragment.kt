@@ -62,6 +62,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersEmpty
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoading
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -589,6 +590,11 @@ class OrderListFragment :
                         emptyView.show(emptyViewType) {
                             navigateToTryTestOrderScreen()
                         }
+                    }
+
+                    EmptyViewType.ORDER_LIST_LOADING -> {
+                        ordersCommunicationViewModel.pushEvent(OrdersLoading)
+                        emptyView.show(emptyViewType)
                     }
 
                     else -> {

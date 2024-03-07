@@ -18,5 +18,6 @@ class OrdersCommunicationViewModel @Inject constructor(
 
     sealed class CommunicationEvent : MultiLiveEvent.Event() {
         data object OrdersEmpty : CommunicationEvent()
+        data object OrdersLoading : CommunicationEvent()
     }
 }

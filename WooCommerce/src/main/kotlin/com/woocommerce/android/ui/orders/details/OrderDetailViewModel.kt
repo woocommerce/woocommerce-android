@@ -885,5 +885,12 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
+    fun showLoadingView() {
+        viewState = viewState.copy(
+            isOrderDetailEmpty = false,
+            isOrderDetailSkeletonShown = true
+        )
+    }
+
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
 }
