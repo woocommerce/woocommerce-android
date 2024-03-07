@@ -2,6 +2,7 @@
 17.7
 -----
 - [*] Products: Fixed a bug when after configuration change product's search results are lost [https://github.com/woocommerce/woocommerce-android/pull/10995]
+- [***] The Product Listing and Product Detail screens have been optimized for tablet use, showcasing a two-pane layout on such devices. [https://github.com/woocommerce/woocommerce-android/pull/10985]
 - [***] Stats: Merchants can now customize their analytics by enabling/disabling and reordering the cards in the Analytics Hub. [https://github.com/woocommerce/woocommerce-android/pull/11002]
 
 
