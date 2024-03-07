@@ -24,15 +24,21 @@ sealed class ConnectivityCheckCardData(
         icon = R.drawable.ic_storage
     )
 
-    data object StoreConnectivityCheckData : ConnectivityCheckCardData(
+    class StoreConnectivityCheckData(
+        readMoreAction: OnReadMoreClicked
+    ) : ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_check_title,
         suggestion = R.string.orderlist_connectivity_tool_store_check_suggestion,
-        icon = R.drawable.ic_more_menu_store
+        icon = R.drawable.ic_more_menu_store,
+        readMoreAction = readMoreAction
     )
 
-    data object StoreOrdersConnectivityCheckData : ConnectivityCheckCardData(
+    class StoreOrdersConnectivityCheckData(
+        readMoreAction: OnReadMoreClicked
+    ) : ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_orders_check_title,
         suggestion = R.string.orderlist_connectivity_tool_store_orders_check_suggestion,
-        icon = R.drawable.ic_clipboard
+        icon = R.drawable.ic_clipboard,
+        readMoreAction = readMoreAction
     )
 }
