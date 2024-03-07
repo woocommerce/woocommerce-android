@@ -7,10 +7,13 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.WcEmptyViewBinding
 import com.woocommerce.android.util.WooAnimUtils
@@ -77,11 +80,17 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         type: EmptyViewType,
         searchQueryOrFilter: String? = null,
         forceShowImage: Boolean = false,
+        @ColorRes backgroundColorResId: Int? = null,
         onButtonClick: (() -> Unit)? = null
     ) {
         this.forceShowImage = forceShowImage
 
         checkOrientation()
+
+        backgroundColorResId?.let {
+            val nestedScrollView = findViewById<NestedScrollView>(R.id.empty_view_container)
+            nestedScrollView.setBackgroundColor(ContextCompat.getColor(context, it))
+        }
 
         // if empty view is already showing and it's a different type, fade out the existing view before fading in
         if (visibility == View.VISIBLE && type != lastEmptyViewType) {
@@ -89,7 +98,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             val durationMs = Duration.SHORT.toMillis(context) + 50L
             Handler(Looper.getMainLooper()).postDelayed(
                 {
-                    show(type, searchQueryOrFilter, forceShowImage, onButtonClick)
+                    show(type, searchQueryOrFilter, forceShowImage, backgroundColorResId,onButtonClick)
                 },
                 durationMs
             )

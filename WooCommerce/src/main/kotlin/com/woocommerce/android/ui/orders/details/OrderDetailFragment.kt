@@ -811,7 +811,11 @@ class OrderDetailFragment :
     private fun showEmptyView(show: Boolean) {
         if (show) {
             binding.orderDetailContainer.visibility = View.GONE
-            binding.emptyView.show(WCEmptyView.EmptyViewType.ORDER_DETAILS, forceShowImage = true)
+            binding.emptyView.show(
+                WCEmptyView.EmptyViewType.ORDER_DETAILS,
+                forceShowImage = true,
+                backgroundColorResId = R.color.default_window_background
+            )
         } else {
             binding.emptyView.hide()
             binding.orderDetailContainer.visibility = View.VISIBLE
