@@ -101,6 +101,7 @@ fun ConnectivityCheckCard(
             iconDrawable = it.icon,
             suggestion = it.suggestion,
             testStatus = it.connectivityCheckStatus,
+            onReadMoreClicked = it.readMoreAction ?: {},
             shouldDisplayReadMoreButton = it.readMoreAction != null
         )
     }
@@ -113,6 +114,7 @@ fun ConnectivityCheckCard(
     @DrawableRes iconDrawable: Int,
     @StringRes suggestion: Int,
     testStatus: ConnectivityCheckStatus,
+    onReadMoreClicked: () -> Unit,
     shouldDisplayReadMoreButton: Boolean = false
 ) {
     Card(
@@ -159,7 +161,7 @@ fun ConnectivityCheckCard(
                 }
             }
 
-            if (testStatus == Failure && shouldDisplayReadMoreButton) {
+            if (testStatus == Failure) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = modifier
@@ -167,11 +169,13 @@ fun ConnectivityCheckCard(
                         .fillMaxWidth()
                 ) {
                     Text(stringResource(id = suggestion))
-                    Button(
-                        onClick = { /*TODO*/ },
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(id = R.string.orderlist_connectivity_tool_read_more_action))
+                    if (shouldDisplayReadMoreButton) {
+                        Button(
+                            onClick = onReadMoreClicked,
+                            modifier = modifier.fillMaxWidth()
+                        ) {
+                            Text(stringResource(id = R.string.orderlist_connectivity_tool_read_more_action))
+                        }
                     }
                 }
             }
