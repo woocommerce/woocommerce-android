@@ -17,11 +17,9 @@ class StoreOrdersCheckUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        orderStore.fetchHasOrders(
-            site = selectedSite.get(),
-            status = null
-        ).takeIf { it is HasOrdersResult.Success }?.let {
-            emit(Success)
-        } ?: emit(Failure)
+        orderStore.fetchHasOrders(selectedSite.get(), null)
+            .takeIf { it is HasOrdersResult.Success }
+            ?.let { emit(Success) }
+            ?: emit(Failure)
     }
 }
