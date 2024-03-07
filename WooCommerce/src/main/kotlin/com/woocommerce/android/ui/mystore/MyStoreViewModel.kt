@@ -24,6 +24,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
@@ -40,8 +42,8 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerPr
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -50,6 +52,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -66,7 +69,9 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -86,11 +91,19 @@ class MyStoreViewModel @Inject constructor(
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val timezoneProvider: TimezoneProvider,
     private val observeLastUpdate: ObserveLastUpdate,
+    private val dateUtils: DateUtils,
     notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
+        val SUPPORTED_RANGES_ON_MY_STORE_TAB = listOf(
+            SelectionType.TODAY,
+            SelectionType.WEEK_TO_DATE,
+            SelectionType.MONTH_TO_DATE,
+            SelectionType.YEAR_TO_DATE,
+            SelectionType.CUSTOM
+        )
     }
 
     val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
@@ -110,9 +123,6 @@ class MyStoreViewModel @Inject constructor(
     private var _lastUpdateStats = MutableLiveData<Long?>()
     val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
 
-    private var _customDateRange = MutableLiveData<Pair<Date, Date>?>()
-    val customDateRange: LiveData<Pair<Date, Date>?> = _customDateRange
-
     private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
     val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
 
@@ -121,8 +131,35 @@ class MyStoreViewModel @Inject constructor(
 
     private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
-    private val _activeStatsGranularity = savedState.getStateFlow(viewModelScope, getSelectedStatsGranularityIfAny())
-    val activeStatsGranularity = _activeStatsGranularity.asLiveData()
+    private val _selectedRangeType = savedState.getStateFlow(viewModelScope, getSelectedRangeTypeIfAny())
+    private val _customRange: MutableStateFlow<AnalyticsHubTimeRange> = MutableStateFlow(
+        AnalyticsHubTimeRange(
+            Date(),
+            Date()
+        )
+    )
+    private val _selectedDateRange = combine(_selectedRangeType, _customRange) { selectionType, customRange ->
+        when (selectionType) {
+            SelectionType.CUSTOM -> {
+                selectionType.generateSelectionData(
+                    calendar = Calendar.getInstance(),
+                    locale = Locale.getDefault(),
+                    referenceStartDate = customRange.start,
+                    referenceEndDate = customRange.end
+                )
+            }
+
+            else -> {
+                selectionType.generateSelectionData(
+                    calendar = Calendar.getInstance(),
+                    locale = Locale.getDefault(),
+                    referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+                    referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+                )
+            }
+        }
+    }
+    val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
     val storeName = selectedSite.observe().map { site ->
         if (!site?.displayName.isNullOrBlank()) {
@@ -139,14 +176,14 @@ class MyStoreViewModel @Inject constructor(
 
         viewModelScope.launch {
             combine(
-                _activeStatsGranularity,
+                _selectedDateRange,
                 refreshTrigger.onStart { emit(RefreshState()) }
-            ) { granularity, refreshEvent ->
-                Pair(granularity, refreshEvent.shouldRefresh)
-            }.collectLatest { (granularity, isForceRefresh) ->
+            ) { selectedRange, refreshEvent ->
+                Pair(selectedRange, refreshEvent.shouldRefresh)
+            }.collectLatest { (selectedRange, isForceRefresh) ->
                 coroutineScope {
-                    launch { loadStoreStats(granularity, isForceRefresh) }
-                    launch { loadTopPerformersStats(granularity, isForceRefresh) }
+                    launch { loadStoreStats(selectedRange, isForceRefresh) }
+                    launch { loadTopPerformersStats(selectedRange, isForceRefresh) }
                 }
             }
         }
@@ -190,19 +227,11 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    fun onStatsGranularityChanged(granularity: SelectionType?) {
+    fun onStatsGranularityChanged(granularity: SelectionType) {
         usageTracksEventEmitter.interacted()
-
-        if (granularity != null) {
-            _activeStatsGranularity.update { granularity }
-            launch {
-                appPrefsWrapper.setActiveStatsGranularity(granularity.name)
-            }
-        } else {
-            WooLog.i(
-                WooLog.T.DASHBOARD,
-                message = "Custom range selected: ${customDateRange.value?.first} - ${customDateRange.value?.second}"
-            )
+        _selectedRangeType.update { granularity }
+        launch {
+            appPrefsWrapper.setActiveStatsGranularity(granularity.name)
         }
     }
 
@@ -221,10 +250,17 @@ class MyStoreViewModel @Inject constructor(
             }
         } ?: ""
 
+    fun getInitialStatsTimeRangeSelection(): StatsTimeRangeSelection = _selectedRangeType.value.generateSelectionData(
+        calendar = Calendar.getInstance(),
+        locale = Locale.getDefault(),
+        referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+        referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
+    )
+
     fun onViewAnalyticsClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         val targetPeriod = when (val state = revenueStatsState.value) {
-            is RevenueStatsViewState.Content -> state.granularity
+            is RevenueStatsViewState.Content -> state.statsRangeSelection.selectionType
             else -> SelectionType.TODAY
         }
         triggerEvent(MyStoreEvent.OpenAnalytics(targetPeriod))
@@ -237,17 +273,17 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadStoreStats(granularity: SelectionType, forceRefresh: Boolean) {
+    private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) {
-            _revenueStatsState.value = RevenueStatsViewState.Content(null, granularity)
+            _revenueStatsState.value = RevenueStatsViewState.Content(null, selectedRange)
             _visitorStatsState.value = VisitorStatsViewState.Content(emptyMap())
             return
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
-        getStats(forceRefresh, granularity)
+        getStats(forceRefresh, selectedRange)
             .collect {
                 when (it) {
-                    is RevenueStatsSuccess -> onRevenueStatsSuccess(it, granularity)
+                    is RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
                     is RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
                     PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
                     is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
@@ -259,7 +295,7 @@ class MyStoreViewModel @Inject constructor(
             }
         launch {
             observeLastUpdate(
-                granularity,
+                selectedRange,
                 listOf(
                     AnalyticsUpdateDataStore.AnalyticData.REVENUE,
                     AnalyticsUpdateDataStore.AnalyticData.VISITORS
@@ -268,25 +304,25 @@ class MyStoreViewModel @Inject constructor(
         }
         launch {
             observeLastUpdate(
-                granularity,
+                selectedRange,
                 AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
             ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
         }
     }
 
     private fun onRevenueStatsSuccess(
-        it: RevenueStatsSuccess,
-        selectedGranularity: SelectionType
+        result: RevenueStatsSuccess,
+        selectedRange: StatsTimeRangeSelection
     ) {
         _revenueStatsState.value = RevenueStatsViewState.Content(
-            it.stats?.toStoreStatsUiModel(),
-            selectedGranularity
+            result.stats?.toStoreStatsUiModel(),
+            selectedRange
         )
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
             buildMap {
-                put(AnalyticsTracker.KEY_RANGE, selectedGranularity.name.lowercase())
-                putIfNotNull(AnalyticsTracker.KEY_ID to it.stats?.rangeId)
+                put(AnalyticsTracker.KEY_RANGE, selectedRange.selectionType.identifier)
+                putIfNotNull(AnalyticsTracker.KEY_ID to result.stats?.rangeId)
             }
         )
     }
@@ -313,17 +349,17 @@ class MyStoreViewModel @Inject constructor(
         _visitorStatsState.value = VisitorStatsViewState.Unavailable(benefitsBanner)
     }
 
-    private suspend fun loadTopPerformersStats(granularity: SelectionType, forceRefresh: Boolean) {
+    private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) return
 
         _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
-        val result = getTopPerformers.fetchTopPerformers(granularity, forceRefresh)
+        val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
         result.fold(
             onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
             onSuccess = {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
-                    mapOf(AnalyticsTracker.KEY_RANGE to granularity.name.lowercase())
+                    mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.selectionType.identifier)
                 )
             }
         )
@@ -333,7 +369,7 @@ class MyStoreViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeTopPerformerUpdates() {
         viewModelScope.launch {
-            _activeStatsGranularity
+            _selectedRangeType
                 .flatMapLatest { granularity ->
                     getTopPerformers.observeTopPerformers(granularity)
                 }
@@ -426,7 +462,7 @@ class MyStoreViewModel @Inject constructor(
             0
         )
 
-    private fun getSelectedStatsGranularityIfAny(): SelectionType {
+    private fun getSelectedRangeTypeIfAny(): SelectionType {
         val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity()
         return runCatching {
             SelectionType.fromOrThrow(previouslySelectedGranularity)
@@ -434,14 +470,14 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(fromDate: Date, toDate: Date) {
-        _customDateRange.value = Pair(fromDate, toDate)
+        _customRange.value = AnalyticsHubTimeRange(fromDate, toDate)
     }
 
     fun onAddCustomRangeClicked() {
         triggerEvent(
             OpenDatePicker(
-                fromDate = customDateRange.value?.first ?: Date(),
-                toDate = customDateRange.value?.second ?: Date()
+                fromDate = _customRange.value.start,
+                toDate = _customRange.value.end
             )
         )
     }
@@ -452,7 +488,7 @@ class MyStoreViewModel @Inject constructor(
         data object PluginNotActiveError : RevenueStatsViewState()
         data class Content(
             val revenueStats: RevenueStatsUiModel?,
-            val granularity: SelectionType
+            val statsRangeSelection: StatsTimeRangeSelection
         ) : RevenueStatsViewState()
     }
 

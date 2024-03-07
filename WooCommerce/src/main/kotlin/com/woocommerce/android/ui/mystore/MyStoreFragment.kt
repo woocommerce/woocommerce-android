@@ -394,7 +394,7 @@ class MyStoreFragment :
     private fun setupStateObservers() {
         myStoreViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
-        myStoreViewModel.selectionTypeRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
+        myStoreViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
             // TODO REMOVE THIS COMMENTED CODE AFTER TESTING TABS ARE UPDATED CORRECTLY
 //            if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
 //                val index = StatsGranularity.entries.indexOf(activeGranularity)
@@ -577,7 +577,7 @@ class MyStoreFragment :
         binding.myStoreStats.updateView(revenueStatsModel)
 
         // update the stats today widget if we're viewing today's stats
-        if (myStoreViewModel.selectionTypeRange.value?.selectionType == SelectionType.TODAY) {
+        if (myStoreViewModel.selectedDateRange.value?.selectionType == SelectionType.TODAY) {
             (activity as? MainActivity)?.updateStatsWidgets()
         }
     }
