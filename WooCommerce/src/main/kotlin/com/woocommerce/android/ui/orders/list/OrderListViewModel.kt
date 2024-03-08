@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersC
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.RetryLoadingOrders
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -70,6 +71,8 @@ import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.ListStore
+import org.wordpress.android.fluxc.store.ListStore.ListErrorType.PARSE_ERROR
+import org.wordpress.android.fluxc.store.ListStore.ListErrorType.TIMEOUT_ERROR
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderSummariesFetched
 import javax.inject.Inject
@@ -215,7 +218,10 @@ class OrderListViewModel @Inject constructor(
             filterCount = getSelectedOrderFiltersCount(),
             isErrorFetchingDataBannerVisible = false
         )
-        activatePagedListWrapper(ordersPagedListWrapper!!)
+        activatePagedListWrapper(
+            pagedListWrapper = ordersPagedListWrapper!!,
+            shouldRetry = true
+        )
         fetchOrdersAndOrderDependencies()
     }
 
@@ -370,8 +376,12 @@ class OrderListViewModel @Inject constructor(
      */
     private fun activatePagedListWrapper(
         pagedListWrapper: PagedListWrapper<OrderListItemUIType>,
-        isFirstInit: Boolean = false
+        isFirstInit: Boolean = false,
+        shouldRetry: Boolean = false
     ) {
+        // This flag is used to ensure that we only retry the first time a timeout happens
+        var noTimeoutHappened = true
+
         // Clear any of the data sources assigned to the current wrapper, then
         // create a new one.
         clearLiveDataSources(this.activePagedListWrapper)
@@ -398,13 +408,25 @@ class OrderListViewModel @Inject constructor(
             .filter { !dismissListErrors }
             .filterNotNull()
             .observe(this) { error ->
-                if (error.type == ListStore.ListErrorType.PARSE_ERROR) {
-                    viewState = viewState.copy(
-                        isErrorFetchingDataBannerVisible = true,
-                        isSimplePaymentsAndOrderCreationFeedbackVisible = false
-                    )
-                } else {
-                    triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
+                when (error.type) {
+                    PARSE_ERROR -> {
+                        viewState = viewState.copy(
+                            isErrorFetchingDataBannerVisible = true,
+                            isSimplePaymentsAndOrderCreationFeedbackVisible = false
+                        )
+                    }
+                    TIMEOUT_ERROR -> {
+                        when {
+                            shouldRetry && noTimeoutHappened -> {
+                                triggerEvent(RetryLoadingOrders)
+                            }
+                            else -> viewState = viewState.copy(
+                                shouldDisplayTroubleshootingBanner = true
+                            )
+                        }
+                        noTimeoutHappened = false
+                    }
+                    else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
             }
         this.activePagedListWrapper = pagedListWrapper
@@ -783,6 +805,8 @@ class OrderListViewModel @Inject constructor(
         ) : Event()
 
         data class VMKilledWhenScanningInProgress(@StringRes val message: Int) : Event()
+
+        data object RetryLoadingOrders : OrderListEvent()
     }
 
     @Parcelize
@@ -792,7 +816,8 @@ class OrderListViewModel @Inject constructor(
         val filterCount: Int = 0,
         val isSimplePaymentsAndOrderCreationFeedbackVisible: Boolean = false,
         val jitmEnabled: Boolean = false,
-        val isErrorFetchingDataBannerVisible: Boolean = false
+        val isErrorFetchingDataBannerVisible: Boolean = false,
+        val shouldDisplayTroubleshootingBanner: Boolean = false
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0

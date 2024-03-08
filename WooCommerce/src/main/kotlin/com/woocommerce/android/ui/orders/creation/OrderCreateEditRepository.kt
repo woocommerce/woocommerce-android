@@ -4,11 +4,13 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.Order.Status.Companion.AUTO_DRAFT
+import com.woocommerce.android.model.OrderAttributionOrigin
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
@@ -45,7 +47,7 @@ class OrderCreateEditRepository @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val listItemMapper: ListItemMapper
 ) {
-    suspend fun placeOrder(order: Order, giftCard: String = ""): Result<Order> {
+    suspend fun createOrUpdateOrder(order: Order, giftCard: String = ""): Result<Order> {
         val request = UpdateOrderRequest(
             customerId = order.customer?.customerId,
             status = order.status.toDataModel(),
@@ -54,12 +56,22 @@ class OrderCreateEditRepository @Inject constructor(
             billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }?.toBillingAddressModel(),
             customerNote = order.customerNote,
             shippingLines = order.shippingLines.map { it.toDataModel() },
-            giftCard = giftCard,
+            feeLines = order.feesLines.map { it.toDataModel() },
+            couponLines = order.couponLines.map { it.toDataModel() },
+            giftCard = giftCard.orNullIfEmpty(),
         )
         val result = if (order.id == 0L) {
-            orderUpdateStore.createOrder(selectedSite.get(), request)
+            orderUpdateStore.createOrder(
+                site = selectedSite.get(),
+                createOrderRequest = request,
+                attributionSourceType = OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE
+            )
         } else {
-            orderUpdateStore.updateOrder(selectedSite.get(), order.id, request)
+            orderUpdateStore.updateOrder(
+                site = selectedSite.get(),
+                orderId = order.id,
+                updateRequest = request
+            )
         }
 
         return when {
@@ -97,36 +109,6 @@ class OrderCreateEditRepository @Inject constructor(
                         AnalyticsTracker.KEY_FLOW to AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
                     )
                 )
-                Result.failure(WooException(result.error))
-            }
-
-            else -> Result.success(orderMapper.toAppModel(result.model!!))
-        }
-    }
-
-    suspend fun createOrUpdateDraft(order: Order): Result<Order> {
-        val request = UpdateOrderRequest(
-            customerId = order.customer?.customerId,
-            status = order.status.toDataModel(),
-            lineItems = order.items.map { item -> listItemMapper.toRawListItem(item) },
-            shippingAddress = order.shippingAddress.takeIf { it != Address.EMPTY }
-                ?.toShippingAddressModel(),
-            billingAddress = order.billingAddress.takeIf { it != Address.EMPTY }
-                ?.toBillingAddressModel(),
-            customerNote = order.customerNote,
-            shippingLines = order.shippingLines.map { it.toDataModel() },
-            feeLines = order.feesLines.map { it.toDataModel() },
-            couponLines = order.couponLines.map { it.toDataModel() },
-        )
-
-        val result = if (order.id == 0L) {
-            orderUpdateStore.createOrder(selectedSite.get(), request)
-        } else {
-            orderUpdateStore.updateOrder(selectedSite.get(), order.id, request)
-        }
-
-        return when {
-            result.isError -> {
                 Result.failure(WooException(result.error))
             }
 

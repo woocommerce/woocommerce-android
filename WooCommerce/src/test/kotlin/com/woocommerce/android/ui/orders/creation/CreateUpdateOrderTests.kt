@@ -29,7 +29,7 @@ import java.util.Date
 @ExperimentalCoroutinesApi
 class CreateUpdateOrderTests : BaseUnitTest() {
     private val orderCreateEditRepository = mock<OrderCreateEditRepository> {
-        onBlocking { createOrUpdateDraft(any()) } doAnswer InlineClassesAnswer {
+        onBlocking { createOrUpdateOrder(any(), any()) } doAnswer InlineClassesAnswer {
             val order = it.arguments.first() as Order
             Result.success(order.copy(total = order.total + BigDecimal.TEN))
         }
@@ -58,7 +58,7 @@ class CreateUpdateOrderTests : BaseUnitTest() {
         assertThat(updateStatuses[2]).isInstanceOf(OrderUpdateStatus.Succeeded::class.java)
         with(updateStatuses[2] as OrderUpdateStatus.Succeeded) {
             assertThat(order)
-                .isEqualTo(orderCreateEditRepository.createOrUpdateDraft(orderDraftChanges.value).getOrThrow())
+                .isEqualTo(orderCreateEditRepository.createOrUpdateOrder(orderDraftChanges.value).getOrThrow())
         }
 
         job.cancel()
@@ -66,7 +66,7 @@ class CreateUpdateOrderTests : BaseUnitTest() {
 
     @Test
     fun `when the update fails, then notify the observer`() = testBlocking {
-        whenever(orderCreateEditRepository.createOrUpdateDraft(any())).doReturn(Result.failure(Exception()))
+        whenever(orderCreateEditRepository.createOrUpdateOrder(any(), any())).doReturn(Result.failure(Exception()))
         val updateStatuses = mutableListOf<OrderUpdateStatus>()
         val job = sut(orderDraftChanges, retryTrigger)
             .onEach { updateStatuses.add(it) }
@@ -91,16 +91,16 @@ class CreateUpdateOrderTests : BaseUnitTest() {
             draft.copy(items = OrderTestUtils.generateTestOrderItems())
         }
 
-        verify(orderCreateEditRepository, never()).createOrUpdateDraft(any())
+        verify(orderCreateEditRepository, never()).createOrUpdateOrder(any(), any())
         advanceTimeAndRun(CreateUpdateOrder.DEBOUNCE_DURATION_MS)
-        verify(orderCreateEditRepository, times(1)).createOrUpdateDraft(any())
+        verify(orderCreateEditRepository, times(1)).createOrUpdateOrder(any(), any())
 
         job.cancel()
     }
 
     @Test
     fun `when retrying, then launch a new request`() = testBlocking {
-        whenever(orderCreateEditRepository.createOrUpdateDraft(any()))
+        whenever(orderCreateEditRepository.createOrUpdateOrder(any(), any()))
             .thenReturn(Result.failure(Exception()))
             .thenAnswer(
                 InlineClassesAnswer {
