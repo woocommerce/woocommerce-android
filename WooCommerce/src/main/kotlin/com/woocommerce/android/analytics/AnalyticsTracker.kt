@@ -368,7 +368,7 @@ class AnalyticsTracker private constructor(
         // -- Connectivity Tool
         const val VALUE_INTERNET = "internet"
         const val VALUE_SITE = "site"
-        const val VALUE_JETPACK_TUNNEL ="jetpack_tunnel"
+        const val VALUE_JETPACK_TUNNEL = "jetpack_tunnel"
 
         enum class DownloadableFileAction(val value: String) {
             ADDED("added"),
