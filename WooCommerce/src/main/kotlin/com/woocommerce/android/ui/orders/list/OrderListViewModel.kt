@@ -312,7 +312,7 @@ class OrderListViewModel @Inject constructor(
         analyticsTracker.track(ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
     }
 
-    private fun trackConnectivityTroubleshootClicked() {
+    fun trackConnectivityTroubleshootClicked() {
         analyticsTracker.track(ORDER_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED)
     }
 
