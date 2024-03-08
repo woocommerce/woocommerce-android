@@ -20,6 +20,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+@Suppress("LongParameterList")
 @HiltWorker
 class UpdateTodayStatsWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
