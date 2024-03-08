@@ -221,6 +221,7 @@ class AnalyticsTracker private constructor(
         const val KEY_START_PAYMENT_FLOW = "start_payment_flow"
         const val KEY_HORIZONTAL_SIZE_CLASS = "horizontal_size_class"
         const val KEY_SUCCESS = "success"
+        const val KEY_TIME_TAKEN = "time_taken"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_DEVICE_TYPE_REGULAR = "regular"
