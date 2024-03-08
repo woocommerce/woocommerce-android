@@ -364,6 +364,12 @@ class AnalyticsTracker private constructor(
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
 
+        // -- Connectivity Tool
+        const val VALUE_INTERNET = "internet"
+        const val VALUE_WPCOM = "wp_com"
+        const val VALUE_SITE = "site"
+        const val VALUE_JETPACK_TUNNEL ="jetpack_tunnel"
+
         enum class DownloadableFileAction(val value: String) {
             ADDED("added"),
             UPDATED("updated"),
