@@ -395,14 +395,8 @@ class MyStoreFragment :
         myStoreViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
         myStoreViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
-            // TODO REMOVE THIS COMMENTED CODE AFTER TESTING TABS ARE UPDATED CORRECTLY
-//            if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
-//                val index = StatsGranularity.entries.indexOf(activeGranularity)
-//                // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
-//                handler.postDelayed({ tabLayout.getTabAt(index)?.select() }, 300)
-//            }
             binding.myStoreStats.loadDashboardStats(statsTimeRangeSelection)
-            binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection)
+            binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
             if (statsTimeRangeSelection.selectionType == SelectionType.CUSTOM) {
                 binding.myStoreStats.updateCustomDateRange(statsTimeRangeSelection)
             }
