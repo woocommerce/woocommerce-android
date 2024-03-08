@@ -170,9 +170,9 @@ class MyStoreStatsView @JvmOverloads constructor(
                 .collect { usageTracksEventEmitter.interacted() }
         }
 
+        customRangeButton.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
         // Create tabs and add to appbar
         SUPPORTED_RANGES_ON_MY_STORE_TAB
-            .filter { !FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled() && it == CUSTOM }
             .forEach { rangeType ->
                 val tab = tabLayout.newTab().apply {
                     setText(getStringForGranularity(rangeType))

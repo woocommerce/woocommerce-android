@@ -371,7 +371,7 @@ class MyStoreViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeTopPerformerUpdates() {
         viewModelScope.launch {
-            _selectedRangeType
+            _selectedDateRange
                 .flatMapLatest { granularity ->
                     getTopPerformers.observeTopPerformers(granularity)
                 }
@@ -471,11 +471,11 @@ class MyStoreViewModel @Inject constructor(
         }.getOrDefault(SelectionType.TODAY)
     }
 
-    fun onCustomRangeSelected(fromDate: Date, toDate: Date) {
+    fun onCustomRangeSelected(fromMillis: Long, toMillis: Long) {
+        _customRange.value = AnalyticsHubTimeRange(Date(fromMillis), Date(toMillis))
         viewModelScope.launch {
-            customDateRangeDataStore.updateDateRange(fromDate, toDate)
+            customDateRangeDataStore.updateDateRange(fromMillis, toMillis)
         }
-        _customRange.value = AnalyticsHubTimeRange(fromDate, toDate)
     }
 
     fun onAddCustomRangeClicked() {
