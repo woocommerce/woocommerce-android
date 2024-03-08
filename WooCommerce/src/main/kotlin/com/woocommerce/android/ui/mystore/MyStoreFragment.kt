@@ -396,9 +396,6 @@ class MyStoreFragment :
         myStoreViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
             binding.myStoreStats.loadDashboardStats(statsTimeRangeSelection)
             binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
-            if (statsTimeRangeSelection.selectionType == SelectionType.CUSTOM) {
-                binding.myStoreStats.updateCustomDateRange(statsTimeRangeSelection)
-            }
         }
         myStoreViewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
             when (revenueStats) {

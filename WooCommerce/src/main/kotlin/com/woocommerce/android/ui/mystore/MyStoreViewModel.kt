@@ -472,7 +472,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(fromMillis: Long, toMillis: Long) {
-        _customRange.value = AnalyticsHubTimeRange(Date(fromMillis), Date(toMillis))
+        onStatsGranularityChanged(SelectionType.CUSTOM)
         viewModelScope.launch {
             customDateRangeDataStore.updateDateRange(fromMillis, toMillis)
         }

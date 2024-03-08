@@ -199,9 +199,10 @@ class MyStoreStatsView @JvmOverloads constructor(
             mapOf(KEY_RANGE to selectedTimeRange.selectionType.toString().lowercase())
         )
         isRequestingStats = true
+        if (selectedTimeRange.selectionType == CUSTOM) updateCustomDateRange(statsTimeRangeSelection)
     }
 
-    fun updateCustomDateRange(selectedTimeRange: StatsTimeRangeSelection) {
+    private fun updateCustomDateRange(selectedTimeRange: StatsTimeRangeSelection) {
         statsTimeRangeSelection = selectedTimeRange
         customRangeButton.isVisible = false
 
@@ -326,12 +327,12 @@ class MyStoreStatsView @JvmOverloads constructor(
     ) {
         if (revenueStats?.intervalList.isNullOrEmpty()) {
             statsDateValue.visibility = View.GONE
-        } else {
+        } else if (rangeType != CUSTOM) {
             val startInterval = revenueStats?.intervalList?.first()?.interval
             val startDate = startInterval?.let { getDateValue(it, rangeType) }
 
             val dateRangeString = when (rangeType) {
-                SelectionType.WEEK_TO_DATE -> {
+                WEEK_TO_DATE -> {
                     val endInterval = revenueStats?.intervalList?.last()?.interval
                     val endDate = endInterval?.let { getDateValue(it, rangeType) }
                     String.format(Locale.getDefault(), "%s – %s", startDate, endDate)
