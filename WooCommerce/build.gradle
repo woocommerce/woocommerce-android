@@ -323,7 +323,9 @@ dependencies {
     androidTestImplementation "androidx.test:rules:$androidxTestCoreVersion"
     androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:$espressoVersion") {
+        exclude group: "com.google.protobuf", module: "protobuf-lite"
+    }
     androidTestImplementation "com.google.dagger:hilt-android-testing:$gradle.ext.daggerVersion"
     kspAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
