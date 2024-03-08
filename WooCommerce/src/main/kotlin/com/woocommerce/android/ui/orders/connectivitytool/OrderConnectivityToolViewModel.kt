@@ -4,12 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SITE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.Finished
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.InternetCheck
@@ -122,7 +126,9 @@ class OrderConnectivityToolViewModel @Inject constructor(
     }
 
     private fun startStoreCheck() {
+        val startTime = System.currentTimeMillis()
         storeConnectionCheck().onEach { status ->
+            trackChanges(status, VALUE_SITE, startTime)
             status.startNextCheck()
             storeCheckFlow.update {
                 if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
@@ -155,6 +161,23 @@ class OrderConnectivityToolViewModel @Inject constructor(
                 else -> it
             }
         }
+    }
+
+    private fun trackChanges(
+        status: ConnectivityCheckStatus,
+        type: String,
+        startTime: Long
+    ) {
+        if (status is InProgress || status is NotStarted) return
+
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.CONNECTIVITY_TOOL_REQUEST_RESPONSE,
+            mapOf(
+                AnalyticsTracker.KEY_SUCCESS to (status is Success),
+                AnalyticsTracker.KEY_TYPE to type,
+                AnalyticsTracker.KEY_TIME_TAKEN to (System.currentTimeMillis() - startTime)
+            )
+        )
     }
 
     object OpenSupportRequest : MultiLiveEvent.Event()
