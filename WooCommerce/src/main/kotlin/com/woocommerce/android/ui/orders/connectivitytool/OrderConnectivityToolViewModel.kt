@@ -110,42 +110,28 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private fun startInternetCheck() {
         internetConnectionCheck().onEach { status ->
             status.startNextCheck()
-            internetCheckFlow.update {
-                it.copy(connectivityCheckStatus = status)
-            }
+            internetCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
     }
 
     private fun startWordPressCheck() {
         wordPressConnectionCheck().onEach { status ->
             status.startNextCheck()
-            wordpressCheckFlow.update {
-                it.copy(connectivityCheckStatus = status)
-            }
+            wordpressCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
     }
 
     private fun startStoreCheck() {
         storeConnectionCheck().onEach { status ->
             status.startNextCheck()
-            storeCheckFlow.update {
-                if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
-                    handleReadMoreClick(status.error ?: FailureType.GENERIC)
-                })
-                else it.copy(connectivityCheckStatus = status)
-            }
+            storeCheckFlow.update { it.copyBasedOn(status) }
         }.launchIn(viewModelScope)
     }
 
     private fun startStoreOrdersCheck() {
         storeOrdersCheck().onEach { status ->
             status.startNextCheck()
-            ordersCheckFlow.update {
-                if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
-                    handleReadMoreClick(status.error ?: FailureType.GENERIC)
-                })
-                else it.copy(connectivityCheckStatus = status)
-            }
+            storeCheckFlow.update { it.copyBasedOn(status) }
         }.launchIn(viewModelScope)
     }
 
@@ -158,6 +144,16 @@ class OrderConnectivityToolViewModel @Inject constructor(
                 is Failure -> Finished
                 else -> it
             }
+        }
+    }
+
+    private fun StoreConnectivityCheckData.copyBasedOn(status: ConnectivityCheckStatus): StoreConnectivityCheckData {
+        return if (status is Failure) {
+            copy(connectivityCheckStatus = status, readMoreAction = {
+                handleReadMoreClick(status.error ?: FailureType.GENERIC)
+            })
+        } else {
+            copy(connectivityCheckStatus = status)
         }
     }
 
