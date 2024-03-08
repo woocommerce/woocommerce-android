@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.orders.connectivitytool
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
@@ -35,6 +37,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private val wordPressConnectionCheck: WordPressConnectionCheckUseCase,
     private val storeConnectionCheck: StoreConnectionCheckUseCase,
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val stateMachine = savedState.getStateFlow(
@@ -91,7 +94,18 @@ class OrderConnectivityToolViewModel @Inject constructor(
         }
     }
 
-    fun onContactSupportClicked() { triggerEvent(OpenSupportRequest) }
+    fun onContactSupportClicked() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED)
+        triggerEvent(OpenSupportRequest)
+    }
+
+    private fun handleReadMoreClick(failureType: FailureType) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_READ_MORE_TAPPED)
+        when (failureType) {
+            FailureType.JETPACK -> triggerEvent(OpenWebView(jetpackTroubleshootingUrl))
+            else -> triggerEvent(OpenWebView(genericTroubleshootingUrl))
+        }
+    }
 
     private fun startInternetCheck() {
         internetConnectionCheck().onEach { status ->
@@ -144,13 +158,6 @@ class OrderConnectivityToolViewModel @Inject constructor(
                 is Failure -> Finished
                 else -> it
             }
-        }
-    }
-
-    private fun handleReadMoreClick(failureType: FailureType) {
-        when (failureType) {
-            FailureType.JETPACK -> triggerEvent(OpenWebView(jetpackTroubleshootingUrl))
-            else -> triggerEvent(OpenWebView(genericTroubleshootingUrl))
         }
     }
 
