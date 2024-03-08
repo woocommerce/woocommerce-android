@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.mystore
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +19,9 @@ import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatsRepositoryTests : BaseUnitTest() {
@@ -31,6 +35,12 @@ class StatsRepositoryTests : BaseUnitTest() {
     private lateinit var sut: StatsRepository
 
     private val defaultSiteModel = SiteModel()
+    private val defaultRange = SelectionType.TODAY.generateSelectionData(
+        referenceStartDate = Date(),
+        referenceEndDate = Date(),
+        calendar = Calendar.getInstance(),
+        locale = Locale.ROOT
+    ).currentRange
 
     @Before
     fun setup() {
@@ -39,7 +49,8 @@ class StatsRepositoryTests : BaseUnitTest() {
             wcStatsStore = wcStatsStore,
             wcOrderStore = wcOrderStore,
             wcLeaderboardsStore = wcLeaderboardsStore,
-            wooCommerceStore = wooCommerceStore
+            wooCommerceStore = wooCommerceStore,
+            dispatchers = coroutinesTestRule.testDispatchers
         )
     }
 
@@ -70,15 +81,18 @@ class StatsRepositoryTests : BaseUnitTest() {
             .thenReturn(WCRevenueStatsModel())
 
         val result = sut.fetchStats(
-            granularity = WCStatsStore.StatsGranularity.DAYS,
+            range = defaultRange,
+            revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
+            visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             forced = true,
             includeVisitorStats = true
         )
 
-        assertThat(result.isError).isEqualTo(false)
-        assertThat(result.model).isNotNull
-        assertThat(result.model!!.revenue).isNotNull
-        assertThat(result.model!!.visitors).isNotNull
+        val model = result.getOrNull()
+        assertThat(result.isFailure).isEqualTo(false)
+        assertThat(model).isNotNull
+        assertThat(model!!.revenue).isNotNull
+        assertThat(model.visitors).isNotNull
     }
 
     @Test
@@ -106,15 +120,18 @@ class StatsRepositoryTests : BaseUnitTest() {
             .thenReturn(WCRevenueStatsModel())
 
         val result = sut.fetchStats(
-            granularity = WCStatsStore.StatsGranularity.DAYS,
+            range = defaultRange,
+            revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
+            visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             forced = true,
             includeVisitorStats = true
         )
 
-        assertThat(result.isError).isEqualTo(false)
-        assertThat(result.model).isNotNull
-        assertThat(result.model!!.revenue).isNotNull
-        assertThat(result.model!!.visitors).isNull()
+        val model = result.getOrNull()
+        assertThat(result.isFailure).isEqualTo(false)
+        assertThat(model).isNotNull
+        assertThat(model!!.revenue).isNotNull
+        assertThat(model.visitors).isNull()
     }
 
     @Test
@@ -137,12 +154,13 @@ class StatsRepositoryTests : BaseUnitTest() {
         whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
 
         val result = sut.fetchStats(
-            granularity = WCStatsStore.StatsGranularity.DAYS,
+            range = defaultRange,
+            revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
+            visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
             forced = true,
             includeVisitorStats = true
         )
 
-        assertThat(result.isError).isEqualTo(true)
-        assertThat(result.model).isNull()
+        assertThat(result.isFailure).isEqualTo(true)
     }
 }

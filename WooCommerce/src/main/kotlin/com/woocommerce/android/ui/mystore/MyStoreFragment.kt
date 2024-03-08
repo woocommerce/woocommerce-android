@@ -396,7 +396,9 @@ class MyStoreFragment :
 
         myStoreViewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
-                val index = StatsGranularity.entries.indexOf(activeGranularity)
+                val index = StatsGranularity.entries
+                    .filterNot { it == StatsGranularity.HOURS }
+                    .indexOf(activeGranularity)
                 // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
                 handler.postDelayed({ tabLayout.getTabAt(index)?.select() }, 300)
             }
