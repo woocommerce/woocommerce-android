@@ -40,7 +40,7 @@ sealed class ConnectivityCheckCardData(
     @Parcelize
     data class StoreConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
-        override val readMoreAction: OnReadMoreClicked? = null
+        @IgnoredOnParcel override val readMoreAction: OnReadMoreClicked? = null
     ) : Parcelable, ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_check_title,
         suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
