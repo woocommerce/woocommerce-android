@@ -3,11 +3,20 @@ package com.woocommerce.android.ui.orders.connectivitytool
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_INTERNET
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_TUNNEL
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SITE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.Finished
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.InternetCheck
@@ -35,6 +44,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private val wordPressConnectionCheck: WordPressConnectionCheckUseCase,
     private val storeConnectionCheck: StoreConnectionCheckUseCase,
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val stateMachine = savedState.getStateFlow(
@@ -91,28 +101,41 @@ class OrderConnectivityToolViewModel @Inject constructor(
         }
     }
 
-    fun onContactSupportClicked() { triggerEvent(OpenSupportRequest) }
+    fun onContactSupportClicked() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED)
+        triggerEvent(OpenSupportRequest)
+    }
+
+    private fun handleReadMoreClick(failureType: FailureType) {
+        analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_READ_MORE_TAPPED)
+        when (failureType) {
+            FailureType.JETPACK -> triggerEvent(OpenWebView(jetpackTroubleshootingUrl))
+            else -> triggerEvent(OpenWebView(genericTroubleshootingUrl))
+        }
+    }
 
     private fun startInternetCheck() {
+        val startTime = System.currentTimeMillis()
         internetConnectionCheck().onEach { status ->
+            trackChanges(status, VALUE_INTERNET, startTime)
             status.startNextCheck()
-            internetCheckFlow.update {
-                it.copy(connectivityCheckStatus = status)
-            }
+            internetCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
     }
 
     private fun startWordPressCheck() {
+        val startTime = System.currentTimeMillis()
         wordPressConnectionCheck().onEach { status ->
+            trackChanges(status, VALUE_WP_COM, startTime)
             status.startNextCheck()
-            wordpressCheckFlow.update {
-                it.copy(connectivityCheckStatus = status)
-            }
+            wordpressCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
     }
 
     private fun startStoreCheck() {
+        val startTime = System.currentTimeMillis()
         storeConnectionCheck().onEach { status ->
+            trackChanges(status, VALUE_SITE, startTime)
             status.startNextCheck()
             storeCheckFlow.update {
                 if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
@@ -124,7 +147,9 @@ class OrderConnectivityToolViewModel @Inject constructor(
     }
 
     private fun startStoreOrdersCheck() {
+        val startTime = System.currentTimeMillis()
         storeOrdersCheck().onEach { status ->
+            trackChanges(status, VALUE_JETPACK_TUNNEL, startTime)
             status.startNextCheck()
             ordersCheckFlow.update {
                 if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
@@ -147,11 +172,21 @@ class OrderConnectivityToolViewModel @Inject constructor(
         }
     }
 
-    private fun handleReadMoreClick(failureType: FailureType) {
-        when (failureType) {
-            FailureType.JETPACK -> triggerEvent(OpenWebView(jetpackTroubleshootingUrl))
-            else -> triggerEvent(OpenWebView(genericTroubleshootingUrl))
-        }
+    private fun trackChanges(
+        status: ConnectivityCheckStatus,
+        type: String,
+        startTime: Long
+    ) {
+        if (status is InProgress || status is NotStarted) return
+
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.CONNECTIVITY_TOOL_REQUEST_RESPONSE,
+            mapOf(
+                AnalyticsTracker.KEY_SUCCESS to (status is Success),
+                AnalyticsTracker.KEY_TYPE to type,
+                AnalyticsTracker.KEY_TIME_TAKEN to (System.currentTimeMillis() - startTime)
+            )
+        )
     }
 
     object OpenSupportRequest : MultiLiveEvent.Event()
