@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders.connectivitytool.useCases
 
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Failure
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.InProgress
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
 import com.woocommerce.android.util.BuildConfigWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -20,7 +20,7 @@ class WordPressConnectionCheckUseCase @Inject constructor(
             versionName = buildConfigWrapper.versionName,
             appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
         ).fetchError?.let {
-            emit(Failure)
+            emit(Failure())
         } ?: emit(Success)
     }
 }

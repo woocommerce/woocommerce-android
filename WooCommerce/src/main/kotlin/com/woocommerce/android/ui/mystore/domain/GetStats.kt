@@ -1,11 +1,12 @@
 package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
+import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
@@ -19,7 +20,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
@@ -49,8 +49,8 @@ class GetStats @Inject constructor(
             shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
             hasOrders(),
-            revenueStats(shouldRefreshRevenue, granularity),
-            visitorStats(shouldRefreshVisitors, granularity)
+            revenueStats(selectionRange, shouldRefreshRevenue),
+            visitorStats(selectionRange, shouldRefreshRevenue)
         ).onEach { result ->
             if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
@@ -77,61 +77,63 @@ class GetStats @Inject constructor(
                 }
             }
 
-    private suspend fun revenueStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val rangeSelection = granularity.asRangeSelection(
-            dateUtils = dateUtils,
-            locale = localeProvider.provideLocale()
-        )
+    private suspend fun revenueStats(
+        rangeSelection: StatsTimeRangeSelection,
+        forceRefresh: Boolean
+    ): Flow<LoadStatsResult> {
         val revenueRangeId = rangeSelection.selectionType.identifier.asRevenueRangeId(
             startDate = rangeSelection.currentRange.start,
             endDate = rangeSelection.currentRange.end
         )
         if (forceRefresh.not()) {
             statsRepository.getRevenueStatsById(revenueRangeId)
-                .single()
                 .takeIf { it.isSuccess && it.getOrNull() != null }
                 ?.let { return flowOf(LoadStatsResult.RevenueStatsSuccess(it.getOrNull())) }
         }
 
-        val startDate = rangeSelection.currentRange.start.formatToYYYYmmDDhhmmss()
-        val endDate = rangeSelection.currentRange.end.formatToYYYYmmDDhhmmss()
-
-        return statsRepository.fetchRevenueStats(
-            granularity,
-            forceRefresh,
-            startDate,
-            endDate,
-            revenueRangeId
-        ).transform { result ->
+        val revenueStatsResult = statsRepository.fetchRevenueStats(
+            range = rangeSelection.currentRange,
+            granularity = rangeSelection.revenueStatsGranularity,
+            forced = forceRefresh,
+            revenueRangeId = revenueRangeId
+        ).let { result ->
             result.fold(
                 onSuccess = { stats ->
                     appPrefsWrapper.setV4StatsSupported(true)
-                    emit(LoadStatsResult.RevenueStatsSuccess(stats))
+                    LoadStatsResult.RevenueStatsSuccess(stats)
                 },
                 onFailure = {
                     if (isPluginNotActiveError(it)) {
                         appPrefsWrapper.setV4StatsSupported(false)
-                        emit(LoadStatsResult.PluginNotActive)
+                        LoadStatsResult.PluginNotActive
                     } else {
-                        emit(LoadStatsResult.RevenueStatsError)
+                        LoadStatsResult.RevenueStatsError
                     }
                 }
             )
         }
+        return flowOf(revenueStatsResult)
     }
 
-    private suspend fun visitorStats(forceRefresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val (startDate, endDate) = granularity.statsDateRange
+    private suspend fun visitorStats(
+        rangeSelection: StatsTimeRangeSelection,
+        forceRefresh: Boolean
+    ): Flow<LoadStatsResult> {
         // Visitor stats are only available for Jetpack connected sites
         return when (selectedSite.connectionType) {
             SiteConnectionType.Jetpack -> {
-                statsRepository.fetchVisitorStats(granularity, forceRefresh, startDate, endDate)
-                    .transform { result ->
+                val result = statsRepository.fetchVisitorStats(
+                    range = rangeSelection.currentRange,
+                    granularity = rangeSelection.visitorStatsGranularity,
+                    forced = forceRefresh
+                )
+                    .let { result ->
                         result.fold(
-                            onSuccess = { stats -> emit(LoadStatsResult.VisitorsStatsSuccess(stats)) },
-                            onFailure = { emit(LoadStatsResult.VisitorsStatsError) }
+                            onSuccess = { stats -> LoadStatsResult.VisitorsStatsSuccess(stats) },
+                            onFailure = { LoadStatsResult.VisitorsStatsError }
                         )
                     }
+                flowOf(result)
             }
 
             else -> selectedSite.connectionType?.let {
@@ -142,17 +144,6 @@ class GetStats @Inject constructor(
 
     private fun isPluginNotActiveError(error: Throwable): Boolean =
         (error as? StatsException)?.error?.type == OrderStatsErrorType.PLUGIN_NOT_ACTIVE
-
-    private val StatsGranularity.statsDateRange
-        get() = asRangeSelection(
-            dateUtils = dateUtils,
-            locale = localeProvider.provideLocale()
-        ).let {
-            Pair(
-                it.currentRange.start.formatToYYYYmmDDhhmmss(),
-                it.currentRange.end.formatToYYYYmmDDhhmmss()
-            )
-        }
 
     private suspend fun shouldUpdateStats(
         selectionRange: StatsTimeRangeSelection,

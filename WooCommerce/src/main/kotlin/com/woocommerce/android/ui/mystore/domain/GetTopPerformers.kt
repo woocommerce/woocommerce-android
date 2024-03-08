@@ -25,13 +25,19 @@ class GetTopPerformers @Inject constructor(
         const val NUM_TOP_PERFORMERS = 5
     }
 
-    fun observeTopPerformers(granularity: WCStatsStore.StatsGranularity): Flow<List<TopPerformerProduct>> =
-        statsRepository.observeTopPerformers(granularity)
+    fun observeTopPerformers(granularity: WCStatsStore.StatsGranularity): Flow<List<TopPerformerProduct>> {
+        val selectionRange = granularity.asRangeSelection(
+            dateUtils = dateUtils,
+            locale = localeProvider.provideLocale()
+        )
+
+        return statsRepository.observeTopPerformers(selectionRange.currentRange)
             .map { topPerformersProductEntities ->
                 topPerformersProductEntities
                     .map { it.toTopPerformerProduct() }
                     .sortDescByQuantityAndTotal()
             }.flowOn(coroutineDispatchers.computation)
+    }
 
     suspend fun fetchTopPerformers(
         granularity: WCStatsStore.StatsGranularity,
@@ -43,7 +49,11 @@ class GetTopPerformers @Inject constructor(
             locale = localeProvider.provideLocale()
         )
         val isForcedRefresh = shouldUpdateStats(selectionRange, refresh)
-        return statsRepository.fetchTopPerformerProducts(isForcedRefresh, granularity, topPerformersCount)
+        return statsRepository.fetchTopPerformerProducts(
+            forceRefresh = isForcedRefresh,
+            range = selectionRange.currentRange,
+            quantity = topPerformersCount
+        )
             .let { result ->
                 if (result.isSuccess && isForcedRefresh) {
                     analyticsUpdateDataStore.storeLastAnalyticsUpdate(

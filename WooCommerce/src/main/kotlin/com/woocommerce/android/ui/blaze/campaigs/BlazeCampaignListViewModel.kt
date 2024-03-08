@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.blaze.campaigs
 
-import android.icu.text.DecimalFormat
-import android.icu.text.DecimalFormatSymbols
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
@@ -16,6 +14,7 @@ import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
-import java.util.Locale
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -40,17 +38,16 @@ class BlazeCampaignListViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val blazeUrlsHelper: BlazeUrlsHelper,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val LOADING_TRANSITION_DELAY = 200L
-        private const val CENTS_TO_UNITS = 100f
     }
 
     private val navArgs: BlazeCampaignListFragmentArgs by savedStateHandle.navArgs()
 
-    private var totalPages = 1
-    private var currentPage = 1
+    private var totalItems = 0
     private val isLoadingMore = MutableStateFlow(false)
     private val isCampaignCelebrationShown = MutableStateFlow(false)
 
@@ -77,15 +74,16 @@ class BlazeCampaignListViewModel @Inject constructor(
             showCampaignCelebrationIfNeeded()
         }
         launch {
-            loadCampaignsFor(currentPage)
+            loadCampaigns(offset = 0)
         }
     }
 
-    fun onEndOfTheListReached() {
-        if (!isLoadingMore.value && currentPage + 1 <= totalPages) {
+    fun onLoadMoreCampaigns() {
+        val offset = state.value?.campaigns?.size ?: 0
+        if (!isLoadingMore.value && offset < totalItems) {
             launch {
                 isLoadingMore.value = true
-                loadCampaignsFor(++currentPage)
+                loadCampaigns(offset)
                 isLoadingMore.value = false
             }
         }
@@ -95,16 +93,16 @@ class BlazeCampaignListViewModel @Inject constructor(
         isCampaignCelebrationShown.value = false
     }
 
-    private suspend fun loadCampaignsFor(page: Int) {
-        val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), page)
+    private suspend fun loadCampaigns(offset: Int) {
+        val result = blazeCampaignsStore.fetchBlazeCampaigns(selectedSite.get(), offset)
         if (result.isError || result.model == null) {
             triggerEvent(Event.ShowSnackbar(R.string.blaze_campaign_list_error_fetching_campaigns))
         } else {
-            totalPages = result.model?.totalPages ?: 1
+            totalItems = result.model?.totalItems ?: 0
         }
     }
 
-    private fun onCampaignClicked(campaignId: Int) {
+    private fun onCampaignClicked(campaignId: String) {
         val url = blazeUrlsHelper.buildCampaignDetailsUrl(campaignId)
         analyticsTrackerWrapper.track(
             stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
@@ -137,8 +135,7 @@ class BlazeCampaignListViewModel @Inject constructor(
                     ),
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_budget,
-                        value = DecimalFormat("#.##", DecimalFormatSymbols(Locale.getDefault()))
-                            .format(campaignEntity.budgetCents / CENTS_TO_UNITS)
+                        value = currencyFormatter.formatCurrencyRounded(campaignEntity.totalBudget)
                     )
                 )
             ),

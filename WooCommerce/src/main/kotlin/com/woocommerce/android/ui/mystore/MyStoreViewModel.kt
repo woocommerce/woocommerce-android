@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
+import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -67,7 +68,6 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
-import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -87,6 +87,7 @@ class MyStoreViewModel @Inject constructor(
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val timezoneProvider: TimezoneProvider,
     private val observeLastUpdate: ObserveLastUpdate,
+    private val customDateRangeDataStore: CustomDateRangeDataStore,
     notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
@@ -111,8 +112,7 @@ class MyStoreViewModel @Inject constructor(
     private var _lastUpdateStats = MutableLiveData<Long?>()
     val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
 
-    private var _customDateRange = MutableLiveData<Pair<Date, Date>?>()
-    val customDateRange: LiveData<Pair<Date, Date>?> = _customDateRange
+    val customDateRange = customDateRangeDataStore.dateRange.asLiveData()
 
     private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
     val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
@@ -202,7 +202,8 @@ class MyStoreViewModel @Inject constructor(
         } else {
             WooLog.i(
                 WooLog.T.DASHBOARD,
-                message = "Custom range selected: ${customDateRange.value?.first} - ${customDateRange.value?.second}"
+                message = "Custom range selected: " +
+                    "${customDateRange.value?.startDate} - ${customDateRange.value?.endDate}"
             )
         }
     }
@@ -438,10 +439,13 @@ class MyStoreViewModel @Inject constructor(
         StatsGranularity.WEEKS -> SelectionType.WEEK_TO_DATE
         StatsGranularity.MONTHS -> SelectionType.MONTH_TO_DATE
         StatsGranularity.YEARS -> SelectionType.YEAR_TO_DATE
+        StatsGranularity.HOURS -> error("Hours shouldn't be used now")
     }
 
-    fun onCustomRangeSelected(fromDate: Date, toDate: Date) {
-        _customDateRange.value = Pair(fromDate, toDate)
+    fun onCustomRangeSelected(fromDate: Long, toDate: Long) {
+        viewModelScope.launch {
+            customDateRangeDataStore.updateDateRange(fromDate, toDate)
+        }
     }
 
     fun onAddCustomRangeClicked() {
