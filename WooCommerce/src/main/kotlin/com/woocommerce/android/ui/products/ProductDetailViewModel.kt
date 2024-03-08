@@ -1906,7 +1906,7 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(
                 productDraft = null
             )
-            triggerEvent(ProductUpdated(product))
+            triggerEvent(ProductUpdated)
             loadRemoteProduct(product.remoteId)
         } else {
             triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
@@ -2520,7 +2520,7 @@ class ProductDetailViewModel @Inject constructor(
 
     object ShowAiProductCreationSurveyBottomSheet : Event()
 
-    data class ProductUpdated(val product: Product) : Event()
+    object ProductUpdated : Event()
 
     data class TrashProduct(val productId: Long) : Event()
 

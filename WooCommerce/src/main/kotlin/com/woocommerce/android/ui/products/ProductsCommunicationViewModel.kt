@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import javax.inject.Inject
@@ -20,6 +19,6 @@ class ProductsCommunicationViewModel @Inject constructor(
 
     sealed class CommunicationEvent : MultiLiveEvent.Event() {
         data class ProductTrashed(val productId: Long) : CommunicationEvent()
-        data class ProductUpdated(val product: Product) : CommunicationEvent()
+        data object ProductUpdated : CommunicationEvent()
     }
 }

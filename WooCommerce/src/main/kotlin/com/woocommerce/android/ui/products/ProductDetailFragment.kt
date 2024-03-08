@@ -364,7 +364,7 @@ class ProductDetailFragment :
 
                 is ShowAiProductCreationSurveyBottomSheet -> openAIProductCreationSurveyBottomSheet()
                 is ProductUpdated -> productsCommunicationViewModel.pushEvent(
-                    ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated(event.product)
+                    ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated
                 )
                 else -> event.isHandled = false
             }
