@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.connectivitytool
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
@@ -33,10 +34,10 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         wordPressConnectionCheck = mock()
         storeConnectionCheck = mock()
         storeOrdersCheck = mock()
-        whenever(internetConnectionCheck()).thenReturn(flowOf())
-        whenever(wordPressConnectionCheck()).thenReturn(flowOf())
-        whenever(storeConnectionCheck()).thenReturn(flowOf())
-        whenever(storeOrdersCheck()).thenReturn(flowOf())
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
+        whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
         sut = OrderConnectivityToolViewModel(
             internetConnectionCheck = internetConnectionCheck,
             wordPressConnectionCheck = wordPressConnectionCheck,
@@ -56,7 +57,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
@@ -72,7 +73,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
@@ -88,7 +89,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
@@ -104,7 +105,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(NotStarted, Success))
@@ -114,35 +115,45 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
     fun `when all checks are finished, then isCheckFinished is true`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<Boolean>()
-        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
-        whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
         sut.isCheckFinished.observeForever {
             stateEvents.add(it)
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(false, true))
+        assertThat(stateEvents).isEqualTo(listOf(false, false, false, false, true))
+    }
+
+    @Test
+    fun `when one check fails, then isCheckFinished is true`() = testBlocking {
+        // Given
+        val stateEvents = mutableListOf<Boolean>()
+        whenever(storeConnectionCheck()).thenReturn(flowOf(Failure()))
+        sut.isCheckFinished.observeForever {
+            stateEvents.add(it)
+        }
+
+        // When
+        sut.startConnectionChecks()
+
+        // Then
+        assertThat(stateEvents).isEqualTo(listOf(false, false, false, true))
     }
 
     @Test
     fun `when checks are still running, then isCheckFinished is false`() = testBlocking {
         // Given
         val stateEvents = mutableListOf<Boolean>()
-        whenever(internetConnectionCheck()).thenReturn(flowOf(InProgress))
+        whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
         whenever(wordPressConnectionCheck()).thenReturn(flowOf(InProgress))
-        whenever(storeConnectionCheck()).thenReturn(flowOf(InProgress))
-        whenever(storeOrdersCheck()).thenReturn(flowOf(InProgress))
         sut.isCheckFinished.observeForever {
             stateEvents.add(it)
         }
 
         // When
-        sut.startConnectionTests()
+        sut.startConnectionChecks()
 
         // Then
         assertThat(stateEvents).isEqualTo(listOf(false, false))

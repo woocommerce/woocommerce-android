@@ -7,6 +7,13 @@ import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardD
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreOrdersConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.WordPressConnectivityCheckData
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
+import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Success
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.Finished
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.InternetCheck
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.StoreCheck
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.StoreOrdersCheck
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.ConnectivityCheckStep.WordPressCheck
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.InternetConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnectionCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
@@ -15,8 +22,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,6 +37,11 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private val storeOrdersCheck: StoreOrdersCheckUseCase,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    private val stateMachine = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = InternetCheck
+    )
+
     private val internetCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = InternetConnectivityCheckData()
@@ -54,44 +66,109 @@ class OrderConnectivityToolViewModel @Inject constructor(
     )
     val storeOrdersCheckData = ordersCheckFlow.asLiveData()
 
-    val isCheckFinished = combine(
-        internetCheckFlow,
-        wordpressCheckFlow,
-        storeCheckFlow,
-        ordersCheckFlow
-    ) { internet, wordpress, store, orders ->
-        internet.isFinished && wordpress.isFinished && store.isFinished && orders.isFinished
-    }.asLiveData()
+    val isCheckFinished = stateMachine.map { it == Finished }.asLiveData()
 
-    fun startConnectionTests() {
+    private val nextStep
+        get() = when (stateMachine.value) {
+            InternetCheck -> WordPressCheck
+            WordPressCheck -> StoreCheck
+            StoreCheck -> StoreOrdersCheck
+            StoreOrdersCheck -> Finished
+            Finished -> throw IllegalStateException("Cannot move to next state from Finished")
+        }
+
+    fun startConnectionChecks() {
         launch {
-            internetConnectionCheck().onEach { status ->
-                internetCheckFlow.update {
-                    it.copy(connectivityCheckStatus = status)
+            stateMachine.collect {
+                when (it) {
+                    InternetCheck -> startInternetCheck()
+                    WordPressCheck -> startWordPressCheck()
+                    StoreCheck -> startStoreCheck()
+                    StoreOrdersCheck -> startStoreOrdersCheck()
+                    Finished -> { /* No-op */ }
                 }
-            }.launchIn(viewModelScope)
-
-            wordPressConnectionCheck().onEach { status ->
-                wordpressCheckFlow.update {
-                    it.copy(connectivityCheckStatus = status)
-                }
-            }.launchIn(viewModelScope)
-
-            storeConnectionCheck().onEach { status ->
-                storeCheckFlow.update {
-                    it.copy(connectivityCheckStatus = status)
-                }
-            }.launchIn(viewModelScope)
-
-            storeOrdersCheck().onEach { status ->
-                ordersCheckFlow.update {
-                    it.copy(connectivityCheckStatus = status)
-                }
-            }.launchIn(viewModelScope)
+            }
         }
     }
 
     fun onContactSupportClicked() { triggerEvent(OpenSupportRequest) }
 
+    private fun startInternetCheck() {
+        internetConnectionCheck().onEach { status ->
+            status.startNextCheck()
+            internetCheckFlow.update {
+                it.copy(connectivityCheckStatus = status)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun startWordPressCheck() {
+        wordPressConnectionCheck().onEach { status ->
+            status.startNextCheck()
+            wordpressCheckFlow.update {
+                it.copy(connectivityCheckStatus = status)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun startStoreCheck() {
+        storeConnectionCheck().onEach { status ->
+            status.startNextCheck()
+            storeCheckFlow.update {
+                if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
+                    handleReadMoreClick(status.error ?: FailureType.GENERIC)
+                })
+                else it.copy(connectivityCheckStatus = status)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun startStoreOrdersCheck() {
+        storeOrdersCheck().onEach { status ->
+            status.startNextCheck()
+            ordersCheckFlow.update {
+                if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
+                    handleReadMoreClick(status.error ?: FailureType.GENERIC)
+                })
+                else it.copy(connectivityCheckStatus = status)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun ConnectivityCheckStatus.startNextCheck() {
+        if (stateMachine.value == Finished) return
+
+        stateMachine.update {
+            when (this) {
+                is Success -> nextStep
+                is Failure -> Finished
+                else -> it
+            }
+        }
+    }
+
+    private fun handleReadMoreClick(failureType: FailureType) {
+        when (failureType) {
+            FailureType.JETPACK -> triggerEvent(OpenWebView(jetpackTroubleshootingUrl))
+            else -> triggerEvent(OpenWebView(genericTroubleshootingUrl))
+        }
+    }
+
     object OpenSupportRequest : MultiLiveEvent.Event()
+    data class OpenWebView(val url: String) : MultiLiveEvent.Event()
+
+    enum class ConnectivityCheckStep {
+        InternetCheck,
+        WordPressCheck,
+        StoreCheck,
+        StoreOrdersCheck,
+        Finished
+    }
+
+    companion object {
+        const val jetpackTroubleshootingUrl =
+            "https://jetpack.com/support/reconnecting-reinstalling-jetpack/"
+        const val genericTroubleshootingUrl =
+            "https://woo.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
+    }
 }

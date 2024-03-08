@@ -13,6 +13,8 @@ import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenSupportRequest
+import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenWebView
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -35,9 +37,10 @@ class OrderConnectivityToolFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 is OpenSupportRequest -> openSupportRequestScreen()
+                is OpenWebView -> openWebView(it.url)
             }
         }
-        viewModel.startConnectionTests()
+        viewModel.startConnectionChecks()
     }
 
     override fun getFragmentTitle() = getString(R.string.orderlist_connectivity_tool_title)
@@ -49,4 +52,6 @@ class OrderConnectivityToolFragment : BaseFragment() {
             extraTags = ArrayList()
         ).let { activity?.startActivity(it) }
     }
+
+    private fun openWebView(url: String) { ChromeCustomTabUtils.launchUrl(requireContext(), url) }
 }

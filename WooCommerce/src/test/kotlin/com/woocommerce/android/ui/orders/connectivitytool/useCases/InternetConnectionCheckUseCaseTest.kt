@@ -53,6 +53,6 @@ class InternetConnectionCheckUseCaseTest : BaseUnitTest() {
         }.launchIn(this)
 
         // Then
-        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure))
+        assertThat(stateEvents).isEqualTo(listOf(InProgress, Failure()))
     }
 }

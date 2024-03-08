@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -100,7 +101,7 @@ fun ConnectivityCheckCard(
             checkTitle = it.title,
             iconDrawable = it.icon,
             suggestion = it.suggestion,
-            testStatus = it.connectivityCheckStatus,
+            checkStatus = it.connectivityCheckStatus,
             onReadMoreClicked = it.readMoreAction ?: {},
             shouldDisplayReadMoreButton = it.readMoreAction != null
         )
@@ -113,7 +114,7 @@ fun ConnectivityCheckCard(
     @StringRes checkTitle: Int,
     @DrawableRes iconDrawable: Int,
     @StringRes suggestion: Int,
-    testStatus: ConnectivityCheckStatus,
+    checkStatus: ConnectivityCheckStatus,
     onReadMoreClicked: () -> Unit,
     shouldDisplayReadMoreButton: Boolean = false
 ) {
@@ -146,31 +147,35 @@ fun ConnectivityCheckCard(
                     modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100))
                 )
                 Spacer(modifier = modifier.weight(1f))
-                when (testStatus) {
-                    NotStarted, InProgress -> CircularProgressIndicator(
+                when (checkStatus) {
+                    is InProgress -> CircularProgressIndicator(
                         modifier = modifier.size(dimensionResource(id = R.dimen.major_200))
                     )
-                    Success -> ResultIcon(
+                    is Success -> ResultIcon(
                         icon = R.drawable.ic_rounded_chcekbox_checked,
                         color = R.color.woo_green_50
                     )
-                    Failure -> ResultIcon(
+                    is Failure -> ResultIcon(
                         icon = R.drawable.ic_rounded_chcekbox_partially_checked,
                         color = R.color.woo_red_50
                     )
+                    NotStarted -> { /* Do nothing */ }
                 }
             }
 
-            if (testStatus == Failure) {
+            if (checkStatus is Failure) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = modifier
                         .padding(top = dimensionResource(id = R.dimen.major_100))
                         .fillMaxWidth()
                 ) {
-                    Text(stringResource(id = suggestion))
+                    Text(
+                        text = stringResource(id = checkStatus.error?.message ?: suggestion),
+                        color = colorResource(id = R.color.woo_red_50)
+                    )
                     if (shouldDisplayReadMoreButton) {
-                        Button(
+                        OutlinedButton(
                             onClick = onReadMoreClicked,
                             modifier = modifier.fillMaxWidth()
                         ) {
@@ -201,15 +206,18 @@ fun OrderConnectivityToolScreenPreview() {
     WooThemeWithBackground {
         OrderConnectivityToolScreen(
             isContactSupportButtonEnabled = true,
-            internetConnectionCheckData = InternetConnectivityCheckData(),
+            internetConnectionCheckData = InternetConnectivityCheckData(
+                connectivityCheckStatus = NotStarted
+            ),
             wordpressConnectionCheckData = WordPressConnectivityCheckData(
-                connectivityCheckStatus = InProgress
+                connectivityCheckStatus = Success
             ),
             storeConnectionCheckData = StoreConnectivityCheckData(
-                connectivityCheckStatus = Failure
+                connectivityCheckStatus = Failure(),
+                readMoreAction = {}
             ),
             storeOrdersCheckData = StoreOrdersConnectivityCheckData(
-                connectivityCheckStatus = Success
+                connectivityCheckStatus = InProgress
             ),
             onContactSupportClicked = {}
         )
