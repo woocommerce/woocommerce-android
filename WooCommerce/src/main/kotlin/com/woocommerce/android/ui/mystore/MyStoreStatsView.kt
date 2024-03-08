@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.YEAR_TO_DATE
+import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -57,6 +58,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import kotlin.math.round
@@ -175,7 +177,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         SUPPORTED_RANGES_ON_MY_STORE_TAB
             .forEach { rangeType ->
                 val tab = tabLayout.newTab().apply {
-                    setText(getStringForGranularity(rangeType))
+                    setText(getStringForRangeType(rangeType))
                     tag = rangeType
                 }
                 if (rangeType == CUSTOM) {
@@ -199,19 +201,24 @@ class MyStoreStatsView @JvmOverloads constructor(
             mapOf(KEY_RANGE to selectedTimeRange.selectionType.toString().lowercase())
         )
         isRequestingStats = true
-        if (selectedTimeRange.selectionType == CUSTOM) updateCustomDateRange(statsTimeRangeSelection)
+        updateCustomDateRange(statsTimeRangeSelection)
     }
 
     private fun updateCustomDateRange(selectedTimeRange: StatsTimeRangeSelection) {
-        statsTimeRangeSelection = selectedTimeRange
-        customRangeButton.isVisible = false
+        if (selectedTimeRange.selectionType == CUSTOM) {
+            statsTimeRangeSelection = selectedTimeRange
+            customRangeButton.isVisible = false
 
-        customRangeTab.view.isVisible = true
-        tabLayout.selectTab(customRangeTab)
-        tabLayout.scrollX = tabLayout.width
+            customRangeTab.view.isVisible = true
+            tabLayout.selectTab(customRangeTab)
+            tabLayout.scrollX = tabLayout.width
 
-        customRangeLabel.isVisible = true
-        customRangeLabel.text = selectedTimeRange.currentRangeDescription
+            customRangeLabel.isVisible = true
+            customRangeLabel.text = selectedTimeRange.currentRangeDescription
+            statsDateValue.text = getStringForGranularity(selectedTimeRange.revenueStatsGranularity)
+        } else {
+            customRangeLabel.isVisible = false
+        }
     }
 
     fun showSkeleton(show: Boolean) {
@@ -637,7 +644,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     @StringRes
-    fun getStringForGranularity(rangeType: SelectionType): Int {
+    fun getStringForRangeType(rangeType: SelectionType): Int {
         return when (rangeType) {
             TODAY -> R.string.today
             WEEK_TO_DATE -> R.string.this_week
@@ -646,6 +653,17 @@ class MyStoreStatsView @JvmOverloads constructor(
             CUSTOM -> R.string.orderfilters_date_range_filter_custom_range
             else -> error("Unsupported range value used in my store tab: $rangeType")
         }
+    }
+
+    private fun getStringForGranularity(granularity: StatsGranularity): String {
+        val granularityLabel = when (granularity) {
+            StatsGranularity.HOURS -> resources.getString(R.string.my_store_custom_range_by_granularity_hour)
+            StatsGranularity.DAYS -> resources.getString(R.string.my_store_custom_range_by_granularity_day)
+            StatsGranularity.WEEKS -> resources.getString(R.string.my_store_custom_range_by_granularity_week)
+            StatsGranularity.MONTHS -> resources.getString(R.string.my_store_custom_range_by_granularity_month)
+            StatsGranularity.YEARS -> resources.getString(R.string.my_store_custom_range_by_granularity_year)
+        }
+        return resources.getString(R.string.my_store_custom_range_by_granularity, granularityLabel)
     }
 
     private fun getEntryValue(dateString: String): String {

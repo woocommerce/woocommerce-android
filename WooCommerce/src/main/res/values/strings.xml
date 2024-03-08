@@ -392,6 +392,11 @@
     <string name="my_store_stats_availability_contact_us">Contact us</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
     <string name="my_store_custom_range_by_granularity">By %s</string>
+    <string name="my_store_custom_range_by_granularity_hour">hour</string>
+    <string name="my_store_custom_range_by_granularity_day">day</string>
+    <string name="my_store_custom_range_by_granularity_week">week</string>
+    <string name="my_store_custom_range_by_granularity_month">month</string>
+    <string name="my_store_custom_range_by_granularity_year">year</string>
 
     <!--
         Sign Up Flow
