@@ -66,8 +66,10 @@ class AddProductWithAIFragment : BaseFragment(), MediaPickerResultHandler {
                 is NavigateToAIProductNameBottomSheet -> navigateToAIProductName(event.initialName)
                 is NavigateToProductDetailScreen -> findNavController().navigateSafely(
                     directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
-                        isAIContent = true
+                        mode = ProductDetailFragment.Mode.ShowProduct(
+                            remoteProductId = event.productId,
+                            afterGeneratedWithAi = true,
+                        )
                     ),
                     navOptions = navOptions {
                         popUpTo(R.id.addProductWithAIFragment) { inclusive = true }

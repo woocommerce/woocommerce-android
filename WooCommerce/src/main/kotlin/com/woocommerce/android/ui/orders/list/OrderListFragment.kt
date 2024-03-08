@@ -690,6 +690,12 @@ class OrderListFragment :
         )
     }
 
+    private fun openConnectivityTool() {
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToOrderConnectivityToolFragment()
+        )
+    }
+
     private fun hideEmptyView() {
         emptyView.hide()
     }
@@ -944,7 +950,7 @@ class OrderListFragment :
                 show = show,
                 title = getString(R.string.orderlist_timeout_error_title),
                 message = getString(R.string.orderlist_timeout_error_message),
-                troubleshootingClick = { /* Call Connectivity tool */ },
+                troubleshootingClick = { openConnectivityTool() },
                 supportContactClick = { openSupportRequestScreen() }
             )
         }

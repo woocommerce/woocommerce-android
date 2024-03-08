@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderAttributionOrigin
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -126,8 +127,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT)
         )
 
-        // When the createOrUpdateDraft method is call
-        sut.createOrUpdateDraft(order)
+        // When the createOrUpdateOrder method is call
+        sut.createOrUpdateOrder(order)
 
         // Then the order status is changed to PENDING
         val request = UpdateOrderRequest(
@@ -141,7 +142,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             couponLines = emptyList(),
         )
 
-        verify(orderUpdateStore).createOrder(defaultSiteModel, request)
+        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
     }
 
     @Test
@@ -157,8 +158,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT)
         )
 
-        // When the createOrUpdateDraft method is call
-        sut.createOrUpdateDraft(order)
+        // When the createOrUpdateOrder method is call
+        sut.createOrUpdateOrder(order)
 
         // Then the order status is not changed
         val request = UpdateOrderRequest(
@@ -172,7 +173,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             couponLines = emptyList(),
         )
 
-        verify(orderUpdateStore).createOrder(defaultSiteModel, request)
+        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
     }
 
     @Test

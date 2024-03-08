@@ -36,7 +36,6 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.IsTablet
-import com.woocommerce.android.util.IsTabletLogicNeeded
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -73,7 +72,6 @@ class ProductListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val isTabletLogicNeeded: IsTabletLogicNeeded,
     private val isTablet: IsTablet,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -447,13 +445,13 @@ class ProductListViewModel @Inject constructor(
     }
 
     private fun openFirstLoadedProductOnTablet(products: List<Product>) {
-        if (products.isNotEmpty()) {
-            if (isTabletLogicNeeded() && openedProductId == null) {
-                openedProductId = products.first().remoteId
-                onOpenProduct(openedProductId!!, null)
-            }
-        } else {
-            if (isTabletLogicNeeded()) {
+        if (isTablet()) {
+            if (products.isNotEmpty()) {
+                if (openedProductId == null) {
+                    openedProductId = products.first().remoteId
+                    onOpenProduct(openedProductId!!, null)
+                }
+            } else {
                 triggerEvent(ProductListEvent.OpenEmptyProduct)
             }
         }
@@ -478,7 +476,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    fun isProductHighlighted(productId: Long) = if (isTabletLogicNeeded()) productId == openedProductId else false
+    fun isProductHighlighted(productId: Long) = if (isTablet()) productId == openedProductId else false
 
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)

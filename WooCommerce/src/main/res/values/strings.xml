@@ -487,6 +487,19 @@
     <string name="error_troubleshooting">Troubleshooting</string>
     <string name="orderlist_timeout_error_title">Your site is taking a long time to respond</string>
     <string name="orderlist_timeout_error_message">Please try again later or reach out to us and we\'ll be happy to assist you</string>
+    <string name="orderlist_connectivity_tool_title">Connectivity Test</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Internet Connection</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">It looks like you\'re not connected to the internet.\n\nEnsure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com servers</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Oops! It seems we can\'t connect to WordPress.com at the moment.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Your site</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Your site orders</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Contact Support</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Read More</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Oops! Your site seems to be taking too long to respond.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oops! It seems we can\'t work properly with your site\'s response.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oops! There seems to be a problem with your jetpack connection.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Oops! There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
 
     <!--
          Simple Payments

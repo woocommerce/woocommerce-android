@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-27 17:54:03+0000
+Translation-Revision-Date: 2024-03-06 11:54:15+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">Kein Ort gefunden.\nBitte versuche es erneut.</string>
+    <string name="order_detail_attribution_session_page_views">Seitenaufrufe der Sitzung</string>
+    <string name="order_detail_attribution_device_type">Gerätetyp</string>
+    <string name="order_detail_attribution_campaign">Mittel</string>
+    <string name="order_detail_attribution_medium">Mittel</string>
+    <string name="order_detail_attribution_source">Quelle</string>
+    <string name="order_detail_attribution_source_type">Quelltyp</string>
+    <string name="order_detail_attribution_unknown_origin">Unbekannt</string>
+    <string name="order_detail_attribution_mobile_origin">Mobil-App</string>
+    <string name="order_detail_attribution_admin_origin">Web-Administrator</string>
+    <string name="order_detail_attribution_direct_origin">Direkt</string>
+    <string name="order_detail_attribution_utm_origin">Quelle: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Empfehlung: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">Organisch: %1$s</string>
+    <string name="order_detail_attribution_origin">Ursprung</string>
+    <string name="order_detail_attribution_header">Bestellungszuordnung</string>
+    <string name="orderdetail_message_customer_using_telegram">Contact using Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Kontak per WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID %d</string>
+    <string name="orderfilters_customer_filter">Kunde</string>
+    <string name="orderfilters_product_filter">Produkt</string>
+    <string name="customer_picker_guest">Gast</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
+    <string name="orderlist_timeout_error_message">Versuche es später erneut oder kontaktiere uns, wir helfen dir gerne weiter!</string>
+    <string name="orderlist_timeout_error_title">Deine Website braucht sehr lange, um zu reagieren</string>
+    <string name="show_details">Details anzeigen</string>
     <string name="order_creation_payment_shipping_tax_label">Versandsteuer</string>
     <string name="customize_analytics">Analysen anpassen</string>
     <string name="blaze_campaign_creation_error">Etwas stimmt nicht.\nDeine Kampagne konnte nicht erstellt werden.</string>
@@ -46,7 +72,7 @@ Language: de
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL-Parameter</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">Ziel-URL</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Manuell eingeben</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Kein Ort gefunden.\nBitte versuche es erneut.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Suche fehlgeschlagen\nBitte versuche es erneut</string>
     <string name="blaze_campaign_creation_location_search_message">Beginne mit der Eingabe des Landes, Bundeslandes oder der Stadt, um verfügbare Optionen anzuzeigen</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">Indem du auf „Kampagne absenden“ klickst, akzeptierst du die &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Geschäftsbedingungen&lt;/u&gt;&lt;/a&gt; sowie die &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Werberichtlinien&lt;/u&gt;&lt;/a&gt; und erlaubst, dass deine Zahlungsmethode für die von dir gewählte Dauer mit dem von dir gewählten Budget belastet wird. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Hier findest du weitere Informationen&lt;/u&gt;&lt;/a&gt; zu Budgets und Zahlungen für beworbene Beiträge.</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Kampagne absenden</string>

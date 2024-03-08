@@ -263,7 +263,7 @@ class ProductDetailViewModel @Inject constructor(
         .combine(_hasChanges) { productDraft, hasChanges ->
             Pair(productDraft, hasChanges)
         }.map { (productDraft, hasChanges) ->
-            val canBeSavedAsDraft = isAddFlowEntryPoint &&
+            val canBeSavedAsDraft = this.isAddNewProductFlow &&
                 !isProductStoredAtSite &&
                 productDraft.status != DRAFT
             val isNotPublishedUnderCreation = isProductUnderCreation &&
@@ -309,14 +309,17 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Returns boolean value of [navArgs.isAddProduct] to determine if the view model was started for the **add** flow
      */
-    private val isAddFlowEntryPoint: Boolean
+    private val isAddNewProductFlow: Boolean
         get() = navArgs.mode == ProductDetailFragment.Mode.AddNewProduct
+
+    val startMode: ProductDetailFragment.Mode
+        get() = navArgs.mode
 
     /**
      * Validates if the view model was started for the **add** flow AND there is an already valid product to modify.
      */
     val isProductUnderCreation: Boolean
-        get() = isAddFlowEntryPoint and isProductStoredAtSite.not()
+        get() = isAddNewProductFlow and isProductStoredAtSite.not()
 
     /**
      * Returns boolean value of [navArgs.isTrashEnabled] to determine if the detail fragment should enable
@@ -324,9 +327,6 @@ class ProductDetailViewModel @Inject constructor(
      */
     val isTrashEnabled: Boolean
         get() = !isProductUnderCreation && navArgs.isTrashEnabled
-
-    val isAddNewProductFlow: Boolean
-        get() = navArgs.mode == ProductDetailFragment.Mode.AddNewProduct
 
     /**
      * Provides the currencyCode for views who requires display prices
@@ -399,7 +399,7 @@ class ProductDetailViewModel @Inject constructor(
 
     private fun initializeStoredProductAfterRestoration() {
         launch {
-            if (isAddFlowEntryPoint && !isProductStoredAtSite) {
+            if (isAddNewProductFlow && !isProductStoredAtSite) {
                 storedProduct.value = createDefaultProductForAddFlow()
             } else {
                 when (val mode = navArgs.mode) {
@@ -1036,7 +1036,7 @@ class ProductDetailViewModel @Inject constructor(
         navArgs.source == STORE_ONBOARDING || productListRepository.getProductList().isEmpty()
 
     /**
-     * during a product creation flow flagged by [isAddFlowEntryPoint],
+     * during a product creation flow flagged by [isAddNewProductFlow],
      * we may have to POST the product before hand in order to operate
      * some remotes properties of the Product.
      * (e.g. Variable Product when editing the Attributes and Variations)
@@ -2024,7 +2024,7 @@ class ProductDetailViewModel @Inject constructor(
             draftChanges
                 .distinctUntilChanged { old, new -> old?.remoteId == new?.remoteId }
                 .map { getRemoteProductId() }
-                .filter { productId -> productId != DEFAULT_ADD_NEW_PRODUCT_ID || isAddFlowEntryPoint }
+                .filter { productId -> productId != DEFAULT_ADD_NEW_PRODUCT_ID || isAddNewProductFlow }
                 .collectLatest { productId ->
                     mediaFileUploadHandler.observeCurrentUploads(productId)
                         .map { list -> list.map { it.toUri() } }

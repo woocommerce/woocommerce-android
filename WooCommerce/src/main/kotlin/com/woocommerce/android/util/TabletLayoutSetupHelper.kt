@@ -21,62 +21,60 @@ import javax.inject.Inject
 
 class TabletLayoutSetupHelper @Inject constructor(
     private val context: Context,
-    private val isTabletLogicNeeded: IsTabletLogicNeeded,
+    private val isTablet: IsTablet,
 ) : DefaultLifecycleObserver {
     private var screen: Screen? = null
     private var navHostFragment: NavHostFragment? = null
 
     fun onRootFragmentCreated(screen: Screen) {
-        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
-            this.screen = screen
-            initNavFragment(screen)
+        this.screen = screen
+        initNavFragment(screen)
 
-            screen.listFragment.parentFragmentManager.registerFragmentLifecycleCallbacks(
-                object : FragmentManager.FragmentLifecycleCallbacks() {
-                    override fun onFragmentViewCreated(
-                        fm: FragmentManager,
-                        f: Fragment,
-                        v: View,
-                        savedInstanceState: Bundle?
-                    ) {
-                        if (f == screen.listFragment) {
-                            adjustUIForScreenSize(screen)
-                        }
+        screen.listFragment.parentFragmentManager.registerFragmentLifecycleCallbacks(
+            object : FragmentManager.FragmentLifecycleCallbacks() {
+                override fun onFragmentViewCreated(
+                    fm: FragmentManager,
+                    f: Fragment,
+                    v: View,
+                    savedInstanceState: Bundle?
+                ) {
+                    if (f == screen.listFragment) {
+                        adjustUIForScreenSize(screen)
                     }
+                }
 
-                    override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
-                        if (f == screen.listFragment) {
-                            this@TabletLayoutSetupHelper.screen = null
-                            navHostFragment = null
-                        }
+                override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
+                    if (f == screen.listFragment) {
+                        this@TabletLayoutSetupHelper.screen = null
+                        navHostFragment = null
                     }
-                },
-                false
-            )
+                }
+            },
+            false
+        )
 
-            screen.listFragment.childFragmentManager.registerFragmentLifecycleCallbacks(
-                object : FragmentManager.FragmentLifecycleCallbacks() {
-                    override fun onFragmentViewCreated(
-                        fm: FragmentManager,
-                        f: Fragment,
-                        v: View,
-                        savedInstanceState: Bundle?
-                    ) {
-                        if (f != navHostFragment && f !is BottomSheetDialogFragment) {
-                            setDetailsMargins(v)
-                        }
+        screen.listFragment.childFragmentManager.registerFragmentLifecycleCallbacks(
+            object : FragmentManager.FragmentLifecycleCallbacks() {
+                override fun onFragmentViewCreated(
+                    fm: FragmentManager,
+                    f: Fragment,
+                    v: View,
+                    savedInstanceState: Bundle?
+                ) {
+                    if (f != navHostFragment && f !is BottomSheetDialogFragment) {
+                        setDetailsMargins(v)
                     }
-                },
-                true
-            )
-        }
+                }
+            },
+            true
+        )
     }
 
     fun openItemDetails(
         tabletNavigateTo: () -> Pair<Int, Bundle>,
         navigateWithPhoneNavigation: () -> Unit
     ) {
-        if (isTabletLogicNeeded()) {
+        if (isTablet()) {
             val navOptions =
                 NavOptions.Builder()
                     .setPopUpTo(navHostFragment!!.navController.graph.startDestinationId, true)
@@ -96,7 +94,7 @@ class TabletLayoutSetupHelper @Inject constructor(
 
     @Suppress("NestedBlockDepth")
     private fun setDetailsMargins(rootView: View) {
-        if (isTabletLogicNeeded()) {
+        if (isTablet()) {
             if (rootView !is ViewGroup) return
 
             val isSmallTablet = context.isDisplaySmallerThan720
@@ -143,7 +141,7 @@ class TabletLayoutSetupHelper @Inject constructor(
     }
 
     private fun adjustUIForScreenSize(screen: Screen) {
-        if (isTabletLogicNeeded()) {
+        if (isTablet()) {
             adjustLayoutForTablet(screen)
         } else {
             adjustLayoutForNonTablet(screen)
@@ -207,8 +205,4 @@ class TabletLayoutSetupHelper @Inject constructor(
             val detailsInitialBundle: Bundle?
         )
     }
-}
-
-class IsTabletLogicNeeded @Inject constructor(private val isTablet: IsTablet) {
-    operator fun invoke() = isTablet() && FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()
 }
