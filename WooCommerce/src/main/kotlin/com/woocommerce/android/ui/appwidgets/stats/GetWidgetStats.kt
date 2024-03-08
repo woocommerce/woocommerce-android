@@ -4,13 +4,18 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
+import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository
+import com.woocommerce.android.ui.mystore.domain.asRangeSelection
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.store.WCStatsStore
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
 class GetWidgetStats @Inject constructor(
@@ -18,10 +23,12 @@ class GetWidgetStats @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val dateUtils: DateUtils,
+    private val localeProvider: LocaleProvider
 ) {
     suspend operator fun invoke(
-        granularity: WCStatsStore.StatsGranularity,
+        granularity: StatsGranularity,
         siteModel: SiteModel?
     ): WidgetStatsResult {
         return withContext(coroutineDispatchers.io) {
@@ -37,18 +44,28 @@ class GetWidgetStats @Inject constructor(
                 else -> {
                     val areVisitorStatsSupported = siteModel.connectionType == SiteConnectionType.Jetpack
 
+                    val rangeSelection = granularity.asRangeSelection(
+                        dateUtils = dateUtils,
+                        locale = localeProvider.provideLocale()
+                    )
+
                     // Fetch stats, always force to refresh data.
                     val fetchedStats = statsRepository.fetchStats(
-                        granularity = granularity,
+                        range = rangeSelection.currentRange,
+                        revenueStatsGranularity = rangeSelection.revenueStatsGranularity,
+                        visitorStatsGranularity = rangeSelection.visitorStatsGranularity,
                         forced = true,
                         includeVisitorStats = areVisitorStatsSupported,
                         site = siteModel
                     )
-                    if (fetchedStats.isError) {
-                        WidgetStatsResult.WidgetStatsFailure(fetchedStats.error.message)
-                    } else {
-                        WidgetStatsResult.WidgetStats(fetchedStats.model!!)
-                    }
+                    fetchedStats.fold(
+                        onSuccess = { stats ->
+                            WidgetStatsResult.WidgetStats(stats)
+                        },
+                        onFailure = { error ->
+                            WidgetStatsResult.WidgetStatsFailure(error.message)
+                        }
+                    )
                 }
             }
         }

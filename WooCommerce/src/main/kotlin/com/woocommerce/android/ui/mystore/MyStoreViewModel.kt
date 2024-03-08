@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
+import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -91,6 +92,7 @@ class MyStoreViewModel @Inject constructor(
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val timezoneProvider: TimezoneProvider,
     private val observeLastUpdate: ObserveLastUpdate,
+    private val customDateRangeDataStore: CustomDateRangeDataStore,
     private val dateUtils: DateUtils,
     notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
@@ -470,6 +472,9 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(fromDate: Date, toDate: Date) {
+        viewModelScope.launch {
+            customDateRangeDataStore.updateDateRange(fromDate, toDate)
+        }
         _customRange.value = AnalyticsHubTimeRange(fromDate, toDate)
     }
 

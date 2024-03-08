@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-26 16:54:04+0000
+Translation-Revision-Date: 2024-03-06 22:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">Nenhuma localização encontrada.\nTente novamente.</string>
+    <string name="order_detail_attribution_session_page_views">Visualizações de página da sessão</string>
+    <string name="order_detail_attribution_device_type">Tipo de dispositivo</string>
+    <string name="order_detail_attribution_mobile_origin">Aplicativo móvel</string>
+    <string name="order_detail_attribution_admin_origin">Administrador da web</string>
+    <string name="order_detail_attribution_referral_origin">Indicação: %1$s</string>
+    <string name="order_detail_attribution_origin">Origem</string>
+    <string name="order_detail_attribution_header">Atribuição do pedido</string>
+    <string name="orderdetail_message_customer_using_telegram">Falar pelo Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Falar pelo WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID: %d</string>
+    <string name="orderfilters_customer_filter">Cliente</string>
+    <string name="orderfilters_product_filter">Produto</string>
+    <string name="customer_picker_guest">Convidado</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">Este usuário é um convidado, e convidados não podem ser usados para filtrar pedidos.</string>
+    <string name="orderlist_timeout_error_message">Tente novamente mais tarde ou fale conosco. Teremos prazer em ajudar você</string>
+    <string name="orderlist_timeout_error_title">Seu site está demorando a responder</string>
+    <string name="order_detail_attribution_campaign">Mídia</string>
+    <string name="order_detail_attribution_medium">Mídia</string>
+    <string name="order_detail_attribution_source">Origem</string>
+    <string name="order_detail_attribution_source_type">Tipo de origem</string>
+    <string name="order_detail_attribution_unknown_origin">Desconhecida</string>
+    <string name="order_detail_attribution_direct_origin">Direta</string>
+    <string name="order_detail_attribution_utm_origin">Origem: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">Orgânico: %1$s</string>
+    <string name="show_details">Exibir detalhes</string>
     <string name="order_creation_payment_shipping_tax_label">Taxa de entrega</string>
     <string name="customize_analytics">Personalizar análises</string>
     <string name="blaze_campaign_creation_error">Algo não está certo.\nNão foi possível criar sua campanha.</string>
@@ -46,9 +72,9 @@ Language: pt_BR
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">Parâmetros de URL</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">URL de destino</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Inserir manualmente</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Nenhuma localização encontrada.\nTente novamente.</string>
     <string name="blaze_campaign_creation_location_search_message">Comece a digitar o país, estado ou cidade para ver as opções disponíveis</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">Ao clicar em \"Enviar campanha\", você concorda com os &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Termos de serviço&lt;/u&gt;&lt;/a&gt; e a &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Política de publicidade&lt;/u&gt;&lt;/a&gt; e autoriza a cobrança na sua forma de pagamento de acordo com o orçamento e a duração escolhidos. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Saiba mais&lt;/u&gt;&lt;/a&gt; sobre como funcionam os orçamentos e pagamentos de posts promovidos.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Falha na pesquisa.\nTente novamente</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Enviar campanha</string>
     <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Falha ao carregar formas de pagamento, tente novamente clicando aqui!</string>
     <string name="blaze_campaign_payment_summary_add_payment_method">Adicionar forma de pagamento</string>

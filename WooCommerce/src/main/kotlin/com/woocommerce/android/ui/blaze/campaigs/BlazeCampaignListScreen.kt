@@ -59,7 +59,7 @@ fun BlazeCampaignListScreen(viewModel: BlazeCampaignListViewModel) {
         BlazeCampaignListScreen(
             state = state,
             modifier = Modifier.background(color = MaterialTheme.colors.surface),
-            onEndOfTheListReached = viewModel::onEndOfTheListReached,
+            onEndOfTheListReached = viewModel::onLoadMoreCampaigns,
             onCampaignCelebrationDismissed = viewModel::onCampaignCelebrationDismissed,
         )
     }

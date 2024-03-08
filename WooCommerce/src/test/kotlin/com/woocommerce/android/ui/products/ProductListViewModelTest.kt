@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.util.IsTablet
-import com.woocommerce.android.util.IsTabletLogicNeeded
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -35,6 +34,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.internal.verification.AtLeast
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
@@ -55,7 +55,6 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val isTabletLogicNeeded: IsTabletLogicNeeded = mock()
     private val isTablet: IsTablet = mock()
 
     private val productList = ProductTestUtils.generateProductList()
@@ -77,7 +76,6 @@ class ProductListViewModelTest : BaseUnitTest() {
                 analyticsTracker,
                 selectedSite,
                 wooCommerceStore,
-                isTabletLogicNeeded,
                 isTablet,
             )
         )
@@ -606,6 +604,23 @@ class ProductListViewModelTest : BaseUnitTest() {
         // We delayed the message waiting the resume animation to complete
         advanceUntilIdle()
         assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
+    }
+
+    @Test
+    fun `given open product id excluded, when reloadProductsFromDb, then value of it reseted`() = testBlocking {
+        // GIVEN
+        val openProductId = 1L
+        savedStateHandle["key_product_opened"] = openProductId
+        whenever(productRepository.getProductList(any(), anyOrNull(), anyOrNull())).thenReturn(
+            listOf(ProductTestUtils.generateProduct(productId = 2L))
+        )
+
+        // WHEN
+        createViewModel()
+        viewModel.reloadProductsFromDb(excludeProductId = openProductId)
+
+        // THEN
+        assertThat(savedStateHandle.get<Long>("key_product_opened")).isNull()
     }
 
     @Test

@@ -4,19 +4,19 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCStatsStore
+import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetWidgetStatsTest : BaseUnitTest() {
@@ -32,11 +32,7 @@ class GetWidgetStatsTest : BaseUnitTest() {
         origin = SiteModel.ORIGIN_WPCOM_REST
         setIsJetpackConnected(true)
     }
-    private val defaultError = WooError(
-        type = WooErrorType.GENERIC_ERROR,
-        original = BaseRequest.GenericErrorType.UNKNOWN,
-        message = "Error fetching site stats for site ${defaultSiteModel.siteId}"
-    )
+    private val defaultErrorMessage = "Error fetching site stats for site ${defaultSiteModel.siteId}"
     private val defaultResponse = StatsRepository.SiteStats(
         visitors = mapOf(
             "2020-10-01" to 1,
@@ -52,7 +48,9 @@ class GetWidgetStatsTest : BaseUnitTest() {
         appPrefsWrapper = appPrefsWrapper,
         statsRepository = statsRepository,
         networkStatus = networkStatus,
-        coroutineDispatchers = coroutinesTestRule.testDispatchers
+        coroutineDispatchers = coroutinesTestRule.testDispatchers,
+        dateUtils = DateUtils(Locale.ROOT, mock(), mock()),
+        localeProvider = mock()
     )
 
     @Test
@@ -121,12 +119,12 @@ class GetWidgetStatsTest : BaseUnitTest() {
             whenever(networkStatus.isConnected()).thenReturn(true)
 
             // Given fetching the stats fails
-            whenever(statsRepository.fetchStats(defaultGranularity, true, true, defaultSiteModel))
-                .thenReturn(WooResult(defaultError))
+            whenever(statsRepository.fetchStats(any(), any(), any(), eq(true), eq(true), eq(defaultSiteModel)))
+                .thenReturn(Result.failure(Exception(defaultErrorMessage)))
 
             // When GetWidgetStats is invoked
             val result = sut.invoke(defaultGranularity, defaultSiteModel)
-            val expected = GetWidgetStats.WidgetStatsResult.WidgetStatsFailure(defaultError.message)
+            val expected = GetWidgetStats.WidgetStatsResult.WidgetStatsFailure(defaultErrorMessage)
 
             // Then the result is WidgetStatsFailure
             assertThat(result).isEqualTo(expected)
@@ -141,8 +139,8 @@ class GetWidgetStatsTest : BaseUnitTest() {
             whenever(networkStatus.isConnected()).thenReturn(true)
 
             // Given fetching the stats succeed
-            whenever(statsRepository.fetchStats(defaultGranularity, true, true, defaultSiteModel))
-                .thenReturn(WooResult(defaultResponse))
+            whenever(statsRepository.fetchStats(any(), any(), any(), eq(true), eq(true), eq(defaultSiteModel)))
+                .thenReturn(Result.success(defaultResponse))
 
             // When GetWidgetStats is invoked
             val result = sut.invoke(defaultGranularity, defaultSiteModel)

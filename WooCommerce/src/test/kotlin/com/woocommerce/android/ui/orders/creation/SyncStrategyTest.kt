@@ -16,7 +16,7 @@ import java.util.Date
 @ExperimentalCoroutinesApi
 abstract class SyncStrategyTest : BaseUnitTest() {
     protected val orderCreateEditRepository = mock<OrderCreateEditRepository> {
-        onBlocking { createOrUpdateDraft(any()) } doAnswer InlineClassesAnswer {
+        onBlocking { createOrUpdateOrder(any(), any()) } doAnswer InlineClassesAnswer {
             val order = it.arguments.first() as Order
             Result.success(order.copy(total = order.total + BigDecimal.TEN))
         }
