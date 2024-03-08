@@ -11,13 +11,11 @@ import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
 import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
@@ -64,10 +62,7 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     private fun setupToolbar(binding: FragmentPrintShippingLabelBinding) {
         binding.toolbar.title = getString(viewModel.screenTitle)
         binding.toolbar.setNavigationOnClickListener {
-            when {
-                isTablet() && onRequestAllowBackPress() -> findNavController().navigateUp()
-                else -> (activity as? MainActivity)?.onBackPressed()
-            }
+            navigateBack()
         }
     }
 
@@ -162,7 +157,12 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     }
 
     override fun onRequestAllowBackPress(): Boolean {
+        return navigateBack()
+    }
+
+    private fun navigateBack(): Boolean {
         return if (navArgs.isReprint) {
+            findNavController().popBackStack()
             true
         } else {
             navigateBackAndNotifyOrderDetails()
