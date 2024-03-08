@@ -37,12 +37,10 @@ class GetStatsTest : BaseUnitTest() {
 
     private val getStats = GetStats(
         selectedSite = selectedSite,
-        localeProvider = mock(),
         statsRepository = statsRepository,
         appPrefsWrapper = appPrefsWrapper,
         coroutineDispatchers = coroutinesTestRule.testDispatchers,
         analyticsUpdateDataStore = analyticsUpdateDataStore,
-        dateUtils = mock()
     )
 
     @Before
