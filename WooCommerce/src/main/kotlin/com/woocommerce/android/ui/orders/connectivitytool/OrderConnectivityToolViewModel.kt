@@ -5,7 +5,10 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_INTERNET
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_JETPACK_TUNNEL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SITE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WP_COM
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
@@ -112,14 +115,18 @@ class OrderConnectivityToolViewModel @Inject constructor(
     }
 
     private fun startInternetCheck() {
+        val startTime = System.currentTimeMillis()
         internetConnectionCheck().onEach { status ->
+            trackChanges(status, VALUE_INTERNET, startTime)
             status.startNextCheck()
             internetCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
     }
 
     private fun startWordPressCheck() {
+        val startTime = System.currentTimeMillis()
         wordPressConnectionCheck().onEach { status ->
+            trackChanges(status, VALUE_WP_COM, startTime)
             status.startNextCheck()
             wordpressCheckFlow.update { it.copy(connectivityCheckStatus = status) }
         }.launchIn(viewModelScope)
@@ -140,7 +147,9 @@ class OrderConnectivityToolViewModel @Inject constructor(
     }
 
     private fun startStoreOrdersCheck() {
+        val startTime = System.currentTimeMillis()
         storeOrdersCheck().onEach { status ->
+            trackChanges(status, VALUE_JETPACK_TUNNEL, startTime)
             status.startNextCheck()
             ordersCheckFlow.update {
                 if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
