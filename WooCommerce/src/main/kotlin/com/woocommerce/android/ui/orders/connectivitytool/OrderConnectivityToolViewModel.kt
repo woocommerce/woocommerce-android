@@ -124,14 +124,24 @@ class OrderConnectivityToolViewModel @Inject constructor(
     private fun startStoreCheck() {
         storeConnectionCheck().onEach { status ->
             status.startNextCheck()
-            storeCheckFlow.update { it.copyBasedOn(status) }
+            storeCheckFlow.update {
+                if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
+                    handleReadMoreClick(status.error ?: FailureType.GENERIC)
+                })
+                else it.copy(connectivityCheckStatus = status)
+            }
         }.launchIn(viewModelScope)
     }
 
     private fun startStoreOrdersCheck() {
         storeOrdersCheck().onEach { status ->
             status.startNextCheck()
-            storeCheckFlow.update { it.copyBasedOn(status) }
+            ordersCheckFlow.update {
+                if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
+                    handleReadMoreClick(status.error ?: FailureType.GENERIC)
+                })
+                else it.copy(connectivityCheckStatus = status)
+            }
         }.launchIn(viewModelScope)
     }
 
@@ -144,16 +154,6 @@ class OrderConnectivityToolViewModel @Inject constructor(
                 is Failure -> Finished
                 else -> it
             }
-        }
-    }
-
-    private fun StoreConnectivityCheckData.copyBasedOn(status: ConnectivityCheckStatus): StoreConnectivityCheckData {
-        return if (status is Failure) {
-            copy(connectivityCheckStatus = status, readMoreAction = {
-                handleReadMoreClick(status.error ?: FailureType.GENERIC)
-            })
-        } else {
-            copy(connectivityCheckStatus = status)
         }
     }
 
