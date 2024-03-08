@@ -86,7 +86,6 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 import kotlin.math.abs
 
