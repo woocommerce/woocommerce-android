@@ -37,6 +37,7 @@ import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
+import com.woocommerce.android.ui.mystore.data.DateRange
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -53,7 +54,6 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.HOURS
 import org.wordpress.android.util.DisplayUtils
-import java.util.Date
 import java.util.Locale
 import kotlin.math.round
 
@@ -82,7 +82,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
-    private var customRange: Pair<Date, Date>? = null
+    private var customRange: DateRange? = null
 
     private var skeletonView = SkeletonView()
 
@@ -199,7 +199,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         isRequestingStats = true
     }
 
-    fun updateCustomDateRange(customDateRange: Pair<Date, Date>?) {
+    fun updateCustomDateRange(customDateRange: DateRange?) {
         customRange = customDateRange
         customRangeButton.isVisible = customDateRange == null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
         customRangeTab.view.isVisible = customDateRange != null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
