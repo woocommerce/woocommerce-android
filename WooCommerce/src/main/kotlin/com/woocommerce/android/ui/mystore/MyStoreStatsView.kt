@@ -428,6 +428,15 @@ class MyStoreStatsView @JvmOverloads constructor(
             StatsGranularity.YEARS -> dateUtils.getFriendlyLongMonthYear(dateString).orEmpty()
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
+//    private fun updateDateOnScrubbing(dateString: String, activeGranularity: StatsGranularity) {
+//        statsDateValue.text = when (activeGranularity) {
+//            StatsGranularity.DAYS -> dateUtils.getFriendlyDayHourString(dateString).orEmpty()
+//            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+//            StatsGranularity.MONTHS -> dateUtils.getLongMonthDayString(dateString).orEmpty()
+//            StatsGranularity.YEARS -> dateUtils.getFriendlyLongMonthYear(dateString).orEmpty()
+//            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
+//        }.also { result -> trackUnexpectedFormat(result, dateString) }
+//    }
 
     /**
      * Method called when a touch-gesture has ended on the chart (ACTION_UP, ACTION_CANCEL)
