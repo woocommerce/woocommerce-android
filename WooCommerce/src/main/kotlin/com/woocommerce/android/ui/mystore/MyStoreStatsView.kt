@@ -239,6 +239,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             WEEK_TO_DATE -> R.integer.stats_label_count_weeks
             MONTH_TO_DATE -> R.integer.stats_label_count_months
             YEAR_TO_DATE -> R.integer.stats_label_count_years
+            CUSTOM -> R.integer.stats_label_count_custom_range
             else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
         }
         val chartRevenueStatsSize = chartRevenueStats.keys.size
