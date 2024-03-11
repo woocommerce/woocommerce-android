@@ -614,6 +614,10 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
+    fun onTrashOrderClicked() {
+        triggerEvent(TrashOrder(navArgs.orderId))
+    }
+
     private suspend fun updateOrderState() {
         val isPaymentCollectable = isPaymentCollectable(order)
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
@@ -880,4 +884,5 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
+    data class TrashOrder(val orderId: Long) : MultiLiveEvent.Event()
 }

@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -110,6 +111,7 @@ class OrderListFragment :
     lateinit var feedbackPrefs: FeedbackPrefs
 
     private val viewModel: OrderListViewModel by viewModels()
+    private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
     private var snackBar: Snackbar? = null
 
     override fun onStop() {
@@ -551,6 +553,15 @@ class OrderListFragment :
                     action = event.action
                 )
                 is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
+                else -> event.isHandled = false
+            }
+        }
+
+        communicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OrdersCommunicationViewModel.CommunicationEvent.OrderTrashed -> {
+                    viewModel.trashOrder(event.orderId)
+                }
                 else -> event.isHandled = false
             }
         }

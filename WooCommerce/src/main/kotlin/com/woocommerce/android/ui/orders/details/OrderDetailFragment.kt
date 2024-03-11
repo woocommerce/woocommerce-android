@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
@@ -73,6 +74,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
@@ -110,6 +112,7 @@ class OrderDetailFragment :
 
     private val viewModel: OrderDetailViewModel by viewModels()
     private val orderEditingViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
 
     @Inject
     lateinit var navigator: OrderNavigator
@@ -436,6 +439,13 @@ class OrderDetailFragment :
                 }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 is InstallWCShippingViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
+                is OrderDetailViewModel.TrashOrder -> {
+                    if (findNavController().previousBackStackEntry != null) {
+                        findNavController().popBackStack()
+                    }
+
+                    communicationViewModel.trashOrder(event.orderId)
+                }
                 else -> event.isHandled = false
             }
         }

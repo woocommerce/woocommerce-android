@@ -782,6 +782,10 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    fun trashOrder(orderId: Long) {
+        TODO("Not yet implemented")
+    }
+
     sealed class OrderListEvent : Event() {
         data class ShowErrorSnack(@StringRes val messageRes: Int) : OrderListEvent()
         object ShowOrderFilters : OrderListEvent()
