@@ -10,6 +10,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.ui.compose.DeviceType
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.util.DisplayUtils
@@ -191,3 +192,6 @@ fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
 }
 
 fun Fragment.isTablet() = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
+
+val Fragment.deviceType: DeviceType
+    get() = if (isTablet()) DeviceType.Tablet else DeviceType.Phone
