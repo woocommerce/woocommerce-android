@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.details
 
-import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
@@ -39,7 +38,7 @@ import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.isDisplaySmallerThan720
+import com.woocommerce.android.extensions.isMediumWindowSize
 import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
@@ -233,14 +232,11 @@ class OrderDetailFragment :
     private fun isOrderListFragmentNotVisible() = parentFragment?.parentFragment !is OrderListFragment
 
     private fun setMarginsIfTablet() {
-        val isSmallTablet = requireContext().isDisplaySmallerThan720
-        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
         if (isTablet()) {
             val windowWidth = DisplayUtils.getWindowPixelWidth(requireContext())
             val layoutParams = binding.orderDetailContainer.layoutParams as FrameLayout.LayoutParams
 
-            if (isSmallTablet && isPortrait) {
+            if (requireContext().isMediumWindowSize()) {
                 val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
                 layoutParams.setMargins(
                     marginHorizontal,
