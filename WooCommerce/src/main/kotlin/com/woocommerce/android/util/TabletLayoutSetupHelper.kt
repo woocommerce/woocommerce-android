@@ -106,12 +106,18 @@ class TabletLayoutSetupHelper @Inject constructor(
                     if (isSmallTablet && isPortrait) {
                         val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
                         layoutParams.setMargins(
-                            marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
+                            marginHorizontal,
+                            layoutParams.topMargin,
+                            marginHorizontal,
+                            layoutParams.bottomMargin
                         )
                     } else {
                         val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
                         layoutParams.setMargins(
-                            marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
+                            marginHorizontal,
+                            layoutParams.topMargin,
+                            marginHorizontal,
+                            layoutParams.bottomMargin
                         )
                     }
 

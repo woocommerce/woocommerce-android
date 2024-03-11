@@ -111,7 +111,7 @@ class StatsRepository @Inject constructor(
         Result.success(
             wcStatsStore.getRawRevenueStatsFromRangeId(
                 selectedSite.get(),
-            revenueRangeId
+                revenueRangeId
             )
         )
     }

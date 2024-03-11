@@ -166,7 +166,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (!isPluginInstalled(preferredPlugin)) {
             when (preferredPlugin.type) {
                 WOOCOMMERCE_PAYMENTS -> return WcpayNotInstalled
-                STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
+                STRIPE_EXTENSION_GATEWAY -> error("Developer error:`preferredPlugin` should be WCPay")
             }
         }
 
@@ -185,7 +185,7 @@ class CardReaderOnboardingChecker @Inject constructor(
         if (!isPluginActivated(preferredPlugin.info)) {
             when (preferredPlugin.type) {
                 WOOCOMMERCE_PAYMENTS -> return WcpayNotActivated
-                STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
+                STRIPE_EXTENSION_GATEWAY -> error("Developer error:`preferredPlugin` should be WCPay")
             }
         }
 

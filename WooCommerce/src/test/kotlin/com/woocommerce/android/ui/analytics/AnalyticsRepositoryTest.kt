@@ -779,7 +779,8 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // Then
             verify(statsRepository, times(2)).fetchRevenueStats(
-                eq(testSelectionData.previousRange),any(),
+                eq(testSelectionData.previousRange),
+                any(),
                 any(),
 
                 any()

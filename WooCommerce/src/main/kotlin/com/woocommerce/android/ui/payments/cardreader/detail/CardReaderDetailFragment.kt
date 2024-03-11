@@ -109,7 +109,7 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                         with(readerNameTv) {
                             UiHelpers.setTextOrHide(this, state.readerName)
                             setOnLongClickListener {
-                                state.onReaderNameLongClick();
+                                state.onReaderNameLongClick()
                                 true
                             }
                             expandHitArea(0, dpToPx(requireContext(), HIT_AREA_EXPANSION_DP))

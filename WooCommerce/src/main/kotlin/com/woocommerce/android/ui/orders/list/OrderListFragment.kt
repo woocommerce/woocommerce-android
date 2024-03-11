@@ -729,7 +729,7 @@ class OrderListFragment :
             isSearching = true
         }
         (activity as? MainNavigationRouter)?.run {
-val navHostFragment = if (isTablet()) {
+            val navHostFragment = if (isTablet()) {
                 childFragmentManager.findFragmentById(R.id.detailPaneContainer) as NavHostFragment
             } else {
                 null

@@ -46,7 +46,9 @@ class PaymentsHubDepositSummaryStateMapper @Inject constructor(
                             pendingFundsAmount = pendingBalances.firstOrNull { it.currency == currency }?.amount ?: 0,
                             fundsAvailableInDays = overview.account?.depositsSchedule?.delayDays,
                             fundsDepositInterval = overview.account.fundsAvailableIn(),
-                            lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let { mapDeposit(it) }
+                            lastDeposit = lastPaidDeposits.firstOrNull { it.currency == currency }?.let {
+                                mapDeposit(it)
+                            }
                         )
                     }.toSortedMap(
                         compareBy<String> { it != defaultCurrency }.thenBy { it }
