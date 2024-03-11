@@ -64,7 +64,7 @@ private fun PluginsScreen(state: ViewState) {
     }
 }
 
-    @Composable
+@Composable
 private fun Plugins(plugins: List<ViewState.Loaded.Plugin>) {
     LazyColumn {
         items(plugins) { plugin ->
@@ -104,12 +104,4 @@ private fun PreviewPlugins() {
             )
         )
     )
-}
-
-
-
-@LightDarkThemePreviews
-@Composable
-private fun PreviewLoading() {
-    PluginsScreen(ViewState.Loading)
 }
