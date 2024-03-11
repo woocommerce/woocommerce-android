@@ -362,24 +362,7 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.initProductsSection() {
         productsSection.hideHeader()
-        productsSection.setProductSectionButtons(
-            addProductsButton = AddButton(
-                text = getString(R.string.order_creation_add_products),
-                onClickListener = {
-                    viewModel.onAddProductClicked()
-                }
-            ),
-            addProductsViaScanButton = AddButton(
-                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                onClickListener = { viewModel.onScanClicked() }
-            ),
-            addCustomAmountsButton = AddButton(
-                text = getString(R.string.order_creation_add_custom_amounts),
-                onClickListener = {
-                    navigateToCustomAmountsDialog()
-                }
-            )
-        )
+        renderDefaultProductsSectionButtons()
     }
 
     private fun FragmentOrderCreateEditFormBinding.initAdditionalInfoCollectionSection() {
@@ -558,18 +541,27 @@ class OrderCreateEditFormFragment :
         binding.productsSection.hideAddProductsHeaderActions()
         binding.productsSection.hideHeader()
         binding.productsSection.content = null
-        binding.productsSection.setProductSectionButtons(
-            addProductsButton = AddButton(
-                text = getString(R.string.order_creation_add_products),
-                onClickListener = {
-                    viewModel.onAddProductClicked()
-                }
-            ),
-            addProductsViaScanButton = AddButton(
-                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                onClickListener = { viewModel.onScanClicked() }
-            ),
-        )
+        if (!isTablet()) {
+            binding.productsSection.setProductSectionButtons(
+                addProductsButton = AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        viewModel.onAddProductClicked()
+                    }
+                ),
+                addProductsViaScanIconButton = AddButton(
+                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                    onClickListener = { viewModel.onScanClicked() }
+                ),
+            )
+        } else {
+            binding.productsSection.setProductSectionButtons(
+                addProductsViaScanButton = AddButton(
+                    text = getString(R.string.order_creation_scan_products),
+                    onClickListener = { viewModel.onScanClicked() },
+                )
+            )
+        }
     }
 
     private fun productAddedCustomAmountUnset(binding: FragmentOrderCreateEditFormBinding) {
@@ -611,26 +603,44 @@ class OrderCreateEditFormFragment :
         binding.productsSection.hideAddProductsHeaderActions()
         binding.productsSection.hideHeader()
         binding.productsSection.content = null
-        binding.productsSection.setProductSectionButtons(
-            addProductsButton = AddButton(
-                text = getString(R.string.order_creation_add_products),
-                onClickListener = {
-                    viewModel.onAddProductClicked()
-                }
-            ),
-            addProductsViaScanButton = AddButton(
-                text = getString(R.string.order_creation_add_product_via_barcode_scanning),
-                onClickListener = { viewModel.onScanClicked() }
-            ),
-            addCustomAmountsButton =
-            AddButton(
-                text = getString(R.string.order_creation_add_custom_amounts),
-                onClickListener = {
-                    navigateToCustomAmountsDialog()
-                }
-            )
-        )
+        binding.renderDefaultProductsSectionButtons()
         binding.customAmountsSection.hide()
+    }
+
+    private fun FragmentOrderCreateEditFormBinding.renderDefaultProductsSectionButtons() {
+        if (!isTablet()) {
+            productsSection.setProductSectionButtons(
+                addProductsButton = AddButton(
+                    text = getString(R.string.order_creation_add_products),
+                    onClickListener = {
+                        viewModel.onAddProductClicked()
+                    }
+                ),
+                addProductsViaScanIconButton = AddButton(
+                    text = getString(R.string.order_creation_add_product_via_barcode_scanning),
+                    onClickListener = { viewModel.onScanClicked() }
+                ),
+                addCustomAmountsButton = AddButton(
+                    text = getString(R.string.order_creation_add_custom_amounts),
+                    onClickListener = {
+                        navigateToCustomAmountsDialog()
+                    }
+                )
+            )
+        } else {
+            productsSection.setProductSectionButtons(
+                addProductsViaScanButton = AddButton(
+                    text = getString(R.string.order_creation_scan_products),
+                    onClickListener = { viewModel.onScanClicked() },
+                ),
+                addCustomAmountsButton = AddButton(
+                    text = getString(R.string.order_creation_add_custom_amounts),
+                    onClickListener = {
+                        navigateToCustomAmountsDialog()
+                    }
+                )
+            )
+        }
     }
 
     private fun navigateToCustomAmountsDialog(
