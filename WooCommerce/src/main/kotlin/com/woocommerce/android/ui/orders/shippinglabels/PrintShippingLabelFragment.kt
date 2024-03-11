@@ -10,10 +10,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -65,7 +66,9 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         binding.toolbar.title = getString(viewModel.screenTitle)
         binding.toolbar.setNavigationOnClickListener {
             when {
-                isTablet() && onRequestAllowBackPress() -> findNavController().navigateUp()
+                requireContext().windowSizeClass != WindowSizeClass.Compact && onRequestAllowBackPress() -> {
+                    findNavController().navigateUp()
+                }
                 else -> (activity as? MainActivity)?.onBackPressed()
             }
         }

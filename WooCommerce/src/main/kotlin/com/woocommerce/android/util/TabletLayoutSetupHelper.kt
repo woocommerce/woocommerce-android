@@ -15,7 +15,8 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.isMediumWindowSize
+import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.windowSizeClass
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -101,7 +102,7 @@ class TabletLayoutSetupHelper @Inject constructor(
             rootView.children.filter { it !is Toolbar }.forEach { viewToApplyMargins ->
                 val layoutParams = viewToApplyMargins.layoutParams
                 if (layoutParams is MarginLayoutParams) {
-                    if (rootView.context.isMediumWindowSize()) {
+                    if (context.windowSizeClass != WindowSizeClass.Compact) {
                         val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
                         layoutParams.setMargins(
                             marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
@@ -147,10 +148,14 @@ class TabletLayoutSetupHelper @Inject constructor(
     }
 
     private fun adjustLayoutForTablet(screen: Screen) {
-        if (screen.listFragment.requireContext().isMediumWindowSize()) {
-            screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
-        } else {
-            screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        when (context.windowSizeClass) {
+            WindowSizeClass.Compact -> return
+            WindowSizeClass.Medium -> {
+                screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
+            }
+            WindowSizeClass.ExpandedAndBigger -> {
+                screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+            }
         }
         screen.listPaneContainer.visibility = View.VISIBLE
         screen.detailPaneContainer.visibility = View.VISIBLE
