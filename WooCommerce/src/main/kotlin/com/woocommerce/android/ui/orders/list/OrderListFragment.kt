@@ -169,8 +169,8 @@ class OrderListFragment :
                     } else {
                         val result =
                             _binding?.detailPaneContainer?.findNavController()?.navigateUp() ?: false
-                        val isLargeScreen = requireContext().windowSizeClass == WindowSizeClass.Compact
-                        if (!result && _binding?.listPaneContainer?.isVisible != true && isLargeScreen) {
+                        val isCompactScreen = requireContext().windowSizeClass == WindowSizeClass.Compact
+                        if (!result && _binding?.listPaneContainer?.isVisible != true && isCompactScreen) {
                             // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
                             // and now it's a single pane layout (phone), e.g. due to a configuration change.
                             // In this case we need to switch panes – show the list pane instead of details pane.
