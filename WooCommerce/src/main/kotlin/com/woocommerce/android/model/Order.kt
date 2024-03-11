@@ -50,7 +50,8 @@ data class Order(
     val paymentUrl: String,
     val isEditable: Boolean,
     val selectedGiftCard: String?,
-    val giftCardDiscountedAmount: BigDecimal?
+    val giftCardDiscountedAmount: BigDecimal?,
+    val shippingTax: BigDecimal,
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -253,6 +254,7 @@ data class Order(
         val email: String? = null,
         val billingAddress: Address,
         val shippingAddress: Address,
+        val username: String? = null,
     ) : Parcelable {
         companion object {
             val EMPTY = Customer(
@@ -390,7 +392,8 @@ data class Order(
                 paymentUrl = "",
                 isEditable = true,
                 selectedGiftCard = "",
-                giftCardDiscountedAmount = null
+                giftCardDiscountedAmount = null,
+                shippingTax = BigDecimal(0)
             )
         }
 

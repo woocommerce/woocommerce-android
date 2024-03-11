@@ -4,6 +4,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.OrderAttributionOrigin
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -14,6 +15,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -125,7 +127,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         // Given a site using a version that doesn't support AUTO_DRAFT
         whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
             .thenReturn(SitePluginModel().apply { version = "6.2.0" })
-        whenever(orderUpdateStore.createOrder(any(), any()))
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
         val order = Order.getEmptyOrder(Date(), Date()).copy(
@@ -133,8 +135,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT)
         )
 
-        // When the createOrUpdateDraft method is call
-        sut.createOrUpdateDraft(order)
+        // When the createOrUpdateOrder method is call
+        sut.createOrUpdateOrder(order)
 
         // Then the order status is changed to PENDING
         val request = UpdateOrderRequest(
@@ -148,7 +150,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             couponLines = emptyList(),
         )
 
-        verify(orderUpdateStore).createOrder(defaultSiteModel, request)
+        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
     }
 
     @Test
@@ -156,7 +158,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
         // Given a site using a version that support AUTO_DRAFT
         whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
             .thenReturn(SitePluginModel().apply { version = OrderCreateEditRepository.AUTO_DRAFT_SUPPORTED_VERSION })
-        whenever(orderUpdateStore.createOrder(any(), any()))
+        whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
         val order = Order.getEmptyOrder(Date(), Date()).copy(
@@ -164,8 +166,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             status = Order.Status.Custom(Order.Status.AUTO_DRAFT)
         )
 
-        // When the createOrUpdateDraft method is call
-        sut.createOrUpdateDraft(order)
+        // When the createOrUpdateOrder method is call
+        sut.createOrUpdateOrder(order)
 
         // Then the order status is not changed
         val request = UpdateOrderRequest(
@@ -179,7 +181,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             couponLines = emptyList(),
         )
 
-        verify(orderUpdateStore).createOrder(defaultSiteModel, request)
+        verify(orderUpdateStore).createOrder(defaultSiteModel, request, OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE)
     }
 
     @Test

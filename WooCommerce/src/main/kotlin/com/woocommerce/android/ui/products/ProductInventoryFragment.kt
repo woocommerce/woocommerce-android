@@ -14,6 +14,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.ProductItemSelectorDialog.ProductItemSelectorDialogListener
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -58,8 +59,6 @@ class ProductInventoryFragment :
         super.onDestroyView()
         _binding = null
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_inventory)
 
     private fun setupObservers(viewModel: ProductInventoryViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -194,6 +193,16 @@ class ProductInventoryFragment :
                 viewModel.onDataChanged(isSoldIndividually = isChecked)
             }
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_inventory),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    onExit()
+                }
+            }
+        )
     }
 
     private fun enableManageStockStatus(isStockManaged: Boolean, isStockStatusVisible: Boolean) {

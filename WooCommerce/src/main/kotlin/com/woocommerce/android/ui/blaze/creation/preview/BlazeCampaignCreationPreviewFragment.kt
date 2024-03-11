@@ -11,9 +11,11 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.BlazeRepository.Budget
+import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdFragment
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.EditAdResult
 import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetFragment
+import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationFragment
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToAdDestinationScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToBudgetScreen
 import com.woocommerce.android.ui.blaze.creation.preview.BlazeCampaignCreationPreviewViewModel.NavigateToEditAdScreen
@@ -58,16 +60,20 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
 
                 is NavigateToBudgetScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
-                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment(event.budget)
+                        .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignBudgetFragment(
+                            budget = event.budget,
+                            targetingParameters = event.targetingParameters
+                        )
                 )
 
                 is NavigateToEditAdScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationEditAdFragment(
-                            event.productId,
-                            event.tagLine,
-                            event.description,
-                            event.campaignImageUrl
+                            productId = event.productId,
+                            tagline = event.tagLine,
+                            description = event.description,
+                            adImage = event.campaignImage,
+                            aiSuggestionsForAd = event.aiSuggestions.toTypedArray()
                         )
                 )
 
@@ -89,14 +95,14 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
                 is NavigateToAdDestinationScreen -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignCreationAdDestinationFragment(
-                            event.targetUrl,
-                            event.productId
+                            event.productId,
+                            event.destinationParameters
                         )
                 )
                 is NavigateToPaymentSummary -> findNavController().navigateSafely(
                     BlazeCampaignCreationPreviewFragmentDirections
                         .actionBlazeCampaignCreationPreviewFragmentToBlazeCampaignPaymentSummaryFragment(
-                            event.budget
+                            event.campaignDetails
                         )
                 )
             }
@@ -105,7 +111,7 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
 
     private fun handleResults() {
         handleResult<EditAdResult>(BlazeCampaignCreationEditAdFragment.EDIT_AD_RESULT) {
-            viewModel.onAdUpdated(it.tagline, it.description, it.campaignImageUrl)
+            viewModel.onAdUpdated(it.tagline, it.description, it.campaignImage)
         }
         handleResult<Budget>(BlazeCampaignBudgetFragment.EDIT_BUDGET_AND_DURATION_RESULT) {
             viewModel.onBudgetAndDurationUpdated(it)
@@ -115,6 +121,9 @@ class BlazeCampaignCreationPreviewFragment : BaseFragment() {
         }
         handleResult<TargetLocationResult>(BlazeCampaignTargetLocationSelectionFragment.BLAZE_TARGET_LOCATION_RESULT) {
             viewModel.onTargetLocationsUpdated(it.locations)
+        }
+        handleResult<DestinationParameters>(BlazeCampaignCreationAdDestinationFragment.BLAZE_DESTINATION_RESULT) {
+            viewModel.onDestinationUpdated(it)
         }
     }
 }

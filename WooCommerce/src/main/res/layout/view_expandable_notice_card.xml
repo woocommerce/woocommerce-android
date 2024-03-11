@@ -24,61 +24,59 @@
             tools:textOff="@string/product_wip_title"
             tools:textOn="@string/product_wip_title_m5" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/notice_morePanel"
-            android:layout_width="@dimen/minor_00"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/notice_message"
+            style="@style/Woo.Card.Body"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginEnd="@dimen/major_300"
+            android:gravity="start"
+            app:layout_constraintBottom_toTopOf="@+id/btn_mainAction"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/guideline_contentStart"
+            app:layout_constraintTop_toBottomOf="@+id/notice_viewMore"
+            tools:text="@string/error_chooser_photo" />
+
+        <!-- PRIMARY button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_secondaryAction"
+            style="@style/Woo.Card.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textSize="@dimen/text_minor_80"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/guideline7"
-            app:layout_constraintTop_toBottomOf="@+id/notice_viewMore"
-            tools:visibility="visible">
+            app:layout_constraintStart_toEndOf="@+id/btn_mainAction"
+            app:layout_constraintTop_toBottomOf="@+id/notice_message"
+            tools:text="@string/support_contact" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/notice_message"
-                style="@style/Woo.Card.Body"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/minor_00"
-                android:layout_marginEnd="@dimen/major_300"
-                android:gravity="start"
-                app:layout_constraintBottom_toTopOf="@+id/btn_mainAction"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="@string/error_chooser_photo" />
+        <!-- SECONDARY button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_mainAction"
+            style="@style/Woo.Card.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/minor_00"
+            android:layout_marginEnd="8dp"
+            android:textSize="@dimen/text_minor_80"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_secondaryAction"
+            app:layout_constraintStart_toEndOf="@+id/guideline_contentStart"
+            app:layout_constraintTop_toBottomOf="@+id/notice_message"
+            tools:text="@string/error_troubleshooting" />
 
-            <!-- PRIMARY button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_secondaryAction"
-                style="@style/Woo.Card.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                tools:text="@string/support_contact"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/notice_message" />
-
-            <!-- SECONDARY button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_mainAction"
-                style="@style/Woo.Card.Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="@dimen/minor_100"
-                tools:text="@string/error_troubleshooting"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_secondaryAction"
-                app:layout_constraintTop_toBottomOf="@+id/notice_message" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Group to control visibility -->
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/noticeMorePanel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="notice_message,btn_mainAction,btn_secondaryAction" />
 
         <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline7"
+            android:id="@+id/guideline_contentStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -86,4 +84,3 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>
-

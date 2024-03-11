@@ -1,6 +1,18 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 17.7
+Exciting news for WooCommerce app users! We've fixed a bug to keep product searches intact after changes, and optimized the product viewing experience on tablets with a two-pane layout. Customize your analytics with ease in the Analytics Hub. Plus, orders made in the app are now clearly tagged, improving tracking. Dive into a smoother, more personalized shopping and selling journey. Update your app now!
+
+## 17.6
+Dive into a more personalized experience with our latest update that lets you filter orders by customers or products with ease. Plus, connecting with your customers is now just a tap away – reach out directly via WhatsApp or Telegram. Don't miss the new order attribution details on your order screen, giving you insights at a glance. Update now for a smoother, more efficient shop management experience!
+
+## 17.5
+We're thrilled to roll out a shiny new update that marks our first leap towards jazzing up order management on tablets! This update brings a slicker interface, turning the task of managing orders into a breeze on your tablet. Keep your eyes peeled for more enhancements as we keep working to make your experience even cooler!
+
+## 17.4
+We're excited to offer support for third-party Passkey providers. This update is designed to provide WordPress.com users with more flexibility and convenience in how they manage their account's security. Get ready to say goodbye to password fatigue and hello to a smoother, secure login experience!
+
 ## 17.3
 We've enhanced the shipping label creation flow to ensure a smoother and more intuitive experience. This improvement aims to streamline your order fulfillment process, making it faster and more efficient. Please continue sending us feedback – we are listening!
 

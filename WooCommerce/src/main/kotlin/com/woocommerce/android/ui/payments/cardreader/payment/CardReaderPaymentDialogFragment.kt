@@ -73,6 +73,7 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
         viewModel.start()
     }
 
+    @Suppress("LongMethod")
     private fun initObservers(binding: CardReaderPaymentDialogBinding) {
         viewModel.event.observe(
             viewLifecycleOwner

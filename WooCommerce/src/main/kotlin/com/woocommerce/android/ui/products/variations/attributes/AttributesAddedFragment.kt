@@ -12,6 +12,7 @@ import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.BaseProductFragment
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
 import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment
 import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion.KEY_ADD_NEW_VARIATION
@@ -24,6 +25,7 @@ import com.woocommerce.android.ui.products.variations.VariationListViewModel.Sho
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ShowGenerateVariationsError.NoCandidates
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.widgets.CustomProgressDialog
@@ -48,9 +50,17 @@ class AttributesAddedFragment :
         }
         setupObservers()
         setupResultHandlers()
-    }
 
-    override fun getFragmentTitle() = getString(R.string.product_variations)
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_variations),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onBackButtonClicked(ExitAttributesAdded)
+                }
+            }
+        )
+    }
 
     private fun setupObservers() {
         viewModel.attributeListViewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -88,8 +98,9 @@ class AttributesAddedFragment :
         when (event) {
             is ExitAttributesAdded ->
                 AttributesAddedFragmentDirections
-                    .actionAttributesAddedFragmentToProductDetailFragment()
-                    .apply { findNavController().navigateSafely(this) }
+                    .actionAttributesAddedFragmentToProductDetailFragment(
+                        mode = ProductDetailFragment.Mode.AddNewProduct
+                    ).apply { findNavController().navigateSafely(this) }
             is ShowSnackbar -> uiMessageResolver.getSnack(event.message)
             is ShowGenerateVariationConfirmation -> showGenerateVariationConfirmation(event.variationCandidates)
             is ShowGenerateVariationsError -> handleGenerateVariationError(event)

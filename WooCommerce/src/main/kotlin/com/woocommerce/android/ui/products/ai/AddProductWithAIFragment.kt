@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.NavigateToProductDetailScreen
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.PackagePhotoData
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.NavigateToAIProductNameBottomSheet
@@ -66,8 +67,10 @@ class AddProductWithAIFragment : BaseFragment(), MediaPickerResultHandler {
                 is NavigateToAIProductNameBottomSheet -> navigateToAIProductName(event.initialName)
                 is NavigateToProductDetailScreen -> findNavController().navigateSafely(
                     directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        remoteProductId = event.productId,
-                        isAIContent = true
+                        mode = ProductDetailFragment.Mode.ShowProduct(
+                            remoteProductId = event.productId,
+                            afterGeneratedWithAi = true,
+                        )
                     ),
                     navOptions = navOptions {
                         popUpTo(R.id.addProductWithAIFragment) { inclusive = true }

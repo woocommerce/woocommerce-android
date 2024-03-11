@@ -14,6 +14,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -76,7 +77,7 @@ class MoreMenuFragment : TopLevelFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        blazeCampaignCreationDispatcher.attachFragment(this)
+        blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.MORE_MENU_ITEM)
         setupObservers()
     }
 
@@ -115,7 +116,7 @@ class MoreMenuFragment : TopLevelFragment() {
 
     private fun openBlazeCreationFlow() {
         lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation()
+            blazeCampaignCreationDispatcher.startCampaignCreation(source = BlazeFlowSource.MORE_MENU_ITEM)
         }
     }
 

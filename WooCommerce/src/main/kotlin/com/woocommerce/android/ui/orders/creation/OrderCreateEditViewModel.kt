@@ -52,6 +52,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUST
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_DIFFERENT_SHIPPING_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_METHOD
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_GIFT_CARD_REMOVED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PARENT_ID
@@ -73,6 +74,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_C
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_CARD
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
@@ -149,7 +152,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -1140,13 +1142,15 @@ class OrderCreateEditViewModel @Inject constructor(
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
 
-    fun onCreateOrderClicked(order: Order) {
+    fun onCreateOrderClicked(order: Order, isTablet: Boolean = false) {
         when (mode) {
             Mode.Creation -> {
-                trackCreateOrderButtonClick()
+                trackCreateOrderButtonClick(isTablet)
                 createOrder(order) {
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
-                    triggerEvent(ShowCreatedOrder(it.id, startPaymentFlow = false))
+                    triggerEvent(
+                        ShowCreatedOrder(it.id, startPaymentFlow = false, isTablet = isTablet)
+                    )
                 }
             }
 
@@ -1213,7 +1217,7 @@ class OrderCreateEditViewModel @Inject constructor(
         launch {
             viewState = viewState.copy(isProgressDialogShown = true)
             val giftCard = _selectedGiftCard.value
-            orderCreateEditRepository.placeOrder(order, giftCard).fold(
+            orderCreateEditRepository.createOrUpdateOrder(order, giftCard).fold(
                 onSuccess = {
                     trackOrderCreationSuccess()
                     onSuccess(it)
@@ -1367,11 +1371,11 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
-    private fun trackCreateOrderButtonClick() {
+    private fun trackCreateOrderButtonClick(isTablet: Boolean = false) {
         launch {
             tracker.track(
                 ORDER_CREATE_BUTTON_TAPPED,
-                buildPropsForOrderCreation()
+                buildPropsForOrderCreation(isTablet)
             )
         }
     }
@@ -1730,11 +1734,12 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun getCurrencySymbol() = currencySymbolFinder.findCurrencySymbol(currentDraft.currency)
 
-    private suspend fun buildPropsForOrderCreation(): Map<String, Any> {
+    private suspend fun buildPropsForOrderCreation(isTablet: Boolean = false): Map<String, Any> {
         val ids = products.value?.map { orderProduct -> orderProduct.item.productId }
         val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
         val productCount = products.value?.count() ?: 0
         return buildMap {
+            put(KEY_HORIZONTAL_SIZE_CLASS, IsTabletValue(isTablet).deviceTypeToAnalyticsString)
             put(KEY_STATUS, _orderDraft.value.status)
             putIfNotNull(PRODUCT_TYPES to productTypes)
             put(KEY_PRODUCT_COUNT, productCount)

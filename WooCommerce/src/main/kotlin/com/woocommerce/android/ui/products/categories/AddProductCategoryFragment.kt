@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -16,7 +14,9 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -30,8 +30,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AddProductCategoryFragment :
     BaseFragment(R.layout.fragment_add_product_category),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     companion object {
         const val ARG_ADDED_CATEGORY = "arg-added-category"
     }
@@ -49,7 +48,8 @@ class AddProductCategoryFragment :
         navGraphId = R.id.nav_graph_add_product_category
     )
 
-    override fun getFragmentTitle() = getString(R.string.product_add_category)
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onResume() {
         super.onResume()
@@ -61,13 +61,12 @@ class AddProductCategoryFragment :
         activity?.let { ActivityUtils.hideKeyboard(it) }
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done)
+    private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.inflateMenu(R.menu.menu_done)
+        doneMenuItem = toolbar.menu.findItem(R.id.menu_done)
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_done -> {
                 AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
@@ -83,7 +82,6 @@ class AddProductCategoryFragment :
 
         _binding = FragmentAddProductCategoryBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
 
         binding.productCategoryName.setOnTextChangedListener {
@@ -102,6 +100,19 @@ class AddProductCategoryFragment :
                 findNavController().navigateSafely(action)
             }
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_add_category),
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    if (viewModel.onBackButtonClicked(getCategoryName(), binding.productCategoryParent.getText())) {
+                        findNavController().navigateUp()
+                    }
+                }
+                onCreateMenu(toolbar)
+            }
+        )
     }
 
     override fun onDestroyView() {

@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.OnProductTagClickListener
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.SkeletonView
@@ -49,6 +50,16 @@ class ProductTagsFragment :
 
         setupObservers(viewModel)
         viewModel.loadProductTags()
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_tags),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    viewModel.onProductTagsBackButtonClicked()
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {
@@ -56,8 +67,6 @@ class ProductTagsFragment :
         super.onDestroyView()
         _binding = null
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_tags)
 
     override fun onResume() {
         super.onResume()

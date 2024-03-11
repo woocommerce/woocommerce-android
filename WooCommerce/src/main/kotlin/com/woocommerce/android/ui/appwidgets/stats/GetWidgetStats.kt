@@ -4,13 +4,15 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
+import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.store.WCStatsStore
 import javax.inject.Inject
 
 class GetWidgetStats @Inject constructor(
@@ -21,7 +23,7 @@ class GetWidgetStats @Inject constructor(
     private val networkStatus: NetworkStatus
 ) {
     suspend operator fun invoke(
-        granularity: WCStatsStore.StatsGranularity,
+        rangeSelection: StatsTimeRangeSelection,
         siteModel: SiteModel?
     ): WidgetStatsResult {
         return withContext(coroutineDispatchers.io) {
@@ -39,16 +41,21 @@ class GetWidgetStats @Inject constructor(
 
                     // Fetch stats, always force to refresh data.
                     val fetchedStats = statsRepository.fetchStats(
-                        granularity = granularity,
+                        range = rangeSelection.currentRange,
+                        revenueStatsGranularity = rangeSelection.revenueStatsGranularity,
+                        visitorStatsGranularity = rangeSelection.visitorStatsGranularity,
                         forced = true,
                         includeVisitorStats = areVisitorStatsSupported,
                         site = siteModel
                     )
-                    if (fetchedStats.isError) {
-                        WidgetStatsResult.WidgetStatsFailure(fetchedStats.error.message)
-                    } else {
-                        WidgetStatsResult.WidgetStats(fetchedStats.model!!)
-                    }
+                    fetchedStats.fold(
+                        onSuccess = { stats ->
+                            WidgetStatsResult.WidgetStats(stats)
+                        },
+                        onFailure = { error ->
+                            WidgetStatsResult.WidgetStatsFailure(error.message)
+                        }
+                    )
                 }
             }
         }

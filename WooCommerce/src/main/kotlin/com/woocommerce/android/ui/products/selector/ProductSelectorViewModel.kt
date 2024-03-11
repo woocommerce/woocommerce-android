@@ -24,6 +24,8 @@ import com.woocommerce.android.ui.products.selector.ProductListHandler.SearchTyp
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.NORMAL
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.SIMPLE
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.UNSELECTED
@@ -127,10 +129,7 @@ class ProductSelectorViewModel @Inject constructor(
         ViewState(
             loadingState = loadingState,
             products = products.map {
-                when (navArgs.selectionHandling) {
-                    SelectionHandling.NORMAL -> it.toUiModel(selectedIds)
-                    SelectionHandling.SIMPLE -> it.toSimpleUiModel(selectedIds)
-                }
+                mapProductsToUiModel(it, selectedIds)
             },
             popularProducts = getPopularProductsToDisplay(popularProducts, selectedIds),
             recentProducts = getRecentProductsToDisplay(recentProducts, selectedIds),
@@ -142,6 +141,14 @@ class ProductSelectorViewModel @Inject constructor(
             ctaButtonTextOverride = navArgs.ctaButtonTextOverride,
         )
     }.asLiveData()
+
+    private fun mapProductsToUiModel(
+        it: Product,
+        selectedIds: List<SelectedItem>
+    ) = when (navArgs.selectionHandling) {
+        NORMAL -> it.toUiModel(selectedIds)
+        SIMPLE -> it.toSimpleUiModel(selectedIds)
+    }
 
     init {
         if (navArgs.selectionMode == SelectionMode.SINGLE && (navArgs.selectedItems?.size ?: 0) > 1) {
@@ -177,7 +184,7 @@ class ProductSelectorViewModel @Inject constructor(
         if (searchState.value.searchQuery.isNotNullOrEmpty() || filterState.value.filterOptions.isNotEmpty()) {
             return emptyList()
         }
-        return productsList.map { it.toUiModel(selectedIds) }
+        return productsList.map { mapProductsToUiModel(it, selectedIds) }
     }
 
     private suspend fun loadRecentProducts() {

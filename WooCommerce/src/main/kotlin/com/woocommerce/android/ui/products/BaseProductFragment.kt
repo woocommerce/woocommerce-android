@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialog
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -24,6 +25,9 @@ abstract class BaseProductFragment : BaseFragment, BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     constructor() : super()
     constructor(@LayoutRes layoutId: Int) : super(layoutId)

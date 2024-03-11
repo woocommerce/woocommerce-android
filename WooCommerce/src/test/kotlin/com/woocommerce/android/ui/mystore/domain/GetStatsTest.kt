@@ -16,8 +16,6 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -38,13 +36,13 @@ class GetStatsTest : BaseUnitTest() {
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
 
     private val getStats = GetStats(
-        selectedSite,
-        mock(),
-        statsRepository,
-        appPrefsWrapper,
-        coroutinesTestRule.testDispatchers,
-        analyticsUpdateDataStore,
-        mock()
+        selectedSite = selectedSite,
+        localeProvider = mock(),
+        statsRepository = statsRepository,
+        appPrefsWrapper = appPrefsWrapper,
+        coroutineDispatchers = coroutinesTestRule.testDispatchers,
+        analyticsUpdateDataStore = analyticsUpdateDataStore,
+        dateUtils = mock()
     )
 
     @Before
@@ -257,7 +255,7 @@ class GetStatsTest : BaseUnitTest() {
 
             getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
-            verify(statsRepository, never()).fetchRevenueStats(any(), any(), any(), any(), any())
+            verify(statsRepository, never()).fetchRevenueStats(any(), any(), any(), any())
         }
 
     @Test
@@ -268,7 +266,7 @@ class GetStatsTest : BaseUnitTest() {
 
             getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
 
-            verify(statsRepository).fetchRevenueStats(any(), eq(false), any(), any(), any())
+            verify(statsRepository).fetchRevenueStats(any(), any(), eq(false), any())
         }
 
     @Test
@@ -293,11 +291,12 @@ class GetStatsTest : BaseUnitTest() {
     }
 
     private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?>) {
-        whenever(statsRepository.fetchRevenueStats(any(), anyBoolean(), anyString(), anyString(), any()))
-            .thenReturn(flow { emit(result) })
+        whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
+            .thenReturn(result)
     }
+
     private suspend fun getRevenueStatsById(result: Result<WCRevenueStatsModel?>) {
-        whenever(statsRepository.getRevenueStatsById(any())).thenReturn(flow { emit(result) })
+        whenever(statsRepository.getRevenueStatsById(any())).thenReturn(result)
     }
 
     private fun givenIsJetpackConnected(isJetPackConnected: Boolean) {
@@ -311,8 +310,8 @@ class GetStatsTest : BaseUnitTest() {
     }
 
     private suspend fun givenFetchVisitorStats(result: Result<Map<String, Int>>) {
-        whenever(statsRepository.fetchVisitorStats(any(), anyBoolean(), anyString(), anyString()))
-            .thenReturn(flow { emit(result) })
+        whenever(statsRepository.fetchVisitorStats(any(), any(), any()))
+            .thenReturn(result)
     }
 
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {

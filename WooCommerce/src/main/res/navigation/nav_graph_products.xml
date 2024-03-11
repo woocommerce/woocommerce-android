@@ -9,13 +9,8 @@
         android:name="com.woocommerce.android.ui.products.ProductDetailFragment"
         tools:layout="@layout/fragment_product_detail">
         <argument
-            android:name="remoteProductId"
-            android:defaultValue="0L"
-            app:argType="long" />
-        <argument
-            android:name="isAddProduct"
-            android:defaultValue="false"
-            app:argType="boolean" />
+            android:name="mode"
+            app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"
@@ -540,6 +535,7 @@
 
     <include app:graph="@navigation/nav_graph_add_product_category" />
     <include app:graph="@navigation/nav_graph_product_settings" />
+    <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
 
     <action
         android:id="@+id/action_productDetailFragment_to_productSettingsFragment"

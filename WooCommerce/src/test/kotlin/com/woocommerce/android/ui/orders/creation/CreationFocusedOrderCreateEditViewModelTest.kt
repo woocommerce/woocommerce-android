@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_BUND
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_CUSTOMER_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_FEES
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HAS_SHIPPING_METHOD
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_ADDED_VIA
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
@@ -24,6 +25,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_COMPACT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_CREATION
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
@@ -699,7 +701,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     @Test
     fun `when creating the order fails, then trigger Snackbar with fail message`() {
         orderCreateEditRepository = mock {
-            onBlocking { placeOrder(defaultOrderValue) } doReturn Result.failure(Throwable())
+            onBlocking { createOrUpdateOrder(defaultOrderValue) } doReturn Result.failure(Throwable())
         }
         createSut()
 
@@ -1183,6 +1185,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         verify(tracker).track(
             AnalyticsEvent.ORDER_CREATE_BUTTON_TAPPED,
             mapOf(
+                KEY_HORIZONTAL_SIZE_CLASS to VALUE_DEVICE_TYPE_COMPACT,
                 KEY_STATUS to defaultOrderValue.status,
                 KEY_PRODUCT_COUNT to productCount,
                 KEY_HAS_CUSTOMER_DETAILS to defaultOrderValue.billingAddress.hasInfo(),
@@ -2051,6 +2054,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             verify(tracker).track(
                 AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED,
                 mapOf(
+                    KEY_HORIZONTAL_SIZE_CLASS to VALUE_DEVICE_TYPE_COMPACT,
                     KEY_STATUS to Order.Status.Pending,
                     KEY_PRODUCT_COUNT to 0,
                     KEY_HAS_CUSTOMER_DETAILS to false,

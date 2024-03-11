@@ -25,15 +25,16 @@ class GetWCOrderListDescriptorWithFilters @Inject constructor(
             .firstOrNull()
         val rangeStartAndEnd = getBeforeAndAfterFrom(selectedDateRange)
 
-        val orderStatusFilters =
-            orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
-                .joinToString(separator = ",")
+        val orderStatusFilters = orderFiltersRepository.getCurrentFilterSelection(OrderListFilterCategory.ORDER_STATUS)
+            .joinToString(separator = ",")
 
         return WCOrderListDescriptor(
             site = selectedSite.get(),
             statusFilter = orderStatusFilters,
             beforeFilter = rangeStartAndEnd.second,
-            afterFilter = rangeStartAndEnd.first
+            afterFilter = rangeStartAndEnd.first,
+            productId = orderFiltersRepository.productFilter,
+            customerId = orderFiltersRepository.customerFilter
         )
     }
 

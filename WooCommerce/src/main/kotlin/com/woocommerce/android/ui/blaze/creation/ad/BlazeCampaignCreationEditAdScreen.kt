@@ -48,6 +48,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.mediapicker.MediaPickerDialog
+import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ViewState
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
@@ -228,37 +229,39 @@ private fun AdDataSection(
                 .fillMaxWidth()
         )
 
-        Row(
-            modifier = Modifier
-                .padding(top = dimensionResource(id = dimen.major_100))
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = drawable.ic_ai),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface)),
+        if (viewState.suggestions.size > 1) {
+            Row(
                 modifier = Modifier
-                    .size(dimensionResource(id = dimen.image_minor_80))
-                    .padding(end = dimensionResource(id = dimen.minor_100))
-            )
-            Text(
-                text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
-                style = MaterialTheme.typography.subtitle2,
-            )
-            Spacer(modifier = Modifier.weight(1f))
+                    .padding(top = dimensionResource(id = dimen.major_100))
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = drawable.ic_ai),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface)),
+                    modifier = Modifier
+                        .size(dimensionResource(id = dimen.image_minor_80))
+                        .padding(end = dimensionResource(id = dimen.minor_100))
+                )
+                Text(
+                    text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
+                    style = MaterialTheme.typography.subtitle2,
+                )
+                Spacer(modifier = Modifier.weight(1f))
 
-            SuggestionButton(
-                onClick = onPreviousSuggestionTapped,
-                isEnabled = viewState.isPreviousSuggestionButtonEnabled,
-                icon = Filled.ArrowBackIosNew
-            )
-            SuggestionButton(
-                onClick = onNextSuggestionTapped,
-                isEnabled = viewState.isNextSuggestionButtonEnabled,
-                icon = Filled.ArrowForwardIos,
-                modifier = Modifier.padding(start = dimensionResource(id = dimen.major_150))
-            )
+                SuggestionButton(
+                    onClick = onPreviousSuggestionTapped,
+                    isEnabled = viewState.isPreviousSuggestionButtonEnabled,
+                    icon = Filled.ArrowBackIosNew
+                )
+                SuggestionButton(
+                    onClick = onNextSuggestionTapped,
+                    isEnabled = viewState.isNextSuggestionButtonEnabled,
+                    icon = Filled.ArrowForwardIos,
+                    modifier = Modifier.padding(start = dimensionResource(id = dimen.major_150))
+                )
+            }
         }
     }
 }
@@ -295,7 +298,7 @@ private fun AdImageSection(viewState: ViewState, onChangeImageTapped: () -> Unit
         ) {
             SubcomposeAsyncImage(
                 model = Builder(LocalContext.current)
-                    .data(viewState.adImageUrl)
+                    .data(viewState.adImage.uri)
                     .crossfade(true)
                     .fallback(drawable.blaze_campaign_product_placeholder)
                     .placeholder(drawable.blaze_campaign_product_placeholder)
@@ -366,7 +369,7 @@ fun PreviewCampaignEditAdContent() {
     WooThemeWithBackground {
         CampaignEditAdContent(
             viewState = ViewState(
-                adImageUrl = "https://rb.gy/gmjuwb"
+                adImage = BlazeCampaignImage.RemoteImage(0, "https://rb.gy/gmjuwb")
             ),
             onTagLineChanged = { },
             onDescriptionChanged = { },

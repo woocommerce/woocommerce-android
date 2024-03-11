@@ -11,6 +11,8 @@ import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -57,6 +59,7 @@ import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -67,6 +70,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
@@ -146,6 +150,9 @@ class OrderDetailViewModel @Inject constructor(
     private val _subscriptions = MutableLiveData<List<Subscription>>()
     val subscriptions: LiveData<List<Subscription>> = _subscriptions
 
+    private val _orderAttributionInfo = MutableLiveData<OrderAttributionInfo>()
+    val orderAttributionInfo: LiveData<OrderAttributionInfo> = _orderAttributionInfo
+
     private var isFetchingData = false
 
     private val productListObserver = Observer<List<OrderProduct>> { products ->
@@ -181,12 +188,18 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun start() {
-        launch {
-            orderDetailRepository.getOrderById(navArgs.orderId)?.let {
-                order = it
-                displayOrderDetails()
-                fetchOrder(showSkeleton = false)
-            } ?: fetchOrder(showSkeleton = true)
+        if (navArgs.orderId != -1L) {
+            launch {
+                orderDetailRepository.getOrderById(navArgs.orderId)?.let {
+                    order = it
+                    displayOrderDetails()
+                    fetchOrder(showSkeleton = false)
+                } ?: fetchOrder(showSkeleton = true)
+            }
+        } else {
+            viewState = viewState.copy(
+                isOrderDetailSkeletonShown = true
+            )
         }
     }
 
@@ -260,6 +273,10 @@ class OrderDetailViewModel @Inject constructor(
      */
     fun onCustomFieldClicked(context: Context, value: String) {
         CustomOrderFieldsHelper.handleMetadataValue(context, value)
+    }
+
+    fun onBackPressed() {
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     fun getOrderMetadata(): List<OrderMetaDataEntity> = runBlocking {
@@ -340,11 +357,13 @@ class OrderDetailViewModel @Inject constructor(
         it.contains(navArgs.orderId) && it.last() != navArgs.orderId
     } ?: false
 
-    fun onCollectPaymentClicked() {
-        paymentsFlowTracker.trackCollectPaymentTapped()
+    fun onCollectPaymentClicked(isTablet: Boolean = false) {
+        paymentsFlowTracker.trackCollectPaymentTapped(
+            IsTabletValue(isTablet).deviceTypeToAnalyticsString
+        )
         triggerEvent(
             StartPaymentFlow(
-                orderId = order.id,
+                orderId = navArgs.orderId,
                 paymentTypeFlow = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
             )
         )
@@ -779,6 +798,8 @@ class OrderDetailViewModel @Inject constructor(
         if (shipmentTracking.isVisible) {
             _shipmentTrackings.value = shipmentTracking.list
         }
+
+        _orderAttributionInfo.value = orderDetailRepository.getOrderAttributionInfo(navArgs.orderId)
 
         val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
 

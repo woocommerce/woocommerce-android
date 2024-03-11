@@ -222,7 +222,7 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun onPromoteProductsWithBlaze() {
         launch {
-            val hasCampaigns = blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isNotEmpty()
+            val hasCampaigns = blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).isNotEmpty()
             if (hasCampaigns) {
                 AnalyticsTracker.track(
                     stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,

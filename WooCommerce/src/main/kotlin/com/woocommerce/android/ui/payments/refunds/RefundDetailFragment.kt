@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.refunds
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +16,7 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.payments.refunds.RefundDetailViewModel.ViewOrderedAddons
 import com.woocommerce.android.util.CurrencyFormatter
@@ -50,6 +52,9 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
         setupObservers(viewModel)
     }
 
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -57,8 +62,21 @@ class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
     }
 
     private fun initializeViews() {
+        setupToolbar(binding)
+
         productsBinding.issueRefundProducts.layoutManager = LinearLayoutManager(context)
         productsBinding.issueRefundProducts.setHasFixedSize(true)
+    }
+
+    private fun setupToolbar(binding: FragmentRefundDetailBinding) {
+        binding.toolbar.title = getString(R.string.order_refunds_refund_info_title)
+        binding.toolbar.navigationIcon = AppCompatResources.getDrawable(
+            requireActivity(),
+            R.drawable.ic_back_24dp
+        )
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     @Suppress("LongMethod")

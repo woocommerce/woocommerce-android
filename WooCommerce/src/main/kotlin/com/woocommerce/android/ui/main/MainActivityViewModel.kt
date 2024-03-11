@@ -400,7 +400,9 @@ class MainActivityViewModel @Inject constructor(
     object ViewPayments : Event()
     object ViewTapToPay : Event()
     object RequestNotificationsPermission : Event()
-    data class ViewUrlInWebView(val url: String) : Event()
+    data class ViewUrlInWebView(
+        val url: String,
+    ) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
     data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()

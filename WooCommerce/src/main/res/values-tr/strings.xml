@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-07 09:54:03+0000
+Translation-Revision-Date: 2024-03-06 09:54:14+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">Konum bulunamadı.\nLütfen tekrar deneyin.</string>
+    <string name="order_detail_attribution_session_page_views">Oturum sayfa görüntülemeleri</string>
+    <string name="order_detail_attribution_device_type">Cihaz türü</string>
+    <string name="order_detail_attribution_campaign">Orta</string>
+    <string name="order_detail_attribution_medium">Orta</string>
+    <string name="order_detail_attribution_source">Kaynak</string>
+    <string name="order_detail_attribution_source_type">Kaynak türü</string>
+    <string name="order_detail_attribution_unknown_origin">Bilinmiyor</string>
+    <string name="order_detail_attribution_mobile_origin">Mobil Uygulama</string>
+    <string name="order_detail_attribution_admin_origin">Web yöneticisi</string>
+    <string name="order_detail_attribution_direct_origin">Doğrudan</string>
+    <string name="order_detail_attribution_utm_origin">Kaynak: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Yönlendirme: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">Organik: %1$s</string>
+    <string name="order_detail_attribution_origin">Menşe</string>
+    <string name="order_detail_attribution_header">Sipariş niteliği</string>
+    <string name="orderdetail_message_customer_using_telegram">Telegram\'dan iletişime geçin</string>
+    <string name="orderdetail_message_customer_using_whatsapp">WhatsApp\'tan iletişime geçin</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">Kimlik: %d</string>
+    <string name="orderfilters_customer_filter">Müşteri</string>
+    <string name="orderfilters_product_filter">Ürün</string>
+    <string name="customer_picker_guest">Misafir</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">Bu kullanıcı bir misafir, misafirler siparişleri filtrelerken kullanılamaz.</string>
+    <string name="orderlist_timeout_error_message">Lütfen daha sonra tekrar deneyin veya bize ulaşın, size yardımcı olmaktan memnuniyet duyarız</string>
+    <string name="orderlist_timeout_error_title">Sitenizin yanıt vermesi uzun sürüyor</string>
+    <string name="show_details">Ayrıntıları Göster</string>
+    <string name="order_creation_payment_shipping_tax_label">Gönderim Vergisi</string>
+    <string name="customize_analytics">Analizleri Özelleştir</string>
+    <string name="blaze_campaign_creation_error">Bir sorun var.\nKampanyanız oluşturulamadı.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">Kampanya görseli detayları alınamadı</string>
+    <string name="blaze_campaign_creation_error_media_upload">Kampanya görseli yüklenemedi.</string>
+    <string name="blaze_campaign_creation_error_cancel">Kampanyayı iptal et</string>
+    <string name="blaze_campaign_creation_error_get_support">Destek al</string>
+    <string name="blaze_campaign_creation_error_help_hint">Lütfen tekrar deneyin veya yardım için destek ekibine başvurun.</string>
+    <string name="blaze_campaign_creation_error_payment_hint">Kampanya oluşturulurken hata oluştu</string>
+    <string name="blaze_campaign_creation_error_title">Kampanya oluşturulurken hata oluştu</string>
+    <string name="blaze_campaign_creation_loading">Kampanyanız oluşturuluyor</string>
+    <string name="blaze_campaign_created_success_done_button">Tamam</string>
+    <string name="blaze_campaign_created_success_description">Kampanyanızı inceliyoruz. 24 saat içinde kullanıma sunulacak. Önümüzdeki günlerde satışlarınızla ilgili harika gelişmeler olacak!</string>
+    <string name="blaze_campaign_created_success_title">Her şey hazır!</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">Anahtar zaten mevcut</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">Son URL çok uzun</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">Değer</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">Anahtar</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Hedef: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">Parametre ekle</string>
+    <string name="blaze_campaign_payment_added_successfully">Kredi kartı başarıyla eklendi</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">Yeni kart ekle</string>
+    <string name="blaze_campaign_payment_list_hint">Kredi kartları şu WordPress.com hesabından alınır: %1$s &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_header_text">Tüm işlemler güvenli ve şifreli</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">Kredi kartı ekle</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">Lütfen yeni bir ödeme yöntemi ekleyin</string>
+    <string name="blaze_campaign_payment_list_screen_title">Ödeme yöntemi</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">İzlenimler tahmin edilemedi. Tekrar denensin mi?</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Ekle</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Lütfen Blaze kampanyanıza bir slogan ve açıklama ekleyin</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Görsel Ekle</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Lütfen Blaze kampanyası için bir görsel ekleyin</string>
+    <string name="drag_handle">Tutamağı sürükleyin</string>
+    <string name="analytic_cards">Analiz Kartları</string>
+    <string name="see_report">Raporu Göster</string>
+    <string name="blaze_campaign_edit_ad_destination_site_url_option">Site ana sayfası</string>
+    <string name="blaze_campaign_edit_ad_destination_product_url_option">Ürün URL\'si</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL parametreleri</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">Hedef URL</string>
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Manuel olarak girin</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Arama başarısız oldu.\nLütfen tekrar deneyin</string>
+    <string name="blaze_campaign_creation_location_search_message">Kullanılabilir seçenekleri görmek için ülke, eyalet veya şehir yazmaya başlayın</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">\"Kampanyayı gönder\"e tıklayarak &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Hizmet Koşullarını&lt;/u&gt;&lt;/a&gt; ve &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Reklam Politikasını&lt;/u&gt;&lt;/a&gt; kabul etmiş ve seçtiğiniz bütçe ile süre için ödeme yönteminize yetki vermiş olursunuz. Tanıtılan Yazılar için bütçelerin ve ödemelerin nasıl çalıştığı hakkında &lt;a href=\'learnMore\'&gt;&lt;u&gt;daha fazla bilgi edinin&lt;/u&gt;&lt;/a&gt;.</string>
+    <string name="blaze_campaign_payment_summary_submit_campaign">Kampanyayı gönderin</string>
+    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Ödeme yöntemlerini yükleme başarısız oldu, lütfen buraya tıklayarak yeniden deneyin!</string>
+    <string name="blaze_campaign_payment_summary_add_payment_method">Ödeme yöntemi ekleyin</string>
+    <string name="blaze_campaign_payment_summary_loading_payment_methods">Ödeme yöntemleri yükleniyor</string>
+    <string name="blaze_campaign_payment_summary_total_budget">Toplam</string>
+    <string name="blaze_campaign_payment_summary_campaign_budget">Kampanyayı öne çıkarın</string>
+    <string name="blaze_campaign_payment_summary_totals">Ödeme toplamı</string>
+    <string name="blaze_campaign_payment_summary_title">Ödeme</string>
+    <string name="blaze_campaign_preview_target_location_search_hint">Konum arayın</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">Fatura depolanamıyor</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">Fatura indirilemiyor</string>
     <string name="card_reader_payment_email_client_not_found">Faturanın paylaşılabileceği bir uygulama bulunamadı</string>

@@ -43,13 +43,23 @@ class OrderEditingViewModel @Inject constructor(
     private var viewState by viewStateData
 
     lateinit var order: Order
+    private var orderId: Long = -1L
 
     fun start() {
         runBlocking {
-            order = requireNotNull(orderDetailRepository.getOrderById(navArgs.orderId)) {
-                "Order ${navArgs.orderId} not found in the database."
+            val orderId = if (orderId == -1L) {
+                navArgs.orderId
+            } else {
+                orderId
+            }
+            order = requireNotNull(orderDetailRepository.getOrderById(orderId)) {
+                "Order $orderId not found in the database."
             }
         }
+    }
+
+    fun setOrderId(orderId: Long) {
+        this.orderId = orderId
     }
 
     private fun checkConnectionAndResetState(): Boolean {

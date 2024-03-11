@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-07 22:54:03+0000
+Translation-Revision-Date: 2024-03-06 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">No se ha encontrado la ubicación.\nInténtalo de nuevo.</string>
+    <string name="order_detail_attribution_session_page_views">Vistas de página de sesión</string>
+    <string name="order_detail_attribution_device_type">Tipo de dispositivo</string>
+    <string name="order_detail_attribution_campaign">Medio</string>
+    <string name="order_detail_attribution_medium">Medio</string>
+    <string name="order_detail_attribution_source">Fuente</string>
+    <string name="order_detail_attribution_source_type">Tipo de fuente</string>
+    <string name="order_detail_attribution_unknown_origin">Desconocido</string>
+    <string name="order_detail_attribution_mobile_origin">Aplicación móvil</string>
+    <string name="order_detail_attribution_admin_origin">Administración web</string>
+    <string name="order_detail_attribution_direct_origin">Directo</string>
+    <string name="order_detail_attribution_utm_origin">Fuente: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Recomendación: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">Orgánico: %1$s</string>
+    <string name="order_detail_attribution_origin">Origen</string>
+    <string name="order_detail_attribution_header">Atribución del pedido</string>
+    <string name="orderdetail_message_customer_using_telegram">Contactar con Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Contactar con WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID: %d</string>
+    <string name="orderfilters_customer_filter">Cliente</string>
+    <string name="orderfilters_product_filter">Producto</string>
+    <string name="customer_picker_guest">Invitado</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">Este usuario es un invitado y no se pueden usar invitados para filtrar pedidos.</string>
+    <string name="orderlist_timeout_error_message">Inténtalo de nuevo más tarde o ponte en contacto con nosotros y estaremos encantados de ayudarte</string>
+    <string name="orderlist_timeout_error_title">Tu sitio tarda bastante en responder</string>
+    <string name="show_details">Mostrar detalles</string>
+    <string name="order_creation_payment_shipping_tax_label">Tasas de envío</string>
+    <string name="customize_analytics">Personalizar análisis</string>
+    <string name="blaze_campaign_creation_error">Algo no va bien.\nNo hemos podido crear tu campaña.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">Error al recuperar los detalles de las imágenes de la campaña</string>
+    <string name="blaze_campaign_creation_error_media_upload">Error al cargar la imagen de la campaña.</string>
+    <string name="blaze_campaign_creation_error_cancel">Cancelar campaña</string>
+    <string name="blaze_campaign_creation_error_get_support">Obtener soporte</string>
+    <string name="blaze_campaign_creation_error_help_hint">Inténtalo de nuevo o ponte en contacto con el equipo de soporte si necesitas ayuda.</string>
+    <string name="blaze_campaign_creation_error_payment_hint">Error al crear campaña</string>
+    <string name="blaze_campaign_creation_error_title">Error al crear campaña</string>
+    <string name="blaze_campaign_creation_loading">Creando tu campaña</string>
+    <string name="blaze_campaign_created_success_done_button">Hecho</string>
+    <string name="blaze_campaign_created_success_description">Estamos revisando tu campaña. Se lanzará en un plazo de 24 horas. ¡Se avecinan momentos emocionantes para tus ventas!</string>
+    <string name="blaze_campaign_created_success_title">¡Todo listo!</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">La clave ya existe</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">La URL final es demasiado larga</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">Valor</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">Clave</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">Destino: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">Añadir parámetro</string>
+    <string name="blaze_campaign_payment_added_successfully">Tarjeta de crédito añadida correctamente</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">Añadir tarjeta nueva</string>
+    <string name="blaze_campaign_payment_list_hint">Las tarjetas de crédito se han recuperado de esta cuenta de WordPress.com: %1$s &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_header_text">Todas las transacciones son seguras y están cifradas</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">Añadir tarjeta de crédito</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">Añade un método de pago nuevo</string>
+    <string name="blaze_campaign_payment_list_screen_title">Método de pago</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">Error al estimar las impresiones. ¿Reintentar?</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">Añadir</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">Añade una descripción corta y una descripción para tu campaña de Blaze</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">Añadir imagen</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">Añade una imagen para la campaña de Blaze</string>
+    <string name="drag_handle">Control de arrastre</string>
+    <string name="analytic_cards">Tarjetas de análisis</string>
+    <string name="see_report">Ver informe</string>
+    <string name="blaze_campaign_edit_ad_destination_site_url_option">La página de inicio del sitio</string>
+    <string name="blaze_campaign_edit_ad_destination_product_url_option">La URL del producto</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">Parámetros de la URL</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">URL de destino</string>
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Introducir manualmente</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Se ha producido un error en la búsqueda.\nInténtalo de nuevo.</string>
+    <string name="blaze_campaign_creation_location_search_message">Empieza a escribir el nombre de un país, estado o ciudad para ver las opciones disponibles</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">Al hacer clic en \"Enviar campaña\" aceptas las &lt;a href=\'termsOfService\'&gt;&lt;u&gt;condiciones del servicio&lt;/u&gt;&lt;/a&gt; y la &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;política de publicidad&lt;/u&gt;&lt;/a&gt; y nos autorizas a que carguemos a través de tu método de pago los cobros pertinentes según el presupuesto y la duración que hayas elegido. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Obtén más información&lt;/u&gt;&lt;/a&gt; sobre el funcionamiento de los presupuestos y los pagos de las entradas promocionadas.</string>
+    <string name="blaze_campaign_payment_summary_submit_campaign">Enviar campaña</string>
+    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">Error al cargar los métodos de pago; haz clic aquí para volver a intentarlo.</string>
+    <string name="blaze_campaign_payment_summary_add_payment_method">Añadir método de pago</string>
+    <string name="blaze_campaign_payment_summary_loading_payment_methods">Cargando métodos de pago</string>
+    <string name="blaze_campaign_payment_summary_total_budget">Total</string>
+    <string name="blaze_campaign_payment_summary_campaign_budget">Campaña de Blaze</string>
+    <string name="blaze_campaign_payment_summary_totals">Cantidad total del pago</string>
+    <string name="blaze_campaign_payment_summary_title">Pago</string>
+    <string name="blaze_campaign_preview_target_location_search_hint">Buscar ubicaciones</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">No se ha podido guardar el recibo</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">No se ha podido descargar el recibo</string>
     <string name="card_reader_payment_email_client_not_found">No se ha detectado ninguna aplicación con la que se pueda compartir el recibo</string>
@@ -228,7 +306,7 @@ Language: es
     <string name="custom_amounts">Cantidades personalizadas</string>
     <string name="product_details_blaze_card">Promocionar con Blaze</string>
     <string name="blaze_campaign_ceation_celebration_button">De acuerdo</string>
-    <string name="blaze_campaign_ceation_celebration_message">Se ha enviado el anuncio para su aprobación. Te enviaremos un correo electrónico de confirmación en cuanto esté listo.</string>
+    <string name="blaze_campaign_ceation_celebration_message">El anuncio se ha enviado para su aprobación. Te enviaremos un correo electrónico de confirmación en cuanto esté listo.</string>
     <string name="blaze_campaign_creation_celebration_header">¡Todo listo!</string>
     <string name="blaze_campaign_creation_intro_button">Iniciar campaña de Blaze ahora</string>
     <string name="blaze_campaign_creation_intro_benefit_4">Inicia y detén la campaña de Blaze y haz un seguimiento del rendimiento siempre que quieras.</string>

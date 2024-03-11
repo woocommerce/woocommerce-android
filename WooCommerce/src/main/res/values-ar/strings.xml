@@ -1,11 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-07 13:54:03+0000
+Translation-Revision-Date: 2024-03-06 09:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">لم يتم العثور على الموقع.\nترجى المحاولة مجددًا.</string>
+    <string name="order_detail_attribution_session_page_views">مشاهدات صفحة الجلسة</string>
+    <string name="order_detail_attribution_device_type">نوع الجهاز</string>
+    <string name="order_detail_attribution_campaign">متوسط</string>
+    <string name="order_detail_attribution_medium">متوسط</string>
+    <string name="order_detail_attribution_source">المصدر</string>
+    <string name="order_detail_attribution_source_type">نوع المصدر</string>
+    <string name="order_detail_attribution_unknown_origin">غير معروف</string>
+    <string name="order_detail_attribution_mobile_origin">تطبيق للهواتف المحمولة</string>
+    <string name="order_detail_attribution_admin_origin">مسؤول الويب</string>
+    <string name="order_detail_attribution_direct_origin">مباشر</string>
+    <string name="order_detail_attribution_utm_origin">المصدر: ⁦%1$s⁩</string>
+    <string name="order_detail_attribution_referral_origin">الإحالة: ⁦%1$s⁩</string>
+    <string name="order_detail_attribution_organic_origin">عضوي: ⁦%1$s⁩</string>
+    <string name="order_detail_attribution_origin">الأصل</string>
+    <string name="order_detail_attribution_header">تخصيص الطلب</string>
+    <string name="orderdetail_message_customer_using_telegram">التواصل باستخدام Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">التواصل باستخدام WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">المُعرّف: %d</string>
+    <string name="orderfilters_customer_filter">العميل</string>
+    <string name="orderfilters_product_filter">المنتج</string>
+    <string name="customer_picker_guest">ضيف</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">هذا المستخدم هو ضيف، ويتعذر استخدام الضيوف لتصفية الطلبات.</string>
+    <string name="orderlist_timeout_error_message">يرجى المحاولة مرة أخرى لاحقًا أو تواصل معنا وستسرنا مساعدتك</string>
+    <string name="orderlist_timeout_error_title">يستغرق موقعك فترة طويلة للاستجابة</string>
+    <string name="show_details">مشاهدة التفاصيل</string>
+    <string name="order_creation_payment_shipping_tax_label">ضريبة الشحن</string>
+    <string name="customize_analytics">تخصيص التحليلات</string>
+    <string name="blaze_campaign_creation_error">هناك شيء ليس صحيحًا تمامًا.\nتعذر علينا إنشاء حملتك.</string>
+    <string name="blaze_campaign_creation_error_media_fetch">فشل إحضار تفاصيل صورة الحملة</string>
+    <string name="blaze_campaign_creation_error_media_upload">فشل رفع صورة الحملة.</string>
+    <string name="blaze_campaign_creation_error_cancel">إلغاء الحملة</string>
+    <string name="blaze_campaign_creation_error_get_support">الحصول على الدعم</string>
+    <string name="blaze_campaign_creation_error_help_hint">ترجى المحاولة مجددًا أو الاتصال بالدعم للحصول على المساعدة.</string>
+    <string name="blaze_campaign_creation_error_payment_hint">خطأ في أثناء إنشاء الحملة</string>
+    <string name="blaze_campaign_creation_error_title">خطأ في أثناء إنشاء الحملة</string>
+    <string name="blaze_campaign_creation_loading">إنشاء حملتك</string>
+    <string name="blaze_campaign_created_success_done_button">تم</string>
+    <string name="blaze_campaign_created_success_description">إننا نراجع حملتك. سيصبح فعالاً في غضون 24 ساعة. أوقات مشوقة في انتظار مبيعاتك!</string>
+    <string name="blaze_campaign_created_success_title">كل شيء جاهز الآن!</string>
+    <string name="blaze_campaign_edit_ad_destination_key_exists_error">المفتاح موجود بالفعل</string>
+    <string name="blaze_campaign_edit_ad_destination_too_long_error">عنوان URL النهائي طويل للغاية</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_value">القيمة</string>
+    <string name="blaze_campaign_edit_ad_destination_parameter_key">المفتاح</string>
+    <string name="blaze_campaign_edit_ad_destination_destination_with_parameters">الوجهة: %s</string>
+    <string name="blaze_campaign_edit_ad_destination_add_parameter_button">إضافة معيار</string>
+    <string name="blaze_campaign_payment_added_successfully">تمت إضافة بطاقة الائتمان بنجاح</string>
+    <string name="blaze_campaign_payment_list_add_new_payment_method_button">إضافة بطاقة جديدة</string>
+    <string name="blaze_campaign_payment_list_hint">يتم استرداد بطاقات الائتمان من حساب ووردبريس التالي: ⁦%1$s⁩ &lt;%2$s&gt;</string>
+    <string name="blaze_campaign_payment_list_header_text">تكون كل المعاملات آمنة ومشفَّرة</string>
+    <string name="blaze_campaign_payment_list_add_payment_method_button">إضافة بطاقة ائتمان</string>
+    <string name="blaze_campaign_payment_list_empty_state_text">ترجى إضافة طريقة دفع جديدة</string>
+    <string name="blaze_campaign_payment_list_screen_title">طريقة الدفع</string>
+    <string name="blaze_campaign_budget_error_fetching_forecast">فشل تقدير مرات الظهور. هل تريد إعادة المحاولة؟</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_positive_button">إضافة</string>
+    <string name="blaze_campaign_preview_missing_content_dialog_text">ترجى إضافة شعارووصف لحملة Blaze الخاصة بك</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_positive_button">إضافة صورة</string>
+    <string name="blaze_campaign_preview_missing_image_dialog_text">ترجى إضافة صورة لحملة Blaze</string>
+    <string name="drag_handle">سحب المقبض</string>
+    <string name="analytic_cards">بطاقات تحليلية</string>
+    <string name="see_report">الاطلاع على التقرير</string>
+    <string name="blaze_campaign_edit_ad_destination_site_url_option">الصفحة الرئيسية للموقع</string>
+    <string name="blaze_campaign_edit_ad_destination_product_url_option">عنوان URL للمنتج</string>
+    <string name="blaze_campaign_edit_ad_destination_parameters_property_title">معايير عناوين URL</string>
+    <string name="blaze_campaign_edit_ad_destination_url_property_title">عنوان URL للوجهة</string>
+    <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">الإدخال يدويًا</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">فشل البحث.\nيرجى المحاولة مجددًا</string>
+    <string name="blaze_campaign_creation_location_search_message">بدء كتابة البلد أو الولاية أو المدينة للاطلاع على الخيارات المتوافرة</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">يعني النقر على \"إرسال الحملة\" أنك توافق على &lt;a href=\'termsOfService\'&gt;&lt;u&gt;شروط الخدمة&lt;/u&gt;&lt;/a&gt; و&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;سياسة الإعلانات&lt;/u&gt;&lt;/a&gt;، والسماح بطريقة الدفع الخاصة بك ليتم تحصيلها من الميزانية والمدة التي اخترتها. &lt;a href=\'learnMore\'&gt;&lt;u&gt;تعرّف على المزيد&lt;/u&gt;&lt;/a&gt; حول كيفية عمل الميزانيات والمدفوعات الخاصة بالتدوينات التي تم الترويج لها.</string>
+    <string name="blaze_campaign_payment_summary_submit_campaign">إرسال حملتك</string>
+    <string name="blaze_campaign_payment_summary_error_loading_payment_methods">فشل تحميل طرق الدفع، يرجى إعادة المحاولة عن طريق النقر هنا!</string>
+    <string name="blaze_campaign_payment_summary_add_payment_method">إضافة طريقة الدفع</string>
+    <string name="blaze_campaign_payment_summary_loading_payment_methods">تحميل طرق الدفع</string>
+    <string name="blaze_campaign_payment_summary_total_budget">الإجمالي</string>
+    <string name="blaze_campaign_payment_summary_campaign_budget">حملة Blaze</string>
+    <string name="blaze_campaign_payment_summary_totals">إجماليات المدفوعات</string>
+    <string name="blaze_campaign_payment_summary_title">الدفع</string>
+    <string name="blaze_campaign_preview_target_location_search_hint">البحث عن المواقع</string>
     <string name="card_reader_payment_receipt_can_not_be_stored">يتعذر تخزين الإيصال</string>
     <string name="card_reader_payment_receipt_can_not_be_downloaded">يتعذر تنزيل الإيصال</string>
     <string name="card_reader_payment_email_client_not_found">يتعذر الكشف عن أي تطبيق يمكن مشاركة الإيصال عليه</string>

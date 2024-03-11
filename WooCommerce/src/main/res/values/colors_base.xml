@@ -46,6 +46,12 @@
     <color name="color_text_link">@color/woo_pink_50</color>
 
     <!--
+        Color resource used to indicate selected state of an item
+    -->
+    <color name="woo_item_selected">@color/woo_purple_10</color>
+    <color name="color_item_selected">@color/woo_item_selected</color>
+
+    <!--
         Icon-related resources that use the surface color should be assigned
         this resource.
     -->
@@ -83,6 +89,7 @@
     <color name="image_border_color">@color/woo_black_90_alpha_012</color>
     <color name="splash_background">@color/woo_purple_60</color>
     <color name="color_toolbar">@color/woo_white</color>
+    <color name="bottom_sheet_background">@color/color_surface</color>
 
     <!--
         Elevation colors

@@ -143,6 +143,29 @@ object ActivityUtils {
         val title = context.resources.getText(R.string.share_store_dialog_title)
         context.startActivity(Intent.createChooser(sendIntent, title))
     }
+
+    @Suppress("SwallowedException")
+    fun isAppInstalled(context: Context, packageName: String): Boolean {
+        return try {
+            val pm = context.packageManager
+            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
+    }
+
+    fun openWhatsApp(context: Context, phoneNumber: String) {
+        val uri = Uri.parse("whatsapp://send?phone=$phoneNumber")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        context.startActivity(intent)
+    }
+
+    fun openTelegram(context: Context, telephone: String) {
+        val uri = Uri.parse("tg://resolve?phone=$telephone")
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        context.startActivity(intent)
+    }
 }
 
 @Suppress("MagicNumber")

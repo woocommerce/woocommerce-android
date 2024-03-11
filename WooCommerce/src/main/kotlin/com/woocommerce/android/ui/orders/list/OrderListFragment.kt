@@ -1,23 +1,25 @@
 package com.woocommerce.android.ui.orders.list
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.MenuItem.OnActionExpandListener
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.OnQueryTextListener
-import androidx.core.view.MenuProvider
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -32,8 +34,12 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.isDisplaySmallerThan720
+import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
@@ -50,6 +56,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
@@ -60,6 +67,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -69,13 +77,13 @@ import javax.inject.Inject
 import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
+@Suppress("LargeClass")
 class OrderListFragment :
     TopLevelFragment(R.layout.fragment_order_list),
     OnQueryTextListener,
     OnActionExpandListener,
     OrderListListener,
-    SwipeToComplete.OnSwipeListener,
-    MenuProvider {
+    SwipeToComplete.OnSwipeListener {
     companion object {
         const val TAG: String = "OrderListFragment"
         const val STATE_KEY_SEARCH_QUERY = "search-query"
@@ -83,6 +91,10 @@ class OrderListFragment :
         const val FILTER_CHANGE_NOTICE_KEY = "filters_changed_notice"
 
         private const val JITM_FRAGMENT_TAG = "jitm_orders_fragment"
+        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
+        private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.40f
+        private const val CURRENT_NAV_DESTINATION = "current_nav_destination"
+        private const val HANDLER_DELAY = 200L
     }
 
     @Inject
@@ -116,7 +128,7 @@ class OrderListFragment :
     private var orderListMenu: Menu? = null
     private var searchMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
-    private val searchHandler = Handler(Looper.getMainLooper())
+    private val handler = Handler(Looper.getMainLooper())
 
     private var _binding: FragmentOrderListBinding? = null
     private val binding get() = _binding!!
@@ -132,29 +144,50 @@ class OrderListFragment :
     private val emptyView
         get() = binding.orderListView.emptyView
 
+    private val selectedOrder: SelectedOrderTrackerViewModel by activityViewModels()
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
+
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(viewModel.performanceObserver)
         super.onCreate(savedInstanceState)
-
         savedInstanceState?.let { bundle ->
             isSearching = bundle.getBoolean(STATE_KEY_IS_SEARCHING)
             searchQuery = bundle.getString(STATE_KEY_SEARCH_QUERY, "")
         }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    selectedOrder.selectOrder(-1L)
+                    if (isTablet()) {
+                        if (!binding.detailPaneContainer.findNavController().popBackStack()) {
+                            findNavController().popBackStack()
+                        }
+                    } else if (isSearching) {
+                        handleSearchViewCollapse()
+                    } else {
+                        val result =
+                            _binding?.detailPaneContainer?.findNavController()?.navigateUp() ?: false
+                        if (!result && _binding?.listPaneContainer?.isVisible != true && !isTablet()) {
+                            // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
+                            // and now it's a single pane layout (phone), e.g. due to a configuration change.
+                            // In this case we need to switch panes – show the list pane instead of details pane.
+                            adjustUiForDeviceType(savedInstanceState)
+                        } else {
+                            findNavController().popBackStack()
+                        }
+                    }
+                }
+            }
+        )
 
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
         val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
         enterTransition = fadeThroughTransition
         exitTransition = fadeThroughTransition
         reenterTransition = fadeThroughTransition
-    }
-
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_order_list_fragment, menu)
-
-        orderListMenu = menu
-        searchMenuItem = menu.findItem(R.id.menu_search)
-        searchView = searchMenuItem?.actionView as SearchView?
-        searchView?.queryHint = getSearchQueryHint()
     }
 
     private fun getSearchQueryHint(): String {
@@ -165,33 +198,26 @@ class OrderListFragment :
         }
     }
 
-    override fun onPrepareMenu(menu: Menu) {
-        refreshOptionsMenu()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentOrderListBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
-
-        requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
+        setupToolbar()
         view.doOnPreDraw { startPostponedEnterTransition() }
 
         uiMessageResolver.anchorViewId = binding.createOrderButton.id
 
         binding.orderListView.init(currencyFormatter = currencyFormatter, orderListListener = this)
-        ViewGroupCompat.setTransitionGroup(binding.orderRefreshLayout, true)
-        binding.orderRefreshLayout.apply {
+        ViewGroupCompat.setTransitionGroup(binding.listPaneContainer, true)
+        binding.listPaneContainer.apply {
             // Set the scrolling view in the custom refresh SwipeRefreshLayout
             scrollUpChild = binding.orderListView.ordersList
             setOnRefreshListener {
@@ -202,12 +228,102 @@ class OrderListFragment :
 
         initObservers()
         initializeResultHandlers()
-        if (isSearching) {
-            searchHandler.postDelayed({ searchView?.setQuery(searchQuery, true) }, 100)
-        }
+        adjustUiForDeviceType(savedInstanceState)
         binding.orderFiltersCard.setClickListener { viewModel.onFiltersButtonTapped() }
         initCreateOrderFAB(binding.createOrderButton)
         initSwipeBehaviour()
+    }
+
+    private fun setupToolbar() {
+        binding.toolbar.title = getString(R.string.orders)
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            onMenuItemSelected(menuItem)
+        }
+        binding.toolbar.inflateMenu(R.menu.menu_order_list_fragment)
+        binding.toolbar.navigationIcon = null
+        setupToolbarMenu(binding.toolbar.menu)
+    }
+
+    private fun setupToolbarMenu(menu: Menu) {
+        orderListMenu = menu
+        searchMenuItem = menu.findItem(R.id.menu_search)
+        searchView = searchMenuItem?.actionView as SearchView?
+        searchView?.queryHint = getSearchQueryHint()
+
+        // Set listeners for search view expansion and collapse
+        searchMenuItem?.setOnActionExpandListener(object : OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                return handleSearchViewExpand()
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                return handleSearchViewCollapse()
+            }
+        })
+        refreshOptionsMenu()
+    }
+
+    private fun handleSearchViewExpand(): Boolean {
+        isSearching = true
+        refreshOptionsMenu()
+        checkOrientation()
+        onSearchViewActiveChanged(isActive = true)
+        binding.orderFiltersCard.isVisible = false
+        handler.postDelayed({
+            binding.orderListView.clearAdapterData()
+        }, 100)
+        return true // Return true to expand the action view
+    }
+
+    private fun handleSearchViewCollapse(): Boolean {
+        clearSearchResults()
+        searchMenuItem?.isVisible = true
+        viewModel.onSearchClosed()
+        binding.orderFiltersCard.isVisible = true
+        onSearchViewActiveChanged(isActive = false)
+        return true // Return true to collapse the action view
+    }
+
+    private fun adjustUiForDeviceType(savedInstanceState: Bundle?) {
+        if (isTablet()) {
+            adjustLayoutForTablet()
+        } else {
+            adjustLayoutForNonTablet(savedInstanceState)
+            savedInstanceState?.putInt(CURRENT_NAV_DESTINATION, -1)
+        }
+    }
+
+    private fun adjustLayoutForTablet() {
+        val isSmallTablet = requireContext().isDisplaySmallerThan720
+        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+        if (isSmallTablet && isPortrait) {
+            binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
+        } else {
+            binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        }
+        binding.listPaneContainer.visibility = View.VISIBLE
+        binding.detailPaneContainer.visibility = View.VISIBLE
+    }
+
+    private fun adjustLayoutForNonTablet(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null && savedInstanceState.getInt(CURRENT_NAV_DESTINATION, -1) != -1) {
+            displayDetailPaneOnly()
+        } else {
+            displayListPaneOnly()
+        }
+    }
+
+    private fun displayListPaneOnly() {
+        _binding?.detailPaneContainer?.visibility = View.GONE
+        _binding?.listPaneContainer?.visibility = View.VISIBLE
+        _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(1f)
+    }
+
+    private fun displayDetailPaneOnly() {
+        _binding?.detailPaneContainer?.visibility = View.VISIBLE
+        _binding?.twoPaneLayoutGuideline?.setGuidelinePercent(0.0f)
+        _binding?.listPaneContainer?.visibility = View.GONE
     }
 
     private fun initSwipeBehaviour() {
@@ -219,17 +335,24 @@ class OrderListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
+        if (isTablet()) {
+            refreshOrders()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
-
-        super.onSaveInstanceState(outState)
+        if (isTablet()) {
+            val navHostFragment = childFragmentManager.findFragmentById(R.id.detailPaneContainer) as? NavHostFragment
+            val currentDestinationId = navHostFragment?.navController?.currentDestination?.id
+            outState.putInt(CURRENT_NAV_DESTINATION, currentDestinationId ?: -1)
+        }
     }
 
     override fun onDestroyView() {
         disableSearchListeners()
+        handler.removeCallbacksAndMessages(null)
         searchView = null
         orderListMenu = null
         searchMenuItem = null
@@ -244,11 +367,13 @@ class OrderListFragment :
     private fun refreshOptionsMenu() {
         if (!isChildFragmentShowing() && isSearching) {
             val savedSearchQuery = searchQuery
-            searchMenuItem?.expandActionView()
             enableSearchListeners()
-            searchQuery = savedSearchQuery
-            searchView?.setQuery(searchQuery, false)
-            if (searchQuery.isEmpty()) binding.orderListView.clearAdapterData()
+            handler.postDelayed({
+                searchMenuItem?.expandActionView()
+                searchQuery = savedSearchQuery
+                searchView?.setQuery(searchQuery, false)
+                if (searchQuery.isEmpty()) binding.orderListView.clearAdapterData()
+            }, HANDLER_DELAY)
         } else {
             val showSearch = shouldShowSearchMenuItem()
             searchMenuItem?.let {
@@ -258,17 +383,19 @@ class OrderListFragment :
         }
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.menu_search -> {
                 AnalyticsTracker.track(AnalyticsEvent.ORDERS_LIST_MENU_SEARCH_TAPPED)
                 enableSearchListeners()
                 true
             }
+
             R.id.menu_barcode -> {
                 viewModel.onScanClicked()
                 true
             }
+
             else -> false
         }
     }
@@ -303,6 +430,13 @@ class OrderListFragment :
     @Suppress("LongMethod", "ComplexMethod")
     private fun initObservers() {
         // setup observers
+        selectedOrder.selectedOrderId.observe(viewLifecycleOwner) {
+            viewModel.updateOrderSelectedStatus(
+                orderId = selectedOrder.selectedOrderId.value ?: -1,
+                isTablet()
+            )
+        }
+
         viewModel.orderStatusOptions.observe(viewLifecycleOwner) {
             it?.let { options ->
                 // So the order status can be matched to the appropriate label
@@ -311,7 +445,7 @@ class OrderListFragment :
         }
 
         viewModel.isFetchingFirstPage.observe(viewLifecycleOwner) {
-            binding.orderRefreshLayout.isRefreshing = it == true
+            binding.listPaneContainer.isRefreshing = it == true
         }
 
         viewModel.isLoadingMore.observe(viewLifecycleOwner) {
@@ -321,6 +455,24 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
+            if (isTablet()) {
+                when {
+                    // A specific order is set to be opened
+                    viewModel.orderId.value != -1L -> {
+                        openSpecificOrder(viewModel.orderId.value)
+                        clearSelectedOrderIdInViewModel()
+                    }
+                    // No order selected and no specific order to open, or no specific condition met
+                    selectedOrder.selectedOrderId.value == null || selectedOrder.selectedOrderId.value == -1L -> {
+                        // The first time the user logs in, we need to add some delay
+                        // before opening the first order.
+                        handler.postDelayed({
+                            openFirstOrder()
+                        }, HANDLER_DELAY)
+                    }
+                }
+            }
+            updateOrderSelectedStatus()
             updatePagedListData(it)
         }
 
@@ -328,8 +480,9 @@ class OrderListFragment :
             when (event) {
                 is ShowErrorSnack -> {
                     uiMessageResolver.showSnack(event.messageRes)
-                    binding.orderRefreshLayout.isRefreshing = false
+                    binding.listPaneContainer.isRefreshing = false
                 }
+
                 is ShowOrderFilters -> showOrderFilters()
                 is OrderListViewModel.OrderListEvent.OpenPurchaseCardReaderLink -> {
                     findNavController().navigate(
@@ -339,9 +492,15 @@ class OrderListFragment :
                         )
                     )
                 }
+
                 is OrderListViewModel.OrderListEvent.NotifyOrderChanged -> {
                     binding.orderListView.ordersList.adapter?.notifyItemChanged(event.position)
                 }
+
+                OrderListViewModel.OrderListEvent.NotifyOrderSelectionChanged -> {
+                    binding.orderListView.ordersList.adapter?.notifyDataSetChanged()
+                }
+
                 is MultiLiveEvent.Event.ShowUndoSnackbar -> {
                     snackBar = uiMessageResolver.getUndoSnack(
                         message = event.message,
@@ -351,6 +510,7 @@ class OrderListFragment :
                         it.show()
                     }
                 }
+
                 is OrderListViewModel.OrderListEvent.ShowRetryErrorSnack -> {
                     snackBar = uiMessageResolver.getRetrySnack(
                         message = event.message,
@@ -358,11 +518,13 @@ class OrderListFragment :
                     ).also {
                         it.show()
                     }
-                    binding.orderRefreshLayout.isRefreshing = false
+                    binding.listPaneContainer.isRefreshing = false
                 }
+
                 is OrderListViewModel.OrderListEvent.OnBarcodeScanned -> {
                     openOrderCreationFragment(event.code, event.barcodeFormat)
                 }
+
                 is OrderListViewModel.OrderListEvent.OnAddingProductViaScanningFailed -> {
                     uiMessageResolver.getRetrySnack(
                         stringResId = event.message,
@@ -370,21 +532,25 @@ class OrderListFragment :
                         actionListener = event.retry
                     ).show()
                 }
+
                 is OrderListViewModel.OrderListEvent.VMKilledWhenScanningInProgress -> {
                     ToastUtils.showToast(
                         context,
                         event.message
                     )
                 }
+
                 is OrderListViewModel.OrderListEvent.OpenBarcodeScanningFragment -> {
                     openBarcodeScanningFragment()
                 }
+
                 is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
                 is MultiLiveEvent.Event.ShowActionSnackbar -> uiMessageResolver.showActionSnack(
                     message = event.message,
                     actionText = event.actionText,
                     action = event.action
                 )
+                is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
                 else -> event.isHandled = false
             }
         }
@@ -395,25 +561,30 @@ class OrderListFragment :
                     EmptyViewType.SEARCH_RESULTS -> {
                         emptyView.show(emptyViewType, searchQueryOrFilter = searchQuery)
                     }
+
                     EmptyViewType.ORDER_LIST -> {
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
                     }
+
                     EmptyViewType.ORDER_LIST_FILTERED -> {
                         emptyView.show(emptyViewType)
                     }
+
                     EmptyViewType.NETWORK_OFFLINE, EmptyViewType.NETWORK_ERROR -> {
                         emptyView.show(emptyViewType) {
                             refreshOrders()
                         }
                     }
+
                     EmptyViewType.ORDER_LIST_CREATE_TEST_ORDER -> {
                         AnalyticsTracker.track(AnalyticsEvent.ORDER_LIST_TEST_ORDER_DISPLAYED)
                         emptyView.show(emptyViewType) {
                             navigateToTryTestOrderScreen()
                         }
                     }
+
                     else -> {
                         emptyView.show(emptyViewType)
                     }
@@ -436,7 +607,27 @@ class OrderListFragment :
             new.isErrorFetchingDataBannerVisible.takeIfNotEqualTo(old?.isErrorFetchingDataBannerVisible) {
                 displayErrorParsingOrdersCard(it)
             }
+            new.shouldDisplayTroubleshootingBanner.takeIfNotEqualTo(old?.shouldDisplayTroubleshootingBanner) {
+                displayTimeoutErrorCard(it)
+            }
         }
+    }
+
+    private fun openFirstOrder() {
+        binding.orderListView.openFirstOrder()
+    }
+
+    private fun openSpecificOrder(orderId: Long?, startPaymentsFlow: Boolean = false) {
+        binding.orderListView.openOrder(orderId ?: -1L, startPaymentsFlow)
+    }
+
+    private fun clearSelectedOrderIdInViewModel() {
+        viewModel.clearOrderId()
+    }
+
+    private fun updateOrderSelectedStatus() {
+        val selectedOrderId = selectedOrder.selectedOrderId.value ?: -1
+        viewModel.updateOrderSelectedStatus(orderId = selectedOrderId, isTablet())
     }
 
     private fun initJitm(jitmEnabled: Boolean) {
@@ -461,6 +652,16 @@ class OrderListFragment :
         }
         handleResult<CodeScannerStatus>(KEY_BARCODE_SCANNING_SCAN_STATUS) { status ->
             viewModel.handleBarcodeScannedStatus(status)
+        }
+        handleResult<Long>(KEY_ORDER_ID) {
+            if (isTablet()) {
+                openSpecificOrder(it)
+            }
+        }
+        handleResult<Long>(KEY_START_PAYMENT_FLOW) {
+            if (isTablet()) {
+                openSpecificOrder(it, true)
+            }
         }
     }
 
@@ -489,6 +690,12 @@ class OrderListFragment :
         )
     }
 
+    private fun openConnectivityTool() {
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToOrderConnectivityToolFragment()
+        )
+    }
+
     private fun hideEmptyView() {
         emptyView.hide()
     }
@@ -497,10 +704,20 @@ class OrderListFragment :
         binding.orderListView.submitPagedList(pagedListData)
     }
 
-    override fun openOrderDetail(orderId: Long, allOrderIds: List<Long>, orderStatus: String, sharedView: View?) {
-        viewModel.trackOrderClickEvent(orderId, orderStatus)
+    override fun openOrderDetail(
+        orderId: Long,
+        allOrderIds: List<Long>,
+        orderStatus: String,
+        sharedView: View?,
+        startPaymentsFlow: Boolean,
+    ) {
+        viewModel.trackOrderClickEvent(orderId, orderStatus, isTablet())
 
-        _binding?.createOrderButton?.hide()
+        if (isTablet()) {
+            _binding?.createOrderButton?.show()
+        } else {
+            _binding?.createOrderButton?.hide()
+        }
 
         // if a search is active, we need to collapse the search view so order detail can show it's title and then
         // remember the user was searching (since both searchQuery and isSearching will be reset)
@@ -512,14 +729,26 @@ class OrderListFragment :
             isSearching = true
         }
         (activity as? MainNavigationRouter)?.run {
-            if (sharedView != null) {
-                showOrderDetailWithSharedTransition(
-                    orderId = orderId,
-                    allOrderIds = allOrderIds,
-                    sharedView = sharedView
-                )
+val navHostFragment = if (isTablet()) {
+                childFragmentManager.findFragmentById(R.id.detailPaneContainer) as NavHostFragment
             } else {
-                showOrderDetail(orderId)
+                null
+            }
+            selectedOrder.selectOrder(orderId)
+            viewModel.updateOrderSelectedStatus(orderId, isTablet())
+            navHostFragment?.let {
+                showOrderDetail(orderId, it, startPaymentsFlow = startPaymentsFlow)
+            } ?: run {
+                // Phone layout
+                if (sharedView != null) {
+                    showOrderDetailWithSharedTransition(
+                        orderId = orderId,
+                        allOrderIds = allOrderIds,
+                        sharedView = sharedView
+                    )
+                } else {
+                    showOrderDetail(orderId)
+                }
             }
         }
     }
@@ -534,6 +763,10 @@ class OrderListFragment :
     override fun onQueryTextChange(newText: String): Boolean {
         // only display the order status list if the search query is empty
         if (newText.isEmpty()) {
+            if (searchQuery.isNotEmpty()) {
+                viewModel.loadOrders()
+            }
+
             searchQuery = ""
         }
 
@@ -566,12 +799,15 @@ class OrderListFragment :
 
     private fun clearSearchResults() {
         if (isSearching) {
-            searchQuery = ""
+            if (!isTablet()) {
+                searchQuery = ""
+                isSearching = false
+                disableSearchListeners()
+                updateActivityTitle()
+                searchMenuItem?.collapseActionView()
+                (activity as? MainActivity)?.showBottomNav()
+            }
             isSearching = false
-            disableSearchListeners()
-            updateActivityTitle()
-            searchMenuItem?.collapseActionView()
-            (activity as? MainActivity)?.showBottomNav()
         }
     }
 
@@ -580,7 +816,7 @@ class OrderListFragment :
      * perform a search while the user is typing
      */
     private fun submitSearchDelayed(query: String) {
-        searchHandler.postDelayed(
+        handler.postDelayed(
             {
                 searchView?.let {
                     // submit the search if the searchView's query still matches the passed query
@@ -636,8 +872,11 @@ class OrderListFragment :
 
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
-
-        (activity as? MainActivity)?.hideBottomNav()
+        if (!isTablet()) {
+            handler.postDelayed({
+                (activity as? MainActivity)?.hideBottomNav()
+            }, HANDLER_DELAY)
+        }
     }
 
     private fun checkOrientation() {
@@ -696,21 +935,52 @@ class OrderListFragment :
     }
 
     private fun displayErrorParsingOrdersCard(show: Boolean) {
+        displayErrorTroubleshootingCard(
+            show = show,
+            title = getString(R.string.orderlist_parsing_error_title),
+            message = getString(R.string.orderlist_parsing_error_message),
+            troubleshootingClick = { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
+            supportContactClick = { openSupportRequestScreen() }
+        )
+    }
+
+    private fun displayTimeoutErrorCard(show: Boolean) {
+        if (FeatureFlag.CONNECTIVITY_TOOL.isEnabled()) {
+            displayErrorTroubleshootingCard(
+                show = show,
+                title = getString(R.string.orderlist_timeout_error_title),
+                message = getString(R.string.orderlist_timeout_error_message),
+                supportContactClick = { openSupportRequestScreen() },
+                troubleshootingClick = {
+                    viewModel.trackConnectivityTroubleshootClicked()
+                    openConnectivityTool()
+                }
+            )
+        }
+    }
+
+    private fun displayErrorTroubleshootingCard(
+        show: Boolean,
+        title: String,
+        message: String,
+        troubleshootingClick: () -> Unit,
+        supportContactClick: () -> Unit
+    ) {
         TransitionManager.beginDelayedTransition(binding.orderListViewRoot)
         if (!show) {
-            binding.errorParsingOrdersCard.isVisible = false
+            binding.errorTroubleshootingCard.isVisible = false
             return
         }
 
-        binding.errorParsingOrdersCard.isVisible = true
-        binding.errorParsingOrdersCard.initView(
-            getString(R.string.orderlist_parsing_error_title),
-            getString(R.string.orderlist_parsing_error_message),
-            getString(R.string.error_troubleshooting),
-            getString(R.string.support_contact),
-            true,
-            { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
-            { openSupportRequestScreen() }
+        binding.errorTroubleshootingCard.isVisible = true
+        binding.errorTroubleshootingCard.initView(
+            title = title,
+            message = message,
+            isExpanded = true,
+            mainActionText = getString(R.string.error_troubleshooting),
+            secondaryActionText = getString(R.string.support_contact),
+            mainActionClick = troubleshootingClick,
+            secondaryActionClick = supportContactClick
         )
     }
 

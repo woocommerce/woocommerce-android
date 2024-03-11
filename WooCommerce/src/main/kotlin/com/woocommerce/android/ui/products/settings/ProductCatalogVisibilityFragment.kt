@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.CAT
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.HIDDEN
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.SEARCH
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility.VISIBLE
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -47,6 +48,16 @@ class ProductCatalogVisibilityFragment :
         binding.btnVisibilityCatalog.setOnClickListener(this)
         binding.btnVisibilitySearch.setOnClickListener(this)
         binding.btnVisibilityHidden.setOnClickListener(this)
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_catalog_visibility),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    onRequestAllowBackPress()
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {
@@ -88,8 +99,6 @@ class ProductCatalogVisibilityFragment :
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_catalog_visibility)
 
     private fun getButtonForVisibility(visibility: String): CheckedTextView {
         return when (ProductCatalogVisibility.fromString(visibility)) {

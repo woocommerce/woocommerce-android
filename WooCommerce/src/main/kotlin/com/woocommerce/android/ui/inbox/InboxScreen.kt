@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.inbox
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,10 +20,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -38,9 +43,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.core.text.HtmlCompat
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.toAnnotatedString
@@ -103,27 +105,19 @@ fun InboxEmptyCase() {
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun InboxNotes(
     notes: List<InboxNoteUi>,
     isRefreshing: Boolean,
     onRefresh: () -> Unit
 ) {
-    SwipeRefresh(
-        state = rememberSwipeRefreshState(isRefreshing),
-        onRefresh = { onRefresh.invoke() },
-        indicator = { state, trigger ->
-            SwipeRefreshIndicator(
-                state = state,
-                refreshTriggerDistance = trigger,
-                contentColor = MaterialTheme.colors.primary,
-            )
-        }
-    ) {
+    val pullRefreshState = rememberPullRefreshState(isRefreshing, { onRefresh() })
+    Box(Modifier.pullRefresh(pullRefreshState)) {
         if (notes.isEmpty()) {
             InboxEmptyCase()
         } else {
-            LazyColumn {
+            LazyColumn(Modifier.fillMaxSize()) {
                 itemsIndexed(notes) { index, note ->
                     InboxNoteRow(note = note)
                     if (index < notes.lastIndex) {
@@ -135,6 +129,12 @@ fun InboxNotes(
                 }
             }
         }
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colors.primary,
+        )
     }
 }
 
