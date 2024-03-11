@@ -390,6 +390,9 @@ class ProductListFragment :
                 is ProductsCommunicationViewModel.CommunicationEvent.ProductTrashed -> {
                     trashProduct(event.productId)
                 }
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated -> {
+                    productListViewModel.reloadProductsFromDb()
+                }
             }
         }
     }
