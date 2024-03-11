@@ -197,8 +197,8 @@ class DateUtils @Inject constructor(
      * return null if the argument is not a valid iso8601 date string.
      */
     fun getShortMonthString(iso8601Month: String): String? {
-        val month = iso8601Month.split("-")[1]
         return try {
+            val month = iso8601Month.split("-")[1]
             shortMonths[month.toInt() - 1]
         } catch (e: Exception) {
             "Date string argument is not of format YYYY-MM: $iso8601Month".reportAsError(e)
@@ -490,6 +490,7 @@ class DateUtils @Inject constructor(
             null
         }
     }
+
     @Suppress("SwallowedException")
     private fun iso8601OnSiteTimeZoneFromIso8601UTC(iso8601date: String): String {
         return try {
