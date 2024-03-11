@@ -883,6 +883,10 @@ class LoginActivity :
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
     }
 
+    override fun onLoginWithSiteCredentialsFallbackClicked() {
+        loginViaSiteCredentials(AppPrefs.getLoginSiteAddress())
+    }
+
     override fun onCreateAccountClicked() {
         changeFragment(SignUpFragment.newInstance(SITE_PICKER), true, SignUpFragment.TAG)
     }
