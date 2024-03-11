@@ -43,6 +43,6 @@ fun Context.isLargeWindowSize() =
 /**
  * Returns true if the current screen size is of the "Extra-large" window size class as per
  * [Material Design 3 guidelines](https://m3.material.io/foundations/layout/applying-layout/window-size-classes).
- * This indicates a desktop or ultra-wide sreen.
+ * This indicates a desktop or ultra-wide screen.
  */
 fun Context.isXLargeWindowSize() = resources.configuration.screenWidthDp >= LARGE_SCREEN_MAX_WIDTH
