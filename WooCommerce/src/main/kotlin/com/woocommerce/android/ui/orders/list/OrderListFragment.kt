@@ -950,8 +950,11 @@ class OrderListFragment :
                 show = show,
                 title = getString(R.string.orderlist_timeout_error_title),
                 message = getString(R.string.orderlist_timeout_error_message),
-                troubleshootingClick = { openConnectivityTool() },
-                supportContactClick = { openSupportRequestScreen() }
+                supportContactClick = { openSupportRequestScreen() },
+                troubleshootingClick = {
+                    viewModel.trackConnectivityTroubleshootClicked()
+                    openConnectivityTool()
+                }
             )
         }
     }
