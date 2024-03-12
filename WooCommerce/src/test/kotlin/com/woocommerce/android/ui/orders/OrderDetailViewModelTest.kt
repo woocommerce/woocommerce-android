@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -90,6 +91,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         private const val ORDER_SITE_ID = 1
     }
 
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefs = mock {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
@@ -168,28 +170,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     )
 
     private fun createViewModel() {
-        viewModel = spy(
-            OrderDetailViewModel(
-                savedState,
-                appPrefsWrapper,
-                networkStatus,
-                resources,
-                orderDetailRepository,
-                addonsRepository,
-                selectedSite,
-                productImageMap,
-                paymentCollectibilityChecker,
-                paymentsFlowTracker,
-                orderDetailTracker,
-                shippingLabelOnboardingRepository,
-                orderDetailsTransactionLauncher,
-                getOrderSubscriptions,
-                giftCardRepository,
-                orderProductMapper,
-                productDetailRepository,
-                paymentReceiptHelper,
-            )
-        )
+        createViewModel(newSavedState = savedState)
     }
 
     private fun createViewModel(newSavedState: SavedStateHandle) {
@@ -212,7 +193,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 giftCardRepository,
                 orderProductMapper,
                 productDetailRepository,
-                paymentReceiptHelper
+                paymentReceiptHelper,
+                analyticsTracker
             )
         )
     }
