@@ -7,15 +7,19 @@ import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.windowSizeClass
 
 val Context.deviceTypeToAnalyticsString: String
-    get() = buildAnalyticsDeviceTypeValue(IsTabletValue(value = windowSizeClass != WindowSizeClass.Compact))
+    get() = buildAnalyticsDeviceTypeValue(
+        IsScreenLargerThanCompactValue(value = windowSizeClass != WindowSizeClass.Compact)
+    )
 
-val IsTabletValue.deviceTypeToAnalyticsString: String get() = buildAnalyticsDeviceTypeValue(this)
+val IsScreenLargerThanCompactValue.deviceTypeToAnalyticsString: String
+    get() = buildAnalyticsDeviceTypeValue(this)
 
-private fun buildAnalyticsDeviceTypeValue(isTabletValue: IsTabletValue) = if (isTabletValue.value) {
-    VALUE_DEVICE_TYPE_REGULAR
-} else {
-    VALUE_DEVICE_TYPE_COMPACT
-}
+private fun buildAnalyticsDeviceTypeValue(isScreenSizeLargerThanCompact: IsScreenLargerThanCompactValue) =
+    if (isScreenSizeLargerThanCompact.value) {
+        VALUE_DEVICE_TYPE_REGULAR
+    } else {
+        VALUE_DEVICE_TYPE_COMPACT
+    }
 
 @JvmInline
-value class IsTabletValue(val value: Boolean)
+value class IsScreenLargerThanCompactValue(val value: Boolean)
