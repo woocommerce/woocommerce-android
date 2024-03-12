@@ -922,6 +922,7 @@
     <string name="order_detail_attribution_campaign">Medium</string>
     <string name="order_detail_attribution_device_type">Device type</string>
     <string name="order_detail_attribution_session_page_views">Session page views</string>
+    <string name="order_detail_move_to_trash">Move to trash</string>
 
     <!--
         Shipping label Refunds

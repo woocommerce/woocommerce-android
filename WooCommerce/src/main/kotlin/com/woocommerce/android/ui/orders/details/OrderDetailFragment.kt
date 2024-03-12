@@ -226,6 +226,9 @@ class OrderDetailFragment :
         binding.orderDetailsAICard.aiThankYouNoteButton.setOnClickListener {
             viewModel.onAIThankYouNoteButtonClicked()
         }
+        binding.orderDetailTrash.setOnClickListener {
+            viewModel.onTrashOrderClicked()
+        }
 
         ViewCompat.setTransitionName(
             binding.scrollView,

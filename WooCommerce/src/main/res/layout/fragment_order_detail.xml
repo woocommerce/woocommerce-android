@@ -192,6 +192,25 @@
                         style="@style/Woo.Card.WithoutPadding"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
+
+                    <!-- Trash button -->
+                    <androidx.cardview.widget.CardView
+                        style="@style/Woo.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/major_100"
+                        app:contentPadding="@dimen/major_100" >
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/orderDetail_trash"
+                            style="@style/Woo.Button.TextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/order_detail_move_to_trash"
+                            android:textColor="@color/color_error" />
+                    </androidx.cardview.widget.CardView>
+
+
                 </LinearLayout>
             </FrameLayout>
         </androidx.core.widget.NestedScrollView>
