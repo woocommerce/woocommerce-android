@@ -1,10 +1,23 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+17.8
+-----
+- [*] Login: Enables login with site credentials for Jetpack connected sites as a fallback to WP.com email login [https://github.com/woocommerce/woocommerce-android/pull/11055]
+
+- [*] Products: Fixed a bug when changes to products were not reflected in the product list [https://github.com/woocommerce/woocommerce-android/pull/11048]
+
+17.7
+-----
+- [*] Products: Fixed a bug when after configuration change product's search results are lost [https://github.com/woocommerce/woocommerce-android/pull/10995]
+- [***] The Product Listing and Product Detail screens have been optimized for tablet use, showcasing a two-pane layout on such devices. [https://github.com/woocommerce/woocommerce-android/pull/10985]
+- [***] Stats: Merchants can now customize their analytics by enabling/disabling and reordering the cards in the Analytics Hub. [https://github.com/woocommerce/woocommerce-android/pull/11002]
+- [*] [Internal] Orders created from the app will be marked with the "mobile_app" source [https://github.com/woocommerce/woocommerce-android/pull/11003]
 
 17.6
 -----
 - [***] Products: Merchants can now bulk update the stock status of their products [https://github.com/woocommerce/woocommerce-android/pull/10943]
 - [**] Orders can be filtered now using specific customers or products [https://github.com/woocommerce/woocommerce-android/pull/10927]
 - [*] Orders: Merchants can now contact their customers through WhatsApp and Telegram apps. [https://github.com/woocommerce/woocommerce-android/pull/10936]
+- [**] Orders: Show the order attribution info in the order detail screen. [https://github.com/woocommerce/woocommerce-android/pull/10981]
 
 17.5
 -----

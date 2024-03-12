@@ -2,5 +2,6 @@ package com.woocommerce.android.datastore
 
 enum class DataStoreType {
     TRACKER,
-    ANALYTICS
+    ANALYTICS_UI_CACHE,
+    ANALYTICS_CONFIGURATION
 }

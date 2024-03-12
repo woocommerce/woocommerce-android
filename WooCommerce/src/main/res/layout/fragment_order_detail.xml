@@ -181,6 +181,11 @@
                         android:visibility="gone"
                         tools:visibility="visible" />
 
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/orderDetail_orderAttributionInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
                     <!-- Order Notes -->
                     <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderNotesView
                         android:id="@+id/orderDetail_noteList"

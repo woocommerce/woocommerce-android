@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withStarted
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT
@@ -308,8 +307,7 @@ class LoginActivity :
 
     override fun startOver() {
         // Clear logged in url from AppPrefs
-        AppPrefs.removeLoginSiteAddress()
-
+        appPrefsWrapper.removeLoginSiteAddress()
         // Pop all the fragments from the backstack until we get to the Prologue fragment
         supportFragmentManager.popBackStack(LoginPrologueFragment.TAG, 0)
     }
@@ -344,8 +342,7 @@ class LoginActivity :
 
     private fun startLoginViaWPCom() {
         // Clean previously saved site address, e.g: if merchants return from a store address flow.
-        AppPrefs.removeLoginSiteAddress()
-
+        appPrefsWrapper.removeLoginSiteAddress()
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         showEmailLoginScreen()
     }
@@ -529,7 +526,7 @@ class LoginActivity :
     override fun gotWpcomSiteInfo(siteAddress: String?) {
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app.
-        siteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
+        siteAddress?.let { appPrefsWrapper.setLoginSiteAddress(it) }
         showEmailLoginScreen(siteAddress)
     }
 
@@ -544,8 +541,7 @@ class LoginActivity :
         // in the login process.
         val protocolRegex = Regex("^(http[s]?://)", IGNORE_CASE)
         val siteAddressClean = inputSiteAddress.replaceFirst(protocolRegex, "")
-        AppPrefs.setLoginSiteAddress(siteAddressClean)
-
+        appPrefsWrapper.setLoginSiteAddress(siteAddressClean)
         if (hasJetpack || connectSiteInfo?.isWPCom == true) {
             showEmailLoginScreen(null)
         } else {
@@ -571,7 +567,7 @@ class LoginActivity :
     override fun gotXmlRpcEndpoint(inputSiteAddress: String?, endpointAddress: String?) {
         // Save site address to app prefs so it's available to MainActivity regardless of how the user
         // logs into the app.
-        inputSiteAddress?.let { AppPrefs.setLoginSiteAddress(it) }
+        inputSiteAddress?.let { appPrefsWrapper.setLoginSiteAddress(it) }
 
         showUsernamePasswordScreen(inputSiteAddress, endpointAddress, null, null)
     }
@@ -881,6 +877,10 @@ class LoginActivity :
     override fun onWhatIsWordPressLinkClicked() {
         ChromeCustomTabUtils.launchUrl(this, LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT)
         unifiedLoginTracker.trackClick(Click.WHAT_IS_WORDPRESS_COM)
+    }
+
+    override fun onLoginWithSiteCredentialsFallbackClicked() {
+        loginViaSiteCredentials(appPrefsWrapper.getLoginSiteAddress())
     }
 
     override fun onCreateAccountClicked() {

@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 20:54:03+0000
+Translation-Revision-Date: 2024-03-06 15:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">Местоположение не найдено.\nПовторите попытку.</string>
+    <string name="order_detail_attribution_session_page_views">Просмотры страниц сеанса</string>
+    <string name="order_detail_attribution_device_type">Тип устройства</string>
+    <string name="order_detail_attribution_campaign">Устройство</string>
+    <string name="order_detail_attribution_medium">Устройство</string>
+    <string name="order_detail_attribution_source">Источник</string>
+    <string name="order_detail_attribution_source_type">Тип источника</string>
+    <string name="order_detail_attribution_unknown_origin">Неизвестно</string>
+    <string name="order_detail_attribution_mobile_origin">Мобильное приложение</string>
+    <string name="order_detail_attribution_admin_origin">Веб-администратор</string>
+    <string name="order_detail_attribution_direct_origin">Прямые</string>
+    <string name="order_detail_attribution_utm_origin">Источник: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Источник перехода: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">Органические: %1$s</string>
+    <string name="order_detail_attribution_origin">Происхождение</string>
+    <string name="order_detail_attribution_header">Атрибуция заказа</string>
+    <string name="orderdetail_message_customer_using_telegram">Связаться в Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Связаться в WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">Идентификатор: %d</string>
+    <string name="orderfilters_customer_filter">Клиент</string>
+    <string name="orderfilters_product_filter">Товар</string>
+    <string name="customer_picker_guest">Гость</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">Этот пользователь — гость, а гостевой статус не позволяет фильтровать заказы.</string>
+    <string name="orderlist_timeout_error_message">Повторите попытку позже или свяжитесь с нами. Мы будем рады помочь!</string>
+    <string name="orderlist_timeout_error_title">Ваш сайт отвечает долго</string>
+    <string name="show_details">Показать подробности</string>
+    <string name="order_creation_payment_shipping_tax_label">Налог на доставку</string>
+    <string name="customize_analytics">Настроить аналитику</string>
     <string name="blaze_campaign_creation_error">Что-то пошло не так.\nНе удалось создать кампанию.</string>
     <string name="blaze_campaign_creation_error_media_fetch">Не удалось получить сведения об изображении кампании</string>
     <string name="blaze_campaign_creation_error_media_upload">Не удалось загрузить изображение кампании.</string>
@@ -38,14 +66,13 @@ Language: ru
     <string name="blaze_campaign_preview_missing_image_dialog_text">Добавьте изображение для кампании Blaze</string>
     <string name="drag_handle">Перетащить указатель</string>
     <string name="analytic_cards">Карты аналитики</string>
-    <string name="manage_analytics">Управление аналитикой</string>
     <string name="see_report">Смотреть отчет</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Главная страница сайта</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">URL-адрес товара</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">Параметры URL-адреса</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">URL-адрес назначения</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Ввести вручную</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Местоположение не найдено.\nПовторите попытку.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Не удалось выполнить поиск.\nПовторите попытку</string>
     <string name="blaze_campaign_creation_location_search_message">Начните набирать название страны, штата или города, чтобы увидеть доступные варианты</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">Нажимая «Отправить кампанию», вы принимаете &lt;a href=\'termsOfService\'&gt;&lt;u&gt;условия предоставления услуг&lt;/u&gt;&lt;/a&gt; и &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;политику публикации рекламы&lt;/u&gt;&lt;/a&gt;, а также разрешаете использовать указанный способ оплаты для списания средств за выбранные вами бюджет и период. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Подробнее&lt;/u&gt;&lt;/a&gt; о том, как использовать бюджеты и платежи за продвигаемые записи.</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Отправить кампанию</string>

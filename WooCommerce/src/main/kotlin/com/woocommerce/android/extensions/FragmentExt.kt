@@ -6,10 +6,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointBackward
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragment
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.util.DisplayUtils
@@ -191,3 +195,25 @@ fun Fragment.navigateToHelpScreen(origin: HelpOrigin) {
 }
 
 fun Fragment.isTablet() = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
+
+fun Fragment.showDateRangePicker(
+    fromMillis: Long = System.currentTimeMillis(),
+    toMillis: Long = System.currentTimeMillis(),
+    onCustomRangeSelected: (Long, Long) -> Unit
+) {
+    val datePicker =
+        MaterialDatePicker.Builder.dateRangePicker()
+            .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
+            .setSelection(androidx.core.util.Pair(fromMillis, toMillis))
+            .setCalendarConstraints(
+                CalendarConstraints.Builder()
+                    .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
+                    .setValidator(DateValidatorPointBackward.now())
+                    .build()
+            )
+            .build()
+    datePicker.show(parentFragmentManager, AnalyticsHubFragment.DATE_PICKER_FRAGMENT_TAG)
+    datePicker.addOnPositiveButtonClickListener {
+        onCustomRangeSelected(it?.first ?: 0L, it.second ?: 0L)
+    }
+}

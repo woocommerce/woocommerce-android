@@ -11,8 +11,9 @@ import androidx.core.view.MenuCompat
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -42,6 +43,7 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenEmptyProduct
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenProduct
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
@@ -73,6 +75,7 @@ class ProductListFragment :
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+        private const val TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY = "non_root_navigation_in_detail_pane"
     }
 
     @Inject
@@ -92,6 +95,8 @@ class ProductListFragment :
 
     @Inject
     lateinit var productListToolbar: ProductListToolbarHelper
+
+    private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
 
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
@@ -118,15 +123,17 @@ class ProductListFragment :
 
     override val twoPaneLayoutGuideline
         get() = binding.twoPaneLayoutGuideline
-
-    override val lifecycleKeeper: Lifecycle
-        get() = viewLifecycleOwner.lifecycle
-
-    override val secondPaneNavigation
+    override val listPaneContainer: View
+        get() = binding.productsRefreshLayout
+    override val detailPaneContainer: View
+        get() = binding.detailNavContainer
+    override var twoPanesWereShownBeforeConfigChange: Boolean = false
+    override val listFragment: Fragment
+        get() = this
+    override val navigation
         get() = TabletLayoutSetupHelper.Screen.Navigation(
-            childFragmentManager,
-            R.navigation.nav_graph_products,
-            ProductDetailFragmentArgs(
+            detailsNavGraphId = R.navigation.nav_graph_products,
+            detailsInitialBundle = ProductDetailFragmentArgs(
                 mode = ProductDetailFragment.Mode.Loading,
             ).toBundle()
         )
@@ -142,6 +149,12 @@ class ProductListFragment :
         enterTransition = fadeThroughTransition
         exitTransition = fadeThroughTransition
         reenterTransition = fadeThroughTransition
+
+        twoPanesWereShownBeforeConfigChange = savedInstanceState?.getBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            false
+        ) ?: false
+        tabletLayoutSetupHelper.onRootFragmentCreated(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -150,8 +163,6 @@ class ProductListFragment :
         postponeEnterTransition()
 
         _binding = FragmentProductListBinding.bind(view)
-
-        tabletLayoutSetupHelper.onViewCreated(this)
 
         view.doOnPreDraw { startPostponedEnterTransition() }
 
@@ -244,6 +255,10 @@ class ProductListFragment :
 
     override fun onSaveInstanceState(outState: Bundle) {
         tracker?.onSaveInstanceState(outState)
+        outState.putBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            _binding?.detailNavContainer?.isVisible == true && _binding?.productsRefreshLayout?.isVisible == true
+        )
         super.onSaveInstanceState(outState)
     }
 
@@ -262,7 +277,7 @@ class ProductListFragment :
         binding.productsRefreshLayout.isRefreshing = isRefreshing
     }
 
-    @Suppress("ComplexMethod", "LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun setupObservers(viewModel: ProductListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
@@ -342,7 +357,7 @@ class ProductListFragment :
                 is SelectProducts -> tracker?.setItemsSelected(event.productsIds, true)
                 is ShowUpdateDialog -> handleUpdateDialogs(event)
                 is OpenProduct -> {
-                    tabletLayoutSetupHelper.onItemClicked(
+                    tabletLayoutSetupHelper.openItemDetails(
                         tabletNavigateTo = {
                             productAdapter.notifyItemChanged(event.oldPosition)
                             productAdapter.notifyItemChanged(event.newPosition)
@@ -357,11 +372,35 @@ class ProductListFragment :
                         }
                     )
                 }
+                is OpenEmptyProduct -> {
+                    tabletLayoutSetupHelper.openItemDetails(
+                        tabletNavigateTo = {
+                            R.id.nav_graph_products to ProductDetailFragmentArgs(
+                                mode = ProductDetailFragment.Mode.Empty,
+                                isTrashEnabled = true,
+                            ).toBundle()
+                        },
+                        navigateWithPhoneNavigation = {
+                            error("Should not be invoked on a phone")
+                        }
+                    )
+                }
 
                 is ShowProductUpdateStockStatusScreen -> {
                     showProductUpdateStockStatusScreen(event.productsIds)
                 }
                 else -> event.isHandled = false
+            }
+        }
+
+        productsCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductTrashed -> {
+                    trashProduct(event.productId)
+                }
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated -> {
+                    productListViewModel.reloadProductsFromDb()
+                }
             }
         }
     }
@@ -448,14 +487,6 @@ class ProductListFragment :
     }
 
     private fun setupResultHandlers() {
-        handleResult<Bundle>(ProductDetailFragment.KEY_PRODUCT_DETAIL_RESULT) { bundle ->
-            if (bundle.getBoolean(ProductDetailFragment.KEY_PRODUCT_DETAIL_DID_TRASH)) {
-                // User chose to trash from product detail, but we do the actual trashing here
-                // so we can show a snackbar enabling the user to undo the trashing.
-                val remoteProductId = bundle.getLong(ProductDetailFragment.KEY_REMOTE_PRODUCT_ID)
-                trashProduct(remoteProductId)
-            }
-        }
         handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
             productListViewModel.onFiltersChanged(
                 stockStatus = result.stockStatus,
@@ -493,7 +524,6 @@ class ProductListFragment :
 
         val callback = object : Snackbar.Callback() {
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                super.onDismissed(transientBottomBar, event)
                 pendingTrashProductId = null
                 if (trashProductCancelled) {
                     productListViewModel.reloadProductsFromDb()

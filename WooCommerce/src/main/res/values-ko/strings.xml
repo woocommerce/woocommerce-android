@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 09:54:04+0000
+Translation-Revision-Date: 2024-03-06 09:54:16+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">위치를 찾을 수 없습니다.\n다시 시도하세요.</string>
+    <string name="order_detail_attribution_session_page_views">세션 페이지 조회수</string>
+    <string name="order_detail_attribution_device_type">기기 유형</string>
+    <string name="order_detail_attribution_campaign">보통</string>
+    <string name="order_detail_attribution_medium">보통</string>
+    <string name="order_detail_attribution_source">소스</string>
+    <string name="order_detail_attribution_source_type">소스 유형</string>
+    <string name="order_detail_attribution_unknown_origin">알 수 없음</string>
+    <string name="order_detail_attribution_mobile_origin">모바일 앱</string>
+    <string name="order_detail_attribution_admin_origin">웹 관리자</string>
+    <string name="order_detail_attribution_direct_origin">다이렉트</string>
+    <string name="order_detail_attribution_utm_origin">소스: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">추천: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">유기농: %1$s</string>
+    <string name="order_detail_attribution_origin">원산지</string>
+    <string name="order_detail_attribution_header">주문 속성</string>
+    <string name="orderdetail_message_customer_using_telegram">Telegram으로 문의</string>
+    <string name="orderdetail_message_customer_using_whatsapp">WhatsApp으로 문의</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID: %d</string>
+    <string name="orderfilters_customer_filter">고객</string>
+    <string name="orderfilters_product_filter">상품</string>
+    <string name="customer_picker_guest">(비회원)</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">이 사용자는 비회원이며, 비회원은 주문 필터링에 사용할 수 없습니다.</string>
+    <string name="orderlist_timeout_error_message">나중에 다시 시도해 보세요. 또는 당사에 연락하면 기꺼이 도와드리겠습니다.</string>
+    <string name="orderlist_timeout_error_title">사이트가 응답하는 데 오랜 시간이 걸립니다.</string>
+    <string name="show_details">상세 정보 표시</string>
+    <string name="order_creation_payment_shipping_tax_label">운송세</string>
+    <string name="customize_analytics">애널리틱스 사용자 정의</string>
     <string name="blaze_campaign_creation_error">문제가 발생했습니다.\n캠페인을 생성할 수 없습니다.</string>
     <string name="blaze_campaign_creation_error_media_fetch">캠페인 이미지 세부 정보 가져오기 실패</string>
     <string name="blaze_campaign_creation_error_media_upload">캠페인 이미지 업로드에 실패했습니다.</string>
@@ -38,14 +66,13 @@ Language: ko_KR
     <string name="blaze_campaign_preview_missing_image_dialog_text">Blaze 캠페인의 이미지를 추가하세요.</string>
     <string name="drag_handle">핸들 끌기</string>
     <string name="analytic_cards">분석 카드</string>
-    <string name="manage_analytics">분석 관리</string>
     <string name="see_report">보고서 보기</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">사이트 홈</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">상품 URL</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL 파라미터</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">대상 URL</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">수동으로 입력</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">위치를 찾을 수 없습니다.\n다시 시도해 주세요.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">검색되지 않았습니다.\n다시 시도하세요.</string>
     <string name="blaze_campaign_creation_location_search_message">국가, 광역시/도 또는 시/군/구 입력을 시작하여 사용 가능한 옵션을 참조하세요.</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">\"캠페인 제출\"을 클릭하면 &lt;a href=\'termsOfService\'&gt;&lt;u&gt;서비스 약관&lt;/u&gt;&lt;/a&gt;과 &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;광고 정책&lt;/u&gt;&lt;/a&gt;에 동의하고 선택한 예산과 기간에 대해 결제 수단으로 요금이 청구되도록 승인하는 것입니다. 홍보한 글의 예산 및 결제 방식에 대해 &lt;a href=\'learnMore\'&gt;&lt;u&gt;자세히 알아보세요&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">캠페인 제출</string>

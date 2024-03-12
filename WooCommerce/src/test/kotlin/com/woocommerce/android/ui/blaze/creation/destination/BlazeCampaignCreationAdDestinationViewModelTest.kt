@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.blaze.creation.destination
 
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationViewModel.NavigateToParametersScreen
 import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.util.captureValues
@@ -21,6 +22,7 @@ import kotlin.test.Test
 class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val productDetailRepository: ProductDetailRepository = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val product = mock<Product>()
 
     private lateinit var viewModel: BlazeCampaignCreationAdDestinationViewModel
@@ -29,11 +31,11 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
         viewModel = BlazeCampaignCreationAdDestinationViewModel(
             savedStateHandle = BlazeCampaignCreationAdDestinationFragmentArgs(
                 productId,
-                BlazeRepository.DestinationParameters(url, emptyMap())
+                DestinationParameters(url, emptyMap())
             ).toSavedStateHandle(),
             selectedSite = selectedSite,
             productDetailRepository = productDetailRepository,
-            analyticsTrackerWrapper = mock()
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
@@ -75,7 +77,7 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
         val event = viewModel.event.value
         assertThat(event).isEqualTo(
             NavigateToParametersScreen(
-                destinationParameters = BlazeRepository.DestinationParameters(url, emptyMap())
+                destinationParameters = DestinationParameters(url, emptyMap())
             )
         )
     }
@@ -100,9 +102,10 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
         val url2 = "https://cnn.com"
         setup(url, productId = 1L)
 
-        viewModel.onDestinationParametersUpdated(targetUrl = url2)
+        viewModel.onDestinationParametersUpdated(url2)
 
         val viewState = viewModel.viewState.captureValues().last()
+        assertThat(viewState.targetUrl).isEqualTo(url2)
         assertThat(viewState.targetUrl).isEqualTo(url2)
         assertThat(viewState.isUrlDialogVisible).isFalse()
     }

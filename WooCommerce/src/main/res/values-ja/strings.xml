@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 09:54:04+0000
+Translation-Revision-Date: 2024-03-06 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">場所が見つかりませんでした。\nもう一度お試しください。</string>
+    <string name="order_detail_attribution_session_page_views">セッションページ表示数</string>
+    <string name="order_detail_attribution_device_type">端末タイプ</string>
+    <string name="order_detail_attribution_campaign">メディア</string>
+    <string name="order_detail_attribution_medium">メディア</string>
+    <string name="order_detail_attribution_source">ソース</string>
+    <string name="order_detail_attribution_source_type">ソースタイプ</string>
+    <string name="order_detail_attribution_unknown_origin">不明</string>
+    <string name="order_detail_attribution_mobile_origin">モバイルアプリ</string>
+    <string name="order_detail_attribution_admin_origin">Web 管理者</string>
+    <string name="order_detail_attribution_direct_origin">直接</string>
+    <string name="order_detail_attribution_utm_origin">ソース: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">リファラル: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">オーガニック: %1$s</string>
+    <string name="order_detail_attribution_origin">オリジン</string>
+    <string name="order_detail_attribution_header">注文の属性</string>
+    <string name="orderdetail_message_customer_using_telegram">Telegram で連絡する</string>
+    <string name="orderdetail_message_customer_using_whatsapp">WhatsApp で連絡する</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID: %d</string>
+    <string name="orderfilters_customer_filter">顧客</string>
+    <string name="orderfilters_product_filter">商品</string>
+    <string name="customer_picker_guest">ゲスト</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">このユーザーはゲストです。ゲストは注文の絞り込みに使用できません。</string>
+    <string name="orderlist_timeout_error_message">しばらくしてから再度お試しいただくか、サポートをご依頼ください</string>
+    <string name="orderlist_timeout_error_title">サイトの応答に時間がかかっています</string>
+    <string name="show_details">詳細を表示</string>
+    <string name="order_creation_payment_shipping_tax_label">送料の税額</string>
+    <string name="customize_analytics">アナリティクスのカスタマイズ</string>
     <string name="blaze_campaign_creation_error">問題が発生しました。\nキャンペーンを作成できませんでした。</string>
     <string name="blaze_campaign_creation_error_media_fetch">キャンペーン画像の詳細を取得できませんでした</string>
     <string name="blaze_campaign_creation_error_media_upload">キャンペーン画像のアップロードに失敗しました。</string>
@@ -38,14 +66,13 @@ Language: ja_JP
     <string name="blaze_campaign_preview_missing_image_dialog_text">Blaze キャンペーンの画像を追加してください</string>
     <string name="drag_handle">ドラッグハンドル</string>
     <string name="analytic_cards">分析カード</string>
-    <string name="manage_analytics">アナリティクスを管理</string>
     <string name="see_report">レポートを見る</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">サイトホーム</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">商品 URL</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL パラメーター</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">リンク先 URL</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">手動で入力</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">場所が見つかりませんでした。\nもう一度お試しください。</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">検索に失敗しました。\nもう一度お試しください</string>
     <string name="blaze_campaign_creation_location_search_message">国、州、都市を入力すると、選択可能なオプションが表示されます</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">「キャンペーンを送信」をクリックすると、&lt;a href=\'termsOfService\'&gt;&lt;u&gt;利用規約&lt;/u&gt;&lt;/a&gt;と&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;広告ポリシー&lt;/u&gt;&lt;/a&gt;に同意し、選択した予算と期間での支払いの決済方法を許可したと見なされます。 宣伝された投稿における予算と支払いの仕組みについて詳しくは&lt;a href=\'learnMore\'&gt;&lt;u&gt;こちら&lt;/u&gt;&lt;/a&gt;をご覧ください。</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">キャンペーンを送信</string>

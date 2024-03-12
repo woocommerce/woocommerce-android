@@ -166,6 +166,7 @@ class StatsTimeRangeSelection private constructor(
                     StatsGranularity.WEEKS -> WEEK_TO_DATE
                     StatsGranularity.MONTHS -> MONTH_TO_DATE
                     StatsGranularity.YEARS -> YEAR_TO_DATE
+                    StatsGranularity.HOURS -> error("Hours shouldn't be used now")
                 }
 
             fun from(description: String): SelectionType {

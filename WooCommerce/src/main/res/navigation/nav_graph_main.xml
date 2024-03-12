@@ -144,6 +144,9 @@
         <action
             android:id="@+id/action_orderListFragment_to_createTestOrderDialogFragment"
             app:destination="@id/createTestOrderDialogFragment" />
+        <action
+            android:id="@+id/action_orderListFragment_to_orderConnectivityToolFragment"
+            app:destination="@id/orderConnectivityToolFragment" />
     </fragment>
     <fragment
         android:id="@+id/barcodeScanningFragment"
@@ -385,10 +388,6 @@
             app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
-            android:defaultValue="false"
-            app:argType="boolean" />
-        <argument
-            android:name="isAIContent"
             android:defaultValue="false"
             app:argType="boolean" />
         <argument
@@ -819,4 +818,8 @@
     <action
         android:id="@+id/action_global_themeActivationFragmentDialog"
         app:destination="@id/themeActivationFragmentDialog" />
+    <fragment
+        android:id="@+id/orderConnectivityToolFragment"
+        android:name="com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolFragment"
+        android:label="OrderConnectivityToolFragment"/>
 </navigation>
