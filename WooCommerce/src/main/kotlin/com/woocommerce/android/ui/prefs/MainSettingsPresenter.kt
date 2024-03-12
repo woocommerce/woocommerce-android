@@ -111,9 +111,6 @@ class MainSettingsPresenter @Inject constructor(
     override val isThemePickerOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
 
-    override val isPluginsOptionVisible: Boolean
-        get() = !selectedSite.get().isWPCom || selectedSite.get().isWPComAtomic
-
     override val wooPluginVersion: String
         get() = wooCommerceStore.getSitePlugin(selectedSite.get(), WOO_CORE)?.version ?: ""
 }
