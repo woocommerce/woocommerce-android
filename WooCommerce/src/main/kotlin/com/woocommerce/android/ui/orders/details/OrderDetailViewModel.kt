@@ -11,6 +11,8 @@ import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsTabletValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -98,6 +100,7 @@ class OrderDetailViewModel @Inject constructor(
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -615,6 +618,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onTrashOrderClicked() {
+        analyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
         triggerEvent(TrashOrder(navArgs.orderId))
     }
 
