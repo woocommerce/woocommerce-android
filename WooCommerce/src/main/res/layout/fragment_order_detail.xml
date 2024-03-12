@@ -207,6 +207,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/order_detail_move_to_trash"
+                            android:textAllCaps="false"
                             android:textColor="@color/color_error" />
                     </androidx.cardview.widget.CardView>
 
