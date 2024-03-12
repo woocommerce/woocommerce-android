@@ -124,7 +124,6 @@ class ProductSelectionListFragment :
         tracker?.addObserver(
             object : SelectionTracker.SelectionObserver<Long>() {
                 override fun onSelectionChanged() {
-                    super.onSelectionChanged()
                     val selectionCount = tracker?.selection?.size() ?: 0
                     if (selectionCount > 0 && actionMode == null) {
                         actionMode = requireActivity().startActionMode(actionModeCallback)
@@ -133,10 +132,10 @@ class ProductSelectionListFragment :
                     when (selectionCount) {
                         0 -> {
                             actionMode?.finish()
-                            binding.toolbar.title = getString(R.string.grouped_product_add)
+                            actionMode?.title = getString(R.string.grouped_product_add)
                         }
                         else -> {
-                            binding.toolbar.title = StringUtils.getQuantityString(
+                            actionMode?.title = StringUtils.getQuantityString(
                                 context = requireContext(),
                                 quantity = selectionCount,
                                 default = R.string.product_selection_count,
@@ -148,7 +147,7 @@ class ProductSelectionListFragment :
             })
 
         setupTabletSecondPaneToolbar(
-            title = "",
+            title = getString(R.string.grouped_product_add),
             onMenuItemSelected = ::onMenuItemSelected,
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
@@ -160,7 +159,7 @@ class ProductSelectionListFragment :
     }
 
     private fun onCreateMenu(toolbar: Toolbar) {
-        toolbar.inflateMenu(R.menu.menu_product_list_fragment)
+        toolbar.inflateMenu(R.menu.menu_product_selection_fragment)
 
         searchMenuItem = toolbar.menu.findItem(R.id.menu_search)
         searchView = searchMenuItem?.actionView as SearchView?

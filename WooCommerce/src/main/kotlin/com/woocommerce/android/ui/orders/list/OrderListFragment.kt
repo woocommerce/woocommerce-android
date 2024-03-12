@@ -38,6 +38,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.databinding.FragmentOrderListBinding
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.extensions.isDisplaySmallerThan720
 import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -66,6 +67,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -292,7 +294,7 @@ class OrderListFragment :
     }
 
     private fun adjustLayoutForTablet() {
-        val isSmallTablet = !resources.getBoolean(R.bool.is_at_least_720sw)
+        val isSmallTablet = requireContext().isDisplaySmallerThan720
         val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
         if (isSmallTablet && isPortrait) {
@@ -548,7 +550,7 @@ class OrderListFragment :
                     actionText = event.actionText,
                     action = event.action
                 )
-
+                is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
                 else -> event.isHandled = false
             }
         }
@@ -604,6 +606,9 @@ class OrderListFragment :
             }
             new.isErrorFetchingDataBannerVisible.takeIfNotEqualTo(old?.isErrorFetchingDataBannerVisible) {
                 displayErrorParsingOrdersCard(it)
+            }
+            new.shouldDisplayTroubleshootingBanner.takeIfNotEqualTo(old?.shouldDisplayTroubleshootingBanner) {
+                displayTimeoutErrorCard(it)
             }
         }
     }
@@ -682,6 +687,12 @@ class OrderListFragment :
                 code,
                 barcodeFormat,
             )
+        )
+    }
+
+    private fun openConnectivityTool() {
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToOrderConnectivityToolFragment()
         )
     }
 
@@ -924,21 +935,52 @@ class OrderListFragment :
     }
 
     private fun displayErrorParsingOrdersCard(show: Boolean) {
+        displayErrorTroubleshootingCard(
+            show = show,
+            title = getString(R.string.orderlist_parsing_error_title),
+            message = getString(R.string.orderlist_parsing_error_message),
+            troubleshootingClick = { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
+            supportContactClick = { openSupportRequestScreen() }
+        )
+    }
+
+    private fun displayTimeoutErrorCard(show: Boolean) {
+        if (FeatureFlag.CONNECTIVITY_TOOL.isEnabled()) {
+            displayErrorTroubleshootingCard(
+                show = show,
+                title = getString(R.string.orderlist_timeout_error_title),
+                message = getString(R.string.orderlist_timeout_error_message),
+                supportContactClick = { openSupportRequestScreen() },
+                troubleshootingClick = {
+                    viewModel.trackConnectivityTroubleshootClicked()
+                    openConnectivityTool()
+                }
+            )
+        }
+    }
+
+    private fun displayErrorTroubleshootingCard(
+        show: Boolean,
+        title: String,
+        message: String,
+        troubleshootingClick: () -> Unit,
+        supportContactClick: () -> Unit
+    ) {
         TransitionManager.beginDelayedTransition(binding.orderListViewRoot)
         if (!show) {
-            binding.errorParsingOrdersCard.isVisible = false
+            binding.errorTroubleshootingCard.isVisible = false
             return
         }
 
-        binding.errorParsingOrdersCard.isVisible = true
-        binding.errorParsingOrdersCard.initView(
-            getString(R.string.orderlist_parsing_error_title),
-            getString(R.string.orderlist_parsing_error_message),
-            getString(R.string.error_troubleshooting),
-            getString(R.string.support_contact),
-            true,
-            { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
-            { openSupportRequestScreen() }
+        binding.errorTroubleshootingCard.isVisible = true
+        binding.errorTroubleshootingCard.initView(
+            title = title,
+            message = message,
+            isExpanded = true,
+            mainActionText = getString(R.string.error_troubleshooting),
+            secondaryActionText = getString(R.string.support_contact),
+            mainActionClick = troubleshootingClick,
+            secondaryActionClick = supportContactClick
         )
     }
 

@@ -11,6 +11,7 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
@@ -59,6 +60,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher = mock()
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
+    private val customDateRangeDataStore: CustomDateRangeDataStore = mock {
+        onBlocking { this.dateRange } doReturn flowOf(null)
+    }
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock {
         onBlocking { invoke() } doReturn true
     }
@@ -653,6 +657,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             myStoreTransactionLauncher,
             timezoneProvider,
             observeLastUpdate,
+            customDateRangeDataStore,
             localNotificationScheduler,
             shouldShowPrivacyBanner
         )

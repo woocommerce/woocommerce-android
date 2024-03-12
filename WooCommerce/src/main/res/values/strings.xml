@@ -36,6 +36,7 @@
     <string name="products_total">Products total</string>
     <string name="discount">Discount</string>
     <string name="details">Details</string>
+    <string name="show_details">Show Details</string>
     <string name="hide_details">Hide Details</string>
     <string name="retry">Retry</string>
     <string name="undo">Undo</string>
@@ -389,6 +390,7 @@
     <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
+    <string name="my_store_custom_range_content_description">Add custom date range stats</string>
 
     <!--
         Sign Up Flow
@@ -483,6 +485,21 @@
     <string name="orderlist_parsing_error_title">We couldn\'t load your data.</string>
     <string name="orderlist_parsing_error_message">This could be related to a conflict with a plugin. Please try again later or reach out to us and we\'ll be happy to assist you!</string>
     <string name="error_troubleshooting">Troubleshooting</string>
+    <string name="orderlist_timeout_error_title">Your site is taking a long time to respond</string>
+    <string name="orderlist_timeout_error_message">Please try again later or reach out to us and we\'ll be happy to assist you</string>
+    <string name="orderlist_connectivity_tool_title">Connectivity Test</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Internet Connection</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">It looks like you\'re not connected to the internet.\n\nEnsure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com servers</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Oops! It seems we can\'t connect to WordPress.com at the moment.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Your site</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Your site orders</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Contact Support</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Read More</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Oops! Your site seems to be taking too long to respond.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oops! It seems we can\'t work properly with your site\'s response.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oops! There seems to be a problem with your jetpack connection.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Oops! There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
 
     <!--
          Simple Payments
@@ -893,6 +910,21 @@
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
     <string name="order_detail_payment_header">PAYMENT TOTALS</string>
     <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
+    <string name="order_detail_attribution_header">Order attribution</string>
+    <string name="order_detail_attribution_origin">Origin</string>
+    <string name="order_detail_attribution_organic_origin">Organic: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Referral: %1$s</string>
+    <string name="order_detail_attribution_utm_origin">Source: %1$s</string>
+    <string name="order_detail_attribution_direct_origin">Direct</string>
+    <string name="order_detail_attribution_admin_origin">Web admin</string>
+    <string name="order_detail_attribution_mobile_origin">Mobile App</string>
+    <string name="order_detail_attribution_unknown_origin">Unknown</string>
+    <string name="order_detail_attribution_source_type">Source type</string>
+    <string name="order_detail_attribution_source">Source</string>
+    <string name="order_detail_attribution_medium">Medium</string>
+    <string name="order_detail_attribution_campaign">Medium</string>
+    <string name="order_detail_attribution_device_type">Device type</string>
+    <string name="order_detail_attribution_session_page_views">Session page views</string>
 
     <!--
         Shipping label Refunds
@@ -1767,6 +1799,7 @@
     <string name="product_add_image_content_description">Add image</string>
     <string name="product_detail_fetch_product_error">Error fetching product</string>
     <string name="product_detail_fetch_product_invalid_id_error">Product not found</string>
+    <string name="product_detail_product_not_selected">Product not selected</string>
     <string name="product_variants_fetch_product_variants_error">Error fetching product variations</string>
     <string name="product_name">Title</string>
     <string name="product_purchase_note">Purchase note</string>
@@ -3922,7 +3955,8 @@
     <string name="blaze_campaign_creation_product_selector_title">Ready to promote</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">Promote</string>
     <string name="blaze_campaign_creation_location_search_message">Start typing country, state or city to see available options</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">No location found.\nPlease try again.</string>
+    <string name="blaze_campaign_creation_location_search_no_results_message">No location found.\nPlease try again.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Searching failed.\nPlease try again</string>
 
     <!--
     Blaze edit ad destination

@@ -1,1 +1,0 @@
-We're excited to offer support for third-party Passkey providers. This update is designed to provide WordPress.com users with more flexibility and convenience in how they manage their account's security. Get ready to say goodbye to password fatigue and hello to a smoother, secure login experience!

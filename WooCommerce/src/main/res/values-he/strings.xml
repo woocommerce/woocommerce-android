@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 11:54:04+0000
+Translation-Revision-Date: 2024-03-06 17:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">לא נמצא מיקום.\nיש לנסות שוב.</string>
+    <string name="order_detail_attribution_session_page_views">צפיות בעמודים במהלך ההפעלה</string>
+    <string name="order_detail_attribution_device_type">סוג מכשיר</string>
+    <string name="order_detail_attribution_campaign">בינוני</string>
+    <string name="order_detail_attribution_medium">בינוני</string>
+    <string name="order_detail_attribution_source">מקור</string>
+    <string name="order_detail_attribution_source_type">סוג מקור</string>
+    <string name="order_detail_attribution_unknown_origin">לא ידוע</string>
+    <string name="order_detail_attribution_mobile_origin">אפליקציה לנייד</string>
+    <string name="order_detail_attribution_admin_origin">מנהל מערכת אינטרנט</string>
+    <string name="order_detail_attribution_direct_origin">ישיר</string>
+    <string name="order_detail_attribution_utm_origin">מקור: ⁦%1$s⁩</string>
+    <string name="order_detail_attribution_referral_origin">הפניה: ⁦%1$s⁩</string>
+    <string name="order_detail_attribution_organic_origin">אורגני: ⁦%1$s⁩</string>
+    <string name="order_detail_attribution_origin">מוצא</string>
+    <string name="order_detail_attribution_header">שיוך ההזמנה</string>
+    <string name="orderdetail_message_customer_using_telegram">ליצור קשר באמצעות Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">ליצור קשר באמצעות WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">מזהה: %d</string>
+    <string name="orderfilters_customer_filter">לקוח</string>
+    <string name="orderfilters_product_filter">מוצר</string>
+    <string name="customer_picker_guest">אורח</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">המשתמש הזה הוא אורח, ולא ניתן להשתמש באורחים לסינון הזמנות.</string>
+    <string name="orderlist_timeout_error_message">יש לנסות שוב מאוחר יותר או לפנות אלינו בכל עת ואנחנו נשמח לעזור</string>
+    <string name="orderlist_timeout_error_title">זמן התגובה של האתר שלך איטי מדי</string>
+    <string name="show_details">הצגת פרטים</string>
+    <string name="order_creation_payment_shipping_tax_label">מיסי משלוח</string>
+    <string name="customize_analytics">להתאים אישית את הנתונים האנליטיים</string>
     <string name="blaze_campaign_creation_error">יש בעיה כלשהי.\nלא הצלחנו ליצור את הקמפיין שלך.</string>
     <string name="blaze_campaign_creation_error_media_fetch">לא הייתה אפשרות להביא את פרטי התמונה של הקמפיין</string>
     <string name="blaze_campaign_creation_error_media_upload">העלאת התמונה של הקמפיין נכשלה.</string>
@@ -38,14 +66,13 @@ Language: he_IL
     <string name="blaze_campaign_preview_missing_image_dialog_text">יש להוסיף תמונה לקמפיין של Blaze</string>
     <string name="drag_handle">לגרור את vידית</string>
     <string name="analytic_cards">כרטיסי נתונים אנליטיים</string>
-    <string name="manage_analytics">לנהל נתונים אנליטיים</string>
     <string name="see_report">להציג את הדוח</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">עמוד הבית של האתר</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">כתובת ה-URL של המוצר</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">פרמטרים של כתובת URL</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">כתובת URL ליעד</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">יש להזין באופן ידני</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">לא נמצא מיקום.\nיש לנסות שוב.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">החיפוש נכשל.\nיש לנסות שוב</string>
     <string name="blaze_campaign_creation_location_search_message">יש להתחיל בהקלדת מדינה או עיר כדי להציג את האפשרויות הזמינות</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">לחיצה על \'לשלוח את הקמפיין\' נחשבת הסכמה מצדך ל&lt;a href=\'termsOfService\'&gt;&lt;u&gt;תנאי השימוש&lt;/u&gt;&lt;/a&gt; &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;ולמדיניות הפרסום&lt;/u&gt;&lt;/a&gt; שלנו ומאשרת לנו לחייב את אמצעי התשלום שלך בהתאם לתקציב ולמשך הזמן שבחרת. ניתן &lt;a href=\'learnMore\'&gt;&lt;u&gt;לקבל מידע נוסף&lt;/u&gt;&lt;/a&gt; לגבי האופן שבו תקציבים ותשלומים עובדים בפוסטים מקודמים.</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">שליחת קמפיין</string>

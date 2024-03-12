@@ -28,7 +28,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.blaze.BlazeCampaignsModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.blaze.BlazeCampaignsStore
 import java.time.ZonedDateTime
@@ -378,8 +377,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     @Test
     fun `given no blaze campaigns, when user clicks on blaze, then start campaign creation`() = testBlocking {
         setup {
-            whenever(blazeCampaignsStore.getBlazeCampaigns(any()))
-                .thenReturn(BlazeCampaignsModel(emptyList(), 0, 0, 0))
+            whenever(blazeCampaignsStore.getBlazeCampaigns(any())).thenReturn(emptyList())
         }
 
         val state = viewModel.moreMenuViewState.captureValues().last()
@@ -395,7 +393,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given existing blaze campaigns, when user clicks on blaze, then show campaigns list`() = testBlocking {
         setup {
             whenever(blazeCampaignsStore.getBlazeCampaigns(any()))
-                .thenReturn(BlazeCampaignsModel(listOf(mock()), 0, 1, 1))
+                .thenReturn(listOf(mock()))
         }
 
         val state = viewModel.moreMenuViewState.captureValues().last()

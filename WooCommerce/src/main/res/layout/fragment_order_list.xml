@@ -32,7 +32,7 @@
                 tools:title="@string/app_name" />
 
             <com.woocommerce.android.ui.common.ExpandableNoticeCard
-                android:id="@+id/errorParsingOrdersCard"
+                android:id="@+id/error_troubleshooting_card"
                 style="@style/Woo.Card.Expandable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/errorParsingOrdersCard"
+                app:layout_constraintTop_toBottomOf="@+id/error_troubleshooting_card"
                 tools:visibility="visible" />
 
             <com.woocommerce.android.ui.orders.filters.OrderFiltersCard

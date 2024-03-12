@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 11:54:04+0000
+Translation-Revision-Date: 2024-03-06 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">找不到地點。\n請再試一次。</string>
+    <string name="order_detail_attribution_session_page_views">工作階段頁面瀏覽次數</string>
+    <string name="order_detail_attribution_device_type">裝置類型</string>
+    <string name="order_detail_attribution_campaign">中</string>
+    <string name="order_detail_attribution_medium">中</string>
+    <string name="order_detail_attribution_source">來源</string>
+    <string name="order_detail_attribution_source_type">來源類型</string>
+    <string name="order_detail_attribution_unknown_origin">未知</string>
+    <string name="order_detail_attribution_mobile_origin">行動應用程式</string>
+    <string name="order_detail_attribution_admin_origin">網頁管理員</string>
+    <string name="order_detail_attribution_direct_origin">直接</string>
+    <string name="order_detail_attribution_utm_origin">來源：%1$s</string>
+    <string name="order_detail_attribution_referral_origin">推薦：%1$s</string>
+    <string name="order_detail_attribution_organic_origin">有機：%1$s</string>
+    <string name="order_detail_attribution_origin">來源</string>
+    <string name="order_detail_attribution_header">訂單歸屬</string>
+    <string name="orderdetail_message_customer_using_telegram">使用 Telegram 與我們聯絡</string>
+    <string name="orderdetail_message_customer_using_whatsapp">使用 WhatsApp 與我們聯絡</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID：%d</string>
+    <string name="orderfilters_customer_filter">顧客</string>
+    <string name="orderfilters_product_filter">商品</string>
+    <string name="customer_picker_guest">訪客</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">此使用者是訪客，而訪客無法用於篩選訂單。</string>
+    <string name="orderlist_timeout_error_message">請稍後再試或與我們聯絡，我們將很樂意提供協助</string>
+    <string name="orderlist_timeout_error_title">你的網站太久沒有回應</string>
+    <string name="show_details">顯示詳細資料</string>
+    <string name="order_creation_payment_shipping_tax_label">貨運稅</string>
+    <string name="customize_analytics">自訂分析工具</string>
     <string name="blaze_campaign_creation_error">發生問題。\n我們無法建立你的行銷活動。</string>
     <string name="blaze_campaign_creation_error_media_fetch">無法擷取行銷活動圖片的詳細資料</string>
     <string name="blaze_campaign_creation_error_media_upload">無法上傳行銷活動圖片。</string>
@@ -38,14 +66,13 @@ Language: zh_TW
     <string name="blaze_campaign_preview_missing_image_dialog_text">請新增 Blaze 行銷活動用的圖片</string>
     <string name="drag_handle">拖曳控點</string>
     <string name="analytic_cards">分析卡片</string>
-    <string name="manage_analytics">管理分析</string>
     <string name="see_report">查看報告</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">網站首頁</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">商品 URL</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL 參數</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">目的地 URL</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">手動輸入</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">找不到地點。\n請再試一次。</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">搜尋失敗。\n請再試一次</string>
     <string name="blaze_campaign_creation_location_search_message">立即輸入國家/地區、州或城市，查看可用選項</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">按一下「提交行銷活動」即表示你同意&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服務條款&lt;/u&gt;&lt;/a&gt;和&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;廣告政策&lt;/u&gt;&lt;/a&gt;，並授權我們根據你選擇的預算和時間長度向你的付款方式扣款。 &lt;a href=\'learnMore\'&gt;&lt;u&gt;深入了解&lt;/u&gt;&lt;/a&gt;推廣文章的預算和付款運作方式。</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">提交行銷活動</string>

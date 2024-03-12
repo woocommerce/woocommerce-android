@@ -1,9 +1,17 @@
 steps:
+  - input: "What version code do you want to use for the new hotfix release?"
+    fields:
+      - text: "Version Code"
+        key: "version_code"
+        format: "[0-9]+" # Only allow numbers
   - label: "New Hotfix Release"
     plugins:
       - automattic/a8c-ci-toolkit#3.0.1
     command: |
       .buildkite/commands/configure-environment.sh
 
+      # Get the version code from the Buildkite 'input' step
+      VERSION_CODE=$(buildkite-agent meta-data get version_code)
+
       echo '--- :fire: Start New Hotfix Release'
-      bundle exec fastlane new_hotfix_release version:${VERSION} skip_confirm:true
+      bundle exec fastlane new_hotfix_release version_name:${VERSION} version_code:${VERSION_CODE} skip_confirm:true

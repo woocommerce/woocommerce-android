@@ -1,2 +1,0 @@
-17.4:
-We zijn heel enthousiast over onze ondersteuning voor externe passkeyproviders. Deze update biedt gebruikers van WordPress.com meer flexibiliteit en gemak bij het beheren van de beveiliging van hun accounts. Zeg vaarwel tegen wachtwoordmoeheid en bereid je voor op een soepelere, veilige inlogervaring!
