@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
@@ -2166,5 +2167,16 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val attributionState = viewModel.orderAttributionInfo.getOrAwaitValue()
 
         assertThat(attributionState).isEqualTo(attribution)
+    }
+
+    @Test
+    fun `when trash button is clicked, then communicate event to the parent fragment`() = testBlocking {
+        createViewModel()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onTrashOrderClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(OrderDetailViewModel.TrashOrder(ORDER_ID))
     }
 }
