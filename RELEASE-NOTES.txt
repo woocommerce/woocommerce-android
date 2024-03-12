@@ -2,6 +2,7 @@
 17.8
 -----
 - [*] Backend Generated Receipts: Fixed a bug when after error comes from the backend on the receipt generation action, the "see receipt" button was still disabled [https://github.com/woocommerce/woocommerce-android/pull/11065]
+- [*] Login: Enables login with site credentials for Jetpack connected sites as a fallback to WP.com email login [https://github.com/woocommerce/woocommerce-android/pull/11055]
 - [*] Products: Fixed a bug when changes to products were not reflected in the product list [https://github.com/woocommerce/woocommerce-android/pull/11048]
 
 17.7

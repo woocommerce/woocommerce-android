@@ -3213,6 +3213,7 @@
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
     <string name="what_is_wordpress_link">What is WordPress.com?</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Log in with your site credentials</string>
 
     <string name="login_site_address">Site address</string>
 
