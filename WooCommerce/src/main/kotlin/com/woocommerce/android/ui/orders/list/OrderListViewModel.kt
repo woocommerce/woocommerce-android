@@ -69,6 +69,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -169,6 +170,8 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
+    private var activeWCOrderListDescriptor: WCOrderListDescriptor? = null
+
     var isSearching = false
     private var dismissListErrors = false
     var searchQuery = ""
@@ -215,6 +218,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun loadOrders() {
+        activeWCOrderListDescriptor = getWCOrderListDescriptorWithFilters()
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
         viewState = viewState.copy(
             filterCount = getSelectedOrderFiltersCount(),
@@ -236,6 +240,7 @@ class OrderListViewModel @Inject constructor(
      */
     fun submitSearchOrFilter(searchQuery: String) {
         val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(sanitizeSearchQuery(searchQuery))
+        activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
@@ -421,18 +426,21 @@ class OrderListViewModel @Inject constructor(
                             isSimplePaymentsAndOrderCreationFeedbackVisible = false
                         )
                     }
+
                     TIMEOUT_ERROR -> {
                         when {
                             shouldRetry && noTimeoutHappened -> {
                                 analyticsTracker.track(ORDER_LIST_AUTOMATIC_TIMEOUT_RETRY)
                                 triggerEvent(RetryLoadingOrders)
                             }
+
                             else -> viewState = viewState.copy(
                                 shouldDisplayTroubleshootingBanner = true
                             )
                         }
                         noTimeoutHappened = false
                     }
+
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
             }
@@ -783,7 +791,37 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun trashOrder(orderId: Long) {
-        TODO("Not yet implemented")
+        fun revert() {
+            val listDescriptor = activeWCOrderListDescriptor?.copy(excludedIds = null) ?: return
+            val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+            activatePagedListWrapper(pagedListWrapper)
+        }
+
+        fun handleTrashing() {
+            launch {
+                orderListRepository
+                    .trashOrder(orderId)
+                    .onFailure { triggerEvent(ShowErrorSnack(R.string.orderlist_order_trashed)) }
+            }
+        }
+
+        val listDescriptor = activeWCOrderListDescriptor?.copy(excludedIds = listOf(orderId)) ?: return
+        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+        activatePagedListWrapper(pagedListWrapper)
+
+        triggerEvent(
+            Event.ShowUndoSnackbar(
+                message = resourceProvider.getString(R.string.orderlist_order_trashed, orderId),
+                undoAction = { revert() },
+                dismissAction = object : Snackbar.Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        if (event != DISMISS_EVENT_ACTION) {
+                            handleTrashing()
+                        }
+                    }
+                }
+            )
+        )
     }
 
     sealed class OrderListEvent : Event() {
