@@ -26,6 +26,7 @@ class WooLoginEmailFragment : LoginEmailFragment() {
 
     interface Listener {
         fun onWhatIsWordPressLinkClicked()
+        fun onLoginWithSiteCredentialsFallbackClicked()
     }
 
     private lateinit var wooLoginEmailListener: Listener
@@ -38,6 +39,10 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         val whatIsWordPressText = rootView.findViewById<Button>(R.id.login_what_is_wordpress)
         whatIsWordPressText.setOnClickListener {
             wooLoginEmailListener.onWhatIsWordPressLinkClicked()
+        }
+        val loginWithSiteCredentials = rootView.findViewById<Button>(R.id.login_with_site_credentials)
+        loginWithSiteCredentials.setOnClickListener {
+            wooLoginEmailListener.onLoginWithSiteCredentialsFallbackClicked()
         }
     }
 
