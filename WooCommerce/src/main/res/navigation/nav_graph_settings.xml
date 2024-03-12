@@ -61,6 +61,9 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_notificationSettingsFragment"
             app:destination="@id/notificationSettingsFragment" />
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_pluginsFragment"
+            app:destination="@id/pluginsFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -195,4 +198,8 @@
         android:id="@+id/notificationSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.notifications.NotificationSettingsFragment"
         android:label="NotificationSettingsFragment" />
+    <fragment
+        android:id="@+id/pluginsFragment"
+        android:name="com.woocommerce.android.ui.prefs.plugins.PluginsFragment"
+        android:label="PluginsFragment" />
 </navigation>
