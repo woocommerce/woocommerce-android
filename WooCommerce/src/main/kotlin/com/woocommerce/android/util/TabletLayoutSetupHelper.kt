@@ -20,10 +20,8 @@ import com.woocommerce.android.extensions.windowSizeClass
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
-class TabletLayoutSetupHelper @Inject constructor(
-    private val context: Context,
-    private val isTablet: IsTablet,
-) : DefaultLifecycleObserver {
+class TabletLayoutSetupHelper @Inject constructor(private val context: Context) :
+    DefaultLifecycleObserver {
     private var screen: Screen? = null
     private var navHostFragment: NavHostFragment? = null
 
@@ -75,7 +73,7 @@ class TabletLayoutSetupHelper @Inject constructor(
         tabletNavigateTo: () -> Pair<Int, Bundle>,
         navigateWithPhoneNavigation: () -> Unit
     ) {
-        if (isTablet()) {
+        if (context.windowSizeClass != WindowSizeClass.Compact) {
             val navOptions =
                 NavOptions.Builder()
                     .setPopUpTo(navHostFragment!!.navController.graph.startDestinationId, true)
@@ -95,25 +93,26 @@ class TabletLayoutSetupHelper @Inject constructor(
 
     @Suppress("NestedBlockDepth")
     private fun setDetailsMargins(rootView: View) {
-        if (isTablet()) {
+        if (context.windowSizeClass != WindowSizeClass.Compact) {
             if (rootView !is ViewGroup) return
+
+            val marginPart = when (context.windowSizeClass) {
+                WindowSizeClass.Compact -> return
+                WindowSizeClass.ExpandedAndBigger -> MARGINS_FOR_TABLET
+                WindowSizeClass.Medium -> MARGINS_FOR_SMALL_TABLET_PORTRAIT
+            }
 
             val windowWidth = DisplayUtils.getWindowPixelWidth(context)
             rootView.children.filter { it !is Toolbar }.forEach { viewToApplyMargins ->
                 val layoutParams = viewToApplyMargins.layoutParams
                 if (layoutParams is MarginLayoutParams) {
-                    if (context.windowSizeClass != WindowSizeClass.Compact) {
-                        val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
-                        layoutParams.setMargins(
-                            marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
-                        )
-                    } else {
-                        val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
-                        layoutParams.setMargins(
-                            marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
-                        )
-                    }
-
+                    val marginHorizontal = (windowWidth * marginPart).toInt()
+                    layoutParams.setMargins(
+                        marginHorizontal,
+                        layoutParams.topMargin,
+                        marginHorizontal,
+                        layoutParams.bottomMargin
+                    )
                     viewToApplyMargins.layoutParams = layoutParams
                 }
             }
@@ -140,7 +139,7 @@ class TabletLayoutSetupHelper @Inject constructor(
     }
 
     private fun adjustUIForScreenSize(screen: Screen) {
-        if (isTablet()) {
+        if (context.windowSizeClass != WindowSizeClass.Compact) {
             adjustLayoutForTablet(screen)
         } else {
             adjustLayoutForNonTablet(screen)
