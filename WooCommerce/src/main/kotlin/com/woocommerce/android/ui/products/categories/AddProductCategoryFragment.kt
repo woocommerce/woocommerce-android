@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.Toolbar
+import androidx.core.text.parseAsHtml
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -138,10 +139,12 @@ class AddProductCategoryFragment :
                 displayCategoryNameError(it)
             }
             new.displayProgressDialog?.takeIfNotEqualTo(old?.displayProgressDialog) { showProgressDialog(it) }
-            new.categoryName.takeIfNotEqualTo(old?.categoryName) { binding.productCategoryName.text = it }
+            new.categoryName.takeIfNotEqualTo(old?.categoryName) {
+                binding.productCategoryName.text = it.parseAsHtml().toString()
+            }
             new.selectedParentId.takeIfNotEqualTo(old?.selectedParentId) {
                 val parentCategoryName = viewModel.getSelectedParentCategoryName()
-                parentCategoryName?.let { binding.productCategoryParent.setText(it) }
+                parentCategoryName?.let { binding.productCategoryParent.setHtmlText(it) }
             }
         }
 
