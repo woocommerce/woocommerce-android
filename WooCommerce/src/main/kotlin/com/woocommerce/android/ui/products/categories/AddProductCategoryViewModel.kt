@@ -117,8 +117,8 @@ class AddProductCategoryViewModel @Inject constructor(
         loadParentCategories()
     }
 
-    fun onParentCategorySelected(parentId: Long) {
-        addProductCategoryViewState = addProductCategoryViewState.copy(selectedParentId = parentId)
+    fun onCategorySelected(categoryId: Long) {
+        addProductCategoryViewState = addProductCategoryViewState.copy(selectedParentId = categoryId)
         triggerEvent(Exit)
     }
 

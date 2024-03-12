@@ -419,6 +419,7 @@ class ProductDetailViewModel @Inject constructor(
                                 R.string.product_detail_product_not_selected
                             )
                         )
+
                     is ProductDetailFragment.Mode.AddNewProduct -> Unit
                 }
             }
@@ -2089,6 +2090,10 @@ class ProductDetailViewModel @Inject constructor(
     fun onAddCategoryButtonClicked() {
         tracker.track(AnalyticsEvent.PRODUCT_CATEGORY_SETTINGS_ADD_BUTTON_TAPPED)
         triggerEvent(ProductNavigationTarget.AddProductCategory)
+    }
+
+    fun onEditCategory(category: ProductCategory) {
+        triggerEvent(ProductNavigationTarget.EditCategory(category))
     }
 
     fun onProductCategoryAdded(category: ProductCategory) {

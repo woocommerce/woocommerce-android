@@ -71,9 +71,8 @@ class ProductCategoriesAdapter(
 
             viewBinder.categoryCheckbox.isChecked = productCategory.isSelected
 
-            viewBinder.categoryCheckbox.setOnClickListener {
-                viewBinder.categoryCheckbox.isChecked = !viewBinder.categoryCheckbox.isChecked
-                productCategory.isSelected = viewBinder.categoryCheckbox.isChecked
+            viewBinder.categoryCheckbox.setOnCheckedChangeListener { compoundButton, _ ->
+                productCategory.isSelected = compoundButton.isChecked
                 clickListener.onProductCategoryChecked(productCategory)
             }
 
