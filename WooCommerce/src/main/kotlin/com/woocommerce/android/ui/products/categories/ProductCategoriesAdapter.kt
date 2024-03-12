@@ -44,14 +44,6 @@ class ProductCategoriesAdapter(
         }
     }
 
-    private fun handleCategoryClick(
-        productCategory: ProductCategoryItemUiModel,
-        isChecked: Boolean
-    ) {
-        productCategory.isSelected = isChecked
-        clickListener.onProductCategoryClick(productCategory)
-    }
-
     fun setProductCategories(productsCategories: List<ProductCategoryItemUiModel>) {
         val diffResult =
             DiffUtil.calculateDiff(ProductCategoryItemDiffUtil(productCategoryList, productsCategories))
@@ -77,15 +69,16 @@ class ProductCategoriesAdapter(
                 layoutParams = newLayoutParams
             }
 
-            viewBinder.categorySelected.isChecked = productCategory.isSelected
+            viewBinder.categoryCheckbox.isChecked = productCategory.isSelected
 
-            viewBinder.categorySelected.setOnClickListener {
-                handleCategoryClick(productCategory, viewBinder.categorySelected.isChecked)
+            viewBinder.categoryCheckbox.setOnClickListener {
+                viewBinder.categoryCheckbox.isChecked = !viewBinder.categoryCheckbox.isChecked
+                productCategory.isSelected = viewBinder.categoryCheckbox.isChecked
+                clickListener.onProductCategoryChecked(productCategory)
             }
 
             itemView.setOnClickListener {
-                viewBinder.categorySelected.isChecked = !viewBinder.categorySelected.isChecked
-                handleCategoryClick(productCategory, viewBinder.categorySelected.isChecked)
+                clickListener.onProductCategorySelected(productCategory)
             }
         }
     }

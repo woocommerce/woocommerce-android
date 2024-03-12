@@ -171,7 +171,7 @@ class ProductCategoriesFragment :
         return false
     }
 
-    override fun onProductCategoryClick(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+    override fun onProductCategoryChecked(productCategoryItemUiModel: ProductCategoryItemUiModel) {
         val product = requireNotNull(viewModel.getProduct().productDraft)
         val selectedCategories = product.categories.toMutableList()
 
@@ -191,5 +191,9 @@ class ProductCategoriesFragment :
         if (changeRequired) {
             viewModel.updateProductDraft(categories = selectedCategories)
         }
+    }
+
+    override fun onProductCategorySelected(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+        viewModel.onEditCategory(productCategoryItemUiModel.category)
     }
 }
