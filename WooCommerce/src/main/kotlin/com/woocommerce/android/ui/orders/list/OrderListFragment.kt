@@ -561,6 +561,7 @@ class OrderListFragment :
             when (event) {
                 is OrdersCommunicationViewModel.CommunicationEvent.OrderTrashed -> {
                     viewModel.trashOrder(event.orderId)
+                    selectedOrder.selectOrder(-1L)
                 }
                 else -> event.isHandled = false
             }
