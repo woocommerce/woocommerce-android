@@ -19,6 +19,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -31,9 +32,17 @@ class AddProductCategoryViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedState) {
+    private val navArgs: AddProductCategoryFragmentArgs by savedState.navArgs()
+
     // view state for the add category screen
-    val addProductCategoryViewStateData = LiveDataDelegate(savedState, AddProductCategoryViewState())
-    private var addProductCategoryViewState by addProductCategoryViewStateData
+    val addProductCategoryViewStateLiveData = LiveDataDelegate(
+        savedState,
+        AddProductCategoryViewState(
+            categoryName = navArgs.productCategory?.name ?: "",
+            selectedParentId = navArgs.productCategory?.parentId
+        )
+    )
+    private var addProductCategoryViewState by addProductCategoryViewStateLiveData
 
     // view state for the parent category list screen
     val parentCategoryListViewStateData = LiveDataDelegate(savedState, ParentCategoryListViewState())
@@ -95,15 +104,20 @@ class AddProductCategoryViewModel @Inject constructor(
                             .getProductCategoryByNameAndParentId(categoryNameTrimmed, parentId)
                         triggerEvent(ExitWithResult(addedCategory))
                     }
+
                     RequestResult.API_ERROR -> {
                         addProductCategoryViewState = addProductCategoryViewState.copy(
                             categoryNameErrorMessage = string.add_product_category_duplicate
                         )
                     }
+
                     RequestResult.ERROR -> {
                         triggerEvent(ShowSnackbar(string.add_product_category_failed))
                     }
-                    else -> { /** No action needed */ }
+
+                    else -> {
+                        /** No action needed */
+                    }
                 }
             } else {
                 // hide progress dialog
@@ -124,12 +138,8 @@ class AddProductCategoryViewModel @Inject constructor(
 
     fun getSelectedParentId() = addProductCategoryViewState.selectedParentId ?: 0L
 
-    fun getSelectedParentCategoryName(): String? {
-        val selectedRemoteId = getSelectedParentId()
-        return if (selectedRemoteId != 0L) {
-            productCategoriesRepository.getProductCategoryByRemoteId(selectedRemoteId)?.name ?: ""
-        } else ""
-    }
+    fun getSelectedParentCategoryName(): String? =
+        productCategoriesRepository.getProductCategoryByRemoteId(getSelectedParentId())?.name
 
     /**
      * Refreshes the list of categories by calling the [loadParentCategories] method
@@ -228,6 +238,7 @@ class AddProductCategoryViewModel @Inject constructor(
     data class AddProductCategoryViewState(
         val displayProgressDialog: Boolean? = null,
         val categoryNameErrorMessage: Int? = null,
+        val categoryName: String = "",
         val selectedParentId: Long? = null,
         val shouldShowDiscardDialog: Boolean = true
     ) : Parcelable

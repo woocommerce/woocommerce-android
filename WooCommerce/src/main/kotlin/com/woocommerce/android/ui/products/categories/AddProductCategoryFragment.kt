@@ -70,9 +70,10 @@ class AddProductCategoryFragment :
         return when (item.itemId) {
             R.id.menu_done -> {
                 AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
-                viewModel.addProductCategory(getCategoryName())
+                viewModel.addProductCategory(binding.productCategoryName.text)
                 true
             }
+
             else -> false
         }
     }
@@ -91,7 +92,7 @@ class AddProductCategoryFragment :
         }
 
         with(binding.productCategoryParent) {
-            viewModel.getSelectedParentCategoryName()?.let { post { setHtmlText(it) } }
+            viewModel.getSelectedParentCategoryName()?.let { setText(it) }
             setClickListener {
                 val action = AddProductCategoryFragmentDirections
                     .actionAddProductCategoryFragmentToParentCategoryListFragment(
@@ -106,7 +107,11 @@ class AddProductCategoryFragment :
             onMenuItemSelected = ::onMenuItemSelected,
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
-                    if (viewModel.onBackButtonClicked(getCategoryName(), binding.productCategoryParent.getText())) {
+                    if (viewModel.onBackButtonClicked(
+                            binding.productCategoryName.text,
+                            binding.productCategoryParent.getText()
+                        )
+                    ) {
                         findNavController().navigateUp()
                     }
                 }
@@ -121,15 +126,23 @@ class AddProductCategoryFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(getCategoryName(), binding.productCategoryParent.getText())
+        return viewModel.onBackButtonClicked(
+            binding.productCategoryName.text,
+            binding.productCategoryParent.getText()
+        )
     }
 
     private fun setupObservers(viewModel: AddProductCategoryViewModel) {
-        viewModel.addProductCategoryViewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.addProductCategoryViewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.categoryNameErrorMessage?.takeIfNotEqualTo(old?.categoryNameErrorMessage) {
                 displayCategoryNameError(it)
             }
             new.displayProgressDialog?.takeIfNotEqualTo(old?.displayProgressDialog) { showProgressDialog(it) }
+            new.categoryName.takeIfNotEqualTo(old?.categoryName) { binding.productCategoryName.text = it }
+            new.selectedParentId.takeIfNotEqualTo(old?.selectedParentId) {
+                val parentCategoryName = viewModel.getSelectedParentCategoryName()
+                parentCategoryName?.let { binding.productCategoryParent.setText(it) }
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -174,6 +187,4 @@ class AddProductCategoryFragment :
         progressDialog?.dismiss()
         progressDialog = null
     }
-
-    private fun getCategoryName() = binding.productCategoryName.text
 }

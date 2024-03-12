@@ -8,6 +8,11 @@
         android:id="@+id/addProductCategoryFragment"
         android:name="com.woocommerce.android.ui.products.categories.AddProductCategoryFragment"
         tools:layout="@layout/fragment_add_product_category">
+        <argument
+            android:name="productCategory"
+            android:defaultValue="@null"
+            app:argType="com.woocommerce.android.model.ProductCategory"
+            app:nullable="true" />
         <action
             android:id="@+id/action_addProductCategoryFragment_to_parentCategoryListFragment"
             app:destination="@id/parentCategoryListFragment">
@@ -15,11 +20,6 @@
                 android:name="selectedParentId"
                 android:defaultValue="0L"
                 app:argType="long" />
-            <argument
-                android:name="productCategory"
-                app:argType="com.woocommerce.android.model.ProductCategory"
-                android:defaultValue="@null"
-                app:nullable="true" />
         </action>
     </fragment>
     <fragment
