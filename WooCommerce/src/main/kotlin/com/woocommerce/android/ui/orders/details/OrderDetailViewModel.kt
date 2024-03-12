@@ -11,7 +11,7 @@ import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
@@ -357,7 +357,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onCollectPaymentClicked(isTablet: Boolean = false) {
         paymentsFlowTracker.trackCollectPaymentTapped(
-            IsTabletValue(isTablet).deviceTypeToAnalyticsString
+            IsScreenLargerThanCompactValue(isTablet).deviceTypeToAnalyticsString
         )
         triggerEvent(
             StartPaymentFlow(
