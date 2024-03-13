@@ -106,13 +106,11 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
             val layoutParams = viewToApplyMargins.layoutParams
             if (layoutParams is MarginLayoutParams) {
                 val marginHorizontal = (windowWidth * marginPart).toInt()
-                        layoutParams.setMargins(
-                            marginHorizontal,
-                            layoutParams.topMargin,
-
+                layoutParams.setMargins(
                     marginHorizontal,
-
-                            layoutParams.bottomMargin
+                    layoutParams.topMargin,
+                    marginHorizontal,
+                    layoutParams.bottomMargin
 
                 )
                 viewToApplyMargins.layoutParams = layoutParams
