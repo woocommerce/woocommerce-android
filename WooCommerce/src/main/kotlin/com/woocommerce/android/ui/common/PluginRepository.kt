@@ -25,10 +25,13 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.PluginActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.plugin.ImmutablePluginModel
+import org.wordpress.android.fluxc.model.plugin.PluginDirectoryType.SITE
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.PluginStore
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginError
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginPayload
+import org.wordpress.android.fluxc.store.PluginStore.FetchPluginDirectoryPayload
 import org.wordpress.android.fluxc.store.PluginStore.FetchSitePluginErrorType
 import org.wordpress.android.fluxc.store.PluginStore.FetchSitePluginPayload
 import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginError
@@ -77,6 +80,25 @@ class PluginRepository @Inject constructor(
                 Result.failure(OnChangedException(event.error))
             }
         }
+    }
+
+    suspend fun fetchInstalledPlugins(site: SiteModel): Result<List<ImmutablePluginModel>> {
+        val plugins = mutableListOf<ImmutablePluginModel>()
+        var loadMore = false
+        do {
+            val payload = FetchPluginDirectoryPayload(SITE, site, loadMore)
+            val action = PluginActionBuilder.newFetchPluginDirectoryAction(payload)
+            val event: PluginStore.OnPluginDirectoryFetched = dispatcher.dispatchAndAwait(action)
+            if (event.isError) {
+                WooLog.w(WooLog.T.PLUGINS, "Fetching installed plugins failed, ${event.error.type} ${event.error.message}")
+                return Result.failure(OnChangedException(event.error))
+            } else {
+                val list = pluginStore.getPluginDirectory(site, SITE)
+                plugins.addAll(list)
+                loadMore = !event.isError && event.canLoadMore
+            }
+        } while (loadMore)
+        return Result.success(plugins)
     }
 
     @Suppress("LongMethod")
