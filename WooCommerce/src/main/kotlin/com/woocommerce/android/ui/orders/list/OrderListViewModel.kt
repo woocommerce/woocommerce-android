@@ -785,28 +785,37 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun trashOrder(orderId: Long) {
-        fun revert() {
-            val listDescriptor = activeWCOrderListDescriptor?.copy(excludedIds = null) ?: return
+        fun updateExcludedOrders(excludedOrderIds: List<Long>?) {
+            val listDescriptor = activeWCOrderListDescriptor?.copy(
+                excludedIds = excludedOrderIds?.takeIf { it.isNotEmpty() }
+            ) ?: return
+            activeWCOrderListDescriptor = listDescriptor
             val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
             activatePagedListWrapper(pagedListWrapper)
         }
+
+        fun excludeOrder() = updateExcludedOrders(
+            excludedOrderIds = (activeWCOrderListDescriptor?.excludedIds ?: emptyList()) + orderId
+        )
+
+        fun cancelExcludingOrder() = updateExcludedOrders(activeWCOrderListDescriptor?.excludedIds?.minus(orderId))
 
         fun handleTrashing() {
             launch {
                 orderListRepository
                     .trashOrder(orderId)
-                    .onFailure { triggerEvent(ShowErrorSnack(R.string.orderlist_order_trashed)) }
+                    .onFailure { triggerEvent(ShowErrorSnack(R.string.orderlist_order_trashed_error)) }
+
+                cancelExcludingOrder()
             }
         }
 
-        val listDescriptor = activeWCOrderListDescriptor?.copy(excludedIds = listOf(orderId)) ?: return
-        val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
-        activatePagedListWrapper(pagedListWrapper)
+        excludeOrder()
 
         triggerEvent(
             Event.ShowUndoSnackbar(
                 message = resourceProvider.getString(R.string.orderlist_order_trashed, orderId),
-                undoAction = { revert() },
+                undoAction = { cancelExcludingOrder() },
                 dismissAction = object : Snackbar.Callback() {
                     override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                         if (event != DISMISS_EVENT_ACTION) {
