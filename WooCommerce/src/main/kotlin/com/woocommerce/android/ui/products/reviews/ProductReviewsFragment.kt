@@ -125,7 +125,9 @@ class ProductReviewsFragment :
     private fun setupObservers() {
         viewModel.productReviewsViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { binding.reviewsList.notifsRefreshLayout.isRefreshing = it }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
+                binding.reviewsList.notifsRefreshLayout.isRefreshing = it
+            }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
         }
