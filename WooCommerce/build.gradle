@@ -290,7 +290,7 @@ dependencies {
     implementation "com.google.mlkit:text-recognition:$mlkitTextRecognitionVersion"
     implementation "com.google.mlkit:barcode-scanning:$mlkitBarcodeScanningVersion"
 
-    implementation "com.google.zxing:core:3.5.1"
+    implementation "com.google.zxing:core:3.5.3"
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
