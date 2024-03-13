@@ -7,7 +7,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintingInstructionsBinding
-import com.woocommerce.android.extensions.isTablet
+import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.windowSizeClass
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
 
@@ -33,7 +34,7 @@ class PrintingInstructionsFragment : DialogFragment(R.layout.fragment_printing_i
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners_NoMinWidth)
         } else {
             /* This draws the dialog as full screen */
@@ -43,7 +44,7 @@ class PrintingInstructionsFragment : DialogFragment(R.layout.fragment_printing_i
 
     override fun onStart() {
         super.onStart()
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             dialog?.window?.setLayout(
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
                 (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()

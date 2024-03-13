@@ -11,9 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.extensions.isTablet
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,7 +33,7 @@ class CustomerListDialogFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners_NoMinWidth)
         } else {
             /* This draws the dialog as full screen */
@@ -86,7 +87,7 @@ class CustomerListDialogFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             dialog?.window?.setLayout(
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
                 (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
