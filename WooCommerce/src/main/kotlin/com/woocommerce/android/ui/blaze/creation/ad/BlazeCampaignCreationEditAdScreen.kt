@@ -350,10 +350,11 @@ private fun SuggestionButton(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = if (isEnabled)
+            tint = if (isEnabled) {
                 MaterialTheme.colors.primary
-            else
-                colorResource(id = color.color_on_surface_disabled),
+            } else {
+                colorResource(id = color.color_on_surface_disabled)
+            },
             modifier = Modifier
                 .align(Alignment.Center)
                 .size(dimensionResource(id = dimen.major_200))

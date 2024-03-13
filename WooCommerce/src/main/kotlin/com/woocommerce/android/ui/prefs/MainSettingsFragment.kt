@@ -227,6 +227,15 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                     )
                 )
         }
+
+        binding.optionSitePlugins.setOnClickListener {
+            findNavController()
+                .navigateSafely(
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToPluginsFragment()
+                )
+        }
+
+        binding.wooPluginVersion.text = presenter.wooPluginVersion
     }
 
     private fun showDomainDashboard() {

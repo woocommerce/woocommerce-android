@@ -24,6 +24,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CountryPickerFragment : BaseFragment() {
     private val viewModel: CountryPickerViewModel by viewModels()
+
     @Inject lateinit var newStore: NewStore
 
     override val activityAppBarStatus: AppBarStatus

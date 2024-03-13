@@ -42,6 +42,7 @@ class CouponListFragment : BaseFragment(R.layout.fragment_coupon_list) {
     }
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var feedbackPrefs: FeedbackPrefs
 
     private lateinit var searchMenuItem: MenuItem

@@ -30,16 +30,22 @@ data class Subscription(
                 }
             }
         }
+
         @Parcelize
         object Active : Status("active")
+
         @Parcelize
         object OnHold : Status("on-hold")
+
         @Parcelize
         object Cancelled : Status("cancelled")
+
         @Parcelize
         object Expired : Status("expired")
+
         @Parcelize
         object PendingCancellation : Status("pending_cancellation")
+
         @Parcelize
         data class Custom(private val customValue: String) : Status(customValue)
     }

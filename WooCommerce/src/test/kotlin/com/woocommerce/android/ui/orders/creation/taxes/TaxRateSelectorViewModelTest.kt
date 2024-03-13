@@ -45,7 +45,9 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
         // Create a TaxRateUiModel for testing
         val taxRate = TaxRate(1, "US", "NY", "12345", "New York")
         val taxRateUiModel = TaxRateSelectorViewModel.TaxRateUiModel(
-            "Test Rate · US NY 12345 New York", "10%", taxRate
+            "Test Rate · US NY 12345 New York",
+            "10%",
+            taxRate
         )
 
         // GIVEN
@@ -66,7 +68,9 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
         // Create a TaxRateUiModel for testing
         val taxRate = TaxRate(1, "US", "NY", "12345", "New York")
         val taxRateUiModel = TaxRateSelectorViewModel.TaxRateUiModel(
-            "Test Rate · US NY 12345 New York", "10%", taxRate
+            "Test Rate · US NY 12345 New York",
+            "10%",
+            taxRate
         )
 
         // WHEN
@@ -81,7 +85,6 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when onEditTaxRatesInAdmin clicked, the should track event`() = testBlocking {
-
         // WHEN
         viewModel.onEditTaxRatesInAdminClicked()
 
@@ -94,7 +97,9 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
         // Create a TaxRateUiModel for testing with an empty address
         val taxRate = TaxRate(1, "", "", "", "")
         val taxRateUiModel = TaxRateSelectorViewModel.TaxRateUiModel(
-            "Test Rate · US", "10%", taxRate
+            "Test Rate · US",
+            "10%",
+            taxRate
         )
 
         // GIVEN
@@ -109,7 +114,9 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
         // Create a TaxRateUiModel for testing with an empty address
         val taxRate = TaxRate(1, "US", "NY", "12345", "New York")
         val taxRateUiModel = TaxRateSelectorViewModel.TaxRateUiModel(
-            "Test Rate · US NY 12345 New York", "10%", taxRate
+            "Test Rate · US NY 12345 New York",
+            "10%",
+            taxRate
         )
 
         // GIVEN

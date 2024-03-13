@@ -11,5 +11,5 @@ enum class GroupedProductListType(
 ) {
     GROUPED(R.string.grouped_products, "key_grouped", ConnectedProductsListContext.GROUPED_PRODUCTS),
     UPSELLS(R.string.upsells_label, "key_upsells", ConnectedProductsListContext.UPSELLS),
-    CROSS_SELLS(R.string.cross_sells_label, "key_cross-sells", ConnectedProductsListContext.CROSS_SELLS);
+    CROSS_SELLS(R.string.cross_sells_label, "key_cross-sells", ConnectedProductsListContext.CROSS_SELLS)
 }

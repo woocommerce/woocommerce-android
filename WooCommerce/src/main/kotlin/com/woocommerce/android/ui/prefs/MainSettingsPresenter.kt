@@ -15,6 +15,7 @@ import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
 import javax.inject.Inject
 
 class MainSettingsPresenter @Inject constructor(
@@ -106,6 +107,10 @@ class MainSettingsPresenter @Inject constructor(
     override val isCloseAccountOptionVisible: Boolean
         get() = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords &&
             accountRepository.getUserAccount()?.userName != null
+
     override val isThemePickerOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
+
+    override val wooPluginVersion: String
+        get() = wooCommerceStore.getSitePlugin(selectedSite.get(), WOO_CORE)?.version ?: ""
 }

@@ -255,10 +255,12 @@ private fun CalendarView(
             AndroidCalendarView(context)
         },
         update = { view ->
-            if (minDate != null)
+            if (minDate != null) {
                 view.minDate = minDate.timeInMillis
-            if (maxDate != null)
+            }
+            if (maxDate != null) {
                 view.maxDate = maxDate.timeInMillis
+            }
 
             view.setDate(currentDate.timeInMillis, false, true)
 

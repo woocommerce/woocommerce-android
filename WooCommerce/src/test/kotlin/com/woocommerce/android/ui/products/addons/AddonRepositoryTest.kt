@@ -200,7 +200,8 @@ class AddonRepositoryTest : BaseUnitTest() {
     private fun configureSuccessfulAddonResponse() {
         whenever(
             productStoreMock.getProductByRemoteId(
-                testSite, remoteProductID
+                testSite,
+                remoteProductID
             )
         ).thenReturn(defaultWCProductModel)
 

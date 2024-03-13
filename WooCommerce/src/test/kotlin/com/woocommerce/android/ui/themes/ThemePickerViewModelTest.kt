@@ -34,13 +34,19 @@ class ThemePickerViewModelTest : BaseUnitTest() {
     private val crashLogger = mock<CrashLogging>()
 
     private val currentTheme = Theme(
-        id = "tsubaki", name = "Tsubaki", demoUrl = "https://example.com/tsubaki"
+        id = "tsubaki",
+        name = "Tsubaki",
+        demoUrl = "https://example.com/tsubaki"
     )
     private val sampleTheme = Theme(
-        id = "tsubaki", name = "Tsubaki", demoUrl = "https://example.com/tsubaki"
+        id = "tsubaki",
+        name = "Tsubaki",
+        demoUrl = "https://example.com/tsubaki"
     )
     private val sampleTheme2 = Theme(
-        id = "tazza", name = "Tazza", demoUrl = "https://example.com/tazza"
+        id = "tazza",
+        name = "Tazza",
+        demoUrl = "https://example.com/tazza"
     )
 
     private lateinit var viewModel: ThemePickerViewModel

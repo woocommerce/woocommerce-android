@@ -149,8 +149,12 @@ object AIPrompts {
         languageISOCode: String = "en"
     ): String {
         val descriptionPart =
-            if (productDescription.isNotEmpty()) "Use the following product description to improve the " +
-                "thank-you note's message, but only if it makes sense: \"$productDescription\"" else ""
+            if (productDescription.isNotEmpty()) {
+                "Use the following product description to improve the " +
+                    "thank-you note's message, but only if it makes sense: \"$productDescription\""
+            } else {
+                ""
+            }
         return String.format(
             ORDER_DETAIL_THANK_YOU_NOTE_PROMPT,
             customerName,

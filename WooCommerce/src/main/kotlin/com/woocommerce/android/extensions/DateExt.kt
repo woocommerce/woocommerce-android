@@ -14,47 +14,58 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
 fun Date.formatToYYYYmm(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "yyyy-MM", locale
+    "yyyy-MM",
+    locale
 ).format(this)
 
 fun Date.formatToYYYYmmDD(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "yyyy-MM-dd", locale
+    "yyyy-MM-dd",
+    locale
 ).format(this)
 
 fun Date.formatToYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "yyyy", locale
+    "yyyy",
+    locale
 ).format(this)
 
 fun Date.formatToYYYYWmm(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "yyyy-'W'ww", locale
+    "yyyy-'W'ww",
+    locale
 ).format(this)
 
 fun Date.formatToMMMMdd(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMMM dd", locale
+    "MMMM dd",
+    locale
 ).format(this)
 
 fun Date.formatToDD(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "d", locale
+    "d",
+    locale
 ).format(this)
 
 fun Date.formatToMMMdd(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d", locale
+    "MMM d",
+    locale
 ).format(this)
 
 fun Date.formatToDDMMMYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "dd MMM yyyy", locale
+    "dd MMM yyyy",
+    locale
 ).format(this)
 
 fun Date.formatToMMMddYYYY(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d, yyyy", locale
+    "MMM d, yyyy",
+    locale
 ).format(this)
 
 fun Date.formatToMMMddYYYYhhmm(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
-    "MMM d, yyyy hh:mm a", locale
+    "MMM d, yyyy hh:mm a",
+    locale
 ).format(this)
 
 fun Date.formatToDDyyyy(locale: Locale): String = SimpleDateFormat(
-    "d, yyyy", locale
+    "d, yyyy",
+    locale
 ).format(this)
 
 fun Date.formatToEEEEMMMddhha(locale: Locale): String {

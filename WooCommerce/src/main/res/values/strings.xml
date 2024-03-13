@@ -2333,6 +2333,9 @@
     <string name="dev_options">Developer Options</string>
     <string name="settings_account">Account Settings</string>
     <string name="settings_themes">Themes</string>
+    <string name="settings_plugins">Plugins</string>
+    <string name="settings_option_installed_plugins">Installed Plugins</string>
+    <string name="settings_woo_plugin_version">WooCommerce Version</string>
 
     <!--
         Developer Options Screen

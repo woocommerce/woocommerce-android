@@ -55,8 +55,11 @@ class OrderDetailProductItemView @JvmOverloads constructor(
 
         onViewAddonsClick?.let { onClick ->
             binding.productInfoAddons.visibility =
-                if (item.containsAddons && AppPrefs.isProductAddonsEnabled) VISIBLE
-                else GONE
+                if (item.containsAddons && AppPrefs.isProductAddonsEnabled) {
+                    VISIBLE
+                } else {
+                    GONE
+                }
             binding.productInfoAddons.setOnClickListener { onClick(item) }
         } ?: binding.productInfoAddons.let { it.visibility = GONE }
 

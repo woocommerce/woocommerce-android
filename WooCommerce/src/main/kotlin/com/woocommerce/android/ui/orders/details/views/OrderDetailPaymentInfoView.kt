@@ -82,7 +82,9 @@ class OrderDetailPaymentInfoView @JvmOverloads constructor(
                     dateStr,
                     order.paymentMethodTitle
                 )
-            } else dateStr
+            } else {
+                dateStr
+            }
         }
 
         updateDiscountsSection(order, formatCurrencyForDisplay)
