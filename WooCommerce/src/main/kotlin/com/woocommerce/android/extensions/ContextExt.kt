@@ -7,10 +7,12 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Point
+import android.os.Parcelable
 import android.view.WindowManager
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import com.woocommerce.android.util.SystemVersionUtils
+import kotlinx.parcelize.Parcelize
 
 val Context.windowSizeClass: WindowSizeClass
     get() = when (resources.configuration.screenWidthDp) {
@@ -23,7 +25,8 @@ val Context.windowSizeClass: WindowSizeClass
  * Window size class type based on Material Design
  * [guidelines](https://m3.material.io/foundations/layout/applying-layout/window-size-classes)
  */
-sealed class WindowSizeClass(val maxWidth: Int) {
+@Parcelize
+sealed class WindowSizeClass(val maxWidth: Int) : Parcelable {
     /**
      * Phone in portrait
      */

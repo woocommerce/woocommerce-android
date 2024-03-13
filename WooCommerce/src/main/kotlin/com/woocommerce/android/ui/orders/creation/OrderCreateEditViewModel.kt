@@ -89,7 +89,6 @@ import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
-import com.woocommerce.android.ui.compose.DeviceType
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
@@ -174,6 +173,7 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import com.woocommerce.android.extensions.WindowSizeClass
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -419,8 +419,8 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
-    fun onDeviceConfigurationChanged(deviceType: DeviceType) {
-        viewState = viewState.copy(deviceType = deviceType)
+    fun onDeviceConfigurationChanged(deviceType: WindowSizeClass) {
+        viewState = viewState.copy(windowSizeClass = deviceType)
     }
 
     fun selectCustomAmount(customAmount: CustomAmountUIModel) {
@@ -1322,7 +1322,7 @@ class OrderCreateEditViewModel @Inject constructor(
                                 viewState = viewState.copy(
                                     isUpdatingOrderDraft = false,
                                     showOrderUpdateSnackbar = true,
-                                    isRecalculateNeeded = viewState.deviceType == DeviceType.Tablet
+                                    isRecalculateNeeded = viewState.windowSizeClass != WindowSizeClass.Compact
                                 )
                             }
                             trackOrderSyncFailed(updateStatus.throwable)
@@ -1829,7 +1829,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val taxRateSelectorButtonState: TaxRateSelectorButtonState = TaxRateSelectorButtonState(),
         val productsSectionState: ProductsSectionState = ProductsSectionState(),
         val customAmountSectionState: CustomAmountSectionState = CustomAmountSectionState(),
-        val deviceType: DeviceType = DeviceType.Phone,
+        val windowSizeClass: WindowSizeClass = WindowSizeClass.Compact,
         val isRecalculateNeeded: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel

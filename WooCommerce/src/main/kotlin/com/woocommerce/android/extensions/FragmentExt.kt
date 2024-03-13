@@ -14,7 +14,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubFragment
-import com.woocommerce.android.ui.compose.DeviceType
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlin.math.abs
@@ -215,6 +214,3 @@ fun Fragment.showDateRangePicker(
         onCustomRangeSelected(it?.first ?: 0L, it.second ?: 0L)
     }
 }
-
-val Fragment.deviceType: DeviceType
-    get() = if (isTablet()) DeviceType.Tablet else DeviceType.Phone

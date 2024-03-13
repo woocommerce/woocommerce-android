@@ -34,15 +34,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationAdditionalInfoCollectionSectionBinding
-import com.woocommerce.android.extensions.deviceType
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
@@ -157,8 +157,8 @@ class OrderCreateEditFormFragment :
             viewModel.onCouponAdded(it)
         }
         handleTaxRateSelectionResult()
-        viewModel.onDeviceConfigurationChanged(deviceType)
-        if (isTablet()) syncSelectedItems()
+        viewModel.onDeviceConfigurationChanged(requireContext().windowSizeClass)
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) syncSelectedItems()
     }
 
     private fun syncSelectedItems() {
@@ -541,7 +541,7 @@ class OrderCreateEditFormFragment :
         binding.productsSection.hideAddProductsHeaderActions()
         binding.productsSection.hideHeader()
         binding.productsSection.content = null
-        if (!isTablet()) {
+        if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
             binding.productsSection.setProductSectionButtons(
                 addProductsButton = AddButton(
                     text = getString(R.string.order_creation_add_products),
@@ -608,7 +608,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.renderDefaultProductsSectionButtons() {
-        if (!isTablet()) {
+        if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
             productsSection.setProductSectionButtons(
                 addProductsButton = AddButton(
                     text = getString(R.string.order_creation_add_products),
@@ -1112,7 +1112,9 @@ class OrderCreateEditFormFragment :
             }
 
             is OnSelectedProductsSyncRequested -> {
-                if (isTablet()) sharedViewModel.selectedItems.value.let { viewModel.onProductsSelected(it) }
+                if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+                    sharedViewModel.selectedItems.value.let { viewModel.onProductsSelected(it) }
+                }
             }
 
             is Exit -> findNavController().navigateUp()
