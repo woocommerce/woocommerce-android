@@ -18,4 +18,11 @@ class ProductSelectorSharedViewModel @Inject constructor(
     fun updateSelectedItems(selectedItems: List<ProductSelectorViewModel.SelectedItem>) {
         _selectedItems.value = selectedItems
     }
+
+    private val _isProductSelectionActive: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    val isProductSelectionActive: StateFlow<Boolean> = _isProductSelectionActive
+
+    fun onProductSelectorStateChanged(isEnabled: Boolean) {
+        _isProductSelectionActive.value = isEnabled
+    }
 }

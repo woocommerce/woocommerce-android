@@ -106,6 +106,9 @@ class ProductSelectorViewModel @Inject constructor(
     private val popularProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
     private val recentProducts: MutableStateFlow<List<Product>> = MutableStateFlow(emptyList())
 
+    private val selectionEnabled: MutableStateFlow<Boolean> =
+        savedState.getStateFlow(viewModelScope, true, "key_selection_enabled")
+
     private val selectedItemsSource: MutableMap<Long, ProductSourceForTracking> = mutableMapOf()
 
     private var fetchProductsJob: Job? = null
@@ -126,7 +129,8 @@ class ProductSelectorViewModel @Inject constructor(
         flow5 = selectedItems,
         flow6 = filterState,
         flow7 = searchState,
-    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState ->
+        flow8 = selectionEnabled,
+    ) { products, popularProducts, recentProducts, loadingState, selectedIds, filterState, searchState, enabled ->
         ViewState(
             loadingState = loadingState,
             products = products.map {
@@ -140,6 +144,7 @@ class ProductSelectorViewModel @Inject constructor(
             selectionMode = navArgs.selectionMode,
             screenTitleOverride = navArgs.screenTitleOverride,
             ctaButtonTextOverride = navArgs.ctaButtonTextOverride,
+            selectionEnabled = enabled,
         )
     }.asLiveData()
 
@@ -641,6 +646,10 @@ class ProductSelectorViewModel @Inject constructor(
         _selectedItems.value = selectedItems
     }
 
+    fun onProductSelectionStateChanged(productSelectionEnabled: Boolean) {
+        selectionEnabled.value = productSelectionEnabled
+    }
+
     data class ViewState(
         val loadingState: LoadingState,
         val products: List<ListItem>,
@@ -652,6 +661,7 @@ class ProductSelectorViewModel @Inject constructor(
         val selectionMode: SelectionMode,
         val screenTitleOverride: String? = null,
         val ctaButtonTextOverride: String? = null,
+        val selectionEnabled: Boolean = true,
     ) {
         val isDoneButtonEnabled: Boolean = selectionMode == SelectionMode.MULTIPLE || selectedItemsCount > 0
     }

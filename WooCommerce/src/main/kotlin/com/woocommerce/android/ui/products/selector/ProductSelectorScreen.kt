@@ -312,6 +312,7 @@ private fun displayProductsSection(
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description),
                 isCogwheelVisible = product is ListItem.ConfigurableListItem,
+                enabled = state.selectionEnabled,
                 onEditConfiguration = {
                     (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                 }
@@ -432,6 +433,7 @@ private fun ProductList(
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = product is ListItem.ConfigurableListItem,
+                    enabled = state.selectionEnabled,
                     onEditConfiguration = {
                         (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                     }

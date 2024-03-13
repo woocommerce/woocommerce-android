@@ -432,6 +432,7 @@ class OrderCreateEditFormFragment :
 
                     binding.productsSection.isEachAddButtonEnabled = idle
                 }
+                sharedViewModel.onProductSelectorStateChanged(idle && new.isEditable)
             }
             new.showOrderUpdateSnackbar.takeIfNotEqualTo(old?.showOrderUpdateSnackbar) { show ->
                 showOrHideErrorSnackBar(show)
