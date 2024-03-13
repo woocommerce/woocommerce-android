@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
@@ -85,7 +83,6 @@ private const val EMPTY_VIEW_THROTTLE = 250L
 
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
-@Suppress("LeakingThis")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -234,9 +231,6 @@ class OrderListViewModel @Inject constructor(
     /**
      * Creates and activates a new list with the search and filter params provided. This should only be used
      * by the search component portion of the order list view.
-     *
-     * NOTE: Although technically the "PROCESSING" tab is a filtered list, it should not use this method. The
-     * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
         val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(sanitizeSearchQuery(searchQuery))
