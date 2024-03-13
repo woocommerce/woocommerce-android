@@ -62,7 +62,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/woo_plugin_info"
-                    android:textColor="@color/color_on_surface"
+                    android:textColor="@color/color_on_surface_high"
                     android:textAppearance="?attr/textAppearanceBody1"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
