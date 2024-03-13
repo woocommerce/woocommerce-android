@@ -21,7 +21,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.model.Product
@@ -219,7 +219,9 @@ class ProductListViewModel @Inject constructor(
             analyticsTracker.track(
                 AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
                 mapOf(
-                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsTabletValue(isTablet()).deviceTypeToAnalyticsString
+                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenLargerThanCompactValue(
+                        isTablet()
+                    ).deviceTypeToAnalyticsString
                 )
             )
             triggerEvent(ShowAddProductBottomSheet)
@@ -461,7 +463,11 @@ class ProductListViewModel @Inject constructor(
     fun onOpenProduct(productId: Long, sharedView: View?) {
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED,
-            mapOf(AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsTabletValue(isTablet()).deviceTypeToAnalyticsString)
+            mapOf(
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenLargerThanCompactValue(
+                    isTablet()
+                ).deviceTypeToAnalyticsString
+            )
         )
 
         val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == openedProductId } ?: 0

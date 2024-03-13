@@ -105,6 +105,18 @@
                 android:layout_height="wrap_content" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/login_with_site_credentials"
+                style="@style/Widget.LoginFlow.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_extra_large"
+                android:layout_marginEnd="@dimen/margin_extra_large"
+                android:text="@string/wp_email_input_fallback_log_in_with_site_credentials"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/login_continue_button" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/continue_with_google"
                 style="@style/Widget.LoginFlow.Button.Secondary"
                 android:layout_width="match_parent"

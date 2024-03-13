@@ -16,7 +16,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -1432,7 +1432,7 @@ class ProductDetailViewModel @Inject constructor(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
                         AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules,
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsTabletValue(isTablet()).deviceTypeToAnalyticsString,
+                            IsScreenLargerThanCompactValue(isTablet()).deviceTypeToAnalyticsString,
                     )
                     tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
                 }
@@ -1441,7 +1441,7 @@ class ProductDetailViewModel @Inject constructor(
                     AnalyticsEvent.PRODUCT_DETAIL_LOADED,
                     mapOf(
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsTabletValue(isTablet()).deviceTypeToAnalyticsString
+                            IsScreenLargerThanCompactValue(isTablet()).deviceTypeToAnalyticsString
                     )
                 )
             }
@@ -1919,6 +1919,7 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(
                 productDraft = null
             )
+            triggerEvent(ProductUpdated)
             loadRemoteProduct(product.remoteId)
         } else {
             triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
@@ -2531,6 +2532,8 @@ class ProductDetailViewModel @Inject constructor(
     ) : Event()
 
     object ShowAiProductCreationSurveyBottomSheet : Event()
+
+    object ProductUpdated : Event()
 
     data class TrashProduct(val productId: Long) : Event()
 

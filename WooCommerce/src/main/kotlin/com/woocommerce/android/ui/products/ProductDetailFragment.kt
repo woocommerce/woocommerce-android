@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDet
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Loading
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductUpdated
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAiProductCreationSurveyBottomSheet
@@ -362,6 +363,9 @@ class ProductDetailFragment :
                 )
 
                 is ShowAiProductCreationSurveyBottomSheet -> openAIProductCreationSurveyBottomSheet()
+                is ProductUpdated -> productsCommunicationViewModel.pushEvent(
+                    ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated
+                )
                 else -> event.isHandled = false
             }
         }

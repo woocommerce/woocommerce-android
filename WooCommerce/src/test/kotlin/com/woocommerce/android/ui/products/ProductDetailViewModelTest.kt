@@ -1052,6 +1052,20 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given product updated successfuly, when onPublishButtonClicked, then ProductUpdated event emitted`() = testBlocking {
+        // GIVEN
+        whenever(productRepository.getProductAsync(any())).thenReturn(product)
+        whenever(productRepository.updateProduct(any())).thenReturn(true)
+        viewModel.start()
+
+        // WHEN
+        viewModel.onPublishButtonClicked()
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(ProductDetailViewModel.ProductUpdated)
+    }
+
     private val productsDraft
         get() = viewModel.productDetailViewStateData.liveData.value?.productDraft
 }
