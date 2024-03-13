@@ -290,7 +290,8 @@ class ProductListRepository @Inject constructor(
                 ProductStockStatusInfo(
                     productId = wcProductModel.remoteProductId,
                     stockStatus = ProductStockStatus.fromString(wcProductModel.stockStatus),
-                    manageStock = wcProductModel.manageStock
+                    manageStock = wcProductModel.manageStock,
+                    isVariable = ProductType.fromString(wcProductModel.type).isVariableProduct()
                 )
             }
         }

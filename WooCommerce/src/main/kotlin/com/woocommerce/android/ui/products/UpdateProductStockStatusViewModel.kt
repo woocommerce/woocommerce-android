@@ -123,6 +123,7 @@ class UpdateProductStockStatusViewModel @Inject constructor(
             val distinctStatuses = stockStatusInfos.map { it.stockStatus }.distinct()
             val productsToUpdateCount = stockStatusInfos.count { !it.manageStock }
             val ignoredProductsCount = stockStatusInfos.size - productsToUpdateCount
+            val variableProductsIgnoredCount = stockStatusInfos.count { it.isVariable }
 
             val statusMessage = buildStatusMessage(productsToUpdateCount, ignoredProductsCount, resourceProvider)
 
@@ -158,7 +159,8 @@ class UpdateProductStockStatusViewModel @Inject constructor(
     data class ProductStockStatusInfo(
         val productId: Long,
         val stockStatus: ProductStockStatus,
-        val manageStock: Boolean
+        val manageStock: Boolean,
+        val isVariable: Boolean
     ) : Parcelable
 
     sealed class StockStatusState : Parcelable {
