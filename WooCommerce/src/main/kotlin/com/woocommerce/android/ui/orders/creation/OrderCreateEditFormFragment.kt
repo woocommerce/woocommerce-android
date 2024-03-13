@@ -94,7 +94,6 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 
@@ -211,16 +210,13 @@ class OrderCreateEditFormFragment :
     }
 
     private fun FragmentOrderCreateEditFormBinding.adjustUIForScreenSize() {
-        productSelectorNavContainer.isVisible =
-            DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
-        if (DisplayUtils.isTablet(context)) {
-            twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
-        } else if (DisplayUtils.isXLargeTablet(context)) {
-            twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
-        } else {
-            twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
+        productSelectorNavContainer.isVisible = requireContext().windowSizeClass != WindowSizeClass.Compact
+        when (requireContext().windowSizeClass) {
+            WindowSizeClass.Compact -> twoPaneLayoutGuideline.setGuidelinePercent(0.0f)
+            WindowSizeClass.Medium -> twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PANES_WIDTH_RATIO)
+            WindowSizeClass.ExpandedAndBigger -> twoPaneLayoutGuideline.setGuidelinePercent(XL_TABLET_PANES_WIDTH_RATIO)
         }
-        setupToolbars(DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context))
+        setupToolbars(requireContext().windowSizeClass != WindowSizeClass.Compact)
     }
 
     private fun FragmentOrderCreateEditFormBinding.setupToolbars(isTablet: Boolean) {
