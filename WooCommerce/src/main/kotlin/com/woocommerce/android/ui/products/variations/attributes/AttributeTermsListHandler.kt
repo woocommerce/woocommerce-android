@@ -43,7 +43,9 @@ class AttributeTermsListHandler @Inject constructor(
     private suspend fun loadAttributeTerms(
         remoteAttributeId: Long
     ): List<ProductAttributeTerm> = repository.fetchGlobalAttributeTerms(
-        remoteAttributeId, page, PAGE_SIZE
+        remoteAttributeId,
+        page,
+        PAGE_SIZE
     ).also {
         if (it.size == PAGE_SIZE) {
             canLoadMore = true

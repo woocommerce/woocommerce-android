@@ -137,8 +137,11 @@ private fun BackgroundImage(bannerState: JitmState.Banner) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(
-                        if (isSystemInDarkTheme()) icon.urlDarkMode
-                        else icon.urlLightMode
+                        if (isSystemInDarkTheme()) {
+                            icon.urlDarkMode
+                        } else {
+                            icon.urlLightMode
+                        }
                     )
                     .decoderFactory(SvgDecoder.Factory())
                     .build(),
@@ -176,8 +179,11 @@ private fun BadgeIcon(bannerState: JitmState.Banner) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(
-                        if (isSystemInDarkTheme()) icon.urlDarkMode
-                        else icon.urlLightMode
+                        if (isSystemInDarkTheme()) {
+                            icon.urlDarkMode
+                        } else {
+                            icon.urlLightMode
+                        }
                     )
                     .decoderFactory(SvgDecoder.Factory())
                     .build(),

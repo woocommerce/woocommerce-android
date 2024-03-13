@@ -610,13 +610,17 @@ class ShippingLabelsStateMachine @Inject constructor() {
                 !originAddressStep.data.phone.isValidPhoneNumber(ORIGIN, isCustomsFormRequired)
             ) {
                 originAddressStep.copy(status = READY)
-            } else originAddressStep
+            } else {
+                originAddressStep
+            }
 
             val shippingAddressStep = if (isCustomsFormRequired &&
                 !shippingAddressStep.data.phone.isValidPhoneNumber(DESTINATION, isCustomsFormRequired)
             ) {
                 shippingAddressStep.copy(status = READY)
-            } else shippingAddressStep
+            } else {
+                shippingAddressStep
+            }
 
             val customsStep = customsStep.copy(
                 isVisible = isCustomsFormRequired,

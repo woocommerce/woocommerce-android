@@ -87,7 +87,9 @@ class CardReaderPaymentDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                 InteracRefundSuccessful -> navigateBackWithNotice(KEY_INTERAC_SUCCESS)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowSnackbarInDialog -> Snackbar.make(
-                    requireView(), event.message, BaseTransientBottomBar.LENGTH_LONG
+                    requireView(),
+                    event.message,
+                    BaseTransientBottomBar.LENGTH_LONG
                 ).show()
                 is PlayChaChing -> playChaChing()
                 is ContactSupport -> openSupportRequestScreen()

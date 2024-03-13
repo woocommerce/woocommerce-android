@@ -48,8 +48,11 @@ class JetpackActivationStartViewModel @Inject constructor(
 
     init {
         analyticsTrackerWrapper.track(
-            stat = if (navArgs.isJetpackInstalled) AnalyticsEvent.LOGIN_JETPACK_CONNECTION_ERROR_SHOWN
-            else AnalyticsEvent.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED
+            stat = if (navArgs.isJetpackInstalled) {
+                AnalyticsEvent.LOGIN_JETPACK_CONNECTION_ERROR_SHOWN
+            } else {
+                AnalyticsEvent.LOGIN_JETPACK_REQUIRED_SCREEN_VIEWED
+            }
         )
     }
 
@@ -90,8 +93,11 @@ class JetpackActivationStartViewModel @Inject constructor(
             )
         } else {
             analyticsTrackerWrapper.track(
-                stat = if (navArgs.isJetpackInstalled) AnalyticsEvent.LOGIN_JETPACK_CONNECT_BUTTON_TAPPED
-                else AnalyticsEvent.LOGIN_JETPACK_SETUP_BUTTON_TAPPED
+                stat = if (navArgs.isJetpackInstalled) {
+                    AnalyticsEvent.LOGIN_JETPACK_CONNECT_BUTTON_TAPPED
+                } else {
+                    AnalyticsEvent.LOGIN_JETPACK_SETUP_BUTTON_TAPPED
+                }
             )
             triggerEvent(
                 NavigateToSiteCredentialsScreen(

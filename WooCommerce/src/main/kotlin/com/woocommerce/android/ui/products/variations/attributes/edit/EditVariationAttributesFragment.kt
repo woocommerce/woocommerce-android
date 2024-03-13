@@ -42,12 +42,15 @@ class EditVariationAttributesFragment :
     private var isLoadingSkeletonVisible: Boolean = false
         set(show) {
             field = show
-            if (show) skeletonView.show(
-                viewActual = binding.attributeSelectionGroupList,
-                layoutId = R.layout.skeleton_variation_attributes_list,
-                delayed = true
-            )
-            else skeletonView.hide()
+            if (show) {
+                skeletonView.show(
+                    viewActual = binding.attributeSelectionGroupList,
+                    layoutId = R.layout.skeleton_variation_attributes_list,
+                    delayed = true
+                )
+            } else {
+                skeletonView.hide()
+            }
         }
 
     private val adapter

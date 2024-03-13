@@ -55,8 +55,11 @@ class CloseAccountViewModel @Inject constructor(
 
                 is Error -> {
                     val errorDescription =
-                        if (result.hasActiveStores) R.string.settings_close_account_active_stores_error_description
-                        else R.string.settings_close_account_generic_error_description
+                        if (result.hasActiveStores) {
+                            R.string.settings_close_account_active_stores_error_description
+                        } else {
+                            R.string.settings_close_account_generic_error_description
+                        }
                     _viewState.value = _viewState.value?.copy(
                         title = R.string.settings_close_account_error_dialog_title,
                         description = errorDescription,

@@ -297,7 +297,8 @@ class OrderListViewModel @Inject constructor(
             // Fetch and load order status options
             when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
                 SUCCESS -> _orderStatusOptions.value = orderListRepository.getCachedOrderStatusOptions()
-                else -> { /* do nothing */
+                else -> {
+                    /* do nothing */
                 }
             }
         }

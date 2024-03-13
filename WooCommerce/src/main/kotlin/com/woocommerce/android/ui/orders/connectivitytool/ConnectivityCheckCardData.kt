@@ -67,6 +67,7 @@ sealed class ConnectivityCheckStatus : Parcelable {
     data object NotStarted : ConnectivityCheckStatus()
     data object InProgress : ConnectivityCheckStatus()
     data object Success : ConnectivityCheckStatus()
+
     @Parcelize
     data class Failure(val error: FailureType? = null) : ConnectivityCheckStatus(), Parcelable
 }

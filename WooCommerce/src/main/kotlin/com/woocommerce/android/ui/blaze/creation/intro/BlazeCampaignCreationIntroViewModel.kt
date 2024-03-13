@@ -50,7 +50,8 @@ class BlazeCampaignCreationIntroViewModel @Inject constructor(
                 when {
                     products.size == 1 -> triggerEvent(
                         ShowCampaignCreationForm(
-                            products.first().remoteId, BlazeFlowSource.INTRO_VIEW
+                            products.first().remoteId,
+                            BlazeFlowSource.INTRO_VIEW
                         )
                     )
 

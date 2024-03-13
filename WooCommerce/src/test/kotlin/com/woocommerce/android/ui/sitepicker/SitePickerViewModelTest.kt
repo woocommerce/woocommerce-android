@@ -267,7 +267,8 @@ class SitePickerViewModelTest : BaseUnitTest() {
     fun `given that the view model is created, when store fetch is empty, then empty view is displayed`() =
         testBlocking {
             val expectedSitePickerViewState = SitePickerTestUtils.getEmptyViewState(
-                defaultSitePickerViewState, resourceProvider
+                defaultSitePickerViewState,
+                resourceProvider
             )
             whenSitesAreFetched(returnsEmpty = true)
             whenViewModelIsCreated()
@@ -494,11 +495,15 @@ class SitePickerViewModelTest : BaseUnitTest() {
     fun `given list of sites is shown, when a non-woo site is tapped, then show the Woo not found error`() =
         testBlocking {
             val expectedSites = defaultExpectedSiteList.mapIndexed { index, siteModel ->
-                if (index == 0) siteModel.apply {
-                    hasWooCommerce = false
-                    url = SitePickerTestUtils.loginSiteAddress
-                    setIsJetpackConnected(true)
-                } else siteModel
+                if (index == 0) {
+                    siteModel.apply {
+                        hasWooCommerce = false
+                        url = SitePickerTestUtils.loginSiteAddress
+                        setIsJetpackConnected(true)
+                    }
+                } else {
+                    siteModel
+                }
             }
             whenever(repository.fetchWooCommerceSites()).thenReturn(WooResult(expectedSites))
             whenViewModelIsCreated()

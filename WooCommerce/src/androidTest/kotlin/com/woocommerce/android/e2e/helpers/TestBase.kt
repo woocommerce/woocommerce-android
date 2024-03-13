@@ -75,13 +75,19 @@ internal class LocaleAwareRenderableDate(date: Date, format: String?, timezone: 
             }
             return if (mFormat == "unix") {
                 java.lang.String.valueOf(mDate.getTime() / DIVIDE_MILLISECONDS_TO_SECONDS)
-            } else formatCustom()
+            } else {
+                formatCustom()
+            }
         }
-        return if (mTimezoneName != null) ISO8601Utils.format(
-            mDate,
-            false,
-            TimeZone.getTimeZone(mTimezoneName)
-        ) else ISO8601Utils.format(mDate, false)
+        return if (mTimezoneName != null) {
+            ISO8601Utils.format(
+                mDate,
+                false,
+                TimeZone.getTimeZone(mTimezoneName)
+            )
+        } else {
+            ISO8601Utils.format(mDate, false)
+        }
     }
 
     private fun formatCustom(): String {

@@ -85,7 +85,9 @@ class WooNotificationBuilder @Inject constructor(
             setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
             // Call processing service when notification is dismissed
             val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForLocalNotificationDismiss(
-                context, notification.noteId, notification.tag!!
+                context,
+                notification.noteId,
+                notification.tag!!
             )
             setDeleteIntent(pendingDeleteIntent)
             NotificationManagerCompat.from(context).notify(
@@ -161,7 +163,8 @@ class WooNotificationBuilder @Inject constructor(
         try {
             // Call processing service when notification is dismissed
             val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForPushNotificationDismiss(
-                context, pushId
+                context,
+                pushId
             )
             builder.setDeleteIntent(pendingDeleteIntent)
 
@@ -171,7 +174,9 @@ class WooNotificationBuilder @Inject constructor(
                 PendingIntent.FLAG_UPDATE_CURRENT
             }
             val pendingIntent = PendingIntent.getActivity(
-                context, pushId, getResultIntent(pushId, notification),
+                context,
+                pushId,
+                getResultIntent(pushId, notification),
                 flags
             )
             builder.setContentIntent(pendingIntent)

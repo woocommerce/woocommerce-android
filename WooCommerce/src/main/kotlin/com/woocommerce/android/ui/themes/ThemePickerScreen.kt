@@ -67,8 +67,11 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
             Toolbar(
                 title = {
                     Text(
-                        if (viewState.isFromStoreCreation) ""
-                        else stringResource(id = R.string.settings_themes)
+                        if (viewState.isFromStoreCreation) {
+                            ""
+                        } else {
+                            stringResource(id = R.string.settings_themes)
+                        }
                     )
                 },
                 navigationIcon = Filled.ArrowBack,

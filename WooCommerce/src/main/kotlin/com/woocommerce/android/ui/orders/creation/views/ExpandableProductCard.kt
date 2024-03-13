@@ -110,7 +110,8 @@ fun ExpandableProductCard(
     }
     val transition = updateTransition(transitionState, "expandableProductCard")
     val chevronRotation by transition.animateFloat(
-        transitionSpec = { tween(durationMillis = ANIM_DURATION_MILLIS) }, label = "chevronRotation"
+        transitionSpec = { tween(durationMillis = ANIM_DURATION_MILLIS) },
+        label = "chevronRotation"
     ) {
         if (isExpanded) 180f else 0f
     }

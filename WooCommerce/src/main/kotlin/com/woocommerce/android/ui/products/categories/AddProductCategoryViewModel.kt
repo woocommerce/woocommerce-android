@@ -62,7 +62,9 @@ class AddProductCategoryViewModel @Inject constructor(
                 )
             )
             false
-        } else true
+        } else {
+            true
+        }
     }
 
     fun onCategoryNameChanged(categoryName: String) {
@@ -128,7 +130,9 @@ class AddProductCategoryViewModel @Inject constructor(
         val selectedRemoteId = getSelectedParentId()
         return if (selectedRemoteId != 0L) {
             productCategoriesRepository.getProductCategoryByRemoteId(selectedRemoteId)?.name ?: ""
-        } else ""
+        } else {
+            ""
+        }
     }
 
     /**

@@ -27,10 +27,11 @@ class SettingsScreen : Screen {
     fun setTheme(theme: String): SettingsScreen {
         clickOn(R.id.option_theme)
 
-        val themeString = if (theme == "dark")
+        val themeString = if (theme == "dark") {
             R.string.settings_app_theme_option_dark
-        else
+        } else {
             R.string.settings_app_theme_option_light
+        }
 
         val themeCheckbox: ViewInteraction = Espresso.onView(
             ViewMatchers.withText(getTranslatedString(themeString))

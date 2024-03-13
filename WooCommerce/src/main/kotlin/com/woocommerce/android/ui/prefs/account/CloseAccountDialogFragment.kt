@@ -69,8 +69,9 @@ class CloseAccountDialogFragment : DialogFragment() {
                         Column(modifier = Modifier.clip(RoundedCornerShape(35.dp))) {
                             if (state.isLoading) {
                                 LoadingDialog()
-                            } else
+                            } else {
                                 AccountClosingDialog(state, focusRequester)
+                            }
                         }
                         LaunchedEffect(Unit) { focusRequester.requestFocus() }
                     }
@@ -174,6 +175,8 @@ class CloseAccountDialogFragment : DialogFragment() {
                     style = MaterialTheme.typography.subtitle1
                 )
             }
+            // In the currently used version of kotlin and compose compiler, using multiline if else breaks the build
+            @Suppress("MultiLineIfElse")
             WCTextButton(
                 onClick = if (state.isAccountDeletionError) viewModel::onContactSupportClicked
                 else viewModel::onConfirmCloseAccount,

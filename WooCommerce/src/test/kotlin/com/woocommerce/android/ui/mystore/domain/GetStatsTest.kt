@@ -301,8 +301,11 @@ class GetStatsTest : BaseUnitTest() {
 
     private fun givenIsJetpackConnected(isJetPackConnected: Boolean) {
         whenever(selectedSite.connectionType).thenReturn(
-            if (isJetPackConnected) SiteConnectionType.JetpackConnectionPackage
-            else SiteConnectionType.Jetpack
+            if (isJetPackConnected) {
+                SiteConnectionType.JetpackConnectionPackage
+            } else {
+                SiteConnectionType.Jetpack
+            }
         )
     }
 

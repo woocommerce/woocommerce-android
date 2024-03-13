@@ -19,6 +19,7 @@ class ProductImagesJobService : JobService() {
         private const val MIN_JOB_ID = 0
         private const val MAX_JOB_ID = 10000
     }
+
     @Inject lateinit var notifHandler: ProductImagesNotificationHandler
 
     init {

@@ -112,9 +112,11 @@ class DeveloperOptionsViewModel @Inject constructor(
             val newState = originalListItem.copy(isChecked = isChecked)
             _viewState.value = currentViewState.copy(
                 rows = currentViewState.rows.map {
-                    if (it.label == newState.label)
+                    if (it.label == newState.label) {
                         newState
-                    else it
+                    } else {
+                        it
+                    }
                 }
             )
         }
