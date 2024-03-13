@@ -22,7 +22,7 @@ class ProductSelectorSharedViewModel @Inject constructor(
     private val _isProductSelectionActive: MutableStateFlow<Boolean> = MutableStateFlow(true)
     val isProductSelectionActive: StateFlow<Boolean> = _isProductSelectionActive
 
-    fun onProductSelectorStateChanged(isEnabled: Boolean) {
+    fun onProductSelectionStateChanged(isEnabled: Boolean) {
         _isProductSelectionActive.value = isEnabled
     }
 }
