@@ -141,10 +141,14 @@ object WooAnimUtils {
             toY = if (isVisible) 0f else 1f
         }
         val animation = TranslateAnimation(
-            Animation.RELATIVE_TO_SELF, 0.0f,
-            Animation.RELATIVE_TO_SELF, 0.0f,
-            Animation.RELATIVE_TO_SELF, fromY,
-            Animation.RELATIVE_TO_SELF, toY
+            Animation.RELATIVE_TO_SELF,
+            0.0f,
+            Animation.RELATIVE_TO_SELF,
+            0.0f,
+            Animation.RELATIVE_TO_SELF,
+            fromY,
+            Animation.RELATIVE_TO_SELF,
+            toY
         )
 
         val durationMillis = duration.toMillis(view.context)
@@ -163,9 +167,12 @@ object WooAnimUtils {
 
     fun rotate(view: View, duration: Duration = EXTRA_LONG) {
         val rotationAnimation: Animation = RotateAnimation(
-            DEGREES_0, DEGREES_360,
-            Animation.RELATIVE_TO_SELF, PIVOT_CENTER,
-            Animation.RELATIVE_TO_SELF, PIVOT_CENTER
+            DEGREES_0,
+            DEGREES_360,
+            Animation.RELATIVE_TO_SELF,
+            PIVOT_CENTER,
+            Animation.RELATIVE_TO_SELF,
+            PIVOT_CENTER
         )
         rotationAnimation.repeatCount = REPEAT_COUNT_LOOP
         rotationAnimation.duration = duration.toMillis(view.context)

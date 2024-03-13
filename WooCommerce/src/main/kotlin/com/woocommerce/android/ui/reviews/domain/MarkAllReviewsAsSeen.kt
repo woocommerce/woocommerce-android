@@ -20,7 +20,8 @@ class MarkAllReviewsAsSeen @Inject constructor(
             NO_ACTION_NEEDED,
             SUCCESS -> {
                 notificationHandler.removeNotificationsOfTypeFromSystemsBar(
-                    NotificationChannelType.REVIEW, selectedSite.get().siteId
+                    NotificationChannelType.REVIEW,
+                    selectedSite.get().siteId
                 )
                 Success
             }

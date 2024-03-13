@@ -112,16 +112,22 @@ class OrderDetailFragment :
 
     @Inject
     lateinit var navigator: OrderNavigator
+
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     lateinit var productImageMap: ProductImageMap
+
     @Inject
     lateinit var dateUtils: DateUtils
+
     @Inject
     lateinit var cardReaderManager: CardReaderManager
+
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
 
@@ -751,7 +757,9 @@ class OrderDetailFragment :
                 onGiveFeedbackClick = { onGiveFeedbackClicked() },
                 onDismissClick = { onDismissProductWIPNoticeCardClicked() }
             )
-        } else binding.orderDetailShippingLabelsWipCard.isVisible = false
+        } else {
+            binding.orderDetailShippingLabelsWipCard.isVisible = false
+        }
     }
 
     private fun onGiveFeedbackClicked() {

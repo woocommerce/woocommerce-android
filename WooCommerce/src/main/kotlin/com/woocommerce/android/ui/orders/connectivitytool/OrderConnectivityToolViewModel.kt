@@ -84,7 +84,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
             WordPressCheck -> StoreCheck
             StoreCheck -> StoreOrdersCheck
             StoreOrdersCheck -> Finished
-            Finished -> throw IllegalStateException("Cannot move to next state from Finished")
+            Finished -> error("Cannot move to next state from Finished")
         }
 
     fun startConnectionChecks() {
@@ -138,10 +138,13 @@ class OrderConnectivityToolViewModel @Inject constructor(
             trackChanges(status, VALUE_SITE, startTime)
             status.startNextCheck()
             storeCheckFlow.update {
-                if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
-                    handleReadMoreClick(status.error ?: FailureType.GENERIC)
-                })
-                else it.copy(connectivityCheckStatus = status)
+                if (status is Failure) {
+                    it.copy(connectivityCheckStatus = status, readMoreAction = {
+                        handleReadMoreClick(status.error ?: FailureType.GENERIC)
+                    })
+                } else {
+                    it.copy(connectivityCheckStatus = status)
+                }
             }
         }.launchIn(viewModelScope)
     }
@@ -152,10 +155,13 @@ class OrderConnectivityToolViewModel @Inject constructor(
             trackChanges(status, VALUE_JETPACK_TUNNEL, startTime)
             status.startNextCheck()
             ordersCheckFlow.update {
-                if (status is Failure) it.copy(connectivityCheckStatus = status, readMoreAction = {
-                    handleReadMoreClick(status.error ?: FailureType.GENERIC)
-                })
-                else it.copy(connectivityCheckStatus = status)
+                if (status is Failure) {
+                    it.copy(connectivityCheckStatus = status, readMoreAction = {
+                        handleReadMoreClick(status.error ?: FailureType.GENERIC)
+                    })
+                } else {
+                    it.copy(connectivityCheckStatus = status)
+                }
             }
         }.launchIn(viewModelScope)
     }

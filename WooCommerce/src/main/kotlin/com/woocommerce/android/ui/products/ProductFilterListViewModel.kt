@@ -165,7 +165,9 @@ class ProductFilterListViewModel @Inject constructor(
 
         val screenTitle = if (productFilterOptions.isNotEmpty()) {
             resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
-        } else resourceProvider.getString(string.product_list_filters)
+        } else {
+            resourceProvider.getString(string.product_list_filters)
+        }
 
         productFilterListViewState = productFilterListViewState.copy(
             screenTitle = screenTitle,

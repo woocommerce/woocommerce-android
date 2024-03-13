@@ -259,8 +259,11 @@ private fun CategoriesSkeleton() {
                     )
                 ) {
                     val width = dimensionResource(
-                        id = if (it.mod(2) == 0) R.dimen.skeleton_text_large_width
-                        else R.dimen.skeleton_text_medium_width
+                        id = if (it.mod(2) == 0) {
+                            R.dimen.skeleton_text_large_width
+                        } else {
+                            R.dimen.skeleton_text_medium_width
+                        }
                     )
                     SkeletonView(
                         width = width,
@@ -284,7 +287,9 @@ private fun PreviewProductCategorySelector() {
             title = "Category $id",
             children = if (childrenDepth > 0) {
                 listOf(generateCategory("$childrenDepth$id".toLong(), childrenDepth - 1))
-            } else emptyList(),
+            } else {
+                emptyList()
+            },
             isSelected = (id.mod(2)) == 0,
             onItemClick = {}
         )

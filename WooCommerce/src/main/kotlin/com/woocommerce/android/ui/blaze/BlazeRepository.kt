@@ -147,8 +147,11 @@ class BlazeRepository @Inject constructor(
             tagLine = "",
             description = "",
             campaignImage = product.images.firstOrNull().let {
-                if (it != null) BlazeCampaignImage.RemoteImage(it.id, it.source)
-                else BlazeCampaignImage.None
+                if (it != null) {
+                    BlazeCampaignImage.RemoteImage(it.id, it.source)
+                } else {
+                    BlazeCampaignImage.None
+                }
             },
             budget = getDefaultBudget(),
             targetingParameters = TargetingParameters(),
@@ -293,7 +296,8 @@ class BlazeRepository @Inject constructor(
                         when (it) {
                             is MediaFilesRepository.UploadResult.UploadSuccess -> emit(Result.success(it.media))
                             is MediaFilesRepository.UploadResult.UploadFailure -> throw it.error
-                            else -> { /* Do nothing */
+                            else -> {
+                                /* Do nothing */
                             }
                         }
                     }

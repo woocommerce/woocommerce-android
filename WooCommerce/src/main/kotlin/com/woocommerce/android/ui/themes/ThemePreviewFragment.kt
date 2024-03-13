@@ -58,7 +58,8 @@ class ThemePreviewFragment : BaseFragment() {
             when (event) {
                 is ThemePreviewViewModel.ContinueStoreCreationWithTheme -> continueStoreCreation()
                 is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(
-                    CURRENT_THEME_UPDATED, event.data
+                    CURRENT_THEME_UPDATED,
+                    event.data
                 )
 
                 is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)

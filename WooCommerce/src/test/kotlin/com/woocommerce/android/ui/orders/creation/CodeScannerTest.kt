@@ -42,7 +42,7 @@ class CodeScannerTest : BaseUnitTest() {
             // arrange
             val barcodeRawValue = "12345"
             val mockBarcodeList = mock<Task<List<Barcode>>>()
-            val mockBarcode = mock<Barcode>() {
+            val mockBarcode = mock<Barcode> {
                 on {
                     rawValue
                 }.thenReturn(barcodeRawValue)
@@ -80,7 +80,7 @@ class CodeScannerTest : BaseUnitTest() {
             // arrange
             val barcodeRawValue = "12345"
             val mockBarcodeList = mock<Task<List<Barcode>>>()
-            val mockBarcode = mock<Barcode>() {
+            val mockBarcode = mock<Barcode> {
                 on {
                     rawValue
                 }.thenReturn(barcodeRawValue)
@@ -178,7 +178,7 @@ class CodeScannerTest : BaseUnitTest() {
         testBlocking {
             // arrange
             val mockBarcodeList = mock<Task<List<Barcode>>>()
-            val mockBarcode = mock<Barcode>() {
+            val mockBarcode = mock<Barcode> {
                 on {
                     rawValue
                 }.thenReturn(null)
@@ -215,7 +215,7 @@ class CodeScannerTest : BaseUnitTest() {
             // arrange
             val errorMessage = "Failed to find a valid raw value!"
             val mockBarcodeList = mock<Task<List<Barcode>>>()
-            val mockBarcode = mock<Barcode>() {
+            val mockBarcode = mock<Barcode> {
                 on {
                     rawValue
                 }.thenReturn(null)

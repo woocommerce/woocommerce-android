@@ -111,6 +111,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
                     layoutParams.topMargin,
                     marginHorizontal,
                     layoutParams.bottomMargin
+
                 )
                 viewToApplyMargins.layoutParams = layoutParams
             }

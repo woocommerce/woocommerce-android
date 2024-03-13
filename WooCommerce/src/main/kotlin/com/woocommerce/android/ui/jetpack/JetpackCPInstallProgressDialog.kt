@@ -150,7 +150,10 @@ class JetpackCPInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_in
                 if (status.retry) {
                     setViewVisibility(
                         View.VISIBLE,
-                        binding.message1, binding.message2, binding.message3, binding.message4
+                        binding.message1,
+                        binding.message2,
+                        binding.message3,
+                        binding.message4
                     )
                 }
 

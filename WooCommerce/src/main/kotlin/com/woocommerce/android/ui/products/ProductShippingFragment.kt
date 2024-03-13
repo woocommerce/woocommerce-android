@@ -140,7 +140,9 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
         val str = editable?.toString() ?: ""
         return if (str.isFloat()) {
             str.toFloat()
-        } else 0.0f
+        } else {
+            0.0f
+        }
     }
 
     /**

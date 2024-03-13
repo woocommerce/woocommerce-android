@@ -121,8 +121,11 @@ fun JetpackBenefitsScreen(
         WCColoredButton(onClick = onInstallClick, modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = stringResource(
-                    id = if (viewState.isUsingJetpackCP) R.string.jetpack_benefits_modal_install_jetpack
-                    else R.string.jetpack_benefits_modal_login
+                    id = if (viewState.isUsingJetpackCP) {
+                        R.string.jetpack_benefits_modal_install_jetpack
+                    } else {
+                        R.string.jetpack_benefits_modal_login
+                    }
                 )
             )
         }

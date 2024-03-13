@@ -72,8 +72,11 @@ class StoreCreationRepository @Inject constructor(
         val result = withContext(Dispatchers.Default) {
             wooCommerceStore.fetchWooCommerceSites()
         }
-        return if (result.isError) Result.failure(Exception(result.error.message))
-        else Result.success(result.model ?: emptyList())
+        return if (result.isError) {
+            Result.failure(Exception(result.error.message))
+        } else {
+            Result.success(result.model ?: emptyList())
+        }
     }
 
     suspend fun getSiteByUrl(url: String?): SiteModel? {

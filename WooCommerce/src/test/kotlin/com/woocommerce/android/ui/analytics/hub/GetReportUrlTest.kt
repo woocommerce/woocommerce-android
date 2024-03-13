@@ -1,4 +1,5 @@
 @file:Suppress("MaximumLineLength")
+
 package com.woocommerce.android.ui.analytics.hub
 
 import com.woocommerce.android.tools.SelectedSite

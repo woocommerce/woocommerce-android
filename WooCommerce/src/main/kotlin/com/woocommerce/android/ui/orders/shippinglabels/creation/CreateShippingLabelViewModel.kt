@@ -429,7 +429,9 @@ class CreateShippingLabelViewModel @Inject constructor(
                             .first { it.packageId == rate.packageId }
                         Pair(labelPackage, rate.price)
                     }.toMap()
-                } else emptyMap()
+                } else {
+                    emptyMap()
+                }
 
                 return OrderSummaryState(
                     isVisible = true,
@@ -655,8 +657,11 @@ class CreateShippingLabelViewModel @Inject constructor(
 
     private val CustomsStep.stepDescription: String
         get() = resourceProvider.getString(
-            if (status == DONE) string.shipping_label_create_customs_done
-            else string.shipping_label_create_customs_description
+            if (status == DONE) {
+                string.shipping_label_create_customs_done
+            } else {
+                string.shipping_label_create_customs_description
+            }
         )
 
     fun retry() = stateMachine.handleEvent(FlowStarted(arguments.orderId))

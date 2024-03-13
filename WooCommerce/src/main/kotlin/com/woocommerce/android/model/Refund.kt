@@ -38,6 +38,7 @@ data class Refund(
         @IgnoredOnParcel
         val uniqueId: Long = ProductHelper.productOrVariationId(productId, variationId)
     }
+
     @Parcelize
     data class ShippingLine(
         val itemId: Long,
@@ -128,7 +129,9 @@ fun List<Refund>.getNonRefundedProducts(
             val quantity = it.quantity.toBigDecimal()
             val individualProductTax = if (quantity > BigDecimal.ZERO) {
                 it.totalTax.divide(quantity, 2, HALF_UP)
-            } else BigDecimal.ZERO
+            } else {
+                BigDecimal.ZERO
+            }
 
             it.copy(
                 quantity = newQuantity ?: error("Missing product"),

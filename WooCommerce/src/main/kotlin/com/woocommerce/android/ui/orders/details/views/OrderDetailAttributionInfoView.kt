@@ -136,8 +136,11 @@ private fun OrderAttributionContent(
                     )
                     Icon(
                         painter = painterResource(
-                            id = if (detailsExpanded) R.drawable.ic_arrow_up
-                            else R.drawable.ic_arrow_down
+                            id = if (detailsExpanded) {
+                                R.drawable.ic_arrow_up
+                            } else {
+                                R.drawable.ic_arrow_down
+                            }
                         ),
                         contentDescription = null
                     )

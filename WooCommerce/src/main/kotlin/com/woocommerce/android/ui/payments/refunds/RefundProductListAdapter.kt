@@ -107,8 +107,11 @@ class RefundProductListAdapter(
             quantityTextView.text = item.quantity.toString()
 
             productAddonsView.visibility =
-                if (item.orderItem.containsAddons && AppPrefs.isProductAddonsEnabled) VISIBLE
-                else GONE
+                if (item.orderItem.containsAddons && AppPrefs.isProductAddonsEnabled) {
+                    VISIBLE
+                } else {
+                    GONE
+                }
 
             productAddonsView.setOnClickListener {
                 onViewAddonsClick?.invoke(item.orderItem)

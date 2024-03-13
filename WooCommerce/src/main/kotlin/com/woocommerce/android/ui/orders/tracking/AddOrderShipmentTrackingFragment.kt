@@ -48,8 +48,11 @@ class AddOrderShipmentTrackingFragment :
     }
 
     @Inject lateinit var networkStatus: NetworkStatus
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var navigator: OrderNavigator
+
     @Inject lateinit var dateUtils: DateUtils
 
     private val viewModel: AddOrderShipmentTrackingViewModel by viewModels()

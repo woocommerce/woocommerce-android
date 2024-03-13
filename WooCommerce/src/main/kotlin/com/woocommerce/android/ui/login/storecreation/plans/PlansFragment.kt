@@ -26,6 +26,7 @@ class PlansFragment : BaseFragment() {
     private val viewModel: PlansViewModel by viewModels()
 
     @Inject internal lateinit var authenticator: WPComWebViewAuthenticator
+
     @Inject internal lateinit var userAgent: UserAgent
 
     override val activityAppBarStatus: AppBarStatus

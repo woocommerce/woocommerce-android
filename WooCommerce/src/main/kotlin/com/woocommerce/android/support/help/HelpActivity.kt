@@ -42,9 +42,13 @@ class HelpActivity : AppCompatActivity() {
     private val viewModel: HelpViewModel by viewModels()
 
     @Inject lateinit var accountRepository: AccountRepository
+
     @Inject lateinit var siteStore: SiteStore
+
     @Inject lateinit var supportHelper: SupportHelper
+
     @Inject lateinit var zendeskSettings: ZendeskSettings
+
     @Inject lateinit var selectedSite: SelectedSite
 
     private lateinit var binding: ActivityHelpBinding
@@ -195,7 +199,7 @@ class HelpActivity : AppCompatActivity() {
         Zendesk FAQ once it's ready
         zendeskHelper
                 .showZendeskHelpCenter(this, originFromExtras, selectedSiteOrNull(), extraTagsFromExtras)
-        */
+         */
     }
 
     private fun showApplicationLog() {
