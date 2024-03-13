@@ -18,10 +18,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentSelectPaymentMethodBinding
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -223,7 +224,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                 }
 
                 is NavigateBackToOrderList -> {
-                    val action = if (isTablet()) {
+                    val action = if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                         SelectPaymentMethodFragmentDirections.actionSelectPaymentMethodFragmentToOrderDetailFragment(
                             orderId = event.order.id
                         )
