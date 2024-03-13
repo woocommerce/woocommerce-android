@@ -91,6 +91,7 @@ import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
@@ -449,6 +450,7 @@ class OrderDetailFragment :
 
                     communicationViewModel.trashOrder(event.orderId)
                 }
+                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
                 else -> event.isHandled = false
             }
         }

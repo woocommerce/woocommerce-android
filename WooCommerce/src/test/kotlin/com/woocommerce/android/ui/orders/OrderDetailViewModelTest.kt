@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.GiftCardSummary
@@ -45,6 +46,7 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -2152,13 +2154,28 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when trash button is clicked, then communicate event to the parent fragment`() = testBlocking {
+    fun `when trash button is clicked, then show an alert`() = testBlocking {
         createViewModel()
 
         val event = viewModel.event.runAndCaptureValues {
             viewModel.onTrashOrderClicked()
         }.last()
 
+        assertThat(event).isInstanceOf(MultiLiveEvent.Event.ShowDialog::class.java)
+    }
+
+    @Test
+    fun `when trash is confirmed, then communicate event to the parent fragment`() = testBlocking {
+        createViewModel()
+
+        val dialogEvent = viewModel.event.runAndCaptureValues {
+            viewModel.onTrashOrderClicked()
+        }.last() as MultiLiveEvent.Event.ShowDialog
+        val event = viewModel.event.runAndCaptureValues {
+            dialogEvent.positiveBtnAction?.onClick(mock(), 0)
+        }.last()
+
         assertThat(event).isEqualTo(OrderDetailViewModel.TrashOrder(ORDER_ID))
+        verify(analyticsTracker).track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
     }
 }

@@ -618,8 +618,17 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     fun onTrashOrderClicked() {
-        analyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
-        triggerEvent(TrashOrder(navArgs.orderId))
+        triggerEvent(
+            MultiLiveEvent.Event.ShowDialog(
+                messageId = string.order_detail_trash_order_dialog_message,
+                positiveButtonId = string.order_detail_move_to_trash,
+                positiveBtnAction = { _, _ ->
+                    analyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
+                    triggerEvent(TrashOrder(navArgs.orderId))
+                },
+                negativeButtonId = string.cancel
+            )
+        )
     }
 
     private suspend fun updateOrderState() {
