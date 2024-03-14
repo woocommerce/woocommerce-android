@@ -6,7 +6,6 @@ import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.compose.DeviceType
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
 import com.woocommerce.android.util.CurrencyFormatter

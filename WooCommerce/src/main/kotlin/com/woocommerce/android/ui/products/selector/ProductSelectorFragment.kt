@@ -90,6 +90,11 @@ class ProductSelectorFragment : BaseFragment() {
                     sharedViewModel.updateSelectedItems(it)
                 }
             }
+            lifecycleScope.launch {
+                sharedViewModel.isProductSelectionActive.collect {
+                    viewModel.onProductSelectionStateChanged(it)
+                }
+            }
         }
     }
 
