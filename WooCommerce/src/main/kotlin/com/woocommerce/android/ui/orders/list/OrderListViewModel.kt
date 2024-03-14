@@ -768,6 +768,7 @@ class OrderListViewModel @Inject constructor(
         if (notificationChannelsHandler.checkNewOrderNotificationSound() == NewOrderNotificationSoundStatus.DISABLED &&
             !appPrefs.chaChingSoundIssueDialogDismissed
         ) {
+            analyticsTracker.track(AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_SHOWN)
             triggerEvent(
                 Event.ShowDialog(
                     titleId = R.string.cha_ching_sound_issue_dialog_title,
@@ -775,9 +776,14 @@ class OrderListViewModel @Inject constructor(
                     positiveButtonId = R.string.cha_ching_sound_issue_dialog_turn_on_sound,
                     negativeButtonId = R.string.cha_ching_sound_issue_dialog_keep_silent,
                     positiveBtnAction = { _, _ ->
+                        analyticsTracker.track(
+                            AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_SOURCE to "order_list")
+                        )
                         recreateNotificationChannel()
                     },
                     negativeBtnAction = { _, _ ->
+                        analyticsTracker.track(AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_DISMISSED)
                         appPrefs.chaChingSoundIssueDialogDismissed = true
                     },
                     cancelable = false

@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.prefs.notifications
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.ShowTestNotification
@@ -20,7 +23,8 @@ class NotificationSettingsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val notificationChannelsHandler: NotificationChannelsHandler,
-    private val showTestNotification: ShowTestNotification
+    private val showTestNotification: ShowTestNotification,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val _newOrderNotificationSoundStatus = MutableStateFlow(
         notificationChannelsHandler.checkNewOrderNotificationSound()
@@ -32,6 +36,10 @@ class NotificationSettingsViewModel @Inject constructor(
     }
 
     fun onEnableChaChingSoundClicked() {
+        analyticsTracker.track(
+            AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to "settings")
+        )
         notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
         triggerEvent(
             MultiLiveEvent.Event.ShowActionSnackbar(
