@@ -174,6 +174,8 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import android.util.Log
+import kotlinx.coroutines.flow.last
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -297,15 +299,26 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         .asLiveData()
 
-    val selectedItems: StateFlow<List<SelectedItem>> = orderDraft.map { order ->
-        order.items.map { item ->
+    val selectedItems: StateFlow<List<SelectedItem>> =
+        _orderDraft.map { order -> order.selectedItems() }
+            .toStateFlow(
+                emptyList()
+            )
+
+    fun Order.selectedItems(): List<SelectedItem> = items.map { item ->
             if (item.isVariation) {
                 SelectedItem.ProductVariation(item.productId, item.variationId)
             } else {
                 Product(item.productId)
             }
         }
-    }.distinctUntilChanged().asFlow().toStateFlow(emptyList())
+
+    private val _pendingSelectedItems: MutableStateFlow<List<SelectedItem>> = savedState.getStateFlow(
+        viewModelScope,
+        initialValue = emptyList(),
+        key = "key_pending_selected_items"
+    )
+    val pendingSelectedItems: StateFlow<List<SelectedItem>> = _pendingSelectedItems
 
     val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
         .map { order -> order.feesLines }
@@ -413,6 +426,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         updateAddGiftCardButtonVisibility(order)
                         handleCouponEditResult()
                         updateTaxRateSelectorButtonState()
+                        _pendingSelectedItems.value = _orderDraft.value.selectedItems()
                     }
                 }
             }
@@ -1220,8 +1234,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onItemsSelectionChanged(selectedItems: List<SelectedItem>) {
-        if (this.selectedItems.value != selectedItems) {
+        if (_orderDraft.value.selectedItems() != selectedItems) {
+            Log.d("OrderCreateEditViewModel", "onItemsSelectionChanged: ${_orderDraft.value.selectedItems()} vs $selectedItems")
             viewState = viewState.copy(isRecalculateNeeded = true)
+            _pendingSelectedItems.value = selectedItems
         }
     }
 

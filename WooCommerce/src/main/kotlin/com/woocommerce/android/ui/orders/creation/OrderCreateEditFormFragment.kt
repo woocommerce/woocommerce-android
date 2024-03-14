@@ -94,6 +94,7 @@ import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
@@ -163,11 +164,15 @@ class OrderCreateEditFormFragment :
 
     private fun syncSelectedItems() {
         lifecycleScope.launch {
-            viewModel.selectedItems.collect(sharedViewModel::updateSelectedItems)
+            viewModel.pendingSelectedItems.collect {
+                sharedViewModel.updateSelectedItems(it)
+            }
         }
         lifecycleScope.launch(Dispatchers.Main) {
-            sharedViewModel.updateSelectedItems(viewModel.selectedItems.value)
-            sharedViewModel.selectedItems.collect(viewModel::onItemsSelectionChanged)
+            sharedViewModel.updateSelectedItems(viewModel.pendingSelectedItems.value)
+            sharedViewModel.selectedItems.drop(1).collect {
+                viewModel.onItemsSelectionChanged(it)
+            }
         }
     }
 
@@ -195,8 +200,8 @@ class OrderCreateEditFormFragment :
         orderUpdateFailureSnackBar?.dismiss()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onDestroy() {
+        super.onDestroy()
         sharedViewModel.updateSelectedItems(emptyList())
     }
 
