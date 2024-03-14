@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
@@ -301,12 +300,12 @@ class OrderCreateEditViewModel @Inject constructor(
         _orderDraft.map { order -> order.selectedItems() }.toStateFlow(emptyList())
 
     fun Order.selectedItems(): List<SelectedItem> = items.map { item ->
-            if (item.isVariation) {
-                SelectedItem.ProductVariation(item.productId, item.variationId)
-            } else {
-                Product(item.productId)
-            }
+        if (item.isVariation) {
+            SelectedItem.ProductVariation(item.productId, item.variationId)
+        } else {
+            Product(item.productId)
         }
+    }
 
     private val _pendingSelectedItems: MutableStateFlow<List<SelectedItem>> = savedState.getStateFlow(
         viewModelScope,
@@ -1229,10 +1228,9 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onItemsSelectionChanged(selectedItems: List<SelectedItem>) {
-        if (_orderDraft.value.selectedItems() != selectedItems) {
-            viewState = viewState.copy(isRecalculateNeeded = true)
-            _pendingSelectedItems.value = selectedItems
-        }
+        viewState =
+            viewState.copy(isRecalculateNeeded = _orderDraft.value.selectedItems() != selectedItems)
+        _pendingSelectedItems.value = selectedItems
     }
 
     private fun onTotalsSectionRecalculateButtonClicked() {
