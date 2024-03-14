@@ -7,15 +7,14 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
-import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
-import androidx.core.widget.NestedScrollView
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.WcEmptyViewBinding
+import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
@@ -36,11 +35,9 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SEARCH_RESULTS
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_CARRIER_RATES
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.SHIPPING_LABEL_SERVICE_PACKAGE_LIST
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.UNREAD_FILTERED_REVIEW_LIST
-import org.wordpress.android.util.DisplayUtils
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private val binding = WcEmptyViewBinding.inflate(LayoutInflater.from(context), this, true)
-    private var showImageInBothOrientations: Boolean = false
 
     enum class EmptyViewType {
         DASHBOARD,
@@ -73,24 +70,16 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
      * Hide the image in landscape since there isn't enough room for it on most devices
      */
     private fun checkOrientation() {
-        binding.emptyViewImage.isVisible = showImageInBothOrientations || !DisplayUtils.isLandscape(context)
+        binding.emptyViewImage.isVisible = context.windowSizeClass != WindowSizeClass.Compact
     }
 
+    @Suppress("LongMethod", "ComplexMethod")
     fun show(
         type: EmptyViewType,
         searchQueryOrFilter: String? = null,
-        showImageInBothOrientations: Boolean = false,
-        @ColorRes backgroundColorResId: Int? = null,
         onButtonClick: (() -> Unit)? = null
     ) {
-        this.showImageInBothOrientations = showImageInBothOrientations
-
         checkOrientation()
-
-        backgroundColorResId?.let {
-            val nestedScrollView = findViewById<NestedScrollView>(R.id.empty_view_container)
-            nestedScrollView.setBackgroundColor(ContextCompat.getColor(context, it))
-        }
 
         // if empty view is already showing and it's a different type, fade out the existing view before fading in
         if (visibility == View.VISIBLE && type != lastEmptyViewType) {
@@ -98,7 +87,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             val durationMs = Duration.SHORT.toMillis(context) + 50L
             Handler(Looper.getMainLooper()).postDelayed(
                 {
-                    show(type, searchQueryOrFilter, showImageInBothOrientations, backgroundColorResId,onButtonClick)
+                    show(type, searchQueryOrFilter, onButtonClick)
                 },
                 durationMs
             )
