@@ -680,6 +680,9 @@ class AnalyticsTracker private constructor(
         }
 
         fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {
+            if (instance == null && BuildConfig.DEBUG) {
+                error("event $stat was tracked before AnalyticsTracker was initialized.")
+            }
             if (sendUsageStats) {
                 instance?.track(stat, properties)
             }
