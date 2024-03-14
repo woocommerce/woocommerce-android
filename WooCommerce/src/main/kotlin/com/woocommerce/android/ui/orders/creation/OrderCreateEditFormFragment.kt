@@ -1194,6 +1194,9 @@ class OrderCreateEditFormFragment :
             isLocked = false
             isEachAddButtonEnabled = true
         }
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+            sharedViewModel.onProductSelectionStateChanged(true)
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.hideEditableControls() {
@@ -1219,6 +1222,9 @@ class OrderCreateEditFormFragment :
         customAmountsSection.apply {
             isLocked = true
             isEachAddButtonEnabled = false
+        }
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+            sharedViewModel.onProductSelectionStateChanged(false)
         }
     }
 }
