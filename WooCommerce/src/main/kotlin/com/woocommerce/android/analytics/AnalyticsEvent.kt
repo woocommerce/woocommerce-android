@@ -721,6 +721,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Push notifications
     PUSH_NOTIFICATION_RECEIVED,
     PUSH_NOTIFICATION_TAPPED,
+    NEW_ORDER_PUSH_NOTIFICATION_SOUND,
 
     // -- Notifications List
     NOTIFICATION_OPEN,

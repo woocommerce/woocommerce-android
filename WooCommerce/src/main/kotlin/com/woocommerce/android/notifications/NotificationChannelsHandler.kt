@@ -1,5 +1,6 @@
 package com.woocommerce.android.notifications
 
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.media.AudioAttributes
@@ -7,6 +8,8 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
@@ -17,7 +20,8 @@ import javax.inject.Singleton
 @Singleton
 class NotificationChannelsHandler @Inject constructor(
     private val context: Context,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) {
     private val notificationManagerCompat: NotificationManagerCompat by lazy {
         NotificationManagerCompat.from(context)
@@ -49,6 +53,12 @@ class NotificationChannelsHandler @Inject constructor(
     private fun createChannel(channelType: NotificationChannelType) {
         // check for existing channel first
         notificationManagerCompat.getNotificationChannel(channelType.getChannelId())?.let {
+            if (channelType == NEW_ORDER) {
+                analyticsTracker.track(
+                    AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_SOUND,
+                    mapOf("sound_status" to it.getNewOrderNotificationSoundStatus().name)
+                )
+            }
             WooLog.i(WooLog.T.NOTIFS, "Notification channel already created with the following attributes: $it")
             return
         }
@@ -92,5 +102,17 @@ class NotificationChannelsHandler @Inject constructor(
                 OTHER -> R.string.notification_channel_general_title
             }
         )
+    }
+
+    private fun NotificationChannel.getNewOrderNotificationSoundStatus(): NewOrderNotificationSoundStatus {
+        return when (sound) {
+            context.getChaChingUri() -> NewOrderNotificationSoundStatus.DEFAULT
+            null -> NewOrderNotificationSoundStatus.DISABLED
+            else -> NewOrderNotificationSoundStatus.SOUND_MODIFIED
+        }
+    }
+
+    private enum class NewOrderNotificationSoundStatus {
+        DISABLED, DEFAULT, SOUND_MODIFIED
     }
 }

@@ -187,8 +187,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         // Apply Theme
         AppThemeUtils.setAppTheme()
 
-        notificationChannelsHandler.init()
-
         dispatcher.register(this)
 
         FluxCCrashLoggerProvider.initLogger(fluxCCrashLogger)
@@ -196,6 +194,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         AppRatingDialog.init(application)
 
         initAnalytics()
+
+        notificationChannelsHandler.init()
 
         // Developers can uncomment the line below to clear the db tables at startup
         // wellSqlConfig.resetDatabase()
