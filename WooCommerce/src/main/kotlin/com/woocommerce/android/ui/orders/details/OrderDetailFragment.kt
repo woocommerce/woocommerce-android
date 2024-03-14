@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -94,7 +93,6 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
-import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -103,8 +101,6 @@ class OrderDetailFragment :
     OrderProductActionListener {
     companion object {
         val TAG: String = OrderDetailFragment::class.java.simpleName
-        private const val MARGINS_FOR_TABLET: Float = 0.1F
-        private const val MARGINS_FOR_SMALL_TABLET_PORTRAIT: Float = 0.025F
     }
 
     private val viewModel: OrderDetailViewModel by viewModels()
@@ -176,8 +172,6 @@ class OrderDetailFragment :
         }
     }
 
-    override fun getFragmentTitle() = screenTitle
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -209,7 +203,6 @@ class OrderDetailFragment :
 
         _binding = FragmentOrderDetailBinding.bind(view)
 
-        setMarginsIfTablet()
         setupToolbar()
 
         setupObservers(viewModel)
@@ -237,35 +230,6 @@ class OrderDetailFragment :
     }
 
     private fun isOrderListFragmentNotVisible() = parentFragment?.parentFragment !is OrderListFragment
-
-    private fun setMarginsIfTablet() {
-        val windowWidth = DisplayUtils.getWindowPixelWidth(requireContext())
-        val layoutParams = binding.orderDetailContainer.layoutParams as FrameLayout.LayoutParams
-        when (requireContext().windowSizeClass) {
-            WindowSizeClass.Medium -> {
-                val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
-                layoutParams.setMargins(
-                    marginHorizontal,
-                    layoutParams.topMargin,
-                    marginHorizontal,
-                    layoutParams.bottomMargin
-                )
-            }
-
-            WindowSizeClass.ExpandedAndBigger -> {
-                val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
-                layoutParams.setMargins(
-                    marginHorizontal,
-                    layoutParams.topMargin,
-                    marginHorizontal,
-                    layoutParams.bottomMargin
-                )
-            }
-
-            WindowSizeClass.Compact -> return
-        }
-        binding.orderDetailContainer.layoutParams = layoutParams
-    }
 
     private fun setupToolbar() {
         binding.toolbar.title = screenTitle

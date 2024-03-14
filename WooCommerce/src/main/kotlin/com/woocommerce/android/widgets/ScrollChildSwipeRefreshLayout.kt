@@ -18,7 +18,7 @@ import com.woocommerce.android.R
 class ScrollChildSwipeRefreshLayout @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : androidx.swiperefreshlayout.widget.SwipeRefreshLayout(context, attrs) {
+) : SwipeRefreshLayout(context, attrs) {
     var scrollUpChild: View? = null
 
     override fun canChildScrollUp() =
