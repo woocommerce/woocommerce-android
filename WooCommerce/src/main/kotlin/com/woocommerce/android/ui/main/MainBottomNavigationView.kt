@@ -25,7 +25,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
 ) : BottomNavigationView(context, attrs),
     OnItemSelectedListener,
     OnItemReselectedListener {
-    private var _navController: NavController? = null
+    private var navController: NavController? = null
     private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable
     private lateinit var moreMenuBadge: BadgeDrawable
@@ -42,7 +42,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
         }
 
     fun init(navController: NavController, listener: MainNavigationListener) {
-        this._navController = navController
+        this.navController = navController
         this.listener = listener
 
         addTopDivider()
@@ -50,7 +50,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
         assignNavigationListeners(true)
         val weakReference = WeakReference(this)
-        _navController?.addOnDestinationChangedListener(
+        this.navController?.addOnDestinationChangedListener(
             object : NavController.OnDestinationChangedListener {
                 override fun onDestinationChanged(
                     controller: NavController,
@@ -59,7 +59,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
                 ) {
                     val view = weakReference.get()
                     if (view == null) {
-                        _navController?.removeOnDestinationChangedListener(this)
+                        this@MainBottomNavigationView.navController?.removeOnDestinationChangedListener(this)
                         return
                     }
                     view.menu.forEach { item ->
@@ -137,7 +137,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        _navController?.let { navController ->
+        navController?.let { navController ->
             val navSuccess = NavigationUI.onNavDestinationSelected(item, navController)
             if (navSuccess) {
                 listener.onNavItemSelected(findNavigationPositionById(item.itemId))
