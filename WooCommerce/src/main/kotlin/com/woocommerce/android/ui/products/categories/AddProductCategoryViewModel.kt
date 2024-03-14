@@ -40,7 +40,8 @@ class AddProductCategoryViewModel @Inject constructor(
         savedState,
         AddProductCategoryViewState(
             categoryName = navArgs.productCategory?.name ?: "",
-            selectedParentId = navArgs.productCategory?.parentId
+            selectedParentId = navArgs.productCategory?.parentId,
+            isEditingMode = navArgs.productCategory != null
         )
     )
     private var addProductCategoryViewState by addProductCategoryViewStateLiveData
@@ -91,6 +92,29 @@ class AddProductCategoryViewModel @Inject constructor(
         }
     }
 
+    fun onDeletedCategory() {
+        addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = true)
+        launch {
+            if (networkStatus.isConnected()) {
+                productCategoriesRepository.deleteProductCategory(navArgs.productCategory!!.remoteCategoryId)
+                    .onSuccess {
+                        triggerEvent(ShowSnackbar(R.string.delete_product_category_success))
+                        triggerEvent(ExitWithResult(navArgs.productCategory))
+                    }
+                    .onFailure {
+                        WooLog.e(
+                            tag = WooLog.T.PRODUCTS,
+                            message = "Error deleting product category: ${it.message}"
+                        )
+                        triggerEvent(ShowSnackbar(R.string.delete_product_category_failed))
+                    }
+            } else {
+                triggerEvent(ShowSnackbar(R.string.offline_error))
+            }
+            addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = true)
+        }
+    }
+
     fun saveProductCategory(categoryName: String, parentId: Long = getSelectedParentId()) {
         if (categoryName.isEmpty()) {
             addProductCategoryViewState = addProductCategoryViewState.copy(
@@ -104,7 +128,7 @@ class AddProductCategoryViewModel @Inject constructor(
             if (networkStatus.isConnected()) {
                 val categoryNameTrimmed = TextUtils.htmlEncode(categoryName.trim())
                 val requestResult = when {
-                    isEditingExistingCategory() -> productCategoriesRepository.updateProductCategory(
+                    addProductCategoryViewState.isEditingMode -> productCategoriesRepository.updateProductCategory(
                         navArgs.productCategory!!.remoteCategoryId,
                         categoryName,
                         parentId
@@ -115,7 +139,7 @@ class AddProductCategoryViewModel @Inject constructor(
                 requestResult
                     .onSuccess {
                         val successString = when {
-                            isEditingExistingCategory() -> R.string.update_product_category_success
+                            addProductCategoryViewState.isEditingMode -> R.string.update_product_category_success
                             else -> R.string.add_product_category_success
                         }
                         triggerEvent(ShowSnackbar(successString))
@@ -133,17 +157,15 @@ class AddProductCategoryViewModel @Inject constructor(
                                 categoryNameErrorMessage = string.add_product_category_duplicate
                             )
 
-                            else -> triggerEvent(ShowSnackbar(string.add_product_category_failed))
+                            else -> triggerEvent(ShowSnackbar(R.string.add_product_category_failed))
                         }
                     }
             } else {
-                triggerEvent(ShowSnackbar(string.offline_error))
+                triggerEvent(ShowSnackbar(R.string.offline_error))
             }
             addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = false)
         }
     }
-
-    private fun isEditingExistingCategory(): Boolean = navArgs.productCategory != null
 
     fun fetchParentCategories() {
         loadParentCategories()
@@ -258,7 +280,8 @@ class AddProductCategoryViewModel @Inject constructor(
         val categoryNameErrorMessage: Int? = null,
         val categoryName: String = "",
         val selectedParentId: Long? = null,
-        val shouldShowDiscardDialog: Boolean = true
+        val shouldShowDiscardDialog: Boolean = true,
+        val isEditingMode: Boolean = false
     ) : Parcelable
 
     @Parcelize

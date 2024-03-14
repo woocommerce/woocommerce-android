@@ -37,6 +37,7 @@ class AddProductCategoryFragment :
     }
 
     private var doneMenuItem: MenuItem? = null
+    private var deleteMenuItem: MenuItem? = null
 
     private var progressDialog: CustomProgressDialog? = null
 
@@ -63,13 +64,14 @@ class AddProductCategoryFragment :
     }
 
     private fun onCreateMenu(toolbar: Toolbar) {
-        toolbar.inflateMenu(R.menu.menu_done)
-        doneMenuItem = toolbar.menu.findItem(R.id.menu_done)
+        toolbar.inflateMenu(R.menu.menu_product_category_detail)
+        doneMenuItem = toolbar.menu.findItem(R.id.menu_item_done)
+        deleteMenuItem = toolbar.menu.findItem(R.id.menu_item_delete)
     }
 
     private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_done -> {
+            R.id.menu_item_done -> {
                 AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
                 viewModel.saveProductCategory(binding.productCategoryName.text)
                 true
@@ -148,6 +150,9 @@ class AddProductCategoryFragment :
                 val parentCategoryName = viewModel.getSelectedParentCategoryName()
                 parentCategoryName?.let { binding.productCategoryParent.setHtmlText(it) }
             }
+            new.isEditingMode.takeIfNotEqualTo(old?.isEditingMode) {
+                deleteMenuItem?.isVisible = it
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -164,15 +169,12 @@ class AddProductCategoryFragment :
     private fun displayCategoryNameError(messageId: Int) {
         if (messageId != 0) {
             binding.productCategoryName.error = getString(messageId)
-            showDoneMenuItem(false)
+            doneMenuItem?.isVisible = false
+
         } else {
             binding.productCategoryName.clearError()
-            showDoneMenuItem(true)
+            doneMenuItem?.isVisible = true
         }
-    }
-
-    private fun showDoneMenuItem(show: Boolean) {
-        doneMenuItem?.isVisible = show
     }
 
     private fun showProgressDialog(show: Boolean) {

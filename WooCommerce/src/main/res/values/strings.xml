@@ -1989,8 +1989,10 @@
     <string name="product_add_category">Add category</string>
     <string name="add_product_category_success">Product category added</string>
     <string name="update_product_category_success">Product category updated</string>
+    <string name="delete_product_category_success">Product category deleted</string>
     <string name="add_product_category_duplicate">Error creating category - Name already exists on your site.</string>
     <string name="add_product_category_failed">Error creating category</string>
+    <string name="delete_product_category_failed">Error deleting category</string>
     <string name="add_product_category_empty">Enter a category name</string>
     <string name="product_category_name">Category name</string>
     <string name="product_category_parent">Parent category</string>
