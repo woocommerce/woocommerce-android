@@ -299,9 +299,16 @@ class ProductListRepository @Inject constructor(
     suspend fun bulkUpdateStockStatus(productIds: List<Long>, newStatus: ProductStockStatus): UpdateStockStatusResult =
         withContext(dispatchers.io) {
             val allProducts = productStore.getProductsByRemoteIds(selectedSite.get(), productIds)
-            val productsToUpdate = allProducts.filterNot { it.manageStock }.map {
-                it.apply { stockStatus = ProductStockStatus.fromStockStatus(newStatus) }
+            val variableProductsCount = allProducts.count { ProductType.fromString(it.type).isVariableProduct() }
+
+            if (variableProductsCount == allProducts.size) {
+                return@withContext UpdateStockStatusResult.IsVariableProducts
             }
+
+            val productsToUpdate =
+                allProducts.filterNot { it.manageStock || ProductType.fromString(it.type).isVariableProduct() }.map {
+                    it.apply { stockStatus = ProductStockStatus.fromStockStatus(newStatus) }
+                }
 
             if (productsToUpdate.isEmpty() && allProducts.isNotEmpty()) {
                 return@withContext UpdateStockStatusResult.IsManagedProducts

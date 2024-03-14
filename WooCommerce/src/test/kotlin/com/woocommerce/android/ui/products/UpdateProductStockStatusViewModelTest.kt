@@ -37,12 +37,16 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
                     "1 product with managed stock quantity will be ignored."
                 }
 
+                R.string.product_update_stock_status_variable_ignored_count_singular -> {
+                    "1 variable product will be ignored."
+                }
+
                 else -> "Unexpected resource ID"
             }
         }
         on { getString(any(), any()) } doAnswer { invocation ->
             val resourceId = invocation.arguments[0] as Int
-            val formatArg = invocation.arguments[1] as Int
+            val formatArg = invocation.arguments[1]
             when (resourceId) {
                 R.string.product_update_stock_status_update_count -> {
                     "Stock status will be updated for $formatArg products."
@@ -50,6 +54,10 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
 
                 R.string.product_update_stock_status_ignored_count -> {
                     "$formatArg products with managed stock quantity will be ignored."
+                }
+
+                R.string.product_update_stock_status_variable_ignored_count -> {
+                    "$formatArg variable products will be ignored."
                 }
 
                 else -> "Default String with $formatArg"
@@ -62,8 +70,18 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         testBlocking {
             // Given
             val stockStatusInfos = listOf(
-                ProductStockStatusInfo(productId = 1L, stockStatus = ProductStockStatus.InStock, manageStock = false),
-                ProductStockStatusInfo(productId = 2L, stockStatus = ProductStockStatus.OutOfStock, manageStock = false)
+                ProductStockStatusInfo(
+                    productId = 1L,
+                    stockStatus = ProductStockStatus.InStock,
+                    manageStock = false,
+                    isVariable = false
+                ),
+                ProductStockStatusInfo(
+                    productId = 2L,
+                    stockStatus = ProductStockStatus.OutOfStock,
+                    manageStock = false,
+                    isVariable = false
+                )
             )
             mockFetchStockStatuses(stockStatusInfos)
             setupViewModel(stockStatusInfos.map { it.productId })
@@ -202,7 +220,12 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
     fun `when one product is eligible for update, correct singular status message is shown`() = testBlocking {
         // Given
         val stockStatusInfos = listOf(
-            ProductStockStatusInfo(productId = 1L, stockStatus = ProductStockStatus.InStock, manageStock = false)
+            ProductStockStatusInfo(
+                productId = 1L,
+                stockStatus = ProductStockStatus.InStock,
+                manageStock = false,
+                isVariable = false
+            )
         )
         mockFetchStockStatusesWithManageStock(stockStatusInfos)
         setupViewModel(stockStatusInfos.map { it.productId })
@@ -220,8 +243,18 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
     fun `when all products are eligible for update, correct status message is shown`() = testBlocking {
         // Given
         val stockStatusInfos = listOf(
-            ProductStockStatusInfo(productId = 1L, stockStatus = ProductStockStatus.InStock, manageStock = false),
-            ProductStockStatusInfo(productId = 2L, stockStatus = ProductStockStatus.OutOfStock, manageStock = false)
+            ProductStockStatusInfo(
+                productId = 1L,
+                stockStatus = ProductStockStatus.InStock,
+                manageStock = false,
+                isVariable = false
+            ),
+            ProductStockStatusInfo(
+                productId = 2L,
+                stockStatus = ProductStockStatus.OutOfStock,
+                manageStock = false,
+                isVariable = false
+            )
         )
         mockFetchStockStatusesWithManageStock(stockStatusInfos)
         setupViewModel(stockStatusInfos.map { it.productId })
@@ -239,8 +272,18 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
     fun `when some products have managed stock, correct status message is shown`() = testBlocking {
         // Given
         val stockStatusInfos = listOf(
-            ProductStockStatusInfo(productId = 1L, stockStatus = ProductStockStatus.InStock, manageStock = false),
-            ProductStockStatusInfo(productId = 2L, stockStatus = ProductStockStatus.OutOfStock, manageStock = true)
+            ProductStockStatusInfo(
+                productId = 1L,
+                stockStatus = ProductStockStatus.InStock,
+                manageStock = false,
+                isVariable = false
+            ),
+            ProductStockStatusInfo(
+                productId = 2L,
+                stockStatus = ProductStockStatus.OutOfStock,
+                manageStock = true,
+                isVariable = false
+            )
         )
         mockFetchStockStatusesWithManageStock(stockStatusInfos)
         setupViewModel(stockStatusInfos.map { it.productId })
@@ -260,9 +303,24 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         testBlocking {
             // Given
             val stockStatusInfos = listOf(
-                ProductStockStatusInfo(productId = 1L, stockStatus = ProductStockStatus.InStock, manageStock = false),
-                ProductStockStatusInfo(productId = 2L, stockStatus = ProductStockStatus.OutOfStock, manageStock = true),
-                ProductStockStatusInfo(productId = 3L, stockStatus = ProductStockStatus.OutOfStock, manageStock = true)
+                ProductStockStatusInfo(
+                    productId = 1L,
+                    stockStatus = ProductStockStatus.InStock,
+                    manageStock = false,
+                    isVariable = false
+                ),
+                ProductStockStatusInfo(
+                    productId = 2L,
+                    stockStatus = ProductStockStatus.OutOfStock,
+                    manageStock = true,
+                    isVariable = false
+                ),
+                ProductStockStatusInfo(
+                    productId = 3L,
+                    stockStatus = ProductStockStatus.OutOfStock,
+                    manageStock = true,
+                    isVariable = false
+                )
             )
             mockFetchStockStatusesWithManageStock(stockStatusInfos)
             setupViewModel(stockStatusInfos.map { it.productId })
@@ -276,6 +334,61 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
                 "Stock status will be updated for 1 product. 2 products with managed stock quantity will be ignored."
             assertThat(state?.statusMessage).isEqualTo(expectedMessage)
         }
+
+    @Test
+    fun `when variable products are ignored, correct status messages are shown`() = testBlocking {
+        // Given
+        val stockStatusInfos = listOf(
+            ProductStockStatusInfo(
+                productId = 1L,
+                stockStatus = ProductStockStatus.InStock,
+                manageStock = false,
+                isVariable = false
+            ),
+            ProductStockStatusInfo(
+                productId = 2L,
+                stockStatus = ProductStockStatus.OutOfStock,
+                manageStock = false,
+                isVariable = true
+            )
+        )
+        mockFetchStockStatusesWithManageStock(stockStatusInfos)
+        setupViewModel(stockStatusInfos.map { it.productId })
+
+        // When
+        var state: UpdateStockStatusUiState? = null
+        viewModel.viewState.observeForever { state = it }
+
+        // Then
+        val expectedMessage =
+            "Stock status will be updated for 1 product. 1 variable product will be ignored."
+        assertThat(state?.statusMessage).isEqualTo(expectedMessage)
+    }
+
+    @Test
+    fun `when only variable products are selected, update is blocked and correct event is dispatched`() = testBlocking {
+        // Given
+        val selectedProductIds = listOf(1L, 2L)
+        mockFetchStockStatuses(selectedProductIds, ProductStockStatus.InStock, false, isVariable = true)
+        setupViewModel(selectedProductIds)
+        mockBulkUpdateStockStatus(
+            selectedProductIds,
+            ProductStockStatus.InStock,
+            UpdateStockStatusResult.IsVariableProducts
+        )
+
+        var event: MultiLiveEvent.Event? = null
+        viewModel.event.observeForever { event = it }
+
+        // When
+        viewModel.onDoneButtonClicked()
+
+        // Then
+        assertThat(event).isInstanceOf(MultiLiveEvent.Event.ExitWithResult::class.java)
+        assertThat((event as MultiLiveEvent.Event.ExitWithResult<*>).data).isEqualTo(
+            UpdateStockStatusExitState.Error
+        )
+    }
 
     private fun setupViewModel(selectedProductIds: List<Long>) {
         viewModel = UpdateProductStockStatusViewModel(
@@ -306,14 +419,16 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
     private suspend fun mockFetchStockStatuses(
         selectedProductIds: List<Long>,
         stockStatus: ProductStockStatus,
-        manageStock: Boolean
+        manageStock: Boolean,
+        isVariable: Boolean = false
     ) {
         whenever(productListRepository.fetchStockStatuses(selectedProductIds)).thenReturn(
             selectedProductIds.map { id ->
                 ProductStockStatusInfo(
                     productId = id,
                     stockStatus = stockStatus,
-                    manageStock = manageStock
+                    manageStock = manageStock,
+                    isVariable = isVariable
                 )
             }
         )

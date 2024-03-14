@@ -35,7 +35,8 @@ class UpdateProductStockStatusViewModel @Inject constructor(
 
         private fun buildStatusMessage(
             productsToUpdateCount: Int,
-            ignoredProductsCount: Int,
+            managedProductsIgnoredCount: Int,
+            variableProductsIgnoredCount: Int,
             resourceProvider: ResourceProvider
         ): String {
             return buildString {
@@ -46,17 +47,30 @@ class UpdateProductStockStatusViewModel @Inject constructor(
                 }
                 append(updateMessage)
 
-                if (ignoredProductsCount > 0) {
+                if (managedProductsIgnoredCount > 0) {
                     append(" ")
-                    val ignoreMessage = if (ignoredProductsCount == 1) {
+                    val ignoreMessage = if (managedProductsIgnoredCount == 1) {
                         resourceProvider.getString(R.string.product_update_stock_status_ignored_count_singular)
                     } else {
                         resourceProvider.getString(
                             R.string.product_update_stock_status_ignored_count,
-                            ignoredProductsCount
+                            managedProductsIgnoredCount
                         )
                     }
                     append(ignoreMessage)
+                }
+
+                if (variableProductsIgnoredCount > 0) {
+                    append(" ")
+                    val variableIgnoreMessage = if (variableProductsIgnoredCount == 1) {
+                        resourceProvider.getString(R.string.product_update_stock_status_variable_ignored_count_singular)
+                    } else {
+                        resourceProvider.getString(
+                            R.string.product_update_stock_status_variable_ignored_count,
+                            variableProductsIgnoredCount
+                        )
+                    }
+                    append(variableIgnoreMessage)
                 }
             }
         }
@@ -113,6 +127,12 @@ class UpdateProductStockStatusViewModel @Inject constructor(
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
                     triggerEvent(MultiLiveEvent.Event.ExitWithResult(UpdateStockStatusExitState.Error))
                 }
+
+                is UpdateStockStatusResult.IsVariableProducts -> {
+                    val snackText = R.string.product_update_stock_status_variable_products
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(snackText))
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(UpdateStockStatusExitState.Error))
+                }
             }
         }
     }
@@ -121,11 +141,17 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         viewModelScope.launch {
             val stockStatusInfos = productListRepository.fetchStockStatuses(productIds)
             val distinctStatuses = stockStatusInfos.map { it.stockStatus }.distinct()
-            val productsToUpdateCount = stockStatusInfos.count { !it.manageStock }
-            val ignoredProductsCount = stockStatusInfos.size - productsToUpdateCount
+
+            val productsToUpdateCount = stockStatusInfos.count { !it.manageStock && !it.isVariable }
+            val managedProductsIgnoredCount = stockStatusInfos.count { it.manageStock }
             val variableProductsIgnoredCount = stockStatusInfos.count { it.isVariable }
 
-            val statusMessage = buildStatusMessage(productsToUpdateCount, ignoredProductsCount, resourceProvider)
+            val statusMessage = buildStatusMessage(
+                productsToUpdateCount,
+                managedProductsIgnoredCount,
+                variableProductsIgnoredCount,
+                resourceProvider
+            )
 
             val stockStatusState = if (distinctStatuses.size > 1) {
                 StockStatusState.Mixed
@@ -175,6 +201,7 @@ class UpdateProductStockStatusViewModel @Inject constructor(
         data object Updated : UpdateStockStatusResult()
         data object Error : UpdateStockStatusResult()
         data object IsManagedProducts : UpdateStockStatusResult()
+        data object IsVariableProducts : UpdateStockStatusResult()
     }
 
     @Parcelize
