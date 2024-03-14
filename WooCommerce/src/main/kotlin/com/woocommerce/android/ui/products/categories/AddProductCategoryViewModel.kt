@@ -79,9 +79,15 @@ class AddProductCategoryViewModel @Inject constructor(
 
     fun onCategoryNameChanged(categoryName: String) {
         addProductCategoryViewState = if (categoryName.isEmpty()) {
-            addProductCategoryViewState.copy(categoryNameErrorMessage = string.add_product_category_empty)
+            addProductCategoryViewState.copy(
+                categoryName = categoryName,
+                categoryNameErrorMessage = string.add_product_category_empty
+            )
         } else {
-            addProductCategoryViewState.copy(categoryNameErrorMessage = 0)
+            addProductCategoryViewState.copy(
+                categoryName = categoryName,
+                categoryNameErrorMessage = 0
+            )
         }
     }
 
