@@ -141,7 +141,9 @@ class ProductReviewsViewModel @Inject constructor(
                                 trackFetchProductReviewsResult(result.requestResult, loadMore)
                                 when (result.requestResult) {
                                     SUCCESS,
-                                    NO_ACTION_NEEDED -> _reviewList.value = reviewListRepository.getCachedProductReviews()
+                                    NO_ACTION_NEEDED -> {
+                                        _reviewList.value = reviewListRepository.getCachedProductReviews()
+                                    }
 
                                     ERROR,
                                     API_ERROR,

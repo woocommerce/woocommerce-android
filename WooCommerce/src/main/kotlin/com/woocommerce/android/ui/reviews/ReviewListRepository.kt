@@ -72,36 +72,37 @@ class ReviewListRepository @Inject constructor(
      *
      * @param [loadMore] if true, creates an offset to fetch the next page of [ProductReview]s
      * from the API.
-     * @return the result of the fetch as a [RequestResult]
+     * @return the result of the fetch as a [FetchReviewsResult]
      */
     suspend fun fetchProductReviews(
         loadMore: Boolean,
         remoteProductId: Long? = null
     ): Flow<FetchReviewsResult> =
-        flow { if (!isFetchingProductReviews) {
-            coroutineScope {
-                launch {
-                    val fetchNotificationsResult =  fetchNotifications()
-                    emit(FetchReviewsResult.NotificationsFetched(if (fetchNotificationsResult) SUCCESS else ERROR))
-                }
-
-                launch {
-                    val wasFetchReviewsSuccess = fetchProductReviewsFromApi(loadMore, remoteProductId)
-                    /*
-                     * Fetch any products associated with these reviews missing from the db.
-                     */
-                    if (wasFetchReviewsSuccess) {
-                        getProductReviewsFromDB().map { it.remoteProductId }
-                            .distinct()
-                            .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it) }
+        flow {
+            if (!isFetchingProductReviews) {
+                coroutineScope {
+                    launch {
+                        val fetchNotificationsResult = fetchNotifications()
+                        emit(FetchReviewsResult.NotificationsFetched(if (fetchNotificationsResult) SUCCESS else ERROR))
                     }
-                    emit(FetchReviewsResult.ReviewsFetched(if (wasFetchReviewsSuccess) SUCCESS else ERROR))
+
+                    launch {
+                        val wasFetchReviewsSuccess = fetchProductReviewsFromApi(loadMore, remoteProductId)
+                        /*
+                         * Fetch any products associated with these reviews missing from the db.
+                         */
+                        if (wasFetchReviewsSuccess) {
+                            getProductReviewsFromDB().map { it.remoteProductId }
+                                .distinct()
+                                .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it) }
+                        }
+                        emit(FetchReviewsResult.ReviewsFetched(if (wasFetchReviewsSuccess) SUCCESS else ERROR))
+                    }
                 }
+            } else {
+                emit(FetchReviewsResult.NothingFetched)
             }
-        } else {
-            emit(FetchReviewsResult.NothingFetched)
         }
-    }
 
     /**
      * Fires the request to mark all product review notifications as read to the API. If there are
@@ -412,8 +413,8 @@ class ReviewListRepository @Inject constructor(
     }
 
     sealed class FetchReviewsResult {
-        data class ReviewsFetched(val requestResult: RequestResult): FetchReviewsResult()
-        data class NotificationsFetched(val requestResult: RequestResult): FetchReviewsResult()
-        data object NothingFetched: FetchReviewsResult()
+        data class ReviewsFetched(val requestResult: RequestResult) : FetchReviewsResult()
+        data class NotificationsFetched(val requestResult: RequestResult) : FetchReviewsResult()
+        data object NothingFetched : FetchReviewsResult()
     }
 }
