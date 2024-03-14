@@ -555,6 +555,7 @@ class AnalyticsTracker private constructor(
         const val KEY_PROPERTY = "property"
         const val VALUE_PRICE = "price"
         const val VALUE_STATUS = "status"
+        const val VALUE_STOCK_STATUS = "stock_status"
         const val KEY_SELECTED_PRODUCTS_COUNT = "selected_products_count"
 
         // -- IPP Learn More Link

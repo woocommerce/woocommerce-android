@@ -702,6 +702,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Product images
     PRODUCT_IMAGE_ADDED,
 
+    // -- Product stock status
+    PRODUCT_STOCK_STATUSES_UPDATE_DONE_TAPPED,
+
     // -- Duplicate product
     DUPLICATE_PRODUCT_SUCCESS,
     DUPLICATE_PRODUCT_FAILED,

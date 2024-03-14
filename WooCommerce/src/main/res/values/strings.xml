@@ -2014,6 +2014,7 @@
     <string name="product_selection_count_single">%d product selected</string>
     <string name="product_selection_menu_update_status">Update status</string>
     <string name="product_selection_menu_update_price">Update price</string>
+    <string name="product_selection_menu_update_stock_status">Update stock status</string>
     <string name="product_selection_menu_select_all">Select all</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
     <string name="product_detail_linked_products">Linked products</string>
@@ -4111,4 +4112,21 @@
     <string name="order_configuration_product_selection_control">Product selection</string>
     <string name="disabled">Disabled</string>
     <string name="see_report">See Report</string>
+
+    <string name="product_update_stock_status_title">Update Stock Status</string>
+    <string name="product_update_stock_status_done">DONE</string>
+    <string name="product_update_stock_status_current_status_mixed">Current stock statuses are mixed</string>
+    <string name="product_update_stock_status_current_status_single">Current stock status is %1$s</string>
+    <string name="product_update_stock_status_update_count">Stock status will be updated for %1$d products.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d products with managed stock quantity will be ignored.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d variable products will be ignored.</string>
+    <string name="product_update_stock_status_update_count_singular">Stock status will be updated for 1 product.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 product with managed stock quantity will be ignored.</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 variable product will be ignored.</string>
+    <string name="product_update_stock_status_managed_products">Managed products can\'t be updated</string>
+    <string name="product_update_stock_status_variable_products">Variable products can\'t be updated</string>
+    <string name="product_update_stock_status_completed">Updated stock statuses</string>
+    <string name="product_update_stock_status_error">Something went wrong. Please try again.</string>
+    <string name="product_update_stock_status_dialog_title">Updating stock statuses</string>
+    <string name="product_update_stock_status_dialog_subtitle">Please wait…</string>
 </resources>
