@@ -29,7 +29,6 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         }
     }
 
-
     interface Listener {
         fun onWhatIsWordPressLinkClicked()
         fun onLoginWithSiteCredentialsFallbackClicked()
