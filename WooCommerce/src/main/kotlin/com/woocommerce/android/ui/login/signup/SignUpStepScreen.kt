@@ -187,8 +187,12 @@ private fun SignUpPasswordForm(
                 onValueChange = { onPasswordInputChanged(it) },
                 label = stringResource(id = R.string.signup_password_hint),
                 isError = isPasswordError,
-                helperText = if (isPasswordError) state.error?.stringId
-                    ?.let { stringResource(id = it) } else null,
+                helperText = if (isPasswordError) {
+                    state.error?.stringId
+                        ?.let { stringResource(id = it) }
+                } else {
+                    null
+                },
                 keyboardActions = KeyboardActions(onDone = { onPrimaryButtonClicked() })
             )
         }

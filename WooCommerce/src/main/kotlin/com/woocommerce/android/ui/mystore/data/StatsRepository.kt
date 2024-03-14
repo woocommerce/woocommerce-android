@@ -87,7 +87,10 @@ class StatsRepository @Inject constructor(
         return if (!result.isError) {
             val revenueStatsModel = withContext(dispatchers.io) {
                 wcStatsStore.getRawRevenueStats(
-                    site, result.granularity, result.startDate!!, result.endDate!!
+                    site,
+                    result.granularity,
+                    result.startDate!!,
+                    result.endDate!!
                 )
             }
             Result.success(revenueStatsModel)
@@ -107,7 +110,8 @@ class StatsRepository @Inject constructor(
     ): Result<WCRevenueStatsModel?> = withContext(dispatchers.io) {
         Result.success(
             wcStatsStore.getRawRevenueStatsFromRangeId(
-                selectedSite.get(), revenueRangeId
+                selectedSite.get(),
+                revenueRangeId
             )
         )
     }
@@ -140,7 +144,11 @@ class StatsRepository @Inject constructor(
         return if (!result.isError) {
             val visitorStats = withContext(dispatchers.io) {
                 wcStatsStore.getNewVisitorStats(
-                    site, result.granularity, result.quantity, result.date, result.isCustomField
+                    site,
+                    result.granularity,
+                    result.quantity,
+                    result.date,
+                    result.isCustomField
                 )
             }
             Result.success(visitorStats)

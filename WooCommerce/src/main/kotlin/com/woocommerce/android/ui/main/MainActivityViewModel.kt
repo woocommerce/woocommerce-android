@@ -122,7 +122,8 @@ class MainActivityViewModel @Inject constructor(
 
     fun removeOrderNotifications() {
         notificationHandler.removeNotificationsOfTypeFromSystemsBar(
-            NotificationChannelType.NEW_ORDER, selectedSite.get().siteId
+            NotificationChannelType.NEW_ORDER,
+            selectedSite.get().siteId
         )
     }
 
@@ -278,8 +279,9 @@ class MainActivityViewModel @Inject constructor(
     }
 
     private fun determineMenuBadgeState(count: Int, features: List<MoreMenuNewFeature>) =
-        if (features.isNotEmpty()) NewFeature
-        else if (count > 0) UnseenReviews(count) else Hidden
+        if (features.isNotEmpty()) {
+            NewFeature
+        } else if (count > 0) UnseenReviews(count) else Hidden
 
     fun showFeatureAnnouncementIfNeeded() {
         launch {

@@ -26,6 +26,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class RefundDetailFragment : BaseFragment(R.layout.fragment_refund_detail) {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject lateinit var imageMap: ProductImageMap
 
     private val viewModel: RefundDetailViewModel by viewModels()

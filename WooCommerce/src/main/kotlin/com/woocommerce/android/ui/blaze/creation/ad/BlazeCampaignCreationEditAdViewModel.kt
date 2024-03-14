@@ -122,7 +122,8 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
         _viewState.update {
             it.copy(
                 adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
-                    mediaId = image.id, uri = image.source
+                    mediaId = image.id,
+                    uri = image.source
                 )
             )
         }

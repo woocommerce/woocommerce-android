@@ -182,7 +182,9 @@ private fun Default() {
                 analyticsSwitchEnabled = false,
                 loading = true
             ),
-            {}, {}, {}
+            {},
+            {},
+            {}
         )
     }
 }

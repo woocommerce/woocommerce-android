@@ -80,7 +80,6 @@ class ProductFilterOptionListAdapter(
             oldItem: FilterListOptionItemUiModel,
             newItem: FilterListOptionItemUiModel
         ): Boolean {
-
             val areDefaultItemsTheSame = oldItem is FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel &&
                 newItem is FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel &&
                 oldItem.filterOptionItemValue == newItem.filterOptionItemValue

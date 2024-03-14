@@ -27,7 +27,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_product_list), BackPressListener {
     @Inject lateinit var navigator: ProductNavigator
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: GroupedProductListViewModel by viewModels()

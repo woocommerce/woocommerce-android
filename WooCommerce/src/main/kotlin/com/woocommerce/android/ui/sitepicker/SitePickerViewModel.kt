@@ -91,8 +91,11 @@ class SitePickerViewModel @Inject constructor(
         }
         updateSiteViewDetails()
         loadAndDisplayUserInfo()
-        if (appPrefsWrapper.getIsNewSignUp()) onEmptyStoresList()
-        else loadAndDisplaySites()
+        if (appPrefsWrapper.getIsNewSignUp()) {
+            onEmptyStoresList()
+        } else {
+            loadAndDisplaySites()
+        }
         if (selectedSiteId.value == null && selectedSite.exists()) {
             selectedSiteId.value = selectedSite.getSelectedSiteId()
         }
@@ -482,7 +485,6 @@ class SitePickerViewModel @Inject constructor(
 
                 sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
                 launch {
-
                     val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
                     when {
                         siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)

@@ -325,7 +325,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted, when enable-bluetooth requested, then card manager initialized`() =
         testBlocking {
-
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(true)
@@ -338,7 +337,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted, when bt permissions requested, then card manager initialized`() =
         testBlocking {
-
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
@@ -352,7 +350,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request not accepted, when bt permissions requested, then card manager not initialized`() =
         testBlocking {
-
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)
             (viewModel.event.value as CheckBluetoothPermissionsGiven).onBluetoothPermissionsGivenCheckResult(false)
@@ -365,7 +362,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     @Test
     fun `given request accepted and manager init, when enable-bluetooth requested, then manager is not initialized`() =
         testBlocking {
-
             whenever(cardReaderManager.initialized).thenReturn(true)
             (viewModel.event.value as CheckLocationPermissions).onLocationPermissionsCheckResult(true, false)
             (viewModel.event.value as CheckLocationEnabled).onLocationEnabledCheckResult(true)

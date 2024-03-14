@@ -23,7 +23,9 @@ class GetProductQuantityRules @Inject constructor(
 
             if (isActive) {
                 productDetailRepository.getQuantityRules(productId)
-            } else null
+            } else {
+                null
+            }
         }
     }
 }

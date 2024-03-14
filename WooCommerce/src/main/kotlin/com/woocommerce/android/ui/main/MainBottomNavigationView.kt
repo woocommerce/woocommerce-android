@@ -68,7 +68,8 @@ class MainBottomNavigationView @JvmOverloads constructor(
                         }
                     }
                 }
-            })
+            }
+        )
     }
 
     private fun createBadges() {
