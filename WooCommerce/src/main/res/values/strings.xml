@@ -500,6 +500,8 @@
     <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oops! It seems we can\'t work properly with your site\'s response.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
     <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oops! There seems to be a problem with your jetpack connection.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
     <string name="orderlist_connectivity_tool_generic_error_suggestion">Oops! There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_order_trashed">Order trashed</string>
+    <string name="orderlist_order_trashed_error">Error trashing order</string>
 
     <!--
          Simple Payments
@@ -922,6 +924,8 @@
     <string name="order_detail_attribution_campaign">Medium</string>
     <string name="order_detail_attribution_device_type">Device type</string>
     <string name="order_detail_attribution_session_page_views">Session page views</string>
+    <string name="order_detail_move_to_trash">Move to trash</string>
+    <string name="order_detail_trash_order_dialog_message">Do you want to move this order to the trash?</string>
 
     <!--
         Shipping label Refunds

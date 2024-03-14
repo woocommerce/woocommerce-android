@@ -4,6 +4,7 @@
 - [*] Login: Enables login with site credentials for Jetpack connected sites as a fallback to WP.com email login [https://github.com/woocommerce/woocommerce-android/pull/11055]
 
 - [*] Products: Fixed a bug when changes to products were not reflected in the product list [https://github.com/woocommerce/woocommerce-android/pull/11048]
+- [**] Orders: Merchants can now move orders to trash [https://github.com/woocommerce/woocommerce-android/pull/11068]
 
 17.7
 -----
