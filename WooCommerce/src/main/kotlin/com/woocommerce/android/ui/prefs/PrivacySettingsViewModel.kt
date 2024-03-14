@@ -107,7 +107,6 @@ class PrivacySettingsViewModel @Inject constructor(
         analyticsTrackerWrapper.sendUsageStats = checked
         launch {
             if (repository.isUserWPCOM()) {
-
                 _state.value = _state.value?.copy(progressBarVisible = true)
 
                 val event = repository.updateTracksSetting(checked)

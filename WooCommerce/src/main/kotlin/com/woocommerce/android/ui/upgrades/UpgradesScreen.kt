@@ -159,7 +159,8 @@ private fun TrialInProgress() {
         UpgradesScreen(
             state =
             TrialInProgress("Free Trial", Period.ofDays(14), "6 days"),
-            {}, {}
+            {},
+            {}
         )
     }
 }
@@ -171,7 +172,9 @@ private fun TrialInProgress() {
 private fun TrialEnded() {
     WooThemeWithBackground {
         UpgradesScreen(
-            state = TrialEnded("Trial ended"), {}, {}
+            state = TrialEnded("Trial ended"),
+            {},
+            {}
         )
     }
 }
@@ -185,7 +188,8 @@ private fun NonUpgradeable() {
         UpgradesScreen(
             state =
             NonUpgradeable("eCommerce", "March 2, 2023"),
-            {}, {}
+            {},
+            {}
         )
     }
 }

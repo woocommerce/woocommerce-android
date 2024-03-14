@@ -59,12 +59,12 @@ enum class CampaignStatusUi(
     companion object {
         fun fromString(status: String): CampaignStatusUi? {
             return when (status) {
-                "created" -> InModeration
+                "pending" -> InModeration
                 "scheduled" -> Scheduled
                 "active" -> Active
-                "finished" -> Completed
                 "rejected" -> Rejected
                 "canceled" -> Canceled
+                "finished" -> Completed
                 else -> null
             }
         }

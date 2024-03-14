@@ -37,8 +37,11 @@ fun WCModalBottomSheetLayout(
         scrimColor =
         // Overriding scrim color for dark theme because of the following bug affecting ModalBottomSheetLayout:
         // https://issuetracker.google.com/issues/183697056
-        if (isSystemInDarkTheme()) colorResource(id = R.color.color_scrim_background)
-        else ModalBottomSheetDefaults.scrimColor,
+        if (isSystemInDarkTheme()) {
+            colorResource(id = R.color.color_scrim_background)
+        } else {
+            ModalBottomSheetDefaults.scrimColor
+        },
         content = content,
     )
 }

@@ -21,14 +21,14 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CountryListPickerFragment : BaseFragment() {
     private val viewModel: CountryListPickerViewModel by viewModels()
+
     @Inject lateinit var newStore: NewStore
 
     companion object {
         const val KEY_COUNTRY_LIST_PICKER_RESULT = "key_country_list_picker_result"
     }
 
-    override
-    val activityAppBarStatus: AppBarStatus
+    override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

@@ -25,6 +25,7 @@ class ProductCategorySelectorFragment : BaseFragment() {
     }
 
     private val viewModel: ProductCategorySelectorViewModel by viewModels()
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus

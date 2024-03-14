@@ -93,7 +93,8 @@ class StoreCreationSummaryViewModel @Inject constructor(
                     }
 
                     is Failed -> triggerEvent(OnStoreCreationFailure)
-                    else -> { /* no op */
+                    else -> {
+                        /* no op */
                     }
                 }
             }
@@ -103,10 +104,11 @@ class StoreCreationSummaryViewModel @Inject constructor(
     private fun manageDeferredNotifications(siteId: Long) {
         launch {
             if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_STORE_CREATION_READY)) {
-                val name = if (accountStore.account.firstName.isNotNullOrEmpty())
+                val name = if (accountStore.account.firstName.isNotNullOrEmpty()) {
                     accountStore.account.firstName
-                else
+                } else {
                     accountStore.account.userName
+                }
                 localNotificationScheduler.scheduleNotification(StoreCreationCompletedNotification(siteId, name))
             }
             if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES)) {
@@ -119,10 +121,11 @@ class StoreCreationSummaryViewModel @Inject constructor(
             }
 
             if (isRemoteFeatureFlagEnabled(LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES)) {
-                val name = if (accountStore.account.firstName.isNotNullOrEmpty())
+                val name = if (accountStore.account.firstName.isNotNullOrEmpty()) {
                     accountStore.account.firstName
-                else
+                } else {
                     accountStore.account.userName
+                }
 
                 localNotificationScheduler.scheduleNotification(
                     FreeTrialExpiredNotification(name, siteId)

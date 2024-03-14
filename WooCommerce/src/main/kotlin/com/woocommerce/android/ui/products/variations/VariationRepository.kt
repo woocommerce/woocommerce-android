@@ -154,8 +154,11 @@ class VariationRepository @Inject constructor(
                 it.toDataModel()
             }
         ).let {
-            if (it.isError) Result.failure(WooException(it.error))
-            else Result.success(Unit)
+            if (it.isError) {
+                Result.failure(WooException(it.error))
+            } else {
+                Result.success(Unit)
+            }
         }
     }
 

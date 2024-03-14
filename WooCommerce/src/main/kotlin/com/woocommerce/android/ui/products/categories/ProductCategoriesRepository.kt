@@ -144,7 +144,9 @@ class ProductCategoriesRepository @Inject constructor(
                 if (event.isError) {
                     val requestResultType = if (event.error.type == TERM_EXISTS) {
                         RequestResult.API_ERROR
-                    } else RequestResult.ERROR
+                    } else {
+                        RequestResult.ERROR
+                    }
                     addProductCategoryContinuation.continueWith(requestResultType)
                     AnalyticsTracker.track(
                         AnalyticsEvent.PARENT_CATEGORIES_LOAD_FAILED,

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,6 +16,8 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -36,6 +39,8 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
 
     private var _binding: FragmentProductShippingClassListBinding? = null
     private val binding get() = _binding!!
+
+    override val activityAppBarStatus = AppBarStatus.Hidden
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,6 +65,16 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
         }
 
         viewModel.loadShippingClasses()
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_shipping_class),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    findNavController().navigateUp()
+                }
+            }
+        )
     }
 
     override fun onDestroyView() {
@@ -92,8 +107,6 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
             }
         }
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_shipping_class)
 
     private fun onShippingClassClicked(shippingClass: ShippingClass) {
         viewModel.onShippingClassClicked(shippingClass)

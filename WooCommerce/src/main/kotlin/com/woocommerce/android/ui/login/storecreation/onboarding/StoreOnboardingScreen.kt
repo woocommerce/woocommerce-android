@@ -131,9 +131,11 @@ fun StoreOnboardingCollapsed(
                     )
                     .fillMaxWidth(0.5f)
             )
-            val taskToDisplay = if (onboardingState.tasks.filter { !it.isCompleted }.size == 1)
+            val taskToDisplay = if (onboardingState.tasks.filter { !it.isCompleted }.size == 1) {
                 onboardingState.tasks.filter { !it.isCompleted }
-            else onboardingState.tasks.take(numberOfItemsToShowInCollapsedMode)
+            } else {
+                onboardingState.tasks.take(numberOfItemsToShowInCollapsedMode)
+            }
             OnboardingTaskList(
                 tasks = taskToDisplay,
                 onTaskClicked = onTaskClicked,
@@ -217,11 +219,12 @@ fun OnboardingTaskList(
     Column(modifier) {
         tasks.forEachIndexed { index, task ->
             TaskItem(task, onTaskClicked)
-            if (index < tasks.size - 1)
+            if (index < tasks.size - 1) {
                 Divider(
                     color = colorResource(id = R.color.divider_color),
                     thickness = dimensionResource(id = dimen.minor_10)
                 )
+            }
         }
     }
 }
@@ -242,15 +245,19 @@ private fun TaskItem(
         Image(
             modifier = Modifier.fillMaxHeight(),
             painter = painterResource(
-                id = if (task.isCompleted)
+                id = if (task.isCompleted) {
                     R.drawable.ic_onboarding_task_completed
-                else task.taskUiResources.icon
+                } else {
+                    task.taskUiResources.icon
+                }
             ),
             contentDescription = "",
             colorFilter =
-            if (!task.isCompleted)
+            if (!task.isCompleted) {
                 ColorFilter.tint(color = colorResource(id = R.color.color_icon))
-            else null
+            } else {
+                null
+            }
         )
         Column(
             modifier = Modifier.weight(1f),

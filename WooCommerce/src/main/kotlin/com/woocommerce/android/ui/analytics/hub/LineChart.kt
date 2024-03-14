@@ -212,6 +212,7 @@ private fun DrawScope.drawLineChart(
 
 @Suppress("MagicNumber")
 private val infoMultipleValues = listOf(10f, 5.5f, 12f, -12f, 8f, 18f)
+
 @Suppress("MagicNumber")
 private val infoSingleValue = listOf(-10f)
 

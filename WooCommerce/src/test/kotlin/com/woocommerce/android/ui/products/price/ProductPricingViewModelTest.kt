@@ -46,7 +46,10 @@ class ProductPricingViewModelTest : BaseUnitTest() {
         currencyCode = "USD",
         currencySymbol = "$",
         currencyFormattingParameters = CurrencyFormattingParameters(
-            "", "", 2, LEFT
+            "",
+            "",
+            2,
+            LEFT
         ),
         weightUnit = "kg",
         dimensionUnit = "cm",

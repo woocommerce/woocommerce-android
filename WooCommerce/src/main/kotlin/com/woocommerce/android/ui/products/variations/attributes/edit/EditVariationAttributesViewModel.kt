@@ -59,14 +59,17 @@ class EditVariationAttributesViewModel @Inject constructor(
     }
 
     fun exit() {
-        if (hasChanges) triggerEvent(
-            ExitWithResult(
-                viewState.updatedAttributeSelection
-                    .mapNotNull { it.toVariantOption() }
-                    .toTypedArray()
+        if (hasChanges) {
+            triggerEvent(
+                ExitWithResult(
+                    viewState.updatedAttributeSelection
+                        .mapNotNull { it.toVariantOption() }
+                        .toTypedArray()
+                )
             )
-        )
-        else triggerEvent(Exit)
+        } else {
+            triggerEvent(Exit)
+        }
     }
 
     fun updateData(attributeSelection: List<VariationAttributeSelectionGroup>) {

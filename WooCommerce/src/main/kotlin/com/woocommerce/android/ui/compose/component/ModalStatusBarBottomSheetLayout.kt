@@ -130,8 +130,11 @@ fun ModalStatusBarBottomSheetLayout(
 }
 
 @Composable
-private fun scrimColor() = if (isSystemInDarkTheme())
-    colorResource(id = R.color.color_scrim_background) else ModalBottomSheetDefaults.scrimColor
+private fun scrimColor() = if (isSystemInDarkTheme()) {
+    colorResource(id = R.color.color_scrim_background)
+} else {
+    ModalBottomSheetDefaults.scrimColor
+}
 
 fun Context.findActivity(): Activity {
     var context = this
@@ -139,5 +142,5 @@ fun Context.findActivity(): Activity {
         if (context is Activity) return context
         context = context.baseContext
     }
-    throw IllegalStateException("Permissions should be called in the context of an Activity")
+    error("Permissions should be called in the context of an Activity")
 }

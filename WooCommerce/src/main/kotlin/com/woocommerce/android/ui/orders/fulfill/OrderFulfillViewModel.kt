@@ -115,7 +115,9 @@ class OrderFulfillViewModel @Inject constructor(
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.getProductIds()
             repository.hasVirtualProductsOnly(remoteProductIds)
-        } else false
+        } else {
+            false
+        }
     }
 
     fun onMarkOrderCompleteButtonClicked() {
@@ -157,7 +159,8 @@ class OrderFulfillViewModel @Inject constructor(
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
             repository.getOrderShipmentTrackingByTrackingNumber(
-                navArgs.orderId, trackingNumber
+                navArgs.orderId,
+                trackingNumber
             )?.let { deletedShipmentTracking ->
                 deletedOrderShipmentTrackingSet.add(trackingNumber)
 
@@ -197,7 +200,8 @@ class OrderFulfillViewModel @Inject constructor(
     fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val onOrderChanged = repository.deleteOrderShipmentTracking(
-                navArgs.orderId, shipmentTracking.toDataModel()
+                navArgs.orderId,
+                shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
                 analyticsTrackerWrapper.track(AnalyticsEvent.ORDER_TRACKING_DELETE_SUCCESS)
@@ -217,7 +221,9 @@ class OrderFulfillViewModel @Inject constructor(
     fun onBackButtonClicked() {
         if (viewState.shouldRefreshShipmentTracking) {
             triggerEvent(ExitWithResult(true, key = KEY_REFRESH_SHIPMENT_TRACKING_RESULT))
-        } else triggerEvent(Exit)
+        } else {
+            triggerEvent(Exit)
+        }
     }
 
     private fun prepareTracksEventsDetails(event: OnOrderChanged) = mapOf(

@@ -99,8 +99,11 @@ class FreeTrialSurveyViewModel @Inject constructor(
         surveyState: FreeTrialSurveyState,
         type: SurveyOptionType
     ) = surveyState.options.map {
-        if (type == it.optionType) it.copy(isSelected = true)
-        else it.copy(isSelected = false)
+        if (type == it.optionType) {
+            it.copy(isSelected = true)
+        } else {
+            it.copy(isSelected = false)
+        }
     }
 
     fun onSendTapped() {

@@ -58,7 +58,7 @@ class BlazeCampaignCreationViewModel @Inject constructor(
 
     val viewState: LiveData<BlazeCreationViewState> = isIntroDismissed.map { introDismissed ->
         if (!introDismissed &&
-            blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).campaigns.isEmpty()
+            blazeCampaignsStore.getBlazeCampaigns(selectedSite.get()).isEmpty()
         ) {
             analyticsTracker.track(
                 stat = BLAZE_INTRO_DISPLAYED,

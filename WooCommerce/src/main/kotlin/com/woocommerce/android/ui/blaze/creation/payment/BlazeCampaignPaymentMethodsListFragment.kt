@@ -26,6 +26,7 @@ class BlazeCampaignPaymentMethodsListFragment : BaseFragment() {
         get() = AppBarStatus.Hidden
 
     private val viewModel: BlazeCampaignPaymentMethodsListViewModel by viewModels()
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 

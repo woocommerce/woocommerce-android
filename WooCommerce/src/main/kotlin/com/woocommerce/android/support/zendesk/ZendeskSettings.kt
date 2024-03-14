@@ -85,8 +85,11 @@ class ZendeskSettings @Inject constructor(
     ) {
         val zendeskInstance = Zendesk.INSTANCE
         if (zendeskInstance.isInitialized) {
-            if (PackageUtils.isTesting()) return
-            else error("Zendesk shouldn't be initialized more than once!")
+            if (PackageUtils.isTesting()) {
+                return
+            } else {
+                error("Zendesk shouldn't be initialized more than once!")
+            }
         }
         if (zendeskUrl.isEmpty() || applicationId.isEmpty() || oauthClientId.isEmpty()) {
             return
