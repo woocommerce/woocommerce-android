@@ -16,8 +16,10 @@ import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Succe
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
@@ -75,22 +77,16 @@ class ReviewListRepository @Inject constructor(
     suspend fun fetchProductReviews(
         loadMore: Boolean,
         remoteProductId: Long? = null
-    ): RequestResult {
-        return if (!isFetchingProductReviews) {
+    ): Flow<FetchReviewsResult> =
+        flow { if (!isFetchingProductReviews) {
             coroutineScope {
-                val fetchNotifs = async {
-                    /*
-                     * Fetch notifications so we can match them to reviews to get the read state. This
-                     * will wait for completion. If this fails we still consider fetching reviews to be successful since it
-                     * failing won't block the user. Just log the exception.
-                     */
-                    fetchNotifications()
+                launch {
+                    val fetchNotificationsResult =  fetchNotifications()
+                    emit(FetchReviewsResult.NotificationsFetched(if (fetchNotificationsResult) SUCCESS else ERROR))
                 }
 
-                var wasFetchReviewsSuccess = false
-                val fetchReviews = async {
-                    wasFetchReviewsSuccess = fetchProductReviewsFromApi(loadMore, remoteProductId)
-
+                launch {
+                    val wasFetchReviewsSuccess = fetchProductReviewsFromApi(loadMore, remoteProductId)
                     /*
                      * Fetch any products associated with these reviews missing from the db.
                      */
@@ -99,16 +95,11 @@ class ReviewListRepository @Inject constructor(
                             .distinct()
                             .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it) }
                     }
+                    emit(FetchReviewsResult.ReviewsFetched(if (wasFetchReviewsSuccess) SUCCESS else ERROR))
                 }
-
-                // Wait for both to complete before continuing
-                fetchNotifs.await()
-                fetchReviews.await()
-
-                if (wasFetchReviewsSuccess) SUCCESS else ERROR
             }
         } else {
-            NO_ACTION_NEEDED
+            emit(FetchReviewsResult.NothingFetched)
         }
     }
 
@@ -418,5 +409,11 @@ class ReviewListRepository @Inject constructor(
                 continuationNotification.continueWith(true)
             }
         }
+    }
+
+    sealed class FetchReviewsResult {
+        data class ReviewsFetched(val requestResult: RequestResult): FetchReviewsResult()
+        data class NotificationsFetched(val requestResult: RequestResult): FetchReviewsResult()
+        data object NothingFetched: FetchReviewsResult()
     }
 }
