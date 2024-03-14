@@ -9,6 +9,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
@@ -680,7 +681,7 @@ class AnalyticsTracker private constructor(
         }
 
         fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {
-            if (instance == null && BuildConfig.DEBUG) {
+            if (instance == null && BuildConfig.DEBUG && !PackageUtils.isTesting()) {
                 error("event $stat was tracked before AnalyticsTracker was initialized.")
             }
             if (sendUsageStats) {
