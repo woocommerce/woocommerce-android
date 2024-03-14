@@ -215,9 +215,9 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     /* Test order status options are emitted via [OrderListViewModel.orderStatusOptions]
-    * once fetched, and verify expected methods are called the correct number of
-    * times.
-    */
+     * once fetched, and verify expected methods are called the correct number of
+     * times.
+     */
     @Test
     fun `Request to fetch order status options emits options`() = testBlocking {
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()

@@ -57,7 +57,9 @@ class BlazeCampaignListViewModel @Inject constructor(
             if (index != 0 && !isLoading) {
                 // When resetting to not loading, wait a bit to make sure the campaigns list has been fetched from DB
                 LOADING_TRANSITION_DELAY
-            } else 0L
+            } else {
+                0L
+            }
         }.map { it.value },
         isCampaignCelebrationShown
     ) { campaigns, loadingMore, isBlazeCelebrationScreenShown ->

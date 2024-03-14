@@ -51,6 +51,7 @@ class NotificationsProcessingService : Service() {
     }
 
     private lateinit var actionProcessor: ActionProcessor
+
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
 
     override fun onBind(intent: Intent): IBinder? {

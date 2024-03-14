@@ -47,6 +47,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AIProductCreationSurveyBottomSheet : WCBottomSheetDialogFragment() {
     @Inject lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+
     @Inject lateinit var appPrefs: AppPrefsWrapper
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

@@ -190,9 +190,11 @@ private fun CountryItem(
             .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
             .background(
                 color = colorResource(
-                    id = if (country.isSelected)
+                    id = if (country.isSelected) {
                         if (isSystemInDarkTheme()) R.color.color_surface else R.color.woo_purple_10
-                    else R.color.color_surface
+                    } else {
+                        R.color.color_surface
+                    }
                 )
             )
             .clickable { onCountrySelected(country) }
@@ -212,8 +214,11 @@ private fun CountryItem(
             Text(
                 text = country.name,
                 color = colorResource(
-                    id = if (isSystemInDarkTheme() && country.isSelected) R.color.color_primary
-                    else R.color.color_on_surface
+                    id = if (isSystemInDarkTheme() && country.isSelected) {
+                        R.color.color_primary
+                    } else {
+                        R.color.color_on_surface
+                    }
                 )
             )
         }
@@ -237,9 +242,11 @@ private fun CurrentCountryItem(
             .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
             .background(
                 color = colorResource(
-                    id = if (country.isSelected)
+                    id = if (country.isSelected) {
                         if (isSystemInDarkTheme()) R.color.color_surface else R.color.woo_purple_10
-                    else R.color.color_surface
+                    } else {
+                        R.color.color_surface
+                    }
                 )
             )
     ) {
@@ -258,8 +265,11 @@ private fun CurrentCountryItem(
             Text(
                 text = country.name,
                 color = colorResource(
-                    id = if (isSystemInDarkTheme() && country.isSelected) R.color.color_primary
-                    else R.color.color_on_surface
+                    id = if (isSystemInDarkTheme() && country.isSelected) {
+                        R.color.color_primary
+                    } else {
+                        R.color.color_on_surface
+                    }
                 )
             )
         }

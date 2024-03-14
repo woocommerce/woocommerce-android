@@ -66,7 +66,9 @@ class PreconditionCheckWorker @AssistedInject constructor(
         } else {
             if (notificationLinkedSite == null) {
                 cancelWork("The site linked to the notifications doesn't exist in the db. Cancelling work.")
-            } else cancelWork("Store plan upgraded. Cancelling work.")
+            } else {
+                cancelWork("Store plan upgraded. Cancelling work.")
+            }
         }
     }
 

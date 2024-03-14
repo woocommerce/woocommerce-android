@@ -32,7 +32,9 @@ class LoginPrologueCarouselFragment : Fragment(R.layout.fragment_login_prologue_
     }
 
     @Inject lateinit var unifiedLoginTracker: UnifiedLoginTracker
+
     @Inject lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+
     @Inject lateinit var appPrefsWrapper: AppPrefsWrapper
 
     private var prologueCarouselListener: PrologueCarouselListener? = null

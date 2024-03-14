@@ -41,6 +41,8 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.getProductIds()
             orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)
-        } else false
+        } else {
+            false
+        }
     }
 }

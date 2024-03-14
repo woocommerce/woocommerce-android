@@ -73,7 +73,8 @@ class OrderEditingViewModel @Inject constructor(
 
     fun updateCustomerOrderNote(updatedNote: String) = runWhenUpdateIsPossible {
         orderEditingRepository.updateCustomerOrderNote(
-            order.id, updatedNote
+            order.id,
+            updatedNote
         ).collectOrderUpdate(AnalyticsTracker.ORDER_EDIT_CUSTOMER_NOTE)
     }
 

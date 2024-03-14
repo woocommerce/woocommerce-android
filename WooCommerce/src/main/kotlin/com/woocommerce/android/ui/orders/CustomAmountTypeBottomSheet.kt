@@ -103,6 +103,7 @@ fun CustomAmountOption(label: String, symbol: String, onClick: () -> Unit) {
         )
     }
 }
+
 @Preview(name = "Light mode")
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable

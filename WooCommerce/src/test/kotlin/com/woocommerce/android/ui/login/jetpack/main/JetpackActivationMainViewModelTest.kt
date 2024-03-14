@@ -78,7 +78,8 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
                 whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
                 whenever(
                     jetpackActivationRepository.fetchJetpackConnectionUrl(
-                        site = site, useApplicationPasswords = true
+                        site = site,
+                        useApplicationPasswords = true
                     )
                 ).thenReturn(Result.success("https://example.com"))
             }

@@ -22,6 +22,7 @@ class DetermineMultipleLinesContextTest : BaseUnitTest() {
     private val location: GetLocations = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val dateUtils: DateUtils = mock()
+
     @Test
     fun `when order has multiple shipping lines, then return proper multiple lines context`() {
         whenever(location.invoke(any(), any())).thenReturn(

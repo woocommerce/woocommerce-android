@@ -18,8 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class FreeTrialSurveyFragment : BaseFragment() {
     private val viewModel: FreeTrialSurveyViewModel by viewModels()
 
-    override
-    val activityAppBarStatus: AppBarStatus
+    override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

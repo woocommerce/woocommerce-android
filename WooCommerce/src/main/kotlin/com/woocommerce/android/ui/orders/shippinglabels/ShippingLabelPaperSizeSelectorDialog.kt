@@ -13,7 +13,7 @@ class ShippingLabelPaperSizeSelectorDialog : DialogFragment() {
     enum class ShippingLabelPaperSize(@StringRes val stringResource: Int) {
         LEGAL(string.shipping_label_paper_size_legal),
         LETTER(string.shipping_label_paper_size_letter),
-        LABEL(string.shipping_label_paper_size_label);
+        LABEL(string.shipping_label_paper_size_label)
     }
 
     companion object {

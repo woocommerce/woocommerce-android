@@ -242,7 +242,9 @@ class InboxViewModel @Inject constructor(
                             }
                         }
                     note.copy(actions = updatedActions)
-                } else note
+                } else {
+                    note
+                }
             } ?: emptyList()
         )
     }
@@ -252,8 +254,11 @@ class InboxViewModel @Inject constructor(
     }
 
     private fun InboxNoteAction.getActionTextColor() =
-        if (isPrimary) R.color.color_secondary
-        else R.color.color_surface_variant
+        if (isPrimary) {
+            R.color.color_secondary
+        } else {
+            R.color.color_surface_variant
+        }
 
     @SuppressWarnings("MagicNumber", "ReturnCount")
     private fun formatNoteCreationDate(createdDate: String): String {

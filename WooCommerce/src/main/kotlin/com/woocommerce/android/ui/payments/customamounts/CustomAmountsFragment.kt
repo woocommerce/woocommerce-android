@@ -117,7 +117,10 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
 
     private fun bindAmountsView(binding: DialogCustomAmountsBinding) {
         binding.editPrice.editText.setPadding(
-            getDensityPixel(binding.editPrice.context, START_PADDING), 0, 0, 0
+            getDensityPixel(binding.editPrice.context, START_PADDING),
+            0,
+            0,
+            0
         )
     }
 

@@ -213,7 +213,8 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                     WooPermissionUtils.requestScanAndConnectBluetoothPermission(requestBluetoothPermissionsLauncher)
                 }
                 is CheckBluetoothEnabled -> {
-                    @Suppress("DEPRECATION") val btAdapter = BluetoothAdapter.getDefaultAdapter()
+                    @Suppress("DEPRECATION")
+                    val btAdapter = BluetoothAdapter.getDefaultAdapter()
                     event.onBluetoothCheckResult(btAdapter?.isEnabled ?: false)
                 }
                 is RequestEnableBluetooth -> {

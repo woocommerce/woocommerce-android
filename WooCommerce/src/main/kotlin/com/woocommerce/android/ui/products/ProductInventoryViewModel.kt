@@ -153,6 +153,7 @@ class ProductInventoryViewModel @Inject constructor(
         val isStockManagementVisible: Boolean? = null,
         val isStockQuantityEditable: Boolean? = null
     ) : Parcelable
+
     @Parcelize
     data class InventoryData(
         val sku: String? = null,

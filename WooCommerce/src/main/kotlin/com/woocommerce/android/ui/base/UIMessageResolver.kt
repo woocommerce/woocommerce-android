@@ -227,7 +227,9 @@ interface UIMessageResolver {
      * @param [stringArgs] Optional. One or more format argument stringArgs
      */
     fun getSnack(@StringRes stringResId: Int, vararg stringArgs: String = arrayOf()) = Snackbar.make(
-        snackbarRoot, snackbarRoot.context.getString(stringResId, *stringArgs), BaseTransientBottomBar.LENGTH_LONG
+        snackbarRoot,
+        snackbarRoot.context.getString(stringResId, *stringArgs),
+        BaseTransientBottomBar.LENGTH_LONG
     ).apply {
         anchorViewId?.let { setAnchorView(it) }
     }
