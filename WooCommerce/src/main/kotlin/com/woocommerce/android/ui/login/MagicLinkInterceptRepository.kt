@@ -73,9 +73,13 @@ class MagicLinkInterceptRepository @Inject constructor(
 
                     // fetch account details
                     fetchAccountInfo()
-                } else ERROR
+                } else {
+                    ERROR
+                }
             }
-        } else NO_ACTION_NEEDED
+        } else {
+            NO_ACTION_NEEDED
+        }
     }
 
     /**

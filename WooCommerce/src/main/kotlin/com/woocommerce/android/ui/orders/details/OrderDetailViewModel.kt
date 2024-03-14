@@ -11,7 +11,7 @@ import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
@@ -291,7 +291,9 @@ class OrderDetailViewModel @Inject constructor(
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.getProductIds()
             orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)
-        } else false
+        } else {
+            false
+        }
     }
 
     fun onEditOrderStatusSelected() {
@@ -355,7 +357,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onCollectPaymentClicked(isTablet: Boolean = false) {
         paymentsFlowTracker.trackCollectPaymentTapped(
-            IsTabletValue(isTablet).deviceTypeToAnalyticsString
+            IsScreenLargerThanCompactValue(isTablet).deviceTypeToAnalyticsString
         )
         triggerEvent(
             StartPaymentFlow(
@@ -509,7 +511,8 @@ class OrderDetailViewModel @Inject constructor(
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
             orderDetailRepository.getOrderShipmentTrackingByTrackingNumber(
-                order.id, trackingNumber
+                order.id,
+                trackingNumber
             )?.let { deletedShipmentTracking ->
                 deletedOrderShipmentTrackingSet.add(trackingNumber)
 
@@ -548,7 +551,8 @@ class OrderDetailViewModel @Inject constructor(
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val onOrderChanged = orderDetailRepository.deleteOrderShipmentTracking(
-                navArgs.orderId, shipmentTracking.toDataModel()
+                navArgs.orderId,
+                shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
                 tracker.trackOrderTrackingDeleteSucceeded()

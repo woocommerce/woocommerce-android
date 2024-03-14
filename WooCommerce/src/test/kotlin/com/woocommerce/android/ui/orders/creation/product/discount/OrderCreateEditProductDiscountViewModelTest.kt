@@ -59,7 +59,10 @@ class OrderCreateEditProductDiscountViewModelTest : BaseUnitTest() {
         currencyCode = "USD",
         currencySymbol = "$",
         currencyFormattingParameters = CurrencyFormattingParameters(
-            "", "", 2, WCSettingsModel.CurrencyPosition.LEFT
+            "",
+            "",
+            2,
+            WCSettingsModel.CurrencyPosition.LEFT
         ),
         weightUnit = "kg",
         dimensionUnit = "cm",

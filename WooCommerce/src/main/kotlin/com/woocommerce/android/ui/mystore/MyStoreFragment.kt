@@ -86,7 +86,6 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -228,8 +227,9 @@ class MyStoreFragment :
 
     private fun setUpBlazeCampaignView() {
         myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) binding.blazeCampaignView.hide()
-            else {
+            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) {
+                binding.blazeCampaignView.hide()
+            } else {
                 binding.blazeCampaignView.apply {
                     setContent {
                         WooThemeWithBackground {
@@ -396,7 +396,9 @@ class MyStoreFragment :
 
         myStoreViewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
-                val index = StatsGranularity.entries.indexOf(activeGranularity)
+                val index = StatsGranularity.entries
+                    .filterNot { it == StatsGranularity.HOURS }
+                    .indexOf(activeGranularity)
                 // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
                 handler.postDelayed({ tabLayout.getTabAt(index)?.select() }, 300)
             }
@@ -464,7 +466,7 @@ class MyStoreFragment :
                     )
 
                 is OpenDatePicker -> showDateRangePicker { start, end ->
-                    myStoreViewModel.onCustomRangeSelected(Date(start), Date(end))
+                    myStoreViewModel.onCustomRangeSelected(start, end)
                 }
 
                 else -> event.isHandled = false

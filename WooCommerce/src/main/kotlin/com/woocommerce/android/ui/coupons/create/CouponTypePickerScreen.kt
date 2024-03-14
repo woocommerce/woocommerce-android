@@ -130,6 +130,8 @@ fun CouponTypePreview() {
 @Composable
 fun CouponTypePickerScreenPreview() {
     CouponTypePickerScreen(
-        {}, {}, {}
+        {},
+        {},
+        {}
     )
 }

@@ -214,7 +214,8 @@ class ProductListFragment :
                     val selectionCount = tracker?.selection?.size() ?: 0
                     productListViewModel.onSelectionChanged(selectionCount)
                 }
-            })
+            }
+        )
     }
 
     private fun enableProductsRefresh(enable: Boolean) {
@@ -389,6 +390,9 @@ class ProductListFragment :
             when (event) {
                 is ProductsCommunicationViewModel.CommunicationEvent.ProductTrashed -> {
                     trashProduct(event.productId)
+                }
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated -> {
+                    productListViewModel.reloadProductsFromDb()
                 }
             }
         }
@@ -598,8 +602,11 @@ class ProductListFragment :
     private fun shouldPreventDetailNavigation(remoteProductId: Long): Boolean {
         if (productListViewModel.isSelecting()) {
             tracker?.let { selectionTracker ->
-                if (selectionTracker.isSelected(remoteProductId)) selectionTracker.deselect(remoteProductId)
-                else selectionTracker.select(remoteProductId)
+                if (selectionTracker.isSelected(remoteProductId)) {
+                    selectionTracker.deselect(remoteProductId)
+                } else {
+                    selectionTracker.select(remoteProductId)
+                }
             }
             return true
         }

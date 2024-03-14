@@ -131,8 +131,11 @@ fun JetpackActivationWPComEmailScreen(
             ) {
                 Text(
                     text = stringResource(
-                        id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connect
-                        else R.string.login_jetpack_install
+                        id = if (viewState.isJetpackInstalled) {
+                            R.string.login_jetpack_connect
+                        } else {
+                            R.string.login_jetpack_install
+                        }
                     )
                 )
             }

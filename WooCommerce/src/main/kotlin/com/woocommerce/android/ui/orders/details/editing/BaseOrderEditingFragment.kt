@@ -24,6 +24,7 @@ abstract class BaseOrderEditingFragment : BaseFragment, BackPressListener {
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     protected val sharedViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     protected var doneMenuItem: MenuItem? = null

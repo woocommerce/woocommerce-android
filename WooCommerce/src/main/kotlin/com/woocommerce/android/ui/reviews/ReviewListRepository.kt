@@ -107,7 +107,9 @@ class ReviewListRepository @Inject constructor(
 
                 if (wasFetchReviewsSuccess) SUCCESS else ERROR
             }
-        } else NO_ACTION_NEEDED
+        } else {
+            NO_ACTION_NEEDED
+        }
     }
 
     /**
@@ -244,7 +246,9 @@ class ReviewListRepository @Inject constructor(
                     .map { it.toAppModel() }
                     .map { it.copy(read = false) }
                     .sortedByDescending { it.remoteId }
-            } else emptyList()
+            } else {
+                emptyList()
+            }
         }
 
     /**

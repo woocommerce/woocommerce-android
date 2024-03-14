@@ -281,7 +281,9 @@ data class Order(
         val billingAddress = this.billingAddress.getEnvelopeAddress()
         val billingCountry = AddressUtils.getCountryLabelByCountryCode(this.billingAddress.country.code)
         return this.billingAddress.getFullAddress(
-            billingName, billingAddress, billingCountry
+            billingName,
+            billingAddress,
+            billingCountry
         )
     }
 
@@ -290,7 +292,9 @@ data class Order(
         val shippingAddress = this.shippingAddress.getEnvelopeAddress()
         val shippingCountry = AddressUtils.getCountryLabelByCountryCode(this.shippingAddress.country.code)
         return this.shippingAddress.getFullAddress(
-            shippingName, shippingAddress, shippingCountry
+            shippingName,
+            shippingAddress,
+            shippingCountry
         )
     }
 

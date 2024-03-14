@@ -71,7 +71,6 @@ class CardReaderManagerImplTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `given application delegate, when manager gets initialized, then delegate calls on create`() {
-
         cardReaderManager.initialize(updateFrequency, useInterac, false)
 
         verify(terminalApplicationDelegateWrapper).onCreate(application)

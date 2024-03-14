@@ -576,7 +576,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Correctly sorts the Product Categories By their Parent Ids and by name`() {
         testBlocking {
             val sortedByNameAndParent = viewModel.sortAndStyleProductCategories(
-                product, productCategories
+                product,
+                productCategories
             ).toList()
             assertThat(sortedByNameAndParent[0].category).isEqualTo(productCategories[0])
             assertThat(sortedByNameAndParent[1].category).isEqualTo(productCategories[7])
@@ -1049,6 +1050,20 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             eq(AnalyticsEvent.PRODUCT_DETAIL_LOADED),
             eq(mapOf("horizontal_size_class" to "compact"))
         )
+    }
+
+    @Test
+    fun `given product updated successfuly, when onPublishButtonClicked, then ProductUpdated event emitted`() = testBlocking {
+        // GIVEN
+        whenever(productRepository.getProductAsync(any())).thenReturn(product)
+        whenever(productRepository.updateProduct(any())).thenReturn(true)
+        viewModel.start()
+
+        // WHEN
+        viewModel.onPublishButtonClicked()
+
+        // THEN
+        assertThat(viewModel.event.value).isEqualTo(ProductDetailViewModel.ProductUpdated)
     }
 
     private val productsDraft

@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-27 15:54:03+0000
+Translation-Revision-Date: 2024-03-06 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">Ingen plats hittades.\nFörsök igen.</string>
+    <string name="order_detail_attribution_session_page_views">Sidvisningar under session</string>
+    <string name="order_detail_attribution_device_type">Enhetstyp</string>
+    <string name="order_detail_attribution_campaign">Medium</string>
+    <string name="order_detail_attribution_medium">Medium</string>
+    <string name="order_detail_attribution_source">Källa</string>
+    <string name="order_detail_attribution_source_type">Källtyp</string>
+    <string name="order_detail_attribution_unknown_origin">Okänd</string>
+    <string name="order_detail_attribution_mobile_origin">Mobilapp</string>
+    <string name="order_detail_attribution_admin_origin">Webbadministratör</string>
+    <string name="order_detail_attribution_direct_origin">Direkt</string>
+    <string name="order_detail_attribution_utm_origin">Källa: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Hänvisning: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">Organisk: %1$s</string>
+    <string name="order_detail_attribution_origin">Ursprung</string>
+    <string name="order_detail_attribution_header">Beställningstillskrivning</string>
+    <string name="orderdetail_message_customer_using_telegram">Kontakta via Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Kontakta via WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID: %d</string>
+    <string name="orderfilters_customer_filter">Kund</string>
+    <string name="orderfilters_product_filter">Produkt</string>
+    <string name="customer_picker_guest">Gäst</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">Denna användare är en gäst, och gäster kan inte användas för att filtrera beställningar.</string>
+    <string name="orderlist_timeout_error_message">Försök igen senare eller kontakta oss så hjälper vi dig gärna</string>
+    <string name="orderlist_timeout_error_title">Det tar lång tid för din webbplats att svara</string>
+    <string name="show_details">Visa detaljer</string>
     <string name="order_creation_payment_shipping_tax_label">Fraktmoms</string>
     <string name="customize_analytics">Anpassa analys</string>
     <string name="blaze_campaign_creation_error">Något är fel.\nVi kunde inte skapa din kampanj.</string>
@@ -46,7 +72,7 @@ Language: sv_SE
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL-parametrar</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">Mål-URL</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Ange manuellt</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Ingen plats hittades.\nFörsök igen.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Sökning misslyckades.\nFörsök igen</string>
     <string name="blaze_campaign_creation_location_search_message">Börja skriva land, delstat eller stad för att se tillgängliga alternativ</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">Genom att klicka på \"Skicka kampanj\" godkänner du våra &lt;a href=\'termsOfService\'&gt;&lt;u&gt;användarvillkor&lt;/u&gt;&lt;/a&gt; och vår &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;annonspolicy&lt;/u&gt;&lt;/a&gt; och samtycker till att din betalningsmetod debiteras för den budget och den varaktighet som du väljer. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Läs mer&lt;/u&gt;&lt;/a&gt; om hur budgetar och betalningar för marknadsförda inlägg fungerar.</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Skicka in kampanj</string>

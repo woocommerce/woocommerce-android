@@ -110,7 +110,6 @@ class CustomAmountsViewModel @Inject constructor(
 
     private fun populateUIWithExistingData() {
         args.customAmountUIModel.apply {
-
             val orderTotalValue = BigDecimal(args.orderTotal ?: "0")
             if (orderTotalValue > BigDecimal.ZERO) {
                 populatePercentage(this)

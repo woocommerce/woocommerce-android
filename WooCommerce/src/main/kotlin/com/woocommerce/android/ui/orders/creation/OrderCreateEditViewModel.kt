@@ -74,7 +74,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_C
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_CARD
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
@@ -1217,7 +1217,7 @@ class OrderCreateEditViewModel @Inject constructor(
         launch {
             viewState = viewState.copy(isProgressDialogShown = true)
             val giftCard = _selectedGiftCard.value
-            orderCreateEditRepository.placeOrder(order, giftCard).fold(
+            orderCreateEditRepository.createOrUpdateOrder(order, giftCard).fold(
                 onSuccess = {
                     trackOrderCreationSuccess()
                     onSuccess(it)
@@ -1739,7 +1739,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
         val productCount = products.value?.count() ?: 0
         return buildMap {
-            put(KEY_HORIZONTAL_SIZE_CLASS, IsTabletValue(isTablet).deviceTypeToAnalyticsString)
+            put(KEY_HORIZONTAL_SIZE_CLASS, IsScreenLargerThanCompactValue(isTablet).deviceTypeToAnalyticsString)
             put(KEY_STATUS, _orderDraft.value.status)
             putIfNotNull(PRODUCT_TYPES to productTypes)
             put(KEY_PRODUCT_COUNT, productCount)

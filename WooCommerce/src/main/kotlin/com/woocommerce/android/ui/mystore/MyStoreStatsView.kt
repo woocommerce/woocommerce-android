@@ -37,6 +37,7 @@ import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
+import com.woocommerce.android.ui.mystore.data.DateRange
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -51,8 +52,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.HOURS
 import org.wordpress.android.util.DisplayUtils
-import java.util.Date
 import java.util.Locale
 import kotlin.math.round
 
@@ -81,7 +82,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
-    private var customRange: Pair<Date, Date>? = null
+    private var customRange: DateRange? = null
 
     private var skeletonView = SkeletonView()
 
@@ -167,13 +168,15 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
 
         // Create tabs and add to appbar
-        StatsGranularity.entries.forEach { granularity ->
-            val tab = tabLayout.newTab().apply {
-                setText(getStringForGranularity(granularity))
-                tag = granularity
+        StatsGranularity.entries
+            .filterNot { it == HOURS }
+            .forEach { granularity ->
+                val tab = tabLayout.newTab().apply {
+                    setText(getStringForGranularity(granularity))
+                    tag = granularity
+                }
+                tabLayout.addTab(tab)
             }
-            tabLayout.addTab(tab)
-        }
         customRangeTab = tabLayout.newTab().apply {
             setText(R.string.orderfilters_date_range_filter_custom_range)
             view.isVisible = false
@@ -196,7 +199,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         isRequestingStats = true
     }
 
-    fun updateCustomDateRange(customDateRange: Pair<Date, Date>?) {
+    fun updateCustomDateRange(customDateRange: DateRange?) {
         customRange = customDateRange
         customRangeButton.isVisible = customDateRange == null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
         customRangeTab.view.isVisible = customDateRange != null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
@@ -222,12 +225,15 @@ class MyStoreStatsView @JvmOverloads constructor(
             StatsGranularity.WEEKS -> R.integer.stats_label_count_weeks
             StatsGranularity.MONTHS -> R.integer.stats_label_count_months
             StatsGranularity.YEARS -> R.integer.stats_label_count_years
+            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
         }
         val chartRevenueStatsSize = chartRevenueStats.keys.size
         val barLabelCount = context.resources.getInteger(resId)
         return if (chartRevenueStatsSize < barLabelCount) {
             chartRevenueStatsSize
-        } else barLabelCount
+        } else {
+            barLabelCount
+        }
     }
 
     /**
@@ -352,6 +358,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
             StatsGranularity.MONTHS -> dateUtils.getMonthString(dateString).orEmpty()
             StatsGranularity.YEARS -> dateUtils.getYearString(dateString).orEmpty()
+            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
@@ -401,6 +408,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
             StatsGranularity.MONTHS -> dateUtils.getLongMonthDayString(dateString).orEmpty()
             StatsGranularity.YEARS -> dateUtils.getFriendlyLongMonthYear(dateString).orEmpty()
+            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
@@ -586,9 +594,13 @@ class MyStoreStatsView @JvmOverloads constructor(
      * [StatsGranularity.DAYS] format is the same for both
      */
     private fun getFormattedVisitorStats(visitorStats: Map<String, Int>): Map<String, Int> {
-        return if (activeGranularity == StatsGranularity.YEARS) visitorStats.mapKeys {
-            dateUtils.getYearMonthString(it.key) ?: it.key.take("yyyy-MM".length)
-        } else visitorStats
+        return if (activeGranularity == StatsGranularity.YEARS) {
+            visitorStats.mapKeys {
+                dateUtils.getYearMonthString(it.key) ?: it.key.take("yyyy-MM".length)
+            }
+        } else {
+            visitorStats
+        }
     }
 
     private fun fadeInLabelValue(view: TextView, value: String) {
@@ -629,6 +641,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             StatsGranularity.WEEKS -> R.string.this_week
             StatsGranularity.MONTHS -> R.string.this_month
             StatsGranularity.YEARS -> R.string.this_year
+            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
         }
     }
 
@@ -638,6 +651,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
             StatsGranularity.MONTHS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
             StatsGranularity.YEARS -> dateUtils.getShortMonthString(dateString).orEmpty()
+            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
@@ -667,7 +681,9 @@ class MyStoreStatsView @JvmOverloads constructor(
                 } else {
                     getLabelValue(dateString)
                 }
-            } else ""
+            } else {
+                ""
+            }
         }
 
         /**
@@ -683,6 +699,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                 StatsGranularity.WEEKS -> getWeekLabelValue(dateString)
                 StatsGranularity.MONTHS -> dateUtils.getDayString(dateString).orEmpty()
                 StatsGranularity.YEARS -> dateUtils.getShortMonthString(dateString).orEmpty()
+                StatsGranularity.HOURS -> error("Hours shouldn't be used now")
             }.also { result -> trackUnexpectedFormat(result, dateString) }
         }
 

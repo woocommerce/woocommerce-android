@@ -10,7 +10,8 @@ object PaymentUtils {
         currency: String,
         cardReaderConfigFor: CardReaderConfigForSupportedCountry
     ): Boolean = currency.equals(
-        cardReaderConfigFor.currency, ignoreCase = true
+        cardReaderConfigFor.currency,
+        ignoreCase = true
     )
 
     fun convertToSmallestCurrencyUnit(value: BigDecimal, currencyCode: String): Long {

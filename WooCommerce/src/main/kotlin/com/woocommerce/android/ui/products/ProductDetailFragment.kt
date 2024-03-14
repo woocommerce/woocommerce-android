@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDet
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Loading
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None
+import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductUpdated
 import com.woocommerce.android.ui.products.ProductDetailViewModel.RefreshMenu
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAIProductDescriptionBottomSheet
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ShowAiProductCreationSurveyBottomSheet
@@ -362,6 +363,9 @@ class ProductDetailFragment :
                 )
 
                 is ShowAiProductCreationSurveyBottomSheet -> openAIProductCreationSurveyBottomSheet()
+                is ProductUpdated -> productsCommunicationViewModel.pushEvent(
+                    ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated
+                )
                 else -> event.isHandled = false
             }
         }
@@ -447,7 +451,9 @@ class ProductDetailFragment :
     private fun updateProductNameFromDetails(product: Product): String {
         return if (viewModel.isProductUnderCreation && product.name.isEmpty()) {
             getString(R.string.product_add_tool_bar_title)
-        } else product.name.fastStripHtml()
+        } else {
+            product.name.fastStripHtml()
+        }
     }
 
     private fun displayProductImageUploadErrorSnackBar(
@@ -578,7 +584,10 @@ class ProductDetailFragment :
         data object Empty : Mode()
 
         @Parcelize
-        data class ShowProduct(val remoteProductId: Long) : Mode()
+        data class ShowProduct(
+            val remoteProductId: Long,
+            val afterGeneratedWithAi: Boolean = false,
+        ) : Mode()
 
         @Parcelize
         data object AddNewProduct : Mode()

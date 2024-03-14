@@ -44,6 +44,7 @@ class SignUpFragment : BaseFragment() {
     }
 
     @Inject internal lateinit var urlUtils: UrlUtils
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
     private val viewModel: SignUpViewModel by viewModels()
     private var signUpEmailFragment: Listener? = null

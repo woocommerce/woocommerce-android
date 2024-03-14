@@ -137,8 +137,11 @@ class AccountMismatchErrorViewModel @Inject constructor(
         },
         secondaryButtonText = R.string.login_try_another_account,
         secondaryButtonAction = { loginWithDifferentAccount() },
-        inlineButtonText = if (navArgs.errorType == WPCOM_ACCOUNT_MISMATCH) R.string.login_need_help_finding_email
-        else null,
+        inlineButtonText = if (navArgs.errorType == WPCOM_ACCOUNT_MISMATCH) {
+            R.string.login_need_help_finding_email
+        } else {
+            null
+        },
         inlineButtonAction = { helpFindingEmail() },
         showJetpackTermsConsent = navArgs.primaryButton == AccountMismatchPrimaryButton.CONNECT_JETPACK,
         onBackPressed = { triggerEvent(Exit) }

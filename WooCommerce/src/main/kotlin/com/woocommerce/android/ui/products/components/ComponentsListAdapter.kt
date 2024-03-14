@@ -26,7 +26,9 @@ class ComponentsListAdapter(private val clickListener: OnComponentClickListener)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ComponentViewHolder {
         return ComponentViewHolder(
             ComponentItemViewBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
+                LayoutInflater.from(parent.context),
+                parent,
+                false
             )
         )
     }

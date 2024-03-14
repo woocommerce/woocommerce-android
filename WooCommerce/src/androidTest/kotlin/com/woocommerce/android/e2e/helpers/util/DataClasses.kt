@@ -102,8 +102,9 @@ data class StatsSummaryData(
     val orders: String,
     val visitors: String,
 ) {
-    val conversion = if (visitors == "0")
+    val conversion = if (visitors == "0") {
         "0%"
-    else
+    } else {
         ((orders.toDouble() / visitors.toDouble()) * 100).toInt().toString() + "%"
+    }
 }

@@ -70,7 +70,11 @@ class ProductDetailsToolbarHelper @Inject constructor(
         toolbar.navigationIcon =
             when {
                 isTablet() -> {
-                    if (viewModel?.isAddNewProductFlow == true) {
+                    val startMode = viewModel?.startMode
+                    val isAddNewModeCreationFlow = startMode == ProductDetailFragment.Mode.AddNewProduct
+                    val isProductShownAfterGenerationWithAi = startMode is ProductDetailFragment.Mode.ShowProduct &&
+                        startMode.afterGeneratedWithAi
+                    if (isAddNewModeCreationFlow || isProductShownAfterGenerationWithAi) {
                         AppCompatResources.getDrawable(activity, R.drawable.ic_back_24dp)
                     } else {
                         null

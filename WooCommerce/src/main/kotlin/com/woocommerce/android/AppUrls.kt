@@ -47,8 +47,11 @@ object AppUrls {
 
     const val CROWDSIGNAL_TAP_TO_PAY_SURVEY = "https://automattic.survey.fm/woo-app-%E2%80%93-first-ttp-survey"
     val CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY =
-        if (BuildConfig.DEBUG) "https://automattic.survey.fm/testing-debug-product-creation-with-ai-dec-2023"
-        else "https://automattic.survey.fm/product-creation-with-ai-dec-2023"
+        if (BuildConfig.DEBUG) {
+            "https://automattic.survey.fm/testing-debug-product-creation-with-ai-dec-2023"
+        } else {
+            "https://automattic.survey.fm/product-creation-with-ai-dec-2023"
+        }
 
     // Will be used later when the feature is fully launched.
     const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"

@@ -28,6 +28,7 @@ import javax.inject.Inject
 class SimplePaymentsDialog : PaymentsBaseDialogFragment(R.layout.dialog_simple_payments) {
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 

@@ -8,19 +8,28 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.appwidgets.stats.GetWidgetStats
+import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.util.locale.LocaleProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WCStatsStore
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
+@Suppress("LongParameterList")
 @HiltWorker
 class UpdateTodayStatsWorker @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
     private val getWidgetStats: GetWidgetStats,
     private val selectedSite: SelectedSite,
-    private val todayStatsWidgetUIHelper: TodayStatsWidgetUIHelper
+    private val todayStatsWidgetUIHelper: TodayStatsWidgetUIHelper,
+    private val dateUtils: DateUtils,
+    private val localeProvider: LocaleProvider
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -40,7 +49,13 @@ class UpdateTodayStatsWorker @AssistedInject constructor(
         widgetManager.updateAppWidget(widgetId, remoteViews)
 
         // Fetch data
-        val todayStatsResult = getWidgetStats(WCStatsStore.StatsGranularity.DAYS, site)
+        val todayRange = StatsTimeRangeSelection.build(
+            selectionType = SelectionType.TODAY,
+            referenceDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
+            calendar = Calendar.getInstance(),
+            locale = localeProvider.provideLocale() ?: Locale.getDefault()
+        )
+        val todayStatsResult = getWidgetStats(todayRange, site)
 
         // Display results
         val result = getTaskResult(widgetId, remoteViews, site, todayStatsResult)

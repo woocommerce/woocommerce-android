@@ -24,8 +24,11 @@ data class OrderDetailViewState(
     val isOrderDetailEmpty: Boolean = false,
 ) : Parcelable {
     val isMarkOrderCompleteButtonVisible: Boolean?
-        get() = if (orderStatus != null && (orderStatus.statusKey != CoreOrderStatus.COMPLETED.value))
-            orderInfo?.order?.isOrderPaid else false
+        get() = if (orderStatus != null && (orderStatus.statusKey != CoreOrderStatus.COMPLETED.value)) {
+            orderInfo?.order?.isOrderPaid
+        } else {
+            false
+        }
 
     val isCreateShippingLabelBannerVisible: Boolean
         get() = isCreateShippingLabelButtonVisible == true && isProductListVisible == true

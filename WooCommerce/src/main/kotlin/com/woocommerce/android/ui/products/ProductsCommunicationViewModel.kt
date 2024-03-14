@@ -19,5 +19,6 @@ class ProductsCommunicationViewModel @Inject constructor(
 
     sealed class CommunicationEvent : MultiLiveEvent.Event() {
         data class ProductTrashed(val productId: Long) : CommunicationEvent()
+        data object ProductUpdated : CommunicationEvent()
     }
 }

@@ -8,7 +8,9 @@ sealed interface OrderAttributionOrigin {
     data class Organic(val source: String?) : OrderAttributionOrigin
     data object Direct : OrderAttributionOrigin
     data object Admin : OrderAttributionOrigin
-    data object Mobile : OrderAttributionOrigin
+    data object Mobile : OrderAttributionOrigin {
+        const val SOURCE_TYPE_VALUE = "mobile_app"
+    }
     data object Unknown : OrderAttributionOrigin
 }
 
@@ -19,6 +21,6 @@ val OrderAttributionInfo.origin
         "organic" -> OrderAttributionOrigin.Organic(source)
         "typein" -> OrderAttributionOrigin.Direct
         "admin" -> OrderAttributionOrigin.Admin
-        "mobile_app" -> OrderAttributionOrigin.Mobile
+        OrderAttributionOrigin.Mobile.SOURCE_TYPE_VALUE -> OrderAttributionOrigin.Mobile
         else -> OrderAttributionOrigin.Unknown
     }

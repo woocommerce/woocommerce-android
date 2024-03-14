@@ -164,7 +164,9 @@ class CardReaderPaymentViewModel
             tracker.trackPaymentFailed("VM killed when TTP activity in foreground")
             viewState.postValue(
                 buildFailedPaymentState(
-                    PaymentFlowError.BuiltInReader.AppKilledWhileInBackground, "", {}
+                    PaymentFlowError.BuiltInReader.AppKilledWhileInBackground,
+                    "",
+                    {}
                 )
             )
         } else {
@@ -195,10 +197,12 @@ class CardReaderPaymentViewModel
                     handleAdditionalInfo(message.message)
                 }
 
-                is BluetoothCardReaderMessages.CardReaderInputMessage -> { /* no-op*/
+                is BluetoothCardReaderMessages.CardReaderInputMessage -> {
+                    /* no-op*/
                 }
 
-                is BluetoothCardReaderMessages.CardReaderNoMessage -> { /* no-op*/
+                is BluetoothCardReaderMessages.CardReaderNoMessage -> {
+                    /* no-op*/
                 }
             }
         }
@@ -532,7 +536,9 @@ class CardReaderPaymentViewModel
         WooLog.e(WooLog.T.CARD_READER, error.errorMessage)
         cardReaderOnboardingChecker.invalidateCache()
         val onRetryClicked = error.paymentDataForRetry?.let {
-            { retry(orderId, billingEmail, it, amountLabel) }
+            {
+                retry(orderId, billingEmail, it, amountLabel)
+            }
         } ?: { initPaymentFlow(isRetry = true) }
         val config = cardReaderConfigProvider.provideCountryConfigFor(getStoreCountryCode())
 
@@ -663,7 +669,8 @@ class CardReaderPaymentViewModel
                 )
 
             else -> WooLog.e(
-                WooLog.T.CARD_READER, "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}"
+                WooLog.T.CARD_READER,
+                "Got SDK message when cardReaderPaymentViewModel is in ${viewState.value}"
             )
         }
     }
