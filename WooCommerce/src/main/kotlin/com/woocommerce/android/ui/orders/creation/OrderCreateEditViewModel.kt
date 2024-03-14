@@ -174,8 +174,6 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
-import android.util.Log
-import kotlinx.coroutines.flow.last
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -300,10 +298,7 @@ class OrderCreateEditViewModel @Inject constructor(
         .asLiveData()
 
     val selectedItems: StateFlow<List<SelectedItem>> =
-        _orderDraft.map { order -> order.selectedItems() }
-            .toStateFlow(
-                emptyList()
-            )
+        _orderDraft.map { order -> order.selectedItems() }.toStateFlow(emptyList())
 
     fun Order.selectedItems(): List<SelectedItem> = items.map { item ->
             if (item.isVariation) {
@@ -1235,7 +1230,6 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onItemsSelectionChanged(selectedItems: List<SelectedItem>) {
         if (_orderDraft.value.selectedItems() != selectedItems) {
-            Log.d("OrderCreateEditViewModel", "onItemsSelectionChanged: ${_orderDraft.value.selectedItems()} vs $selectedItems")
             viewState = viewState.copy(isRecalculateNeeded = true)
             _pendingSelectedItems.value = selectedItems
         }
