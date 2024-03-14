@@ -2340,6 +2340,7 @@
     <string name="plugin_state_update_available">Update available</string>
     <string name="plugin_state_inactive">Inactive</string>
     <string name="plugin_state_auto_managed">Auto-managed</string>
+    <string name="plugins_error_message">An error occurred while loading installed plugins</string>
 
     <!--
         Developer Options Screen

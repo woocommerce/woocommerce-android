@@ -9,6 +9,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Error
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.INACTIVE
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UPDATE_AVAILABLE
@@ -20,11 +22,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.plugin.ImmutablePluginModel
 import org.wordpress.android.util.helpers.Version
@@ -34,30 +32,30 @@ import javax.inject.Inject
 @HiltViewModel
 class PluginsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    pluginRepository: PluginRepository,
-    site: SelectedSite
+    private val pluginRepository: PluginRepository,
+    private val site: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
-    companion object {
-        private const val LOADING_DEBOUNCE_MS = 500L
-    }
-
-    private val _viewState = MutableStateFlow<ViewState>(Loading)
-    val viewState = merge(
-        _viewState.take(1),
-        _viewState.drop(1).debounce(LOADING_DEBOUNCE_MS)
-    ).asLiveData()
+    private val _viewState = MutableSharedFlow<ViewState>(1)
+    val viewState = _viewState.asLiveData()
 
     init {
+        loadPlugins()
+    }
+
+    private fun loadPlugins() {
         viewModelScope.launch {
+            _viewState.emit(Loading)
             pluginRepository.fetchInstalledPlugins(site.get()).fold(
                 onSuccess = { plugins ->
-                    _viewState.value = ViewState.Loaded(
-                        plugins = plugins
-                            .filter { it.installedVersion.isNotNullOrEmpty() && it.displayName.isNotNullOrEmpty() }
-                            .map { Plugin(it.displayName!!, it.authorName, it.installedVersion!!, it.getState()) }
+                    _viewState.emit(
+                        Loaded(
+                            plugins = plugins
+                                .filter { it.installedVersion.isNotNullOrEmpty() && it.displayName.isNotNullOrEmpty() }
+                                .map { Plugin(it.displayName!!, it.authorName, it.installedVersion!!, it.getState()) }
+                        )
                     )
                 },
-                onFailure = { _viewState.value = ViewState.Error }
+                onFailure = { _viewState.emit(Error) }
             )
         }
     }
@@ -90,6 +88,10 @@ class PluginsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun onRetryClicked() {
+        loadPlugins()
     }
 
     fun onBackPressed() {
