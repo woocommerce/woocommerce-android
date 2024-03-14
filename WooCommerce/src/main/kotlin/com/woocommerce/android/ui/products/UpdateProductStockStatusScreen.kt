@@ -12,8 +12,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +21,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -33,30 +30,9 @@ import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Com
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState.Common
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.StockStatusState.Mixed
-import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusUiState
 
 @Composable
-fun UpdateProductStockStatusScreen(viewModel: UpdateProductStockStatusViewModel) {
-    val uiState by viewModel.viewState.observeAsState(UpdateStockStatusUiState())
-
-    UpdateProductStockStatusScreen(
-        currentStockStatusState = uiState.currentStockStatusState,
-        statusMessage = uiState.statusMessage,
-        currentProductStockStatus = uiState.currentProductStockStatus,
-        stockStatuses = uiState.stockStockStatuses,
-        isProgressDialogVisible = uiState.isProgressDialogVisible,
-        onStockStatusChanged = { newStatus ->
-            viewModel.onStockStatusSelected(newStatus)
-        },
-        onNavigationUpClicked = { viewModel.onBackPressed() },
-        onUpdateClicked = {
-            viewModel.onDoneButtonClicked()
-        }
-    )
-}
-
-@Composable
-private fun UpdateProductStockStatusScreen(
+fun UpdateProductStockStatusScreen(
     currentStockStatusState: StockStatusState,
     statusMessage: String,
     currentProductStockStatus: ProductStockStatus,
@@ -66,7 +42,6 @@ private fun UpdateProductStockStatusScreen(
     onNavigationUpClicked: () -> Unit,
     onUpdateClicked: () -> Unit
 ) {
-    val borderWidth = 1.dp
     val borderColor = colorResource(id = R.color.divider_color)
 
     val currentStockStatusMessage = when (currentStockStatusState) {
@@ -121,7 +96,7 @@ private fun UpdateProductStockStatusScreen(
 
             Spacer(modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100)))
 
-            Divider(color = borderColor, thickness = borderWidth)
+            Divider(color = borderColor)
 
             Text(
                 text = statusMessage,
@@ -137,7 +112,7 @@ private fun UpdateProductStockStatusScreen(
                 textAlign = TextAlign.Center
             )
 
-            Divider(color = borderColor, thickness = borderWidth)
+            Divider(color = borderColor)
         }
 
         if (isProgressDialogVisible) {
