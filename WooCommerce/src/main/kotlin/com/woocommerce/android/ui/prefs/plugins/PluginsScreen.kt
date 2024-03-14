@@ -97,7 +97,7 @@ private fun Plugins(plugins: List<ViewState.Loaded.Plugin>) {
                 }
 
                 Column {
-                    Row (modifier = Modifier.align(Alignment.End)) {
+                    Row(modifier = Modifier.align(Alignment.End)) {
                         Text(
                             style = MaterialTheme.typography.subtitle1,
                             text = plugin.version,
@@ -131,7 +131,7 @@ private fun PreviewPlugins() {
         ViewState.Loaded(
             plugins = listOf(
                 ViewState.Loaded.Plugin("Plugin 1", "Automattic", "1.0", UP_TO_DATE),
-                ViewState.Loaded.Plugin("Plugin 2", null,"2.0", UPDATE_AVAILABLE),
+                ViewState.Loaded.Plugin("Plugin 2", null, "2.0", UPDATE_AVAILABLE),
                 ViewState.Loaded.Plugin("Plugin 3", "Gutenberg", "3.0", INACTIVE),
             )
         )

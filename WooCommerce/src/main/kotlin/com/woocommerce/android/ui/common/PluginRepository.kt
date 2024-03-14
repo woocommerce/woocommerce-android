@@ -90,7 +90,10 @@ class PluginRepository @Inject constructor(
             val action = PluginActionBuilder.newFetchPluginDirectoryAction(payload)
             val event: PluginStore.OnPluginDirectoryFetched = dispatcher.dispatchAndAwait(action)
             if (event.isError) {
-                WooLog.w(WooLog.T.PLUGINS, "Fetching installed plugins failed, ${event.error.type} ${event.error.message}")
+                WooLog.w(
+                    WooLog.T.PLUGINS,
+                    "Fetching installed plugins failed, ${event.error.type} ${event.error.message}"
+                )
                 return Result.failure(OnChangedException(event.error))
             } else {
                 val list = pluginStore.getPluginDirectory(site, SITE)

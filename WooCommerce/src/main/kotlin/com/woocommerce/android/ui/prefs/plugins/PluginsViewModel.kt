@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.prefs.plugins
 
-import android.text.TextUtils
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
@@ -15,6 +14,8 @@ import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loade
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UPDATE_AVAILABLE
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UP_TO_DATE
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loading
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,8 +27,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.plugin.ImmutablePluginModel
-import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.AppLog.T.PLUGINS
 import org.wordpress.android.util.helpers.Version
 import javax.inject.Inject
 
@@ -38,10 +37,14 @@ class PluginsViewModel @Inject constructor(
     pluginRepository: PluginRepository,
     site: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private const val LOADING_DEBOUNCE_MS = 500L
+    }
+
     private val _viewState = MutableStateFlow<ViewState>(Loading)
     val viewState = merge(
         _viewState.take(1),
-        _viewState.drop(1).debounce(500L)
+        _viewState.drop(1).debounce(LOADING_DEBOUNCE_MS)
     ).asLiveData()
 
     init {
@@ -68,25 +71,24 @@ class PluginsViewModel @Inject constructor(
     }
 
     private fun ImmutablePluginModel.isUpdateAvailable(): Boolean {
-        if (TextUtils.isEmpty(installedVersion)
-            || TextUtils.isEmpty(wpOrgPluginVersion)) {
-            return false
-        }
-        val installedVersionStr = installedVersion
-        val availableVersionStr = wpOrgPluginVersion
-        try {
-            val currentVersion = Version(installedVersionStr)
-            val availableVersion = Version(availableVersionStr)
-            return currentVersion < availableVersion
-        } catch (e: IllegalArgumentException) {
-            val errorStr = String.format(
-                "An IllegalArgumentException occurred while trying to compare site plugin version: %s"
-                    + " with wporg plugin version: %s", installedVersionStr, availableVersionStr
-            )
-            AppLog.e(PLUGINS, errorStr, e)
-            // If the versions are not in the expected format, we can assume that an update is available if the version
-            // values for the site plugin and wporg plugin are not the same
-            return !installedVersionStr.equals(availableVersionStr, ignoreCase = true)
+        return when {
+            installedVersion.isNullOrEmpty() || wpOrgPluginVersion.isNullOrEmpty() -> false
+            else -> {
+                try {
+                    val currentVersion = Version(installedVersion)
+                    val availableVersion = Version(wpOrgPluginVersion)
+                    currentVersion < availableVersion
+                } catch (_: IllegalArgumentException) {
+                    val errorStr = String.format(
+                        "An IllegalArgumentException occurred while trying to compare site plugin version: %s" +
+                            " with wporg plugin version: %s",
+                        installedVersion,
+                        wpOrgPluginVersion
+                    )
+                    WooLog.w(T.PLUGINS, errorStr)
+                    !installedVersion.equals(wpOrgPluginVersion, ignoreCase = true)
+                }
+            }
         }
     }
 
