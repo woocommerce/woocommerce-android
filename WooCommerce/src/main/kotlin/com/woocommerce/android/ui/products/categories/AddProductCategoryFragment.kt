@@ -71,7 +71,7 @@ class AddProductCategoryFragment :
         return when (item.itemId) {
             R.id.menu_done -> {
                 AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
-                viewModel.addProductCategory(binding.productCategoryName.text)
+                viewModel.saveProductCategory(binding.productCategoryName.text)
                 true
             }
 

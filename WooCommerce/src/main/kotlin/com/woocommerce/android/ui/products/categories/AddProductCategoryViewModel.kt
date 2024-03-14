@@ -8,7 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
-import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.util.WooLog
@@ -23,6 +23,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.RESOURCE_ALREADY_EXISTS
 import javax.inject.Inject
 
 @HiltViewModel
@@ -82,7 +83,7 @@ class AddProductCategoryViewModel @Inject constructor(
         }
     }
 
-    fun addProductCategory(categoryName: String, parentId: Long = getSelectedParentId()) {
+    fun saveProductCategory(categoryName: String, parentId: Long = getSelectedParentId()) {
         if (categoryName.isEmpty()) {
             addProductCategoryViewState = addProductCategoryViewState.copy(
                 categoryNameErrorMessage = string.add_product_category_empty
@@ -94,38 +95,47 @@ class AddProductCategoryViewModel @Inject constructor(
         launch {
             if (networkStatus.isConnected()) {
                 val categoryNameTrimmed = TextUtils.htmlEncode(categoryName.trim())
-                val requestResult = productCategoriesRepository.addProductCategory(categoryNameTrimmed, parentId)
-                // hide progress dialog
-                addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = false)
-                when (requestResult) {
-                    RequestResult.SUCCESS -> {
-                        triggerEvent(ShowSnackbar(string.add_product_category_success))
+                val requestResult = when {
+                    isEditingExistingCategory() -> productCategoriesRepository.updateProductCategory(
+                        navArgs.productCategory!!.remoteCategoryId,
+                        categoryName,
+                        parentId
+                    )
+
+                    else -> productCategoriesRepository.addProductCategory(categoryName, parentId)
+                }
+                requestResult
+                    .onSuccess {
+                        val successString = when {
+                            isEditingExistingCategory() -> R.string.update_product_category_success
+                            else -> R.string.add_product_category_success
+                        }
+                        triggerEvent(ShowSnackbar(successString))
                         val addedCategory = productCategoriesRepository
                             .getProductCategoryByNameAndParentId(categoryNameTrimmed, parentId)
                         triggerEvent(ExitWithResult(addedCategory))
                     }
-
-                    RequestResult.API_ERROR -> {
-                        addProductCategoryViewState = addProductCategoryViewState.copy(
-                            categoryNameErrorMessage = string.add_product_category_duplicate
+                    .onFailure {
+                        WooLog.e(
+                            tag = WooLog.T.PRODUCTS,
+                            message = "Error adding product category: ${it.message}"
                         )
-                    }
+                        when ((it as WooException).error.type) {
+                            RESOURCE_ALREADY_EXISTS -> addProductCategoryViewState = addProductCategoryViewState.copy(
+                                categoryNameErrorMessage = string.add_product_category_duplicate
+                            )
 
-                    RequestResult.ERROR -> {
-                        triggerEvent(ShowSnackbar(string.add_product_category_failed))
+                            else -> triggerEvent(ShowSnackbar(string.add_product_category_failed))
+                        }
                     }
-
-                    else -> {
-                        /** No action needed */
-                    }
-                }
             } else {
-                // hide progress dialog
-                addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = false)
                 triggerEvent(ShowSnackbar(string.offline_error))
             }
+            addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = false)
         }
     }
+
+    private fun isEditingExistingCategory(): Boolean = navArgs.productCategory != null
 
     fun fetchParentCategories() {
         loadParentCategories()
