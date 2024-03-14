@@ -140,7 +140,9 @@ class AddProductCategoryFragment :
             }
             new.displayProgressDialog?.takeIfNotEqualTo(old?.displayProgressDialog) { showProgressDialog(it) }
             new.categoryName.takeIfNotEqualTo(old?.categoryName) {
-                binding.productCategoryName.text = it.parseAsHtml().toString()
+                if (it != binding.productCategoryName.text) {
+                    binding.productCategoryName.text = it.parseAsHtml().toString()
+                }
             }
             new.selectedParentId.takeIfNotEqualTo(old?.selectedParentId) {
                 val parentCategoryName = viewModel.getSelectedParentCategoryName()
