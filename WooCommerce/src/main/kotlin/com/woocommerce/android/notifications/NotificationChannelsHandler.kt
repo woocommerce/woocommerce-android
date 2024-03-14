@@ -23,7 +23,7 @@ class NotificationChannelsHandler @Inject constructor(
         NotificationManagerCompat.from(context)
     }
 
-    init {
+    fun init() {
         createChannels()
     }
 
