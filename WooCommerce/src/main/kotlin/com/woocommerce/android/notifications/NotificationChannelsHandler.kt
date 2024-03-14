@@ -10,6 +10,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.notifications.NotificationChannelType.NEW_ORDER
 import com.woocommerce.android.notifications.NotificationChannelType.OTHER
 import com.woocommerce.android.notifications.NotificationChannelType.REVIEW
+import com.woocommerce.android.util.WooLog
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,6 +47,12 @@ class NotificationChannelsHandler @Inject constructor(
     }
 
     private fun createChannel(channelType: NotificationChannelType) {
+        // check for existing channel first
+        notificationManagerCompat.getNotificationChannel(channelType.getChannelId())?.let {
+            WooLog.i(WooLog.T.NOTIFS, "Notification channel already created with the following attributes: $it")
+            return
+        }
+
         val channel = NotificationChannelCompat.Builder(
             channelType.getChannelId(),
             NotificationManager.IMPORTANCE_DEFAULT
