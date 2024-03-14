@@ -100,6 +100,7 @@ import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderDetailFragment :
     BaseFragment(R.layout.fragment_order_detail),

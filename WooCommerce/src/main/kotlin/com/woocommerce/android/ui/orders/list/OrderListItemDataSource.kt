@@ -99,7 +99,9 @@ class OrderListItemDataSource(
         val orderIds = remoteItemIds.map { it.value }.let {
             if (listDescriptor.excludedIds != null) {
                 it.filterNot { orderId -> listDescriptor.excludedIds!!.contains(orderId) }
-            } else it
+            } else {
+                it
+            }
         }
         val orderSummaries = orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, orderIds)
             .let { summariesByRemoteId ->
