@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.categories
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
 import androidx.core.text.parseAsHtml
 import androidx.navigation.fragment.findNavController
@@ -17,6 +18,11 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.CreatingCategory
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.DeletingCategory
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.Hidden
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.UpdatingCategory
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -74,6 +80,12 @@ class AddProductCategoryFragment :
             R.id.menu_item_done -> {
                 AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
                 viewModel.saveProductCategory(binding.productCategoryName.text)
+                true
+            }
+
+            R.id.menu_item_delete -> {
+                AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_CATEGORY_DELETE_TAPPED)
+                viewModel.onDeletedCategory()
                 true
             }
 
@@ -140,7 +152,7 @@ class AddProductCategoryFragment :
             new.categoryNameErrorMessage?.takeIfNotEqualTo(old?.categoryNameErrorMessage) {
                 displayCategoryNameError(it)
             }
-            new.displayProgressDialog?.takeIfNotEqualTo(old?.displayProgressDialog) { showProgressDialog(it) }
+            new.displayProgressDialog.takeIfNotEqualTo(old?.displayProgressDialog) { showProgressDialog(it) }
             new.categoryName.takeIfNotEqualTo(old?.categoryName) {
                 if (it != binding.productCategoryName.text) {
                     binding.productCategoryName.text = it.parseAsHtml().toString()
@@ -177,17 +189,25 @@ class AddProductCategoryFragment :
         }
     }
 
-    private fun showProgressDialog(show: Boolean) {
-        if (show) {
-            hideProgressDialog()
-            progressDialog = CustomProgressDialog.show(
-                getString(R.string.product_add_category_dialog_title),
-                getString(R.string.product_add_category_dialog_message)
-            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
-            progressDialog?.isCancelable = false
-        } else {
-            hideProgressDialog()
+    private fun showProgressDialog(progressDialog: ProgressDialog) {
+        hideProgressDialog()
+        when (progressDialog) {
+            CreatingCategory -> showProgressDialog(R.string.product_add_category_dialog_title)
+            UpdatingCategory -> showProgressDialog(R.string.product_update_category_dialog_title)
+            DeletingCategory -> showProgressDialog(R.string.product_removing_category_dialog_title)
+            Hidden -> hideProgressDialog()
         }
+    }
+
+    private fun showProgressDialog(
+        @StringRes title: Int,
+        @StringRes messageId: Int = R.string.product_add_category_dialog_message
+    ) {
+        this.progressDialog = CustomProgressDialog.show(getString(title), getString(messageId))
+            .also {
+                it.show(parentFragmentManager, CustomProgressDialog.TAG)
+                it.isCancelable = false
+            }
     }
 
     private fun hideProgressDialog() {
