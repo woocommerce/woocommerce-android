@@ -47,7 +47,6 @@ import com.woocommerce.android.ui.products.ai.AIProductNameViewModel.ViewState.G
 
 @Composable
 fun AIProductNameBottomSheet(viewModel: AIProductNameViewModel) {
-
     viewModel.viewState.observeAsState().value?.let { state ->
         when (val generationState = state.generationState) {
             is GenerationState.Start -> StartLayout(

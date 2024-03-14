@@ -352,10 +352,14 @@ class CustomerListViewModel @Inject constructor(
         body = CustomerListViewState.CustomerList.Empty(
             R.string.order_creation_customer_search_empty_on_old_version_wcpay,
             R.drawable.img_search_suggestion,
-            button = if (allowCustomerCreation) Button(
-                R.string.order_creation_customer_search_empty_add_details_manually,
-                onClick = { onAddCustomerClicked(null) }
-            ) else null
+            button = if (allowCustomerCreation) {
+                Button(
+                    R.string.order_creation_customer_search_empty_add_details_manually,
+                    onClick = { onAddCustomerClicked(null) }
+                )
+            } else {
+                null
+            }
         )
     )
 

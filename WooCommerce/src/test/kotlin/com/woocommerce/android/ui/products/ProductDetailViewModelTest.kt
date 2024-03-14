@@ -576,7 +576,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `Correctly sorts the Product Categories By their Parent Ids and by name`() {
         testBlocking {
             val sortedByNameAndParent = viewModel.sortAndStyleProductCategories(
-                product, productCategories
+                product,
+                productCategories
             ).toList()
             assertThat(sortedByNameAndParent[0].category).isEqualTo(productCategories[0])
             assertThat(sortedByNameAndParent[1].category).isEqualTo(productCategories[7])

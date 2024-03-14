@@ -26,8 +26,11 @@ class FeedbackCompletedFragment : androidx.fragment.app.Fragment(R.layout.fragme
 
     private val feedbackContext by lazy {
         (navArgs<FeedbackCompletedFragmentArgs>().value).let {
-            if (it.surveyType == MAIN) VALUE_FEEDBACK_GENERAL_CONTEXT
-            else VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+            if (it.surveyType == MAIN) {
+                VALUE_FEEDBACK_GENERAL_CONTEXT
+            } else {
+                VALUE_FEEDBACK_PRODUCT_M3_CONTEXT
+            }
         }
     }
 

@@ -61,7 +61,9 @@ class UserEligibilityErrorViewModel @Inject constructor(
 
                     if (isUserEligible) {
                         triggerEvent(Exit)
-                    } else triggerEvent(ShowSnackbar(string.user_role_access_error_retry))
+                    } else {
+                        triggerEvent(ShowSnackbar(string.user_role_access_error_retry))
+                    }
                 },
                 onFailure = {
                     triggerEvent(ShowSnackbar(R.string.error_generic))

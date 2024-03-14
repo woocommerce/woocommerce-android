@@ -19,6 +19,7 @@ class InitializationRule : TestRule {
     @InstallIn(SingletonComponent::class)
     interface AppEntryPoint {
         fun initializer(): AppInitializer
+
         @AppCoroutineScope fun appCoroutineScope(): CoroutineScope
     }
 

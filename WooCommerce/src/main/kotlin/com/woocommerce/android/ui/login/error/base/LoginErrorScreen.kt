@@ -100,7 +100,8 @@ fun LoginErrorScreen(
             }
 
             ButtonBar(
-                primaryButton, secondaryButton
+                primaryButton,
+                secondaryButton
             )
         }
     }

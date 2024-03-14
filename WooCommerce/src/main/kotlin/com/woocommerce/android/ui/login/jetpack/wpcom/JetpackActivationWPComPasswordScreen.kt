@@ -104,8 +104,11 @@ fun JetpackActivationWPComPasswordScreen(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 Text(
                     text = stringResource(
-                        id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_enter_wpcom_password
-                        else R.string.login_jetpack_installation_enter_wpcom_password
+                        id = if (viewState.isJetpackInstalled) {
+                            R.string.login_jetpack_connection_enter_wpcom_password
+                        } else {
+                            R.string.login_jetpack_installation_enter_wpcom_password
+                        }
                     )
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -144,8 +147,11 @@ fun JetpackActivationWPComPasswordScreen(
             ) {
                 Text(
                     text = stringResource(
-                        id = if (viewState.isJetpackInstalled) R.string.login_jetpack_connect
-                        else R.string.login_jetpack_install
+                        id = if (viewState.isJetpackInstalled) {
+                            R.string.login_jetpack_connect
+                        } else {
+                            R.string.login_jetpack_install
+                        }
                     )
                 )
             }

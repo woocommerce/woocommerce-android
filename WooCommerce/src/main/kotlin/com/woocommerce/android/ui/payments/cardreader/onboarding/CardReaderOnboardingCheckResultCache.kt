@@ -8,6 +8,7 @@ class CardReaderOnboardingCheckResultCache @Inject constructor() {
     @Volatile
     var value: Result = Result.NotCached
         @Synchronized get
+
         @Synchronized set
 
     fun invalidate() {

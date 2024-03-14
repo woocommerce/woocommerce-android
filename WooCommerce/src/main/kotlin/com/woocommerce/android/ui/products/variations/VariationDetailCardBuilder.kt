@@ -145,7 +145,8 @@ class VariationDetailCardBuilder(
         ) {
             viewModel.onEditVariationCardClicked(
                 ViewDescriptionEditor(
-                    variationDescription, resources.getString(string.product_description)
+                    variationDescription,
+                    resources.getString(string.product_description)
                 ),
                 AnalyticsEvent.PRODUCT_VARIATION_VIEW_VARIATION_DESCRIPTION_TAPPED
             )
@@ -154,6 +155,7 @@ class VariationDetailCardBuilder(
 
     private fun ProductVariation.visibility(): ProductProperty {
         @StringRes val visibility: Int
+
         @DrawableRes val visibilityIcon: Int
         if (this.isVisible) {
             visibility = string.product_variation_enabled

@@ -165,7 +165,9 @@ class OrderFilterOptionsViewModel @Inject constructor(
                 .map {
                     if (it.isSelected && DateRange.fromValue(it.key) == DateRange.CUSTOM_RANGE) {
                         it.copy(displayValue = dateRangeDisplayValue)
-                    } else it
+                    } else {
+                        it
+                    }
                 }
         )
     }

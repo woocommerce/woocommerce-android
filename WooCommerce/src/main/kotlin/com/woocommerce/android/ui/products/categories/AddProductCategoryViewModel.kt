@@ -72,7 +72,9 @@ class AddProductCategoryViewModel @Inject constructor(
                 )
             )
             false
-        } else true
+        } else {
+            true
+        }
     }
 
     fun onCategoryNameChanged(categoryName: String) {

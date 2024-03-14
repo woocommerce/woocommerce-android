@@ -119,7 +119,8 @@ fun JetpackActivationMainScreen(
             ) { targetState ->
                 when (targetState) {
                     is JetpackActivationMainViewModel.ViewState.ProgressViewState -> ProgressState(
-                        viewState = targetState, onContinueClick = onContinueClick
+                        viewState = targetState,
+                        onContinueClick = onContinueClick
                     )
 
                     is JetpackActivationMainViewModel.ViewState.ErrorViewState -> ErrorState(
@@ -144,11 +145,17 @@ private fun ProgressState(
         modifier = modifier
     ) {
         val title = if (viewState.isDone) {
-            if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title_done
-            else R.string.login_jetpack_installation_steps_screen_title_done
+            if (viewState.isJetpackInstalled) {
+                R.string.login_jetpack_connection_steps_screen_title_done
+            } else {
+                R.string.login_jetpack_installation_steps_screen_title_done
+            }
         } else {
-            if (viewState.isJetpackInstalled) R.string.login_jetpack_connection_steps_screen_title
-            else R.string.login_jetpack_installation_steps_screen_title
+            if (viewState.isJetpackInstalled) {
+                R.string.login_jetpack_connection_steps_screen_title
+            } else {
+                R.string.login_jetpack_installation_steps_screen_title
+            }
         }
         Text(
             text = stringResource(id = title),
@@ -362,11 +369,17 @@ private fun JetpackActivationStep(
             Text(
                 text = stringResource(id = step.type.title),
                 style = MaterialTheme.typography.subtitle1,
-                fontWeight = if (isIdle) FontWeight.Normal
-                else FontWeight.Bold,
+                fontWeight = if (isIdle) {
+                    FontWeight.Normal
+                } else {
+                    FontWeight.Bold
+                },
                 color = colorResource(
-                    id = if (isIdle) R.color.color_on_surface_medium
-                    else R.color.color_on_surface
+                    id = if (isIdle) {
+                        R.color.color_on_surface_medium
+                    } else {
+                        R.color.color_on_surface
+                    }
                 )
             )
 

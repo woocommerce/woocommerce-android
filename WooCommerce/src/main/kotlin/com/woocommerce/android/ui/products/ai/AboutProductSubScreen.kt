@@ -153,9 +153,9 @@ fun AboutProductSubScreen(
                     contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_100)),
                     onClick = {
                         coroutineScope.launch {
-                            if (modalSheetState.isVisible)
+                            if (modalSheetState.isVisible) {
                                 modalSheetState.hide()
-                            else {
+                            } else {
                                 modalSheetState.show()
                             }
                         }
@@ -250,8 +250,9 @@ private fun AiToneBottomSheetContent(
                     )
                 }
             }
-            if (index < aiTones.size - 1)
+            if (index < aiTones.size - 1) {
                 Divider(modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_75)))
+            }
         }
     }
 }

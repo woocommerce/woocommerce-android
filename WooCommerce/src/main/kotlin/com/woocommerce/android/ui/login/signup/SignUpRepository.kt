@@ -58,7 +58,9 @@ class SignUpRepository @Inject constructor(
             return if (updateTokenResult.isError) {
                 WooLog.w(WooLog.T.LOGIN, "Error updating token: ${updateTokenResult.error.message}")
                 AccountCreationError(UNKNOWN_ERROR)
-            } else onTokenUpdatedSuccessfully(username)
+            } else {
+                onTokenUpdatedSuccessfully(username)
+            }
         }
     }
 

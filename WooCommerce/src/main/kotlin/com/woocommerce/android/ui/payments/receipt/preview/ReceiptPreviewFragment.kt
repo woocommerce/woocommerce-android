@@ -25,6 +25,7 @@ class ReceiptPreviewFragment : BaseFragment(R.layout.fragment_receipt_preview), 
     val viewModel: ReceiptPreviewViewModel by viewModels()
 
     @Inject lateinit var printHtmlHelper: PrintHtmlHelper
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private var _binding: FragmentReceiptPreviewBinding? = null

@@ -41,6 +41,7 @@ class RefundByItemsFragment :
     OnCheckedChangeListener,
     OnFeeLineCheckedChangeListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject lateinit var imageMap: ProductImageMap
 
     private var _binding: FragmentRefundByItemsBinding? = null

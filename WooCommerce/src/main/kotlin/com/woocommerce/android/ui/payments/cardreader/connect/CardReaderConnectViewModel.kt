@@ -277,7 +277,9 @@ class CardReaderConnectViewModel @Inject constructor(
                     if (connectionStarted) {
                         status.errorMessage?.let { triggerEvent(ShowToastString(it)) }
                         onReaderConnectionFailed()
-                    } else Unit
+                    } else {
+                        Unit
+                    }
                 }
                 CardReaderStatus.Connecting -> {
                     connectionStarted = true
