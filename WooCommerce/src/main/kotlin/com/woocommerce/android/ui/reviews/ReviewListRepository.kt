@@ -18,7 +18,7 @@ import com.woocommerce.android.util.WooLog.T.REVIEWS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
@@ -78,12 +78,12 @@ class ReviewListRepository @Inject constructor(
         loadMore: Boolean,
         remoteProductId: Long? = null
     ): Flow<FetchReviewsResult> =
-        flow {
+        channelFlow {
             if (!isFetchingProductReviews) {
                 coroutineScope {
                     launch {
                         val fetchNotificationsResult = fetchNotifications()
-                        emit(FetchReviewsResult.NotificationsFetched(if (fetchNotificationsResult) SUCCESS else ERROR))
+                        send(FetchReviewsResult.NotificationsFetched(if (fetchNotificationsResult) SUCCESS else ERROR))
                     }
 
                     launch {
@@ -96,11 +96,11 @@ class ReviewListRepository @Inject constructor(
                                 .distinct()
                                 .takeIf { it.isNotEmpty() }?.let { fetchProductsByRemoteId(it) }
                         }
-                        emit(FetchReviewsResult.ReviewsFetched(if (wasFetchReviewsSuccess) SUCCESS else ERROR))
+                        send(FetchReviewsResult.ReviewsFetched(if (wasFetchReviewsSuccess) SUCCESS else ERROR))
                     }
                 }
             } else {
-                emit(FetchReviewsResult.NothingFetched)
+                send(FetchReviewsResult.NothingFetched)
             }
         }
 
