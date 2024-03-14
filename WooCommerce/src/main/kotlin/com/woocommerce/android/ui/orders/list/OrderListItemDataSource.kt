@@ -111,7 +111,9 @@ class OrderListItemDataSource(
                     // a "loading" view for that item indefinitely.
                     val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, orderIds)
                     summaries.filter { cachedOrders.containsKey(it.orderId) }
-                } else summaries
+                } else {
+                    summaries
+                }
             }
 
         val listFuture = mutableListOf<OrderIdentifier>()

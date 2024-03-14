@@ -31,6 +31,7 @@ class StoreInstallationFragment : BaseFragment() {
 
     @Inject
     lateinit var userAgent: UserAgent
+
     @Inject
     lateinit var authenticator: WPComWebViewAuthenticator
 

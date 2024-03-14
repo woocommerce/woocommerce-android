@@ -10,10 +10,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentPrintShippingLabelBinding
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleDialogResult
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -35,7 +36,9 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
     companion object {
         const val KEY_LABEL_PURCHASED = "key-label-purchased"
     }
+
     @Inject lateinit var navigator: OrderNavigator
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: PrintShippingLabelViewModel by viewModels()
@@ -65,7 +68,9 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         binding.toolbar.title = getString(viewModel.screenTitle)
         binding.toolbar.setNavigationOnClickListener {
             when {
-                isTablet() && onRequestAllowBackPress() -> findNavController().navigateUp()
+                requireContext().windowSizeClass != WindowSizeClass.Compact && onRequestAllowBackPress() -> {
+                    findNavController().navigateUp()
+                }
                 else -> (activity as? MainActivity)?.onBackPressed()
             }
         }
@@ -76,13 +81,19 @@ class PrintShippingLabelFragment : BaseFragment(R.layout.fragment_print_shipping
         binding.purchaseGroup.isVisible = !navArgs.isReprint
 
         binding.labelPurchased.setText(
-            if (navArgs.shippingLabelIds.size > 1) R.string.shipping_label_print_multiple_purchase_success
-            else R.string.shipping_label_print_purchase_success
+            if (navArgs.shippingLabelIds.size > 1) {
+                R.string.shipping_label_print_multiple_purchase_success
+            } else {
+                R.string.shipping_label_print_purchase_success
+            }
         )
 
         binding.shippingLabelPrintBtn.setText(
-            if (navArgs.shippingLabelIds.size > 1) R.string.shipping_label_print_multiple_button
-            else R.string.shipping_label_print_button
+            if (navArgs.shippingLabelIds.size > 1) {
+                R.string.shipping_label_print_multiple_button
+            } else {
+                R.string.shipping_label_print_button
+            }
         )
 
         binding.shippingLabelPrintPaperSize.setClickListener { viewModel.onPaperSizeOptionsSelected() }

@@ -23,8 +23,11 @@ abstract class InputField<T : InputField<T>>(open val content: String) : Parcela
     private var hasBeenValidated: Boolean = false
     val isValid: Boolean
         get() {
-            return if (!hasBeenValidated) validateInternal() == null
-            else error == null
+            return if (!hasBeenValidated) {
+                validateInternal() == null
+            } else {
+                error == null
+            }
         }
 
     @Suppress("UNCHECKED_CAST")
@@ -69,8 +72,11 @@ data class RequiredField(
     override val content: String
 ) : InputField<RequiredField>(content) {
     override fun validateInternal(): UiString? {
-        return if (content.isBlank()) UiStringRes(R.string.error_required_field)
-        else null
+        return if (content.isBlank()) {
+            UiStringRes(R.string.error_required_field)
+        } else {
+            null
+        }
     }
 }
 

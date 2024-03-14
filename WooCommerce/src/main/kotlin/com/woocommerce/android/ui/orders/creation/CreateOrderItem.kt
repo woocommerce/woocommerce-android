@@ -38,7 +38,9 @@ class CreateOrderItem @Inject constructor(
                 if (product != null) {
                     variationDetailRepository.getVariation(remoteProductId, it)
                         ?.createItem(product, configuration)
-                } else null
+                } else {
+                    null
+                }
             } ?: product?.createItem(configuration)
                 ?: Order.Item.EMPTY.copy(productId = remoteProductId, variationId = variationId ?: 0L)
         }

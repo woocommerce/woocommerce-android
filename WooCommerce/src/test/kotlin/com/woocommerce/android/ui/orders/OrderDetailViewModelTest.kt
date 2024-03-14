@@ -866,7 +866,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         verify(orderDetailRepository, times(2)).updateOrderStatus(eq(order.id), statusChangeCaptor.capture())
 
         assertThat(listOf(initialStatus) + statusChangeCaptor.allValues).containsExactly(
-            initialStatus, newStatus, initialStatus
+            initialStatus,
+            newStatus,
+            initialStatus
         )
     }
 

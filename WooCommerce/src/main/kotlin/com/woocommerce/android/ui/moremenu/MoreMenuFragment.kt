@@ -41,6 +41,7 @@ import javax.inject.Inject
 class MoreMenuFragment : TopLevelFragment() {
     @Inject
     lateinit var selectedSite: SelectedSite
+
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 

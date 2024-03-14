@@ -16,7 +16,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.addNewItem
 import com.woocommerce.android.extensions.clearList
@@ -363,8 +363,9 @@ class ProductDetailViewModel @Inject constructor(
             is ProductDetailFragment.Mode.AddNewProduct -> startAddNewProduct()
             is ProductDetailFragment.Mode.ShowProduct -> {
                 loadRemoteProduct(mode.remoteProductId)
-                if (navArgs.isAIContent && !appPrefsWrapper.isAiProductCreationSurveyDismissed)
+                if (navArgs.isAIContent && !appPrefsWrapper.isAiProductCreationSurveyDismissed) {
                     triggerEventWithDelay(ShowAiProductCreationSurveyBottomSheet, delay = 500)
+                }
             }
 
             is ProductDetailFragment.Mode.Loading -> {
@@ -720,9 +721,11 @@ class ProductDetailViewModel @Inject constructor(
             val updatedDownloads = it.downloads - file
             updateProductDraft(downloads = updatedDownloads)
             // If the downloads list is empty now, go directly to the product details screen
-            if (updatedDownloads.isEmpty()) triggerEvent(
-                ProductExitEvent.ExitProductDownloads
-            )
+            if (updatedDownloads.isEmpty()) {
+                triggerEvent(
+                    ProductExitEvent.ExitProductDownloads
+                )
+            }
         }
     }
 
@@ -896,10 +899,15 @@ class ProductDetailViewModel @Inject constructor(
                 // handles cache them, so that we can assign them to the product if the user decides to save it
                 imageUploadsJob?.cancel()
                 DialogInterface.OnClickListener { _, _ -> observeImageUploadEvents() }
-            } else null
+            } else {
+                null
+            }
 
-            val message = if (isUploadingImagesForNonCreatedProduct) R.string.discard_images_message
-            else R.string.discard_message
+            val message = if (isUploadingImagesForNonCreatedProduct) {
+                R.string.discard_images_message
+            } else {
+                R.string.discard_message
+            }
 
             triggerEvent(
                 ShowDialog(
@@ -1046,8 +1054,11 @@ class ProductDetailViewModel @Inject constructor(
      * so we also should handle the Snackbar text prompt to follow this rule
      */
     private fun pickProductUpdateSuccessText(isProductPublishedOrSaved: Boolean) =
-        if (isProductPublishedOrSaved) R.string.product_detail_publish_product_success
-        else R.string.product_detail_save_product_success
+        if (isProductPublishedOrSaved) {
+            R.string.product_detail_publish_product_success
+        } else {
+            R.string.product_detail_save_product_success
+        }
 
     private fun pickAddProductRequestSnackbarText(
         productWasAdded: Boolean,
@@ -1275,7 +1286,9 @@ class ProductDetailViewModel @Inject constructor(
                 },
                 saleStartDateGmt = if (productHasSale(isSaleScheduled, product)) {
                     saleStartDate ?: product.saleStartDateGmt
-                } else storedProduct.value?.saleStartDateGmt,
+                } else {
+                    storedProduct.value?.saleStartDateGmt
+                },
                 downloads = downloads ?: product.downloads,
                 downloadLimit = downloadLimit ?: product.downloadLimit,
                 downloadExpiry = downloadExpiry ?: product.downloadExpiry,
@@ -1419,7 +1432,7 @@ class ProductDetailViewModel @Inject constructor(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
                         AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules,
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsTabletValue(isTablet()).deviceTypeToAnalyticsString,
+                            IsScreenLargerThanCompactValue(isTablet()).deviceTypeToAnalyticsString,
                     )
                     tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
                 }
@@ -1428,7 +1441,7 @@ class ProductDetailViewModel @Inject constructor(
                     AnalyticsEvent.PRODUCT_DETAIL_LOADED,
                     mapOf(
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsTabletValue(isTablet()).deviceTypeToAnalyticsString
+                            IsScreenLargerThanCompactValue(isTablet()).deviceTypeToAnalyticsString
                     )
                 )
             }

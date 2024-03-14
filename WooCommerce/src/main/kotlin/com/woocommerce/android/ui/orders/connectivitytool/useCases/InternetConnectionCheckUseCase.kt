@@ -14,7 +14,10 @@ class InternetConnectionCheckUseCase @Inject constructor(
 ) {
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
-        if (networkStatus.isConnected()) emit(Success)
-        else emit(Failure())
+        if (networkStatus.isConnected()) {
+            emit(Success)
+        } else {
+            emit(Failure())
+        }
     }
 }

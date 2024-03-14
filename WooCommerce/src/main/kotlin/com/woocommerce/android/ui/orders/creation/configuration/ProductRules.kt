@@ -136,7 +136,9 @@ class VariableProductRule(
                 VARIATION_ATTRIBUTES to attributesDefault
             )
             Gson().toJson(value)
-        } else null
+        } else {
+            null
+        }
     }
 }
 

@@ -64,7 +64,9 @@ class OrderListRepository @Inject constructor(
                 is Cancellation -> RequestResult.ERROR
                 is Success -> result.value
             }
-        } else RequestResult.NO_ACTION_NEEDED
+        } else {
+            RequestResult.NO_ACTION_NEEDED
+        }
     }
 
     suspend fun getCachedOrderStatusOptions(): Map<String, WCOrderStatusModel> {
@@ -92,8 +94,12 @@ class OrderListRepository @Inject constructor(
                 if (result.isError) {
                     WooLog.e(ORDERS, "${result.error.type.name}: ${result.error.message}")
                     RequestResult.ERROR
-                } else RequestResult.SUCCESS
-            } else RequestResult.NO_ACTION_NEEDED
+                } else {
+                    RequestResult.SUCCESS
+                }
+            } else {
+                RequestResult.NO_ACTION_NEEDED
+            }
         }
     }
 

@@ -117,7 +117,9 @@ class ProductSelectorViewModel @Inject constructor(
                 if (it.index != 0 && it.value == IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
                     STATE_UPDATE_DELAY
-                } else 0L
+                } else {
+                    0L
+                }
             }
             .map { it.value },
         flow5 = selectedItems,
@@ -240,10 +242,11 @@ class ProductSelectorViewModel @Inject constructor(
                     else -> SELECTED
                 }
             } else if (isVariation) { // variation can be displayed in search results
-                if (selectedItems.variationIds.contains(this.remoteId))
+                if (selectedItems.variationIds.contains(this.remoteId)) {
                     SELECTED
-                else
+                } else {
                     UNSELECTED
+                }
             } else {
                 val selectedProductsIds = selectedItems.map { it.id }.toSet()
                 if (selectedProductsIds.contains(remoteId)) SELECTED else UNSELECTED
@@ -437,8 +440,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    private fun updateProductSourceIfSearchIsEnabled(productSource: ProductSourceForTracking):
-        ProductSourceForTracking {
+    private fun updateProductSourceIfSearchIsEnabled(productSource: ProductSourceForTracking): ProductSourceForTracking {
         return when {
             searchState.value.searchQuery.isNotNullOrEmpty() -> {
                 ProductSourceForTracking.SEARCH
@@ -589,8 +591,11 @@ class ProductSelectorViewModel @Inject constructor(
                 searchQuery = query,
                 searchType = searchType,
             ).onFailure {
-                val message = if (query.isEmpty()) string.product_selector_loading_failed
-                else string.product_selector_search_failed
+                val message = if (query.isEmpty()) {
+                    string.product_selector_loading_failed
+                } else {
+                    string.product_selector_search_failed
+                }
                 triggerEvent(ShowSnackbar(message))
             }
             loadingState.value = IDLE
@@ -618,7 +623,9 @@ class ProductSelectorViewModel @Inject constructor(
         val items = selectedItems.value.map { item ->
             if (item.id == productId && item is SelectedItem.ConfigurableProduct) {
                 item.copy(configuration = productConfiguration)
-            } else item
+            } else {
+                item
+            }
         }
         selectedItems.update { items }
     }

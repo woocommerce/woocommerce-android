@@ -32,7 +32,11 @@ class ThemeRepository @Inject constructor(
         private const val STORE_THEMES_LIMIT = 100
         private val supportedThemes by lazy {
             listOf(
-                "tsubaki", "tazza", "amulet", "zaino", "thriving-artist"
+                "tsubaki",
+                "tazza",
+                "amulet",
+                "zaino",
+                "thriving-artist"
             )
         }
     }

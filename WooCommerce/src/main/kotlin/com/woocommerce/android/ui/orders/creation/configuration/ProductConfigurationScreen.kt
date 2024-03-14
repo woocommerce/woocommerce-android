@@ -505,7 +505,9 @@ fun SelectionCheck(
 
     val controlModifier = if (isEnabled) {
         modifier.clickable { onSelectionChange(!isSelected) }
-    } else modifier
+    } else {
+        modifier
+    }
 
     Box(
         modifier = controlModifier
@@ -819,7 +821,6 @@ fun VariableQuantityProductItem(
     attributes: List<VariantOption>? = null,
     isSelectionEnabled: Boolean = true
 ) {
-
     val description = stringResource(id = R.string.order_configuration_product_selection, title)
     val state = if (!isSelectionEnabled) stringResource(id = R.string.disabled) else ""
 
@@ -906,7 +907,6 @@ fun OptionalVariableQuantityProductItem(
     attributes: List<VariantOption>? = null,
     isSelectionEnabled: Boolean = true
 ) {
-
     val description = stringResource(id = R.string.order_configuration_product_selection, title)
     val state = if (!isSelectionEnabled) stringResource(id = R.string.disabled) else ""
 

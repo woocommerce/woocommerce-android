@@ -19,6 +19,7 @@ import javax.inject.Inject
 abstract class BaseProductEditorFragment(@LayoutRes private val layoutRes: Int) :
     BaseFragment(), BackPressListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus

@@ -102,7 +102,6 @@ class ProductDetailCardBuilder(
     private val onTooltipDismiss = { appPrefsWrapper.isAIProductDescriptionTooltipDismissed = true }
 
     suspend fun buildPropertyCards(product: Product, originalSku: String): List<ProductPropertyCard> {
-
         this.originalSku = originalSku
 
         val cards = mutableListOf<ProductPropertyCard>()
@@ -152,7 +151,9 @@ class ProductDetailCardBuilder(
             !isProductPublic ||
             viewModel.isProductUnderCreation ||
             isProductCurrentlyPromoted(product.remoteId.toString())
-        ) return null
+        ) {
+            return null
+        }
 
         if (!blazeCtaShownTracked) {
             analyticsTrackerWrapper.track(
@@ -459,7 +460,9 @@ class ProductDetailCardBuilder(
                     resources.getString(string.subscription_one_time_shipping),
                     if (subscription?.oneTimeShipping == true) {
                         resources.getString(string.subscription_one_time_shipping_enabled)
-                    } else ""
+                    } else {
+                        ""
+                    }
                 )
             )
 
@@ -492,7 +495,9 @@ class ProductDetailCardBuilder(
                                         }
                                     }
                                 )
-                            } else null
+                            } else {
+                                null
+                            }
                         )
                     ),
                     AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED
@@ -714,7 +719,8 @@ class ProductDetailCardBuilder(
             ) {
                 viewModel.onEditProductCardClicked(
                     ViewProductDescriptionEditor(
-                        productDescription, resources.getString(string.product_description),
+                        productDescription,
+                        resources.getString(string.product_description),
                         productTitle
                     ),
                     PRODUCT_DETAIL_VIEW_PRODUCT_DESCRIPTION_TAPPED
@@ -962,7 +968,9 @@ class ProductDetailCardBuilder(
                     AnalyticsEvent.PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED
                 )
             }
-        } else null
+        } else {
+            null
+        }
     }
 
     private suspend fun Product.componentProducts(): ProductProperty? {
@@ -992,11 +1000,14 @@ class ProductDetailCardBuilder(
 }
 
 fun ProductStatus?.getBadgeResources(): Pair<Int?, Int?> {
-    return if (this == null) Pair(null, null)
-    else when (this) {
-        ProductStatus.PUBLISH -> Pair(null, null)
-        ProductStatus.PENDING -> Pair(string.product_status_pending, R.color.product_status_badge_pending)
-        ProductStatus.PRIVATE -> Pair(string.product_status_privately_published, R.color.product_status_badge_draft)
-        else -> Pair(this.stringResource, R.color.product_status_badge_draft)
+    return if (this == null) {
+        Pair(null, null)
+    } else {
+        when (this) {
+            ProductStatus.PUBLISH -> Pair(null, null)
+            ProductStatus.PENDING -> Pair(string.product_status_pending, R.color.product_status_badge_pending)
+            ProductStatus.PRIVATE -> Pair(string.product_status_privately_published, R.color.product_status_badge_draft)
+            else -> Pair(this.stringResource, R.color.product_status_badge_draft)
+        }
     }
 }

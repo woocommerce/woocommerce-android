@@ -46,10 +46,15 @@ class AppSettingsActivity :
     }
 
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
+
     @Inject lateinit var presenter: AppSettingsContract.Presenter
+
     @Inject lateinit var selectedSite: SelectedSite
+
     @Inject lateinit var prefs: AppPrefs
+
     @Inject lateinit var notificationMessageHandler: NotificationMessageHandler
+
     @Inject lateinit var statsWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
 
     private var isBetaOptionChanged = false
@@ -81,7 +86,6 @@ class AppSettingsActivity :
         }
 
         if (intent.getBooleanExtra(EXTRA_SHOW_PRIVACY_SETTINGS, false)) {
-
             val requestedAnalyticsValue =
                 intent.parcelable(EXTRA_REQUESTED_ANALYTICS_VALUE_FROM_ERROR)
                     ?: RequestedAnalyticsValue.NONE

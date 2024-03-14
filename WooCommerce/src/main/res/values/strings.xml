@@ -2337,6 +2337,9 @@
     <string name="dev_options">Developer Options</string>
     <string name="settings_account">Account Settings</string>
     <string name="settings_themes">Themes</string>
+    <string name="settings_plugins">Plugins</string>
+    <string name="settings_option_installed_plugins">Installed Plugins</string>
+    <string name="settings_woo_plugin_version">WooCommerce Version</string>
 
     <!--
         Developer Options Screen
@@ -3217,6 +3220,7 @@
     <string name="reset_your_password">Reset your password</string>
     <string name="signup_confirmation_title">Signup confirmation</string>
     <string name="what_is_wordpress_link">What is WordPress.com?</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Log in with your site credentials</string>
 
     <string name="login_site_address">Site address</string>
 

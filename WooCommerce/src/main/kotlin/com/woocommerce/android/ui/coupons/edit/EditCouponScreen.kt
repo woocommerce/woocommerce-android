@@ -235,10 +235,11 @@ private fun ConditionsSection(
             },
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.couponDraft.categoryIds.isEmpty())
+                    imageVector = if (viewState.couponDraft.categoryIds.isEmpty()) {
                         Icons.Filled.Add
-                    else
-                        Icons.Filled.Edit,
+                    } else {
+                        Icons.Filled.Edit
+                    },
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )
@@ -305,8 +306,11 @@ private fun AmountField(amount: BigDecimal?, amountUnit: String, type: Type?, on
         valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
         onValueChange = onAmountChanged,
         helperText = stringResource(
-            if (type is Percent) R.string.coupon_edit_amount_percentage_helper
-            else R.string.coupon_edit_amount_rate_helper
+            if (type is Percent) {
+                R.string.coupon_edit_amount_percentage_helper
+            } else {
+                R.string.coupon_edit_amount_rate_helper
+            }
         ),
         // TODO use KeyboardType.Decimal after updating to Compose 1.2.0
         //  (https://issuetracker.google.com/issues/209835363)
@@ -320,8 +324,11 @@ private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit)
     WCOutlinedButton(
         onClick = onButtonClicked,
         text = stringResource(
-            id = if (description.isNullOrEmpty()) R.string.coupon_edit_add_description
-            else R.string.coupon_edit_edit_description
+            id = if (description.isNullOrEmpty()) {
+                R.string.coupon_edit_add_description
+            } else {
+                R.string.coupon_edit_edit_description
+            }
         ),
         leadingIcon = {
             Icon(

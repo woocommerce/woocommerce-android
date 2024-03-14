@@ -173,11 +173,15 @@ class OrderDetailShippingLabelsAdapter(
                         showTrackingItemButton(true)
                         setTrackingItemClickListener {
                             OrderShipmentTrackingHelper.showTrackingOrDeleteOptionPopup(
-                                getTrackingItemButton(), context, shippingLabel.trackingLink,
+                                getTrackingItemButton(),
+                                context,
+                                shippingLabel.trackingLink,
                                 shippingLabel.trackingNumber
                             )
                         }
-                    } else showTrackingItemButton(false)
+                    } else {
+                        showTrackingItemButton(false)
+                    }
 
                     viewBinding.shippingLabelListPrintBtn.setOnClickListener {
                         listener.onPrintShippingLabelClicked(shippingLabel)
@@ -215,7 +219,9 @@ class OrderDetailShippingLabelsAdapter(
             shippingLabel.originAddress?.let {
                 viewBinding.shippingLabelItemShipFrom.setShippingLabelValue(
                     it.getFullAddress(
-                        it.firstName, it.getEnvelopeAddress(), it.country.name
+                        it.firstName,
+                        it.getEnvelopeAddress(),
+                        it.country.name
                     )
                 )
             }
@@ -224,7 +230,9 @@ class OrderDetailShippingLabelsAdapter(
             shippingLabel.destinationAddress?.let {
                 viewBinding.shippingLabelItemShipTo.setShippingLabelValue(
                     it.getFullAddress(
-                        it.firstName, it.getEnvelopeAddress(), it.country.name
+                        it.firstName,
+                        it.getEnvelopeAddress(),
+                        it.country.name
                     )
                 )
             }

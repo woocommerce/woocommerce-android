@@ -123,7 +123,8 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
             return TopPerformersViewHolder(
                 TopPerformersListItemBinding.inflate(
                     LayoutInflater.from(parent.context),
-                    parent, false
+                    parent,
+                    false
                 )
             )
         }

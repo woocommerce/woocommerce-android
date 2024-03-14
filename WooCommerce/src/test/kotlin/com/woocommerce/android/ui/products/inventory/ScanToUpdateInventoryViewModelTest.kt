@@ -300,7 +300,8 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
             sut.onBarcodeScanningResult(
                 CodeScannerStatus.Success(
-                    product.sku, GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
+                    product.sku,
+                    GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
             )
 

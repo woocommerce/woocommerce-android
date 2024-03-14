@@ -41,16 +41,22 @@ class ApplicationPasswordsNotifier @Inject constructor(
     override fun onPasswordGenerationFailed(networkError: WPAPINetworkError) {
         val statusCode = networkError.volleyError?.networkResponse?.statusCode
         trackGenerationFailure(
-            cause = if (statusCode == UNAUTHORIZED_STATUS_CODE) GenerationFailureCause.AUTHORIZATION_FAILED
-            else GenerationFailureCause.OTHER,
+            cause = if (statusCode == UNAUTHORIZED_STATUS_CODE) {
+                GenerationFailureCause.AUTHORIZATION_FAILED
+            } else {
+                GenerationFailureCause.OTHER
+            },
             networkError = networkError
         )
         _passwordGenerationFailures.tryEmit(ApplicationPasswordGenerationException(networkError))
     }
 
     override fun onNewPasswordCreated(isPasswordRegenerated: Boolean) {
-        val scenario = if (isPasswordRegenerated) GenerationFailureScenario.REGENERATION
-        else GenerationFailureScenario.GENERATION
+        val scenario = if (isPasswordRegenerated) {
+            GenerationFailureScenario.REGENERATION
+        } else {
+            GenerationFailureScenario.GENERATION
+        }
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.APPLICATION_PASSWORDS_NEW_PASSWORD_CREATED,
             properties = mapOf(AnalyticsTracker.KEY_SCENARIO to scenario.name.lowercase())
@@ -61,8 +67,11 @@ class ApplicationPasswordsNotifier @Inject constructor(
         cause: GenerationFailureCause,
         networkError: WPAPINetworkError
     ) {
-        val scenario = if (selectedSite.exists()) GenerationFailureScenario.REGENERATION
-        else GenerationFailureScenario.GENERATION
+        val scenario = if (selectedSite.exists()) {
+            GenerationFailureScenario.REGENERATION
+        } else {
+            GenerationFailureScenario.GENERATION
+        }
 
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.APPLICATION_PASSWORDS_GENERATION_FAILED,

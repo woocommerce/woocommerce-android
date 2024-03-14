@@ -269,15 +269,21 @@ private fun ExclusionsSection(
             color = colorResource(id = R.color.color_on_surface_medium)
         )
 
-        val productsButtonSuffix = if (viewState.restrictions.excludedProductIds.isEmpty()) ""
-        else " (${viewState.restrictions.excludedProductIds.size})"
+        val productsButtonSuffix = if (viewState.restrictions.excludedProductIds.isEmpty()) {
+            ""
+        } else {
+            " (${viewState.restrictions.excludedProductIds.size})"
+        }
         WCOutlinedButton(
             onClick = onExcludeProductsButtonClick,
             text = "${stringResource(R.string.coupon_restrictions_exclude_products)}$productsButtonSuffix",
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.restrictions.excludedProductIds.isEmpty()) Icons.Filled.Add
-                    else Icons.Filled.Edit,
+                    imageVector = if (viewState.restrictions.excludedProductIds.isEmpty()) {
+                        Icons.Filled.Add
+                    } else {
+                        Icons.Filled.Edit
+                    },
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )
@@ -286,15 +292,21 @@ private fun ExclusionsSection(
             modifier = Modifier.fillMaxWidth()
         )
 
-        val categoriesButtonSuffix = if (viewState.restrictions.excludedCategoryIds.isEmpty()) ""
-        else " (${viewState.restrictions.excludedCategoryIds.size})"
+        val categoriesButtonSuffix = if (viewState.restrictions.excludedCategoryIds.isEmpty()) {
+            ""
+        } else {
+            " (${viewState.restrictions.excludedCategoryIds.size})"
+        }
         WCOutlinedButton(
             onClick = onExcludeCategoriesButtonClick,
             text = "${stringResource(R.string.coupon_restrictions_exclude_categories)}$categoriesButtonSuffix",
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.restrictions.excludedCategoryIds.isEmpty()) Icons.Filled.Add
-                    else Icons.Filled.Edit,
+                    imageVector = if (viewState.restrictions.excludedCategoryIds.isEmpty()) {
+                        Icons.Filled.Add
+                    } else {
+                        Icons.Filled.Edit
+                    },
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )

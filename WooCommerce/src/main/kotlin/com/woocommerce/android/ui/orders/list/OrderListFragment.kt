@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -37,12 +36,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.databinding.FragmentOrderListBinding
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.isDisplaySmallerThan720
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
@@ -163,7 +162,7 @@ class OrderListFragment :
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     selectedOrder.selectOrder(-1L)
-                    if (isTablet()) {
+                    if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                         if (!binding.detailPaneContainer.findNavController().popBackStack()) {
                             findNavController().popBackStack()
                         }
@@ -172,7 +171,8 @@ class OrderListFragment :
                     } else {
                         val result =
                             _binding?.detailPaneContainer?.findNavController()?.navigateUp() ?: false
-                        if (!result && _binding?.listPaneContainer?.isVisible != true && !isTablet()) {
+                        val isCompactScreen = requireContext().windowSizeClass == WindowSizeClass.Compact
+                        if (!result && _binding?.listPaneContainer?.isVisible != true && isCompactScreen) {
                             // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
                             // and now it's a single pane layout (phone), e.g. due to a configuration change.
                             // In this case we need to switch panes – show the list pane instead of details pane.
@@ -287,7 +287,7 @@ class OrderListFragment :
     }
 
     private fun adjustUiForDeviceType(savedInstanceState: Bundle?) {
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             adjustLayoutForTablet()
         } else {
             adjustLayoutForNonTablet(savedInstanceState)
@@ -296,13 +296,14 @@ class OrderListFragment :
     }
 
     private fun adjustLayoutForTablet() {
-        val isSmallTablet = requireContext().isDisplaySmallerThan720
-        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-        if (isSmallTablet && isPortrait) {
-            binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
-        } else {
-            binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        when (requireContext().windowSizeClass) {
+            WindowSizeClass.Compact -> return
+            WindowSizeClass.Medium -> {
+                binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
+            }
+            WindowSizeClass.ExpandedAndBigger -> {
+                binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+            }
         }
         binding.listPaneContainer.visibility = View.VISIBLE
         binding.detailPaneContainer.visibility = View.VISIBLE
@@ -337,7 +338,7 @@ class OrderListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             refreshOrders()
         }
     }
@@ -345,7 +346,7 @@ class OrderListFragment :
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             val navHostFragment = childFragmentManager.findFragmentById(R.id.detailPaneContainer) as? NavHostFragment
             val currentDestinationId = navHostFragment?.navController?.currentDestination?.id
             outState.putInt(CURRENT_NAV_DESTINATION, currentDestinationId ?: -1)
@@ -435,7 +436,7 @@ class OrderListFragment :
         selectedOrder.selectedOrderId.observe(viewLifecycleOwner) {
             viewModel.updateOrderSelectedStatus(
                 orderId = selectedOrder.selectedOrderId.value ?: -1,
-                isTablet()
+                requireContext().windowSizeClass != WindowSizeClass.Compact
             )
         }
 
@@ -457,7 +458,7 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
-            if (isTablet()) {
+            if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                 when {
                     // A specific order is set to be opened
                     viewModel.orderId.value != -1L -> {
@@ -639,7 +640,10 @@ class OrderListFragment :
 
     private fun updateOrderSelectedStatus() {
         val selectedOrderId = selectedOrder.selectedOrderId.value ?: -1
-        viewModel.updateOrderSelectedStatus(orderId = selectedOrderId, isTablet())
+        viewModel.updateOrderSelectedStatus(
+            orderId = selectedOrderId,
+            requireContext().windowSizeClass != WindowSizeClass.Compact
+        )
     }
 
     private fun initJitm(jitmEnabled: Boolean) {
@@ -666,12 +670,12 @@ class OrderListFragment :
             viewModel.handleBarcodeScannedStatus(status)
         }
         handleResult<Long>(KEY_ORDER_ID) {
-            if (isTablet()) {
+            if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                 openSpecificOrder(it)
             }
         }
         handleResult<Long>(KEY_START_PAYMENT_FLOW) {
-            if (isTablet()) {
+            if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                 openSpecificOrder(it, true)
             }
         }
@@ -723,9 +727,13 @@ class OrderListFragment :
         sharedView: View?,
         startPaymentsFlow: Boolean,
     ) {
-        viewModel.trackOrderClickEvent(orderId, orderStatus, isTablet())
+        viewModel.trackOrderClickEvent(
+            orderId,
+            orderStatus,
+            requireContext().windowSizeClass != WindowSizeClass.Compact
+        )
 
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             _binding?.createOrderButton?.show()
         } else {
             _binding?.createOrderButton?.hide()
@@ -741,13 +749,13 @@ class OrderListFragment :
             isSearching = true
         }
         (activity as? MainNavigationRouter)?.run {
-            val navHostFragment = if (isTablet()) {
+            val navHostFragment = if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                 childFragmentManager.findFragmentById(R.id.detailPaneContainer) as NavHostFragment
             } else {
                 null
             }
             selectedOrder.selectOrder(orderId)
-            viewModel.updateOrderSelectedStatus(orderId, isTablet())
+            viewModel.updateOrderSelectedStatus(orderId, requireContext().windowSizeClass != WindowSizeClass.Compact)
             navHostFragment?.let {
                 showOrderDetail(orderId, it, startPaymentsFlow = startPaymentsFlow)
             } ?: run {
@@ -811,7 +819,7 @@ class OrderListFragment :
 
     private fun clearSearchResults() {
         if (isSearching) {
-            if (!isTablet()) {
+            if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
                 searchQuery = ""
                 isSearching = false
                 disableSearchListeners()
@@ -884,7 +892,7 @@ class OrderListFragment :
 
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
-        if (!isTablet()) {
+        if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
             handler.postDelayed({
                 (activity as? MainActivity)?.hideBottomNav()
             }, HANDLER_DELAY)

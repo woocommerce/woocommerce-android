@@ -112,7 +112,9 @@ class ProductPricingFragment :
                 binding.scheduleSaleEndDate.setText(it.formatToMMMddYYYY())
             }
             new.isRemoveEndDateButtonVisible.takeIfNotEqualTo(old?.isRemoveEndDateButtonVisible) { isVisible ->
-                binding.scheduleSaleRemoveEndDateButton.visibility = if (isVisible) View.VISIBLE else {
+                binding.scheduleSaleRemoveEndDateButton.visibility = if (isVisible) {
+                    View.VISIBLE
+                } else {
                     binding.scheduleSaleEndDate.setText("")
                     View.GONE
                 }
@@ -159,7 +161,9 @@ class ProductPricingFragment :
         with(binding.productRegularPrice) {
             if (isCurrencyPrefix) {
                 prefixText = currency
-            } else suffixText = currency
+            } else {
+                suffixText = currency
+            }
 
             pricingData.regularPrice?.let { text = it.toString() }
             setOnTextChangedListener {
@@ -171,7 +175,9 @@ class ProductPricingFragment :
         with(binding.subscriptionSignupFee) {
             if (isCurrencyPrefix) {
                 prefixText = currency
-            } else suffixText = currency
+            } else {
+                suffixText = currency
+            }
 
             pricingData.subscriptionSignUpFee?.let { text = it.toString() }
             setOnTextChangedListener {
@@ -183,7 +189,9 @@ class ProductPricingFragment :
         with(binding.productSalePrice) {
             if (isCurrencyPrefix) {
                 prefixText = currency
-            } else suffixText = currency
+            } else {
+                suffixText = currency
+            }
 
             pricingData.salePrice?.let { text = it.toString() }
             setOnTextChangedListener {
@@ -269,7 +277,9 @@ class ProductPricingFragment :
         val date = selectedStartDate
             ?: if (endDate?.after(currentDate) == true) {
                 currentDate
-            } else null
+            } else {
+                null
+            }
 
         date?.let { binding.scheduleSaleStartDate.setText(it.formatForDisplay()) }
         selectedStartDate?.let { viewModel.onDataChanged(saleStartDate = it) }
@@ -331,7 +341,11 @@ class ProductPricingFragment :
         }
         val (year, month, day) = dateString?.split("-").orEmpty()
         val datePicker = DatePickerDialog(
-            requireActivity(), dateSetListener, year.toInt(), month.toInt() - 1, day.toInt()
+            requireActivity(),
+            dateSetListener,
+            year.toInt(),
+            month.toInt() - 1,
+            day.toInt()
         )
 
         datePicker.show()
