@@ -93,6 +93,7 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
@@ -161,11 +162,11 @@ class OrderCreateEditFormFragment :
     }
 
     private fun syncSelectedItems() {
-        sharedViewModel.updateSelectedItems(viewModel.selectedItems.value)
         lifecycleScope.launch {
             viewModel.selectedItems.collect(sharedViewModel::updateSelectedItems)
         }
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.Main) {
+            sharedViewModel.updateSelectedItems(viewModel.selectedItems.value)
             sharedViewModel.selectedItems.collect(viewModel::onItemsSelectionChanged)
         }
     }
