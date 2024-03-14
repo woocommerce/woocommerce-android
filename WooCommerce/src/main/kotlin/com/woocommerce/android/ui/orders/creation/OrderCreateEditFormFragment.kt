@@ -563,7 +563,12 @@ class OrderCreateEditFormFragment :
 
     private fun productAddedCustomAmountUnset(binding: FragmentOrderCreateEditFormBinding) {
         if (viewModel.viewStateData.liveData.value?.isEditable == true) {
-            binding.productsSection.showAddProductsHeaderActions()
+            if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
+                binding.productsSection.showAddProductsHeaderActions()
+            } else {
+                binding.productsSection.hideAddProductsHeaderActions()
+                binding.productsSection.showScanProductsHeaderAction()
+            }
         } else {
             binding.productsSection.hideAddProductsHeaderActions()
         }
@@ -588,8 +593,13 @@ class OrderCreateEditFormFragment :
         binding.customAmountsSection.removeCustomSectionButtons()
         binding.customAmountsSection.showHeader()
         if (viewModel.viewStateData.liveData.value?.isEditable == true) {
+            if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
+                binding.productsSection.showAddProductsHeaderActions()
+            } else {
+                binding.productsSection.hideAddProductsHeaderActions()
+                binding.productsSection.showScanProductsHeaderAction()
+            }
             binding.customAmountsSection.showAddAction()
-            binding.productsSection.showAddProductsHeaderActions()
         } else {
             binding.customAmountsSection.hideAddAction()
             binding.productsSection.hideAddProductsHeaderActions()
