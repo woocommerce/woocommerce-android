@@ -35,6 +35,7 @@ import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -764,7 +765,7 @@ class OrderListViewModel @Inject constructor(
             )
         }
 
-        if (!notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER) &&
+        if (notificationChannelsHandler.checkNewOrderNotificationSound() == NewOrderNotificationSoundStatus.DISABLED &&
             !appPrefs.chaChingSoundIssueDialogDismissed
         ) {
             triggerEvent(
@@ -773,7 +774,9 @@ class OrderListViewModel @Inject constructor(
                     messageId = R.string.cha_ching_sound_issue_dialog_message,
                     positiveButtonId = R.string.cha_ching_sound_issue_dialog_turn_on_sound,
                     negativeButtonId = R.string.cha_ching_sound_issue_dialog_keep_silent,
-                    positiveBtnAction = { _, _ -> recreateNotificationChannel() },
+                    positiveBtnAction = { _, _ ->
+                        recreateNotificationChannel()
+                    },
                     negativeBtnAction = { _, _ ->
                         appPrefs.chaChingSoundIssueDialogDismissed = true
                     },

@@ -22,10 +22,10 @@ class NotificationSettingsViewModel @Inject constructor(
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val showTestNotification: ShowTestNotification
 ) : ScopedViewModel(savedStateHandle) {
-    private val _isChaChingSoundEnabled = MutableStateFlow(
-        notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER)
+    private val _newOrderNotificationSoundStatus = MutableStateFlow(
+        notificationChannelsHandler.checkNewOrderNotificationSound()
     )
-    val isChaChingSoundEnabled = _isChaChingSoundEnabled.asLiveData()
+    val newOrderNotificationSoundStatus = _newOrderNotificationSoundStatus.asLiveData()
 
     fun onManageNotificationsClicked() {
         triggerEvent(OpenDeviceNotificationSettings)
@@ -51,8 +51,7 @@ class NotificationSettingsViewModel @Inject constructor(
                 }
             )
         )
-        _isChaChingSoundEnabled.value = notificationChannelsHandler
-            .checkNotificationChannelSound(NotificationChannelType.NEW_ORDER)
+        _newOrderNotificationSoundStatus.value = notificationChannelsHandler.checkNewOrderNotificationSound()
     }
 
     object OpenDeviceNotificationSettings : MultiLiveEvent.Event()

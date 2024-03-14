@@ -37,11 +37,12 @@ class NotificationChannelsHandler @Inject constructor(
         createChannel(channelType)
     }
 
-    fun checkNotificationChannelSound(channelType: NotificationChannelType): Boolean {
-        val channel = notificationManagerCompat.getNotificationChannel(channelType.getChannelId())
-            ?: return true // If the notification is not created yet, then it'll have the correct sound when created
+    fun checkNewOrderNotificationSound(): NewOrderNotificationSoundStatus {
+        val channel = notificationManagerCompat.getNotificationChannel(NEW_ORDER.getChannelId())
+        // If the notification is not created yet, then it'll have the correct sound when created
+            ?: return NewOrderNotificationSoundStatus.DEFAULT
 
-        return channel.importance >= NotificationManager.IMPORTANCE_DEFAULT && channel.sound != null
+        return channel.getNewOrderNotificationSoundStatus()
     }
 
     private fun createChannels() {
@@ -113,7 +114,7 @@ class NotificationChannelsHandler @Inject constructor(
         }
     }
 
-    private enum class NewOrderNotificationSoundStatus {
+    enum class NewOrderNotificationSoundStatus {
         DISABLED, DEFAULT, SOUND_MODIFIED
     }
 }
