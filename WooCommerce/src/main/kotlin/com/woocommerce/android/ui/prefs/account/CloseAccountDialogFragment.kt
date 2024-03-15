@@ -178,8 +178,11 @@ class CloseAccountDialogFragment : DialogFragment() {
             // In the currently used version of kotlin and compose compiler, using multiline if else breaks the build
             @Suppress("MultiLineIfElse")
             WCTextButton(
-                onClick = if (state.isAccountDeletionError) viewModel::onContactSupportClicked
-                else viewModel::onConfirmCloseAccount,
+                onClick = if (state.isAccountDeletionError) {
+                    viewModel::onContactSupportClicked
+                } else {
+                    viewModel::onConfirmCloseAccount
+                },
                 enabled = state.enteredUserName == state.currentUserName
             ) {
                 Box(
