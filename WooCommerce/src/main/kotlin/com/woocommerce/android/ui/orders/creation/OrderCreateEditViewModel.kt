@@ -1845,6 +1845,12 @@ class OrderCreateEditViewModel @Inject constructor(
             !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
 
         @IgnoredOnParcel
+        val isCreateOrderButtonEnabled = when (windowSizeClass) {
+            WindowSizeClass.Compact -> canCreateOrder
+            else -> canCreateOrder && !isRecalculateNeeded
+        }
+
+        @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
     }
 
