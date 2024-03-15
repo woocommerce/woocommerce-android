@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.map
@@ -297,15 +296,23 @@ class OrderCreateEditViewModel @Inject constructor(
         }
         .asLiveData()
 
-    val selectedItems: StateFlow<List<SelectedItem>> = orderDraft.map { order ->
-        order.items.map { item ->
-            if (item.isVariation) {
-                SelectedItem.ProductVariation(item.productId, item.variationId)
-            } else {
-                Product(item.productId)
-            }
+    val selectedItems: StateFlow<List<SelectedItem>> =
+        _orderDraft.map { order -> order.selectedItems() }.toStateFlow(emptyList())
+
+    fun Order.selectedItems(): List<SelectedItem> = items.map { item ->
+        if (item.isVariation) {
+            SelectedItem.ProductVariation(item.productId, item.variationId)
+        } else {
+            Product(item.productId)
         }
-    }.distinctUntilChanged().asFlow().toStateFlow(emptyList())
+    }
+
+    private val _pendingSelectedItems: MutableStateFlow<List<SelectedItem>> = savedState.getStateFlow(
+        viewModelScope,
+        initialValue = emptyList(),
+        key = "key_pending_selected_items"
+    )
+    val pendingSelectedItems: StateFlow<List<SelectedItem>> = _pendingSelectedItems
 
     val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
         .map { order -> order.feesLines }
@@ -413,6 +420,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         updateAddGiftCardButtonVisibility(order)
                         handleCouponEditResult()
                         updateTaxRateSelectorButtonState()
+                        _pendingSelectedItems.value = _orderDraft.value.selectedItems()
                     }
                 }
             }
@@ -1220,9 +1228,9 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onItemsSelectionChanged(selectedItems: List<SelectedItem>) {
-        if (this.selectedItems.value != selectedItems) {
-            viewState = viewState.copy(isRecalculateNeeded = true)
-        }
+        viewState =
+            viewState.copy(isRecalculateNeeded = _orderDraft.value.selectedItems() != selectedItems)
+        _pendingSelectedItems.value = selectedItems
     }
 
     private fun onTotalsSectionRecalculateButtonClicked() {
