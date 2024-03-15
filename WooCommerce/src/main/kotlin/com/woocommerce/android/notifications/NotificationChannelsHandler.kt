@@ -83,6 +83,8 @@ class NotificationChannelsHandler @Inject constructor(
         val sound = channel.sound
         var updatedChannel = channel
         if (sound.toString().matches("^.*\\d+$".toRegex())) {
+            // The channel still uses the Uri based on the resource id, so we need to recreate it
+            WooLog.d(WooLog.T.NOTIFS, "Orders notification channel still uses ID based sound, recreating it.")
             recreateNotificationChannel(NEW_ORDER)
             updatedChannel = notificationManagerCompat.getNotificationChannel(NEW_ORDER.getChannelId())!!
         }
