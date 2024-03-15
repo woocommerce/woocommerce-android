@@ -15,24 +15,20 @@ import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loade
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpToDate
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpdateAvailable
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loading
-import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.util.isGreaterThan
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.ImmutablePluginModel
 import org.wordpress.android.fluxc.store.PluginCoroutineStore
 import org.wordpress.android.fluxc.store.PluginCoroutineStore.InstalledPluginResponse
-import org.wordpress.android.util.helpers.Version
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class)
 @HiltViewModel
 class PluginsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -84,28 +80,10 @@ class PluginsViewModel @Inject constructor(
     }
 
     private fun ImmutablePluginModel.isUpdateAvailable(): Boolean {
-        return when {
-            installedVersion.isNullOrEmpty() || wpOrgPluginVersion.isNullOrEmpty() -> false
-            else -> {
-                try {
-                    val currentVersion = Version(installedVersion)
-                    val availableVersion = Version(wpOrgPluginVersion)
-                    currentVersion < availableVersion
-                } catch (_: IllegalArgumentException) {
-                    val errorStr = String.format(
-                        "An IllegalArgumentException occurred while trying to compare site plugin version: %s" +
-                            " with wporg plugin version: %s",
-                        installedVersion,
-                        wpOrgPluginVersion
-                    )
-                    WooLog.w(T.PLUGINS, errorStr)
-                    !installedVersion.equals(wpOrgPluginVersion, ignoreCase = true)
-                }
-            }
-        }
+        return wpOrgPluginVersion.isGreaterThan(installedVersion)
     }
 
-    fun ImmutablePluginModel.isAutoManaged(site: SiteModel): Boolean {
+    private fun ImmutablePluginModel.isAutoManaged(site: SiteModel): Boolean {
         return if (!site.isAutomatedTransfer || !isInstalled) {
             false
         } else {
