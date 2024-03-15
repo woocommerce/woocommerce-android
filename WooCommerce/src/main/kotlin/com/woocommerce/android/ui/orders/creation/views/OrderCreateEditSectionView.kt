@@ -89,6 +89,10 @@ class OrderCreateEditSectionView @JvmOverloads constructor(
         binding.barcodeIcon.show()
     }
 
+    fun showScanProductsHeaderAction() {
+        binding.barcodeIcon.show()
+    }
+
     fun showAddAction() {
         binding.addIcon.show()
     }

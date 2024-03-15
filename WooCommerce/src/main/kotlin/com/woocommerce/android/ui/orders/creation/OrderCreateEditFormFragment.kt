@@ -93,6 +93,7 @@ import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.CustomProgressDialog
 import com.woocommerce.android.widgets.WCReadMoreTextView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
@@ -161,11 +162,11 @@ class OrderCreateEditFormFragment :
     }
 
     private fun syncSelectedItems() {
-        sharedViewModel.updateSelectedItems(viewModel.selectedItems.value)
         lifecycleScope.launch {
             viewModel.selectedItems.collect(sharedViewModel::updateSelectedItems)
         }
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.Main) {
+            sharedViewModel.updateSelectedItems(viewModel.selectedItems.value)
             sharedViewModel.selectedItems.collect(viewModel::onItemsSelectionChanged)
         }
     }
@@ -563,7 +564,12 @@ class OrderCreateEditFormFragment :
 
     private fun productAddedCustomAmountUnset(binding: FragmentOrderCreateEditFormBinding) {
         if (viewModel.viewStateData.liveData.value?.isEditable == true) {
-            binding.productsSection.showAddProductsHeaderActions()
+            if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
+                binding.productsSection.showAddProductsHeaderActions()
+            } else {
+                binding.productsSection.hideAddProductsHeaderActions()
+                binding.productsSection.showScanProductsHeaderAction()
+            }
         } else {
             binding.productsSection.hideAddProductsHeaderActions()
         }
@@ -588,8 +594,13 @@ class OrderCreateEditFormFragment :
         binding.customAmountsSection.removeCustomSectionButtons()
         binding.customAmountsSection.showHeader()
         if (viewModel.viewStateData.liveData.value?.isEditable == true) {
+            if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
+                binding.productsSection.showAddProductsHeaderActions()
+            } else {
+                binding.productsSection.hideAddProductsHeaderActions()
+                binding.productsSection.showScanProductsHeaderAction()
+            }
             binding.customAmountsSection.showAddAction()
-            binding.productsSection.showAddProductsHeaderActions()
         } else {
             binding.customAmountsSection.hideAddAction()
             binding.productsSection.hideAddProductsHeaderActions()
@@ -1184,6 +1195,9 @@ class OrderCreateEditFormFragment :
             isLocked = false
             isEachAddButtonEnabled = true
         }
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+            sharedViewModel.onProductSelectionStateChanged(true)
+        }
     }
 
     private fun FragmentOrderCreateEditFormBinding.hideEditableControls() {
@@ -1209,6 +1223,9 @@ class OrderCreateEditFormFragment :
         customAmountsSection.apply {
             isLocked = true
             isEachAddButtonEnabled = false
+        }
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+            sharedViewModel.onProductSelectionStateChanged(false)
         }
     }
 }
