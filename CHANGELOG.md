@@ -1,6 +1,8 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 17.8
+Discover our latest update to your WooCommerce mobile app! Now, seamlessly log in with your site credentials on Jetpack-connected sites, as an alternative to WP.com email login. Experience instant refreshing of product list. Plus, managing your inventory is easier than ever with our new bulk stock status update feature. For added convenience, you can now move orders directly to trash. Last but not least, we optimised the order creation flow for tablet devices! Enjoy 💜
 ## 17.7
 Exciting news for WooCommerce app users! We've fixed a bug to keep product searches intact after changes, and optimized the product viewing experience on tablets with a two-pane layout. Customize your analytics with ease in the Analytics Hub. Plus, orders made in the app are now clearly tagged, improving tracking. Dive into a smoother, more personalized shopping and selling journey. Update your app now!
 
