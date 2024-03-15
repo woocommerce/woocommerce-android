@@ -55,10 +55,7 @@ class NotificationChannelsHandler @Inject constructor(
         // check for existing channel first
         notificationManagerCompat.getNotificationChannel(channelType.getChannelId())?.let {
             if (channelType == NEW_ORDER) {
-                analyticsTracker.track(
-                    AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_SOUND,
-                    mapOf("sound_status" to it.getNewOrderNotificationSoundStatus().name)
-                )
+                checkAndTrackNewOrderNotificationSound(it)
             }
             WooLog.i(WooLog.T.NOTIFS, "Notification channel already created with the following attributes: $it")
             return
@@ -80,6 +77,20 @@ class NotificationChannelsHandler @Inject constructor(
             .build()
 
         notificationManagerCompat.createNotificationChannel(channel)
+    }
+
+    private fun checkAndTrackNewOrderNotificationSound(channel: NotificationChannel) {
+        val sound = channel.sound
+        var updatedChannel = channel
+        if (sound.toString().matches("^.*\\d+$".toRegex())) {
+            recreateNotificationChannel(NEW_ORDER)
+            updatedChannel = notificationManagerCompat.getNotificationChannel(NEW_ORDER.getChannelId())!!
+        }
+
+        analyticsTracker.track(
+            AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_SOUND,
+            mapOf("sound_status" to updatedChannel.getNewOrderNotificationSoundStatus().name)
+        )
     }
 
     fun NotificationChannelType.getChannelId(): String {
