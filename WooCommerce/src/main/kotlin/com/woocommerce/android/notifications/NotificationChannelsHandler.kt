@@ -107,9 +107,9 @@ class NotificationChannelsHandler @Inject constructor(
 
     private fun NotificationChannel.getNewOrderNotificationSoundStatus(): NewOrderNotificationSoundStatus {
         if (importance < NotificationManager.IMPORTANCE_DEFAULT) return NewOrderNotificationSoundStatus.DISABLED
-        return when (sound) {
-            context.getChaChingUri() -> NewOrderNotificationSoundStatus.DEFAULT
-            null -> NewOrderNotificationSoundStatus.DISABLED
+        return when {
+            sound.toString().contains(context.packageName) -> NewOrderNotificationSoundStatus.DEFAULT
+            sound == null -> NewOrderNotificationSoundStatus.DISABLED
             else -> NewOrderNotificationSoundStatus.SOUND_MODIFIED
         }
     }
