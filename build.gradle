@@ -54,7 +54,7 @@ def detektAll = tasks.register("detektAll", Detekt) {
     baseline.set(file("$rootDir/config/detekt/baseline.xml"))
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     include("**/*.kt")
-    exclude("**/resources/**", "**/build/**")
+    exclude("**/resources/**", "**/build/**", "**/vendor/**")
 
     reports {
         xml.required.set(true)
@@ -210,10 +210,6 @@ tasks.register("configureApply") {
     doLast {
         println("Done")
     }
-}
-
-tasks.withType(io.gitlab.arturbosch.detekt.Detekt).configureEach {
-    exclude("vendor/**")
 }
 
 apply from: './config/gradle/jacoco.gradle'
