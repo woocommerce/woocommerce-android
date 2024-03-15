@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze
 
 import android.os.Parcelable
+import com.woocommerce.android.AppUrls.WPCOM_ADD_PAYMENT_METHOD
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.media.MediaFilesRepository
@@ -223,15 +224,19 @@ class BlazeRepository @Inject constructor(
                                 }
                             )
                         },
-                        addPaymentMethodUrls = PaymentMethodUrls(
-                            formUrl = paymentMethods.addPaymentMethodUrls.formUrl,
-                            successUrl = paymentMethods.addPaymentMethodUrls.successUrl,
-                            idUrlParameter = paymentMethods.addPaymentMethodUrls.idUrlParameter
-                        )
+                        addPaymentMethodUrls = createPaymentMethodUrls()
                     )
                 )
             } ?: Result.failure(NullPointerException("API response is null"))
         }
+    }
+
+    private fun createPaymentMethodUrls(): PaymentMethodUrls {
+        return PaymentMethodUrls(
+            formUrl = WPCOM_ADD_PAYMENT_METHOD,
+            successUrl = "me/payment-methods",
+            idUrlParameter = "pmid"
+        )
     }
 
     suspend fun createCampaign(
