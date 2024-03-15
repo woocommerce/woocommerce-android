@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -37,6 +39,9 @@ class ProductCategoriesFragment :
     private var _binding: FragmentProductCategoriesListBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var searchMenuItem: MenuItem
+    private lateinit var searchView: SearchView
+
     override fun getFragmentTitle() = getString(R.string.product_categories)
 
     override fun onResume() {
@@ -66,6 +71,11 @@ class ProductCategoriesFragment :
                 toolbar.setNavigationOnClickListener {
                     viewModel.onBackButtonClicked(ExitProductCategories)
                 }
+
+                toolbar.inflateMenu(R.menu.menu_search)
+                searchMenuItem = toolbar.menu.findItem(R.id.menu_search)
+                searchView = searchMenuItem.actionView as SearchView
+                searchView.queryHint = getString(R.string.product_category_selector_search_hint)
             }
         )
     }
