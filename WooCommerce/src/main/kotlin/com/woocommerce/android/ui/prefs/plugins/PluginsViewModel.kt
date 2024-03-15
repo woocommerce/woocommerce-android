@@ -38,9 +38,60 @@ class PluginsViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private val MANAGED_PLUGINS = setOf(
-            "jetpack/jetpack",
-            "akismet/akismet",
-            "vaultpress/vaultpress"
+            "akismet",
+            "amp",
+            "automatewoo",
+            "av1-file-shim",
+            "classic-editor",
+            "coblocks",
+            "crowdsignal-forms",
+            "enable-jquery-migrate-helper",
+            "facebook-for-woocommerce",
+            "full-site-editing",
+            "gutenberg",
+            "hello-dolly",
+            "jetpack",
+            "jetpack-weekly",
+            "klarna-checkout-for-woocommerce",
+            "klarna-payments-for-woocommerce",
+            "layout-grid",
+            "mailchimp-for-woocommerce",
+            "page-optimize",
+            "polldaddy",
+            "storefront-powerpack",
+            "taxjar-simplified-taxes-for-woocommerce",
+            "woocommerce",
+            "woocommerce-bookings",
+            "woocommerce-conditional-shipping-and-payments",
+            "woocommerce-deposits",
+            "woocommerce-gateway-eway",
+            "woocommerce-gateway-paypal-express-checkout",
+            "woocommerce-gateway-stripe",
+            "woocommerce-min-max-quantities",
+            "woocommerce-one-page-checkout",
+            "woocommerce-payfast-gateway",
+            "woocommerce-points-and-rewards",
+            "woocommerce-pre-orders",
+            "woocommerce-product-addons",
+            "woocommerce-product-bundles",
+            "woocommerce-product-vendors",
+            "woocommerce-services",
+            "woocommerce-shipment-tracking",
+            "woocommerce-shipping-australia-post",
+            "woocommerce-shipping-canada-post",
+            "woocommerce-shipping-fedex",
+            "woocommerce-shipping-royalmail",
+            "woocommerce-shipping-ups",
+            "woocommerce-shipping-usps",
+            "woocommerce-square",
+            "woocommerce-subscriptions",
+            "woocommerce-table-rate-shipping",
+            "woocommerce-xero",
+            "woothemes-sensei",
+            "wordpress-seo",
+            "wordpress-seo-premium",
+            "wpcom-file-shim",
+            "wpcomsh"
         )
     }
     private val _viewState = MutableSharedFlow<ViewState>(1)
@@ -87,7 +138,7 @@ class PluginsViewModel @Inject constructor(
         return if (!site.isAutomatedTransfer || !isInstalled) {
             false
         } else {
-            name in MANAGED_PLUGINS
+            slug in MANAGED_PLUGINS
         }
     }
 
