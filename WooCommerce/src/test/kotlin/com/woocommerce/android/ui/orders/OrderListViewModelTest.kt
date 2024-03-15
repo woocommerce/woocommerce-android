@@ -15,6 +15,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -812,8 +813,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given cha-ching sound disabled, when order list is loaded, then show a dialog`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -835,8 +836,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `when cha-ching dialog is shown, then clicking turn on sound should re-create notification channel`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -853,8 +854,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `when cha-ching dialog is shown, then clicking turn keep silent should mark dialog as dismissed`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -871,8 +872,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given cha-ching dialog dismissed, when order list is loaded, then don't show a dialog`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(true)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 

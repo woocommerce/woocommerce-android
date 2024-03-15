@@ -33,6 +33,7 @@ import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -83,6 +84,7 @@ private const val EMPTY_VIEW_THROTTLE = 250L
 
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
+@Suppress("LargeClass")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -766,17 +768,25 @@ class OrderListViewModel @Inject constructor(
             )
         }
 
-        if (!notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER) &&
+        if (notificationChannelsHandler.checkNewOrderNotificationSound() == NewOrderNotificationSoundStatus.DISABLED &&
             !appPrefs.chaChingSoundIssueDialogDismissed
         ) {
+            analyticsTracker.track(AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_SHOWN)
             triggerEvent(
                 Event.ShowDialog(
                     titleId = R.string.cha_ching_sound_issue_dialog_title,
                     messageId = R.string.cha_ching_sound_issue_dialog_message,
                     positiveButtonId = R.string.cha_ching_sound_issue_dialog_turn_on_sound,
                     negativeButtonId = R.string.cha_ching_sound_issue_dialog_keep_silent,
-                    positiveBtnAction = { _, _ -> recreateNotificationChannel() },
+                    positiveBtnAction = { _, _ ->
+                        analyticsTracker.track(
+                            AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_SOURCE to "order_list")
+                        )
+                        recreateNotificationChannel()
+                    },
                     negativeBtnAction = { _, _ ->
+                        analyticsTracker.track(AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_DISMISSED)
                         appPrefs.chaChingSoundIssueDialogDismissed = true
                     },
                     cancelable = false

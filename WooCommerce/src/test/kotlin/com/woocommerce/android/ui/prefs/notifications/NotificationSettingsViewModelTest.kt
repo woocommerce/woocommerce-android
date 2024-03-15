@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.prefs.notifications
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.ShowTestNotification
@@ -27,6 +28,7 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
     }
     private val notificationChannelsHandler: NotificationChannelsHandler = mock()
     private val showTestNotification: ShowTestNotification = mock()
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private lateinit var viewModel: NotificationSettingsViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
@@ -35,30 +37,45 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
             savedStateHandle = SavedStateHandle(),
             resourceProvider = resourceProvider,
             notificationChannelsHandler = notificationChannelsHandler,
-            showTestNotification = showTestNotification
+            showTestNotification = showTestNotification,
+            analyticsTracker = analyticsTracker
         )
     }
 
     @Test
     fun `given cha ching sound is enabled, when view is loaded, then expose correct state`() = testBlocking {
+        val status = NotificationChannelsHandler.NewOrderNotificationSoundStatus.DEFAULT
         setup {
-            whenever(notificationChannelsHandler.checkNotificationChannelSound(any())).thenReturn(true)
+            whenever(notificationChannelsHandler.checkNewOrderNotificationSound()).thenReturn(status)
         }
 
-        val isChaChingSoundEnabled = viewModel.isChaChingSoundEnabled.captureValues().last()
+        val isChaChingSoundEnabled = viewModel.newOrderNotificationSoundStatus.captureValues().last()
 
-        assertThat(isChaChingSoundEnabled).isTrue()
+        assertThat(isChaChingSoundEnabled).isEqualTo(status)
     }
 
     @Test
     fun `given cha ching sound is disabled, when view is loaded, then expose correct state`() = testBlocking {
+        val status = NotificationChannelsHandler.NewOrderNotificationSoundStatus.DISABLED
         setup {
-            whenever(notificationChannelsHandler.checkNotificationChannelSound(any())).thenReturn(false)
+            whenever(notificationChannelsHandler.checkNewOrderNotificationSound()).thenReturn(status)
         }
 
-        val isChaChingSoundEnabled = viewModel.isChaChingSoundEnabled.captureValues().last()
+        val isChaChingSoundEnabled = viewModel.newOrderNotificationSoundStatus.captureValues().last()
 
-        assertThat(isChaChingSoundEnabled).isFalse()
+        assertThat(isChaChingSoundEnabled).isEqualTo(status)
+    }
+
+    @Test
+    fun `given order notification sound modified, when view is loaded, then expose correct state`() = testBlocking {
+        val status = NotificationChannelsHandler.NewOrderNotificationSoundStatus.SOUND_MODIFIED
+        setup {
+            whenever(notificationChannelsHandler.checkNewOrderNotificationSound()).thenReturn(status)
+        }
+
+        val isChaChingSoundEnabled = viewModel.newOrderNotificationSoundStatus.captureValues().last()
+
+        assertThat(isChaChingSoundEnabled).isEqualTo(status)
     }
 
     @Test
@@ -78,7 +95,7 @@ class NotificationSettingsViewModelTest : BaseUnitTest() {
 
         viewModel.onEnableChaChingSoundClicked()
 
-        verify(notificationChannelsHandler).recreateNotificationChannel(any())
+        verify(notificationChannelsHandler).recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
     }
 
     @Test
