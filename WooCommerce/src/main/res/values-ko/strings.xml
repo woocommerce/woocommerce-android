@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 09:54:16+0000
+Translation-Revision-Date: 2024-03-12 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_detail_product_not_selected">상품이 선택되지 않음</string>
+    <string name="orderlist_connectivity_tool_read_more_action">더 보기</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">지원 문의</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">회원님의 사이트 주문</string>
+    <string name="orderlist_connectivity_tool_store_check_title">회원님의 사이트</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">워드프레스닷컴 서버</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">인터넷 연결</string>
+    <string name="orderlist_connectivity_tool_title">연결 테스트</string>
+    <string name="my_store_custom_range_content_description">사용자 정의 날짜 범위 통계 추가</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">위치를 찾을 수 없습니다.\n다시 시도하세요.</string>
     <string name="order_detail_attribution_session_page_views">세션 페이지 조회수</string>
     <string name="order_detail_attribution_device_type">기기 유형</string>

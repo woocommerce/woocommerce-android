@@ -1,0 +1,2 @@
+17.7 :
+Bonnes nouvelles pour les utilisateurs de WooCommerce ! Nous avons corrigé un bug pour préserver les recherches de produits après des changements et optimisé l’aperçu des produits sur tablette avec deux volets. Personnalisez aisément vos statistiques dans l’espace dédié. Les commandes passées dans l’application sont clairement étiquetées, ce qui améliore le suivi. Plongez dans un parcours d’achat et de vente plus fluide et plus personnalisé. Mettez à jour votre application dès maintenant !
