@@ -2337,7 +2337,7 @@
     <string name="settings_option_installed_plugins">Installed Plugins</string>
     <string name="settings_woo_plugin_version">WooCommerce Version</string>
     <string name="plugin_state_up_to_date">Up-to-date</string>
-    <string name="plugin_state_update_available">Update available</string>
+    <string name="plugin_state_update_available">Update available (%s)</string>
     <string name="plugin_state_inactive">Inactive</string>
     <string name="plugin_state_auto_managed">Auto-managed</string>
     <string name="plugins_error_message">An error occurred while loading installed plugins</string>

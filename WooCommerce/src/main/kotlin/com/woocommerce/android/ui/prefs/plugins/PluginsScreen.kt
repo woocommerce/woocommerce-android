@@ -46,9 +46,9 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.INACTIVE
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UPDATE_AVAILABLE
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UP_TO_DATE
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.Inactive
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpToDate
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpdateAvailable
 
 @Composable
 fun PluginsScreen(viewModel: PluginsViewModel) {
@@ -88,7 +88,6 @@ private fun PluginsScreen(state: ViewState, onRetryTapped: () -> Unit) {
                 Plugins(it.plugins)
             }
         }
-
     }
 }
 
@@ -134,9 +133,9 @@ private fun PluginItem(plugin: Plugin) {
             }
 
             Text(
-                text = stringResource(id = plugin.status.title),
+                text = plugin.status.title,
                 color = colorResource(id = plugin.status.color),
-                style = MaterialTheme.typography.subtitle2
+                fontWeight = FontWeight.Bold
             )
         }
     }
@@ -253,9 +252,10 @@ private fun PreviewPlugins() {
     PluginsScreen(
         ViewState.Loaded(
             plugins = listOf(
-                Plugin("Plugin 1", "Automattic", "1.0", UP_TO_DATE),
-                Plugin("Plugin 2", null, "2.0", UPDATE_AVAILABLE),
-                Plugin("Plugin 3", "Gutenberg", "3.0", INACTIVE),
+                Plugin("Plugin 1", "Automattic", "1.0", UpToDate("Up-to-date")),
+                Plugin("Plugin 2", null, "2.0", UpdateAvailable("Update available (4.9)")),
+                Plugin("Plugin 3", "Gutenberg", "3.0", Inactive("Inactive")),
+                Plugin("Plugin 4", "Jetpack", "4.0", UpToDate("Auto-managed"))
             )
         ),
         onRetryTapped = {}

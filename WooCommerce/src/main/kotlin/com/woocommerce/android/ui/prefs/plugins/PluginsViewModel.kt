@@ -1,30 +1,34 @@
 package com.woocommerce.android.ui.prefs.plugins
 
 import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Error
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.INACTIVE
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UPDATE_AVAILABLE
-import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UP_TO_DATE
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.AutoManaged
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.Inactive
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpToDate
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpdateAvailable
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loading
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.ImmutablePluginModel
+import org.wordpress.android.fluxc.store.PluginCoroutineStore
+import org.wordpress.android.fluxc.store.PluginCoroutineStore.InstalledPluginResponse
 import org.wordpress.android.util.helpers.Version
 import javax.inject.Inject
 
@@ -32,9 +36,17 @@ import javax.inject.Inject
 @HiltViewModel
 class PluginsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val pluginRepository: PluginRepository,
-    private val site: SelectedSite
+    private val pluginsStore: PluginCoroutineStore,
+    private val site: SelectedSite,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        private val MANAGED_PLUGINS = setOf(
+            "jetpack/jetpack",
+            "akismet/akismet",
+            "vaultpress/vaultpress"
+        )
+    }
     private val _viewState = MutableSharedFlow<ViewState>(1)
     val viewState = _viewState.asLiveData()
 
@@ -43,28 +55,31 @@ class PluginsViewModel @Inject constructor(
     }
 
     private fun loadPlugins() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _viewState.emit(Loading)
-            pluginRepository.fetchInstalledPlugins(site.get()).fold(
-                onSuccess = { plugins ->
-                    _viewState.emit(
-                        Loaded(
-                            plugins = plugins
-                                .filter { it.installedVersion.isNotNullOrEmpty() && it.displayName.isNotNullOrEmpty() }
-                                .map { Plugin(it.displayName!!, it.authorName, it.installedVersion!!, it.getState()) }
-                        )
+            val response = pluginsStore.fetchInstalledPlugins(site.get())
+            if (response is InstalledPluginResponse.Success) {
+                _viewState.emit(
+                    Loaded(
+                        plugins = response.plugins
+                            .filter { it.installedVersion.isNotNullOrEmpty() && it.displayName.isNotNullOrEmpty() }
+                            .map { Plugin(it.displayName!!, it.authorName, it.installedVersion!!, it.getState()) }
                     )
-                },
-                onFailure = { _viewState.emit(Error) }
-            )
+                )
+            } else {
+                _viewState.emit(Error)
+            }
         }
     }
 
     private fun ImmutablePluginModel.getState(): Plugin.PluginStatus {
         return when {
-            !isActive -> INACTIVE
-            isUpdateAvailable() -> UPDATE_AVAILABLE
-            else -> UP_TO_DATE
+            isAutoManaged(site.get()) -> AutoManaged(resourceProvider.getString(R.string.plugin_state_auto_managed))
+            !isActive -> Inactive(resourceProvider.getString(R.string.plugin_state_inactive))
+            isUpdateAvailable() -> UpdateAvailable(
+                resourceProvider.getString(R.string.plugin_state_update_available, wpOrgPluginVersion!!)
+            )
+            else -> UpToDate(resourceProvider.getString(R.string.plugin_state_up_to_date))
         }
     }
 
@@ -90,6 +105,14 @@ class PluginsViewModel @Inject constructor(
         }
     }
 
+    fun ImmutablePluginModel.isAutoManaged(site: SiteModel): Boolean {
+        return if (!site.isAutomatedTransfer || !isInstalled) {
+            false
+        } else {
+            name in MANAGED_PLUGINS
+        }
+    }
+
     fun onRetryClicked() {
         loadPlugins()
     }
@@ -110,10 +133,14 @@ class PluginsViewModel @Inject constructor(
                 val version: String,
                 val status: PluginStatus
             ) {
-                enum class PluginStatus(@StringRes val title: Int, @ColorRes val color: Int) {
-                    UP_TO_DATE(R.string.plugin_state_up_to_date, R.color.color_info),
-                    UPDATE_AVAILABLE(R.string.plugin_state_update_available, R.color.color_alert),
-                    INACTIVE(R.string.plugin_state_inactive, R.color.color_on_surface_disabled)
+                sealed class PluginStatus(open val title: String, @ColorRes val color: Int) {
+                    data class UpToDate(override val title: String) : PluginStatus(title, R.color.color_info)
+                    data class AutoManaged(override val title: String) : PluginStatus(title, R.color.color_info)
+                    data class UpdateAvailable(override val title: String) : PluginStatus(title, R.color.color_alert)
+                    data class Inactive(override val title: String) : PluginStatus(
+                        title,
+                        R.color.color_on_surface_disabled
+                    )
                 }
             }
         }
