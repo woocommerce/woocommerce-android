@@ -182,7 +182,6 @@ class AddProductCategoryFragment :
         if (messageId != 0) {
             binding.productCategoryName.error = getString(messageId)
             doneMenuItem?.isVisible = false
-
         } else {
             binding.productCategoryName.clearError()
             doneMenuItem?.isVisible = true
