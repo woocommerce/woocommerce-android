@@ -17,10 +17,10 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/categoryCheckbox" />
+        app:layout_constraintEnd_toStartOf="@id/categorySelected" />
 
     <View
-        android:id="@+id/categoryCheckbox"
+        android:id="@+id/categorySelected"
         android:layout_width="@dimen/skeleton_text_height_100"
         android:layout_height="@dimen/skeleton_text_height_100"
         android:background="@color/skeleton_color"
