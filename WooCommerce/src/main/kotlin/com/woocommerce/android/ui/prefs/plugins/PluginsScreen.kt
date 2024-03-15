@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.Inactive
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.Unknown
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpToDate
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpdateAvailable
 
@@ -132,11 +133,13 @@ private fun PluginItem(plugin: Plugin) {
                 )
             }
 
-            Text(
-                text = plugin.status.title,
-                color = colorResource(id = plugin.status.color),
-                fontWeight = FontWeight.Bold
-            )
+            if (plugin.status !is Unknown) {
+                Text(
+                    text = plugin.status.title,
+                    color = colorResource(id = plugin.status.color),
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }

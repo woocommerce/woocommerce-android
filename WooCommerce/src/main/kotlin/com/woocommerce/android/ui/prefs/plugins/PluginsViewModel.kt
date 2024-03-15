@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loade
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.AutoManaged
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.Inactive
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.Unknown
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpToDate
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpdateAvailable
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loading
@@ -123,6 +124,7 @@ class PluginsViewModel @Inject constructor(
         return when {
             isAutoManaged(site.get()) -> AutoManaged(resourceProvider.getString(R.string.plugin_state_auto_managed))
             !isActive -> Inactive(resourceProvider.getString(R.string.plugin_state_inactive))
+            wpOrgPluginVersion.isNullOrEmpty() -> Unknown
             isUpdateAvailable() -> UpdateAvailable(
                 resourceProvider.getString(R.string.plugin_state_update_available, wpOrgPluginVersion!!)
             )
@@ -170,6 +172,7 @@ class PluginsViewModel @Inject constructor(
                         title,
                         R.color.color_on_surface_disabled
                     )
+                    data object Unknown : PluginStatus("", R.color.color_on_surface_disabled)
                 }
             }
         }
