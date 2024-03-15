@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.list
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -37,12 +36,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.databinding.FragmentOrderListBinding
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.isDisplaySmallerThan720
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SIMPLE_PAYMENTS_AND_ORDER_CREATION
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
@@ -60,6 +59,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -67,6 +67,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -109,6 +110,7 @@ class OrderListFragment :
     lateinit var feedbackPrefs: FeedbackPrefs
 
     private val viewModel: OrderListViewModel by viewModels()
+    private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
     private var snackBar: Snackbar? = null
 
     override fun onStop() {
@@ -160,7 +162,7 @@ class OrderListFragment :
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     selectedOrder.selectOrder(-1L)
-                    if (isTablet()) {
+                    if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                         if (!binding.detailPaneContainer.findNavController().popBackStack()) {
                             findNavController().popBackStack()
                         }
@@ -169,7 +171,8 @@ class OrderListFragment :
                     } else {
                         val result =
                             _binding?.detailPaneContainer?.findNavController()?.navigateUp() ?: false
-                        if (!result && _binding?.listPaneContainer?.isVisible != true && !isTablet()) {
+                        val isCompactScreen = requireContext().windowSizeClass == WindowSizeClass.Compact
+                        if (!result && _binding?.listPaneContainer?.isVisible != true && isCompactScreen) {
                             // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
                             // and now it's a single pane layout (phone), e.g. due to a configuration change.
                             // In this case we need to switch panes – show the list pane instead of details pane.
@@ -284,7 +287,7 @@ class OrderListFragment :
     }
 
     private fun adjustUiForDeviceType(savedInstanceState: Bundle?) {
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             adjustLayoutForTablet()
         } else {
             adjustLayoutForNonTablet(savedInstanceState)
@@ -293,13 +296,14 @@ class OrderListFragment :
     }
 
     private fun adjustLayoutForTablet() {
-        val isSmallTablet = requireContext().isDisplaySmallerThan720
-        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-        if (isSmallTablet && isPortrait) {
-            binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
-        } else {
-            binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        when (requireContext().windowSizeClass) {
+            WindowSizeClass.Compact -> return
+            WindowSizeClass.Medium -> {
+                binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
+            }
+            WindowSizeClass.ExpandedAndBigger -> {
+                binding.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+            }
         }
         binding.listPaneContainer.visibility = View.VISIBLE
         binding.detailPaneContainer.visibility = View.VISIBLE
@@ -334,7 +338,7 @@ class OrderListFragment :
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             refreshOrders()
         }
     }
@@ -342,7 +346,7 @@ class OrderListFragment :
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(STATE_KEY_IS_SEARCHING, isSearching)
         outState.putString(STATE_KEY_SEARCH_QUERY, searchQuery)
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             val navHostFragment = childFragmentManager.findFragmentById(R.id.detailPaneContainer) as? NavHostFragment
             val currentDestinationId = navHostFragment?.navController?.currentDestination?.id
             outState.putInt(CURRENT_NAV_DESTINATION, currentDestinationId ?: -1)
@@ -432,7 +436,7 @@ class OrderListFragment :
         selectedOrder.selectedOrderId.observe(viewLifecycleOwner) {
             viewModel.updateOrderSelectedStatus(
                 orderId = selectedOrder.selectedOrderId.value ?: -1,
-                isTablet()
+                requireContext().windowSizeClass != WindowSizeClass.Compact
             )
         }
 
@@ -454,7 +458,7 @@ class OrderListFragment :
         }
 
         viewModel.pagedListData.observe(viewLifecycleOwner) {
-            if (isTablet()) {
+            if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                 when {
                     // A specific order is set to be opened
                     viewModel.orderId.value != -1L -> {
@@ -554,6 +558,16 @@ class OrderListFragment :
             }
         }
 
+        communicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OrdersCommunicationViewModel.CommunicationEvent.OrderTrashed -> {
+                    viewModel.trashOrder(event.orderId)
+                    selectedOrder.selectOrder(-1L)
+                }
+                else -> event.isHandled = false
+            }
+        }
+
         viewModel.emptyViewType.observe(viewLifecycleOwner) {
             it?.let { emptyViewType ->
                 when (emptyViewType) {
@@ -606,6 +620,9 @@ class OrderListFragment :
             new.isErrorFetchingDataBannerVisible.takeIfNotEqualTo(old?.isErrorFetchingDataBannerVisible) {
                 displayErrorParsingOrdersCard(it)
             }
+            new.shouldDisplayTroubleshootingBanner.takeIfNotEqualTo(old?.shouldDisplayTroubleshootingBanner) {
+                displayTimeoutErrorCard(it)
+            }
         }
     }
 
@@ -623,7 +640,10 @@ class OrderListFragment :
 
     private fun updateOrderSelectedStatus() {
         val selectedOrderId = selectedOrder.selectedOrderId.value ?: -1
-        viewModel.updateOrderSelectedStatus(orderId = selectedOrderId, isTablet())
+        viewModel.updateOrderSelectedStatus(
+            orderId = selectedOrderId,
+            requireContext().windowSizeClass != WindowSizeClass.Compact
+        )
     }
 
     private fun initJitm(jitmEnabled: Boolean) {
@@ -650,12 +670,12 @@ class OrderListFragment :
             viewModel.handleBarcodeScannedStatus(status)
         }
         handleResult<Long>(KEY_ORDER_ID) {
-            if (isTablet()) {
+            if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                 openSpecificOrder(it)
             }
         }
         handleResult<Long>(KEY_START_PAYMENT_FLOW) {
-            if (isTablet()) {
+            if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                 openSpecificOrder(it, true)
             }
         }
@@ -686,6 +706,12 @@ class OrderListFragment :
         )
     }
 
+    private fun openConnectivityTool() {
+        findNavController().navigateSafely(
+            OrderListFragmentDirections.actionOrderListFragmentToOrderConnectivityToolFragment()
+        )
+    }
+
     private fun hideEmptyView() {
         emptyView.hide()
     }
@@ -701,9 +727,13 @@ class OrderListFragment :
         sharedView: View?,
         startPaymentsFlow: Boolean,
     ) {
-        viewModel.trackOrderClickEvent(orderId, orderStatus, isTablet())
+        viewModel.trackOrderClickEvent(
+            orderId,
+            orderStatus,
+            requireContext().windowSizeClass != WindowSizeClass.Compact
+        )
 
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             _binding?.createOrderButton?.show()
         } else {
             _binding?.createOrderButton?.hide()
@@ -719,13 +749,13 @@ class OrderListFragment :
             isSearching = true
         }
         (activity as? MainNavigationRouter)?.run {
-            val navHostFragment = if (isTablet()) {
+            val navHostFragment = if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                 childFragmentManager.findFragmentById(R.id.detailPaneContainer) as NavHostFragment
             } else {
                 null
             }
             selectedOrder.selectOrder(orderId)
-            viewModel.updateOrderSelectedStatus(orderId, isTablet())
+            viewModel.updateOrderSelectedStatus(orderId, requireContext().windowSizeClass != WindowSizeClass.Compact)
             navHostFragment?.let {
                 showOrderDetail(orderId, it, startPaymentsFlow = startPaymentsFlow)
             } ?: run {
@@ -789,7 +819,7 @@ class OrderListFragment :
 
     private fun clearSearchResults() {
         if (isSearching) {
-            if (!isTablet()) {
+            if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
                 searchQuery = ""
                 isSearching = false
                 disableSearchListeners()
@@ -862,7 +892,7 @@ class OrderListFragment :
 
         searchMenuItem?.setOnActionExpandListener(this)
         searchView?.setOnQueryTextListener(this)
-        if (!isTablet()) {
+        if (requireContext().windowSizeClass == WindowSizeClass.Compact) {
             handler.postDelayed({
                 (activity as? MainActivity)?.hideBottomNav()
             }, HANDLER_DELAY)
@@ -925,21 +955,52 @@ class OrderListFragment :
     }
 
     private fun displayErrorParsingOrdersCard(show: Boolean) {
+        displayErrorTroubleshootingCard(
+            show = show,
+            title = getString(R.string.orderlist_parsing_error_title),
+            message = getString(R.string.orderlist_parsing_error_message),
+            troubleshootingClick = { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
+            supportContactClick = { openSupportRequestScreen() }
+        )
+    }
+
+    private fun displayTimeoutErrorCard(show: Boolean) {
+        if (FeatureFlag.CONNECTIVITY_TOOL.isEnabled()) {
+            displayErrorTroubleshootingCard(
+                show = show,
+                title = getString(R.string.orderlist_timeout_error_title),
+                message = getString(R.string.orderlist_timeout_error_message),
+                supportContactClick = { openSupportRequestScreen() },
+                troubleshootingClick = {
+                    viewModel.trackConnectivityTroubleshootClicked()
+                    openConnectivityTool()
+                }
+            )
+        }
+    }
+
+    private fun displayErrorTroubleshootingCard(
+        show: Boolean,
+        title: String,
+        message: String,
+        troubleshootingClick: () -> Unit,
+        supportContactClick: () -> Unit
+    ) {
         TransitionManager.beginDelayedTransition(binding.orderListViewRoot)
         if (!show) {
-            binding.errorParsingOrdersCard.isVisible = false
+            binding.errorTroubleshootingCard.isVisible = false
             return
         }
 
-        binding.errorParsingOrdersCard.isVisible = true
-        binding.errorParsingOrdersCard.initView(
-            getString(R.string.orderlist_parsing_error_title),
-            getString(R.string.orderlist_parsing_error_message),
-            getString(R.string.error_troubleshooting),
-            getString(R.string.support_contact),
-            true,
-            { ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.ORDERS_TROUBLESHOOTING) },
-            { openSupportRequestScreen() }
+        binding.errorTroubleshootingCard.isVisible = true
+        binding.errorTroubleshootingCard.initView(
+            title = title,
+            message = message,
+            isExpanded = true,
+            mainActionText = getString(R.string.error_troubleshooting),
+            secondaryActionText = getString(R.string.support_contact),
+            mainActionClick = troubleshootingClick,
+            secondaryActionClick = supportContactClick
         )
     }
 

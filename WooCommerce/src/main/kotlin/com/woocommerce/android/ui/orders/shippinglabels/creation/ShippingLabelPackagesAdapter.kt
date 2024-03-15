@@ -77,7 +77,9 @@ class ShippingLabelPackagesAdapter(
         if (payloads.size == 1 &&
             payloads.contains(ShippingLabelPackageDiffCallback.EXPANSION_STATE_PAYLOAD) &&
             holder.isExpanded == uiModels[position].isExpanded
-        ) return
+        ) {
+            return
+        }
         super.onBindViewHolder(holder, position, payloads)
     }
 

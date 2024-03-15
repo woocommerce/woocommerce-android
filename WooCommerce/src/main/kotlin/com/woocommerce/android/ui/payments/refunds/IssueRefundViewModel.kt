@@ -117,7 +117,8 @@ class IssueRefundViewModel @Inject constructor(
     val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
     val refundByItemsStateLiveData = LiveDataDelegate(
-        savedState, RefundByItemsViewState(),
+        savedState,
+        RefundByItemsViewState(),
         onChange = { _, new ->
             updateRefundTotal(new.grandTotalRefund)
         }
@@ -951,7 +952,8 @@ class IssueRefundViewModel @Inject constructor(
             get() = grandTotalRefund > BigDecimal.ZERO
 
         // TODO: @Ruttkay Issue: https://github.com/woocommerce/woocommerce-android/issues/6895
-        @Suppress("PROPERTY_WONT_BE_SERIALIZED") val isRefundNoticeVisible = !refundNotice.isNullOrEmpty()
+        @Suppress("PROPERTY_WONT_BE_SERIALIZED")
+        val isRefundNoticeVisible = !refundNotice.isNullOrEmpty()
     }
 
     @Parcelize

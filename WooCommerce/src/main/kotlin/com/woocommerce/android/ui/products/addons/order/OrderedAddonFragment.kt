@@ -43,12 +43,15 @@ class OrderedAddonFragment : BaseFragment(R.layout.fragment_ordered_addon) {
     private var isLoadingSkeletonVisible: Boolean = false
         set(show) {
             field = show
-            if (show) skeletonView.show(
-                viewActual = binding.contentContainer,
-                layoutId = R.layout.skeleton_ordered_addon_list,
-                delayed = true
-            )
-            else skeletonView.hide()
+            if (show) {
+                skeletonView.show(
+                    viewActual = binding.contentContainer,
+                    layoutId = R.layout.skeleton_ordered_addon_list,
+                    delayed = true
+                )
+            } else {
+                skeletonView.hide()
+            }
         }
 
     private val supportActionBar

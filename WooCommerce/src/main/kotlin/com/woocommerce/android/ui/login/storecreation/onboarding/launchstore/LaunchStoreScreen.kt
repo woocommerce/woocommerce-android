@@ -49,9 +49,11 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             Toolbar(
-                title = if (!state.isStoreLaunched)
+                title = if (!state.isStoreLaunched) {
                     stringResource(id = R.string.store_onboarding_launch_preview_title)
-                else "",
+                } else {
+                    ""
+                },
                 onNavigationButtonClick = viewModel::onBackPressed,
             )
         }) { padding ->
@@ -90,10 +92,12 @@ fun LaunchStoreScreen(
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (state.isTrialPlan) EcommerceTrialBanner(
-                onBannerClicked = onBannerClicked,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (state.isTrialPlan) {
+                EcommerceTrialBanner(
+                    onBannerClicked = onBannerClicked,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
             if (state.isStoreLaunched) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),

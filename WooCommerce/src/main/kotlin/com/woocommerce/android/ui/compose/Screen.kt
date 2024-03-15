@@ -39,3 +39,5 @@ data class Screen(
         object Large : ScreenType(width = 1280)
     }
 }
+
+enum class DeviceType { Phone, Tablet, }

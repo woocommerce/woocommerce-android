@@ -33,6 +33,64 @@
         <View style="@style/Woo.Divider" />
 
         <LinearLayout
+            android:id="@+id/plugins_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!--
+                    Plugins
+            -->
+            <com.woocommerce.android.ui.prefs.WCSettingsCategoryHeaderView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_plugins" />
+
+            <!--
+                Store plugins
+            -->
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/option_site_plugins"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:optionTitle="@string/settings_option_installed_plugins" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_marginVertical="@dimen/major_100"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/woo_plugin_info"
+                    android:textColor="@color/color_on_surface"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_app_title_aligned"
+                    android:text="@string/settings_woo_plugin_version" />
+
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/woo_plugin_version"
+                    android:textAppearance="?attr/textAppearanceBody1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginHorizontal="@dimen/major_100"
+                    tools:text="8.6.1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <View style="@style/Woo.Divider" />
+
+        <LinearLayout
             android:id="@+id/store_settings_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -94,9 +152,9 @@
                 app:toggleOptionDesc="@string/store_onboarding_setting_description"
                 app:toggleOptionTitle="@string/store_onboarding_setting_title" />
 
-            <View style="@style/Woo.Divider" />
-
         </LinearLayout>
+
+        <View style="@style/Woo.Divider" />
 
         <!--
             Notifications

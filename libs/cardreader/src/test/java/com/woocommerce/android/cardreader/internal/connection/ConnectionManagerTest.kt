@@ -55,7 +55,6 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
 
     @Before
     fun setUp() {
-
         val defaultReaderStatus: StateFlow<CardReaderStatus> = MutableStateFlow(CardReaderStatus.NotConnected())
         whenever(terminalListenerImpl.readerStatus).thenReturn(defaultReaderStatus)
 

@@ -46,8 +46,11 @@ class StoreOnboardingRepository @Inject constructor(
                     ?.toMutableList()
                     ?.apply { addLocalOnboardingTasks(this) }
                     ?.map {
-                        if (shouldMarkLaunchStoreAsCompleted(it)) it.copy(isComplete = true)
-                        else it
+                        if (shouldMarkLaunchStoreAsCompleted(it)) {
+                            it.copy(isComplete = true)
+                        } else {
+                            it
+                        }
                     }
                     ?.sortedBy { it.type.order }
                     ?.sortedBy { it.isComplete }

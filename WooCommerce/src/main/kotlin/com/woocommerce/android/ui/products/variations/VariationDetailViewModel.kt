@@ -339,16 +339,18 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     private fun handleVariationDeletion(deleted: Boolean, productID: Long) {
-        if (deleted) triggerEvent(
-            Event.ExitWithResult(
-                viewState.variation?.let { variation ->
-                    DeletedVariationData(
-                        productID,
-                        variation.remoteVariationId
-                    )
-                }
+        if (deleted) {
+            triggerEvent(
+                Event.ExitWithResult(
+                    viewState.variation?.let { variation ->
+                        DeletedVariationData(
+                            productID,
+                            variation.remoteVariationId
+                        )
+                    }
+                )
             )
-        ) else if (deleted.not() && networkStatus.isConnected().not()) {
+        } else if (deleted.not() && networkStatus.isConnected().not()) {
             triggerEvent(Event.ShowSnackbar(string.offline_error))
         }
 

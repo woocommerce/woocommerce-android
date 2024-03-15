@@ -13,14 +13,13 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentAnalyticsBinding
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
+import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
@@ -83,14 +82,24 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
     private fun handleEvent(event: MultiLiveEvent.Event) {
         when (event) {
             is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+
             is AnalyticsViewEvent.OpenWPComWebView -> findNavController()
                 .navigate(NavGraphMainDirections.actionGlobalWPComWebViewFragment(urlToLoad = event.url))
 
-            is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(event.fromMillis, event.toMillis)
+            is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(
+                event.fromMillis,
+                event.toMillis
+            ) { start, end ->
+                viewModel.onCustomRangeSelected(Date(start), Date(end))
+            }
+
             is AnalyticsViewEvent.OpenDateRangeSelector -> openDateRangeSelector()
+
             is AnalyticsViewEvent.SendFeedback -> sendFeedback()
+
             is AnalyticsViewEvent.OpenSettings -> findNavController()
                 .navigateSafely(AnalyticsHubFragmentDirections.actionAnalyticsToAnalyticsSettings())
+
             else -> event.isHandled = false
         }
     }
@@ -148,23 +157,6 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
     }
 
     private fun getDateRangeSelectorViewState() = viewModel.viewState.value.analyticsDateRangeSelectorState
-
-    private fun showDateRangePicker(fromMillis: Long, toMillis: Long) {
-        val datePicker =
-            MaterialDatePicker.Builder.dateRangePicker()
-                .setTitleText(getString(R.string.orderfilters_date_range_picker_title))
-                .setSelection(androidx.core.util.Pair(fromMillis, toMillis))
-                .setCalendarConstraints(
-                    CalendarConstraints.Builder()
-                        .setEnd(MaterialDatePicker.todayInUtcMilliseconds())
-                        .build()
-                )
-                .build()
-        datePicker.show(parentFragmentManager, DATE_PICKER_FRAGMENT_TAG)
-        datePicker.addOnPositiveButtonClickListener {
-            viewModel.onCustomRangeSelected(Date(it?.first ?: 0L), Date(it.second ?: 0L))
-        }
-    }
 
     private fun displayFeedbackBanner(isVisible: Boolean) {
         binding.analyticsHubFeedbackBanner.isVisible = isVisible

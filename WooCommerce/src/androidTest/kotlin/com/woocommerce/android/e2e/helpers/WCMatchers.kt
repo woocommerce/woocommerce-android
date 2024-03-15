@@ -57,7 +57,9 @@ object WCMatchers {
                 val child = view.getChildAt(0)
                 return if (child != null && child is TextView) {
                     ContextCompat.getColor(context, color) == child.textColors.defaultColor
-                } else false
+                } else {
+                    false
+                }
             }
 
             override fun describeTo(description: Description) {
@@ -79,7 +81,9 @@ object WCMatchers {
                     (child.background as GradientDrawable).color?.let { bgColor ->
                         ContextCompat.getColor(context, color) == bgColor.defaultColor
                     } ?: false
-                } else false
+                } else {
+                    false
+                }
             }
 
             override fun describeTo(description: Description) {
@@ -99,7 +103,9 @@ object WCMatchers {
                 val child = view.getChildAt(0)
                 return if (child != null && child is TextView) {
                     child.text.toString() == string
-                } else false
+                } else {
+                    false
+                }
             }
 
             override fun describeTo(description: Description) {

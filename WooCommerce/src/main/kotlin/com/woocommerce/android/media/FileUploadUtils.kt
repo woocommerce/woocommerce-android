@@ -34,7 +34,9 @@ object FileUploadUtils {
                 val path = if (MediaUtils.isValidImage(filePath)) {
                     // optimize the image if the setting is enabled
                     getOptimizedImagePath(context, filePath)
-                } else filePath
+                } else {
+                    filePath
+                }
 
                 val mimeType = getMimeType(context, localUri, fetchedUri) ?: return null
 

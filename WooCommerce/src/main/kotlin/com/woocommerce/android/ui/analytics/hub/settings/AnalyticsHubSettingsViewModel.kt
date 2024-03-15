@@ -124,16 +124,22 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
 
     private fun updateSelection(card: AnalyticsCards, isSelected: Boolean) {
         draftConfiguration = draftConfiguration.map { cardConfiguration ->
-            if (cardConfiguration.card == card) cardConfiguration.copy(isVisible = isSelected)
-            else cardConfiguration
+            if (cardConfiguration.card == card) {
+                cardConfiguration.copy(isVisible = isSelected)
+            } else {
+                cardConfiguration
+            }
         }
     }
 
     private fun checkVisibleCards() {
         val visibleCards = draftConfiguration.count { card -> card.isVisible }
         draftConfiguration = draftConfiguration.map { card ->
-            if (visibleCards == 1 && card.isVisible) card.copy(isEnabled = false)
-            else card.copy(isEnabled = true)
+            if (visibleCards == 1 && card.isVisible) {
+                card.copy(isEnabled = false)
+            } else {
+                card.copy(isEnabled = true)
+            }
         }
     }
 

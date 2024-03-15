@@ -15,5 +15,7 @@ val String.isCashPayment: Boolean
 fun OrderEntity.getBillingName(defaultValue: String): String {
     return if (billingFirstName.isEmpty() && billingLastName.isEmpty()) {
         defaultValue
-    } else "$billingFirstName $billingLastName"
+    } else {
+        "$billingFirstName $billingLastName"
+    }
 }

@@ -1,2 +1,0 @@
-17.5:
-Vi är glada att kunna presentera en helt ny uppdatering, i vilken vi gör vår första ansats att piffa upp beställningshanteringen på surfplattor. Den här uppdateringen ger ett snyggare gränssnitt, vilket gör uppgiften att hantera beställningar till en barnlek på din surfplatta. Vi fortsätter arbetet med att göra din upplevelse ännu häftigare, så håll ögonen öppna efter fler förbättringar.

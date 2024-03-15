@@ -12,6 +12,7 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.gms.google-services'
     id 'com.google.devtools.ksp'
+    id "com.google.protobuf"
 }
 
 sentry {
@@ -220,6 +221,7 @@ dependencies {
     }
     implementation "androidx.preference:preference:1.2.0"
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation "androidx.datastore:datastore:1.0.0"
 
     implementation "androidx.navigation:navigation-fragment-ktx:$gradle.ext.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$gradle.ext.navigationVersion"
@@ -330,7 +332,9 @@ dependencies {
     androidTestImplementation "androidx.test:rules:$androidxTestCoreVersion"
     androidTestImplementation "org.assertj:assertj-core:$assertjVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
-    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:$espressoVersion") {
+        exclude group: "com.google.protobuf", module: "protobuf-lite"
+    }
     androidTestImplementation "com.google.dagger:hilt-android-testing:$gradle.ext.daggerVersion"
     kspAndroidTest "com.google.dagger:hilt-android-compiler:$gradle.ext.daggerVersion"
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
@@ -407,6 +411,38 @@ dependencies {
     implementation "androidx.camera:camera-view:$androidxCameraVersion"
 
     implementation "com.google.guava:guava:$guavaVersion"
+
+    implementation "com.google.protobuf:protobuf-javalite:$protobufVersion"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
+    }
+
+    // Generates the java Protobuf-lite code for the Protobufs in this project. See
+    // https://github.com/google/protobuf-gradle-plugin#customizing-protobuf-compilation
+    // for more information.
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
+}
+
+androidComponents {
+    onVariants(selector().all(), { variant ->
+        afterEvaluate {
+            def capName = variant.name.capitalize()
+            tasks.getByName("ksp${capName}Kotlin") {
+                setSource(tasks.getByName("generate${capName}Proto").outputs)
+            }
+        }
+    })
 }
 
 task copyGoogleServicesExampleFile(type: Copy) {

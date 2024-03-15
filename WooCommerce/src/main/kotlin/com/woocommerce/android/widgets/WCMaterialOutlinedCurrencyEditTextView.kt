@@ -84,7 +84,8 @@ class WCMaterialOutlinedCurrencyEditTextView @JvmOverloads constructor(
             R.styleable.WCMaterialOutlinedCurrencyEditTextView
         ).use { a ->
             val usesFullFormatting = a.getBoolean(
-                R.styleable.WCMaterialOutlinedCurrencyEditTextView_usesFullFormatting, usesFullFormatting
+                R.styleable.WCMaterialOutlinedCurrencyEditTextView_usesFullFormatting,
+                usesFullFormatting
             )
             currencyEditText = when (usesFullFormatting) {
                 true -> FullFormattingCurrencyEditText(context)

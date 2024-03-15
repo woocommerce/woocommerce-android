@@ -39,7 +39,6 @@ import java.math.BigDecimal
 fun CustomAmountCard(
     customAmountUI: CustomAmountUI
 ) {
-
     Card(
         modifier = Modifier
             .fillMaxWidth()

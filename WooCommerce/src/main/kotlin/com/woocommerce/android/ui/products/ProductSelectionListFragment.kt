@@ -46,6 +46,7 @@ class ProductSelectionListFragment :
         get() = AppBarStatus.Hidden
 
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: ProductSelectionListViewModel by viewModels()
@@ -144,7 +145,8 @@ class ProductSelectionListFragment :
                         }
                     }
                 }
-            })
+            }
+        )
 
         setupTabletSecondPaneToolbar(
             title = getString(R.string.grouped_product_add),

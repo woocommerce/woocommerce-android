@@ -271,6 +271,7 @@ class ProductImagesViewModel @Inject constructor(
     sealed class ProductImagesState : Parcelable {
         @Parcelize
         data class Dragging(val initialState: List<Image>) : ProductImagesState()
+
         @Parcelize
         object Browsing : ProductImagesState()
     }

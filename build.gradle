@@ -1,4 +1,5 @@
 import com.automattic.android.measure.MeasureBuildsExtension
+import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -44,7 +45,7 @@ subprojects {
     }
 }
 
-def detektAll = tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
+def detektAll = tasks.register("detektAll", Detekt) {
     description = "Custom DETEKT build for all modules"
     parallel = true
     ignoreFailures = false
@@ -56,9 +57,9 @@ def detektAll = tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) 
     exclude("**/resources/**", "**/build/**")
 
     reports {
-        html.enabled = true
-        xml.enabled = true
-        txt.enabled = false
+        xml.required.set(true)
+        html.required.set(true)
+        txt.required.set(false)
     }
 }
 
@@ -97,7 +98,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = '2.69.0'
+    fluxCVersion = 'trunk-54e2405183330ae81375b8424cd8ab347f2319d5'
     glideVersion = '4.16.0'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -125,6 +126,7 @@ ext {
     mlkitTextRecognitionVersion = '16.0.0'
     androidxCameraVersion = '1.2.3'
     guavaVersion = '31.0.1-android'
+    protobufVersion = '3.25.3'
 
     // Apache
     commonsText = '1.10.0'

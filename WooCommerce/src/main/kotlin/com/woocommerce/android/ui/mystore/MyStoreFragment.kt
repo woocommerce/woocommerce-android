@@ -7,10 +7,8 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup.LayoutParams
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
-import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -29,7 +27,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.R.attr
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentMyStoreBinding
@@ -38,6 +35,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.show
+import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpOrigin
@@ -60,6 +58,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShareStore
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
@@ -141,10 +140,6 @@ class MyStoreFragment :
 
     private var errorSnackbar: Snackbar? = null
 
-    private var _tabLayout: TabLayout? = null
-    private val tabLayout
-        get() = _tabLayout!!
-
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
 
@@ -157,9 +152,12 @@ class MyStoreFragment :
     private var isEmptyViewVisible: Boolean = false
     private var wasPreviouslyStopped = false
 
+    private val tabLayout: TabLayout
+        get() = binding.myStoreStats.tabLayout
+
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            myStoreViewModel.onStatsGranularityChanged(tab.tag as StatsGranularity)
+            myStoreViewModel.onStatsGranularityChanged(tab.tag as? StatsGranularity)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -190,16 +188,6 @@ class MyStoreFragment :
             refreshJitm()
         }
 
-        // Create tabs and add to appbar
-        initTabLayout()
-        StatsGranularity.values().forEach { granularity ->
-            val tab = tabLayout.newTab().apply {
-                setText(binding.myStoreStats.getStringForGranularity(granularity))
-                tag = granularity
-            }
-            tabLayout.addTab(tab)
-        }
-
         binding.myStoreStats.initView(
             myStoreViewModel.activeStatsGranularity.value ?: DEFAULT_STATS_GRANULARITY,
             selectedSite,
@@ -222,6 +210,10 @@ class MyStoreFragment :
 
         tabLayout.addOnTabSelectedListener(tabSelectedListener)
 
+        binding.myStoreStats.customRangeButton.setOnClickListener {
+            myStoreViewModel.onAddCustomRangeClicked()
+        }
+
         binding.statsScrollView.scrollStartEvents()
             .onEach { usageTracksEventEmitter.interacted() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
@@ -235,8 +227,9 @@ class MyStoreFragment :
 
     private fun setUpBlazeCampaignView() {
         myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) binding.blazeCampaignView.hide()
-            else {
+            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) {
+                binding.blazeCampaignView.hide()
+            } else {
                 binding.blazeCampaignView.apply {
                     setContent {
                         WooThemeWithBackground {
@@ -403,7 +396,9 @@ class MyStoreFragment :
 
         myStoreViewModel.activeStatsGranularity.observe(viewLifecycleOwner) { activeGranularity ->
             if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != activeGranularity) {
-                val index = StatsGranularity.values().indexOf(activeGranularity)
+                val index = StatsGranularity.entries
+                    .filterNot { it == StatsGranularity.HOURS }
+                    .indexOf(activeGranularity)
                 // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
                 handler.postDelayed({ tabLayout.getTabAt(index)?.select() }, 300)
             }
@@ -436,6 +431,9 @@ class MyStoreFragment :
                 else -> showTopPerformers(topPerformers.topPerformers)
             }
         }
+        myStoreViewModel.customDateRange.observe(viewLifecycleOwner) { dateRange ->
+            binding.myStoreStats.updateCustomDateRange(dateRange)
+        }
         myStoreViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
             when (newValue) {
                 OrderState.Empty -> showEmptyView(true)
@@ -466,6 +464,10 @@ class MyStoreFragment :
                     findNavController().navigateSafely(
                         MyStoreFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
                     )
+
+                is OpenDatePicker -> showDateRangePicker { start, end ->
+                    myStoreViewModel.onCustomRangeSelected(start, end)
+                }
 
                 else -> event.isHandled = false
             }
@@ -535,11 +537,6 @@ class MyStoreFragment :
         }
     }
 
-    private fun initTabLayout() {
-        _tabLayout = TabLayout(requireContext(), null, attr.scrollableTabStyle)
-        addStatsGranularityTabs()
-    }
-
     override fun onResume() {
         super.onResume()
         handleFeedbackRequestCardState()
@@ -559,9 +556,7 @@ class MyStoreFragment :
 
     override fun onDestroyView() {
         handler.removeCallbacksAndMessages(null)
-        removeTabLayoutFromAppBar()
         tabLayout.removeOnTabSelectedListener(tabSelectedListener)
-        _tabLayout = null
         super.onDestroyView()
         _binding = null
     }
@@ -572,9 +567,10 @@ class MyStoreFragment :
     }
 
     private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
-        addStatsGranularityTabs()
         binding.myStoreStats.showErrorView(false)
         showChartSkeleton(false)
+
+        tabLayout.isVisible = AppPrefs.isV4StatsSupported()
 
         binding.myStoreStats.updateView(revenueStatsModel)
 
@@ -593,7 +589,6 @@ class MyStoreFragment :
     private fun updateStatsAvailabilityError() {
         binding.myStoreRefreshLayout.visibility = View.GONE
         WooAnimUtils.fadeIn(binding.statsErrorScrollView)
-        removeTabLayoutFromAppBar()
         showChartSkeleton(false)
     }
 
@@ -724,26 +719,10 @@ class MyStoreFragment :
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
         }
-        tabLayout.visibility = dashboardVisibility
+        tabLayout.isVisible = !show && AppPrefs.isV4StatsSupported()
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show
-    }
-
-    private fun addStatsGranularityTabs() {
-        val indexOfMyStoreStatsView = binding.myStoreStatsContainer.indexOfChild(binding.myStoreStats)
-        binding.myStoreStatsContainer
-            .takeIf { !it.children.contains(tabLayout) }
-            ?.takeIf { AppPrefs.isV4StatsSupported() }
-            ?.addView(
-                tabLayout,
-                indexOfMyStoreStatsView,
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            )
-    }
-
-    private fun removeTabLayoutFromAppBar() {
-        binding.myStoreStatsContainer.removeView(tabLayout)
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0

@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-26 16:54:04+0000
+Translation-Revision-Date: 2024-03-06 11:54:13+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="blaze_campaign_creation_location_search_no_results_message">Aucun lieu trouvé.\nVeuillez réessayer.</string>
+    <string name="order_detail_attribution_session_page_views">Pages vues par session</string>
+    <string name="order_detail_attribution_device_type">Type d’appareil</string>
+    <string name="order_detail_attribution_campaign">Moyen</string>
+    <string name="order_detail_attribution_medium">Moyen</string>
+    <string name="order_detail_attribution_source">Source</string>
+    <string name="order_detail_attribution_source_type">Type de source</string>
+    <string name="order_detail_attribution_unknown_origin">Inconnue</string>
+    <string name="order_detail_attribution_mobile_origin">Application mobile</string>
+    <string name="order_detail_attribution_admin_origin">Administrateur Web</string>
+    <string name="order_detail_attribution_direct_origin">Recherche directe</string>
+    <string name="order_detail_attribution_utm_origin">Source : %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Parrainage : %1$s</string>
+    <string name="order_detail_attribution_organic_origin">Organique : %1$s</string>
+    <string name="order_detail_attribution_origin">Origine</string>
+    <string name="order_detail_attribution_header">Attribution de commande</string>
+    <string name="orderdetail_message_customer_using_telegram">Contacter via Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Contacter via WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID : %d</string>
+    <string name="orderfilters_customer_filter">Client</string>
+    <string name="orderfilters_product_filter">Produit</string>
+    <string name="customer_picker_guest">Invité</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">Cet utilisateur est un invité et les invités ne peuvent pas être utilisés pour filtrer les commandes.</string>
+    <string name="orderlist_timeout_error_message">Réessayez plus tard ou contactez-nous et nous vous aiderons avec plaisir</string>
+    <string name="orderlist_timeout_error_title">Votre site met du temps à répondre</string>
+    <string name="show_details">Afficher les détails</string>
     <string name="order_creation_payment_shipping_tax_label">Frais d’expédition</string>
     <string name="customize_analytics">Personnaliser les statistiques</string>
     <string name="blaze_campaign_creation_error">Quelque chose ne va pas.\nNous n’avons pas réussi à créer votre campagne.</string>
@@ -46,7 +72,7 @@ Language: fr
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">Paramètres d’URL</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">URL de destination</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Saisir manuellement</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Aucun lieu trouvé.\nVeuillez réessayer.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Échec de la recherche.\nVeuillez réessayer</string>
     <string name="blaze_campaign_creation_location_search_message">Saisir les premières lettres du pays, de l’État / la région ou de la ville pour voir les options disponibles</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">En cliquant sur « Soumettre la campagne », vous acceptez les &lt;a href=\'termsOfService\'&gt;&lt;u&gt;conditions d’utilisation&lt;/u&gt;&lt;/a&gt; et la &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;politique en matière de publicité&lt;/u&gt;&lt;/a&gt;. Vous autorisez également que le budget et la durée que vous choisissez soient facturés à l’aide de votre mode de paiement. &lt;a href=\'learnMore\'&gt;&lt;u&gt;En savoir plus&lt;/u&gt;&lt;/a&gt; sur le fonctionnement des budgets et des paiements pour les articles promus.</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Envoyer la campagne</string>

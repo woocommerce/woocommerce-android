@@ -39,6 +39,7 @@ class AccountMismatchErrorFragment : BaseFragment(), Listener {
     }
 
     private val viewModel: AccountMismatchErrorViewModel by viewModels()
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 

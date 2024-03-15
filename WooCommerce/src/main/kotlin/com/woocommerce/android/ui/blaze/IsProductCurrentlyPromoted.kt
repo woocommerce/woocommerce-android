@@ -13,7 +13,6 @@ class IsProductCurrentlyPromoted @Inject constructor(
 ) {
     suspend operator fun invoke(productId: String): Boolean {
         return blazeStore.getBlazeCampaigns(selectedSite.get())
-            .campaigns
             .filter {
                 CampaignStatusUi.fromString(it.uiStatus) == InModeration ||
                     CampaignStatusUi.fromString(it.uiStatus) == Scheduled ||

@@ -176,7 +176,9 @@ class NotificationMessageHandler @Inject constructor(
                         R.string.more_notifications,
                         notesMap.size - MAX_INBOX_ITEMS
                     )
-                } else null
+                } else {
+                    null
+                }
                 buildAndDisplayWooGroupNotification(
                     inboxMessage = message,
                     subject = subject,

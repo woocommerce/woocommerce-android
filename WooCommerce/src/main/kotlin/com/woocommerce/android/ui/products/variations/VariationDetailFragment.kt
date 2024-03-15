@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.dialog.WooDialogFragment
 import com.woocommerce.android.ui.dialog.WooDialogFragment.DialogInteractionListener
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -70,8 +71,11 @@ class VariationDetailFragment :
         const val KEY_VARIATION_DETAILS_RESULT = "key_variation_details_result"
     }
 
+    override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     lateinit var navigator: VariationNavigator
 

@@ -13,69 +13,67 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.isDisplaySmallerThan720
+import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.windowSizeClass
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
-class TabletLayoutSetupHelper @Inject constructor(
-    private val context: Context,
-    private val isTabletLogicNeeded: IsTabletLogicNeeded,
-) : DefaultLifecycleObserver {
+class TabletLayoutSetupHelper @Inject constructor(private val context: Context) :
+    DefaultLifecycleObserver {
     private var screen: Screen? = null
     private var navHostFragment: NavHostFragment? = null
 
     fun onRootFragmentCreated(screen: Screen) {
-        if (FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()) {
-            this@TabletLayoutSetupHelper.screen = screen
-            initNavFragment(screen)
+        this.screen = screen
+        initNavFragment(screen)
 
-            screen.listFragment.parentFragmentManager.registerFragmentLifecycleCallbacks(
-                object : FragmentManager.FragmentLifecycleCallbacks() {
-                    override fun onFragmentViewCreated(
-                        fm: FragmentManager,
-                        f: Fragment,
-                        v: View,
-                        savedInstanceState: Bundle?
-                    ) {
-                        if (f == screen.listFragment) {
-                            adjustUIForScreenSize(screen)
-                        }
+        screen.listFragment.parentFragmentManager.registerFragmentLifecycleCallbacks(
+            object : FragmentManager.FragmentLifecycleCallbacks() {
+                override fun onFragmentViewCreated(
+                    fm: FragmentManager,
+                    f: Fragment,
+                    v: View,
+                    savedInstanceState: Bundle?
+                ) {
+                    if (f == screen.listFragment) {
+                        adjustUIForScreenSize(screen)
                     }
+                }
 
-                    override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
-                        if (f == screen.listFragment) {
-                            this@TabletLayoutSetupHelper.screen = null
-                            navHostFragment = null
-                        }
+                override fun onFragmentDestroyed(fm: FragmentManager, f: Fragment) {
+                    if (f == screen.listFragment) {
+                        this@TabletLayoutSetupHelper.screen = null
+                        navHostFragment = null
                     }
-                },
-                false
-            )
+                }
+            },
+            false
+        )
 
-            screen.listFragment.childFragmentManager.registerFragmentLifecycleCallbacks(
-                object : FragmentManager.FragmentLifecycleCallbacks() {
-                    override fun onFragmentViewCreated(
-                        fm: FragmentManager,
-                        f: Fragment,
-                        v: View,
-                        savedInstanceState: Bundle?
-                    ) {
-                        if (f != navHostFragment) {
-                            setDetailsMargins(v)
-                        }
+        screen.listFragment.childFragmentManager.registerFragmentLifecycleCallbacks(
+            object : FragmentManager.FragmentLifecycleCallbacks() {
+                override fun onFragmentViewCreated(
+                    fm: FragmentManager,
+                    f: Fragment,
+                    v: View,
+                    savedInstanceState: Bundle?
+                ) {
+                    if (f != navHostFragment && f !is BottomSheetDialogFragment) {
+                        setDetailsMargins(v)
                     }
-                },
-                true
-            )
-        }
+                }
+            },
+            true
+        )
     }
 
     fun openItemDetails(
         tabletNavigateTo: () -> Pair<Int, Bundle>,
         navigateWithPhoneNavigation: () -> Unit
     ) {
-        if (isTabletLogicNeeded()) {
+        if (context.windowSizeClass != WindowSizeClass.Compact) {
             val navOptions =
                 NavOptions.Builder()
                     .setPopUpTo(navHostFragment!!.navController.graph.startDestinationId, true)
@@ -95,29 +93,27 @@ class TabletLayoutSetupHelper @Inject constructor(
 
     @Suppress("NestedBlockDepth")
     private fun setDetailsMargins(rootView: View) {
-        if (isTabletLogicNeeded()) {
-            if (rootView !is ViewGroup) return
+        if (rootView !is ViewGroup) return
 
-            val isSmallTablet = context.isDisplaySmallerThan720
-            val isPortrait = !DisplayUtils.isLandscape(context)
-            val windowWidth = DisplayUtils.getWindowPixelWidth(context)
-            rootView.children.filter { it !is Toolbar }.forEach { viewToApplyMargins ->
-                val layoutParams = viewToApplyMargins.layoutParams
-                if (layoutParams is MarginLayoutParams) {
-                    if (isSmallTablet && isPortrait) {
-                        val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
-                        layoutParams.setMargins(
-                            marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
-                        )
-                    } else {
-                        val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
-                        layoutParams.setMargins(
-                            marginHorizontal, layoutParams.topMargin, marginHorizontal, layoutParams.bottomMargin
-                        )
-                    }
+        val marginPart = when (context.windowSizeClass) {
+            WindowSizeClass.Compact -> return
+            WindowSizeClass.ExpandedAndBigger -> MARGINS_FOR_TABLET
+            WindowSizeClass.Medium -> MARGINS_FOR_SMALL_TABLET_PORTRAIT
+        }
 
-                    viewToApplyMargins.layoutParams = layoutParams
-                }
+        val windowWidth = DisplayUtils.getWindowPixelWidth(context)
+        rootView.children.filter { it !is Toolbar }.forEach { viewToApplyMargins ->
+            val layoutParams = viewToApplyMargins.layoutParams
+            if (layoutParams is MarginLayoutParams) {
+                val marginHorizontal = (windowWidth * marginPart).toInt()
+                layoutParams.setMargins(
+                    marginHorizontal,
+                    layoutParams.topMargin,
+                    marginHorizontal,
+                    layoutParams.bottomMargin
+
+                )
+                viewToApplyMargins.layoutParams = layoutParams
             }
         }
     }
@@ -142,7 +138,7 @@ class TabletLayoutSetupHelper @Inject constructor(
     }
 
     private fun adjustUIForScreenSize(screen: Screen) {
-        if (isTabletLogicNeeded()) {
+        if (context.windowSizeClass != WindowSizeClass.Compact) {
             adjustLayoutForTablet(screen)
         } else {
             adjustLayoutForNonTablet(screen)
@@ -150,13 +146,14 @@ class TabletLayoutSetupHelper @Inject constructor(
     }
 
     private fun adjustLayoutForTablet(screen: Screen) {
-        val isSmallTablet = context.isDisplaySmallerThan720
-        val isPortrait = !DisplayUtils.isLandscape(context)
-
-        if (isSmallTablet && isPortrait) {
-            screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
-        } else {
-            screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+        when (context.windowSizeClass) {
+            WindowSizeClass.Compact -> return
+            WindowSizeClass.Medium -> {
+                screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
+            }
+            WindowSizeClass.ExpandedAndBigger -> {
+                screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
+            }
         }
         screen.listPaneContainer.visibility = View.VISIBLE
         screen.detailPaneContainer.visibility = View.VISIBLE
@@ -206,8 +203,4 @@ class TabletLayoutSetupHelper @Inject constructor(
             val detailsInitialBundle: Bundle?
         )
     }
-}
-
-class IsTabletLogicNeeded @Inject constructor(private val isTablet: IsTablet) {
-    operator fun invoke() = isTablet() && FeatureFlag.BETTER_TABLETS_SUPPORT_PRODUCTS.isEnabled()
 }

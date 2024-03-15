@@ -8,6 +8,8 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
@@ -74,8 +76,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_C
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_FLOW_EDITING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_CARD
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Address.Companion.EMPTY
@@ -147,11 +151,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -277,6 +281,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
                 onMainButtonClicked = { onTotalsSectionPrimaryButtonClicked() },
+                onRecalculateButtonClicked = { onTotalsSectionRecalculateButtonClicked() },
                 onExpandCollapseClicked = { onExpandCollapseTotalsClicked() },
                 onHeightChanged = { onTotalsSectionHeightChanged(it) }
             )
@@ -290,6 +295,24 @@ class OrderCreateEditViewModel @Inject constructor(
                 .sortedBy { creationProduct -> creationProduct.item.productId }
         }
         .asLiveData()
+
+    val selectedItems: StateFlow<List<SelectedItem>> =
+        _orderDraft.map { order -> order.selectedItems() }.toStateFlow(emptyList())
+
+    fun Order.selectedItems(): List<SelectedItem> = items.map { item ->
+        if (item.isVariation) {
+            SelectedItem.ProductVariation(item.productId, item.variationId)
+        } else {
+            Product(item.productId)
+        }
+    }
+
+    private val _pendingSelectedItems: MutableStateFlow<List<SelectedItem>> = savedState.getStateFlow(
+        viewModelScope,
+        initialValue = emptyList(),
+        key = "key_pending_selected_items"
+    )
+    val pendingSelectedItems: StateFlow<List<SelectedItem>> = _pendingSelectedItems
 
     val customAmounts: LiveData<List<CustomAmountUIModel>> = _orderDraft
         .map { order -> order.feesLines }
@@ -397,10 +420,15 @@ class OrderCreateEditViewModel @Inject constructor(
                         updateAddGiftCardButtonVisibility(order)
                         handleCouponEditResult()
                         updateTaxRateSelectorButtonState()
+                        _pendingSelectedItems.value = _orderDraft.value.selectedItems()
                     }
                 }
             }
         }
+    }
+
+    fun onDeviceConfigurationChanged(deviceType: WindowSizeClass) {
+        viewState = viewState.copy(windowSizeClass = deviceType)
     }
 
     fun selectCustomAmount(customAmount: CustomAmountUIModel) {
@@ -1199,6 +1227,17 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onItemsSelectionChanged(selectedItems: List<SelectedItem>) {
+        viewState =
+            viewState.copy(isRecalculateNeeded = _orderDraft.value.selectedItems() != selectedItems)
+        _pendingSelectedItems.value = selectedItems
+    }
+
+    private fun onTotalsSectionRecalculateButtonClicked() {
+        triggerEvent(OnSelectedProductsSyncRequested)
+        viewState = viewState.copy(isRecalculateNeeded = false)
+    }
+
     private fun trackOrderCreationSuccess() {
         tracker.track(
             ORDER_CREATION_SUCCESS,
@@ -1217,7 +1256,7 @@ class OrderCreateEditViewModel @Inject constructor(
         launch {
             viewState = viewState.copy(isProgressDialogShown = true)
             val giftCard = _selectedGiftCard.value
-            orderCreateEditRepository.placeOrder(order, giftCard).fold(
+            orderCreateEditRepository.createOrUpdateOrder(order, giftCard).fold(
                 onSuccess = {
                     trackOrderCreationSuccess()
                     onSuccess(it)
@@ -1288,7 +1327,11 @@ class OrderCreateEditViewModel @Inject constructor(
                                 _orderDraft.update { currentDraft -> currentDraft.copy(couponLines = emptyList()) }
                                 triggerEvent(OnCouponRejectedByBackend)
                             } else {
-                                viewState = viewState.copy(isUpdatingOrderDraft = false, showOrderUpdateSnackbar = true)
+                                viewState = viewState.copy(
+                                    isUpdatingOrderDraft = false,
+                                    showOrderUpdateSnackbar = true,
+                                    isRecalculateNeeded = viewState.windowSizeClass != WindowSizeClass.Compact
+                                )
                             }
                             trackOrderSyncFailed(updateStatus.throwable)
                         }
@@ -1739,7 +1782,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val productTypes = if (!ids.isNullOrEmpty()) orderDetailRepository.getUniqueProductTypes(ids) else null
         val productCount = products.value?.count() ?: 0
         return buildMap {
-            put(KEY_HORIZONTAL_SIZE_CLASS, deviceTypeToAnalyticsString(isTablet))
+            put(KEY_HORIZONTAL_SIZE_CLASS, IsScreenLargerThanCompactValue(isTablet).deviceTypeToAnalyticsString)
             put(KEY_STATUS, _orderDraft.value.status)
             putIfNotNull(PRODUCT_TYPES to productTypes)
             put(KEY_PRODUCT_COUNT, productCount)
@@ -1750,13 +1793,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 put(KEY_CUSTOM_AMOUNTS_COUNT, _orderDraft.value.feesLines.size)
             }
         }
-    }
-
-    private fun deviceTypeToAnalyticsString(isTablet: Boolean): String {
-        if (isTablet) {
-            return AnalyticsTracker.VALUE_DEVICE_TYPE_REGULAR
-        }
-        return AnalyticsTracker.VALUE_DEVICE_TYPE_COMPACT
     }
 
     private fun trackGiftCardCTAAvailable() {
@@ -1801,6 +1837,8 @@ class OrderCreateEditViewModel @Inject constructor(
         val taxRateSelectorButtonState: TaxRateSelectorButtonState = TaxRateSelectorButtonState(),
         val productsSectionState: ProductsSectionState = ProductsSectionState(),
         val customAmountSectionState: CustomAmountSectionState = CustomAmountSectionState(),
+        val windowSizeClass: WindowSizeClass = WindowSizeClass.Compact,
+        val isRecalculateNeeded: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
@@ -1876,6 +1914,8 @@ data class OnTotalsSectionHeightChanged(
 data class OnCustomAmountTypeSelected(
     val type: CustomAmountType
 ) : Event()
+
+object OnSelectedProductsSyncRequested : Event()
 
 @Parcelize
 data class CustomAmountUIModel(

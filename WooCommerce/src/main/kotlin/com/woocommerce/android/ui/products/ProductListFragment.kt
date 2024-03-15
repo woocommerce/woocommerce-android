@@ -12,6 +12,7 @@ import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
@@ -28,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -41,14 +43,18 @@ import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenEmptyProduct
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenProduct
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.ui.products.UpdateProductStockStatusFragment.Companion.UPDATE_STOCK_STATUS_EXIT_STATE_KEY
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusExitState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.TabletLayoutSetupHelper
@@ -89,6 +95,8 @@ class ProductListFragment :
 
     @Inject
     lateinit var productListToolbar: ProductListToolbarHelper
+
+    private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
 
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
@@ -210,7 +218,8 @@ class ProductListFragment :
                     val selectionCount = tracker?.selection?.size() ?: 0
                     productListViewModel.onSelectionChanged(selectionCount)
                 }
-            })
+            }
+        )
     }
 
     private fun enableProductsRefresh(enable: Boolean) {
@@ -269,7 +278,7 @@ class ProductListFragment :
         binding.productsRefreshLayout.isRefreshing = isRefreshing
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun setupObservers(viewModel: ProductListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
@@ -364,9 +373,44 @@ class ProductListFragment :
                         }
                     )
                 }
+                is OpenEmptyProduct -> {
+                    tabletLayoutSetupHelper.openItemDetails(
+                        tabletNavigateTo = {
+                            R.id.nav_graph_products to ProductDetailFragmentArgs(
+                                mode = ProductDetailFragment.Mode.Empty,
+                                isTrashEnabled = true,
+                            ).toBundle()
+                        },
+                        navigateWithPhoneNavigation = {
+                            error("Should not be invoked on a phone")
+                        }
+                    )
+                }
+
+                is ShowProductUpdateStockStatusScreen -> {
+                    showProductUpdateStockStatusScreen(event.productsIds)
+                }
                 else -> event.isHandled = false
             }
         }
+
+        productsCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductTrashed -> {
+                    trashProduct(event.productId)
+                }
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated -> {
+                    productListViewModel.reloadProductsFromDb()
+                }
+            }
+        }
+    }
+
+    private fun showProductUpdateStockStatusScreen(productRemoteIdsToUpdate: List<Long>) {
+        val action = ProductListFragmentDirections.actionProductListFragmentToUpdateProductStockStatusFragment(
+            productRemoteIdsToUpdate.toLongArray()
+        )
+        findNavController().navigateSafely(action)
     }
 
     private fun handleUpdateDialogs(event: ShowUpdateDialog) {
@@ -444,14 +488,6 @@ class ProductListFragment :
     }
 
     private fun setupResultHandlers() {
-        handleResult<Bundle>(ProductDetailFragment.KEY_PRODUCT_DETAIL_RESULT) { bundle ->
-            if (bundle.getBoolean(ProductDetailFragment.KEY_PRODUCT_DETAIL_DID_TRASH)) {
-                // User chose to trash from product detail, but we do the actual trashing here
-                // so we can show a snackbar enabling the user to undo the trashing.
-                val remoteProductId = bundle.getLong(ProductDetailFragment.KEY_REMOTE_PRODUCT_ID)
-                trashProduct(remoteProductId)
-            }
-        }
         handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
             productListViewModel.onFiltersChanged(
                 stockStatus = result.stockStatus,
@@ -460,6 +496,19 @@ class ProductListFragment :
                 productCategory = result.productCategory,
                 productCategoryName = result.productCategoryName
             )
+        }
+
+        handleDialogResult<UpdateStockStatusExitState>(UPDATE_STOCK_STATUS_EXIT_STATE_KEY, R.id.products) { result ->
+            when (result) {
+                UpdateStockStatusExitState.Success -> {
+                    productListViewModel.onRefreshRequested()
+                    productListViewModel.exitSelectionMode()
+                }
+
+                UpdateStockStatusExitState.Error, UpdateStockStatusExitState.NoChange -> {
+                    productListViewModel.exitSelectionMode()
+                }
+            }
         }
     }
 
@@ -476,7 +525,6 @@ class ProductListFragment :
 
         val callback = object : Snackbar.Callback() {
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                super.onDismissed(transientBottomBar, event)
                 pendingTrashProductId = null
                 if (trashProductCancelled) {
                     productListViewModel.reloadProductsFromDb()
@@ -582,8 +630,11 @@ class ProductListFragment :
     private fun shouldPreventDetailNavigation(remoteProductId: Long): Boolean {
         if (productListViewModel.isSelecting()) {
             tracker?.let { selectionTracker ->
-                if (selectionTracker.isSelected(remoteProductId)) selectionTracker.deselect(remoteProductId)
-                else selectionTracker.select(remoteProductId)
+                if (selectionTracker.isSelected(remoteProductId)) {
+                    selectionTracker.deselect(remoteProductId)
+                } else {
+                    selectionTracker.select(remoteProductId)
+                }
             }
             return true
         }
@@ -708,6 +759,11 @@ class ProductListFragment :
 
             R.id.menu_select_all -> {
                 productListViewModel.onSelectAllProductsClicked()
+                true
+            }
+
+            R.id.menu_update_stock_status -> {
+                productListViewModel.onBulkUpdateStockStatusClicked(tracker?.selection?.toList().orEmpty())
                 true
             }
 

@@ -9,6 +9,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
@@ -220,6 +221,8 @@ class AnalyticsTracker private constructor(
         const val KEY_CATEGORY = "category"
         const val KEY_START_PAYMENT_FLOW = "start_payment_flow"
         const val KEY_HORIZONTAL_SIZE_CLASS = "horizontal_size_class"
+        const val KEY_SUCCESS = "success"
+        const val KEY_TIME_TAKEN = "time_taken"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_DEVICE_TYPE_REGULAR = "regular"
@@ -362,6 +365,11 @@ class AnalyticsTracker private constructor(
 
         // -- Downloadable Files
         const val KEY_DOWNLOADABLE_FILE_ACTION = "action"
+
+        // -- Connectivity Tool
+        const val VALUE_INTERNET = "internet"
+        const val VALUE_SITE = "site"
+        const val VALUE_JETPACK_TUNNEL = "jetpack_tunnel"
 
         enum class DownloadableFileAction(val value: String) {
             ADDED("added"),
@@ -548,16 +556,8 @@ class AnalyticsTracker private constructor(
         const val KEY_PROPERTY = "property"
         const val VALUE_PRICE = "price"
         const val VALUE_STATUS = "status"
+        const val VALUE_STOCK_STATUS = "stock_status"
         const val KEY_SELECTED_PRODUCTS_COUNT = "selected_products_count"
-
-        // -- IPP feedback banner
-        const val KEY_IPP_BANNER_CAMPAIGN_NAME = "campaign"
-        const val KEY_IPP_BANNER_SOURCE = "source"
-        const val KEY_IPP_BANNER_REMIND_LATER = "remind_later"
-        const val VALUE_IPP_BANNER_SOURCE_ORDER_LIST = "order_list"
-        const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NEWBIE = "ipp_not_user"
-        const val VALUE_IPP_BANNER_CAMPAIGN_NAME_BEGINNER = "ipp_new_user"
-        const val VALUE_IPP_BANNER_CAMPAIGN_NAME_NINJA = "ipp_power_user"
 
         // -- IPP Learn More Link
         const val IPP_LEARN_MORE_SOURCE = "source"
@@ -682,6 +682,9 @@ class AnalyticsTracker private constructor(
         }
 
         fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {
+            if (instance == null && BuildConfig.DEBUG && !PackageUtils.isTesting()) {
+                error("event $stat was tracked before AnalyticsTracker was initialized.")
+            }
             if (sendUsageStats) {
                 instance?.track(stat, properties)
             }
