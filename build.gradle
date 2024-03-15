@@ -212,5 +212,9 @@ tasks.register("configureApply") {
     }
 }
 
+tasks.withType(io.gitlab.arturbosch.detekt.Detekt).configureEach {
+    exclude("vendor/**")
+}
+
 apply from: './config/gradle/jacoco.gradle'
 apply from: './config/gradle/gradle_build_scan.gradle'
