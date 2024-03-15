@@ -83,6 +83,13 @@ class ProductListToolbarHelper @Inject constructor(
         }
 
         setupToolbar(binding.toolbar)
+
+        fragment.viewLifecycleOwner.lifecycle.addObserver(object : DefaultLifecycleObserver {
+            override fun onStart(owner: LifecycleOwner) {
+                // This ensures refreshOptionsMenu is called when the fragment's view is fully started and attached
+                refreshOptionsMenu()
+            }
+        })
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
@@ -159,7 +166,9 @@ class ProductListToolbarHelper @Inject constructor(
         // We want to refresh the options menu after the toolbar has been inflated
         // Otherwise, logic in it will be executed before the toolbar is in restored state after configuration change
         toolbar.post {
-            refreshOptionsMenu()
+            if (listFragment?.isAdded == true) {
+                refreshOptionsMenu()
+            }
         }
     }
 
