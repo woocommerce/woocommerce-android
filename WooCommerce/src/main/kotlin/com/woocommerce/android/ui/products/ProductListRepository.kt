@@ -11,6 +11,8 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.ProductStockStatusInfo
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusResult
 import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
@@ -280,6 +282,41 @@ class ProductListRepository @Inject constructor(
                 RequestResult.ERROR
             } else {
                 RequestResult.SUCCESS
+            }
+        }
+    suspend fun fetchStockStatuses(productIds: List<Long>): List<ProductStockStatusInfo> =
+        withContext(dispatchers.io) {
+            productStore.getProductsByRemoteIds(selectedSite.get(), productIds).map { wcProductModel ->
+                ProductStockStatusInfo(
+                    productId = wcProductModel.remoteProductId,
+                    stockStatus = ProductStockStatus.fromString(wcProductModel.stockStatus),
+                    manageStock = wcProductModel.manageStock,
+                    isVariable = ProductType.fromString(wcProductModel.type).isVariableProduct()
+                )
+            }
+        }
+
+    suspend fun bulkUpdateStockStatus(productIds: List<Long>, newStatus: ProductStockStatus): UpdateStockStatusResult =
+        withContext(dispatchers.io) {
+            val allProducts = productStore.getProductsByRemoteIds(selectedSite.get(), productIds)
+            val variableProductsCount = allProducts.count { ProductType.fromString(it.type).isVariableProduct() }
+
+            if (variableProductsCount == allProducts.size) {
+                return@withContext UpdateStockStatusResult.IsVariableProducts
+            }
+
+            val productsToUpdate =
+                allProducts.filterNot { it.manageStock || ProductType.fromString(it.type).isVariableProduct() }.map {
+                    it.apply { stockStatus = ProductStockStatus.fromStockStatus(newStatus) }
+                }
+
+            if (productsToUpdate.isEmpty() && allProducts.isNotEmpty()) {
+                return@withContext UpdateStockStatusResult.IsManagedProducts
+            }
+
+            return@withContext when (bulkUpdateProducts(productsToUpdate)) {
+                RequestResult.SUCCESS -> UpdateStockStatusResult.Updated
+                else -> UpdateStockStatusResult.Error
             }
         }
 }

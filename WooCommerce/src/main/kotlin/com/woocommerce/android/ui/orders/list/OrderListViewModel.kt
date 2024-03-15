@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
@@ -70,6 +68,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -85,7 +84,6 @@ private const val EMPTY_VIEW_THROTTLE = 250L
 
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
-@Suppress("LeakingThis")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -170,6 +168,8 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
+    private var activeWCOrderListDescriptor: WCOrderListDescriptor? = null
+
     var isSearching = false
     private var dismissListErrors = false
     var searchQuery = ""
@@ -216,6 +216,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun loadOrders() {
+        activeWCOrderListDescriptor = getWCOrderListDescriptorWithFilters()
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
         viewState = viewState.copy(
             filterCount = getSelectedOrderFiltersCount(),
@@ -231,12 +232,10 @@ class OrderListViewModel @Inject constructor(
     /**
      * Creates and activates a new list with the search and filter params provided. This should only be used
      * by the search component portion of the order list view.
-     *
-     * NOTE: Although technically the "PROCESSING" tab is a filtered list, it should not use this method. The
-     * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
         val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(sanitizeSearchQuery(searchQuery))
+        activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
     }
@@ -423,18 +422,21 @@ class OrderListViewModel @Inject constructor(
                             isSimplePaymentsAndOrderCreationFeedbackVisible = false
                         )
                     }
+
                     TIMEOUT_ERROR -> {
                         when {
                             shouldRetry && noTimeoutHappened -> {
                                 analyticsTracker.track(ORDER_LIST_AUTOMATIC_TIMEOUT_RETRY)
                                 triggerEvent(RetryLoadingOrders)
                             }
+
                             else -> viewState = viewState.copy(
                                 shouldDisplayTroubleshootingBanner = true
                             )
                         }
                         noTimeoutHappened = false
                     }
+
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
             }
@@ -790,6 +792,49 @@ class OrderListViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    fun trashOrder(orderId: Long) {
+        fun updateExcludedOrders(excludedOrderIds: List<Long>?) {
+            val listDescriptor = activeWCOrderListDescriptor?.copy(
+                excludedIds = excludedOrderIds?.takeIf { it.isNotEmpty() }
+            ) ?: return
+            activeWCOrderListDescriptor = listDescriptor
+            val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+            activatePagedListWrapper(pagedListWrapper)
+        }
+
+        fun excludeOrder() = updateExcludedOrders(
+            excludedOrderIds = (activeWCOrderListDescriptor?.excludedIds ?: emptyList()) + orderId
+        )
+
+        fun cancelExcludingOrder() = updateExcludedOrders(activeWCOrderListDescriptor?.excludedIds?.minus(orderId))
+
+        fun handleTrashing() {
+            launch {
+                orderListRepository
+                    .trashOrder(orderId)
+                    .onFailure { triggerEvent(ShowErrorSnack(R.string.orderlist_order_trashed_error)) }
+
+                cancelExcludingOrder()
+            }
+        }
+
+        excludeOrder()
+
+        triggerEvent(
+            Event.ShowUndoSnackbar(
+                message = resourceProvider.getString(R.string.orderlist_order_trashed, orderId),
+                undoAction = { cancelExcludingOrder() },
+                dismissAction = object : Snackbar.Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        if (event != DISMISS_EVENT_ACTION) {
+                            handleTrashing()
+                        }
+                    }
+                }
+            )
+        )
     }
 
     sealed class OrderListEvent : Event() {
