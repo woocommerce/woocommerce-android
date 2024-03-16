@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
@@ -85,15 +86,19 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -101,6 +106,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -114,6 +120,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 @Suppress("EmptyFunctionBlock")
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -214,6 +221,8 @@ class ProductDetailViewModel @Inject constructor(
     val productDetailCards: LiveData<List<ProductPropertyCard>> = _productDetailCards
 
     private var hasTrackedProductDetailLoaded = false
+
+    private val productCategorySearchQuery = savedState.getNullableStateFlow(this, null, clazz = String::class.java)
 
     private val cardBuilder by lazy {
         ProductDetailCardBuilder(
@@ -356,6 +365,8 @@ class ProductDetailViewModel @Inject constructor(
                 uris = navArgs.images!!.asList()
             )
         }
+
+        observeProductCategorySearchQuery()
     }
 
     private fun initializeViewState() {
@@ -2484,6 +2495,35 @@ class ProductDetailViewModel @Inject constructor(
         return storedProduct.value?.subscription?.length != viewState.productDraft?.subscription?.length
     }
 
+    fun onProductCategorySearchQueryChanged(query: String) {
+        productCategorySearchQuery.value = query
+    }
+    fun onProductCategorySearchStateChanged(open: Boolean) {
+        productCategorySearchQuery.value = if (open) {
+            productCategorySearchQuery.value.orEmpty()
+        } else {
+            null
+        }
+    }
+
+    private fun observeProductCategorySearchQuery() {
+        viewModelScope.launch {
+            productCategorySearchQuery
+                .withIndex()
+                .filterNot {
+                    // Skip initial value to avoid double fetching categories
+                    it.index == 0 && it.value == null
+                }
+                .map { it.value }
+                .debounce {
+                    if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+                }
+                .collectLatest {
+                    productCategoriesRepository.searchCategories(it)
+                }
+        }
+    }
+
     /**
      * Sealed class that handles the back navigation for the product detail screens while providing a common
      * interface for managing them as a single type. Currently used in all the product sub detail screens when
@@ -2584,10 +2624,14 @@ class ProductDetailViewModel @Inject constructor(
         val isLoadingMore: Boolean? = null,
         val canLoadMore: Boolean? = null,
         val isRefreshing: Boolean? = null,
-        val isEmptyViewVisible: Boolean? = null
+        val isEmptyViewVisible: Boolean? = null,
+        val searchQuery: String? = null
     ) : Parcelable {
         val isAddCategoryButtonVisible: Boolean
             get() = isSkeletonShown == false
+
+        val isSearchOpen: Boolean
+            get() = searchQuery != null
     }
 
     @Parcelize

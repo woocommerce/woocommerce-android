@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.categories
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.SearchView.OnQueryTextListener
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.navigation.fragment.findNavController
@@ -76,8 +77,56 @@ class ProductCategoriesFragment :
                 searchMenuItem = toolbar.menu.findItem(R.id.menu_search)
                 searchView = searchMenuItem.actionView as SearchView
                 searchView.queryHint = getString(R.string.product_category_selector_search_hint)
+
+                initSearchView()
             }
         )
+    }
+
+    private fun initSearchView() {
+
+        viewModel.productCategoriesViewStateData.liveData.value?.let {
+            if (it.isSearchOpen) {
+                searchMenuItem.expandActionView()
+                searchView.setQuery(it.searchQuery, false)
+            } else {
+                searchMenuItem.collapseActionView()
+            }
+        }
+
+        val textQueryListener = object : OnQueryTextListener, SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (isAdded) {
+                    viewModel.onProductCategorySearchQueryChanged(query.orEmpty())
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (isAdded) {
+                    viewModel.onProductCategorySearchQueryChanged(newText.orEmpty())
+                }
+                return true
+            }
+        }
+
+        searchMenuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+            override fun onMenuItemActionExpand(item: MenuItem): Boolean {
+                if (isAdded) {
+                    viewModel.onProductCategorySearchStateChanged(open = true)
+                    searchView.setOnQueryTextListener(textQueryListener)
+                }
+                return true
+            }
+
+            override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
+                if (isAdded) {
+                    searchView.setOnQueryTextListener(null)
+                    viewModel.onProductCategorySearchStateChanged(open = false)
+                }
+                return true
+            }
+        })
     }
 
     @Suppress("DEPRECATION")
