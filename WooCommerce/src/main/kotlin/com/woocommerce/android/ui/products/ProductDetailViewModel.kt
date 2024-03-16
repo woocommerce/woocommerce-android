@@ -26,6 +26,7 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isEmpty
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.removeItem
@@ -2511,15 +2512,26 @@ class ProductDetailViewModel @Inject constructor(
             productCategorySearchQuery
                 .withIndex()
                 .filterNot {
-                    // Skip initial value to avoid double fetching categories
-                    it.index == 0 && it.value == null
+                    // Skip the first time customer focuses the Search View
+                    it.index == 1 && it.value == ""
                 }
                 .map { it.value }
                 .debounce {
                     if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
                 .collectLatest {
-                    productCategoriesRepository.searchCategories(it)
+                    val oldValue = _productCategories.value
+                    productCategoriesViewState = productCategoriesViewState.copy(
+                        isRefreshing = true
+                    )
+                    _productCategories.value = productCategoriesRepository.searchCategories(it)
+                        .getOrElse {
+                            triggerEvent(ShowSnackbar(R.string.error_generic))
+                            oldValue
+                        }
+                    productCategoriesViewState = productCategoriesViewState.copy(
+                        isRefreshing = false
+                    )
                 }
         }
     }
