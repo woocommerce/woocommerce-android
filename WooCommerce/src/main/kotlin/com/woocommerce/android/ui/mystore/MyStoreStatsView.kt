@@ -215,7 +215,6 @@ class MyStoreStatsView @JvmOverloads constructor(
 
             customRangeLabel.isVisible = true
             customRangeLabel.text = selectedTimeRange.currentRangeDescription
-            statsDateValue.text = getStringForGranularity(selectedTimeRange.revenueStatsGranularity)
         } else {
             customRangeLabel.isVisible = false
         }
@@ -304,10 +303,9 @@ class MyStoreStatsView @JvmOverloads constructor(
         visitorsValue.isVisible = true
         binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = false
         fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
-        updateDate(revenueStatsModel, statsTimeRangeSelection.selectionType)
+        updateDate(revenueStatsModel, statsTimeRangeSelection)
         updateColorForStatsHeaderValues(R.color.color_on_surface_high)
         onUserInteractionWithChart()
-        updateCustomDateRange(statsTimeRangeSelection)
     }
 
     private fun onUserInteractionWithChart() {
@@ -334,11 +332,12 @@ class MyStoreStatsView @JvmOverloads constructor(
      */
     private fun updateDate(
         revenueStats: RevenueStatsUiModel?,
-        rangeType: SelectionType
+        statsTimeRangeSelection: StatsTimeRangeSelection
     ) {
         if (revenueStats?.intervalList.isNullOrEmpty()) {
             statsDateValue.visibility = View.GONE
         } else {
+            val rangeType = statsTimeRangeSelection.selectionType
             val startInterval = revenueStats?.intervalList?.first()?.interval
             val startDate = startInterval?.let { getDateValueFromRangeType(it, rangeType) }
 
@@ -349,13 +348,12 @@ class MyStoreStatsView @JvmOverloads constructor(
                     String.format(Locale.getDefault(), "%s – %s", startDate, endDate)
                 }
 
-                else -> {
-                    startDate
-                }
+                CUSTOM -> getStringForGranularity(statsTimeRangeSelection.revenueStatsGranularity)
+
+                else -> startDate
             }
             statsDateValue.visibility = View.VISIBLE
             statsDateValue.text = dateRangeString
-            customRangeLabel.visibility = View.GONE
         }
     }
 
@@ -489,7 +487,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
-        updateDate(revenueStatsModel, statsTimeRangeSelection.selectionType)
+        updateDate(revenueStatsModel, statsTimeRangeSelection)
         this.revenueStatsModel = revenueStatsModel
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
