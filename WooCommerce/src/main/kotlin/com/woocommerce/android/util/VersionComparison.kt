@@ -1,5 +1,6 @@
 package com.woocommerce.android.util
 
+@Suppress("CyclomaticComplexMethod", "LoopWithTooManyJumpStatements", "MagicNumber")
 fun String?.isGreaterThan(v2: String?): Boolean {
     if (this == null || v2 == null) return false
 
