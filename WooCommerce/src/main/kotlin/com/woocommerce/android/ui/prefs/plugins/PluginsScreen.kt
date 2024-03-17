@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin
+import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.AutoManaged
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.Inactive
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.Unknown
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpToDate
@@ -258,7 +259,8 @@ private fun PreviewPlugins() {
                 Plugin("Plugin 1", "Automattic", "1.0", UpToDate("Up-to-date")),
                 Plugin("Plugin 2", null, "2.0", UpdateAvailable("Update available (4.9)")),
                 Plugin("Plugin 3", "Gutenberg", "3.0", Inactive("Inactive")),
-                Plugin("Plugin 4", "Jetpack", "4.0", UpToDate("Auto-managed"))
+                Plugin("Plugin 4", "Jetpack", "4.0", AutoManaged("Auto-managed")),
+                Plugin("Plugin 5", "Blabla", "5.0", Unknown)
             )
         ),
         onRetryTapped = {}
