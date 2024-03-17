@@ -11,7 +11,9 @@ import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
-import com.woocommerce.android.analytics.IsTabletValue
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
 import com.woocommerce.android.model.GiftCardSummary
@@ -98,6 +100,7 @@ class OrderDetailViewModel @Inject constructor(
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -293,7 +296,9 @@ class OrderDetailViewModel @Inject constructor(
         return if (order.items.isNotEmpty()) {
             val remoteProductIds = order.getProductIds()
             orderDetailRepository.hasVirtualProductsOnly(remoteProductIds)
-        } else false
+        } else {
+            false
+        }
     }
 
     fun onEditOrderStatusSelected() {
@@ -357,7 +362,7 @@ class OrderDetailViewModel @Inject constructor(
 
     fun onCollectPaymentClicked(isTablet: Boolean = false) {
         paymentsFlowTracker.trackCollectPaymentTapped(
-            IsTabletValue(isTablet).deviceTypeToAnalyticsString
+            IsScreenLargerThanCompactValue(isTablet).deviceTypeToAnalyticsString
         )
         triggerEvent(
             StartPaymentFlow(
@@ -511,7 +516,8 @@ class OrderDetailViewModel @Inject constructor(
     fun onDeleteShipmentTrackingClicked(trackingNumber: String) {
         if (networkStatus.isConnected()) {
             orderDetailRepository.getOrderShipmentTrackingByTrackingNumber(
-                order.id, trackingNumber
+                order.id,
+                trackingNumber
             )?.let { deletedShipmentTracking ->
                 deletedOrderShipmentTrackingSet.add(trackingNumber)
 
@@ -550,7 +556,8 @@ class OrderDetailViewModel @Inject constructor(
     private fun deleteOrderShipmentTracking(shipmentTracking: OrderShipmentTracking) {
         launch {
             val onOrderChanged = orderDetailRepository.deleteOrderShipmentTracking(
-                navArgs.orderId, shipmentTracking.toDataModel()
+                navArgs.orderId,
+                shipmentTracking.toDataModel()
             )
             if (!onOrderChanged.isError) {
                 tracker.trackOrderTrackingDeleteSucceeded()
@@ -610,6 +617,20 @@ class OrderDetailViewModel @Inject constructor(
                 navArgs.orderId,
                 orderItem.itemId,
                 orderItem.productId
+            )
+        )
+    }
+
+    fun onTrashOrderClicked() {
+        triggerEvent(
+            MultiLiveEvent.Event.ShowDialog(
+                messageId = string.order_detail_trash_order_dialog_message,
+                positiveButtonId = string.order_detail_move_to_trash,
+                positiveBtnAction = { _, _ ->
+                    analyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
+                    triggerEvent(TrashOrder(navArgs.orderId))
+                },
+                negativeButtonId = string.cancel
             )
         )
     }
@@ -880,4 +901,5 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
+    data class TrashOrder(val orderId: Long) : MultiLiveEvent.Event()
 }

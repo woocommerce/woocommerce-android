@@ -4,18 +4,15 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository
-import com.woocommerce.android.ui.mystore.domain.asRangeSelection
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
 class GetWidgetStats @Inject constructor(
@@ -23,12 +20,10 @@ class GetWidgetStats @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val networkStatus: NetworkStatus,
-    private val dateUtils: DateUtils,
-    private val localeProvider: LocaleProvider
+    private val networkStatus: NetworkStatus
 ) {
     suspend operator fun invoke(
-        granularity: StatsGranularity,
+        rangeSelection: StatsTimeRangeSelection,
         siteModel: SiteModel?
     ): WidgetStatsResult {
         return withContext(coroutineDispatchers.io) {
@@ -43,11 +38,6 @@ class GetWidgetStats @Inject constructor(
                 siteModel == null -> WidgetStatsResult.WidgetStatsFailure("No site selected")
                 else -> {
                     val areVisitorStatsSupported = siteModel.connectionType == SiteConnectionType.Jetpack
-
-                    val rangeSelection = granularity.asRangeSelection(
-                        dateUtils = dateUtils,
-                        locale = localeProvider.provideLocale()
-                    )
 
                     // Fetch stats, always force to refresh data.
                     val fetchedStats = statsRepository.fetchStats(

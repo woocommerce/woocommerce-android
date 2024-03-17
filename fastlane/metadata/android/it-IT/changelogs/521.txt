@@ -1,0 +1,2 @@
+17.7:
+Notizie straordinarie per gli utenti dell'app WooCommerce. Abbiamo corretto un bug per mantenere intatte le ricerche dei prodotti dopo le modifiche e ottimizzato l'esperienza visiva dei prodotti sui tablet con layout a due pannelli. Personalizza le tue analisi in modo semplice nell'Analytics Hub. Inoltre, gli ordini effettuati nell'app ora hanno dei tag chiari, che migliorano il tracciamento. Scopri un percorso di acquisto e vendita più fluido e personalizzato. Aggiorna ora la tua app.

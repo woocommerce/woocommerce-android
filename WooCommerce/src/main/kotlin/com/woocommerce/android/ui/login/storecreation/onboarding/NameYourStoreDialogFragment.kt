@@ -63,8 +63,9 @@ class NameYourStoreDialogFragment : DialogFragment() {
                         Column(modifier = Modifier.clip(RoundedCornerShape(35.dp))) {
                             if (state.isLoading) {
                                 LoadingDialog()
-                            } else
+                            } else {
                                 NameYourStoreDialog(state, focusRequester, state.isError)
+                            }
                         }
                     }
                 }

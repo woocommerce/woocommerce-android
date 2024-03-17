@@ -170,11 +170,17 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             val isContentMissing = it.tagLine.isEmpty() || it.description.isEmpty()
             if (isImageMissing || isContentMissing) {
                 dialogState.value = DialogState(
-                    message = if (isImageMissing) R.string.blaze_campaign_preview_missing_image_dialog_text
-                    else R.string.blaze_campaign_preview_missing_content_dialog_text,
+                    message = if (isImageMissing) {
+                        R.string.blaze_campaign_preview_missing_image_dialog_text
+                    } else {
+                        R.string.blaze_campaign_preview_missing_content_dialog_text
+                    },
                     positiveButton = DialogState.DialogButton(
-                        text = if (isImageMissing) R.string.blaze_campaign_preview_missing_image_dialog_positive_button
-                        else R.string.blaze_campaign_preview_missing_content_dialog_positive_button,
+                        text = if (isImageMissing) {
+                            R.string.blaze_campaign_preview_missing_image_dialog_positive_button
+                        } else {
+                            R.string.blaze_campaign_preview_missing_content_dialog_positive_button
+                        },
                         onClick = {
                             dialogState.value = null
                             onEditAdClicked()

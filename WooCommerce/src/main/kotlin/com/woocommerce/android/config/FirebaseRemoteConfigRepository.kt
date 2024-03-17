@@ -24,10 +24,11 @@ class FirebaseRemoteConfigRepository @Inject constructor(
     }
 
     private val minimumFetchIntervalInSeconds =
-        if (PackageUtils.isDebugBuild())
+        if (PackageUtils.isDebugBuild()) {
             DEBUG_INTERVAL // 10 seconds
-        else
+        } else {
             RELEASE_INTERVAL // 12 hours
+        }
 
     private val changesTrigger = MutableSharedFlow<Unit>(replay = 1)
 

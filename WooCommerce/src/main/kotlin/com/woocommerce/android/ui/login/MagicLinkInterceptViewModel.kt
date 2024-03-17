@@ -102,7 +102,9 @@ class MagicLinkInterceptViewModel @Inject constructor(
         val isJetpackConnected = this == MagicLinkSource.WPComAuthentication
         val wpComEmail = if (isJetpackConnected) {
             accountRepository.getUserAccount()?.email
-        } else null
+        } else {
+            null
+        }
 
         return JetpackStatus(
             isJetpackInstalled = isJetpackInstalled,

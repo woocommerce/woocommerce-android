@@ -13,7 +13,8 @@ class WCProductPropertyLinkView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
     private val binding: ProductPropertyLinkViewLayoutBinding = ProductPropertyLinkViewLayoutBinding.inflate(
-        LayoutInflater.from(context), this
+        LayoutInflater.from(context),
+        this
     )
 
     fun show(

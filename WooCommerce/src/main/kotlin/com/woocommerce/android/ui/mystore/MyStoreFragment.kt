@@ -227,8 +227,9 @@ class MyStoreFragment :
 
     private fun setUpBlazeCampaignView() {
         myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) binding.blazeCampaignView.hide()
-            else {
+            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) {
+                binding.blazeCampaignView.hide()
+            } else {
                 binding.blazeCampaignView.apply {
                     setContent {
                         WooThemeWithBackground {

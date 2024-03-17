@@ -15,10 +15,15 @@ import org.wordpress.android.login.LoginEmailFragment
 class WooLoginEmailFragment : LoginEmailFragment() {
     companion object {
         private const val ARG_PREFILLED_EMAIL = "prefilled_email"
-        fun newInstance(prefilledEmail: String? = null): LoginEmailFragment {
+        private const val ARG_SHOW_SITE_CREDENTIALS_FALLBACK = "show_site_credentials_fallback"
+        fun newInstance(
+            prefilledEmail: String? = null,
+            showSiteCredentialsFallback: Boolean = true
+        ): LoginEmailFragment {
             val fragment = WooLoginEmailFragment()
             val args = Bundle()
             args.putString(ARG_PREFILLED_EMAIL, prefilledEmail)
+            args.putBoolean(ARG_SHOW_SITE_CREDENTIALS_FALLBACK, showSiteCredentialsFallback)
             fragment.arguments = args
             return fragment
         }
@@ -26,6 +31,7 @@ class WooLoginEmailFragment : LoginEmailFragment() {
 
     interface Listener {
         fun onWhatIsWordPressLinkClicked()
+        fun onLoginWithSiteCredentialsFallbackClicked()
     }
 
     private lateinit var wooLoginEmailListener: Listener
@@ -38,6 +44,16 @@ class WooLoginEmailFragment : LoginEmailFragment() {
         val whatIsWordPressText = rootView.findViewById<Button>(R.id.login_what_is_wordpress)
         whatIsWordPressText.setOnClickListener {
             wooLoginEmailListener.onWhatIsWordPressLinkClicked()
+        }
+        val showSiteCredentialsFallback = requireArguments().getBoolean(ARG_SHOW_SITE_CREDENTIALS_FALLBACK, false)
+        val loginWithSiteCredentials = rootView.findViewById<Button>(R.id.login_with_site_credentials)
+        if (showSiteCredentialsFallback) {
+            loginWithSiteCredentials.setOnClickListener {
+                wooLoginEmailListener.onLoginWithSiteCredentialsFallbackClicked()
+            }
+            loginWithSiteCredentials.visibility = View.VISIBLE
+        } else {
+            loginWithSiteCredentials.visibility = View.GONE
         }
     }
 

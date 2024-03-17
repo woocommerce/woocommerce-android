@@ -182,7 +182,9 @@ class PlansViewModel @Inject constructor(
                     currencyCode = iapPlanDataResult.productInfo.currency
                 )
             )
-        } else plan
+        } else {
+            plan
+        }
     }
 
     private fun showCheckoutWebsite() {
@@ -200,7 +202,9 @@ class PlansViewModel @Inject constructor(
         val errorType = error.errorType
         val reason = if (errorType is IAPError.RemoteCommunication.Server) {
             errorType.reason
-        } else ""
+        } else {
+            ""
+        }
         analyticsTrackerWrapper.track(
             AnalyticsEvent.SITE_CREATION_IAP_PURCHASE_ERROR,
             mapOf(

@@ -86,7 +86,9 @@ object ActivityUtils {
 
     fun previewPDFFile(activity: Activity, file: File) {
         val pdfUri = FileProvider.getUriForFile(
-            activity, "${activity.packageName}.provider", file
+            activity,
+            "${activity.packageName}.provider",
+            file
         )
 
         val sendIntent = Intent(Intent.ACTION_VIEW)
@@ -169,5 +171,8 @@ object ActivityUtils {
 @Suppress("MagicNumber")
 inline fun <reified T : Parcelable> Intent.parcelable(key: String): T? = when {
     SDK_INT >= 33 -> getParcelableExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableExtra(key) as? T
+    else ->
+        @Suppress("DEPRECATION")
+        getParcelableExtra(key)
+            as? T
 }

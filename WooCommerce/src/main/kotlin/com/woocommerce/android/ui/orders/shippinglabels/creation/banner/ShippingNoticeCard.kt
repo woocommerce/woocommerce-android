@@ -18,7 +18,9 @@ class ShippingNoticeCard @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : MaterialCardView(context, attrs, defStyleAttr) {
     private val binding = ShippingNoticeBannerBinding.inflate(
-        LayoutInflater.from(context), this, true
+        LayoutInflater.from(context),
+        this,
+        true
     )
 
     var onDismissClicked: () -> Unit = {}

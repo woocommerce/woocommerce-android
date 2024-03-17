@@ -16,7 +16,8 @@ class GetOrderStatusFilterOptions @Inject constructor(
         if (orderStatus.isEmpty()) {
             when (orderListRepository.fetchOrderStatusOptionsFromApi()) {
                 RequestResult.SUCCESS -> orderStatus = orderListRepository.getCachedOrderStatusOptions()
-                else -> { /* do nothing */
+                else -> {
+                    /* do nothing */
                 }
             }
         }

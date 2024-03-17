@@ -96,7 +96,13 @@ class OrderListItemDataSource(
         remoteItemIds: List<LocalOrRemoteId.RemoteId>,
         isListFullyFetched: Boolean
     ): List<OrderListItemIdentifier> {
-        val orderIds = remoteItemIds.map { it.value }
+        val orderIds = remoteItemIds.map { it.value }.let {
+            if (listDescriptor.excludedIds != null) {
+                it.filterNot { orderId -> listDescriptor.excludedIds!!.contains(orderId) }
+            } else {
+                it
+            }
+        }
         val orderSummaries = orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, orderIds)
             .let { summariesByRemoteId ->
                 val summaries = remoteItemIds.mapNotNull { summariesByRemoteId[it] }
@@ -107,7 +113,9 @@ class OrderListItemDataSource(
                     // a "loading" view for that item indefinitely.
                     val cachedOrders = orderStore.getOrdersForDescriptor(listDescriptor, orderIds)
                     summaries.filter { cachedOrders.containsKey(it.orderId) }
-                } else summaries
+                } else {
+                    summaries
+                }
             }
 
         val listFuture = mutableListOf<OrderIdentifier>()

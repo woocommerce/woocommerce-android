@@ -41,7 +41,8 @@ class SingleProductScreen : Screen {
         // Product name:
         Espresso.onView(
             Matchers.allOf(
-                ViewMatchers.withId(R.id.editText), ViewMatchers.withText(product.name)
+                ViewMatchers.withId(R.id.editText),
+                ViewMatchers.withText(product.name)
             )
         ).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
@@ -99,12 +100,14 @@ class SingleProductScreen : Screen {
             Matchers.allOf(
                 ViewMatchers.withChild(
                     Matchers.allOf(
-                        ViewMatchers.withId(R.id.textPropertyName), ViewMatchers.withText(nameText)
+                        ViewMatchers.withId(R.id.textPropertyName),
+                        ViewMatchers.withText(nameText)
                     )
                 ),
                 ViewMatchers.withChild(
                     Matchers.allOf(
-                        ViewMatchers.withId(R.id.textPropertyValue), ViewMatchers.withText(valueText)
+                        ViewMatchers.withId(R.id.textPropertyValue),
+                        ViewMatchers.withText(valueText)
                     )
                 )
             )

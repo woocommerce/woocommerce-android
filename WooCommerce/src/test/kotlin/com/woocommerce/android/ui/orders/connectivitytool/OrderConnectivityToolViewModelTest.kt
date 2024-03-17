@@ -43,6 +43,7 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
             wordPressConnectionCheck = wordPressConnectionCheck,
             storeConnectionCheck = storeConnectionCheck,
             storeOrdersCheck = storeOrdersCheck,
+            analyticsTrackerWrapper = mock(),
             savedState = SavedStateHandle()
         )
     }

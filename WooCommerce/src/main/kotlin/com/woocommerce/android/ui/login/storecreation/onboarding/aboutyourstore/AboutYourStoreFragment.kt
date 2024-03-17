@@ -22,6 +22,7 @@ class AboutYourStoreFragment : BaseFragment() {
     private val viewModel: AboutYourStoreViewModel by viewModels()
 
     @Inject lateinit var userAgent: UserAgent
+
     @Inject lateinit var authenticator: WPComWebViewAuthenticator
 
     override val activityAppBarStatus: AppBarStatus

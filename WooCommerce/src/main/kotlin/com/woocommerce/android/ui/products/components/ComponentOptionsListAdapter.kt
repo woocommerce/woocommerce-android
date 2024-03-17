@@ -25,7 +25,9 @@ class ComponentOptionsListAdapter :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ComponentOptionViewHolder {
         return ComponentOptionViewHolder(
             ComponentOptionItemViewBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
+                LayoutInflater.from(parent.context),
+                parent,
+                false
             )
         )
     }

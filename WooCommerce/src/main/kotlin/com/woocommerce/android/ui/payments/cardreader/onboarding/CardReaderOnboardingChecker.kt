@@ -131,8 +131,9 @@ class CardReaderOnboardingChecker @Inject constructor(
         val countryCode = getStoreCountryCode()
         cardReaderTrackingInfoKeeper.setCountry(countryCode)
         val cardReaderConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(countryCode)
-        if (cardReaderConfig !is CardReaderConfigForSupportedCountry)
+        if (cardReaderConfig !is CardReaderConfigForSupportedCountry) {
             return StoreCountryNotSupported(countryCode)
+        }
 
         val fetchSitePluginsResult = wooStore.fetchSitePlugins(selectedSite.get())
         if (fetchSitePluginsResult.isError) return GenericError
@@ -162,23 +163,30 @@ class CardReaderOnboardingChecker @Inject constructor(
 
         val preferredPlugin = getUserSelectedPluginOrActivatedPlugin(wcPayPluginInfo, stripePluginInfo)
 
-        if (!isPluginInstalled(preferredPlugin)) when (preferredPlugin.type) {
-            WOOCOMMERCE_PAYMENTS -> return WcpayNotInstalled
-            STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
+        if (!isPluginInstalled(preferredPlugin)) {
+            when (preferredPlugin.type) {
+                WOOCOMMERCE_PAYMENTS -> return WcpayNotInstalled
+                STRIPE_EXTENSION_GATEWAY -> error("Developer error:`preferredPlugin` should be WCPay")
+            }
         }
 
-        if (!isPluginSupportedInCountry(preferredPlugin.type, cardReaderConfig))
+        if (!isPluginSupportedInCountry(preferredPlugin.type, cardReaderConfig)) {
             return PluginIsNotSupportedInTheCountry(preferredPlugin.type, countryCode!!)
+        }
 
         if (!isPluginVersionSupported(
                 preferredPlugin,
                 getMinimumSupportedVersionForPlugin(preferredPlugin.type, cardReaderConfig)
             )
-        ) return PluginUnsupportedVersion(preferredPlugin.type)
+        ) {
+            return PluginUnsupportedVersion(preferredPlugin.type)
+        }
 
-        if (!isPluginActivated(preferredPlugin.info)) when (preferredPlugin.type) {
-            WOOCOMMERCE_PAYMENTS -> return WcpayNotActivated
-            STRIPE_EXTENSION_GATEWAY -> throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")
+        if (!isPluginActivated(preferredPlugin.info)) {
+            when (preferredPlugin.type) {
+                WOOCOMMERCE_PAYMENTS -> return WcpayNotActivated
+                STRIPE_EXTENSION_GATEWAY -> error("Developer error:`preferredPlugin` should be WCPay")
+            }
         }
 
         val fluxCPluginType = preferredPlugin.type.toInPersonPaymentsPluginType()
@@ -196,30 +204,38 @@ class CardReaderOnboardingChecker @Inject constructor(
             )
         }
         if (!isPluginSetupCompleted(paymentAccount)) return SetupNotCompleted(preferredPlugin.type)
-        if (isPluginInTestModeWithLiveStripeAccount(paymentAccount)) return PluginInTestModeWithLiveStripeAccount(
-            preferredPlugin.type
-        )
+        if (isPluginInTestModeWithLiveStripeAccount(paymentAccount)) {
+            return PluginInTestModeWithLiveStripeAccount(
+                preferredPlugin.type
+            )
+        }
         if (isStripeAccountUnderReview(paymentAccount)) return StripeAccountUnderReview(preferredPlugin.type)
-        if (isStripeAccountOverdueRequirements(paymentAccount)) return StripeAccountOverdueRequirement(
-            preferredPlugin.type
-        )
-        if (isStripeAccountPendingRequirements(paymentAccount)) return StripeAccountPendingRequirement(
-            paymentAccount.currentDeadline,
-            preferredPlugin.type,
-            preferredPlugin.info?.version,
-            requireNotNull(countryCode)
-        )
+        if (isStripeAccountOverdueRequirements(paymentAccount)) {
+            return StripeAccountOverdueRequirement(
+                preferredPlugin.type
+            )
+        }
+        if (isStripeAccountPendingRequirements(paymentAccount)) {
+            return StripeAccountPendingRequirement(
+                paymentAccount.currentDeadline,
+                preferredPlugin.type,
+                preferredPlugin.info?.version,
+                requireNotNull(countryCode)
+            )
+        }
         if (isStripeAccountRejected(paymentAccount)) return StripeAccountRejected(preferredPlugin.type)
         if (isInUndefinedState(paymentAccount)) return GenericError
 
         if (
             !isCashOnDeliveryDisabledStateSkipped() &&
             !cashOnDeliverySettingsRepository.isCashOnDeliveryEnabled()
-        ) return CashOnDeliveryDisabled(
-            requireNotNull(countryCode),
-            preferredPlugin.type,
-            preferredPlugin.info?.version
-        )
+        ) {
+            return CashOnDeliveryDisabled(
+                requireNotNull(countryCode),
+                preferredPlugin.type,
+                preferredPlugin.info?.version
+            )
+        }
 
         return OnboardingCompleted(
             preferredPlugin.type,

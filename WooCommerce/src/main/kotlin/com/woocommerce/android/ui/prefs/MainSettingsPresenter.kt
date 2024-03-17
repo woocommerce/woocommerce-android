@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
@@ -15,6 +15,7 @@ import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
 import javax.inject.Inject
 
 class MainSettingsPresenter @Inject constructor(
@@ -31,7 +32,7 @@ class MainSettingsPresenter @Inject constructor(
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
     override val isChaChingSoundEnabled: Boolean
-        get() = notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER)
+        get() = notificationChannelsHandler.checkNewOrderNotificationSound() == NewOrderNotificationSoundStatus.DEFAULT
 
     override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
@@ -106,6 +107,10 @@ class MainSettingsPresenter @Inject constructor(
     override val isCloseAccountOptionVisible: Boolean
         get() = selectedSite.connectionType != SiteConnectionType.ApplicationPasswords &&
             accountRepository.getUserAccount()?.userName != null
+
     override val isThemePickerOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
+
+    override val wooPluginVersion: String
+        get() = wooCommerceStore.getSitePlugin(selectedSite.get(), WOO_CORE)?.version ?: ""
 }
