@@ -23,6 +23,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginResponse.SystemPluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
@@ -50,7 +51,14 @@ class PluginsViewModel @Inject constructor(
                     Loaded(
                         plugins = response.model!!
                             .filter { it.version.isNotNullOrEmpty() && it.name.isNotNullOrEmpty() }
-                            .map { Plugin(it.name, it.authorName, it.version!!, it.getState()) }
+                            .map {
+                                Plugin(
+                                    name = StringEscapeUtils.unescapeHtml4(it.name),
+                                    authorName = StringEscapeUtils.unescapeHtml4(it.authorName),
+                                    version = it.version!!,
+                                    status = it.getState()
+                                )
+                            }
                     )
                 )
             } else {
