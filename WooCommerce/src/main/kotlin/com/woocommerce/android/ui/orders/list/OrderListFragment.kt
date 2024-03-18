@@ -60,8 +60,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
-import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersEmpty
-import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoading
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
@@ -578,7 +576,7 @@ class OrderListFragment :
                     }
 
                     EmptyViewType.ORDER_LIST -> {
-                        ordersCommunicationViewModel.pushEvent(OrdersEmpty)
+                        communicationViewModel.notifyOrdersEmpty()
 
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
@@ -603,7 +601,7 @@ class OrderListFragment :
                     }
 
                     EmptyViewType.ORDER_LIST_LOADING -> {
-                        ordersCommunicationViewModel.pushEvent(OrdersLoading)
+                        communicationViewModel.notifyOrdersLoading()
                         emptyView.show(emptyViewType)
                     }
 

@@ -74,8 +74,8 @@ import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
-import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersEmpty
-import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoading
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersEmptyNotified
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoadingNotified
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
@@ -223,7 +223,7 @@ class OrderDetailFragment :
         setupObservers(viewModel)
         setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
-        setupOrdersCommunicationObservers(ordersCommunicationViewModel)
+        setupOrdersCommunicationObservers(communicationViewModel)
 
         binding.orderDetailOrderStatus.initView(mode = Mode.OrderEdit) {
             viewModel.onEditOrderStatusSelected()
@@ -369,11 +369,11 @@ class OrderDetailFragment :
     private fun setupOrdersCommunicationObservers(ordersCommunicationViewModel: OrdersCommunicationViewModel) {
         ordersCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OrdersEmpty -> {
+                is OrdersEmptyNotified -> {
                     viewModel.showEmptyView()
                 }
 
-                is OrdersLoading -> {
+                is OrdersLoadingNotified -> {
                     viewModel.showLoadingView()
                 }
 
