@@ -431,6 +431,7 @@ class OrderCreateEditViewModel @Inject constructor(
         if (viewState.isRecalculateNeeded && deviceType == WindowSizeClass.Compact) {
             // force recalculating of items
             onProductsSelected(pendingSelectedItems.value)
+            viewState = viewState.copy(isRecalculateNeeded = false)
         }
         viewState = viewState.copy(windowSizeClass = deviceType)
     }
