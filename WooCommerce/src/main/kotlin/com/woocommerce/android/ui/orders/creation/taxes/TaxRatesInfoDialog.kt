@@ -197,7 +197,8 @@ fun TaxRateInfoModalPreview() {
                 taxRates,
                 ""
             ),
-            {}, {}
+            {},
+            {}
         )
     }
 }

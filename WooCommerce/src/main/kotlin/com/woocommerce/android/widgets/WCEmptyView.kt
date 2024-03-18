@@ -94,6 +94,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         val message: String?
         val buttonText: String?
         val isTitleBold: Boolean
+
         @DrawableRes val drawableId: Int
 
         when (type) {

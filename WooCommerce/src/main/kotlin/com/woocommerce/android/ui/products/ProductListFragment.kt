@@ -29,6 +29,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
@@ -49,8 +50,11 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.ui.products.UpdateProductStockStatusFragment.Companion.UPDATE_STOCK_STATUS_EXIT_STATE_KEY
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusExitState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.TabletLayoutSetupHelper
@@ -214,7 +218,8 @@ class ProductListFragment :
                     val selectionCount = tracker?.selection?.size() ?: 0
                     productListViewModel.onSelectionChanged(selectionCount)
                 }
-            })
+            }
+        )
     }
 
     private fun enableProductsRefresh(enable: Boolean) {
@@ -381,6 +386,10 @@ class ProductListFragment :
                         }
                     )
                 }
+
+                is ShowProductUpdateStockStatusScreen -> {
+                    showProductUpdateStockStatusScreen(event.productsIds)
+                }
                 else -> event.isHandled = false
             }
         }
@@ -395,6 +404,13 @@ class ProductListFragment :
                 }
             }
         }
+    }
+
+    private fun showProductUpdateStockStatusScreen(productRemoteIdsToUpdate: List<Long>) {
+        val action = ProductListFragmentDirections.actionProductListFragmentToUpdateProductStockStatusFragment(
+            productRemoteIdsToUpdate.toLongArray()
+        )
+        findNavController().navigateSafely(action)
     }
 
     private fun handleUpdateDialogs(event: ShowUpdateDialog) {
@@ -480,6 +496,19 @@ class ProductListFragment :
                 productCategory = result.productCategory,
                 productCategoryName = result.productCategoryName
             )
+        }
+
+        handleDialogResult<UpdateStockStatusExitState>(UPDATE_STOCK_STATUS_EXIT_STATE_KEY, R.id.products) { result ->
+            when (result) {
+                UpdateStockStatusExitState.Success -> {
+                    productListViewModel.onRefreshRequested()
+                    productListViewModel.exitSelectionMode()
+                }
+
+                UpdateStockStatusExitState.Error, UpdateStockStatusExitState.NoChange -> {
+                    productListViewModel.exitSelectionMode()
+                }
+            }
         }
     }
 
@@ -601,8 +630,11 @@ class ProductListFragment :
     private fun shouldPreventDetailNavigation(remoteProductId: Long): Boolean {
         if (productListViewModel.isSelecting()) {
             tracker?.let { selectionTracker ->
-                if (selectionTracker.isSelected(remoteProductId)) selectionTracker.deselect(remoteProductId)
-                else selectionTracker.select(remoteProductId)
+                if (selectionTracker.isSelected(remoteProductId)) {
+                    selectionTracker.deselect(remoteProductId)
+                } else {
+                    selectionTracker.select(remoteProductId)
+                }
             }
             return true
         }
@@ -727,6 +759,11 @@ class ProductListFragment :
 
             R.id.menu_select_all -> {
                 productListViewModel.onSelectAllProductsClicked()
+                true
+            }
+
+            R.id.menu_update_stock_status -> {
+                productListViewModel.onBulkUpdateStockStatusClicked(tracker?.selection?.toList().orEmpty())
                 true
             }
 

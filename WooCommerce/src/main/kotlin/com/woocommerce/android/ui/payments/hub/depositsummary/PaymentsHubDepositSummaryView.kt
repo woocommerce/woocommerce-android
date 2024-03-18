@@ -199,7 +199,8 @@ private fun FundsOverview(
     onExpandCollapseClick: () -> Unit,
 ) {
     val chevronRotation by animateFloatAsState(
-        if (isExpanded) 180f else 0f, label = "chevronRotation"
+        if (isExpanded) 180f else 0f,
+        label = "chevronRotation"
     )
     val topRowIS = remember { MutableInteractionSource() }
     val topRowCoroutineScope = rememberCoroutineScope()

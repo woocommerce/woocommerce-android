@@ -130,7 +130,6 @@ class OrderFilterCategoriesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `When clear button clicked, then clear filter even is tracked`() {
-
         viewModel.onClearFilters()
 
         verify(analyticsTraWrapper).track(

@@ -37,7 +37,8 @@ object OrderCustomerHelper {
             AnalyticsTracker.track(
                 AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                error.javaClass.simpleName, "No e-mail app was found"
+                error.javaClass.simpleName,
+                "No e-mail app was found"
             )
             ToastUtils.showToast(context, R.string.error_no_email_app)
         }
@@ -61,7 +62,8 @@ object OrderCustomerHelper {
             AnalyticsTracker.track(
                 AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                error.javaClass.simpleName, "No phone app was found"
+                error.javaClass.simpleName,
+                "No phone app was found"
             )
             ToastUtils.showToast(context, R.string.error_no_phone_app)
         }
@@ -89,7 +91,8 @@ object OrderCustomerHelper {
             AnalyticsTracker.track(
                 AnalyticsEvent.ORDER_CONTACT_ACTION_FAILED,
                 this.javaClass.simpleName,
-                e.javaClass.simpleName, "No SMS app was found"
+                e.javaClass.simpleName,
+                "No SMS app was found"
             )
 
             ToastUtils.showToast(context, R.string.error_no_sms_app)

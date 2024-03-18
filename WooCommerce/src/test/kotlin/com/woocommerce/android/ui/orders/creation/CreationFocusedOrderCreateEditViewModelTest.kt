@@ -1254,7 +1254,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation, "123", BarcodeFormat.FormatUPCA,
+                Creation,
+                "123",
+                BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1280,7 +1282,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then display progress indicator`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation, "123", BarcodeFormat.FormatUPCA,
+                Creation,
+                "123",
+                BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1307,7 +1311,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given empty sku, when view model init, then do not fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation, "", null,
+                Creation,
+                "",
+                null,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1333,7 +1339,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku succeeds, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation, "12345", BarcodeFormat.FormatUPCA,
+                Creation,
+                "12345",
+                BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1375,7 +1383,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku fails, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation, "12345", BarcodeFormat.FormatUPCA,
+                Creation,
+                "12345",
+                BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1411,7 +1421,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku succeeds but contains no product, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation, "12345", BarcodeFormat.FormatQRCode,
+                Creation,
+                "12345",
+                BarcodeFormat.FormatQRCode,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1447,7 +1459,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation, "12345", BarcodeFormat.FormatUPCA,
+                Creation,
+                "12345",
+                BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1493,7 +1507,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given non-variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation, "12345", BarcodeFormat.FormatUPCA,
+                Creation,
+                "12345",
+                BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
             whenever(parameterRepository.getParameters("parameters_key", navArgs)).thenReturn(
                 SiteParameters(
@@ -1684,6 +1700,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         assertThat(orderDraft?.feesLines?.firstOrNull()?.name).isEqualTo(CUSTOM_AMOUNT)
     }
+
     @Test
     fun `when custom amount is updated, then fee line gets updated`() {
         var orderDraft: Order? = null

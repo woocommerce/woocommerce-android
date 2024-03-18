@@ -120,11 +120,12 @@ fun InboxNotes(
             LazyColumn(Modifier.fillMaxSize()) {
                 itemsIndexed(notes) { index, note ->
                     InboxNoteRow(note = note)
-                    if (index < notes.lastIndex)
+                    if (index < notes.lastIndex) {
                         Divider(
                             color = colorResource(id = R.color.divider_color),
                             thickness = dimensionResource(id = R.dimen.minor_10)
                         )
+                    }
                 }
             }
         }

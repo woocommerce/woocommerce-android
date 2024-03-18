@@ -273,7 +273,9 @@ class JetpackActivationMainViewModel @Inject constructor(
                         // To allow restarting the Jetpack installation after process-death, consider the Activation
                         // same as the Installation events
                         StepType.Installation
-                    } else step.type
+                    } else {
+                        step.type
+                    }
                 )
             }
             .distinctUntilChanged()

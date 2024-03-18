@@ -11,28 +11,29 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun NotificationSettingsScreen(viewModel: NotificationSettingsViewModel) {
-    val isChaChingSoundEnabled by viewModel.isChaChingSoundEnabled.observeAsState(initial = false)
-    NotificationSettingsScreen(
-        isChaChingSoundEnabled = isChaChingSoundEnabled,
-        onManageNotificationsClicked = viewModel::onManageNotificationsClicked,
-        onEnableChaChingSoundClicked = viewModel::onEnableChaChingSoundClicked
-    )
+    viewModel.newOrderNotificationSoundStatus.observeAsState().value?.let {
+        NotificationSettingsScreen(
+            orderNotificationSoundStatus = it,
+            onManageNotificationsClicked = viewModel::onManageNotificationsClicked,
+            onEnableChaChingSoundClicked = viewModel::onEnableChaChingSoundClicked
+        )
+    }
 }
 
 @Composable
 private fun NotificationSettingsScreen(
-    isChaChingSoundEnabled: Boolean,
+    orderNotificationSoundStatus: NewOrderNotificationSoundStatus,
     onManageNotificationsClicked: () -> Unit,
     onEnableChaChingSoundClicked: () -> Unit
 ) {
@@ -49,10 +50,15 @@ private fun NotificationSettingsScreen(
                 onClick = onManageNotificationsClicked,
                 modifier = Modifier.fillMaxWidth()
             )
-            AnimatedVisibility(visible = !isChaChingSoundEnabled) {
+            AnimatedVisibility(visible = orderNotificationSoundStatus.requiresAttention) {
+                val subtitle = if (orderNotificationSoundStatus == NewOrderNotificationSoundStatus.DISABLED) {
+                    R.string.settings_notifs_enable_chaching_sound_description
+                } else {
+                    R.string.settings_notifs_restore_chaching_sound_description
+                }
                 NotificationSettingsItem(
                     title = stringResource(id = R.string.settings_notifs_enable_chaching_sound),
-                    subtitle = stringResource(id = R.string.settings_notifs_enable_chaching_sound_description),
+                    subtitle = stringResource(id = subtitle),
                     onClick = onEnableChaChingSoundClicked,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -84,13 +90,16 @@ private fun NotificationSettingsItem(
     }
 }
 
+private val NewOrderNotificationSoundStatus.requiresAttention: Boolean
+    get() = this != NewOrderNotificationSoundStatus.DEFAULT
+
 @Composable
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 private fun NotificationSettingsScreenPreview() {
     WooThemeWithBackground {
         NotificationSettingsScreen(
-            isChaChingSoundEnabled = false,
+            orderNotificationSoundStatus = NewOrderNotificationSoundStatus.DISABLED,
             onManageNotificationsClicked = {},
             onEnableChaChingSoundClicked = {}
         )

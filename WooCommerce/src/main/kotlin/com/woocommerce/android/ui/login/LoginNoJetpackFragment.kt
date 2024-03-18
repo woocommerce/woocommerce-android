@@ -75,7 +75,8 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
     private var userAvatarUrl: String? = null
     private var isJetpackConnectCustomTabOpened = false
 
-    @Suppress("DEPRECATION") private var progressDialog: ProgressDialog? = null
+    @Suppress("DEPRECATION")
+    private var progressDialog: ProgressDialog? = null
 
     /**
      * This flag, when set to true calls the CONNECT_SITE_INFO API to verify if Jetpack is
@@ -177,7 +178,10 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
                     siteAddress?.let { viewModel.verifyJetpackAvailable(it) }
                 } else {
                     jetpackLoginListener?.showUsernamePasswordScreen(
-                        siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+                        siteAddress,
+                        siteXmlRpcAddress,
+                        mInputUsername,
+                        mInputPassword
                     )
                 }
             }
@@ -239,7 +243,9 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
             } else {
                 view?.let {
                     Snackbar.make(
-                        it, getString(R.string.login_jetpack_not_found), BaseTransientBottomBar.LENGTH_LONG
+                        it,
+                        getString(R.string.login_jetpack_not_found),
+                        BaseTransientBottomBar.LENGTH_LONG
                     ).show()
                 }
             }
@@ -268,7 +274,10 @@ class LoginNoJetpackFragment : Fragment(layout.fragment_login_no_jetpack) {
 
     private fun redirectToSiteCredentialsScreen() {
         jetpackLoginListener?.showUsernamePasswordScreen(
-            siteAddress, siteXmlRpcAddress, mInputUsername, mInputPassword
+            siteAddress,
+            siteXmlRpcAddress,
+            mInputUsername,
+            mInputPassword
         )
     }
 

@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding
@@ -53,8 +53,8 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     fun `given cha-ching sound enabled, when notifications button clicked, then open device notification settings`() =
         testBlocking {
             setup {
-                whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-                    .thenReturn(true)
+                whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+                    .thenReturn(NewOrderNotificationSoundStatus.DEFAULT)
             }
 
             presenter.onNotificationsClicked()
@@ -67,8 +67,21 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     fun `given cha-ching sound disabled, when notifications button clicked, then open notifications settings`() =
         testBlocking {
             setup {
-                whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-                    .thenReturn(false)
+                whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+                    .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
+            }
+
+            presenter.onNotificationsClicked()
+
+            verify(view).showNotificationsSettingsScreen()
+        }
+
+    @Test
+    fun `given order notification sound modified, when notifications button clicked, then open notifications settings`() =
+        testBlocking {
+            setup {
+                whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+                    .thenReturn(NewOrderNotificationSoundStatus.SOUND_MODIFIED)
             }
 
             presenter.onNotificationsClicked()

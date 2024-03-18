@@ -34,8 +34,10 @@ import javax.inject.Inject
 class AddProductDownloadBottomSheetFragment : WCBottomSheetDialogFragment(), MediaPickerResultHandler {
     @Inject
     lateinit var navigator: ProductNavigator
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     lateinit var mediaPickerHelper: MediaPickerHelper
 

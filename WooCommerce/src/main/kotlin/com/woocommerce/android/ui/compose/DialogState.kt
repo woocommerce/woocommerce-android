@@ -52,19 +52,29 @@ fun DialogState.Render() {
     AlertDialog(
         onDismissRequest = { onDismiss() },
         title = title?.let {
-            { Text(text = title.getText()) }
+            {
+                Text(text = title.getText())
+            }
         },
         text = message?.let {
-            { Text(text = message.getText()) }
+            {
+                Text(text = message.getText())
+            }
         },
         confirmButton = positiveButton?.let {
-            { WCTextButton(text = it.text.getText(), onClick = it.onClick) }
+            {
+                WCTextButton(text = it.text.getText(), onClick = it.onClick)
+            }
         } ?: { },
         dismissButton = negativeButton?.let {
-            { WCTextButton(text = it.text.getText(), onClick = it.onClick) }
+            {
+                WCTextButton(text = it.text.getText(), onClick = it.onClick)
+            }
         } ?: { },
         neutralButton = neutralButton?.let {
-            { WCTextButton(text = it.text.getText(), onClick = it.onClick) }
+            {
+                WCTextButton(text = it.text.getText(), onClick = it.onClick)
+            }
         } ?: { },
         properties = DialogProperties(
             dismissOnBackPress = isCancelable,

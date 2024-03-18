@@ -1,4 +1,5 @@
 import com.automattic.android.measure.MeasureBuildsExtension
+import io.gitlab.arturbosch.detekt.Detekt
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -44,7 +45,7 @@ subprojects {
     }
 }
 
-def detektAll = tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) {
+def detektAll = tasks.register("detektAll", Detekt) {
     description = "Custom DETEKT build for all modules"
     parallel = true
     ignoreFailures = false
@@ -53,12 +54,12 @@ def detektAll = tasks.register("detektAll", io.gitlab.arturbosch.detekt.Detekt) 
     baseline.set(file("$rootDir/config/detekt/baseline.xml"))
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     include("**/*.kt")
-    exclude("**/resources/**", "**/build/**")
+    exclude("**/resources/**", "**/build/**", "/vendor/**")
 
     reports {
-        html.enabled = true
-        xml.enabled = true
-        txt.enabled = false
+        xml.required.set(true)
+        html.required.set(true)
+        txt.required.set(false)
     }
 }
 
@@ -97,7 +98,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-1dd96169f7b5e67583e9bc1b459011ce3a347fcf'
+    fluxCVersion = '2.72.0'
     glideVersion = '4.16.0'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -117,7 +118,7 @@ ext {
     mediapickerVersion = '0.3.0'
     wordPressLoginVersion = '1.13.0'
     aboutAutomatticVersion = '0.0.6'
-    automatticTracksVersion = '3.2.0'
+    automatticTracksVersion = '3.5.0'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
     stripeTerminalVersion = '3.1.1'

@@ -56,7 +56,9 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         } catch (e: RuntimeException) {
             if (e.cause is TimeoutException) {
                 Log.w("ScreenshotTest", e)
-            } else throw e
+            } else {
+                throw e
+            }
         }
         rule.inject()
     }

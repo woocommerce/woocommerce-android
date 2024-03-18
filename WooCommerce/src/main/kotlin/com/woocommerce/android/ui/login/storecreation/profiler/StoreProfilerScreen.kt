@@ -125,8 +125,9 @@ private fun ProfilerContent(
                     }
                 }
                 itemsIndexed(profilerStepContent.options) { index, category ->
-                    if (index == 0)
+                    if (index == 0) {
                         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+                    }
 
                     ProfilerOptionItem(
                         category = category,
@@ -178,11 +179,12 @@ private fun HeaderContent(
             style = MaterialTheme.typography.subtitle1,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
-        if (profilerStepContent.isSearchableContent)
+        if (profilerStepContent.isSearchableContent) {
             SearchBar(
                 profilerStepContent.searchQuery,
                 onSearchQueryChanged
             )
+        }
     }
 }
 
@@ -231,9 +233,11 @@ private fun ProfilerOptionItem(
             .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
             .background(
                 color = colorResource(
-                    id = if (category.isSelected)
+                    id = if (category.isSelected) {
                         if (isSystemInDarkTheme()) R.color.color_surface else R.color.woo_purple_10
-                    else R.color.color_surface
+                    } else {
+                        R.color.color_surface
+                    }
                 )
             )
             .clickable { onCategorySelected(category) }
@@ -241,8 +245,11 @@ private fun ProfilerOptionItem(
         Text(
             text = category.name,
             color = colorResource(
-                id = if (isSystemInDarkTheme() && category.isSelected) R.color.color_primary
-                else R.color.color_on_surface
+                id = if (isSystemInDarkTheme() && category.isSelected) {
+                    R.color.color_primary
+                } else {
+                    R.color.color_on_surface
+                }
             ),
             modifier = Modifier.padding(
                 start = dimensionResource(id = R.dimen.major_100),

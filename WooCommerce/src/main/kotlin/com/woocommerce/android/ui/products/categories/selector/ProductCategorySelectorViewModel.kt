@@ -50,7 +50,9 @@ class ProductCategorySelectorViewModel @Inject constructor(
                 if (index != 0 && loadingState == LoadingState.Idle) {
                     // When resetting to Idle, wait a bit to make sure the data has been fetched from DB
                     LOADING_STATE_DELAY
-                } else 0L
+                } else {
+                    0L
+                }
             }
             .map { it.value }
     ) { categories, selectedCategories, searchQuery, loadingState ->
@@ -113,8 +115,11 @@ class ProductCategorySelectorViewModel @Inject constructor(
                     loadingState.value = LoadingState.Loading
                     listHandler.fetchCategories(searchQuery = query)
                         .onFailure {
-                            val message = if (query.isEmpty()) R.string.product_category_selector_loading_failed
-                            else R.string.product_category_selector_search_failed
+                            val message = if (query.isEmpty()) {
+                                R.string.product_category_selector_loading_failed
+                            } else {
+                                R.string.product_category_selector_search_failed
+                            }
                             triggerEvent(ShowSnackbar(message))
                         }
                     loadingState.value = LoadingState.Idle

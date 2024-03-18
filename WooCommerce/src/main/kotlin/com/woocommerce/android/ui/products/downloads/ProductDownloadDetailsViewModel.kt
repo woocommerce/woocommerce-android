@@ -62,7 +62,9 @@ class ProductDownloadDetailsViewModel @Inject constructor(
     fun onDoneOrUpdateClicked() {
         val urlWithScheme = if (!productDownloadDetailsViewState.fileDraft.url.startsWith("http")) {
             "http://${productDownloadDetailsViewState.fileDraft.url}"
-        } else productDownloadDetailsViewState.fileDraft.url
+        } else {
+            productDownloadDetailsViewState.fileDraft.url
+        }
         val updatedFile = productDownloadDetailsViewState.fileDraft.copy(url = urlWithScheme)
 
         if (navArgs.isEditing) {
@@ -93,7 +95,9 @@ class ProductDownloadDetailsViewModel @Inject constructor(
                 )
             )
             false
-        } else true
+        } else {
+            true
+        }
     }
 
     private fun updateState(updatedState: ProductDownloadDetailsViewState) {

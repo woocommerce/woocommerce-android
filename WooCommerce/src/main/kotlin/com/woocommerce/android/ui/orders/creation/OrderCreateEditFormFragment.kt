@@ -812,7 +812,9 @@ class OrderCreateEditFormFragment :
                                             topEnd = dimensionResource(id = R.dimen.corner_radius_large)
                                         )
                                     )
-                                } else Modifier
+                                } else {
+                                    Modifier
+                                }
                                 ExpandableGroupedProductCardLoading(
                                     state = viewModel.viewStateData.liveData.observeAsState(),
                                     product = item,
@@ -840,7 +842,9 @@ class OrderCreateEditFormFragment :
                                             topEnd = dimensionResource(id = R.dimen.corner_radius_large)
                                         )
                                     )
-                                } else Modifier
+                                } else {
+                                    Modifier
+                                }
                                 ExpandableGroupedProductCard(
                                     state = viewModel.viewStateData.liveData.observeAsState(),
                                     product = item,

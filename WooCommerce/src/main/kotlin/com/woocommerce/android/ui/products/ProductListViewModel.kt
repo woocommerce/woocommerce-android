@@ -20,6 +20,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PROPERTY
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED_PRODUCTS_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STOCK_STATUS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
@@ -337,10 +338,11 @@ class ProductListViewModel @Inject constructor(
                     )
                     fetchProductList(
                         viewState.query,
-                        skuSearchOptions = if (viewState.isSkuSearch)
+                        skuSearchOptions = if (viewState.isSkuSearch) {
                             SkuSearchOptions.PartialMatch
-                        else
-                            SkuSearchOptions.Disabled,
+                        } else {
+                            SkuSearchOptions.Disabled
+                        },
                         loadMore = loadMore
                     )
                 }
@@ -499,7 +501,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    private fun exitSelectionMode() {
+    fun exitSelectionMode() {
         viewState = viewState.copy(
             productListState = ProductListState.Browsing,
             isAddProductButtonVisible = true,
@@ -710,6 +712,17 @@ class ProductListViewModel @Inject constructor(
         triggerEvent(ShowUpdateDialog.Status(selectedProductsRemoteIds))
     }
 
+    fun onBulkUpdateStockStatusClicked(selectedProductsRemoteIds: List<Long>) {
+        analyticsTracker.track(
+            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                KEY_PROPERTY to VALUE_STOCK_STATUS,
+                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+            )
+        )
+        triggerEvent(ProductListEvent.ShowProductUpdateStockStatusScreen(selectedProductsRemoteIds))
+    }
+
     fun isSquarePluginActive(): Boolean {
         val plugin = wooCommerceStore.getSitePlugin(
             site = selectedSite.get(),
@@ -756,7 +769,7 @@ class ProductListViewModel @Inject constructor(
             val productCategoryFilter: String?,
             val selectedCategoryName: String?
         ) : ProductListEvent()
-        data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
+        data class ShowProductUpdateStockStatusScreen(val productsIds: List<Long>) : ProductListEvent()
         sealed class ShowUpdateDialog : ProductListEvent() {
             abstract val productsIds: List<Long>
 
@@ -771,6 +784,8 @@ class ProductListViewModel @Inject constructor(
         ) : ProductListEvent()
 
         data object OpenEmptyProduct : ProductListEvent()
+
+        data class SelectProducts(val productsIds: List<Long>) : ProductListEvent()
     }
 
     enum class ProductListState { Selecting, Browsing }

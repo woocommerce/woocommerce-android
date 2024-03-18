@@ -62,7 +62,9 @@ object SubscriptionDetailsMapper {
                 oneTimeShipping = oneTimeShipping,
                 paymentsSyncDate = paymentsSyncDate
             )
-        } else null
+        } else {
+            null
+        }
     }
 
     private fun JsonElement.extractPaymentsSyncDate(): SubscriptionPaymentSyncDate? {
@@ -70,13 +72,19 @@ object SubscriptionDetailsMapper {
             isJsonObject -> asJsonObject.let {
                 val day = it["day"].asInt
                 val month = it["month"].asInt
-                if (day == 0) SubscriptionPaymentSyncDate.None
-                else SubscriptionPaymentSyncDate.MonthDay(day, month)
+                if (day == 0) {
+                    SubscriptionPaymentSyncDate.None
+                } else {
+                    SubscriptionPaymentSyncDate.MonthDay(day, month)
+                }
             }
 
             else -> asString?.toIntOrNull()?.let { day ->
-                if (day == 0) SubscriptionPaymentSyncDate.None
-                else SubscriptionPaymentSyncDate.Day(day)
+                if (day == 0) {
+                    SubscriptionPaymentSyncDate.None
+                } else {
+                    SubscriptionPaymentSyncDate.Day(day)
+                }
             }
         }
     }

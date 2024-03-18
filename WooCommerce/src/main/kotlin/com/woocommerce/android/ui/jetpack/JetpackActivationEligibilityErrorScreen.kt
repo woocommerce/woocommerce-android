@@ -72,7 +72,6 @@ fun JetpackActivationEligibilityErrorScreen(
                     horizontal = dimensionResource(id = R.dimen.major_100)
                 )
         ) {
-
             MainContent(
                 username = viewState.username,
                 role = viewState.role,

@@ -137,6 +137,7 @@ class CustomAmountsFragmentViewModelTest : BaseUnitTest() {
 
         assertThat(viewModel.viewState.customAmountUIModel.currentPrice).isEqualTo(BigDecimal("40.00"))
     }
+
     @Test
     fun `when view model is initiated as fixed custom amount type, then assign proper custom amount type to view state`() {
         viewModel = CustomAmountsViewModel(

@@ -10,7 +10,6 @@ class GeoRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers
 ) {
     suspend fun fetchCountryCode(): Result<String> {
-
         return withContext(dispatchers.io) {
             wpComGeoRestClient.fetchCountryCode().map { it.orEmpty() }
         }

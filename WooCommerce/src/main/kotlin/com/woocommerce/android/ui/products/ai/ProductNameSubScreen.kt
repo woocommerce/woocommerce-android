@@ -165,8 +165,11 @@ private fun ProductKeywordsTextFieldWithEmbeddedButton(
                 .fillMaxWidth()
                 .border(
                     width = 1.dp,
-                    color = if (isFocused) colorResource(id = R.color.color_primary)
-                    else colorResource(id = R.color.divider_color),
+                    color = if (isFocused) {
+                        colorResource(id = R.color.color_primary)
+                    } else {
+                        colorResource(id = R.color.divider_color)
+                    },
                     shape = RoundedCornerShape(10.dp)
                 )
                 .clip(RoundedCornerShape(10.dp))

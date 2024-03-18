@@ -186,6 +186,7 @@ sealed class TicketType(
         subcategoryName = ZendeskConstants.mobileSubcategoryValue,
         tags = listOf(ZendeskTags.mobileApp)
     )
+
     @Parcelize object InPersonPayments : TicketType(
         form = TicketCustomField.wooMobileFormID,
         categoryName = ZendeskConstants.mobileAppCategory,
@@ -195,6 +196,7 @@ sealed class TicketType(
             ZendeskTags.productAreaAppsInPersonPayments
         )
     )
+
     @Parcelize object Payments : TicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
@@ -208,6 +210,7 @@ sealed class TicketType(
         ),
         excludedTags = listOf(ZendeskTags.jetpackTag)
     )
+
     @Parcelize object WooPlugin : TicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
@@ -219,6 +222,7 @@ sealed class TicketType(
         ),
         excludedTags = listOf(ZendeskTags.jetpackTag)
     )
+
     @Parcelize object OtherPlugins : TicketType(
         form = TicketCustomField.wooFormID,
         categoryName = ZendeskConstants.supportCategory,
@@ -250,6 +254,7 @@ object TicketCustomField {
     const val categoryId = 25176003L
     const val subcategoryId = 25176023L
     const val logs = 10901699622036L
+
     // SSR refers to WooCommerce System Status Report
     const val ssr = 22871957L
     const val networkInformation = 360000086966L
