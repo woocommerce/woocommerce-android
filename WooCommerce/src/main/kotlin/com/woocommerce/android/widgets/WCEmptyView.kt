@@ -13,8 +13,6 @@ import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.WcEmptyViewBinding
-import com.woocommerce.android.extensions.WindowSizeClass
-import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.DASHBOARD
@@ -38,6 +36,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.UNREAD_FILTERED
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private val binding = WcEmptyViewBinding.inflate(LayoutInflater.from(context), this, true)
+    private val minimumHeightDp = 600
 
     enum class EmptyViewType {
         DASHBOARD,
@@ -60,17 +59,11 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         SHIPPING_LABEL_SERVICE_PACKAGE_LIST
     }
 
-    init {
-        checkOrientation()
-    }
-
     private var lastEmptyViewType: EmptyViewType? = null
 
-    /**
-     * Hide the image in landscape since there isn't enough room for it on most devices
-     */
-    private fun checkOrientation() {
-        binding.emptyViewImage.isVisible = context.windowSizeClass != WindowSizeClass.Compact
+    private fun isScreenHeightSufficient(): Boolean {
+        val screenHeightDp = context.resources.displayMetrics.heightPixels / context.resources.displayMetrics.density
+        return screenHeightDp >= minimumHeightDp
     }
 
     @Suppress("LongMethod", "ComplexMethod")
@@ -79,7 +72,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         searchQueryOrFilter: String? = null,
         onButtonClick: (() -> Unit)? = null
     ) {
-        checkOrientation()
+        binding.emptyViewImage.isVisible = isScreenHeightSufficient()
 
         // if empty view is already showing and it's a different type, fade out the existing view before fading in
         if (visibility == View.VISIBLE && type != lastEmptyViewType) {
