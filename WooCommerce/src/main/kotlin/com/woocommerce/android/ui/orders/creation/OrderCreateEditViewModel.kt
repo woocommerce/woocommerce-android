@@ -428,6 +428,10 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onDeviceConfigurationChanged(deviceType: WindowSizeClass) {
+        if (viewState.isRecalculateNeeded && deviceType == WindowSizeClass.Compact) {
+            // force recalculating of items
+            onProductsSelected(pendingSelectedItems.value)
+        }
         viewState = viewState.copy(windowSizeClass = deviceType)
     }
 
