@@ -2231,11 +2231,29 @@ class ProductDetailViewModel @Inject constructor(
         // Get the categories of the product
         val selectedCategories = product.categories
 
-        // Sort all incoming categories by their parent
-        val sortedList = productCategories.sortCategories(resources)
+        // Check if the list has any child categories which parent is not included in the list.
+        // This is a possibility, e.g.: in a category search result.
+        val remoteCategoryIds = productCategories.map { it.remoteCategoryId }.toSet()
+        val hasChildWithMissingParentCategory = productCategories.any { category ->
+            category.parentId != 0L && !remoteCategoryIds.contains(category.parentId)
+        }
+
+        // If there is any missing parent, simply make a flat list. Otherwise, sort incoming categories by their parents.
+        val sortedList = if (hasChildWithMissingParentCategory) {
+            productCategories
+                .sortedBy { it.name.lowercase(Locale.US) }
+                .map {
+                    ProductCategoryItemUiModel(
+                        category = it,
+                        margin = resources.getDimensionPixelSize(R.dimen.major_125)
+                    )
+                }
+        } else {
+            productCategories.sortCategories(resources)
+        }
 
         // Mark the product categories as selected in the sorted list
-        sortedList.map { productCategoryItemUiModel ->
+        sortedList.forEach { productCategoryItemUiModel ->
             for (selectedCategory in selectedCategories) {
                 if (productCategoryItemUiModel.category.name == selectedCategory.name) {
                     productCategoryItemUiModel.isSelected = true
@@ -2243,7 +2261,7 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
 
-        return sortedList.toList()
+        return sortedList
     }
 
     fun onProductTagsBackButtonClicked() {
