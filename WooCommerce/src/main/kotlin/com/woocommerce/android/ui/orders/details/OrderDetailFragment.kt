@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
@@ -71,6 +72,7 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
@@ -87,6 +89,7 @@ import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
@@ -95,6 +98,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderDetailFragment :
     BaseFragment(R.layout.fragment_order_detail),
@@ -105,6 +109,7 @@ class OrderDetailFragment :
 
     private val viewModel: OrderDetailViewModel by viewModels()
     private val orderEditingViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
 
     @Inject
     lateinit var navigator: OrderNavigator
@@ -221,6 +226,9 @@ class OrderDetailFragment :
         }
         binding.orderDetailsAICard.aiThankYouNoteButton.setOnClickListener {
             viewModel.onAIThankYouNoteButtonClicked()
+        }
+        binding.orderDetailTrash.setOnClickListener {
+            viewModel.onTrashOrderClicked()
         }
 
         ViewCompat.setTransitionName(
@@ -405,6 +413,14 @@ class OrderDetailFragment :
                 }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 is InstallWCShippingViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
+                is OrderDetailViewModel.TrashOrder -> {
+                    if (findNavController().previousBackStackEntry != null) {
+                        findNavController().popBackStack()
+                    }
+
+                    communicationViewModel.trashOrder(event.orderId)
+                }
+                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
                 else -> event.isHandled = false
             }
         }

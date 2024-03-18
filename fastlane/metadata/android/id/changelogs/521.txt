@@ -1,0 +1,2 @@
+17.7:
+Kabar gembira bagi pengguna aplikasi WooCommerce! Kami telah memperbaiki bug yang dapat mengganggu pencarian produk setelah perubahan dilakukan, dan mengoptimalkan pengalaman penelusuran produk pada tablet dengan tata letak dua panel. Sesuaikan analitik dengan mudah di Hub Analitik. Selain itu, pesanan yang dibuat dalam aplikasi sekarang ditandai dengan jelas untuk meningkatkan pelacakan. Telusuri perjalanan berbelanja dan berjualan yang lebih lancar dan lebih personal. Perbarui aplikasi sekarang juga!

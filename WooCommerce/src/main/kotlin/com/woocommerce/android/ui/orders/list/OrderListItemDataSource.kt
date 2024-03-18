@@ -96,7 +96,13 @@ class OrderListItemDataSource(
         remoteItemIds: List<LocalOrRemoteId.RemoteId>,
         isListFullyFetched: Boolean
     ): List<OrderListItemIdentifier> {
-        val orderIds = remoteItemIds.map { it.value }
+        val orderIds = remoteItemIds.map { it.value }.let {
+            if (listDescriptor.excludedIds != null) {
+                it.filterNot { orderId -> listDescriptor.excludedIds!!.contains(orderId) }
+            } else {
+                it
+            }
+        }
         val orderSummaries = orderStore.getOrderSummariesByRemoteOrderIds(listDescriptor.site, orderIds)
             .let { summariesByRemoteId ->
                 val summaries = remoteItemIds.mapNotNull { summariesByRemoteId[it] }

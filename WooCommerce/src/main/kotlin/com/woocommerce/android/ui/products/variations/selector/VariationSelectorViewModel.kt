@@ -71,6 +71,7 @@ class VariationSelectorViewModel @Inject constructor(
     private val product: Deferred<Product?> = async {
         repository.getProduct(navArgs.productId)
     }
+    val screenMode = navArgs.screenMode
 
     val viewSate = combine(
         variationListHandler.getVariationsFlow(navArgs.productId),
@@ -225,5 +226,9 @@ class VariationSelectorViewModel @Inject constructor(
 
     enum class LoadingState {
         IDLE, LOADING, APPENDING
+    }
+
+    enum class ScreenMode {
+        DIALOG, FULLSCREEN
     }
 }
