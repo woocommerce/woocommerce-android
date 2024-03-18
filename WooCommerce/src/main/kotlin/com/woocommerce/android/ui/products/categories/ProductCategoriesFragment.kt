@@ -66,7 +66,7 @@ class ProductCategoriesFragment :
         viewModel.fetchProductCategories()
 
         setupTabletSecondPaneToolbar(
-            title = getString(R.string.product_price),
+            title = getString(R.string.product_categories),
             onMenuItemSelected = { _ -> false },
             onCreateMenu = { toolbar ->
                 toolbar.setNavigationOnClickListener {
