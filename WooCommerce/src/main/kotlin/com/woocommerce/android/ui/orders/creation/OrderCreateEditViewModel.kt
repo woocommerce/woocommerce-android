@@ -429,7 +429,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onDeviceConfigurationChanged(deviceType: WindowSizeClass) {
         if (viewState.isRecalculateNeeded && deviceType == WindowSizeClass.Compact) {
-            // force recalculating of items
+            // enforce items recalculation after swithcing to single pane mode from dual pane mode
             onProductsSelected(pendingSelectedItems.value)
             viewState = viewState.copy(isRecalculateNeeded = false)
         }
