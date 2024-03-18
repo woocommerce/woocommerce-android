@@ -160,10 +160,10 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
     }
 
     private fun adjustLayoutForNonTablet(screen: Screen) {
-        if (screen.isSearchActive || screen.twoPanesWereShownBeforeConfigChange) {
-            displayListPaneOnly(screen)
-        } else {
+        if (screen.twoPanesWereShownBeforeConfigChange) {
             displayDetailPaneOnly(screen)
+        } else {
+            displayListPaneOnly(screen)
         }
     }
 
@@ -197,8 +197,6 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         val twoPanesWereShownBeforeConfigChange: Boolean
 
         val listFragment: Fragment
-
-        val isSearchActive: Boolean
 
         data class Navigation(
             val detailsNavGraphId: Int,

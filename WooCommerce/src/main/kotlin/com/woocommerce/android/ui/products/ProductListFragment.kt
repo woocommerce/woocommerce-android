@@ -138,9 +138,6 @@ class ProductListFragment :
             ).toBundle()
         )
 
-    override val isSearchActive: Boolean
-        get() = productListViewModel.isSearching()
-
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
