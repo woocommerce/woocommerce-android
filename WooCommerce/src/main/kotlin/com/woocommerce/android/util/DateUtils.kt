@@ -32,7 +32,7 @@ class DateUtils @Inject constructor(
     private val friendlyTimeFormat: SimpleDateFormat = SimpleDateFormat("h:mm a", locale)
     private val friendlyLongMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMMM dd", locale)
 
-    private val weekOfYearStartingMondayFormat: SimpleDateFormat = SimpleDateFormat("yyyy-'W'ww", locale).apply {
+    private val weekOfYearStartingMondayFormat: SimpleDateFormat = SimpleDateFormat("yyyy-ww", locale).apply {
         calendar = Calendar.getInstance().apply {
             // Ensure the date formatter follows ISO8601 week standards:
             // the first day of a week is a Monday, and the first week of the year starts on the first Monday
@@ -172,7 +172,7 @@ class DateUtils @Inject constructor(
     }
 
     /**
-     * Given a date of format YYYY-'W'WW, returns the String in short month ("MMM d") format,
+     * Given a date of format YYYY-WW, returns the String in short month ("MMM d") format,
      * with the day being the first day of that week (a Monday, by ISO8601 convention).
      *
      * For example, given 2018-W11, returns "Mar 12".
@@ -184,7 +184,7 @@ class DateUtils @Inject constructor(
             val date = weekOfYearStartingMondayFormat.parse(iso8601Week)
             friendlyMonthDayFormat.format(date!!)
         } catch (e: Exception) {
-            "Date string argument is not of format YYYY-'W'WW: $iso8601Week".reportAsError(e)
+            "Date string argument is not of format YYYY-WW: $iso8601Week".reportAsError(e)
             return null
         }
     }

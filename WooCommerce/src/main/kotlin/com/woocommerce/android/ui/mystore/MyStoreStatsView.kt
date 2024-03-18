@@ -806,7 +806,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             return when (statsTimeRangeSelection.revenueStatsGranularity) {
                 StatsGranularity.HOURS -> dateUtils.getShortHourString(dateString).orEmpty()
                 StatsGranularity.DAYS -> dateUtils.getDayString(dateString).orEmpty()
-                StatsGranularity.WEEKS -> getWeekLabelValue(dateString)
+                StatsGranularity.WEEKS -> dateUtils.getShortMonthDayStringForWeek(dateString).orEmpty()
                 StatsGranularity.MONTHS -> dateUtils.getShortMonthString(dateString).orEmpty()
                 StatsGranularity.YEARS -> dateString
             }.also { result -> trackUnexpectedFormat(result, dateString) }
