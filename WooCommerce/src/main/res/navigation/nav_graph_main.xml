@@ -204,7 +204,23 @@
         <action
             android:id="@+id/action_productListFragment_to_scanToUpdateInventory"
             app:destination="@id/scanToUpdateInventory" />
+        <action
+            android:id="@+id/action_productListFragment_to_UpdateProductStockStatusFragment"
+            app:destination="@id/updateStockStatusFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out">
+        </action>
     </fragment>
+    <dialog
+        android:id="@+id/updateStockStatusFragment"
+        android:name="com.woocommerce.android.ui.products.UpdateProductStockStatusFragment"
+        android:label="UpdateProductStockStatusFragment">
+        <argument
+            android:name="selectedProductIds"
+            app:argType="long[]"/>
+    </dialog>
     <fragment
         android:id="@+id/scanToUpdateInventory"
         android:name="com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryBarcodeScannerFragment"
