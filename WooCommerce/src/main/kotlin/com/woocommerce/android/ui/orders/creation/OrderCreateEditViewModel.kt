@@ -428,6 +428,11 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onDeviceConfigurationChanged(deviceType: WindowSizeClass) {
+        if (viewState.isRecalculateNeeded && deviceType == WindowSizeClass.Compact) {
+            // enforce items recalculation after swithcing to single pane mode from dual pane mode
+            onProductsSelected(pendingSelectedItems.value)
+            viewState = viewState.copy(isRecalculateNeeded = false)
+        }
         viewState = viewState.copy(windowSizeClass = deviceType)
     }
 
@@ -1843,6 +1848,12 @@ class OrderCreateEditViewModel @Inject constructor(
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
             !willUpdateOrderDraft && !isUpdatingOrderDraft && !showOrderUpdateSnackbar
+
+        @IgnoredOnParcel
+        val isCreateOrderButtonEnabled = when (windowSizeClass) {
+            WindowSizeClass.Compact -> canCreateOrder
+            else -> canCreateOrder && !isRecalculateNeeded
+        }
 
         @IgnoredOnParcel
         val isIdle: Boolean = !isUpdatingOrderDraft && !willUpdateOrderDraft
