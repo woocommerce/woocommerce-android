@@ -397,7 +397,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             StatsGranularity.DAYS -> dateUtils.getDayMonthDateString(dateString).orEmpty()
             StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
             StatsGranularity.MONTHS -> dateUtils.getMonthString(dateString).orEmpty()
-            StatsGranularity.YEARS -> dateUtils.getYearString(dateString).orEmpty()
+            StatsGranularity.YEARS -> dateString
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
@@ -734,12 +734,12 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private fun getEntryValuesForCustomType(dateString: String): String {
         return when (statsTimeRangeSelection.revenueStatsGranularity) {
-            StatsGranularity.HOURS,
-            StatsGranularity.DAYS -> dateUtils.getShortHourString(dateString).orEmpty()
+            StatsGranularity.HOURS -> dateUtils.getShortHourString(dateString).orEmpty()
+            StatsGranularity.DAYS -> dateUtils.getDayString(dateString).orEmpty()
 
             StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            StatsGranularity.MONTHS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            StatsGranularity.YEARS -> dateUtils.getShortMonthString(dateString).orEmpty()
+            StatsGranularity.MONTHS -> dateUtils.getShortMonthString(dateString).orEmpty()
+            StatsGranularity.YEARS -> dateString
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
@@ -768,7 +768,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                 if (value == axis.mEntries.first()) {
                     getEntryValueFromRangeType(dateString)
                 } else {
-                    getLabelValueFromRangeType(dateString)
+                    getAxisLabelFromRangeType(dateString)
                 }
             } else {
                 ""
@@ -783,13 +783,13 @@ class MyStoreStatsView @JvmOverloads constructor(
          * [SelectionType.YEAR_TO_DATE] would be Aug 1, 2, 3
          * [SelectionType.CUSTOM] Any of the above formats depending on the custom range length
          */
-        private fun getLabelValueFromRangeType(dateString: String): String {
+        private fun getAxisLabelFromRangeType(dateString: String): String {
             return when (statsTimeRangeSelection.selectionType) {
                 TODAY -> dateUtils.getShortHourString(dateString).orEmpty()
                 WEEK_TO_DATE -> getWeekLabelValue(dateString)
                 MONTH_TO_DATE -> dateUtils.getDayString(dateString).orEmpty()
                 YEAR_TO_DATE -> dateUtils.getShortMonthString(dateString).orEmpty()
-                CUSTOM -> getLabelValueFromStatsGranularity(dateString)
+                CUSTOM -> getAxisLabelForCustomRange(dateString)
                 else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
             }.also { result -> trackUnexpectedFormat(result, dateString) }
         }
@@ -797,19 +797,18 @@ class MyStoreStatsView @JvmOverloads constructor(
         /**
          * Displays the x-axis labels in the following format based on [StatsGranularity]
          * [StatsGranularity.HOURS] would be 7am, 8am, 9am
-         * [StatsGranularity.DAYS] would be 7am, 8am, 9am
-         * [StatsGranularity.WEEKS] would be Aug 31, Sept 1, 2, 3
-         * [StatsGranularity.MONTHS] would be Aug 1, 2, 3
-         * [StatsGranularity.YEARS] would be Jan, Feb, Mar
+         * [StatsGranularity.DAYS] would be Aug 1, 2, 3
+         * [StatsGranularity.WEEKS] would be 31 Jan, 5 Feb, 12 Feb, 19 Feb, 26 Feb
+         * [StatsGranularity.MONTHS] would be Sept, Oct, Nov, Dec
+         * [StatsGranularity.YEARS] would be 2019, 2020, 2021, 2022
          */
-        private fun getLabelValueFromStatsGranularity(dateString: String): String {
+        private fun getAxisLabelForCustomRange(dateString: String): String {
             return when (statsTimeRangeSelection.revenueStatsGranularity) {
-                StatsGranularity.HOURS,
-                StatsGranularity.DAYS -> dateUtils.getShortHourString(dateString).orEmpty()
-
+                StatsGranularity.HOURS -> dateUtils.getShortHourString(dateString).orEmpty()
+                StatsGranularity.DAYS -> dateUtils.getDayString(dateString).orEmpty()
                 StatsGranularity.WEEKS -> getWeekLabelValue(dateString)
-                StatsGranularity.MONTHS -> dateUtils.getDayString(dateString).orEmpty()
-                StatsGranularity.YEARS -> dateUtils.getShortMonthString(dateString).orEmpty()
+                StatsGranularity.MONTHS -> dateUtils.getShortMonthString(dateString).orEmpty()
+                StatsGranularity.YEARS -> dateString
             }.also { result -> trackUnexpectedFormat(result, dateString) }
         }
 
