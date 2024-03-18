@@ -84,7 +84,6 @@ class ProductCategoriesFragment :
     }
 
     private fun initSearchView() {
-
         viewModel.productCategoriesViewStateData.liveData.value?.let {
             if (it.isSearchOpen) {
                 searchMenuItem.expandActionView()
