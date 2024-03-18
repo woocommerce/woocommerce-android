@@ -112,8 +112,7 @@ class OrderListFragment :
     lateinit var feedbackPrefs: FeedbackPrefs
 
     private val viewModel: OrderListViewModel by viewModels()
-    private val ordersCommunicationViewModel: OrdersCommunicationViewModel by activityViewModels()
-
+    private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
     private var snackBar: Snackbar? = null
 
     override fun onStop() {
@@ -557,6 +556,16 @@ class OrderListFragment :
                     action = event.action
                 )
                 is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
+                else -> event.isHandled = false
+            }
+        }
+
+        communicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OrdersCommunicationViewModel.CommunicationEvent.OrderTrashed -> {
+                    viewModel.trashOrder(event.orderId)
+                    selectedOrder.selectOrder(-1L)
+                }
                 else -> event.isHandled = false
             }
         }

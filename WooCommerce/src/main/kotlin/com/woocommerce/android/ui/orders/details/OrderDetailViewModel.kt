@@ -11,6 +11,8 @@ import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -98,6 +100,7 @@ class OrderDetailViewModel @Inject constructor(
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -616,6 +619,20 @@ class OrderDetailViewModel @Inject constructor(
         )
     }
 
+    fun onTrashOrderClicked() {
+        triggerEvent(
+            MultiLiveEvent.Event.ShowDialog(
+                messageId = string.order_detail_trash_order_dialog_message,
+                positiveButtonId = string.order_detail_move_to_trash,
+                positiveBtnAction = { _, _ ->
+                    analyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
+                    triggerEvent(TrashOrder(navArgs.orderId))
+                },
+                negativeButtonId = string.cancel
+            )
+        )
+    }
+
     private suspend fun updateOrderState() {
         val isPaymentCollectable = isPaymentCollectable(order)
         val orderStatus = orderDetailRepository.getOrderStatus(order.status.value)
@@ -897,4 +914,5 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
+    data class TrashOrder(val orderId: Long) : MultiLiveEvent.Event()
 }

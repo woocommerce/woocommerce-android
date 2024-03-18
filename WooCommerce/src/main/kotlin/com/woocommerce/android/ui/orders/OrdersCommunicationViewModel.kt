@@ -3,21 +3,24 @@ package com.woocommerce.android.ui.orders
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 /**
- * The ViewModel used to communicate between different parts of the Orders feature.
- * This should be activity scoped, so that it can be shared between fragments.
+ * The ViewModel used for operations that are involve both the parent and child fragments of the orders list
+ * detail screens.
+ *
+ * This should be activity scoped, so that it can be shared between fragments
  */
+@HiltViewModel
 class OrdersCommunicationViewModel @Inject constructor(
-    savedState: SavedStateHandle
-) : ScopedViewModel(savedState) {
-    fun pushEvent(event: CommunicationEvent) {
-        triggerEvent(event)
+    savedStateHandle: SavedStateHandle
+) : ScopedViewModel(savedStateHandle) {
+    fun trashOrder(orderId: Long) {
+        triggerEvent(CommunicationEvent.OrderTrashed(orderId))
     }
 
     sealed class CommunicationEvent : MultiLiveEvent.Event() {
-        data object OrdersEmpty : CommunicationEvent()
-        data object OrdersLoading : CommunicationEvent()
+        data class OrderTrashed(val orderId: Long) : CommunicationEvent()
     }
 }

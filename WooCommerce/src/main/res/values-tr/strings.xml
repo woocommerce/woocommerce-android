@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 09:54:14+0000
+Translation-Revision-Date: 2024-03-11 13:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_detail_product_not_selected">Ürün seçilmedi</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Tamamını Okuyun</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Desteğe Başvurun</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Site siparişleriniz</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Siteniz</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com sunucuları</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">İnternet Bağlantısı</string>
+    <string name="orderlist_connectivity_tool_title">Bağlantı Testi</string>
+    <string name="my_store_custom_range_content_description">Özel tarih aralığı istatistikleri ekleyin</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Konum bulunamadı.\nLütfen tekrar deneyin.</string>
     <string name="order_detail_attribution_session_page_views">Oturum sayfa görüntülemeleri</string>
     <string name="order_detail_attribution_device_type">Cihaz türü</string>
