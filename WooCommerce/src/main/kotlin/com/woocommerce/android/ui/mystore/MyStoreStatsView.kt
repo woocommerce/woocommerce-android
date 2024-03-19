@@ -125,18 +125,20 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val conversionValue
         get() = binding.statsViewRow.conversionValueTextView
 
-    private lateinit var coroutineScope: CoroutineScope
-    private val chartUserInteractions = MutableSharedFlow<Unit>()
-    private lateinit var chartUserInteractionsJob: Job
-
     val customRangeLabel
         get() = binding.statsViewRow.statsCustomDateRangeTextView
-    val customRangeGranularityLabel
+
+    private val customRangeGranularityLabel
         get() = binding.customRangeGranularityLabel
+
     val customRangeButton = binding.customRangeButton
 
     val tabLayout = binding.statsTabLayout
     private var customRangeTab: Tab? = null
+
+    private lateinit var coroutineScope: CoroutineScope
+    private val chartUserInteractions = MutableSharedFlow<Unit>()
+    private lateinit var chartUserInteractionsJob: Job
 
     @Suppress("LongParameterList")
     fun initView(
