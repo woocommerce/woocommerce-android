@@ -14,7 +14,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -93,7 +93,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         verify(reviewListRepository, times(1)).fetchProductReviews(loadMore = false)
         verify(reviewListRepository, times(2)).getCachedProductReviews()
-        Assertions.assertThat(reviewList).isEqualTo(reviews)
+        assertThat(reviewList).isEqualTo(reviews)
         assertTrue(hasUnread)
     }
 
@@ -116,7 +116,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         verify(reviewListRepository, times(0)).fetchProductReviews(any(), any())
         verify(reviewListRepository, times(1)).getCachedProductReviews()
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test
@@ -149,9 +149,9 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         verify(reviewListRepository, times(1)).fetchProductReviews(loadMore = false)
         verify(reviewListRepository, times(1)).getCachedProductReviews()
-        Assertions.assertThat(reviewList).isEqualTo(reviews)
+        assertThat(reviewList).isEqualTo(reviews)
         assertFalse(hasUnread)
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.review_fetch_error))
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.review_fetch_error))
     }
 
     @Test
@@ -166,7 +166,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        Assertions.assertThat(skeletonShown).containsExactly(true, false)
+        assertThat(skeletonShown).containsExactly(true, false)
     }
 
     @Test
@@ -180,7 +180,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
         }
 
         viewModel.loadMoreReviews()
-        Assertions.assertThat(isLoadingMore).containsExactly(true, false)
+        assertThat(isLoadingMore).containsExactly(true, false)
     }
 
     @Test
@@ -209,7 +209,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
         }
 
         viewModel.forceRefreshReviews()
-        Assertions.assertThat(isRefreshing).containsExactly(true, false)
+        assertThat(isRefreshing).containsExactly(true, false)
         assertTrue(hasUnread)
     }
 
@@ -223,7 +223,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
         }
 
         viewModel.markAllReviewsAsRead()
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
     }
 
     @Test
@@ -242,8 +242,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         viewModel.markAllReviewsAsRead()
 
-        Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.SUCCESS)
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_success))
+        assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.SUCCESS)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_success))
     }
 
     @Test
@@ -262,8 +262,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
         viewModel.markAllReviewsAsRead()
 
-        Assertions.assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.ERROR)
-        Assertions.assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_error))
+        assertThat(markReadActions).containsExactly(ActionStatus.SUBMITTED, ActionStatus.ERROR)
+        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.wc_mark_all_read_error))
     }
 
     @Test
@@ -281,7 +281,7 @@ class ReviewListViewModelTest : BaseUnitTest() {
 
             viewModel.onUnreadReviewsFilterChanged(isEnabled = true)
 
-            Assertions.assertThat(skeletonShown).containsExactly(true, false)
+            assertThat(skeletonShown).containsExactly(true, false)
         }
 
     @Test
