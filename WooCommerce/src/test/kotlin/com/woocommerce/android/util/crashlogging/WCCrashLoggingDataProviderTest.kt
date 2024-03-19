@@ -48,9 +48,6 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
     private val appPrefs: AppPrefs = mock()
     private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs = mock()
     private val uuidGenerator: UuidGenerator = mock()
-    private val buildConfig: BuildConfigWrapper = mock {
-        on { versionName } doReturn "test version name"
-    }
     private val specifyPerformanceMonitoringConfig: SpecifyPerformanceMonitoringConfig = mock {
         on { invoke() } doReturn PerformanceMonitoringConfig.Enabled(1.0)
     }
@@ -64,7 +61,6 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
             appPrefs = appPrefs,
             enqueueSendingEncryptedLogs = enqueueSendingEncryptedLogs,
             uuidGenerator = uuidGenerator,
-            buildConfig = buildConfig,
             appScope = TestScope(coroutinesTestRule.testDispatcher),
             dispatcher = Dispatcher(),
             specifyPerformanceMonitoringConfig = specifyPerformanceMonitoringConfig
@@ -216,24 +212,6 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
 
         verify(enqueueSendingEncryptedLogs, times(1)).invoke(generatedUuid, FATAL)
         assertThat(extras).containsValue(generatedUuid)
-    }
-
-    @Test
-    fun `should provide version name for release name for not debug build`() {
-        whenever(buildConfig.debug).thenReturn(false)
-
-        reinitialize()
-
-        assertThat(sut.releaseName).isEqualTo(buildConfig.versionName)
-    }
-
-    @Test
-    fun `should provide debug name for release name for debug build`() {
-        whenever(buildConfig.debug).thenReturn(true)
-
-        reinitialize()
-
-        assertThat(sut.releaseName).isEqualTo(DEBUG_RELEASE_NAME)
     }
 
     private fun softlyAssertUser(user: CrashLoggingUser?) {
