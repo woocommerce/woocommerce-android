@@ -163,7 +163,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun syncSelectedItems() {
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch {
             viewModel.pendingSelectedItems.collect {
                 sharedViewModel.updateSelectedItems(it)
             }
