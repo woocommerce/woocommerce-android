@@ -9,7 +9,6 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
