@@ -136,7 +136,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     val customRangeButton = binding.customRangeButton
 
     val tabLayout = binding.statsTabLayout
-    private lateinit var customRangeTab: Tab
+    private var customRangeTab: Tab? = null
 
     @Suppress("LongParameterList")
     fun initView(
@@ -178,14 +178,11 @@ class MyStoreStatsView @JvmOverloads constructor(
         customRangeButton.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
         // Create tabs and add to appbar
         SUPPORTED_RANGES_ON_MY_STORE_TAB
+            .filter { it != CUSTOM }
             .forEach { rangeType ->
                 val tab = tabLayout.newTab().apply {
                     setText(getStringForRangeType(rangeType))
                     tag = rangeType
-                }
-                if (rangeType == CUSTOM) {
-                    tab.view.isVisible = false
-                    customRangeTab = tab
                 }
                 tabLayout.addTab(tab)
             }
@@ -204,17 +201,13 @@ class MyStoreStatsView @JvmOverloads constructor(
             mapOf(KEY_RANGE to selectedTimeRange.selectionType.toString().lowercase())
         )
         isRequestingStats = true
-        updateCustomDateRange(statsTimeRangeSelection)
+        applyCustomRange(statsTimeRangeSelection)
     }
 
-    private fun updateCustomDateRange(selectedTimeRange: StatsTimeRangeSelection) {
+    private fun applyCustomRange(selectedTimeRange: StatsTimeRangeSelection) {
         if (selectedTimeRange.selectionType == CUSTOM) {
-            statsTimeRangeSelection = selectedTimeRange
+            addCustomRangeTabIfMissing()
             customRangeButton.isVisible = false
-
-            customRangeTab.view.isVisible = true
-            tabLayout.selectTab(customRangeTab)
-            tabLayout.scrollX = tabLayout.width
 
             customRangeLabel.isVisible = true
             customRangeLabel.text = selectedTimeRange.currentRangeDescription
@@ -222,7 +215,20 @@ class MyStoreStatsView @JvmOverloads constructor(
             customRangeGranularityLabel.text = getStringForGranularity(selectedTimeRange.revenueStatsGranularity)
         } else {
             customRangeLabel.isVisible = false
-            customRangeTab.view.isVisible = false
+            customRangeGranularityLabel.isVisible = false
+        }
+    }
+
+    private fun addCustomRangeTabIfMissing() {
+        if (customRangeTab == null) {
+            val tab = tabLayout.newTab().apply {
+                setText(getStringForRangeType(CUSTOM))
+                tag = CUSTOM
+            }
+            customRangeTab = tab
+            tabLayout.addTab(tab)
+            tabLayout.selectTab(tab)
+            postDelayed({ tabLayout.scrollX = tabLayout.width }, 300)
         }
     }
 
