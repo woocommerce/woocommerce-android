@@ -452,33 +452,28 @@ class MyStoreStatsView @JvmOverloads constructor(
             WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
             MONTH_TO_DATE -> dateUtils.getLongMonthDayString(dateString).orEmpty()
             YEAR_TO_DATE -> dateUtils.getFriendlyLongMonthYear(dateString).orEmpty()
-            CUSTOM -> getDateForCustomRangeFromStatsGranularity(
-                dateString,
-                statsTimeRangeSelection.revenueStatsGranularity
-            )
+            CUSTOM -> getDisplayDateForGranularity(dateString, statsTimeRangeSelection.revenueStatsGranularity)
 
             else -> error("Unsupported range value used in my store tab: $rangeType")
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
     /**
-     * Method to update the date value for a given [dateString] based on the [activeGranularity]
-     * This is used to display the date bar when the **scrubbing interaction is taking place**
-     * [StatsGranularity.HOURS] would be Tuesday, Aug 08›7am
-     * [StatsGranularity.DAYS] would be Tuesday, Aug 08›7am
-     * [StatsGranularity.WEEKS] would be Aug 08
-     * [StatsGranularity.MONTHS] would be August›08
-     * [StatsGranularity.YEARS] would be 2019›August
+     * Returns a display date for the given date and granularity [StatsGranularity]
+     * [StatsGranularity.HOURS] would be 7am, 8am, 9am
+     * [StatsGranularity.DAYS] would be Aug 1, 2, 3
+     * [StatsGranularity.WEEKS] would be 31 Jan, 5 Feb, 12 Feb, 19 Feb, 26 Feb
+     * [StatsGranularity.MONTHS] would be Sept, Oct, Nov, Dec
+     * [StatsGranularity.YEARS] would be 2019, 2020, 2021, 2022
      */
-    private fun getDateForCustomRangeFromStatsGranularity(dateString: String, statsGranularity: StatsGranularity) =
+    private fun getDisplayDateForGranularity(dateString: String, statsGranularity: StatsGranularity): String =
         when (statsGranularity) {
-            StatsGranularity.HOURS,
-            StatsGranularity.DAYS -> dateUtils.getFriendlyDayHourString(dateString).orEmpty()
-
-            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            StatsGranularity.MONTHS -> dateUtils.getLongMonthDayString(dateString).orEmpty()
-            StatsGranularity.YEARS -> dateUtils.getFriendlyLongMonthYear(dateString).orEmpty()
-        }
+            StatsGranularity.HOURS -> dateUtils.getShortHourString(dateString).orEmpty()
+            StatsGranularity.DAYS -> dateUtils.getDayString(dateString).orEmpty()
+            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayStringForWeek(dateString).orEmpty()
+            StatsGranularity.MONTHS -> dateUtils.getShortMonthString(dateString).orEmpty()
+            StatsGranularity.YEARS -> dateString
+        }.also { result -> trackUnexpectedFormat(result, dateString) }
 
     /**
      * Method called when a touch-gesture has ended on the chart (ACTION_UP, ACTION_CANCEL)
@@ -793,26 +788,8 @@ class MyStoreStatsView @JvmOverloads constructor(
                 WEEK_TO_DATE -> getWeekLabelValue(dateString)
                 MONTH_TO_DATE -> dateUtils.getDayString(dateString).orEmpty()
                 YEAR_TO_DATE -> dateUtils.getShortMonthString(dateString).orEmpty()
-                CUSTOM -> getAxisLabelForCustomRange(dateString)
+                CUSTOM -> getDisplayDateForGranularity(dateString, statsTimeRangeSelection.revenueStatsGranularity)
                 else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
-            }.also { result -> trackUnexpectedFormat(result, dateString) }
-        }
-
-        /**
-         * Displays the x-axis labels in the following format based on [StatsGranularity]
-         * [StatsGranularity.HOURS] would be 7am, 8am, 9am
-         * [StatsGranularity.DAYS] would be Aug 1, 2, 3
-         * [StatsGranularity.WEEKS] would be 31 Jan, 5 Feb, 12 Feb, 19 Feb, 26 Feb
-         * [StatsGranularity.MONTHS] would be Sept, Oct, Nov, Dec
-         * [StatsGranularity.YEARS] would be 2019, 2020, 2021, 2022
-         */
-        private fun getAxisLabelForCustomRange(dateString: String): String {
-            return when (statsTimeRangeSelection.revenueStatsGranularity) {
-                StatsGranularity.HOURS -> dateUtils.getShortHourString(dateString).orEmpty()
-                StatsGranularity.DAYS -> dateUtils.getDayString(dateString).orEmpty()
-                StatsGranularity.WEEKS -> dateUtils.getShortMonthDayStringForWeek(dateString).orEmpty()
-                StatsGranularity.MONTHS -> dateUtils.getShortMonthString(dateString).orEmpty()
-                StatsGranularity.YEARS -> dateString
             }.also { result -> trackUnexpectedFormat(result, dateString) }
         }
 
