@@ -11,6 +11,7 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
@@ -18,6 +19,7 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerPr
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -40,7 +42,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.TimeZone
 import kotlin.test.assertTrue
@@ -70,6 +71,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val observeLastUpdate: ObserveLastUpdate = mock {
         onBlocking { invoke(any(), anyList()) } doReturn flowOf(DEFAULT_LAST_UPDATE)
     }
+    private val dateUtils: DateUtils = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -86,9 +88,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenObserveTopPerformersEmits(emptyList())
             whenViewModelIsCreated()
 
-            verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
+            verify(getStats).invoke(refresh = false, DEFAULT_STATS_RANGE_SELECTION)
             verify(getTopPerformers).fetchTopPerformers(
-                granularity = DEFAULT_STATS_GRANULARITY,
+                selectedRange = DEFAULT_STATS_RANGE_SELECTION,
                 refresh = false,
                 topPerformersCount = ANY_TOP_PERFORMERS_COUNT
             )
@@ -112,7 +114,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = false)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             verify(getStats, never()).invoke(any(), any())
             verify(getTopPerformers, never()).fetchTopPerformers(any(), any(), any())
@@ -125,11 +127,11 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
-            verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
+            verify(getStats).invoke(refresh = false, DEFAULT_STATS_RANGE_SELECTION)
             verify(getTopPerformers).fetchTopPerformers(
-                ANY_SELECTED_STATS_GRANULARITY,
+                DEFAULT_STATS_RANGE_SELECTION,
                 refresh = false,
                 ANY_TOP_PERFORMERS_COUNT
             )
@@ -144,9 +146,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             sut.onPullToRefresh()
 
-            verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
+            verify(getStats).invoke(refresh = true, DEFAULT_STATS_RANGE_SELECTION)
             verify(getTopPerformers).fetchTopPerformers(
-                DEFAULT_STATS_GRANULARITY,
+                DEFAULT_STATS_RANGE_SELECTION,
                 refresh = true,
                 ANY_TOP_PERFORMERS_COUNT
             )
@@ -172,12 +174,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.revenueStatsState.value).isEqualTo(
                 MyStoreViewModel.RevenueStatsViewState.Content(
                     null,
-                    ANY_SELECTED_STATS_GRANULARITY
+                    DEFAULT_STATS_RANGE_SELECTION
                 )
             )
         }
@@ -190,7 +192,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
@@ -206,10 +208,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             verify(appPrefsWrapper).setActiveStatsGranularity(
-                ANY_SELECTED_STATS_GRANULARITY.name
+                ANY_SELECTION_TYPE.name
             )
         }
 
@@ -221,7 +223,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsError)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.revenueStatsState.value).isEqualTo(
                 MyStoreViewModel.RevenueStatsViewState.GenericError
@@ -236,7 +238,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.PluginNotActive)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.revenueStatsState.value).isEqualTo(
                 MyStoreViewModel.RevenueStatsViewState.PluginNotActiveError
@@ -251,7 +253,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value).isEqualTo(
                 MyStoreViewModel.VisitorStatsViewState.Content(emptyMap())
@@ -266,7 +268,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsError)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value).isEqualTo(
                 MyStoreViewModel.VisitorStatsViewState.Error
@@ -286,7 +288,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel()))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value)
                 .isInstanceOf(MyStoreViewModel.VisitorStatsViewState.Unavailable::class.java)
@@ -300,7 +302,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = true))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.hasOrders.value).isEqualTo(
                 MyStoreViewModel.OrderState.AtLeastOne
@@ -315,7 +317,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = false))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.hasOrders.value).isEqualTo(
                 MyStoreViewModel.OrderState.Empty
@@ -345,7 +347,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenFetchTopPerformersResult(Result.success(Unit))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
@@ -361,7 +363,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenFetchTopPerformersResult(Result.failure(WooException(WOO_GENERIC_ERROR)))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertTrue(sut.topPerformersState.value!!.isError)
         }
@@ -599,17 +601,17 @@ class MyStoreViewModelTest : BaseUnitTest() {
         whenViewModelIsCreated()
 
         // When ViewModel starts refresh is false
-        verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
+        verify(getStats).invoke(refresh = false, DEFAULT_STATS_RANGE_SELECTION)
 
         sut.onPullToRefresh()
 
         // When pull-to-refresh refresh is true
-        verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
+        verify(getStats).invoke(refresh = true, DEFAULT_STATS_RANGE_SELECTION)
 
-        sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+        sut.onStatsGranularityChanged(DEFAULT_SELECTION_TYPE)
 
         // When granularity changes refresh is false
-        verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
+        verify(getStats).invoke(refresh = false, DEFAULT_STATS_RANGE_SELECTION)
     }
 
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
@@ -658,8 +660,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             timezoneProvider,
             observeLastUpdate,
             customDateRangeDataStore,
+            dateUtils,
             localNotificationScheduler,
-            shouldShowPrivacyBanner
+            shouldShowPrivacyBanner,
         )
     }
 
@@ -668,8 +671,14 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     private companion object {
-        val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
-        val ANY_SELECTED_STATS_GRANULARITY = StatsGranularity.WEEKS
+        val DEFAULT_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.TODAY
+        val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
+        val DEFAULT_STATS_RANGE_SELECTION = StatsTimeRangeSelection.build(
+            selectionType = DEFAULT_SELECTION_TYPE,
+            referenceDate = mock(),
+            calendar = mock(),
+            locale = mock()
+        )
         const val ANY_TOP_PERFORMERS_COUNT = 5
         val WOO_GENERIC_ERROR = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
         val TOP_PERFORMER_PRODUCT = TopPerformerProduct(
