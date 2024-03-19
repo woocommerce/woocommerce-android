@@ -34,7 +34,6 @@ class WCCrashLoggingDataProvider @Inject constructor(
     private val uuidGenerator: UuidGenerator,
     @AppCoroutineScope private val appScope: CoroutineScope,
     specifyPerformanceMonitoringConfig: SpecifyPerformanceMonitoringConfig,
-    buildConfig: BuildConfigWrapper,
     selectedSite: SelectedSite,
     dispatcher: Dispatcher,
 ) : CrashLoggingDataProvider {
@@ -72,12 +71,6 @@ class WCCrashLoggingDataProvider @Inject constructor(
         get() = localeProvider.provideLocale()
 
     override val performanceMonitoringConfig = specifyPerformanceMonitoringConfig()
-
-    override val releaseName: String = if (buildConfig.debug) {
-        DEBUG_RELEASE_NAME
-    } else {
-        buildConfig.versionName
-    }
 
     override val sentryDSN: String = BuildConfig.SENTRY_DSN
 
