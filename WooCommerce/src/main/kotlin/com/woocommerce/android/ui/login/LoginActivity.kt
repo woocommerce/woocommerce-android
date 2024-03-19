@@ -836,7 +836,7 @@ class LoginActivity :
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: WooLoginEmailFragment.newInstance()
+            ) ?: WooLoginEmailFragment.newInstance(showSiteCredentialsFallback = connectSiteInfo?.isWPCom == false)
             changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
@@ -938,7 +938,10 @@ class LoginActivity :
         unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
         appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
         changeFragment(
-            fragment = WooLoginEmailFragment.newInstance(email) as Fragment,
+            fragment = WooLoginEmailFragment.newInstance(
+                prefilledEmail = email,
+                showSiteCredentialsFallback = false // We expect user to log in with the prefilled WP.com email
+            ) as Fragment,
             shouldAddToBackStack = true,
             LoginEmailFragment.TAG
         )

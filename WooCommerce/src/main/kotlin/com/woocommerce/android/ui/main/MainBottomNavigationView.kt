@@ -25,7 +25,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
 ) : BottomNavigationView(context, attrs),
     OnItemSelectedListener,
     OnItemReselectedListener {
-    private lateinit var navController: NavController
+    private var navController: NavController? = null
     private lateinit var listener: MainNavigationListener
     private lateinit var ordersBadge: BadgeDrawable
     private lateinit var moreMenuBadge: BadgeDrawable
@@ -42,15 +42,15 @@ class MainBottomNavigationView @JvmOverloads constructor(
         }
 
     fun init(navController: NavController, listener: MainNavigationListener) {
-        this.listener = listener
         this.navController = navController
+        this.listener = listener
 
         addTopDivider()
         createBadges()
 
         assignNavigationListeners(true)
         val weakReference = WeakReference(this)
-        navController.addOnDestinationChangedListener(
+        this.navController?.addOnDestinationChangedListener(
             object : NavController.OnDestinationChangedListener {
                 override fun onDestinationChanged(
                     controller: NavController,
@@ -59,7 +59,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
                 ) {
                     val view = weakReference.get()
                     if (view == null) {
-                        navController.removeOnDestinationChangedListener(this)
+                        this@MainBottomNavigationView.navController?.removeOnDestinationChangedListener(this)
                         return
                     }
                     view.menu.forEach { item ->
@@ -138,10 +138,12 @@ class MainBottomNavigationView @JvmOverloads constructor(
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val navSuccess = NavigationUI.onNavDestinationSelected(item, navController)
-        if (navSuccess) {
-            listener.onNavItemSelected(findNavigationPositionById(item.itemId))
-            return true
+        navController?.let { navController ->
+            val navSuccess = NavigationUI.onNavDestinationSelected(item, navController)
+            if (navSuccess) {
+                listener.onNavItemSelected(findNavigationPositionById(item.itemId))
+                return true
+            }
         }
         return false
     }

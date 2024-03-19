@@ -124,6 +124,20 @@ private fun OrderCreateEditTotalsMinimisedView(
                 data = state.orderTotal.value,
                 bold = true,
             )
+            if (state.recalculateButton != null) {
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                WCColoredButton(
+                    onClick = state.recalculateButton.onClick,
+                    enabled = state.recalculateButton.enabled,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                ) {
+                    Text(
+                        text = state.recalculateButton.text,
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
     }

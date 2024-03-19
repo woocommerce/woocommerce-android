@@ -1,0 +1,2 @@
+17.7:
+Ótimas notícias para usuários do app do WooCommerce! Corrigimos uma falha para manter as pesquisas por produtos intactas após as alterações, e otimizamos a experiência de visualização de produtos em tablets com layout de painel duplo. Personalize suas estatísticas de forma fácil na Central de análises. Além disso, pedidos feitos no app agora serão visivelmente marcados, melhorando o rastreamento. Mergulhe em uma jornada de compra e venda mais tranquila e personalizada. Atualize o app agora!

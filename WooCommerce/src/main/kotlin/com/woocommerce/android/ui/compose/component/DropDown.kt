@@ -13,6 +13,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -22,6 +24,7 @@ fun <T> WcExposedDropDown(
     modifier: Modifier = Modifier,
     currentValue: T = items.first(),
     mapper: (T) -> String = { it.toString() },
+    focusRequester: FocusRequester = FocusRequester()
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(currentValue) }
@@ -40,6 +43,7 @@ fun <T> WcExposedDropDown(
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.focusRequester(focusRequester)
             )
 
             ExposedDropdownMenu(
