@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
-        android:drawableStart="@drawable/ic_calendar_16"
+        android:drawableEnd="@drawable/ic_edit"
         android:drawablePadding="@dimen/minor_100"
         android:drawableTint="@color/color_primary"
         android:padding="@dimen/minor_100"
