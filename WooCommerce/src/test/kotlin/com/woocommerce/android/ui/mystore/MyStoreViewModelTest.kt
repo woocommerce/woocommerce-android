@@ -43,6 +43,9 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.TimeZone
 import kotlin.test.assertTrue
 
@@ -675,9 +678,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
         val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
         val DEFAULT_STATS_RANGE_SELECTION = StatsTimeRangeSelection.build(
             selectionType = DEFAULT_SELECTION_TYPE,
-            referenceDate = mock(),
-            calendar = mock(),
-            locale = mock()
+            referenceDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault()
         )
         const val ANY_TOP_PERFORMERS_COUNT = 5
         val WOO_GENERIC_ERROR = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
