@@ -134,7 +134,10 @@ class ProductReviewsViewModel @Inject constructor(
                             }
                             is ReviewListRepository.FetchReviewsResult.NotificationsFetched -> {
                                 if (result.requestResult == SUCCESS) {
-                                    _reviewList.value = reviewListRepository.getCachedProductReviews()
+                                    val reviews = reviewListRepository.getCachedProductReviews()
+                                    if (reviews.isNotEmpty()) {
+                                        _reviewList.value = reviews
+                                    }
                                 }
                             }
                             is ReviewListRepository.FetchReviewsResult.ReviewsFetched -> {
