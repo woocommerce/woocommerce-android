@@ -1236,7 +1236,6 @@ Language: ko_KR
     <string name="analytics_revenue_no_data">이 기간의 수익 없음</string>
     <string name="analytics_revenue_card_title">수익</string>
     <string name="analytics_date_range_custom">%1$s-%2$s</string>
-    <string name="analytics_see_more">더 보기</string>
     <string name="signup_api_generic_error">죄송합니다. 제공된 자격 증명에 대한 계정을 만들 수 없습니다. 다른 이메일로 시도해 보세요.</string>
     <string name="signup_password_not_secure_enough">비밀번호가 보안 가이드라인을 충족하지 않습니다. 더 복잡한 비밀번호를 사용해 보세요.</string>
     <string name="signup_password_too_short">비밀번호가 너무 짧습니다. 6자 이상의 비밀번호를 선택하세요.</string>

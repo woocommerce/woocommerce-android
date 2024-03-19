@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/major_100"
                 android:layout_marginVertical="@dimen/minor_100"
-                android:text="@string/analytics_see_more" />
+                android:text="@string/analytics_section_see_all" />
 
         </LinearLayout>
 

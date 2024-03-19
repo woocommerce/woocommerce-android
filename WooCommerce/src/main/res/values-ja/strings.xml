@@ -1236,7 +1236,6 @@ Language: ja_JP
     <string name="analytics_revenue_no_data">この期間には収益がありません</string>
     <string name="analytics_revenue_card_title">収益</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">もっと見る</string>
     <string name="signup_api_generic_error">提供されたログイン情報でアカウントを作成できませんでした。 別のメールアドレスでお試しください。</string>
     <string name="signup_password_not_secure_enough">パスワードがセキュリティガイドラインを満たしていません。 より複雑なパスワードをお試しください。</string>
     <string name="signup_password_too_short">パスワードが短すぎます。 6文字以上のパスワードを設定してください。</string>

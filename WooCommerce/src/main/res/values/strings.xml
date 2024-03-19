@@ -418,7 +418,7 @@
     <!--
         Analytics View
     -->
-    <string name="analytics_see_more">See more</string>
+    <string name="analytics_section_see_all">See all store analytics</string>
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>

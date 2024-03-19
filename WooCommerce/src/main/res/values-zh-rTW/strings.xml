@@ -1236,7 +1236,6 @@ Language: zh_TW
     <string name="analytics_revenue_no_data">本期沒有收益</string>
     <string name="analytics_revenue_card_title">收益</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">查看更多</string>
     <string name="signup_api_generic_error">抱歉，無法為提供的憑證建立帳號。 請使用其他電子郵件。</string>
     <string name="signup_password_not_secure_enough">你的密碼不符合我們的安全性原則。 請使用更複雜的密碼。</string>
     <string name="signup_password_too_short">你的密碼太短了。 請選擇一個至少含有 6 個字元的密碼。</string>

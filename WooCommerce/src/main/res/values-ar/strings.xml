@@ -1236,7 +1236,6 @@ Language: ar
     <string name="analytics_revenue_no_data">لا توجد إيرادات في هذه الفترة</string>
     <string name="analytics_revenue_card_title">الإيرادات</string>
     <string name="analytics_date_range_custom">من ⁦%1$s⁩ إلى ⁦%2$s⁩</string>
-    <string name="analytics_see_more">مشاهدة المزيد</string>
     <string name="signup_api_generic_error">عذرًا، تعذر علينا إنشاء حساب حسب بيانات الاعتماد المقدّمة. ترجى المحاولة ببريد إلكتروني مختلف.</string>
     <string name="signup_password_not_secure_enough">لا تستوفي كلمة مرورك توجيهات الأمان لدينا. يُرجى محاولة إدخال كلمة مرور أكثر تعقيدًا.</string>
     <string name="signup_password_too_short">كلمة مرورك قصيرة للغاية. يرجى اختيار كلمة مرور تحتوي على 6 أحرف على الأقل.</string>
