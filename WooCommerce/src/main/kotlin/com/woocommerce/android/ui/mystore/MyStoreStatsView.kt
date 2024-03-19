@@ -210,10 +210,9 @@ class MyStoreStatsView @JvmOverloads constructor(
         if (selectedTimeRange.selectionType == CUSTOM) {
             addCustomRangeTabIfMissing()
             customRangeButton.isVisible = false
-
             customRangeLabel.isVisible = true
-            customRangeLabel.text = selectedTimeRange.currentRangeDescription
             customRangeGranularityLabel.isVisible = true
+            customRangeLabel.text = selectedTimeRange.currentRangeDescription
             customRangeGranularityLabel.text = getStringForGranularity(selectedTimeRange.revenueStatsGranularity)
         } else {
             customRangeLabel.isVisible = false
@@ -230,7 +229,8 @@ class MyStoreStatsView @JvmOverloads constructor(
             customRangeTab = tab
             tabLayout.addTab(tab)
             tabLayout.selectTab(tab)
-            postDelayed({ tabLayout.scrollX = tabLayout.width }, 300)
+            @Suppress("MagicNumber")
+            postDelayed({ tabLayout.scrollX = tabLayout.width }, 200)
         }
     }
 
@@ -320,6 +320,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         updateDate(revenueStatsModel, statsTimeRangeSelection)
         updateColorForStatsHeaderValues(R.color.color_on_surface_high)
         onUserInteractionWithChart()
+        if (statsTimeRangeSelection.selectionType == CUSTOM) statsDateValue.isVisible = false
     }
 
     private fun onUserInteractionWithChart() {
@@ -364,7 +365,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
                 else -> startDate
             }
-            statsDateValue.visibility = View.VISIBLE
+            if (statsTimeRangeSelection.selectionType != CUSTOM) statsDateValue.isVisible = true
             statsDateValue.text = dateRangeString
         }
     }
@@ -431,6 +432,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         updateDateOnScrubbing(date, statsTimeRangeSelection.selectionType)
         updateColorForStatsHeaderValues(R.color.color_secondary)
         onUserInteractionWithChart()
+        statsDateValue.isVisible = true
     }
 
     private fun updateVisitorsValue(date: String) {
@@ -749,7 +751,6 @@ class MyStoreStatsView @JvmOverloads constructor(
             StatsGranularity.YEARS -> dateString
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
-
 
     private fun trackUnexpectedFormat(result: String, dateString: String) {
         if (result.isEmpty()) {
