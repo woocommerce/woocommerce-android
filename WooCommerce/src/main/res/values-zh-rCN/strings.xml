@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 13:54:03+0000
+Translation-Revision-Date: 2024-03-12 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_detail_product_not_selected">未选择产品</string>
+    <string name="orderlist_connectivity_tool_read_more_action">阅读更多</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">联系支持人员</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">您的站点订单</string>
+    <string name="orderlist_connectivity_tool_store_check_title">您的站点</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com 服务器</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">互联网连接</string>
+    <string name="orderlist_connectivity_tool_title">连接性测试</string>
+    <string name="my_store_custom_range_content_description">添加自定义日期范围统计信息</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">未找到位置。\n请重试。</string>
     <string name="order_detail_attribution_session_page_views">会话页面浏览量</string>
     <string name="order_detail_attribution_device_type">设备类型</string>

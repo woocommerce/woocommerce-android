@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
@@ -32,7 +32,7 @@ class MainSettingsPresenter @Inject constructor(
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
     override val isChaChingSoundEnabled: Boolean
-        get() = notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER)
+        get() = notificationChannelsHandler.checkNewOrderNotificationSound() == NewOrderNotificationSoundStatus.DEFAULT
 
     override fun takeView(view: MainSettingsContract.View) {
         appSettingsFragmentView = view
