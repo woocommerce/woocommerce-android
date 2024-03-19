@@ -131,7 +131,10 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     val customRangeLabel
         get() = binding.statsViewRow.statsCustomDateRangeTextView
+    val customRangeGranularityLabel
+        get() = binding.customRangeGranularityLabel
     val customRangeButton = binding.customRangeButton
+
     val tabLayout = binding.statsTabLayout
     private lateinit var customRangeTab: Tab
 
@@ -215,8 +218,11 @@ class MyStoreStatsView @JvmOverloads constructor(
 
             customRangeLabel.isVisible = true
             customRangeLabel.text = selectedTimeRange.currentRangeDescription
+            customRangeGranularityLabel.isVisible = true
+            customRangeGranularityLabel.text = getStringForGranularity(selectedTimeRange.revenueStatsGranularity)
         } else {
             customRangeLabel.isVisible = false
+            customRangeTab.view.isVisible = false
         }
     }
 
@@ -347,8 +353,6 @@ class MyStoreStatsView @JvmOverloads constructor(
                     val endDate = endInterval?.let { getDateValueFromRangeType(it, rangeType) }
                     String.format(Locale.getDefault(), "%s – %s", startDate, endDate)
                 }
-
-                CUSTOM -> getStringForGranularity(statsTimeRangeSelection.revenueStatsGranularity)
 
                 else -> startDate
             }
@@ -712,13 +716,13 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     private fun getStringForGranularity(granularity: StatsGranularity): String {
         val granularityLabel = when (granularity) {
-            StatsGranularity.HOURS -> resources.getString(R.string.my_store_custom_range_by_granularity_hour)
-            StatsGranularity.DAYS -> resources.getString(R.string.my_store_custom_range_by_granularity_day)
-            StatsGranularity.WEEKS -> resources.getString(R.string.my_store_custom_range_by_granularity_week)
-            StatsGranularity.MONTHS -> resources.getString(R.string.my_store_custom_range_by_granularity_month)
-            StatsGranularity.YEARS -> resources.getString(R.string.my_store_custom_range_by_granularity_year)
+            StatsGranularity.HOURS -> resources.getString(R.string.my_store_custom_range_granularity_hour)
+            StatsGranularity.DAYS -> resources.getString(R.string.my_store_custom_range_granularity_day)
+            StatsGranularity.WEEKS -> resources.getString(R.string.my_store_custom_range_granularity_week)
+            StatsGranularity.MONTHS -> resources.getString(R.string.my_store_custom_range_granularity_month)
+            StatsGranularity.YEARS -> resources.getString(R.string.my_store_custom_range_granularity_year)
         }
-        return resources.getString(R.string.my_store_custom_range_by_granularity, granularityLabel)
+        return resources.getString(R.string.my_store_custom_range_granularity_label, granularityLabel)
     }
 
     private fun getEntryValueFromRangeType(dateString: String): String {

@@ -391,12 +391,12 @@
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
-    <string name="my_store_custom_range_by_granularity">By %s</string>
-    <string name="my_store_custom_range_by_granularity_hour">hour</string>
-    <string name="my_store_custom_range_by_granularity_day">day</string>
-    <string name="my_store_custom_range_by_granularity_week">week</string>
-    <string name="my_store_custom_range_by_granularity_month">month</string>
-    <string name="my_store_custom_range_by_granularity_year">year</string>
+    <string name="my_store_custom_range_granularity_label">%s interval</string>
+    <string name="my_store_custom_range_granularity_hour">Hourly</string>
+    <string name="my_store_custom_range_granularity_day">Daily</string>
+    <string name="my_store_custom_range_granularity_week">Weekly</string>
+    <string name="my_store_custom_range_granularity_month">Monthly</string>
+    <string name="my_store_custom_range_granularity_year">Yearly</string>
 
     <!--
         Sign Up Flow
