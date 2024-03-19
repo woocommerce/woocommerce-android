@@ -1,7 +1,10 @@
 package com.woocommerce.android.util
 
+/*
+ * Plugin version comparison logic is based on the WordPress PHP implementation.
+ */
 @Suppress("CyclomaticComplexMethod", "LoopWithTooManyJumpStatements", "MagicNumber")
-fun String?.isGreaterThan(v2: String?): Boolean {
+fun String?.isGreaterThanPluginVersion(v2: String?): Boolean {
     if (this == null || v2 == null) return false
 
     val vm = mapOf(

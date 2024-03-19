@@ -15,7 +15,7 @@ import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loade
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpToDate
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loaded.Plugin.PluginStatus.UpdateAvailable
 import com.woocommerce.android.ui.prefs.plugins.PluginsViewModel.ViewState.Loading
-import com.woocommerce.android.util.isGreaterThan
+import com.woocommerce.android.util.isGreaterThanPluginVersion
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -79,7 +79,7 @@ class PluginsViewModel @Inject constructor(
     }
 
     private fun SystemPluginModel.isUpdateAvailable(): Boolean {
-        return versionLatest.isGreaterThan(version)
+        return versionLatest.isGreaterThanPluginVersion(version)
     }
 
     fun onRetryClicked() {
