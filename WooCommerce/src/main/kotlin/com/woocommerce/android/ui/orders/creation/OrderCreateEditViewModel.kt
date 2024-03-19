@@ -173,6 +173,7 @@ import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
 import com.woocommerce.android.model.Product as ModelProduct
+import android.util.Log
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -429,9 +430,14 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onDeviceConfigurationChanged(deviceType: WindowSizeClass) {
         if (viewState.isRecalculateNeeded && deviceType == WindowSizeClass.Compact) {
-            // enforce items recalculation after swithcing to single pane mode from dual pane mode
+            // enforce items recalculation after switching to single pane mode from dual pane mode
             onProductsSelected(pendingSelectedItems.value)
             viewState = viewState.copy(isRecalculateNeeded = false)
+        }
+        if (deviceType != WindowSizeClass.Compact) {
+            // ensure that any items added in single pane mode are displayed in dual pane mode
+            // in the product selector pane after switching to dual pane layout
+            _pendingSelectedItems.value = _orderDraft.value.selectedItems()
         }
         viewState = viewState.copy(windowSizeClass = deviceType)
     }
