@@ -179,9 +179,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             }
         customRangeTab = tabLayout.newTab().apply {
             setText(R.string.orderfilters_date_range_filter_custom_range)
-            view.isVisible = false
         }
-        tabLayout.addTab(customRangeTab)
     }
 
     override fun onDetachedFromWindow() {
@@ -202,9 +200,11 @@ class MyStoreStatsView @JvmOverloads constructor(
     fun updateCustomDateRange(customDateRange: DateRange?) {
         customRange = customDateRange
         customRangeButton.isVisible = customDateRange == null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
-        customRangeTab.view.isVisible = customDateRange != null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
-        tabLayout.selectTab(customRangeTab)
-        tabLayout.scrollX = tabLayout.width
+        if (customDateRange != null && customRangeTab.view.parent == null) {
+            tabLayout.addTab(customRangeTab)
+        } else if (customRangeTab.view.parent != null) {
+            tabLayout.removeTab(customRangeTab)
+        }
     }
 
     fun showSkeleton(show: Boolean) {
