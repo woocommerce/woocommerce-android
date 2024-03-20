@@ -5,9 +5,6 @@ import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import androidx.annotation.AnimRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -127,7 +124,6 @@ class ProductImageViewerFragment :
 
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
-                showToolbar(true)
                 // remember this image id so we can return to it upon rotation, and so
                 // we use the right image if the user requests to remove it
                 remoteMediaId = pagerAdapter.images[position].id
@@ -190,7 +186,6 @@ class ProductImageViewerFragment :
                     if (newImageCount > 0) {
                         WooAnimUtils.scaleIn(binding.viewPager)
                         resetAdapter()
-                        showToolbar(true)
                     } else {
                         findNavController().navigateUp()
                     }
@@ -200,40 +195,8 @@ class ProductImageViewerFragment :
         }
     }
 
-    private fun showToolbar(show: Boolean) {
-        if (isAdded) {
-            if ((show && binding.fakeToolbar.visibility == View.VISIBLE) ||
-                (!show && binding.fakeToolbar.visibility != View.VISIBLE)
-            ) {
-                return
-            }
-
-            @AnimRes val animRes = if (show) {
-                R.anim.toolbar_fade_in_and_down
-            } else {
-                R.anim.toolbar_fade_out_and_up
-            }
-
-            val listener = object : Animation.AnimationListener {
-                override fun onAnimationStart(animation: Animation) {
-                    if (show) binding.fakeToolbar.visibility = View.VISIBLE
-                }
-                override fun onAnimationEnd(animation: Animation) {
-                    if (!show) binding.fakeToolbar.visibility = View.GONE
-                }
-                override fun onAnimationRepeat(animation: Animation) {
-                    // noop
-                }
-            }
-
-            AnimationUtils.loadAnimation(requireActivity(), animRes)?.let { anim ->
-                anim.setAnimationListener(listener)
-                binding.fakeToolbar.startAnimation(anim)
-            }
-        }
-    }
-
     override fun onImageTapped() {
+        // no-op
     }
 
     override fun onImageLoadError() {
