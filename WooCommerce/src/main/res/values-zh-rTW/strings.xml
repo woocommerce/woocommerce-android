@@ -580,7 +580,6 @@ Language: zh_TW
     <string name="coupon_selector_empty_list_message">你尚未建立任何優惠券。 建立優惠券並套用至這份訂單。</string>
     <string name="coupon_selector_empty_list_button">前往優惠券</string>
     <string name="order_creation_select_coupon">選取優惠券</string>
-    <string name="signup_get_started_button">建立新商店</string>
     <string name="coupon_create_coupon_creation_failed">建立優惠券失敗</string>
     <string name="coupon_create_coupon_created">已建立優惠券</string>
     <string name="coupon_create_save_button">建立</string>

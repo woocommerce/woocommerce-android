@@ -580,7 +580,6 @@ Language: ar
     <string name="coupon_selector_empty_list_message">لم تنشئ أي قسائم حتى الآن. أنشئ قسيمة لتطبيقها على هذا الطلب.</string>
     <string name="coupon_selector_empty_list_button">الانتقال إلى القسائم</string>
     <string name="order_creation_select_coupon">تحديد قسيمة</string>
-    <string name="signup_get_started_button">إنشاء متجر جديد</string>
     <string name="coupon_create_coupon_creation_failed">فشل إنشاء القسيمة</string>
     <string name="coupon_create_coupon_created">تم إنشاء القسيمة</string>
     <string name="coupon_create_save_button">إنشاء</string>

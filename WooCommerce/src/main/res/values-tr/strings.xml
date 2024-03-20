@@ -580,7 +580,6 @@ Language: tr
     <string name="coupon_selector_empty_list_message">Henüz hiçbir kupon oluşturmadınız. Bu siparişe uygulamak için bir kupon oluşturun.</string>
     <string name="coupon_selector_empty_list_button">Kuponlara Git</string>
     <string name="order_creation_select_coupon">Bir kupon seçin</string>
-    <string name="signup_get_started_button">Yeni bir mağaza oluştur</string>
     <string name="coupon_create_coupon_creation_failed">Kupon oluşturulamadı</string>
     <string name="coupon_create_coupon_created">Kupon oluşturuldu</string>
     <string name="coupon_create_save_button">Oluştur</string>

@@ -580,7 +580,6 @@ Language: ko_KR
     <string name="coupon_selector_empty_list_message">아직 생성한 쿠폰이 없습니다. 이 주문에 적용할 쿠폰을 생성하세요.</string>
     <string name="coupon_selector_empty_list_button">쿠폰으로 이동</string>
     <string name="order_creation_select_coupon">쿠폰 선택</string>
-    <string name="signup_get_started_button">새 스토어 생성</string>
     <string name="coupon_create_coupon_creation_failed">쿠폰 생성 실패</string>
     <string name="coupon_create_coupon_created">쿠폰 생성됨</string>
     <string name="coupon_create_save_button">생성</string>

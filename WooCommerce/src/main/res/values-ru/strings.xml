@@ -580,7 +580,6 @@ Language: ru
     <string name="coupon_selector_empty_list_message">Вы не создали ни одного купона. Создайте купон, чтобы применить его к этому заказу.</string>
     <string name="coupon_selector_empty_list_button">Перейти к купонам</string>
     <string name="order_creation_select_coupon">Выберите купон</string>
-    <string name="signup_get_started_button">Создать магазин</string>
     <string name="coupon_create_coupon_creation_failed">Не удалось создать купон</string>
     <string name="coupon_create_coupon_created">Купон создан</string>
     <string name="coupon_create_save_button">Создать</string>

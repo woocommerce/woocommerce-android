@@ -580,7 +580,6 @@ Language: nl
     <string name="coupon_selector_empty_list_message">Je hebt nog geen kortingsbonnen aangemaakt. Maak een kortingsbon aan en pas die toe op deze bestelling.</string>
     <string name="coupon_selector_empty_list_button">Naar kortingsbonnen</string>
     <string name="order_creation_select_coupon">Selecteer een kortingsbon</string>
-    <string name="signup_get_started_button">Een nieuwe winkel aanmaken</string>
     <string name="coupon_create_coupon_creation_failed">Aanmaken van coupon mislukt</string>
     <string name="coupon_create_coupon_created">Coupon aangemaakt</string>
     <string name="coupon_create_save_button">Aanmaken</string>

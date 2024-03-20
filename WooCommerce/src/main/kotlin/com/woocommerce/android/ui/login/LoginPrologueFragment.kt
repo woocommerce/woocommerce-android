@@ -49,17 +49,14 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
                 prologueFinishedListener?.onSecondaryButtonClicked()
             }
 
-            buttonGetStarted.setOnClickListener {
+            buttonStartNewStore.setOnClickListener {
                 appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
 
                 AnalyticsTracker.track(
-                    AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED,
-                    mapOf(AnalyticsTracker.KEY_IS_FREE_TRIAL to true)
+                    AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED
                 )
 
-                appPrefsWrapper.removeLoginSiteAddress()
-
-                prologueFinishedListener?.onGetStartedClicked()
+                prologueFinishedListener?.onNewToWooButtonClicked()
             }
         }
 

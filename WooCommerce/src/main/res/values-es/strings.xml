@@ -580,7 +580,6 @@ Language: es
     <string name="coupon_selector_empty_list_message">Todavía no has creado ningún cupón. Crea un cupón para aplicarlo a este pedido.</string>
     <string name="coupon_selector_empty_list_button">Ir a Cupones</string>
     <string name="order_creation_select_coupon">Selecciona un cupón</string>
-    <string name="signup_get_started_button">Crea una nueva tienda</string>
     <string name="coupon_create_coupon_creation_failed">Se ha producido un error al crear el cupón</string>
     <string name="coupon_create_coupon_created">Cupón creado</string>
     <string name="coupon_create_save_button">Crear</string>

@@ -580,7 +580,6 @@ Language: sv_SE
     <string name="coupon_selector_empty_list_message">Du har inte skapat några rabattkoder ännu. Skapa en rabattkod för att tillämpa den på denna beställning.</string>
     <string name="coupon_selector_empty_list_button">Gå till rabattkoder</string>
     <string name="order_creation_select_coupon">Välj en rabattkod</string>
-    <string name="signup_get_started_button">Skapa en ny butik</string>
     <string name="coupon_create_coupon_creation_failed">Misslyckades skapa rabattkod</string>
     <string name="coupon_create_coupon_created">Rabattkod skapad</string>
     <string name="coupon_create_save_button">Skapa</string>

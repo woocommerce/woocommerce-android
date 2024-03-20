@@ -579,7 +579,6 @@ Language: pt_BR
     <string name="coupon_selector_empty_list_message">Você não criou nenhum cupom. Crie um cupom para aplicá-lo a este pedido.</string>
     <string name="coupon_selector_empty_list_button">Ir para Cupons</string>
     <string name="order_creation_select_coupon">Selecione um cupom</string>
-    <string name="signup_get_started_button">Criar uma nova loja</string>
     <string name="order_creation_remove_this_coupon">Remover cupom</string>
     <string name="coupon_create_coupon_creation_failed">Falha ao criar o cupom</string>
     <string name="coupon_create_coupon_created">Cupom criado</string>

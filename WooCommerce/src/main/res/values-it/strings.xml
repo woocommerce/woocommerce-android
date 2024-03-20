@@ -580,7 +580,6 @@ Language: it
     <string name="coupon_selector_empty_list_message">Non hai ancora creato nessun codice promozionale. Crea un codice promozionale per applicarlo a questo ordine.</string>
     <string name="coupon_selector_empty_list_button">Vai ai codici promozionali</string>
     <string name="order_creation_select_coupon">Seleziona un codice promozionale</string>
-    <string name="signup_get_started_button">Crea un nuovo negozio</string>
     <string name="coupon_create_coupon_creation_failed">Impossibile creare il codice promozionale</string>
     <string name="coupon_create_coupon_created">Codice promozionale creato</string>
     <string name="coupon_create_save_button">Crea</string>

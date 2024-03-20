@@ -231,6 +231,8 @@
     <string name="login_prologue_survey_button_manage_orders">Manage my orders</string>
     <string name="login_prologue_survey_button_switch_stores">Switch between multiple stores</string>
 
+    <string name="login_prologue_start_new_store">Starting a new store?</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_non_woo_stores_label">Other sites</string>
     <string name="login_connected_store">Connected store</string>
@@ -395,7 +397,6 @@
     <!--
         Sign Up Flow
     -->
-    <string name="signup_get_started_button">Create a new store</string>
     <string name="signup_get_started_label">Get started in minutes</string>
     <string name="signup_create_password_label">Create your password</string>
     <string name="signup_get_started_create_account_label">First, let’s create your account. </string>

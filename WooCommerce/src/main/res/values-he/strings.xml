@@ -580,7 +580,6 @@ Language: he_IL
     <string name="coupon_selector_empty_list_message">עדיין לא יצרת קופונים. יש ליצור קופון שיוחל על ההזמנה הנוכחית.</string>
     <string name="coupon_selector_empty_list_button">מעבר אל \'קופונים\'</string>
     <string name="order_creation_select_coupon">יש לבחור קופון</string>
-    <string name="signup_get_started_button">ליצור חנות חדשה</string>
     <string name="coupon_create_coupon_creation_failed">יצירת הקופון נכשלה</string>
     <string name="coupon_create_coupon_created">הקופון נוצר</string>
     <string name="coupon_create_save_button">ליצור</string>

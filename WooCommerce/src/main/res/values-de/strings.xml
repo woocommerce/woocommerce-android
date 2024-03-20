@@ -580,7 +580,6 @@ Language: de
     <string name="coupon_selector_empty_list_message">Du hast noch keine Gutscheine erstellt. Erstelle einen Gutschein, um ihn auf diese Bestellung anzuwenden.</string>
     <string name="coupon_selector_empty_list_button">Zu den Gutscheinen</string>
     <string name="order_creation_select_coupon">Einen Gutschein auswählen</string>
-    <string name="signup_get_started_button">Neuen Shop einrichten</string>
     <string name="coupon_create_coupon_creation_failed">Erstellen des Gutscheins fehlgeschlagen</string>
     <string name="coupon_create_coupon_created">Gutschein erstellt</string>
     <string name="coupon_create_save_button">Erstellen</string>

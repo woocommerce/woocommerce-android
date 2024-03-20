@@ -580,7 +580,6 @@ Language: ja_JP
     <string name="coupon_selector_empty_list_message">クーポンはまだ作成されていません。 クーポンを作成してこの注文に適用します。</string>
     <string name="coupon_selector_empty_list_button">クーポンに移動</string>
     <string name="order_creation_select_coupon">クーポンを選択</string>
-    <string name="signup_get_started_button">新しいストアを作成</string>
     <string name="coupon_create_coupon_creation_failed">クーポンの作成に失敗しました</string>
     <string name="coupon_create_coupon_created">クーポンを作成しました</string>
     <string name="coupon_create_save_button">作成</string>
