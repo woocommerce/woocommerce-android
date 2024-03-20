@@ -33,7 +33,13 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
 
     private val availablePackages = listOf(
         ShippingPackage(
-            "id1", "title1", false, "DHL Express", PackageDimensions(1.0f, 1.0f, 1.0f), 1f, "dhl"
+            "id1",
+            "title1",
+            false,
+            "DHL Express",
+            PackageDimensions(1.0f, 1.0f, 1.0f),
+            1f,
+            "dhl"
         ),
         ShippingPackage(
             "id2",

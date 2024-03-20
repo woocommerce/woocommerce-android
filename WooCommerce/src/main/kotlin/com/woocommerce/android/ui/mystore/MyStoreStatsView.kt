@@ -179,9 +179,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             }
         customRangeTab = tabLayout.newTab().apply {
             setText(R.string.orderfilters_date_range_filter_custom_range)
-            view.isVisible = false
         }
-        tabLayout.addTab(customRangeTab)
     }
 
     override fun onDetachedFromWindow() {
@@ -202,9 +200,11 @@ class MyStoreStatsView @JvmOverloads constructor(
     fun updateCustomDateRange(customDateRange: DateRange?) {
         customRange = customDateRange
         customRangeButton.isVisible = customDateRange == null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
-        customRangeTab.view.isVisible = customDateRange != null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
-        tabLayout.selectTab(customRangeTab)
-        tabLayout.scrollX = tabLayout.width
+        if (customDateRange != null && customRangeTab.view.parent == null) {
+            tabLayout.addTab(customRangeTab)
+        } else if (customRangeTab.view.parent != null) {
+            tabLayout.removeTab(customRangeTab)
+        }
     }
 
     fun showSkeleton(show: Boolean) {
@@ -231,7 +231,9 @@ class MyStoreStatsView @JvmOverloads constructor(
         val barLabelCount = context.resources.getInteger(resId)
         return if (chartRevenueStatsSize < barLabelCount) {
             chartRevenueStatsSize
-        } else barLabelCount
+        } else {
+            barLabelCount
+        }
     }
 
     /**
@@ -592,9 +594,13 @@ class MyStoreStatsView @JvmOverloads constructor(
      * [StatsGranularity.DAYS] format is the same for both
      */
     private fun getFormattedVisitorStats(visitorStats: Map<String, Int>): Map<String, Int> {
-        return if (activeGranularity == StatsGranularity.YEARS) visitorStats.mapKeys {
-            dateUtils.getYearMonthString(it.key) ?: it.key.take("yyyy-MM".length)
-        } else visitorStats
+        return if (activeGranularity == StatsGranularity.YEARS) {
+            visitorStats.mapKeys {
+                dateUtils.getYearMonthString(it.key) ?: it.key.take("yyyy-MM".length)
+            }
+        } else {
+            visitorStats
+        }
     }
 
     private fun fadeInLabelValue(view: TextView, value: String) {
@@ -675,7 +681,9 @@ class MyStoreStatsView @JvmOverloads constructor(
                 } else {
                     getLabelValue(dateString)
                 }
-            } else ""
+            } else {
+                ""
+            }
         }
 
         /**

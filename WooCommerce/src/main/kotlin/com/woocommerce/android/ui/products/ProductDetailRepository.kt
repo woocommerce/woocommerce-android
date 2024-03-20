@@ -192,7 +192,8 @@ class ProductDetailRepository @Inject constructor(
     suspend fun fetchProductShippingClassById(remoteShippingClassId: Long): ShippingClass? {
         continuationFetchProductShippingClass.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             val payload = WCProductStore.FetchSingleProductShippingClassPayload(
-                selectedSite.get(), remoteShippingClassId
+                selectedSite.get(),
+                remoteShippingClassId
             )
             dispatcher.dispatch(WCProductActionBuilder.newFetchSingleProductShippingClassAction(payload))
         }
@@ -216,8 +217,12 @@ class ProductDetailRepository @Inject constructor(
                         "Exception encountered while fetching tax class list: ${result.error.message}"
                     )
                     RequestResult.ERROR
-                } else RequestResult.SUCCESS
-            } else RequestResult.NO_ACTION_NEEDED
+                } else {
+                    RequestResult.SUCCESS
+                }
+            } else {
+                RequestResult.NO_ACTION_NEEDED
+            }
         }
     }
 

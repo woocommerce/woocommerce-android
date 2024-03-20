@@ -193,18 +193,20 @@ private fun Message(message: String, isError: Boolean = false) {
             .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
             .background(
                 colorResource(
-                    id = if (isError)
+                    id = if (isError) {
                         color.error_banner_background_color
-                    else
+                    } else {
                         color.tag_bg_main
+                    }
                 )
             )
     ) {
         val color = colorResource(
-            id = if (isError)
+            id = if (isError) {
                 color.error_banner_foreground_color
-            else
+            } else {
                 color.tag_text_main
+            }
         )
 
         Icon(
@@ -491,11 +493,13 @@ private fun KeywordListItem(
                 enabled = isEnabled,
             ) {
                 Image(
-                    painter = painterResource(id = icon), contentDescription = "",
-                    colorFilter = if (isEnabled)
+                    painter = painterResource(id = icon),
+                    contentDescription = "",
+                    colorFilter = if (isEnabled) {
                         null
-                    else
+                    } else {
                         ColorFilter.tint(colorResource(id = color.color_on_surface_disabled))
+                    }
                 )
             }
         }
@@ -549,7 +553,6 @@ private fun LoadingNameAndDescription() {
                     .padding(dimensionResource(id = dimen.major_100))
                     .fillMaxWidth()
             ) {
-
                 SkeletonView(
                     modifier = Modifier
                         .fillMaxWidth(0.8f)

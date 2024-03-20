@@ -55,6 +55,7 @@ class ReviewDetailFragment :
     BaseFragment(R.layout.fragment_review_detail),
     BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var productImageMap: ProductImageMap
 
     private val viewModel: ReviewDetailViewModel by viewModels()

@@ -224,12 +224,16 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
             val dueDate: String?
         ) : StripeAccountError(
             headerLabel = UiString.UiStringRes(R.string.card_reader_onboarding_account_pending_requirements_header),
-            hintLabel = if (dueDate != null) UiString.UiStringRes(
-                R.string.card_reader_onboarding_account_pending_requirements_hint,
-                listOf(UiString.UiStringText(dueDate))
-            ) else UiString.UiStringRes(
-                R.string.card_reader_onboarding_account_pending_requirements_without_date_hint,
-            ),
+            hintLabel = if (dueDate != null) {
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_pending_requirements_hint,
+                    listOf(UiString.UiStringText(dueDate))
+                )
+            } else {
+                UiString.UiStringRes(
+                    R.string.card_reader_onboarding_account_pending_requirements_without_date_hint,
+                )
+            },
             actionButtonPrimary = ActionButton(
                 label = UiString.UiStringRes(R.string.skip),
                 action = onPrimaryActionClicked
@@ -356,7 +360,8 @@ sealed class CardReaderOnboardingViewState(@LayoutRes val layoutRes: Int) {
                 R.string.card_reader_onboarding_stripe_extension_unsupported_version_hint
             ),
             learnMoreLabel = UiString.UiStringRes(
-                R.string.card_reader_onboarding_learn_more, containsHtml = true
+                R.string.card_reader_onboarding_learn_more,
+                containsHtml = true
             ),
             refreshButtonLabel = UiString.UiStringRes(
                 R.string.card_reader_onboarding_wcpay_unsupported_version_refresh_button

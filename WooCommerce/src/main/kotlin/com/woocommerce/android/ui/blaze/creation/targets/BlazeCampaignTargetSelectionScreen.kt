@@ -112,7 +112,9 @@ private fun TargetSelectionScreen(
             .clickable(
                 indication = null,
                 interactionSource = interactionSource
-            ) { focusManager.clearFocus() } // Clear focus when clicked outside
+            ) {
+                focusManager.clearFocus()
+            } // Clear focus when clicked outside
     ) { paddingValues ->
         Column(
             modifier = Modifier

@@ -9,6 +9,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import org.json.JSONObject
@@ -329,7 +330,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_FEEDBACK_CANCELED = "canceled"
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
-        const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
         const val VALUE_COUPONS_FEEDBACK = "coupons"
@@ -555,6 +555,7 @@ class AnalyticsTracker private constructor(
         const val KEY_PROPERTY = "property"
         const val VALUE_PRICE = "price"
         const val VALUE_STATUS = "status"
+        const val VALUE_STOCK_STATUS = "stock_status"
         const val KEY_SELECTED_PRODUCTS_COUNT = "selected_products_count"
 
         // -- IPP Learn More Link
@@ -680,6 +681,9 @@ class AnalyticsTracker private constructor(
         }
 
         fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {
+            if (instance == null && BuildConfig.DEBUG && !PackageUtils.isTesting()) {
+                error("event $stat was tracked before AnalyticsTracker was initialized.")
+            }
             if (sendUsageStats) {
                 instance?.track(stat, properties)
             }

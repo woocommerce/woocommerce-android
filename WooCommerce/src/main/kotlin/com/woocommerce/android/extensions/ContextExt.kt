@@ -7,12 +7,46 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Point
+import android.os.Parcelable
 import android.view.WindowManager
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import com.woocommerce.android.R
 import com.woocommerce.android.util.SystemVersionUtils
-import org.wordpress.android.util.DisplayUtils
+import kotlinx.parcelize.Parcelize
+
+val Context.windowSizeClass: WindowSizeClass
+    get() = when (resources.configuration.screenWidthDp) {
+        in 0 until WindowSizeClass.Compact.maxWidth -> WindowSizeClass.Compact
+        in WindowSizeClass.Compact.maxWidth until WindowSizeClass.Medium.maxWidth -> WindowSizeClass.Medium
+        else -> WindowSizeClass.ExpandedAndBigger
+    }
+
+/**
+ * Window size class type based on Material Design
+ * [guidelines](https://m3.material.io/foundations/layout/applying-layout/window-size-classes)
+ */
+@Parcelize
+sealed class WindowSizeClass(val maxWidth: Int) : Parcelable {
+    /**
+     * Phone in portrait
+     */
+    data object Compact : WindowSizeClass(COMPACT_SCREEN_MAX_WIDTH)
+
+    /**
+     * Small tablet, tablet in portrait or foldable in portrait (unfolded).
+     */
+    data object Medium : WindowSizeClass(MEDIUM_SCREEN_MAX_WIDTH)
+
+    /**
+     * Phone in landscape, tablet in landscape, foldable in landscape, desktop and ultra-wide.
+     */
+    data object ExpandedAndBigger : WindowSizeClass(Int.MAX_VALUE)
+
+    companion object {
+        private const val COMPACT_SCREEN_MAX_WIDTH = 600
+        private const val MEDIUM_SCREEN_MAX_WIDTH = 840
+    }
+}
 
 fun Context.getColorCompat(@ColorRes colorRes: Int) = ContextCompat.getColor(this, colorRes)
 
@@ -44,8 +78,3 @@ val Context.physicalScreenHeightInPx: Int
             size.y
         }
     }
-
-val Context.isDisplaySmallerThan720: Boolean
-    get() = !resources.getBoolean(R.bool.is_at_least_720sw)
-
-fun Context.isTablet() = DisplayUtils.isTablet(this) || DisplayUtils.isXLargeTablet(this)

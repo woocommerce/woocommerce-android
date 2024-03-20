@@ -94,7 +94,10 @@ internal class AnalyticsHubInformationSectionView @JvmOverloads constructor(
         }
 
         private fun getDeltaTagBackgroundColor(context: Context) =
-            if (delta > 0) ContextCompat.getColor(context, R.color.analytics_delta_positive_color)
-            else ContextCompat.getColor(context, R.color.analytics_delta_tag_negative_color)
+            if (delta > 0) {
+                ContextCompat.getColor(context, R.color.analytics_delta_positive_color)
+            } else {
+                ContextCompat.getColor(context, R.color.analytics_delta_tag_negative_color)
+            }
     }
 }

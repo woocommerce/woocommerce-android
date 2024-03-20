@@ -135,7 +135,8 @@ private fun ParameterBottomSheet(
                 modifier = Modifier
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
                 text = stringResource(
-                    R.string.blaze_campaign_edit_ad_destination_destination_with_parameters, paramsState.url
+                    R.string.blaze_campaign_edit_ad_destination_destination_with_parameters,
+                    paramsState.url
                 ),
                 style = MaterialTheme.typography.caption,
                 color = colorResource(id = R.color.color_on_surface_medium)

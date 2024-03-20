@@ -20,14 +20,19 @@ sealed class SubscriptionPeriod(val value: String) : Parcelable {
             }
         }
     }
+
     @Parcelize
     object Day : SubscriptionPeriod("day")
+
     @Parcelize
     object Week : SubscriptionPeriod("week")
+
     @Parcelize
     object Month : SubscriptionPeriod("month")
+
     @Parcelize
     object Year : SubscriptionPeriod("year")
+
     @Parcelize
     data class Custom(private val customValue: String) : SubscriptionPeriod(customValue)
 
@@ -101,8 +106,11 @@ sealed class SubscriptionPeriod(val value: String) : Parcelable {
 
     fun formatWithInterval(context: Context, interval: Int): String {
         val periodText = getPeriodString(context, interval)
-        return if (interval == 1) context.getString(R.string.subscription_period_interval_single, periodText)
-        else context.getString(R.string.subscription_period_interval_multiple, interval, periodText)
+        return if (interval == 1) {
+            context.getString(R.string.subscription_period_interval_single, periodText)
+        } else {
+            context.getString(R.string.subscription_period_interval_multiple, interval, periodText)
+        }
     }
 
     @Suppress("MagicNumber")

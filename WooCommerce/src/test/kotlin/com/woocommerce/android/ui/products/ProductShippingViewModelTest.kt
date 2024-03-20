@@ -26,11 +26,21 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val initialData = ShippingData(
-        10f, 9f, 8f, 7f, "Class 1", 1
+        10f,
+        9f,
+        8f,
+        7f,
+        "Class 1",
+        1
     )
 
     private val expectedData = ShippingData(
-        1f, 2f, 3f, 4f, "Class 2", 2
+        1f,
+        2f,
+        3f,
+        4f,
+        "Class 2",
+        2
     )
 
     private lateinit var viewModel: ProductShippingViewModel

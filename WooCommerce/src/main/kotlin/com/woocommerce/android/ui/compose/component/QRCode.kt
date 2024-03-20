@@ -104,8 +104,11 @@ private fun rememberQrBitmapPainter(
                 eraseColor(Color.TRANSPARENT)
             }
         BitmapPainter(
-            if (overlay != null) currentBitmap.addOverlayToCenter(overlay).asImageBitmap()
-            else currentBitmap.asImageBitmap()
+            if (overlay != null) {
+                currentBitmap.addOverlayToCenter(overlay).asImageBitmap()
+            } else {
+                currentBitmap.asImageBitmap()
+            }
         )
     }
 }

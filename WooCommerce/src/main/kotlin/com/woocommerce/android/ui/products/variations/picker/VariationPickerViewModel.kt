@@ -51,7 +51,9 @@ class VariationPickerViewModel @Inject constructor(
                 if (it.index != 0 && it.value == LoadingState.IDLE) {
                     // When resetting to IDLE, wait a bit to make sure the list has been fetched from DB
                     STATE_UPDATE_DELAY
-                } else 0L
+                } else {
+                    0L
+                }
             }
             .map { it.value }
     ) { variations, loadingState ->

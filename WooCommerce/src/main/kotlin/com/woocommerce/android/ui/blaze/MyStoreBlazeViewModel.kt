@@ -41,8 +41,9 @@ class MyStoreBlazeViewModel @Inject constructor(
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val blazeCampaignState: Flow<MyStoreBlazeCampaignState> = flow {
-        if (!isBlazeEnabled()) emit(Hidden)
-        else {
+        if (!isBlazeEnabled()) {
+            emit(Hidden)
+        } else {
             analyticsTrackerWrapper.track(
                 stat = BLAZE_ENTRY_POINT_DISPLAYED,
                 properties = mapOf(

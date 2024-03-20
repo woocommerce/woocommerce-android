@@ -79,11 +79,17 @@ abstract class BaseStoreProfilerViewModel(
         profilerOptions.update { currentOptions ->
             currentOptions.map {
                 if (isMultiChoice) {
-                    if (option.name == it.name) it.copy(isSelected = !it.isSelected)
-                    else it
+                    if (option.name == it.name) {
+                        it.copy(isSelected = !it.isSelected)
+                    } else {
+                        it
+                    }
                 } else {
-                    if (option.name == it.name) it.copy(isSelected = true)
-                    else it.copy(isSelected = false)
+                    if (option.name == it.name) {
+                        it.copy(isSelected = true)
+                    } else {
+                        it.copy(isSelected = false)
+                    }
                 }
             }
         }

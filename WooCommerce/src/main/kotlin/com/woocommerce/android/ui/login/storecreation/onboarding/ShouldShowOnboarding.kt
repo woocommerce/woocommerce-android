@@ -39,14 +39,18 @@ class ShouldShowOnboarding @Inject constructor(
                 analyticsTrackerWrapper.track(stat = STORE_ONBOARDING_COMPLETED)
             }
             true
-        } else false
+        } else {
+            false
+        }
 
         return if (!areAllTaskCompleted &&
             isOnboardingListSettingVisible()
         ) {
             appPrefsWrapper.setStoreOnboardingShown(siteId)
             true
-        } else false
+        } else {
+            false
+        }
     }
 
     fun isOnboardingMarkedAsCompleted(): Boolean =

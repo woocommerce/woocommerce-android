@@ -165,20 +165,28 @@ class MainActivity :
 
     @Inject
     lateinit var presenter: MainContract.Presenter
+
     @Inject
     lateinit var loginAnalyticsListener: LoginAnalyticsListener
+
     @Inject
     lateinit var selectedSite: SelectedSite
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     lateinit var crashLogging: CrashLogging
+
     @Inject
     lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+
     @Inject
     lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
+
     @Inject
     lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
+
     @Inject lateinit var animatorHelper: MainAnimatorHelper
 
     private val viewModel: MainActivityViewModel by viewModels()
@@ -236,7 +244,9 @@ class MainActivity :
                     }
                     binding.appBarLayout.elevation = if (appBarStatus.hasShadow) {
                         resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
-                    } else 0f
+                    } else {
+                        0f
+                    }
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 

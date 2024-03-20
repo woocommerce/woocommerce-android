@@ -33,6 +33,8 @@ class ProductPropertiesDiffCallback(
         val oldItem = oldList[oldItemPosition]
         return if (oldItem is Editable && newItem is Editable && newItem.text != oldItem.text) {
             newItem.shouldFocus = true
-        } else null
+        } else {
+            null
+        }
     }
 }
