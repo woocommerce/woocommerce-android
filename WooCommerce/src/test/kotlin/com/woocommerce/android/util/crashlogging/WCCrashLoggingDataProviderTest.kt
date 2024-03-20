@@ -6,8 +6,6 @@ import com.automattic.android.tracks.crashlogging.EventLevel.INFO
 import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.BuildConfigWrapper
-import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.DEBUG_RELEASE_NAME
 import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.EXTRA_UUID
 import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.SITE_ID_KEY
 import com.woocommerce.android.util.crashlogging.WCCrashLoggingDataProvider.Companion.SITE_URL_KEY
