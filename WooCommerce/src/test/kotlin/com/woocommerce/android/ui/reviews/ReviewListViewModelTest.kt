@@ -174,6 +174,128 @@ class ReviewListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given fetch review success and notification error, when view model started, then cached data shown`() =
+        testBlocking {
+            // GIVEN
+            val reviews2 = ProductReviewTestUtils.generateProductReviewList()
+            doReturn(
+                reviews,
+                reviews2,
+            ).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
+            doReturn(
+                flowOf(
+                    ReviewListRepository.FetchReviewsResult.NotificationsFetched(RequestResult.ERROR),
+                    ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS),
+                )
+            ).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+
+            val reviewList = ArrayList<ProductReview>()
+            viewModel.reviewList.observeForever {
+                reviewList.clear()
+                reviewList.addAll(it)
+            }
+
+            // WHEN
+            viewModel.start()
+
+            // THEN
+            assertThat(reviewList).isEqualTo(reviews2)
+        }
+
+    @Test
+    fun `given fetch review success and notification success, when view model started, then last cached data shown`() =
+        testBlocking {
+            // GIVEN
+            val reviews2 = ProductReviewTestUtils.generateProductReviewList()
+            val reviews3 = ProductReviewTestUtils.generateProductReviewList()
+            doReturn(
+                reviews,
+                reviews2,
+                reviews3,
+            ).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
+            doReturn(
+                flowOf(
+                    ReviewListRepository.FetchReviewsResult.NotificationsFetched(RequestResult.SUCCESS),
+                    ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS),
+                )
+            ).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+
+            val reviewList = ArrayList<ProductReview>()
+            viewModel.reviewList.observeForever {
+                reviewList.clear()
+                reviewList.addAll(it)
+            }
+
+            // WHEN
+            viewModel.start()
+
+            // THEN
+            assertThat(reviewList).isEqualTo(reviews3)
+        }
+
+    @Test
+    fun `given fetch review error and notification success, when view model started, then cached data shown`() =
+        testBlocking {
+            // GIVEN
+            val reviews2 = ProductReviewTestUtils.generateProductReviewList()
+            doReturn(
+                reviews,
+                reviews2,
+            ).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
+            doReturn(
+                flowOf(
+                    ReviewListRepository.FetchReviewsResult.NotificationsFetched(RequestResult.SUCCESS),
+                    ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.ERROR),
+                )
+            ).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+
+            val reviewList = ArrayList<ProductReview>()
+            viewModel.reviewList.observeForever {
+                reviewList.clear()
+                reviewList.addAll(it)
+            }
+
+            // WHEN
+            viewModel.start()
+
+            // THEN
+            assertThat(reviewList).isEqualTo(reviews2)
+        }
+
+    @Test
+    fun `given fetch review error and notification error, when view model started, then data from cache set once`() =
+        testBlocking {
+            // GIVEN
+            val reviews2 = ProductReviewTestUtils.generateProductReviewList()
+            doReturn(
+                reviews,
+                reviews2,
+            ).whenever(reviewListRepository).getCachedProductReviews()
+            doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
+            doReturn(
+                flowOf(
+                    ReviewListRepository.FetchReviewsResult.NotificationsFetched(RequestResult.ERROR),
+                    ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.ERROR),
+                )
+            ).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+
+            val reviewList = ArrayList<ProductReview>()
+            viewModel.reviewList.observeForever {
+                reviewList.clear()
+                reviewList.addAll(it)
+            }
+
+            // WHEN
+            viewModel.start()
+
+            // THEN
+            assertThat(reviewList).isEqualTo(reviews)
+        }
+
+    @Test
     fun `Shows and hides review list load more progress correctly`() = testBlocking {
         doReturn(true).whenever(reviewListRepository).canLoadMore
         doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS)))
