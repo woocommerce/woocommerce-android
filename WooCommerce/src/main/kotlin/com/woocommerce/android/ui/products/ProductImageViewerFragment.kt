@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.products
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
@@ -45,7 +43,6 @@ class ProductImageViewerFragment :
 
     companion object {
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
-        private const val TOOLBAR_FADE_DELAY_MS = 2500L
     }
 
     private val navArgs: ProductImageViewerFragmentArgs by navArgs()
@@ -53,7 +50,6 @@ class ProductImageViewerFragment :
 
     private var isConfirmationShowing = false
     private var confirmationDialog: AlertDialog? = null
-    private val fadeOutToolbarHandler = Handler(Looper.getMainLooper())
 
     private var remoteMediaId = 0L
     private lateinit var pagerAdapter: ImageViewerAdapter
@@ -95,8 +91,6 @@ class ProductImageViewerFragment :
                 confirmRemoveProductImage()
             }
         }
-
-        fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
 
         @Suppress("MagicNumber")
         // If we make the Activity full-screen directly, it'll prevent the fragment transition from finishing,
@@ -214,12 +208,6 @@ class ProductImageViewerFragment :
                 return
             }
 
-            // remove the current fade-out runnable and start a new one to hide the toolbar shortly after we show it
-            fadeOutToolbarHandler.removeCallbacks(fadeOutToolbarRunnable)
-            if (show) {
-                fadeOutToolbarHandler.postDelayed(fadeOutToolbarRunnable, TOOLBAR_FADE_DELAY_MS)
-            }
-
             @AnimRes val animRes = if (show) {
                 R.anim.toolbar_fade_in_and_down
             } else {
@@ -245,12 +233,7 @@ class ProductImageViewerFragment :
         }
     }
 
-    private val fadeOutToolbarRunnable = Runnable {
-        showToolbar(false)
-    }
-
     override fun onImageTapped() {
-        showToolbar(true)
     }
 
     override fun onImageLoadError() {
