@@ -11,6 +11,7 @@ import androidx.core.view.MenuCompat
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import com.woocommerce.android.extensions.navigateSafely
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -362,6 +363,7 @@ class ProductListFragment :
                         }
                     )
                 }
+
                 is OpenEmptyProduct -> {
                     tabletLayoutSetupHelper.openItemDetails(
                         tabletNavigateTo = {
@@ -379,6 +381,7 @@ class ProductListFragment :
                 is ShowProductUpdateStockStatusScreen -> {
                     showProductUpdateStockStatusScreen(event.productsIds)
                 }
+
                 else -> event.isHandled = false
             }
         }
@@ -388,6 +391,7 @@ class ProductListFragment :
                 is ProductsCommunicationViewModel.CommunicationEvent.ProductTrashed -> {
                     trashProduct(event.productId)
                 }
+
                 is ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated -> {
                     productListViewModel.reloadProductsFromDb()
                 }
