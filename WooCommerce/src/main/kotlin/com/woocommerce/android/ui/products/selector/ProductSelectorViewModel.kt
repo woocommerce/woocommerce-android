@@ -793,6 +793,7 @@ class ProductSelectorViewModel @Inject constructor(
     enum class SelectionMode {
         SINGLE,
         MULTIPLE,
+
         /**
          * Used e.g. in two-pane UI when product selector is always visible next to order summary.
          * In this mode the confirmation button and toolbar are hidden.

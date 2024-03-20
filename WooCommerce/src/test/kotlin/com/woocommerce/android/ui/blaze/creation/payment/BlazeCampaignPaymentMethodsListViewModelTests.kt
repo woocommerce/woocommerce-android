@@ -110,7 +110,7 @@ class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
                 creditCardType = CreditCardType.MASTERCARD
             )
         )
-        setup() {
+        setup {
             whenever(blazeRepository.fetchPaymentMethods()).thenReturn(
                 Result.success(
                     BlazeRepository.PaymentMethodsData(

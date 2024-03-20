@@ -86,7 +86,9 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                 enabled = canCreateOrder,
                 onClick = onRecalculateButtonClicked,
             )
-        } else null
+        } else {
+            null
+        }
     }
 
     private fun ViewState.getMainButton(

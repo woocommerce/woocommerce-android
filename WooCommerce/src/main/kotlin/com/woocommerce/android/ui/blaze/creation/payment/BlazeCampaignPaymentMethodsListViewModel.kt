@@ -18,7 +18,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.UserAgent
-import java.net.URL
 import javax.inject.Inject
 
 @HiltViewModel
@@ -66,7 +65,7 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
             viewModelScope.launch {
                 val urls = navArgs.paymentMethodsData.addPaymentMethodUrls
                 if (url.contains(urls.successUrl)) {
-                        blazeRepository.fetchPaymentMethods().fold(
+                    blazeRepository.fetchPaymentMethods().fold(
                         onSuccess = { data ->
                             val newPayment = data.savedPaymentMethods.firstOrNull {
                                 !navArgs.paymentMethodsData.savedPaymentMethods.contains(it)
