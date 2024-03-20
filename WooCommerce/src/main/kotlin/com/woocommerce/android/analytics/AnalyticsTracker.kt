@@ -330,7 +330,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_FEEDBACK_CANCELED = "canceled"
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
-        const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
         const val VALUE_COUPONS_FEEDBACK = "coupons"
