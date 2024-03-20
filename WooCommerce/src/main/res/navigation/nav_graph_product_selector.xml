@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph_product_selector"
     app:startDestination="@id/productSelectorFragment">
-    <fragment
+    <dialog
         android:id="@+id/variationSelectorFragment"
         android:name="com.woocommerce.android.ui.products.variations.selector.VariationSelectorFragment"
         android:label="VariationSelectorFragment">
@@ -19,7 +19,10 @@
         <argument
             android:name="productSource"
             app:argType="com.woocommerce.android.ui.products.selector.ProductSourceForTracking" />
-    </fragment>
+        <argument
+            android:name="screenMode"
+            app:argType="com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel$ScreenMode" />
+    </dialog>
 
     <fragment
         android:id="@+id/productSelectorFragment"

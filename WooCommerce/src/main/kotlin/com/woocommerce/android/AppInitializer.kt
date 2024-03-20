@@ -18,6 +18,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.support.zendesk.ZendeskSettings
@@ -142,6 +143,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var trackStoreSnapshot: TrackStoreSnapshot
 
+    @Inject lateinit var notificationChannelsHandler: NotificationChannelsHandler
+
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
@@ -191,6 +194,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         AppRatingDialog.init(application)
 
         initAnalytics()
+
+        notificationChannelsHandler.init()
 
         // Developers can uncomment the line below to clear the db tables at startup
         // wellSqlConfig.resetDatabase()

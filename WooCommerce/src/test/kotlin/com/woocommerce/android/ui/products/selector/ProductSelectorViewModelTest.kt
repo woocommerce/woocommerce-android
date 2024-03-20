@@ -356,7 +356,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 selectedVariationIds = emptySet(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
                 productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
-                selectionMode = navArgs.selectionMode
+                selectionMode = navArgs.selectionMode,
+                screenMode = VariationSelectorViewModel.ScreenMode.FULLSCREEN
             )
         )
     }
@@ -389,7 +390,8 @@ internal class ProductSelectorViewModelTest : BaseUnitTest() {
                 selectedVariationIds = emptySet(),
                 productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
                 productSourceForTracking = ProductSourceForTracking.ALPHABETICAL,
-                selectionMode = navArgs.selectionMode
+                selectionMode = navArgs.selectionMode,
+                screenMode = VariationSelectorViewModel.ScreenMode.FULLSCREEN
             )
         )
     }
