@@ -487,7 +487,7 @@
     <fragment
         android:id="@+id/productReviewsFragment"
         android:name="com.woocommerce.android.ui.products.reviews.ProductReviewsFragment"
-        tools:layout="@layout/fragment_reviews_list">
+        tools:layout="@layout/fragment_product_reviews_list">
         <argument
             android:name="remoteProductId"
             android:defaultValue="0L"
