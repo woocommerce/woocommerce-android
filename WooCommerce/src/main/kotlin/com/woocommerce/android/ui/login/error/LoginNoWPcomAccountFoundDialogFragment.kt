@@ -28,9 +28,6 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
 
     private val loginListener: LoginListener
         get() = requireActivity() as LoginListener
-    private val listener: Listener
-        get() = requireActivity() as Listener
-
     override val text: CharSequence
         get() = getString(R.string.login_no_wpcom_account_found)
 
