@@ -14,6 +14,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -73,7 +74,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+        doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS)))
+            .whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         val reviewList = ArrayList<ProductReview>()
         var hasUnread = false
@@ -124,7 +126,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
         doReturn(reviews).whenever(reviewListRepository).getCachedProductReviews()
         doReturn(false).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(RequestResult.ERROR).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+        doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.ERROR)))
+            .whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         val reviewList = ArrayList<ProductReview>()
         var hasUnread = false
@@ -157,7 +160,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
     @Test
     fun `Show and hide review list skeleton correctly`() = testBlocking {
         doReturn(emptyList<ProductReview>()).whenever(reviewListRepository).getCachedProductReviews()
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+        doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS)))
+            .whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         val skeletonShown = mutableListOf<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -172,7 +176,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides review list load more progress correctly`() = testBlocking {
         doReturn(true).whenever(reviewListRepository).canLoadMore
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = true)
+        doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS)))
+            .whenever(reviewListRepository).fetchProductReviews(loadMore = true)
 
         val isLoadingMore = mutableListOf<Boolean>()
         viewModel.viewStateData.observeForever { old, new ->
@@ -199,7 +204,8 @@ class ReviewListViewModelTest : BaseUnitTest() {
     @Test
     fun `Refreshing reviews list handled correctly`() = testBlocking {
         doReturn(true).whenever(reviewListRepository).getHasUnreadCachedProductReviews()
-        doReturn(RequestResult.SUCCESS).whenever(reviewListRepository).fetchProductReviews(loadMore = false)
+        doReturn(flowOf(ReviewListRepository.FetchReviewsResult.ReviewsFetched(RequestResult.SUCCESS)))
+            .whenever(reviewListRepository).fetchProductReviews(loadMore = false)
 
         var hasUnread = false
         val isRefreshing = mutableListOf<Boolean>()
