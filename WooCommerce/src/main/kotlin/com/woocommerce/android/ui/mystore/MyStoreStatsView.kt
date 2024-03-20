@@ -228,9 +228,8 @@ class MyStoreStatsView @JvmOverloads constructor(
             }
             customRangeTab = tab
             tabLayout.addTab(tab)
-            tabLayout.selectTab(tab)
             @Suppress("MagicNumber")
-            postDelayed({ tabLayout.scrollX = tabLayout.width }, 200)
+            postDelayed({ tabLayout.selectTab(tab) }, 200)
         }
     }
 
