@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.moremenu.domain
 
+import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
@@ -26,5 +27,7 @@ class MoreMenuRepository @Inject constructor(
             currentWooCoreVersion.semverCompareTo(INBOX_MINIMUM_SUPPORTED_VERSION) >= 0
         }
 
-    fun isUpgradesEnabled(): Boolean = selectedSite.getIfExists()?.isWpComStore ?: false
+    fun isUpgradesEnabled(): Boolean = selectedSite.getIfExists()?.let {
+        it.isWpComStore && !it.isFreeTrial
+    } ?: false
 }
