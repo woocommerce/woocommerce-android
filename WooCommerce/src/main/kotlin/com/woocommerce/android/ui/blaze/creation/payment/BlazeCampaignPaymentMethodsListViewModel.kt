@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_ADD_PAYME
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_ADD_PAYMENT_METHOD_WEB_VIEW_DISPLAYED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeRepository
+import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethod
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.WooLog
@@ -16,6 +17,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
@@ -40,11 +42,14 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
     )
     val viewState = _viewState.asLiveData()
 
-    private fun paymentMethodsListState(): ViewState = ViewState.PaymentMethodsList(
-        paymentMethods = navArgs.paymentMethodsData.savedPaymentMethods,
-        selectedPaymentMethod = navArgs.paymentMethodsData.savedPaymentMethods.firstOrNull {
+    private fun paymentMethodsListState(
+        paymentMethods: List<PaymentMethod> = navArgs.paymentMethodsData.savedPaymentMethods,
+        selectedMethod: PaymentMethod? = navArgs.paymentMethodsData.savedPaymentMethods.firstOrNull {
             it.id == navArgs.selectedPaymentMethodId
-        },
+        }
+    ): ViewState = ViewState.PaymentMethodsList(
+        paymentMethods = paymentMethods,
+        selectedPaymentMethod = selectedMethod,
         accountEmail = accountRepository.getUserAccount()?.email ?: "",
         accountUsername = accountRepository.getUserAccount()?.userName ?: "",
         onPaymentMethodClicked = {
@@ -67,7 +72,7 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
                 if (url.contains(urls.successUrl)) {
                     blazeRepository.fetchPaymentMethods().fold(
                         onSuccess = { data ->
-                            val newPayment = data.savedPaymentMethods.firstOrNull {
+                            val newPayment = data.savedPaymentMethods.singleOrNull {
                                 !navArgs.paymentMethodsData.savedPaymentMethods.contains(it)
                             }
                             if (newPayment != null) {
@@ -80,7 +85,7 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
                                 triggerEvent(MultiLiveEvent.Event.ExitWithResult(newPayment.id))
                             } else {
                                 WooLog.e(WooLog.T.BLAZE, "Failed to find a new payment methods")
-                                _viewState.value = paymentMethodsListState()
+                                _viewState.value = paymentMethodsListState(data.savedPaymentMethods, null)
                             }
                         },
                         onFailure = {
@@ -98,11 +103,11 @@ class BlazeCampaignPaymentMethodsListViewModel @Inject constructor(
         val onDismiss: () -> Unit
 
         data class PaymentMethodsList(
-            val paymentMethods: List<BlazeRepository.PaymentMethod>,
-            val selectedPaymentMethod: BlazeRepository.PaymentMethod?,
+            val paymentMethods: List<PaymentMethod>,
+            val selectedPaymentMethod: PaymentMethod?,
             val accountEmail: String,
             val accountUsername: String,
-            val onPaymentMethodClicked: (BlazeRepository.PaymentMethod) -> Unit,
+            val onPaymentMethodClicked: (PaymentMethod) -> Unit,
             val onAddPaymentMethodClicked: () -> Unit,
             override val onDismiss: () -> Unit
         ) : ViewState
