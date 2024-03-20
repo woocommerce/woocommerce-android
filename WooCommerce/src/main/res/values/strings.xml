@@ -3619,7 +3619,7 @@
     <string name="upgrades_upgrade_now">Upgrade now</string>
     <string name="upgrades_current_plan">Current: %s</string>
     <string name="upgrades_troubleshooting">Troubleshooting</string>
-    <string name="upgrades_title">Upgrades</string>
+    <string name="upgrades_title">Subscriptions</string>
     <string name="upgrades_subscription_status">Subscription status</string>
     <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$s. Upgrade to unlock new features and keep your store running.</string>
     <string name="upgrades_trial_ended_caption">Your free trial has ended and have limited access to all the features. Subscribe to %1$s now.</string>
@@ -3737,8 +3737,8 @@
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
 
-    <string name="more_menu_button_upgrades">Upgrades</string>
-    <string name="more_menu_button_upgrades_description">Manage your plans</string>
+    <string name="more_menu_button_subscriptions">Subscriptions</string>
+    <string name="more_menu_button_subscriptions_description">Manage your subscription</string>
 
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
