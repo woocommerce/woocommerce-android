@@ -63,16 +63,7 @@ class StoreOnboardingRepository @Inject constructor(
 
     private fun addLocalOnboardingTasks(onboardingTasks: MutableList<OnboardingTask>) {
         if (!selectedSite.get().isFreeTrial) return
-        if (!onboardingTasks.any { it.type == LAUNCH_YOUR_STORE }) {
-            onboardingTasks.add(
-                OnboardingTask(
-                    type = LAUNCH_YOUR_STORE,
-                    isComplete = false,
-                    isVisible = true,
-                    isVisited = false
-                )
-            )
-        }
+
         onboardingTasks.add(
             OnboardingTask(
                 type = LOCAL_NAME_STORE,
