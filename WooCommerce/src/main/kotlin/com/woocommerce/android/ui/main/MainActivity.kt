@@ -893,8 +893,7 @@ class MainActivity :
 
                 is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
-                        context = this,
-                        startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
+                        context = this
                     ).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
                     animateBottomBar(binding.trialBar, show = true)
