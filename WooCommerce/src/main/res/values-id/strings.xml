@@ -1241,7 +1241,6 @@ Language: id
     <string name="signup_password_too_short">Kata sandi Anda terlalu pendek. Gunakan kata sandi yang terdiri dari sedikitnya 6 karakter.</string>
     <string name="signup_email_invalid_input">Masukkan alamat email yang valid.</string>
     <string name="signup_email_exist_input">Akun dengan email ini sudah ada.</string>
-    <string name="login_create_an_account">Buat Akun</string>
     <string name="login_try_another_email">Coba Alamat Lainnya</string>
     <string name="date_timeframe_custom_date_range_title">Rentang tanggal kustom</string>
     <string name="date_timeframe_custom">Kustom</string>

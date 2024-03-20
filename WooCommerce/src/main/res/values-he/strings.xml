@@ -1241,7 +1241,6 @@ Language: he_IL
     <string name="signup_password_too_short">הסיסמה שלך קצרה מדי. יש לבחור סיסמה בת שישה תווים לפחות.</string>
     <string name="signup_email_invalid_input">נא להזין כתובת אימייל תקינה.</string>
     <string name="signup_email_exist_input">כבר קיים חשבון עם כתובת האימייל הזאת.</string>
-    <string name="login_create_an_account">ליצור חשבון</string>
     <string name="login_try_another_email">יש לנסות כתובת אחרת</string>
     <string name="date_timeframe_custom_date_range_title">טווח תאריכים מותאם אישית</string>
     <string name="date_timeframe_custom">התאמה אישית</string>

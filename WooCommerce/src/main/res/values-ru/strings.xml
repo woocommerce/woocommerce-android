@@ -1241,7 +1241,6 @@ Language: ru
     <string name="signup_password_too_short">Пароль слишком короткий. Придумайте пароль, состоящий как минимум из шести символов.</string>
     <string name="signup_email_invalid_input">Введите допустимый адрес электронной почты.</string>
     <string name="signup_email_exist_input">Учётная запись с этим адресом эл. почты уже существует.</string>
-    <string name="login_create_an_account">Создать учётную запись</string>
     <string name="login_try_another_email">Использовать другой адрес</string>
     <string name="date_timeframe_custom_date_range_title">Произвольный период</string>
     <string name="date_timeframe_custom">Произвольный</string>

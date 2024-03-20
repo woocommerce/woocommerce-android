@@ -1241,7 +1241,6 @@ Language: sv_SE
     <string name="signup_password_too_short">Ditt lösenord är för kort. Välj ett lösenord som har minst 6 tecken.</string>
     <string name="signup_email_invalid_input">Ange en giltig e-postadress.</string>
     <string name="signup_email_exist_input">Ett konto med denna e-post finns redan.</string>
-    <string name="login_create_an_account">Skapa ett konto</string>
     <string name="login_try_another_email">Försök med en annan adress</string>
     <string name="date_timeframe_custom_date_range_title">Anpassat datumintervall</string>
     <string name="date_timeframe_custom">Anpassat</string>

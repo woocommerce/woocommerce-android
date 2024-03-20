@@ -1241,7 +1241,6 @@ Language: ar
     <string name="signup_password_too_short">كلمة مرورك قصيرة للغاية. يرجى اختيار كلمة مرور تحتوي على 6 أحرف على الأقل.</string>
     <string name="signup_email_invalid_input">الرجاء إدخال عنوان بريد إلكتروني صالح.</string>
     <string name="signup_email_exist_input">يوجد حساب موجود لهذا البريد الإلكتروني بالفعل.</string>
-    <string name="login_create_an_account">إنشاء حساب</string>
     <string name="login_try_another_email">تجربة عنوان آخر</string>
     <string name="date_timeframe_custom_date_range_title">نطاق تاريخ مخصص</string>
     <string name="date_timeframe_custom">مخصص</string>

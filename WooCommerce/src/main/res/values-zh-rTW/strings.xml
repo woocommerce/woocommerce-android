@@ -1241,7 +1241,6 @@ Language: zh_TW
     <string name="signup_password_too_short">你的密碼太短了。 請選擇一個至少含有 6 個字元的密碼。</string>
     <string name="signup_email_invalid_input">請輸入有效的電子郵件地址。</string>
     <string name="signup_email_exist_input">已有其他帳號使用此電子郵件。</string>
-    <string name="login_create_an_account">建立帳號</string>
     <string name="login_try_another_email">嘗試其他地址</string>
     <string name="date_timeframe_custom_date_range_title">自訂日期範圍</string>
     <string name="date_timeframe_custom">自訂</string>

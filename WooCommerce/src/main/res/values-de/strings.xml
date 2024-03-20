@@ -1241,7 +1241,6 @@ Language: de
     <string name="signup_password_too_short">Dein Passwort ist zu kurz. Bitte wähle ein Passwort mit mindestens 6 Zeichen.</string>
     <string name="signup_email_invalid_input">Bitte gib eine gültige E-Mail-Adresse ein.</string>
     <string name="signup_email_exist_input">Es ist bereits ein Konto mit dieser E-Mail-Adresse vorhanden.</string>
-    <string name="login_create_an_account">Konto erstellen</string>
     <string name="login_try_another_email">Andere Adresse versuchen</string>
     <string name="date_timeframe_custom_date_range_title">Angepasster Zeitraum</string>
     <string name="date_timeframe_custom">Angepasst</string>

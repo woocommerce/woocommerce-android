@@ -1241,7 +1241,6 @@ Language: es
     <string name="signup_password_too_short">La contraseña es demasiado corta. Elige otra contraseña que tenga al menos 6 caracteres.</string>
     <string name="signup_email_invalid_input">Introduce una dirección de correo electrónico válida.</string>
     <string name="signup_email_exist_input">Ya existe una cuenta con esta dirección de correo electrónico.</string>
-    <string name="login_create_an_account">Crear una cuenta</string>
     <string name="login_try_another_email">Prueba con otra dirección</string>
     <string name="date_timeframe_custom_date_range_title">Intervalo de fechas personalizado</string>
     <string name="date_timeframe_custom">Personalizado</string>
