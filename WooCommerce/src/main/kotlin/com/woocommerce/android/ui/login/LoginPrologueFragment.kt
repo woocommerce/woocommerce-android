@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -16,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
+class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
     companion object {
         const val TAG = "login-prologue-fragment"
     }
@@ -27,8 +26,6 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
         fun onNewToWooButtonClicked()
         fun onGetStartedClicked()
     }
-
-    constructor() : this(R.layout.fragment_login_prologue)
 
     @Inject
     lateinit var unifiedLoginTracker: UnifiedLoginTracker
