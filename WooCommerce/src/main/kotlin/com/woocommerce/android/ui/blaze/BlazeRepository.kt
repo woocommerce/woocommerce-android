@@ -237,8 +237,7 @@ class BlazeRepository @Inject constructor(
     private fun createPaymentMethodUrls(): PaymentMethodUrls {
         return PaymentMethodUrls(
             formUrl = WPCOM_ADD_PAYMENT_METHOD,
-            successUrl = FETCH_PAYMENT_METHOD_URL_PATH,
-            idUrlParameter = "pmid"
+            successUrl = FETCH_PAYMENT_METHOD_URL_PATH
         )
     }
 
@@ -416,8 +415,7 @@ class BlazeRepository @Inject constructor(
     @Parcelize
     data class PaymentMethodUrls(
         val formUrl: String,
-        val successUrl: String,
-        val idUrlParameter: String
+        val successUrl: String
     ) : Parcelable
 
     sealed class CampaignCreationError(message: String?) : Exception(message) {
