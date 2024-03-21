@@ -2116,6 +2116,24 @@ class ProductDetailViewModel @Inject constructor(
         refreshProductCategories()
     }
 
+    fun productCategoryEdited(updatedCategory: ProductCategory) {
+        updateProductDraft(
+            categories = viewState.productDraft?.categories
+                ?.map {
+                    if (it.remoteCategoryId == updatedCategory.remoteCategoryId) updatedCategory else it
+                }
+        )
+        refreshProductCategories()
+    }
+
+    fun productCategoryDeleted(deletedCategory: ProductCategory) {
+        updateProductDraft(
+            categories = viewState.productDraft?.categories
+                ?.filter { deletedCategory.remoteCategoryId != it.remoteCategoryId }
+        )
+        refreshProductCategories()
+    }
+
     /**
      * Refreshes the list of categories by calling the [loadProductCategories] method
      * which eventually checks, if there is anything new to fetch from the server
@@ -2230,7 +2248,7 @@ class ProductDetailViewModel @Inject constructor(
         // Mark the product categories as selected in the sorted list
         sortedList.map { productCategoryItemUiModel ->
             for (selectedCategory in selectedCategories) {
-                if (productCategoryItemUiModel.category.name == selectedCategory.name) {
+                if (productCategoryItemUiModel.category.remoteCategoryId == selectedCategory.remoteCategoryId) {
                     productCategoryItemUiModel.isSelected = true
                 }
             }

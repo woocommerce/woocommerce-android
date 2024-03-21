@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.CreatingCategory
@@ -15,6 +16,7 @@ import com.woocommerce.android.ui.products.categories.AddProductCategoryViewMode
 import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.UpdatingCategory
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -101,7 +103,9 @@ class AddProductCategoryViewModel @Inject constructor(
                 productCategoriesRepository.deleteProductCategory(navArgs.productCategory!!.remoteCategoryId)
                     .onSuccess {
                         triggerEvent(ShowSnackbar(R.string.delete_product_category_success))
-                        triggerEvent(ExitWithResult(navArgs.productCategory))
+                        triggerEvent(
+                            ExitWithResult(CategoryUpdateResult(navArgs.productCategory!!, UpdateAction.Delete))
+                        )
                     }
                     .onFailure {
                         WooLog.e(
@@ -156,7 +160,11 @@ class AddProductCategoryViewModel @Inject constructor(
                         triggerEvent(ShowSnackbar(successString))
                         val addedCategory = productCategoriesRepository
                             .getProductCategoryByNameAndParentId(categoryNameTrimmed, parentId)
-                        triggerEvent(ExitWithResult(addedCategory))
+                        val action =
+                            if (addProductCategoryViewState.isEditingMode) UpdateAction.Update else UpdateAction.Add
+                        triggerEvent(
+                            ExitWithResult(CategoryUpdateResult(addedCategory!!, action))
+                        )
                     }
                     .onFailure {
                         WooLog.e(
@@ -317,5 +325,22 @@ class AddProductCategoryViewModel @Inject constructor(
 
         @Parcelize
         object DeletingCategory : ProgressDialog
+    }
+
+    @Parcelize
+    data class CategoryUpdateResult(
+        val updatedCategory: ProductCategory,
+        val action: UpdateAction
+    ) : Parcelable, MultiLiveEvent.Event()
+
+    sealed interface UpdateAction : Parcelable {
+        @Parcelize
+        data object Add : UpdateAction
+
+        @Parcelize
+        data object Update : UpdateAction
+
+        @Parcelize
+        data object Delete : UpdateAction
     }
 }

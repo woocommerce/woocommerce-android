@@ -39,7 +39,7 @@ class AddProductCategoryFragment :
     BaseFragment(R.layout.fragment_add_product_category),
     BackPressListener {
     companion object {
-        const val ARG_ADDED_CATEGORY = "arg-added-category"
+        const val ARG_CATEGORY_UPDATE_RESULT = "arg-category-update-result"
     }
 
     private var doneMenuItem: MenuItem? = null
@@ -172,7 +172,7 @@ class AddProductCategoryFragment :
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 is ShowDialog -> event.showDialog()
-                is ExitWithResult<*> -> navigateBackWithResult(ARG_ADDED_CATEGORY, event.data)
+                is ExitWithResult<*> -> navigateBackWithResult(ARG_CATEGORY_UPDATE_RESULT, event.data)
                 else -> event.isHandled = false
             }
         }
