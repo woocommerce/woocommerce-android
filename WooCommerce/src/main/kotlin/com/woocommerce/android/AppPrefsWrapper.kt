@@ -228,10 +228,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getIsNewSignUp() = AppPrefs.getIsNewSignUp()
 
-    fun setStoreCreationSource(source: String) {
-        AppPrefs.setStoreCreationSource(source)
-    }
-
     fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
     fun setCustomDomainsSource(source: DomainFlowSource) {

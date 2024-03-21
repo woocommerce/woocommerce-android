@@ -38,19 +38,15 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
         with(FragmentLoginPrologueBinding.bind(view)) {
             buttonLoginStore.setOnClickListener {
                 // Login with site address
-                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
                 prologueFinishedListener?.onPrimaryButtonClicked()
             }
 
             buttonLoginWpcom.setOnClickListener {
                 // Login with WordPress.com account
-                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
                 prologueFinishedListener?.onSecondaryButtonClicked()
             }
 
             buttonStartNewStore.setOnClickListener {
-                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
-
                 AnalyticsTracker.track(
                     AnalyticsEvent.LOGIN_PROLOGUE_STARTING_A_NEW_STORE_TAPPED
                 )
