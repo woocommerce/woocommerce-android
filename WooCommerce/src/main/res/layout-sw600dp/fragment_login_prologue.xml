@@ -113,15 +113,15 @@
             tools:visibility="visible" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_get_started"
-            style="@style/Woo.Button.Colored.Circle.White"
+            android:id="@+id/button_start_new_store"
+            style="@style/Woo.Button.TextButton"
             android:layout_width="@dimen/prologue_button_wide"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
             android:layout_marginBottom="@dimen/major_150"
-            android:text="@string/signup_get_started_button"
+            android:text="@string/login_prologue_start_new_store"
             android:textAllCaps="false" />
 
     </LinearLayout>

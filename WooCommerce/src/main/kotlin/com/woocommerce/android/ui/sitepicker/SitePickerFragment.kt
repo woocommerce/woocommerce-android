@@ -326,7 +326,7 @@ class SitePickerFragment :
 
     private fun navigateToAddStoreScreen() {
         findNavController()
-            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToAddStoreBottomSheetFragment())
+            .navigateSafely(SitePickerFragmentDirections.actionSitePickerFragmentToSitePickerSiteDiscoveryFragment())
     }
 
     private fun navigateToStoreCreation() {
