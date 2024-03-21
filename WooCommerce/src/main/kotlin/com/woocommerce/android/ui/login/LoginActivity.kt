@@ -103,7 +103,6 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    LoginNoWPcomAccountFoundDialogFragment.Listener,
     QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
@@ -912,10 +911,6 @@ class LoginActivity :
 
     override fun onLoginWithSiteCredentialsFallbackClicked() {
         loginViaSiteCredentials(appPrefsWrapper.getLoginSiteAddress())
-    }
-
-    override fun onCreateAccountClicked() {
-
     }
 
     override fun onCarouselFinished() {
