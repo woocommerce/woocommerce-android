@@ -83,7 +83,7 @@ class ProductReviewsFragment :
         _reviewsAdapter = ReviewListAdapter(this)
         val unreadReviewItemDecoration = UnreadItemDecoration(requireContext(), this)
 
-        binding.reviewsList.reviewsList.apply {
+        binding.reviewsList.apply {
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             setHasFixedSize(false)
@@ -101,7 +101,7 @@ class ProductReviewsFragment :
             })
         }
 
-        binding.reviewsList.apply {
+        binding.apply {
             // Set the scrolling view in the custom SwipeRefreshLayout
             notifsRefreshLayout.scrollUpChild = reviewsList
             notifsRefreshLayout.setOnRefreshListener {
@@ -126,7 +126,7 @@ class ProductReviewsFragment :
         viewModel.productReviewsViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
             new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
-                binding.reviewsList.notifsRefreshLayout.isRefreshing = it
+                binding.notifsRefreshLayout.isRefreshing = it
             }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
@@ -156,13 +156,13 @@ class ProductReviewsFragment :
     }
 
     private fun showLoadMoreProgress(show: Boolean) {
-        binding.reviewsList.notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
+        binding.notifsLoadMoreProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     private fun showSkeleton(show: Boolean) {
         when (show) {
             true -> {
-                skeletonView.show(binding.reviewsList.notifsView, R.layout.skeleton_notif_list, delayed = true)
+                skeletonView.show(binding.notifsView, R.layout.skeleton_notif_list, delayed = true)
                 showEmptyView(false)
             }
 
@@ -172,22 +172,22 @@ class ProductReviewsFragment :
 
     private fun showEmptyView(show: Boolean) {
         if (show) {
-            if (binding.reviewsList.unreadFilterSwitch.isChecked) {
-                binding.reviewsList.unreadReviewsFilterLayout.show()
-                binding.reviewsList.emptyView.show(EmptyViewType.UNREAD_FILTERED_REVIEW_LIST)
+            if (binding.unreadFilterSwitch.isChecked) {
+                binding.unreadReviewsFilterLayout.show()
+                binding.emptyView.show(EmptyViewType.UNREAD_FILTERED_REVIEW_LIST)
             } else {
-                binding.reviewsList.emptyView.show(EmptyViewType.REVIEW_LIST) {
+                binding.emptyView.show(EmptyViewType.REVIEW_LIST) {
                     ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_REVIEWS)
                 }
-                binding.reviewsList.unreadReviewsFilterLayout.hide()
+                binding.unreadReviewsFilterLayout.hide()
             }
         } else {
-            binding.reviewsList.emptyView.hide()
+            binding.emptyView.hide()
         }
     }
 
     private fun setUnreadFilterChangedListener() {
-        binding.reviewsList.unreadFilterSwitch.setOnCheckedChangeListener { _, isChecked ->
+        binding.unreadFilterSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.onUnreadReviewsFilterChanged(isChecked)
         }
     }
