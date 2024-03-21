@@ -396,6 +396,14 @@ class MyStoreFragment :
         myStoreViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
             binding.myStoreStats.loadDashboardStats(statsTimeRangeSelection)
             binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
+            if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != statsTimeRangeSelection.selectionType) {
+                val index = (0..tabLayout.tabCount)
+                    .firstOrNull { tabLayout.getTabAt(it)?.tag == statsTimeRangeSelection.selectionType }
+                index?.let {
+                    // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
+                    handler.postDelayed({ tabLayout.getTabAt(index)?.select() }, 300)
+                }
+            }
         }
         myStoreViewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
             when (revenueStats) {
