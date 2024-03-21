@@ -168,7 +168,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
         whenever(selectedSite.get()).thenReturn(mockedSite)
         sut.onSetTaxRateClicked()
-        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
+        verify(
+            tracker
+        ).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
     }
 
     @Test
@@ -176,7 +178,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
         whenever(selectedSite.get()).thenReturn(mockedSite)
         sut.onSetNewTaxRateClicked()
-        verify(tracker).track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
+        verify(
+            tracker
+        ).track(
+            AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED,
+            mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact")
+        )
     }
 
     @Test
