@@ -11,9 +11,6 @@
             android:name="isFromStoreCreation"
             app:argType="boolean" />
         <action
-            android:id="@+id/action_themePickerFragment_to_storeCreationInstallationFragment"
-            app:destination="@id/storeCreationInstallationFragment" />
-        <action
             android:id="@+id/action_themePickerFragment_to_themePreviewFragment"
             app:destination="@id/themePreviewFragment" />
     </fragment>

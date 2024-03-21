@@ -807,17 +807,6 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </fragment>
-    <dialog
-        android:id="@+id/themeActivationFragmentDialog"
-        android:name="com.woocommerce.android.ui.login.storecreation.theme.ThemeActivationFragmentDialog"
-        android:label="ThemeActivationFragmentDialog">
-        <argument
-            android:name="themeId"
-            app:argType="string" />
-    </dialog>
-    <action
-        android:id="@+id/action_global_themeActivationFragmentDialog"
-        app:destination="@id/themeActivationFragmentDialog" />
     <fragment
         android:id="@+id/orderConnectivityToolFragment"
         android:name="com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolFragment"

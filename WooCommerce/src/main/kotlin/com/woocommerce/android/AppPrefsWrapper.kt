@@ -222,12 +222,6 @@ class AppPrefsWrapper @Inject constructor() {
     fun getActiveStatsGranularity() =
         AppPrefs.getActiveStatsGranularity()
 
-    fun markAsNewSignUp(newSignUp: Boolean) {
-        AppPrefs.markAsNewSignUp(newSignUp)
-    }
-
-    fun getIsNewSignUp() = AppPrefs.getIsNewSignUp()
-
     fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
     fun setCustomDomainsSource(source: DomainFlowSource) {

@@ -71,10 +71,7 @@ class ThemePickerFragment : BaseFragment() {
     }
 
     private fun navigateToStoreInstallationStep() {
-        findNavController().navigateSafely(
-            ThemePickerFragmentDirections
-                .actionThemePickerFragmentToStoreCreationInstallationFragment()
-        )
+
     }
 
     private fun navigateToThemePreviewFragment(event: NavigateToThemePreview) {

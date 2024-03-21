@@ -32,13 +32,7 @@ class AddStoreBottomSheetFragment : WCBottomSheetDialogFragment(R.layout.dialog_
                 AnalyticsEvent.SITE_CREATION_FLOW_STARTED,
                 mapOf(AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource())
             )
-            findNavController().navigateSafely(
-                directions = AddStoreBottomSheetFragmentDirections
-                    .actionAddStoreBottomSheetFragmentToStoreCreationNativeFlow(),
-                navOptions = NavOptions.Builder()
-                    .setPopUpTo(R.id.sitePickerFragment, false)
-                    .build()
-            )
+
         }
         binding.connectExistingStoreButton.setOnClickListener {
             AnalyticsTracker.track(AnalyticsEvent.SITE_PICKER_CONNECT_EXISTING_STORE_TAPPED)

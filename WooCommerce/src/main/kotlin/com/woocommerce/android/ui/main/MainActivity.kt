@@ -957,10 +957,9 @@ class MainActivity :
         startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun startThemeActivation(themeId: String) {
-        navController.navigateSafely(
-            NavGraphMainDirections.actionGlobalThemeActivationFragmentDialog(themeId)
-        )
+        TODO()
     }
 
     private fun onRestartActivityEvent(event: RestartActivityEvent) {

@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -60,8 +59,6 @@ class PlansFragment : BaseFragment() {
     }
 
     private fun navigateToInstallationFragment() {
-        findNavController().navigateSafely(
-            PlansFragmentDirections.actionPlansFragmentToInstallationFragment()
-        )
+        TODO()
     }
 }
