@@ -1,0 +1,2 @@
+17.8 :
+Découvrez la mise à jour de notre application mobile WooCommerce ! Connectez-vous avec vos identifiants de site sur les sites connectés à Jetpack, alternative à l’e-mail WP.com. Découvrez le rafraîchissement instantané de la liste de produits. Gérer votre inventaire est plus facile que jamais avec la mise à jour de l’état du stock en bloc. Vous pouvez envoyer vos commandes directement dans la corbeille. Nous avons optimisé le flux de création de commande pour les tablettes ! Profitez-en bien 💜
