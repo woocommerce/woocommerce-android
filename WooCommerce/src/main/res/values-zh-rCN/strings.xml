@@ -580,7 +580,6 @@ Language: zh_CN
     <string name="coupon_selector_empty_list_message">您尚未创建任何优惠券。 为此订单创建优惠券。</string>
     <string name="coupon_selector_empty_list_button">前往“优惠券”</string>
     <string name="order_creation_select_coupon">选择一个优惠券</string>
-    <string name="signup_get_started_button">创建新的商店</string>
     <string name="coupon_create_coupon_created">优惠券已创建</string>
     <string name="coupon_create_save_button">创建</string>
     <string name="coupon_create_screen_title_default">创建优惠券</string>
@@ -1241,7 +1240,6 @@ Language: zh_CN
     <string name="signup_password_too_short">您的密码太短。 请选择一个至少包含 6 个字符的密码。</string>
     <string name="signup_email_invalid_input">请输入有效的电子邮箱地址。</string>
     <string name="signup_email_exist_input">已存在使用此电子邮件的账户。</string>
-    <string name="login_create_an_account">创建账户</string>
     <string name="login_try_another_email">尝试其他地址</string>
     <string name="date_timeframe_custom_date_range_title">自定义日期范围</string>
     <string name="date_timeframe_custom">自定义</string>

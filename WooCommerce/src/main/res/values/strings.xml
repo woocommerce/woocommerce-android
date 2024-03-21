@@ -231,6 +231,8 @@
     <string name="login_prologue_survey_button_manage_orders">Manage my orders</string>
     <string name="login_prologue_survey_button_switch_stores">Switch between multiple stores</string>
 
+    <string name="login_prologue_start_new_store">Starting a new store?</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_non_woo_stores_label">Other sites</string>
     <string name="login_connected_store">Connected store</string>
@@ -285,7 +287,7 @@
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
-    <string name="login_site_picker_add_a_store">Add a Store</string>
+    <string name="login_site_picker_add_a_store">Connect another store</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
@@ -298,7 +300,6 @@
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
-    <string name="login_create_an_account">Create An Account</string>
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
     <string name="login_jetpack_installation_screen_title">Connect store</string>
@@ -401,7 +402,6 @@
     <!--
         Sign Up Flow
     -->
-    <string name="signup_get_started_button">Create a new store</string>
     <string name="signup_get_started_label">Get started in minutes</string>
     <string name="signup_create_password_label">Create your password</string>
     <string name="signup_get_started_create_account_label">First, let’s create your account. </string>
@@ -2351,6 +2351,11 @@
     <string name="settings_plugins">Plugins</string>
     <string name="settings_option_installed_plugins">Installed Plugins</string>
     <string name="settings_woo_plugin_version">WooCommerce Version</string>
+    <string name="plugin_state_up_to_date">Up-to-date</string>
+    <string name="plugin_state_update_available">Update available (%s)</string>
+    <string name="plugin_state_inactive">Inactive</string>
+    <string name="plugin_state_auto_managed">Auto-managed</string>
+    <string name="plugins_error_message">An error occurred while loading installed plugins</string>
 
     <!--
         Developer Options Screen
@@ -3205,7 +3210,7 @@
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
     <string name="simplified_login_prologue_intro">The ecommerce platform that grows with you</string>
-    <string name="simplified_login_prologue_title">Start with our 15-day free trial, no credit card needed. Join 3.4M stores thriving with Woo, from first sale to millions.</string>
+    <string name="simplified_login_prologue_title">From your first sale to millions in revenue, Woo is with you. See why merchants trust us to power 3.4 million online stores.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>

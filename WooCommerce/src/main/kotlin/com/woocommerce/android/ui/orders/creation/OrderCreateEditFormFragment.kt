@@ -248,7 +248,7 @@ class OrderCreateEditFormFragment :
                 Creation -> title = resources.getString(R.string.create)
                 is Edit -> isVisible = false
             }
-            isEnabled = viewModel.viewStateData.liveData.value?.canCreateOrder ?: false
+            isEnabled = viewModel.viewStateData.liveData.value?.isCreateOrderButtonEnabled ?: false
         }
         mainToolbar.setOnMenuItemClickListener { item ->
             return@setOnMenuItemClickListener when (item.itemId) {
@@ -415,7 +415,7 @@ class OrderCreateEditFormFragment :
             new.isProgressDialogShown.takeIfNotEqualTo(old?.isProgressDialogShown) { show ->
                 if (show) showProgressDialog() else hideProgressDialog()
             }
-            new.canCreateOrder.takeIfNotEqualTo(old?.canCreateOrder) {
+            new.isCreateOrderButtonEnabled.takeIfNotEqualTo(old?.isCreateOrderButtonEnabled) {
                 createOrderMenuItem?.isEnabled = it
             }
             new.isIdle.takeIfNotEqualTo(old?.isIdle) { idle ->

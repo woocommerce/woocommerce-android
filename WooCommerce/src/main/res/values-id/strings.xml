@@ -580,7 +580,6 @@ Language: id
     <string name="coupon_selector_empty_list_message">Anda belum membuat kupon apa pun. Buat kupon untuk diterapkan ke pesanan ini.</string>
     <string name="coupon_selector_empty_list_button">Buka Kupon</string>
     <string name="order_creation_select_coupon">Pilih kupon</string>
-    <string name="signup_get_started_button">Buat toko baru</string>
     <string name="coupon_create_coupon_creation_failed">Gagal membuat kupon</string>
     <string name="coupon_create_coupon_created">Kupon dibuat</string>
     <string name="coupon_create_save_button">Buat</string>
@@ -1241,7 +1240,6 @@ Language: id
     <string name="signup_password_too_short">Kata sandi Anda terlalu pendek. Gunakan kata sandi yang terdiri dari sedikitnya 6 karakter.</string>
     <string name="signup_email_invalid_input">Masukkan alamat email yang valid.</string>
     <string name="signup_email_exist_input">Akun dengan email ini sudah ada.</string>
-    <string name="login_create_an_account">Buat Akun</string>
     <string name="login_try_another_email">Coba Alamat Lainnya</string>
     <string name="date_timeframe_custom_date_range_title">Rentang tanggal kustom</string>
     <string name="date_timeframe_custom">Kustom</string>

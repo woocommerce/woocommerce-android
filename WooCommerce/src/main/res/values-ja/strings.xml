@@ -580,7 +580,6 @@ Language: ja_JP
     <string name="coupon_selector_empty_list_message">クーポンはまだ作成されていません。 クーポンを作成してこの注文に適用します。</string>
     <string name="coupon_selector_empty_list_button">クーポンに移動</string>
     <string name="order_creation_select_coupon">クーポンを選択</string>
-    <string name="signup_get_started_button">新しいストアを作成</string>
     <string name="coupon_create_coupon_creation_failed">クーポンの作成に失敗しました</string>
     <string name="coupon_create_coupon_created">クーポンを作成しました</string>
     <string name="coupon_create_save_button">作成</string>
@@ -1241,7 +1240,6 @@ Language: ja_JP
     <string name="signup_password_too_short">パスワードが短すぎます。 6文字以上のパスワードを設定してください。</string>
     <string name="signup_email_invalid_input">有効なメールアドレスを入力してください。</string>
     <string name="signup_email_exist_input">このメールアドレスのアカウントはすでにあります。</string>
-    <string name="login_create_an_account">アカウントを作成</string>
     <string name="login_try_another_email">別のアドレスを試す</string>
     <string name="date_timeframe_custom_date_range_title">カスタムの日付の範囲</string>
     <string name="date_timeframe_custom">カスタム</string>

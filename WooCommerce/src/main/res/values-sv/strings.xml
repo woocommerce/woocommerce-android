@@ -580,7 +580,6 @@ Language: sv_SE
     <string name="coupon_selector_empty_list_message">Du har inte skapat några rabattkoder ännu. Skapa en rabattkod för att tillämpa den på denna beställning.</string>
     <string name="coupon_selector_empty_list_button">Gå till rabattkoder</string>
     <string name="order_creation_select_coupon">Välj en rabattkod</string>
-    <string name="signup_get_started_button">Skapa en ny butik</string>
     <string name="coupon_create_coupon_creation_failed">Misslyckades skapa rabattkod</string>
     <string name="coupon_create_coupon_created">Rabattkod skapad</string>
     <string name="coupon_create_save_button">Skapa</string>
@@ -1241,7 +1240,6 @@ Language: sv_SE
     <string name="signup_password_too_short">Ditt lösenord är för kort. Välj ett lösenord som har minst 6 tecken.</string>
     <string name="signup_email_invalid_input">Ange en giltig e-postadress.</string>
     <string name="signup_email_exist_input">Ett konto med denna e-post finns redan.</string>
-    <string name="login_create_an_account">Skapa ett konto</string>
     <string name="login_try_another_email">Försök med en annan adress</string>
     <string name="date_timeframe_custom_date_range_title">Anpassat datumintervall</string>
     <string name="date_timeframe_custom">Anpassat</string>

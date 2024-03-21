@@ -580,7 +580,6 @@ Language: fr
     <string name="coupon_selector_empty_list_message">Vous n’avez encore créé aucun code promo. Créez un code promo à appliquer à cette commande.</string>
     <string name="coupon_selector_empty_list_button">Accéder aux codes promo</string>
     <string name="order_creation_select_coupon">Sélectionner un code promo</string>
-    <string name="signup_get_started_button">Créer une nouvelle boutique</string>
     <string name="coupon_create_coupon_creation_failed">La création du code promo a échoué</string>
     <string name="coupon_create_coupon_created">Code promo créé</string>
     <string name="coupon_create_save_button">Créer</string>
@@ -1241,7 +1240,6 @@ Language: fr
     <string name="signup_password_too_short">Votre mot de passe est trop court. Veuillez entrer un mot de passe d’au moins 6 caractères.</string>
     <string name="signup_email_invalid_input">Veuillez saisir une adresse e-mail valide.</string>
     <string name="signup_email_exist_input">Un compte lié à cette adresse e-mail existe déjà.</string>
-    <string name="login_create_an_account">Créer un compte</string>
     <string name="login_try_another_email">Essayer une autre adresse</string>
     <string name="date_timeframe_custom_date_range_title">Plage de dates personnalisée</string>
     <string name="date_timeframe_custom">Personnalisé</string>

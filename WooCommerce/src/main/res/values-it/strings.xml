@@ -580,7 +580,6 @@ Language: it
     <string name="coupon_selector_empty_list_message">Non hai ancora creato nessun codice promozionale. Crea un codice promozionale per applicarlo a questo ordine.</string>
     <string name="coupon_selector_empty_list_button">Vai ai codici promozionali</string>
     <string name="order_creation_select_coupon">Seleziona un codice promozionale</string>
-    <string name="signup_get_started_button">Crea un nuovo negozio</string>
     <string name="coupon_create_coupon_creation_failed">Impossibile creare il codice promozionale</string>
     <string name="coupon_create_coupon_created">Codice promozionale creato</string>
     <string name="coupon_create_save_button">Crea</string>
@@ -1241,7 +1240,6 @@ Language: it
     <string name="signup_password_too_short">La password è troppo breve. Per favore scegli una password composta da almeno 6 caratteri.</string>
     <string name="signup_email_invalid_input">Inserisci un indirizzo e-mail valido.</string>
     <string name="signup_email_exist_input">Esiste già un account con questa e-mail.</string>
-    <string name="login_create_an_account">Crea un account</string>
     <string name="login_try_another_email">Prova con un altro indirizzo</string>
     <string name="date_timeframe_custom_date_range_title">Intervallo di date personalizzato</string>
     <string name="date_timeframe_custom">Personalizza</string>
