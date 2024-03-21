@@ -185,7 +185,6 @@ class MyStoreFragment :
         }
 
         binding.myStoreStats.initView(
-            myStoreViewModel.getInitialStatsTimeRangeSelection(),
             selectedSite,
             dateUtils,
             currencyFormatter,

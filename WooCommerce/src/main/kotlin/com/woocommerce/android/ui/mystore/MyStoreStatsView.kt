@@ -137,7 +137,6 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     @Suppress("LongParameterList")
     fun initView(
-        selectedTimeRange: StatsTimeRangeSelection,
         selectedSite: SelectedSite,
         dateUtils: DateUtils,
         currencyFormatter: CurrencyFormatter,
@@ -146,7 +145,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         onViewAnalyticsClick: () -> Unit
     ) {
         this.selectedSite = selectedSite
-        this.statsTimeRangeSelection = selectedTimeRange
         this.dateUtils = dateUtils
         this.currencyFormatter = currencyFormatter
         this.usageTracksEventEmitter = usageTracksEventEmitter

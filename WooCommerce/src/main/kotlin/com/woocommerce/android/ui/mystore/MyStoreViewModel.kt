@@ -250,13 +250,6 @@ class MyStoreViewModel @Inject constructor(
             }
         } ?: ""
 
-    fun getInitialStatsTimeRangeSelection(): StatsTimeRangeSelection = _selectedRangeType.value.generateSelectionData(
-        calendar = Calendar.getInstance(),
-        locale = Locale.getDefault(),
-        referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
-        referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
-    )
-
     fun onViewAnalyticsClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         val targetPeriod = when (val state = revenueStatsState.value) {
