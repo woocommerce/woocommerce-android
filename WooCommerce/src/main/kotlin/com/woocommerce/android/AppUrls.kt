@@ -91,6 +91,7 @@ object AppUrls {
         "https://woo.com/document/what-is-a-wordpress-com-account/"
 
     const val NEW_TO_WOO_DOC = "https://woo.com/woocommerce-features/"
+    const val HOSTING_OPTIONS_DOC = "https://woo.com/hosting-solutions/"
 
     const val WORPRESS_COM_TERMS = "https://wordpress.com/tos"
     const val JETPACK_SYNC_POLICY = "https://jetpack.com/support/what-data-does-jetpack-sync"
