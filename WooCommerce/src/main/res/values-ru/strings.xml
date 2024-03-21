@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 15:54:03+0000
+Translation-Revision-Date: 2024-03-20 15:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">Пожалуйста, подождите…</string>
+    <string name="product_update_stock_status_dialog_title">Обновление статусов наличия на складе</string>
+    <string name="product_update_stock_status_error">Что-то пошло не так. Повторите попытку.</string>
+    <string name="product_update_stock_status_completed">Статусы наличия на складе обновлены</string>
+    <string name="product_update_stock_status_variable_products">Товары, имеющие варианты, не могут быть обновлены</string>
+    <string name="product_update_stock_status_managed_products">Управляемые товары не могут быть обновлены</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 товар, имеющий варианты, будет пропущен.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 товар с управляемым количеством на складе будет пропущен.</string>
+    <string name="product_update_stock_status_update_count_singular">Статус наличия на складе будет обновлен для 1 товара.</string>
+    <string name="product_update_stock_status_variable_ignored_count">Товары (%1$d), имеющие варианты, будут пропущены.</string>
+    <string name="product_update_stock_status_ignored_count">Товары (%1$d) с управляемым количеством на складе будут пропущены.</string>
+    <string name="product_update_stock_status_update_count">Статус наличия на складе будет обновлен для %1$d товаров.</string>
+    <string name="product_update_stock_status_current_status_single">Текущий статус наличия на складе: %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">Текущий статус наличия на складе разнороден</string>
+    <string name="product_update_stock_status_done">ГОТОВО</string>
+    <string name="product_update_stock_status_title">Обновить статус наличия на складе</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Войти с учётными данными сайта</string>
+    <string name="settings_woo_plugin_version">Версия WooCommerce</string>
+    <string name="settings_option_installed_plugins">Установленные плагины</string>
+    <string name="settings_plugins">Плагины</string>
+    <string name="settings_notifs_restore_chaching_sound_description">Звук уведомлений о заказах был изменён. Чтобы восстановить звук «дзинь», воспользуйтесь этой кнопкой.</string>
+    <string name="product_selection_menu_update_stock_status">Обновить статус наличия на складе</string>
+    <string name="order_detail_trash_order_dialog_message">Вы уверены, что хотите переместить этот заказ в корзину?</string>
+    <string name="order_detail_move_to_trash">Отправить в корзину</string>
+    <string name="order_creation_recalculate_button">Пересчитать</string>
+    <string name="order_creation_scan_products">Сканировать товары</string>
+    <string name="order_creation_tablet_mode_fragment_title">Детали заказа</string>
+    <string name="orderlist_order_trashed_error">Ошибка при отправке заказа в корзину</string>
+    <string name="orderlist_order_trashed">Заказ отправлен в корзину</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Ой! Похоже, с вашим сайтом возникла проблема.\n\nЧтобы решить эту проблему, обратитесь к своему хостинг-провайдеру.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Ой! Похоже, возникла проблема с вашим подключением к Jetpack.\n\nНо не волнуйтесь: наши инженеры поддержки вам помогут. Свяжитесь с нами, и мы будем рады помочь.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Ой! Похоже, мы не можем правильно работать с ответом вашего сайта.\n\nНо не волнуйтесь: наши инженеры поддержки вам помогут. Свяжитесь с нами, и мы будем рады помочь.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Ой! Похоже, ваш сайт отвечает слишком долго.\n\nЧтобы решить эту проблему, обратитесь к своему хостинг-провайдеру.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Ой! Похоже, в данный момент мы не можем подключиться к WordPress.com.\n\nНо не волнуйтесь: наши инженеры поддержки вам помогут. Свяжитесь с нами, и мы будем рады помочь.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">Похоже, вы не подключены к Интернету.\n\nУбедитесь, что ваш Wi-Fi включён. Если вы используете мобильные данные, убедитесь, что они включены в настройках вашего устройства.</string>
+    <string name="product_detail_product_not_selected">Товар не выбран</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Читать далее</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Поддержка</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Заказы с вашего сайта</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Ваш сайт</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Серверы WordPress.com</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Подключение к Интернету</string>
+    <string name="orderlist_connectivity_tool_title">Проверка подключения</string>
+    <string name="my_store_custom_range_content_description">Добавить статистику за выбранный период</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Местоположение не найдено.\nПовторите попытку.</string>
     <string name="order_detail_attribution_session_page_views">Просмотры страниц сеанса</string>
     <string name="order_detail_attribution_device_type">Тип устройства</string>

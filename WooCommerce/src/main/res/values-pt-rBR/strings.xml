@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 22:54:03+0000
+Translation-Revision-Date: 2024-03-20 22:54:17+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">Aguarde…</string>
+    <string name="product_update_stock_status_dialog_title">Atualizando os status de estoque</string>
+    <string name="product_update_stock_status_error">Ocorreu um erro. Tente novamente.</string>
+    <string name="product_update_stock_status_completed">Status de estoque atualizados</string>
+    <string name="product_update_stock_status_variable_products">Não é possível atualizar produtos variáveis</string>
+    <string name="product_update_stock_status_managed_products">Não é possível atualizar produtos gerenciados</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 produto variável será ignorado.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 produto com uma quantidade de estoque gerenciada será ignorado.</string>
+    <string name="product_update_stock_status_update_count_singular">O status do estoque será atualizado para 1 produto.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d produtos variáveis serão ignorados.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d produtos com uma quantidade de estoque gerenciada serão ignorados.</string>
+    <string name="product_update_stock_status_update_count">O status do estoque será atualizado para %1$d produtos.</string>
+    <string name="product_update_stock_status_current_status_single">O status atual do estoque é %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">Os status atuais de estoque estão misturados</string>
+    <string name="product_update_stock_status_done">CONCLUIR</string>
+    <string name="product_update_stock_status_title">Atualizar status do estoque</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Faça login com suas credenciais do site</string>
+    <string name="settings_woo_plugin_version">Versão do WooCommerce</string>
+    <string name="settings_option_installed_plugins">Plugins instalados</string>
+    <string name="settings_plugins">Plugins</string>
+    <string name="settings_notifs_restore_chaching_sound_description">O som das notificações de pedidos foi modificado. Use este botão para restaurar o som de caixa registradora.</string>
+    <string name="product_selection_menu_update_stock_status">Atualizar status do estoque</string>
+    <string name="order_detail_trash_order_dialog_message">Deseja mover este produto para a lixeira?</string>
+    <string name="order_detail_move_to_trash">Mover para a lixeira</string>
+    <string name="order_creation_recalculate_button">Recalcular</string>
+    <string name="order_creation_scan_products">Verificar produtos</string>
+    <string name="order_creation_tablet_mode_fragment_title">Resumo do pedido</string>
+    <string name="orderlist_order_trashed_error">Erro ao mover o pedido para a lixeira</string>
+    <string name="orderlist_order_trashed">Pedido movido para a lixeira</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Ops! Há um problema no seu site.\n\nEntre em contato com o provedor de hospedagem para obter mais ajuda.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Ops! Há um problema na conexão com o Jetpack.\n\nMas não se preocupe, nossa equipe de suporte pode ajudar. Entre em contato e vamos cuidar disso para você.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Ops! Não conseguimos trabalhar com a resposta do seu site.\n\nMas não se preocupe, nossa equipe de suporte pode ajudar. Entre em contato e vamos cuidar disso para você.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Ops! Seu site está demorando muito para responder.\n\nEntre em contato com o provedor de hospedagem para obter mais ajuda.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Ops! Não é possível conectar ao WordPress.com no momento.\n\nMas não se preocupe, nossa equipe de suporte pode ajudar. Entre em contato e vamos cuidar disso para você.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">Você não está conectado à Internet.\n\nVerifique se seu Wi-Fi está ligado. Se você estiver usando dados móveis, verifique se a opção está ativada nas configurações do seu dispositivo.</string>
+    <string name="product_detail_product_not_selected">Produto não selecionado</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Leia mais</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Falar com o suporte</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Pedidos do seu site</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Seu site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Servidores do WordPress.com</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Conexão com a Internet</string>
+    <string name="orderlist_connectivity_tool_title">Teste de conectividade</string>
+    <string name="my_store_custom_range_content_description">Adicione estatísticas de períodos personalizados</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Nenhuma localização encontrada.\nTente novamente.</string>
     <string name="order_detail_attribution_session_page_views">Visualizações de página da sessão</string>
     <string name="order_detail_attribution_device_type">Tipo de dispositivo</string>

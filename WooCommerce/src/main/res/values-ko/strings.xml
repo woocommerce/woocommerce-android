@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 09:54:16+0000
+Translation-Revision-Date: 2024-03-20 10:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">기다려주세요…</string>
+    <string name="product_update_stock_status_dialog_title">재고 상태 업데이트 중</string>
+    <string name="product_update_stock_status_error">문제가 발생했습니다. 다시 시도하세요.</string>
+    <string name="product_update_stock_status_completed">재고 상태 업데이트 중</string>
+    <string name="product_update_stock_status_variable_products">가변 제품은 업데이트할 수 없음</string>
+    <string name="product_update_stock_status_managed_products">관리되는 제품은 업데이트할 수 없음</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">가변 제품 1개가 무시됩니다.</string>
+    <string name="product_update_stock_status_ignored_count_singular">재고 수량이 관리되는 제품 1개가 무시됩니다.</string>
+    <string name="product_update_stock_status_update_count_singular">제품 1개의 재고 상태가 업데이트됩니다.</string>
+    <string name="product_update_stock_status_variable_ignored_count">가변 제품 %1$d개가 무시됩니다.</string>
+    <string name="product_update_stock_status_ignored_count">재고 수량이 관리되는 제품 %1$d개가 무시됩니다.</string>
+    <string name="product_update_stock_status_update_count">제품 %1$d개의 재고 상태가 업데이트됩니다.</string>
+    <string name="product_update_stock_status_current_status_single">현재 재고 상태: %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">현재 재고 상태: 혼합됨</string>
+    <string name="product_update_stock_status_done">완료</string>
+    <string name="product_update_stock_status_title">재고 상태 업데이트</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">사이트 자격 증명으로 로그인</string>
+    <string name="settings_woo_plugin_version">우커머스 버전</string>
+    <string name="settings_option_installed_plugins">설치된 플러그인</string>
+    <string name="settings_plugins">플러그인</string>
+    <string name="settings_notifs_restore_chaching_sound_description">주문 알림 소리가 수정되었으니 이 버튼을 사용하여 \'금전등록기\' 소리를 복원하세요.</string>
+    <string name="product_selection_menu_update_stock_status">재고 상태 업데이트</string>
+    <string name="order_detail_trash_order_dialog_message">이 주문을 휴지통으로 이동하시겠습니까?</string>
+    <string name="order_detail_move_to_trash">휴지통으로 이동</string>
+    <string name="order_creation_recalculate_button">다시 계산</string>
+    <string name="order_creation_scan_products">제품 스캔</string>
+    <string name="order_creation_tablet_mode_fragment_title">주문 요약</string>
+    <string name="orderlist_order_trashed_error">휴지통으로 주문 이동 중 오류 발생</string>
+    <string name="orderlist_order_trashed">휴지통으로 주문 이동됨</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">죄송합니다! 사이트에서 문제가 발생한 것 같습니다.\n\n자세한 내용은 호스팅 공급업체에 문의하세요.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">죄송합니다! 젯팩 연결에서 문제가 발생한 것 같습니다.\n\n걱정하지 마세요. 지원팀에서 도와드리겠습니다. 문의해 주시면 기꺼이 도와드리겠습니다.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">죄송합니다! 사이트의 응답이 제대로 작동하지 않는 것 같습니다.\n\n걱정하지 마세요. 지원팀에서 도와드리겠습니다. 문의해 주시면 기꺼이 도와드리겠습니다.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">죄송합니다! 사이트의 응답이 너무 오래 걸리는 것 같습니다.\n\n자세한 내용은 호스팅 공급업체에 문의하세요.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">죄송합니다! 지금은 워드프레스닷컴에 연결할 수 없는 것 같습니다.\n\n걱정하지 마세요. 지원팀에서 도와드리겠습니다. 문의해 주시면 기꺼이 도와드리겠습니다.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">인터넷에 연결되지 않은 것 같습니다.\n\n와이파이가 켜졌는지 확인하세요. 모바일 데이터를 사용 중이라면 기기 설정에서 활성화되었는지 확인하세요.</string>
+    <string name="product_detail_product_not_selected">상품이 선택되지 않음</string>
+    <string name="orderlist_connectivity_tool_read_more_action">더 보기</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">지원 문의</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">회원님의 사이트 주문</string>
+    <string name="orderlist_connectivity_tool_store_check_title">회원님의 사이트</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">워드프레스닷컴 서버</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">인터넷 연결</string>
+    <string name="orderlist_connectivity_tool_title">연결 테스트</string>
+    <string name="my_store_custom_range_content_description">사용자 정의 날짜 범위 통계 추가</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">위치를 찾을 수 없습니다.\n다시 시도하세요.</string>
     <string name="order_detail_attribution_session_page_views">세션 페이지 조회수</string>
     <string name="order_detail_attribution_device_type">기기 유형</string>

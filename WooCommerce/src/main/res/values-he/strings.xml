@@ -1,11 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 17:54:03+0000
+Translation-Revision-Date: 2024-03-20 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">רק רגע…</string>
+    <string name="product_update_stock_status_dialog_title">מעדכן את מצבי המלאי</string>
+    <string name="product_update_stock_status_error">משהו השתבש. יש לנסות שוב.</string>
+    <string name="product_update_stock_status_completed">מצב המלאי עודכנו</string>
+    <string name="product_update_stock_status_variable_products">לא ניתן לעדכן מוצרים עם סוגים</string>
+    <string name="product_update_stock_status_managed_products">לא ניתן לעדכן מוצרים מנוהלים</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">אנחנו נתעלם ממוצר אחד עם סוגים.</string>
+    <string name="product_update_stock_status_ignored_count_singular">אנחנו נתעלם ממוצר אחד עם כמות מלאי מנוהלת.</string>
+    <string name="product_update_stock_status_update_count_singular">מצב המלאי יעודכן עבור מוצר אחד.</string>
+    <string name="product_update_stock_status_variable_ignored_count">אנחנו נתעלם מ-⁦%1$d⁩ מוצרים עם סוגים.</string>
+    <string name="product_update_stock_status_ignored_count">אנחנו נתעלם מ-⁦%1$d⁩ מוצרים עם כמות מלאי מנוהלת.</string>
+    <string name="product_update_stock_status_update_count">מצב המלאי יעודכן עבור ⁦%1$d⁩ מוצרים.</string>
+    <string name="product_update_stock_status_current_status_single">מצב המלאי הנוכחי הוא ⁦%1$s⁩</string>
+    <string name="product_update_stock_status_current_status_mixed">מצב המלאי הנוכחיים כוללים מצבים שונים</string>
+    <string name="product_update_stock_status_done">הושלם</string>
+    <string name="product_update_stock_status_title">לעדכן את מצב המלאי</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">להתחבר עם פרטי הכניסה שלך לאתר</string>
+    <string name="settings_woo_plugin_version">גרסת WooCommerce</string>
+    <string name="settings_option_installed_plugins">תוספים מותקנים</string>
+    <string name="settings_plugins">תוספים</string>
+    <string name="settings_notifs_restore_chaching_sound_description">צליל ההודעות של ההזמנות השתנה, יש להשתמש בכפתור הזה כדי לשחזר את הצליל של הקופה הרושמת.</string>
+    <string name="product_selection_menu_update_stock_status">לעדכן את מצב המלאי</string>
+    <string name="order_detail_trash_order_dialog_message">האם ברצונך להעביר את ההזמנה הזאת לפח?</string>
+    <string name="order_detail_move_to_trash">להעביר לפח</string>
+    <string name="order_creation_recalculate_button">לחשב מחדש</string>
+    <string name="order_creation_scan_products">לסרוק מוצרים</string>
+    <string name="order_creation_tablet_mode_fragment_title">סיכום הזמנה</string>
+    <string name="orderlist_order_trashed_error">שגיאה בהעברת ההזמנה לפח</string>
+    <string name="orderlist_order_trashed">ההזמנה הועברה לפח</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">אופס! נראה שיש בעיה באתר שלך.\n\nיש לפנות לספקית האחסון להמשך עזרה.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">אופס! נראה שיש בעיה עם החיבור שלך ל-Jetpack.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">אופס! נראה שאנחנו לא יכולים לאפשר פעילות תקינה עם התגובה של האתר שלך.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">אופס! זמן התגובה של האתר שלך היה ארוך מדי.\n\nיש לפנות לספקית האחסון להמשך עזרה.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">אופס! נראה שאנחנו לא יכולים להתחבר אל WordPress.com כרגע.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">נראה שהחיבור לאינטרנט לא פעיל אצלך.\n\nיש לוודא שהחיבור ל-Wi-Fi הופעל. אם ברצונך להשתמש בנתונים הניידים, עליך לוודא שהאפשרות הופעלה בהגדרות המכשיר.</string>
+    <string name="product_detail_product_not_selected">המוצר לא נבחר</string>
+    <string name="orderlist_connectivity_tool_read_more_action">להמשיך לקרוא</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">לפנות לתמיכה</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">ההזמנות של האתר</string>
+    <string name="orderlist_connectivity_tool_store_check_title">האתר שלך</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">שרתים של WordPress.com</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">חיבור לאינטרנט</string>
+    <string name="orderlist_connectivity_tool_title">בדיקת קישוריות</string>
+    <string name="my_store_custom_range_content_description">להוסיף נתונים סטטיסטיים מטווח תאריכים מותאם אישית</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">לא נמצא מיקום.\nיש לנסות שוב.</string>
     <string name="order_detail_attribution_session_page_views">צפיות בעמודים במהלך ההפעלה</string>
     <string name="order_detail_attribution_device_type">סוג מכשיר</string>
