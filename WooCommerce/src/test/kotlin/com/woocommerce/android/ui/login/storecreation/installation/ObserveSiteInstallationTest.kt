@@ -1,15 +1,5 @@
 package com.woocommerce.android.ui.login.storecreation.installation
 
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType
-import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository
-import com.woocommerce.android.ui.login.storecreation.StoreCreationResult
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationConst.INITIAL_STORE_CREATION_DELAY
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationConst.SITE_CHECK_DEBOUNCE
-import com.woocommerce.android.ui.login.storecreation.installation.InstallationConst.STORE_LOAD_RETRIES_LIMIT
-import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation.InstallationState
-import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation.InstallationState.Failure
-import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation.InstallationState.OutOfSync
-import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation.InstallationState.Success
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList

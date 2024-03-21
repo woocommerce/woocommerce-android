@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.payments
+package com.woocommerce.android.ui.onboarding.payments
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -6,7 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel

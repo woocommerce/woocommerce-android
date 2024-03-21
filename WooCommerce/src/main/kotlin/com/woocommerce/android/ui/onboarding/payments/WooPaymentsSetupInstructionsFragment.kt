@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.payments
+package com.woocommerce.android.ui.onboarding.payments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,8 +14,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType
 import com.woocommerce.android.util.ChromeCustomTabUtils
 
 class WooPaymentsSetupInstructionsFragment : BaseFragment() {

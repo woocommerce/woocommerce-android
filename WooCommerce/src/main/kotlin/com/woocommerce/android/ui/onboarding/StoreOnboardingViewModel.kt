@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding
+package com.woocommerce.android.ui.onboarding
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -17,16 +17,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.CUSTOMIZE_DOMAIN
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
+import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.CUSTOMIZE_DOMAIN
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

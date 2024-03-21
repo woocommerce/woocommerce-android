@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding
+package com.woocommerce.android.ui.onboarding
 
 import android.graphics.Color
 import android.os.Bundle
@@ -16,10 +16,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToAboutYourStore
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToDomains
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToLaunchStore
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToAboutYourStore
+import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToDomains
+import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToLaunchStore
 import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint

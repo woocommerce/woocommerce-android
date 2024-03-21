@@ -6,8 +6,6 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState
-import com.woocommerce.android.ui.login.storecreation.NewStore
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_CREATION_FAILED
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnCancelPressed
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationFailure
 import com.woocommerce.android.ui.login.storecreation.summary.StoreCreationSummaryViewModel.OnStoreCreationSuccess

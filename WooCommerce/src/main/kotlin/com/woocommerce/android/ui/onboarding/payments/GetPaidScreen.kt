@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.payments
+package com.woocommerce.android.ui.onboarding.payments
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold

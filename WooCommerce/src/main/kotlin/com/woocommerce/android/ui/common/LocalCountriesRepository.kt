@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.countrypicker
+package com.woocommerce.android.ui.common
 
 import java.util.Locale
 import javax.inject.Inject

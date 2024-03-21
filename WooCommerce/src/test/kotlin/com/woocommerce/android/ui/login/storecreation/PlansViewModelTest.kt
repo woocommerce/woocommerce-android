@@ -7,16 +7,7 @@ import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.model.WPComPlanProduct
 import com.woocommerce.android.iap.pub.model.WPComProductResult
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.SITE_ADDRESS_ALREADY_EXISTS
-import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
 import com.woocommerce.android.ui.login.storecreation.iap.IsIAPEnabled
-import com.woocommerce.android.ui.login.storecreation.plans.BillingPeriod.ECOMMERCE_MONTHLY
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.PlanInfo
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.CheckoutState
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.ErrorState
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel.ViewState.PlanState
 import com.woocommerce.android.util.SiteIndependentCurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi

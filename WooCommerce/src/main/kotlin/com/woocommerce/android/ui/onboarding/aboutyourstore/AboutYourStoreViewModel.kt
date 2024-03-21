@@ -1,10 +1,10 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore
+package com.woocommerce.android.ui.onboarding.aboutyourstore
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreViewModel.ViewState.LoadingState
-import com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreViewModel.ViewState.WebViewState
+import com.woocommerce.android.ui.onboarding.aboutyourstore.AboutYourStoreViewModel.ViewState.LoadingState
+import com.woocommerce.android.ui.onboarding.aboutyourstore.AboutYourStoreViewModel.ViewState.WebViewState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

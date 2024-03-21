@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore
+package com.woocommerce.android.ui.onboarding.aboutyourstore
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -17,8 +17,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreViewModel.ViewState.LoadingState
-import com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreViewModel.ViewState.WebViewState
+import com.woocommerce.android.ui.onboarding.aboutyourstore.AboutYourStoreViewModel.ViewState.LoadingState
+import com.woocommerce.android.ui.onboarding.aboutyourstore.AboutYourStoreViewModel.ViewState.WebViewState
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable

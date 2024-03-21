@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding
+package com.woocommerce.android.ui.onboarding
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
@@ -6,10 +6,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_TASK_TA
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.ONBOARDING_TASK_KEY
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType
+import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
+import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

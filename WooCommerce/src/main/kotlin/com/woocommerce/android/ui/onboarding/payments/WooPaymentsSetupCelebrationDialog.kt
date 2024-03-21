@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.payments
+package com.woocommerce.android.ui.onboarding.payments
 
 import android.content.res.Configuration
 import android.os.Bundle

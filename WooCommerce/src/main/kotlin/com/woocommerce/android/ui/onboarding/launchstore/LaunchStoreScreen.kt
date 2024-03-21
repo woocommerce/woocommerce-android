@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
+package com.woocommerce.android.ui.onboarding.launchstore
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -41,7 +41,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.component.WebViewProgressIndicator.Circular
 import com.woocommerce.android.ui.compose.drawShadow
-import com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreViewModel.LaunchStoreState
+import com.woocommerce.android.ui.onboarding.launchstore.LaunchStoreViewModel.LaunchStoreState
 import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable

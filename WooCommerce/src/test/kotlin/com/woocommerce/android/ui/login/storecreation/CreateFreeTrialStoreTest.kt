@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.login.storecreation
 
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState
 import com.woocommerce.android.ui.login.storecreation.CreateFreeTrialStore.StoreCreationState.Failed
-import com.woocommerce.android.ui.login.storecreation.StoreCreationRepository.SiteCreationData
-import com.woocommerce.android.ui.login.storecreation.plans.PlansViewModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.launchIn

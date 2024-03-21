@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalComposeUiApi::class)
 
-package com.woocommerce.android.ui.login.storecreation.domainpicker
+package com.woocommerce.android.ui.prefs.domain
 
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
@@ -51,20 +51,18 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSearchState
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSuggestionUi
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSuggestionUi.Free
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSuggestionUi.FreeWithCredit
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSuggestionUi.OnSale
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.DomainSuggestionUi.Paid
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.LoadingState.Idle
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.LoadingState.Loading
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.DomainSearchState
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.DomainSuggestionUi
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.DomainSuggestionUi.Free
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.DomainSuggestionUi.FreeWithCredit
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.DomainSuggestionUi.OnSale
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.DomainSuggestionUi.Paid
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.LoadingState.Idle
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.LoadingState.Loading
 
 @Composable
 fun DomainPickerScreen(viewModel: DomainSuggestionsViewModel, onDomainSelected: (String) -> Unit) {
@@ -169,7 +167,7 @@ private fun DomainSearchForm(
                     else -> {
                         item {
                             Text(
-                                text = stringResource(id = string.store_creation_domain_picker_suggestions_title)
+                                text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title)
                                     .uppercase(),
                                 style = MaterialTheme.typography.caption,
                                 color = colorResource(id = R.color.color_on_surface_medium),
@@ -233,10 +231,10 @@ private fun SearchField(
 
         if (state.freeUrl != null) {
             Text(
-                text = stringResource(id = string.domains_search_domains),
+                text = stringResource(id = R.string.domains_search_domains),
                 style = MaterialTheme.typography.h5,
             )
-            val redirectNotice = stringResource(id = string.domains_redirect_notice)
+            val redirectNotice = stringResource(id = R.string.domains_redirect_notice)
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {
@@ -254,11 +252,11 @@ private fun SearchField(
             )
         } else {
             Text(
-                text = stringResource(id = string.store_creation_domain_picker_title),
+                text = stringResource(id = R.string.store_creation_domain_picker_title),
                 style = MaterialTheme.typography.h5,
             )
             Text(
-                text = stringResource(id = string.store_creation_domain_picker_subtitle),
+                text = stringResource(id = R.string.store_creation_domain_picker_subtitle),
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
@@ -267,7 +265,7 @@ private fun SearchField(
         WCSearchField(
             value = domainQuery,
             onValueChange = onDomainQueryChanged,
-            hint = stringResource(id = string.store_creation_domain_picker_hint),
+            hint = stringResource(id = R.string.store_creation_domain_picker_hint),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
@@ -337,7 +335,7 @@ private fun DomainSuggestionItem(
                                     }
                                 }
                             )
-                            val freeWithCredits = stringResource(id = string.domains_free_with_credits)
+                            val freeWithCredits = stringResource(id = R.string.domains_free_with_credits)
                             Text(
                                 text = buildAnnotatedString {
                                     withStyle(style = MaterialTheme.typography.body2.toParagraphStyle()) {

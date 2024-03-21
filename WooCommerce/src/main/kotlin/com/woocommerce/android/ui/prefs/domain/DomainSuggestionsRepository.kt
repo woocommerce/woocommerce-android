@@ -1,9 +1,9 @@
-package com.woocommerce.android.ui.common.domain
+package com.woocommerce.android.ui.prefs.domain
 
 import com.woocommerce.android.WooException
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Free
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Premium
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsRepository.DomainSuggestion.Free
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsRepository.DomainSuggestion.Premium
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.flow.MutableStateFlow

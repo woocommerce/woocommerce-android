@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding
+package com.woocommerce.android.ui.onboarding
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle

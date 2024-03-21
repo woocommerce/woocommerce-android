@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding
+package com.woocommerce.android.ui.onboarding
 
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite

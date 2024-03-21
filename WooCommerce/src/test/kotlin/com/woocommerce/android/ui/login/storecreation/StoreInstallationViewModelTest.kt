@@ -7,10 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_LOADING_FAILED
-import com.woocommerce.android.ui.login.storecreation.StoreCreationErrorType.STORE_NOT_READY
 import com.woocommerce.android.ui.login.storecreation.installation.InstallationTransactionLauncher
-import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationLoadingTimer
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel
 import com.woocommerce.android.ui.login.storecreation.installation.StoreInstallationViewModel.ViewState

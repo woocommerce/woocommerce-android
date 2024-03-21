@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding
+package com.woocommerce.android.ui.onboarding
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_COMPLETED
@@ -6,11 +6,11 @@ import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_HIDE_LI
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
-import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.SETTINGS
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTask
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
+import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
+import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.SETTINGS
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before

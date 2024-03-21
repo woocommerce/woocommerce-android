@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
+package com.woocommerce.android.ui.onboarding.launchstore
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -12,11 +12,11 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.Error
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.LaunchStoreError.ALREADY_LAUNCHED
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.LaunchStoreError.GENERIC_ERROR
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.Success
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.Error
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.LaunchStoreError.ALREADY_LAUNCHED
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.LaunchStoreError.GENERIC_ERROR
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.Success
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ScopedViewModel

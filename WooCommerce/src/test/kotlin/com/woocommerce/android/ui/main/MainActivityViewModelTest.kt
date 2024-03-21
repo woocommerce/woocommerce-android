@@ -15,9 +15,6 @@ import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.notifications.push.NotificationTestUtils
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation
-import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation.InstallationState
-import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForPushNotification

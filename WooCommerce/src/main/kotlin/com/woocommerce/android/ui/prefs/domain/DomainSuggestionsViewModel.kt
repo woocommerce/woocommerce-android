@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.common.domain
+package com.woocommerce.android.ui.prefs.domain
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
@@ -11,12 +11,14 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Free
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsRepository.DomainSuggestion.Premium
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.LoadingState.Idle
-import com.woocommerce.android.ui.common.domain.DomainSuggestionsViewModel.LoadingState.Loading
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsRepository.DomainSuggestion
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsRepository.DomainSuggestion.Free
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsRepository.DomainSuggestion.Paid
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsRepository.DomainSuggestion.Premium
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.DomainSuggestionUi.FreeWithCredit
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.DomainSuggestionUi.OnSale
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.LoadingState.Idle
+import com.woocommerce.android.ui.prefs.domain.DomainSuggestionsViewModel.LoadingState.Loading
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -158,14 +160,14 @@ abstract class DomainSuggestionsViewModel(
                         } else {
                             if (isFreeCreditAvailable && domain.cost != null) {
                                 // free credit can't be used for premium domains, which don't have cost
-                                DomainSuggestionUi.FreeWithCredit(
+                                FreeWithCredit(
                                     isSelected = domain.name == currentSelection?.name,
                                     domain = domain.name,
                                     price = domain.cost.format(product.currencyCode!!)
                                 )
                             } else if (product.isDomainOnSale()) {
                                 // if the domain is on sale, we need to show the sale price
-                                DomainSuggestionUi.OnSale(
+                                OnSale(
                                     isSelected = domain.name == currentSelection?.name,
                                     domain = domain.name,
                                     price = domain.cost!!.format(product.currencyCode!!),

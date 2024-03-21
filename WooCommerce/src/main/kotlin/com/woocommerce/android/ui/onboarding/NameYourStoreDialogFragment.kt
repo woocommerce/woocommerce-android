@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding
+package com.woocommerce.android.ui.onboarding
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreViewModel.NameYourStoreDialogState
+import com.woocommerce.android.ui.onboarding.NameYourStoreViewModel.NameYourStoreDialogState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

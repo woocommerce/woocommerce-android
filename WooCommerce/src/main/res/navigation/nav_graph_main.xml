@@ -595,7 +595,7 @@
         app:destination="@id/simpleTextEditorFragment" />
     <fragment
         android:id="@+id/storeOnboardingFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingFragment"
+        android:name="com.woocommerce.android.ui.onboarding.StoreOnboardingFragment"
         android:label="StoreOnboardingFragment">
         <action
             android:id="@+id/action_onboardingFragment_to_launchStoreFragment"
@@ -647,11 +647,11 @@
         android:name="com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragment" />
     <fragment
         android:id="@+id/launchStoreFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreFragment"
+        android:name="com.woocommerce.android.ui.onboarding.launchstore.LaunchStoreFragment"
         android:label="LaunchStoreFragment" />
     <fragment
         android:id="@+id/getPaidFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidFragment"
+        android:name="com.woocommerce.android.ui.onboarding.payments.GetPaidFragment"
         android:label="GetPaidFragment">
         <argument
             android:name="taskId"
@@ -664,11 +664,11 @@
     </fragment>
     <dialog
         android:id="@+id/wooPaymentsSetupCelebrationDialog"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupCelebrationDialog"
+        android:name="com.woocommerce.android.ui.onboarding.payments.WooPaymentsSetupCelebrationDialog"
         android:label="WooPaymentsSetupCelebrationDialog" />
     <fragment
         android:id="@+id/wooPaymentsSetupInstructionsFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupInstructionsFragment"
+        android:name="com.woocommerce.android.ui.onboarding.payments.WooPaymentsSetupInstructionsFragment"
         android:label="WooPaymentsSetupInstructionsFragment">
         <action
             android:id="@+id/action_wooPaymentsSetupInstructionsFragment_to_paymentsPreSetupFragment"
@@ -676,7 +676,7 @@
     </fragment>
     <fragment
         android:id="@+id/paymentsPreSetupFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.PaymentsPreSetupFragment"
+        android:name="com.woocommerce.android.ui.onboarding.payments.PaymentsPreSetupFragment"
         android:label="PaymentsPreSetupFragment">
         <argument
             android:name="taskId"
@@ -688,7 +688,7 @@
     </fragment>
     <fragment
         android:id="@+id/aboutYourStoreFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreFragment"
+        android:name="com.woocommerce.android.ui.onboarding.aboutyourstore.AboutYourStoreFragment"
         android:label="AboutYourStoreFragment" />
     <fragment
         android:id="@+id/planUpgradeStartFragment"
@@ -748,7 +748,7 @@
     </dialog>
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
+        android:name="com.woocommerce.android.ui.onboarding.NameYourStoreDialogFragment"
         android:label="NameYourStoreDialogFragment">
         <argument
             android:name="fromOnboarding"

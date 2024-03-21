@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.onboarding.launchstore
+package com.woocommerce.android.ui.onboarding.launchstore
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,9 +13,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.BANNER
-import com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreViewModel.ShareStoreUrl
-import com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreViewModel.UpgradeToEcommercePlan
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.onboarding.launchstore.LaunchStoreViewModel.ShareStoreUrl
+import com.woocommerce.android.ui.onboarding.launchstore.LaunchStoreViewModel.UpgradeToEcommercePlan
 import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.LogLevel.e
