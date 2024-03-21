@@ -53,7 +53,7 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
                 appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
 
                 AnalyticsTracker.track(
-                    AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED
+                    AnalyticsEvent.LOGIN_PROLOGUE_STARTING_A_NEW_STORE_TAPPED
                 )
 
                 prologueFinishedListener?.onNewToWooButtonClicked()
