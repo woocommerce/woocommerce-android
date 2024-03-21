@@ -75,6 +75,7 @@ class ProductImageViewerFragment :
         binding.iconBack.setOnClickListener {
             findNavController().navigateUp()
         }
+        binding.fakeToolbar.tag = TabletLayoutSetupHelper.VIEW_TAG_TO_NOT_APPLY_MARGIN_IN_NOT_COMPACT_MODE
 
         if (navArgs.isDeletingAllowed) {
             binding.iconTrash.setOnClickListener {

@@ -102,7 +102,10 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         }
 
         val windowWidth = DisplayUtils.getWindowPixelWidth(context)
-        rootView.children.filter { it !is Toolbar }.forEach { viewToApplyMargins ->
+        rootView.children.filter {
+            it !is Toolbar &&
+                it.tag != VIEW_TAG_TO_NOT_APPLY_MARGIN_IN_NOT_COMPACT_MODE
+        }.forEach { viewToApplyMargins ->
             val layoutParams = viewToApplyMargins.layoutParams
             if (layoutParams is MarginLayoutParams) {
                 val marginHorizontal = (windowWidth * marginPart).toInt()
@@ -151,6 +154,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
             WindowSizeClass.Medium -> {
                 screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
             }
+
             WindowSizeClass.ExpandedAndBigger -> {
                 screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
             }
@@ -179,7 +183,9 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         screen.twoPaneLayoutGuideline.setGuidelinePercent(1f)
     }
 
-    private companion object {
+    companion object {
+        const val VIEW_TAG_TO_NOT_APPLY_MARGIN_IN_NOT_COMPACT_MODE = "not_apply_margin_in_not_compact_mode"
+
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.3f
         private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.40f
 
