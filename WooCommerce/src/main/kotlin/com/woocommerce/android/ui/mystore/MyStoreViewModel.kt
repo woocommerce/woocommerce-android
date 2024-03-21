@@ -467,7 +467,7 @@ class MyStoreViewModel @Inject constructor(
     private fun getSelectedRangeTypeIfAny(): SelectionType {
         val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity()
         return runCatching {
-            SelectionType.fromOrThrow(previouslySelectedGranularity)
+            SelectionType.valueOf(previouslySelectedGranularity)
         }.getOrDefault(SelectionType.TODAY)
     }
 
