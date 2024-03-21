@@ -133,23 +133,8 @@ class AddProductCategoryViewModel @Inject constructor(
             if (networkStatus.isConnected()) {
                 val categoryNameTrimmed = TextUtils.htmlEncode(categoryName.trim())
                 val requestResult = when {
-                    addProductCategoryViewState.isEditingMode -> {
-                        addProductCategoryViewState = addProductCategoryViewState.copy(
-                            displayProgressDialog = UpdatingCategory
-                        )
-                        productCategoriesRepository.updateProductCategory(
-                            navArgs.productCategory!!.remoteCategoryId,
-                            categoryName,
-                            parentId
-                        )
-                    }
-
-                    else -> {
-                        addProductCategoryViewState = addProductCategoryViewState.copy(
-                            displayProgressDialog = CreatingCategory
-                        )
-                        productCategoriesRepository.addProductCategory(categoryName, parentId)
-                    }
+                    addProductCategoryViewState.isEditingMode -> updateProductCategory(categoryName, parentId)
+                    else -> addNewProductCategory(categoryName, parentId)
                 }
                 requestResult
                     .onSuccess {
@@ -184,6 +169,30 @@ class AddProductCategoryViewModel @Inject constructor(
             }
             addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = Hidden)
         }
+    }
+
+    private suspend fun addNewProductCategory(
+        categoryName: String,
+        parentId: Long
+    ): Result<ProductCategory> {
+        addProductCategoryViewState = addProductCategoryViewState.copy(
+            displayProgressDialog = CreatingCategory
+        )
+        return productCategoriesRepository.addProductCategory(categoryName, parentId)
+    }
+
+    private suspend fun updateProductCategory(
+        categoryName: String,
+        parentId: Long
+    ): Result<ProductCategory> {
+        addProductCategoryViewState = addProductCategoryViewState.copy(
+            displayProgressDialog = UpdatingCategory
+        )
+        return productCategoriesRepository.updateProductCategory(
+            navArgs.productCategory!!.remoteCategoryId,
+            categoryName,
+            parentId
+        )
     }
 
     fun fetchParentCategories() {
