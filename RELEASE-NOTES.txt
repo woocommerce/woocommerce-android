@@ -2,6 +2,7 @@
 17.9
 -----
 - [*] Reviews: Fixed a bug when double toolbar was visible on the reviews in settings [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] Products: Fixed a bug when the removal of a product's picture was not saved [https://github.com/woocommerce/woocommerce-android/pull/11124]
 - [*] Reviews: Optimised speed of showing reviews [https://github.com/woocommerce/woocommerce-android/pull/11083]
 
 17.8
