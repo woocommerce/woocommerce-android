@@ -18,12 +18,15 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductImageViewerBinding
+import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
+import com.woocommerce.android.util.TabletLayoutSetupHelper
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
@@ -95,9 +98,11 @@ class ProductImageViewerFragment :
         // Toolbar doesn't get restored when navigating back.
         // This seems like a bug in the fragment library.
         viewLifecycleOwner.lifecycleScope.launch {
-            delay(500)
-            @Suppress("DEPRECATION")
-            requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            if (context?.windowSizeClass == WindowSizeClass.Compact) {
+                delay(500)
+                @Suppress("DEPRECATION")
+                requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            }
         }
     }
 
