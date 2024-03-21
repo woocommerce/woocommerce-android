@@ -14,12 +14,6 @@ import javax.inject.Inject
 class AppPrefsWrapper @Inject constructor() {
     var storeCreationProfilerAnswers by AppPrefs::storeCreationProfilerAnswers
 
-    /**
-     * Persists the ID of the last created site in case the app was closed while the site was being created.
-     * This allows to switch to the newly created site when the app is opened again.
-     */
-    var createdStoreSiteId: Long? by AppPrefs::createdStoreSiteId
-
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
     var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown

@@ -278,14 +278,6 @@ object AppPrefs {
             }
         }
 
-    /**
-     * Persists the ID of the last created site in case the app was closed while the site was being created.
-     * This allows to switch to the newly created site when the app is opened again.
-     */
-    var createdStoreSiteId: Long?
-        get() = getLong(DeletablePrefKey.CREATED_STORE_SITE_ID, -1).takeIf { it != -1L }
-        set(value) = setLong(DeletablePrefKey.CREATED_STORE_SITE_ID, value ?: -1)
-
     var chaChingSoundIssueDialogDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, value)
