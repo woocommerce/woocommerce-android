@@ -9,36 +9,16 @@
     android:orientation="vertical"
     tools:context=".ui.products.ProductImageViewerFragment">
 
-    <FrameLayout
-        android:id="@+id/fakeToolbar"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
-        android:orientation="horizontal">
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/iconBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="start|center_vertical"
-            android:background="@drawable/ripple_grey_oval"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            app:srcCompat="@drawable/ic_back_surface_24dp" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/iconTrash"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="end|center_vertical"
-            android:background="@drawable/ripple_grey_oval"
-            android:clickable="true"
-            android:contentDescription="@string/product_remove_photo"
-            android:focusable="true"
-            android:padding="8dp"
-            app:srcCompat="@drawable/ic_gridicons_trash_surface_24" />
-
-    </FrameLayout>
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
