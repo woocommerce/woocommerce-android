@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze
 
 import android.os.Parcelable
+import com.woocommerce.android.AppUrls.WPCOM_ADD_PAYMENT_METHOD
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.media.MediaFilesRepository
@@ -19,6 +20,7 @@ import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.blaze.BlazeAdForecast
 import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequest
+import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequestBudget
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignType
 import org.wordpress.android.fluxc.model.blaze.BlazePaymentMethod.PaymentMethodInfo
 import org.wordpress.android.fluxc.model.blaze.BlazeTargetingParameters
@@ -41,6 +43,7 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5f // USD
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50f // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
+        const val DEFAULT_CAMPAIGN_BUDGET_MODE = "total" // "total" or "daily" for campaigns that run without end date
     }
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
@@ -223,15 +226,19 @@ class BlazeRepository @Inject constructor(
                                 }
                             )
                         },
-                        addPaymentMethodUrls = PaymentMethodUrls(
-                            formUrl = paymentMethods.addPaymentMethodUrls.formUrl,
-                            successUrl = paymentMethods.addPaymentMethodUrls.successUrl,
-                            idUrlParameter = paymentMethods.addPaymentMethodUrls.idUrlParameter
-                        )
+                        addPaymentMethodUrls = createPaymentMethodUrls()
                     )
                 )
             } ?: Result.failure(NullPointerException("API response is null"))
         }
+    }
+
+    private fun createPaymentMethodUrls(): PaymentMethodUrls {
+        return PaymentMethodUrls(
+            formUrl = WPCOM_ADD_PAYMENT_METHOD,
+            successUrl = "me/payment-methods",
+            idUrlParameter = "pmid"
+        )
     }
 
     suspend fun createCampaign(
@@ -260,7 +267,11 @@ class BlazeRepository @Inject constructor(
                 description = campaignDetails.description,
                 startDate = campaignDetails.budget.startDate,
                 endDate = campaignDetails.budget.endDate,
-                budget = campaignDetails.budget.totalBudget.toDouble(),
+                budget = BlazeCampaignCreationRequestBudget(
+                    mode = DEFAULT_CAMPAIGN_BUDGET_MODE,
+                    amount = campaignDetails.budget.totalBudget.toDouble(),
+                    currency = BLAZE_DEFAULT_CURRENCY_CODE // To be replaced when more currencies are supported
+                ),
                 targetUrl = campaignDetails.destinationParameters.targetUrl,
                 urlParams = campaignDetails.destinationParameters.parameters,
                 mainImage = image,
