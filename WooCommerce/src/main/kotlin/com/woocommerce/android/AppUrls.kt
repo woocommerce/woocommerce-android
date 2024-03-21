@@ -63,6 +63,7 @@ object AppUrls {
         "https://woo.com/document/woocommerce-shipping-and-tax/woocommerce-shipping/#section-29"
 
     const val WPCOM_ADD_PAYMENT_METHOD = "https://wordpress.com/me/purchases/add-payment-method"
+    const val FETCH_PAYMENT_METHOD_URL_PATH = "me/payment-methods"
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS =
         "https://woo.com/document/woopayments/in-person-payments/getting-started-with-in-person-payments/"
     const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS =
