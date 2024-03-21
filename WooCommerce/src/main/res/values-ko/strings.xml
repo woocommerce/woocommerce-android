@@ -580,7 +580,6 @@ Language: ko_KR
     <string name="coupon_selector_empty_list_message">아직 생성한 쿠폰이 없습니다. 이 주문에 적용할 쿠폰을 생성하세요.</string>
     <string name="coupon_selector_empty_list_button">쿠폰으로 이동</string>
     <string name="order_creation_select_coupon">쿠폰 선택</string>
-    <string name="signup_get_started_button">새 스토어 생성</string>
     <string name="coupon_create_coupon_creation_failed">쿠폰 생성 실패</string>
     <string name="coupon_create_coupon_created">쿠폰 생성됨</string>
     <string name="coupon_create_save_button">생성</string>
@@ -1242,7 +1241,6 @@ Language: ko_KR
     <string name="signup_password_too_short">비밀번호가 너무 짧습니다. 6자 이상의 비밀번호를 선택하세요.</string>
     <string name="signup_email_invalid_input">유효한 이메일 주소를 입력하세요.</string>
     <string name="signup_email_exist_input">이 이메일이 포함된 계정이 이미 있습니다.</string>
-    <string name="login_create_an_account">계정 만들기</string>
     <string name="login_try_another_email">다른 주소 시도</string>
     <string name="date_timeframe_custom_date_range_title">사용자 정의 날짜 범위</string>
     <string name="date_timeframe_custom">사용자 정의</string>
