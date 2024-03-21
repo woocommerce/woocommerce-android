@@ -287,7 +287,7 @@
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
-    <string name="login_site_picker_add_a_store">Add a Store</string>
+    <string name="login_site_picker_add_a_store">Connect another store</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
