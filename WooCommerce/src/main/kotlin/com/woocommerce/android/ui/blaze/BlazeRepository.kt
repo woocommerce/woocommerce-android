@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.blaze
 
 import android.os.Parcelable
+import com.woocommerce.android.AppUrls.FETCH_PAYMENT_METHOD_URL_PATH
 import com.woocommerce.android.AppUrls.WPCOM_ADD_PAYMENT_METHOD
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.OnChangedException
@@ -236,8 +237,7 @@ class BlazeRepository @Inject constructor(
     private fun createPaymentMethodUrls(): PaymentMethodUrls {
         return PaymentMethodUrls(
             formUrl = WPCOM_ADD_PAYMENT_METHOD,
-            successUrl = "me/payment-methods",
-            idUrlParameter = "pmid"
+            successUrl = FETCH_PAYMENT_METHOD_URL_PATH
         )
     }
 
@@ -415,8 +415,7 @@ class BlazeRepository @Inject constructor(
     @Parcelize
     data class PaymentMethodUrls(
         val formUrl: String,
-        val successUrl: String,
-        val idUrlParameter: String
+        val successUrl: String
     ) : Parcelable
 
     sealed class CampaignCreationError(message: String?) : Exception(message) {
