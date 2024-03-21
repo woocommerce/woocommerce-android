@@ -232,9 +232,7 @@ class MyStoreViewModel @Inject constructor(
     fun onStatsGranularityChanged(granularity: SelectionType) {
         usageTracksEventEmitter.interacted()
         _selectedRangeType.update { granularity }
-        launch {
-            appPrefsWrapper.setActiveStatsGranularity(granularity.name)
-        }
+        appPrefsWrapper.setActiveStatsGranularity(granularity.name)
     }
 
     fun onPullToRefresh() {
