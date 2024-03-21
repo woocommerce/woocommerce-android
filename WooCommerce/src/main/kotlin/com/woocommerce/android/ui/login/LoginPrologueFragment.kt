@@ -24,7 +24,6 @@ class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
         fun onPrimaryButtonClicked()
         fun onSecondaryButtonClicked()
         fun onNewToWooButtonClicked()
-        fun onGetStartedClicked()
     }
 
     @Inject
