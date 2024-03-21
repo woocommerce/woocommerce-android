@@ -3480,7 +3480,6 @@
     <string name="theme_picker_current_theme_title">Current theme</string>
     <string name="theme_picker_description">You can always change it later in the settings.</string>
     <string name="theme_picker_carousel_info_item_title">Looking for more?</string>
-    <string name="theme_picker_carousel_info_item_description">Once your store is set up, find your perfect theme in the WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_info_item_description_settings">You can find your perfect theme in the WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_error_placeholder_message">Sorry, it seems there is an issue with the template loading. Please %1$s for a live demo.</string>
     <string name="theme_picker_carousel_error_placeholder_message_cta">tap here</string>

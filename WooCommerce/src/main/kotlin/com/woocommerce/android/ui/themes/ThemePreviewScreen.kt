@@ -150,7 +150,6 @@ fun ThemePreviewScreen(
                 )
 
                 ThemePreviewBottomSection(
-                    isFromStoreCreation = state.isFromStoreCreation,
                     themeName = state.themeName,
                     isActivatingTheme = state.isActivatingTheme,
                     onActivateThemeClicked = onActivateThemeClicked,
@@ -164,7 +163,6 @@ fun ThemePreviewScreen(
 
 @Composable
 private fun ThemePreviewBottomSection(
-    isFromStoreCreation: Boolean,
     themeName: String,
     isActivatingTheme: Boolean,
     onActivateThemeClicked: () -> Unit,
@@ -191,14 +189,7 @@ private fun ThemePreviewBottomSection(
                 )
             } else {
                 Text(
-                    text = stringResource(
-                        id = if (isFromStoreCreation) {
-                            R.string.theme_preview_activate_theme_button_store_creation
-                        } else {
-                            R.string.theme_preview_activate_theme_button_settings
-                        },
-                        themeName
-                    )
+                    text = stringResource(id = R.string.theme_preview_activate_theme_button_settings, themeName)
                 )
             }
         }

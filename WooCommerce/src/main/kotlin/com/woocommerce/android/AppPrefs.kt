@@ -123,8 +123,6 @@ object AppPrefs {
         BLAZE_CELEBRATION_SCREEN_SHOWN,
         MY_STORE_BLAZE_VIEW_DISMISSED,
         WC_STORE_ID,
-        CREATED_STORE_SITE_ID,
-        CREATED_STORE_THEME_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
         AI_PRODUCT_CREATION_SURVEY_DISMISSED,
@@ -1163,25 +1161,6 @@ object AppPrefs {
 
     fun disableAutoTaxRate() {
         remove(AUTO_TAX_RATE_ID)
-    }
-
-    fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) {
-        setString(DeletablePrefKey.CREATED_STORE_THEME_ID, "$siteId:$themeId")
-    }
-
-    fun clearThemeIdForStoreCreation() {
-        remove(DeletablePrefKey.CREATED_STORE_THEME_ID)
-    }
-
-    fun getThemeIdForStoreCreation(siteId: Long): String? {
-        return getString(DeletablePrefKey.CREATED_STORE_THEME_ID).orNullIfEmpty()?.let {
-            val split = it.split(":")
-            if (split.size == 2 && split[0].toLong() == siteId) {
-                split[1]
-            } else {
-                null
-            }
-        }
     }
 
     fun incrementNotificationChannelTypeSuffix(channel: NotificationChannelType) {

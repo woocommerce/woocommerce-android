@@ -367,13 +367,6 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setWCStoreID(siteID, storeID)
     }
 
-    fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) =
-        AppPrefs.saveThemeIdForStoreCreation(siteId, themeId)
-
-    fun clearThemeIdForStoreCreation() = AppPrefs.clearThemeIdForStoreCreation()
-
-    fun getThemeIdForStoreCreation(siteId: Long): String? = AppPrefs.getThemeIdForStoreCreation(siteId)
-
     fun incrementNotificationChannelTypeSuffix(channel: NotificationChannelType) =
         AppPrefs.incrementNotificationChannelTypeSuffix(channel)
 
