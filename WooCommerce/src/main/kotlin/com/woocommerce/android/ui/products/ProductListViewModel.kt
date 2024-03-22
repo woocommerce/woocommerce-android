@@ -472,7 +472,9 @@ class ProductListViewModel @Inject constructor(
         )
 
         val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == openedProductId } ?: 0
-        openedProductId = productId
+        if (isWindowClassLargeThanCompact()) {
+            openedProductId = productId
+        }
         val newPositionInList = _productList.value?.indexOfFirst { it.remoteId == productId } ?: 0
         triggerEvent(
             ProductListEvent.OpenProduct(
