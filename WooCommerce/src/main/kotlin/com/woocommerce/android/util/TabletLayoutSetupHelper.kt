@@ -17,6 +17,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.windowSizeClass
+import com.woocommerce.android.ui.payments.refunds.RefundByAmountFragment
+import com.woocommerce.android.ui.payments.refunds.RefundByItemsFragment
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -60,13 +62,20 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
                     v: View,
                     savedInstanceState: Bundle?
                 ) {
-                    if (f != navHostFragment && f !is BottomSheetDialogFragment) {
+                    if (shouldSetDetailsMargins(f)) {
                         setDetailsMargins(v)
                     }
                 }
             },
             true
         )
+    }
+
+    private fun shouldSetDetailsMargins(fragment: Fragment): Boolean {
+        return fragment != navHostFragment &&
+            fragment !is BottomSheetDialogFragment &&
+            fragment !is RefundByItemsFragment &&
+            fragment !is RefundByAmountFragment
     }
 
     fun openItemDetails(
