@@ -53,12 +53,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
@@ -135,12 +137,14 @@ class MyStoreViewModel @Inject constructor(
 
     private val _selectedRangeType = savedState.getStateFlow(viewModelScope, getSelectedRangeTypeIfAny())
 
-    private val _selectedDateRange = combine(
-        _selectedRangeType,
-        customDateRangeDataStore.dateRange
-            .onStart { emit(DateRange(Date(), Date())) }
-            .filterNotNull()
-    ) { selectionType, customRange ->
+    private val customRange = customDateRangeDataStore.dateRange
+        .filterNotNull()
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = DateRange(Date(), Date())
+        )
+    private val _selectedDateRange = combine(_selectedRangeType, customRange) { selectionType, customRange ->
         when (selectionType) {
             SelectionType.CUSTOM -> {
                 selectionType.generateSelectionData(
@@ -465,8 +469,8 @@ class MyStoreViewModel @Inject constructor(
     fun onAddCustomRangeClicked() {
         triggerEvent(
             OpenDatePicker(
-                fromDate = selectedDateRange.value?.currentRange?.start ?: Date(),
-                toDate = selectedDateRange.value?.currentRange?.end ?: Date()
+                fromDate = customRange.value.startDate,
+                toDate = customRange.value.endDate
             )
         )
     }
