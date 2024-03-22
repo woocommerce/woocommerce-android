@@ -19,9 +19,9 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_AUTOMATIC_TIMEOUT_RETRY
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_AUTOMATIC_TIMEOUT_RETRY
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -315,7 +315,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun trackConnectivityTroubleshootClicked() {
-        analyticsTracker.track(ORDER_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED)
+        analyticsTracker.track(ORDERS_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED)
     }
 
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
@@ -427,7 +427,7 @@ class OrderListViewModel @Inject constructor(
                     TIMEOUT_ERROR -> {
                         when {
                             shouldRetry && noTimeoutHappened -> {
-                                analyticsTracker.track(ORDER_LIST_AUTOMATIC_TIMEOUT_RETRY)
+                                analyticsTracker.track(ORDERS_LIST_AUTOMATIC_TIMEOUT_RETRY)
                                 triggerEvent(RetryLoadingOrders)
                             }
 
