@@ -78,7 +78,7 @@ class ProductListViewModel @Inject constructor(
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
-        private const val KEY_PRODUCT_OPENED = "key_product_opened"
+        private const val KEY_PRODUCT_SELECTED_ON_BIG_SCREEN = "key_product_selected_on_big_screen"
     }
 
     private val _productList = MutableLiveData<List<Product>>()
@@ -100,9 +100,9 @@ class ProductListViewModel @Inject constructor(
     private var selectedCategoryName: String? = null
     private var searchJob: Job? = null
     private var loadJob: Job? = null
-    private var openedProductId: Long?
-        get() = savedState[KEY_PRODUCT_OPENED]
-        set(value) = savedState.set(KEY_PRODUCT_OPENED, value)
+    private var selectedProductIdOnBigScreen: Long?
+        get() = savedState[KEY_PRODUCT_SELECTED_ON_BIG_SCREEN]
+        set(value) = savedState.set(KEY_PRODUCT_SELECTED_ON_BIG_SCREEN, value)
 
     init {
         EventBus.getDefault().register(this)
@@ -300,8 +300,8 @@ class ProductListViewModel @Inject constructor(
     }
 
     private fun resetOpenProductIfNotInList(products: List<Product>) {
-        val isOpenProductInTheList = products.firstOrNull { openedProductId == it.remoteId } != null
-        if (!isOpenProductInTheList) openedProductId = null
+        val isOpenProductInTheList = products.firstOrNull { selectedProductIdOnBigScreen == it.remoteId } != null
+        if (!isOpenProductInTheList) selectedProductIdOnBigScreen = null
     }
 
     @Suppress("LongMethod")
@@ -451,9 +451,9 @@ class ProductListViewModel @Inject constructor(
     private fun openFirstLoadedProductOnTablet(products: List<Product>) {
         if (isWindowClassLargeThanCompact()) {
             if (products.isNotEmpty()) {
-                if (openedProductId == null) {
-                    openedProductId = products.first().remoteId
-                    onOpenProduct(openedProductId!!, null)
+                if (selectedProductIdOnBigScreen == null) {
+                    selectedProductIdOnBigScreen = products.first().remoteId
+                    onOpenProduct(selectedProductIdOnBigScreen!!, null)
                 }
             } else {
                 triggerEvent(ProductListEvent.OpenEmptyProduct)
@@ -471,9 +471,9 @@ class ProductListViewModel @Inject constructor(
             )
         )
 
-        val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == openedProductId } ?: 0
+        val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == selectedProductIdOnBigScreen } ?: 0
         if (isWindowClassLargeThanCompact()) {
-            openedProductId = productId
+            selectedProductIdOnBigScreen = productId
         }
         val newPositionInList = _productList.value?.indexOfFirst { it.remoteId == productId } ?: 0
         triggerEvent(
@@ -487,7 +487,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun isProductHighlighted(productId: Long) =
-        if (isWindowClassLargeThanCompact()) productId == openedProductId else false
+        if (isWindowClassLargeThanCompact()) productId == selectedProductIdOnBigScreen else false
 
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
