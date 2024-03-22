@@ -17,7 +17,11 @@ import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.OnLoadMoreListener
 import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
-import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment.Companion.ARG_ADDED_CATEGORY
+import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment.Companion.ARG_CATEGORY_UPDATE_RESULT
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.CategoryUpdateResult
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.UpdateAction.Add
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.UpdateAction.Delete
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.UpdateAction.Update
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration
@@ -131,8 +135,12 @@ class ProductCategoriesFragment :
     }
 
     private fun setupResultHandlers() {
-        handleResult<ProductCategory>(ARG_ADDED_CATEGORY) { category ->
-            viewModel.onProductCategoryAdded(category)
+        handleResult<CategoryUpdateResult>(ARG_CATEGORY_UPDATE_RESULT) { categoryUpdateResult ->
+            when (categoryUpdateResult.action) {
+                Add -> viewModel.onProductCategoryAdded(categoryUpdateResult.updatedCategory)
+                Update -> viewModel.productCategoryEdited(categoryUpdateResult.updatedCategory)
+                Delete -> viewModel.productCategoryDeleted(categoryUpdateResult.updatedCategory)
+            }
         }
     }
 
