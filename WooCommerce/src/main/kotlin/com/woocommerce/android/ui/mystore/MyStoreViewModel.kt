@@ -470,7 +470,6 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(fromMillis: Long, toMillis: Long) {
-        onStatsGranularityChanged(SelectionType.CUSTOM)
         viewModelScope.launch {
             customDateRangeDataStore.updateDateRange(fromMillis, toMillis)
         }
