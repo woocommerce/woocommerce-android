@@ -102,7 +102,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_JETPACK_CONNECTION_VERIFICATION_FAILED(siteless = true),
     LOGIN_WITH_QR_CODE_BUTTON_TAPPED(siteless = true),
     LOGIN_WITH_QR_CODE_SCANNED(siteless = true),
-    LOGIN_PROLOGUE_CREATE_SITE_TAPPED(siteless = true),
+    LOGIN_PROLOGUE_STARTING_A_NEW_STORE_TAPPED(siteless = true),
     LOGIN_MALFORMED_APP_LOGIN_LINK(siteless = true),
     LOGIN_APP_LOGIN_LINK_SUCCESS(siteless = true),
     SIGNUP_LOGIN_BUTTON_TAPPED(siteless = true),
@@ -331,7 +331,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // -- Refunds
     CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED,
-    CREATE_ORDER_REFUND_TAB_CHANGED,
     CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED,
     CREATE_ORDER_REFUND_ITEM_QUANTITY_DIALOG_OPENED,
     CREATE_ORDER_REFUND_PRODUCT_AMOUNT_DIALOG_OPENED,
@@ -594,6 +593,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PARENT_CATEGORIES_LOAD_FAILED,
     PARENT_CATEGORIES_PULLED_TO_REFRESH,
     ADD_PRODUCT_CATEGORY_SAVE_TAPPED,
+    ADD_PRODUCT_CATEGORY_DELETE_TAPPED,
 
     // -- Product Tags
     PRODUCT_TAGS_LOADED,

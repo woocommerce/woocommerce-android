@@ -330,7 +330,7 @@ class LoginActivity :
     }
 
     override fun onNewToWooButtonClicked() {
-        ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.HOSTING_OPTIONS_DOC)
     }
 
     override fun onGetStartedClicked() {

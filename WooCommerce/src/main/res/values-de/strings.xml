@@ -615,7 +615,6 @@ Language: de
     <string name="coupon_selector_empty_list_message">Du hast noch keine Gutscheine erstellt. Erstelle einen Gutschein, um ihn auf diese Bestellung anzuwenden.</string>
     <string name="coupon_selector_empty_list_button">Zu den Gutscheinen</string>
     <string name="order_creation_select_coupon">Einen Gutschein auswählen</string>
-    <string name="signup_get_started_button">Neuen Shop einrichten</string>
     <string name="coupon_create_coupon_creation_failed">Erstellen des Gutscheins fehlgeschlagen</string>
     <string name="coupon_create_coupon_created">Gutschein erstellt</string>
     <string name="coupon_create_save_button">Erstellen</string>
@@ -1271,13 +1270,11 @@ Language: de
     <string name="analytics_revenue_no_data">Keine Einnahmen in diesem Zeitraum</string>
     <string name="analytics_revenue_card_title">Einnahmen</string>
     <string name="analytics_date_range_custom">%1$s – %2$s</string>
-    <string name="analytics_see_more">Mehr anzeigen</string>
     <string name="signup_api_generic_error">Wir konnten leider kein Konto für die angegebenen Anmeldedaten erstellen. Versuche es bitte mit einer anderen E-Mail-Adresse.</string>
     <string name="signup_password_not_secure_enough">Dein Passwort entspricht nicht unseren Sicherheitsrichtlinien. Bitte versuche es mit einem komplexeren Passwort.</string>
     <string name="signup_password_too_short">Dein Passwort ist zu kurz. Bitte wähle ein Passwort mit mindestens 6 Zeichen.</string>
     <string name="signup_email_invalid_input">Bitte gib eine gültige E-Mail-Adresse ein.</string>
     <string name="signup_email_exist_input">Es ist bereits ein Konto mit dieser E-Mail-Adresse vorhanden.</string>
-    <string name="login_create_an_account">Konto erstellen</string>
     <string name="login_try_another_email">Andere Adresse versuchen</string>
     <string name="date_timeframe_custom_date_range_title">Angepasster Zeitraum</string>
     <string name="date_timeframe_custom">Angepasst</string>

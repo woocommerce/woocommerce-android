@@ -49,7 +49,7 @@ class ParentCategoryListAdapter(
                 if (position > -1) {
                     getItem(position).let {
                         selectedCategoryId = it.category.remoteCategoryId
-                        clickListener.onProductCategoryClick(it)
+                        clickListener.onProductCategoryChecked(it)
                     }
                 }
             }

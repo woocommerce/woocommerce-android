@@ -615,7 +615,6 @@ Language: tr
     <string name="coupon_selector_empty_list_message">Henüz hiçbir kupon oluşturmadınız. Bu siparişe uygulamak için bir kupon oluşturun.</string>
     <string name="coupon_selector_empty_list_button">Kuponlara Git</string>
     <string name="order_creation_select_coupon">Bir kupon seçin</string>
-    <string name="signup_get_started_button">Yeni bir mağaza oluştur</string>
     <string name="coupon_create_coupon_creation_failed">Kupon oluşturulamadı</string>
     <string name="coupon_create_coupon_created">Kupon oluşturuldu</string>
     <string name="coupon_create_save_button">Oluştur</string>
@@ -1271,13 +1270,11 @@ Language: tr
     <string name="analytics_revenue_no_data">Bu dönemde hiç gelir yok</string>
     <string name="analytics_revenue_card_title">Kazanç</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">Daha fazla gör</string>
     <string name="signup_api_generic_error">Maalesef sağlanan kimlik bilgileri için bir hesap oluşturamadık. Lütfen farklı bir e-posta ile deneyin.</string>
     <string name="signup_password_not_secure_enough">Şifreniz güvenlik yönergelerimize uymuyor. Lütfen daha karmaşık bir parola deneyin.</string>
     <string name="signup_password_too_short">Şifreniz çok kısa. Lütfen en az 6 karakterden oluşan bir şifre seçin.</string>
     <string name="signup_email_invalid_input">Lütfen geçerli bir e-posta adresi girin.</string>
     <string name="signup_email_exist_input">Bu e-postayla kayıtlı bir hesap zaten var</string>
-    <string name="login_create_an_account">Bir Hesap Oluşturun</string>
     <string name="login_try_another_email">Başka Bir Adres Deneyin</string>
     <string name="date_timeframe_custom_date_range_title">Özel tarih aralığı</string>
     <string name="date_timeframe_custom">Özel</string>
