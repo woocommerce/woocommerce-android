@@ -484,7 +484,8 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    fun isProductHighlighted(productId: Long) = if (isWindowClassLargeThanCompact()) productId == openedProductId else false
+    fun isProductHighlighted(productId: Long) =
+        if (isWindowClassLargeThanCompact()) productId == openedProductId else false
 
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
