@@ -254,10 +254,9 @@
     <color name="free_trial_banner_content">@color/color_on_surface</color>
 
     <!--
-    Store creation
+    Product Creation using AI
     -->
     <color name="linear_progress_background">@color/woo_purple_0</color>
-    <color name="store_creation_summary_top_illustration_background">@color/woo_purple_0</color>
 
     <!--
     Highlight tooltip
@@ -271,7 +270,7 @@
     <color name="try_test_order_step">#F7F5FB</color>
 
     <!--
-    Store creation
+    Woo Payments Setup
     -->
     <color name="woo_payments_setup_bullet_background">@color/woo_purple_0</color>
 

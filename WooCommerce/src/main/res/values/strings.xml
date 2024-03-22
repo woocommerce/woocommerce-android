@@ -3356,18 +3356,6 @@
     <string name="stats_widget_last_updated_message">As of %1$s</string>
 
     <!--
-    Store creation
-    -->
-    <string name="store_creation_iap_eligibility_loading_title">We are getting ready for your store creation</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Please remain connected.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Store Creation Unavailable </string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Store creation from the mobile app is currently unavailable for your country.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">You can only purchase the eCommerce plan from the mobile app once. To create additional sites visit our website.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Store creation is currently unavailable. Please, try again later.</string>
-    <string name="store_creation_iap_eligibility_network_error">A network error occurred. Please check your connection and try again.</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">You already have an active eCommerce subscription, please contact support if you are experiencing issues with your current subscription not linked to your new site.</string>
-
-    <!--
     Store theme
     -->
     <string name="theme_picker_title">Choose a theme</string>
