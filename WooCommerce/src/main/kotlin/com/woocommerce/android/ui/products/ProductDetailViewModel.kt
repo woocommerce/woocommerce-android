@@ -420,6 +420,7 @@ class ProductDetailViewModel @Inject constructor(
                                 R.string.product_detail_product_not_selected
                             )
                         )
+
                     is ProductDetailFragment.Mode.AddNewProduct -> Unit
                 }
             }
@@ -2104,10 +2105,32 @@ class ProductDetailViewModel @Inject constructor(
         triggerEvent(ProductNavigationTarget.AddProductCategory)
     }
 
+    fun onEditCategory(category: ProductCategory) {
+        triggerEvent(ProductNavigationTarget.EditCategory(category))
+    }
+
     fun onProductCategoryAdded(category: ProductCategory) {
         val selectedCategories = viewState.productDraft?.categories?.toMutableList() ?: mutableListOf()
         selectedCategories.add(category)
         updateProductDraft(categories = selectedCategories)
+        refreshProductCategories()
+    }
+
+    fun productCategoryEdited(updatedCategory: ProductCategory) {
+        updateProductDraft(
+            categories = viewState.productDraft?.categories
+                ?.map {
+                    if (it.remoteCategoryId == updatedCategory.remoteCategoryId) updatedCategory else it
+                }
+        )
+        refreshProductCategories()
+    }
+
+    fun productCategoryDeleted(deletedCategory: ProductCategory) {
+        updateProductDraft(
+            categories = viewState.productDraft?.categories
+                ?.filter { deletedCategory.remoteCategoryId != it.remoteCategoryId }
+        )
         refreshProductCategories()
     }
 
@@ -2225,7 +2248,7 @@ class ProductDetailViewModel @Inject constructor(
         // Mark the product categories as selected in the sorted list
         sortedList.map { productCategoryItemUiModel ->
             for (selectedCategory in selectedCategories) {
-                if (productCategoryItemUiModel.category.name == selectedCategory.name) {
+                if (productCategoryItemUiModel.category.remoteCategoryId == selectedCategory.remoteCategoryId) {
                     productCategoryItemUiModel.isSelected = true
                 }
             }
