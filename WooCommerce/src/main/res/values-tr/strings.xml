@@ -1235,7 +1235,6 @@ Language: tr
     <string name="analytics_revenue_no_data">Bu dönemde hiç gelir yok</string>
     <string name="analytics_revenue_card_title">Kazanç</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">Daha fazla gör</string>
     <string name="signup_api_generic_error">Maalesef sağlanan kimlik bilgileri için bir hesap oluşturamadık. Lütfen farklı bir e-posta ile deneyin.</string>
     <string name="signup_password_not_secure_enough">Şifreniz güvenlik yönergelerimize uymuyor. Lütfen daha karmaşık bir parola deneyin.</string>
     <string name="signup_password_too_short">Şifreniz çok kısa. Lütfen en az 6 karakterden oluşan bir şifre seçin.</string>

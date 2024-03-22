@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -31,36 +30,30 @@ import javax.inject.Inject
 
 class GetStats @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val localeProvider: LocaleProvider,
     private val statsRepository: StatsRepository,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
-    private val dateUtils: DateUtils
 ) {
-    suspend operator fun invoke(refresh: Boolean, granularity: StatsGranularity): Flow<LoadStatsResult> {
-        val selectionRange = granularity.asRangeSelection(
-            dateUtils = dateUtils,
-            locale = localeProvider.provideLocale()
-        )
+    suspend operator fun invoke(refresh: Boolean, selectedRange: StatsTimeRangeSelection): Flow<LoadStatsResult> {
         val shouldRefreshRevenue =
-            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
+            shouldUpdateStats(selectedRange, refresh, AnalyticsUpdateDataStore.AnalyticData.REVENUE)
         val shouldRefreshVisitors =
-            shouldUpdateStats(selectionRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
+            shouldUpdateStats(selectedRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
             hasOrders(),
-            revenueStats(selectionRange, shouldRefreshRevenue),
-            visitorStats(selectionRange, shouldRefreshRevenue)
+            revenueStats(selectedRange, shouldRefreshRevenue),
+            visitorStats(selectedRange, shouldRefreshRevenue)
         ).onEach { result ->
             if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection = selectionRange,
+                    rangeSelection = selectedRange,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
                 )
             }
             if (result is LoadStatsResult.VisitorsStatsSuccess && shouldRefreshVisitors) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                    rangeSelection = selectionRange,
+                    rangeSelection = selectedRange,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS
                 )
             }
