@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.upgrades
+package com.woocommerce.android.ui.plansubscriptions
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,13 +19,12 @@ import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.domain.SitePlan.Type.FREE_TRIAL
 import com.woocommerce.android.ui.plans.domain.SitePlan.Type.OTHER
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSupportRequestForm
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Loading
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.PlanEnded
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.Error
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.Loading
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.NonUpgradeable
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.PlanEnded
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.TrialEnded
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.TrialInProgress
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -36,7 +35,7 @@ import java.time.Period
 import javax.inject.Inject
 
 @HiltViewModel
-class UpgradesViewModel @Inject constructor(
+class PlanSubscriptionViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val planRepository: SitePlanRepository,
@@ -155,12 +154,10 @@ class UpgradesViewModel @Inject constructor(
         ) : HasPlan
     }
 
-    sealed class UpgradesEvent : MultiLiveEvent.Event() {
-        data class OpenSupportRequestForm(
-            val origin: HelpOrigin,
-            val extraTags: List<String>
-        ) : UpgradesEvent()
-    }
+    data class OpenSupportRequestForm(
+        val origin: HelpOrigin,
+        val extraTags: List<String>
+    ) : MultiLiveEvent.Event()
 
     companion object {
         private val tracksProperties = mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)

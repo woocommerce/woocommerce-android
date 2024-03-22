@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.upgrades
+package com.woocommerce.android.ui.plansubscriptions
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
@@ -14,13 +14,12 @@ import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PERIOD
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.PlanEnded
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.Error
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.NonUpgradeable
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.PlanEnded
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.TrialEnded
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.TrialInProgress
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -38,8 +37,8 @@ import java.time.Period
 import java.time.ZonedDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class UpgradesViewModelTest : BaseUnitTest() {
-    lateinit var sut: UpgradesViewModel
+class PlanSubscriptionViewModelTest : BaseUnitTest() {
+    lateinit var sut: PlanSubscriptionViewModel
     lateinit var selectedSite: SelectedSite
     lateinit var planRepository: SitePlanRepository
     lateinit var remainingTrialPeriodUseCase: CalculatePlanRemainingPeriod
@@ -214,7 +213,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
 
             // Then
             assertThat(events).containsExactly(
-                UpgradesEvent.OpenSupportRequestForm(
+                PlanSubscriptionViewModel.OpenSupportRequestForm(
                     HelpOrigin.UPGRADES,
                     listOf(ZendeskTags.freeTrialTag)
                 )
@@ -238,7 +237,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
 
             // Then
             assertThat(events).containsExactly(
-                UpgradesEvent.OpenSupportRequestForm(
+                PlanSubscriptionViewModel.OpenSupportRequestForm(
                     HelpOrigin.UPGRADES,
                     emptyList()
                 )
@@ -253,18 +252,6 @@ class UpgradesViewModelTest : BaseUnitTest() {
         // Then
         verify(tracks).track(
             AnalyticsEvent.UPGRADES_REPORT_SUBSCRIPTION_ISSUE_TAPPED,
-            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
-        )
-    }
-
-    @Test
-    fun `when onSubscribeNowClicked is called, then the expected track event is called`() {
-        // When
-        sut.onSubscribeNowClicked()
-
-        // Then
-        verify(tracks).track(
-            AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED,
             mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_UPGRADES_SCREEN)
         )
     }
@@ -293,7 +280,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
             onBlocking { invoke(sitePlan.expirationDate) } doReturn remainingTrialPeriod
         }
 
-        sut = UpgradesViewModel(
+        sut = PlanSubscriptionViewModel(
             SavedStateHandle(),
             selectedSite,
             planRepository,
@@ -314,7 +301,7 @@ class UpgradesViewModelTest : BaseUnitTest() {
             onBlocking { fetchCurrentPlanDetails(siteModel) } doReturn null
         }
 
-        sut = UpgradesViewModel(
+        sut = PlanSubscriptionViewModel(
             SavedStateHandle(),
             selectedSite,
             planRepository,

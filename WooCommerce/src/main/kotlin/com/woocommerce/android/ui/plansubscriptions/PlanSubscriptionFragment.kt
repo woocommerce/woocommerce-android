@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.upgrades
+package com.woocommerce.android.ui.plansubscriptions
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,16 +11,16 @@ import com.woocommerce.android.R
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSupportRequestForm
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.OpenSupportRequestForm
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 @ExperimentalFoundationApi
-class UpgradesFragment : BaseFragment() {
+class PlanSubscriptionFragment : BaseFragment() {
 
     override fun getFragmentTitle() = getString(R.string.upgrades_title)
 
-    private val viewModel: UpgradesViewModel by viewModels()
+    private val viewModel: PlanSubscriptionViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +30,7 @@ class UpgradesFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 WooThemeWithBackground {
-                    UpgradesScreen(viewModel)
+                    PlanSubscriptionScreen(viewModel)
                 }
             }
         }

@@ -282,7 +282,7 @@
         app:destination="@id/itemSelectorDialog" />
     <fragment
         android:id="@+id/subscriptions"
-        android:name="com.woocommerce.android.ui.upgrades.UpgradesFragment"
+        android:name="com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionFragment"
         android:label="fragment_subscriptions" />
     <fragment
         android:id="@+id/moreMenu"
