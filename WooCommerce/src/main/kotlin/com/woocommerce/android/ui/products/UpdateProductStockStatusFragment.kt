@@ -31,11 +31,11 @@ class UpdateProductStockStatusFragment : DialogFragment() {
     companion object {
         const val UPDATE_STOCK_STATUS_EXIT_STATE_KEY = "update_stock_status_exit_state_key"
 
-        private const val MEDIUM_WIDTH_RATIO = 0.5f
-        private const val MEDIUM_HEIGHT_RATIO = 0.8f
+        private const val LANDSCAPE_WIDTH_RATIO = 0.5f
+        private const val LANDSCAPE_HEIGHT_RATIO = 0.8f
 
-        private const val EXPANDED_WIDTH_RATIO = 0.35f
-        private const val EXPANDED_HEIGHT_RATIO = 0.8f
+        private const val PORTRAIT_WIDTH_RATIO = 0.7f
+        private const val PORTRAIT_HEIGHT_RATIO = 0.5f
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,11 +78,12 @@ class UpdateProductStockStatusFragment : DialogFragment() {
         val width = DisplayUtils.getWindowPixelWidth(requireContext())
         val height = DisplayUtils.getWindowPixelHeight(requireContext())
 
-        val (widthRatio, heightRatio) = when (windowSizeClass) {
-            WindowSizeClass.Compact -> 1f to 1f
-            WindowSizeClass.Medium -> MEDIUM_WIDTH_RATIO to MEDIUM_HEIGHT_RATIO
-            WindowSizeClass.ExpandedAndBigger -> EXPANDED_WIDTH_RATIO to EXPANDED_HEIGHT_RATIO
-            else -> 1f to 1f
+        val isLandscape = DisplayUtils.isLandscape(context)
+
+        val (widthRatio, heightRatio) = when {
+            windowSizeClass == WindowSizeClass.Compact -> 1f to 1f
+            isLandscape -> LANDSCAPE_WIDTH_RATIO to LANDSCAPE_HEIGHT_RATIO
+            else -> PORTRAIT_WIDTH_RATIO to PORTRAIT_HEIGHT_RATIO
         }
 
         dialog?.window?.setLayout(
