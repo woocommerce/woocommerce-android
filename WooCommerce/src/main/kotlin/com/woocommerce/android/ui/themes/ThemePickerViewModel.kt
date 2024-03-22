@@ -17,7 +17,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -37,8 +36,6 @@ class ThemePickerViewModel @Inject constructor(
     private val crashLogger: CrashLogging,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    private val navArgs: ThemePickerFragmentArgs by savedStateHandle.navArgs()
-
     private val currentTheme = MutableStateFlow<CurrentThemeState>(CurrentThemeState.Hidden)
     private val carouselState = MutableStateFlow<CarouselState>(CarouselState.Loading)
     val viewState = combine(
@@ -47,7 +44,6 @@ class ThemePickerViewModel @Inject constructor(
     ) { carouselState, currentThemeState ->
         val updatedCarouseState = removeCurrentThemeFromCarouselItems(carouselState, currentThemeState)
         ViewState(
-            isFromStoreCreation = navArgs.isFromStoreCreation,
             carouselState = updatedCarouseState,
             currentThemeState = currentThemeState
         )
@@ -58,10 +54,7 @@ class ThemePickerViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.THEME_PICKER_SCREEN_DISPLAYED,
             properties = mapOf(
-                AnalyticsTracker.KEY_THEME_PICKER_SOURCE to when (navArgs.isFromStoreCreation) {
-                    true -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_STORE_CREATION
-                    false -> AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_SETTINGS
-                }
+                AnalyticsTracker.KEY_THEME_PICKER_SOURCE to AnalyticsTracker.VALUE_THEME_PICKER_SOURCE_SETTINGS
             )
         )
     }
@@ -87,11 +80,7 @@ class ThemePickerViewModel @Inject constructor(
                                         R.string.theme_picker_carousel_info_item_title
                                     ),
                                     description = resourceProvider.getString(
-                                        resourceId = if (navArgs.isFromStoreCreation) {
-                                            R.string.theme_picker_carousel_info_item_description
-                                        } else {
-                                            R.string.theme_picker_carousel_info_item_description_settings
-                                        }
+                                        resourceId = R.string.theme_picker_carousel_info_item_description_settings
                                     )
                                 )
                             )
@@ -104,10 +93,6 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     private fun loadCurrentTheme() {
-        if (navArgs.isFromStoreCreation) {
-            currentTheme.value = CurrentThemeState.Hidden
-            return
-        }
         viewModelScope.launch {
             currentTheme.value = CurrentThemeState.Loading
             themeRepository.fetchCurrentTheme().fold(
@@ -152,16 +137,12 @@ class ThemePickerViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
-    fun onSkipPressed() {
-        triggerEvent(NavigateToNextStep)
-    }
-
     fun onThemeTapped(theme: Theme) {
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.THEME_PICKER_THEME_SELECTED,
             properties = mapOf(AnalyticsTracker.KEY_THEME_PICKER_THEME to theme.themeId)
         )
-        triggerEvent(NavigateToThemePreview(theme.themeId, navArgs.isFromStoreCreation))
+        triggerEvent(NavigateToThemePreview(theme.themeId))
     }
 
     fun onCurrentThemeUpdated(themeId: String, themeName: String) {
@@ -189,7 +170,6 @@ class ThemePickerViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val isFromStoreCreation: Boolean,
         val carouselState: CarouselState,
         val currentThemeState: CurrentThemeState
     )
@@ -222,6 +202,5 @@ class ThemePickerViewModel @Inject constructor(
         data class Success(val themeName: String, val themeId: String) : CurrentThemeState
     }
 
-    object NavigateToNextStep : Event()
-    data class NavigateToThemePreview(val themeId: String, val isFromStoreCreation: Boolean) : Event()
+    data class NavigateToThemePreview(val themeId: String) : Event()
 }

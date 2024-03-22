@@ -52,9 +52,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingCollapsed
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -67,6 +64,9 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowPriv
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.onboarding.StoreOnboardingCollapsed
+import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
+import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.ui.products.ProductDetailFragment
