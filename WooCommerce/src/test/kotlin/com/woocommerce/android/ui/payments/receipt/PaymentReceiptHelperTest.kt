@@ -28,10 +28,8 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val orderStore: WCOrderStore = mock()
-    private val isDevSiteSupported: PaymentReceiptHelper.IsDevSiteSupported = mock()
 
-    private val helper =
-        PaymentReceiptHelper(selectedSite, wooCommerceStore, appPrefsWrapper, orderStore, isDevSiteSupported)
+    private val helper = PaymentReceiptHelper(selectedSite, wooCommerceStore, appPrefsWrapper, orderStore)
 
     @Test
     fun `given selected site, when storeReceiptUrl, then url is stored`() {
@@ -166,61 +164,6 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
         // THEN
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()!!.message).isEqualTo("error")
-    }
-
-    @Test
-    fun `given version dev usage enabled and 6_4_0 and remote call fails, when getReceiptUrl, then failure returned`() = testBlocking {
-        // GIVEN
-        val site = selectedSite.get()
-        val plugin = mock<SitePluginModel> {
-            on { name }.thenReturn("woocommerce-dev/woocommerce")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugins(
-                selectedSite.get(),
-            )
-        ).thenReturn(listOf(plugin))
-        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
-            WooPayload(
-                WooError(
-                    type = WooErrorType.API_ERROR,
-                    original = BaseRequest.GenericErrorType.NETWORK_ERROR,
-                    message = "error"
-                )
-            )
-        )
-        whenever(isDevSiteSupported()).thenReturn(true)
-
-        // WHEN
-        val result = helper.getReceiptUrl(1)
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()!!.message).isEqualTo("error")
-    }
-
-    @Test
-    fun `given version dev usage enabled and remote call success, when getReceiptUrl, then failure returned`() = testBlocking {
-        // GIVEN
-        val site = selectedSite.get()
-        val plugin = mock<SitePluginModel> {
-            on { name }.thenReturn("woocommerce-dev/woocommerce")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugins(
-                selectedSite.get(),
-            )
-        ).thenReturn(listOf(plugin))
-        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
-            WooPayload(OrderReceiptResponse("url", "date"))
-        )
-        whenever(isDevSiteSupported()).thenReturn(true)
-
-        // WHEN
-        val result = helper.getReceiptUrl(1)
-
-        // THEN
-        assertThat(result.getOrThrow()).isEqualTo("url")
     }
 
     @Test

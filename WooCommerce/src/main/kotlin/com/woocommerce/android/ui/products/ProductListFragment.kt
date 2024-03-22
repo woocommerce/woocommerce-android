@@ -363,6 +363,7 @@ class ProductListFragment :
                         }
                     )
                 }
+
                 is OpenEmptyProduct -> {
                     tabletLayoutSetupHelper.openItemDetails(
                         tabletNavigateTo = {
@@ -380,6 +381,7 @@ class ProductListFragment :
                 is ShowProductUpdateStockStatusScreen -> {
                     showProductUpdateStockStatusScreen(event.productsIds)
                 }
+
                 else -> event.isHandled = false
             }
         }
@@ -389,6 +391,7 @@ class ProductListFragment :
                 is ProductsCommunicationViewModel.CommunicationEvent.ProductTrashed -> {
                     trashProduct(event.productId)
                 }
+
                 is ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated -> {
                     productListViewModel.reloadProductsFromDb()
                 }

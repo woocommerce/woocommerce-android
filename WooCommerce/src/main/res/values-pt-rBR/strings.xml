@@ -1237,7 +1237,6 @@ Language: pt_BR
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
     <string name="signup_email_invalid_input">Digite um endereço de e-mail válido.</string>
     <string name="signup_email_exist_input">Já existe uma conta com este e-mail.</string>
-    <string name="analytics_see_more">Ver mais</string>
     <string name="signup_api_generic_error">Não foi possível criar uma conta com as credenciais fornecidas. Tente outro e-mail.</string>
     <string name="signup_password_not_secure_enough">Sua senha não atende às nossas diretrizes de segurança. Tente uma senha mais complexa.</string>
     <string name="signup_password_too_short">Sua senha é muito curta. Escolha uma com pelo menos seis caracteres.</string>

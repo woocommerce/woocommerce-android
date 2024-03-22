@@ -392,6 +392,12 @@
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
+    <string name="my_store_custom_range_granularity_label">%s interval</string>
+    <string name="my_store_custom_range_granularity_hour">Hourly</string>
+    <string name="my_store_custom_range_granularity_day">Daily</string>
+    <string name="my_store_custom_range_granularity_week">Weekly</string>
+    <string name="my_store_custom_range_granularity_month">Monthly</string>
+    <string name="my_store_custom_range_granularity_year">Yearly</string>
 
     <!--
         Sign Up Flow
@@ -412,7 +418,7 @@
     <!--
         Analytics View
     -->
-    <string name="analytics_see_more">See more</string>
+    <string name="analytics_section_see_all">See all store analytics</string>
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
@@ -1995,12 +2001,17 @@
     <string name="product_category_list_empty_message">Organise your products in categories</string>
     <string name="product_add_category">Add category</string>
     <string name="add_product_category_success">Product category added</string>
+    <string name="update_product_category_success">Product category updated</string>
+    <string name="delete_product_category_success">Product category deleted</string>
     <string name="add_product_category_duplicate">Error creating category - Name already exists on your site.</string>
     <string name="add_product_category_failed">Error creating category</string>
+    <string name="delete_product_category_failed">Error deleting category</string>
     <string name="add_product_category_empty">Enter a category name</string>
     <string name="product_category_name">Category name</string>
     <string name="product_category_parent">Parent category</string>
     <string name="product_add_category_dialog_title">Adding category</string>
+    <string name="product_update_category_dialog_title">Updating category</string>
+    <string name="product_removing_category_dialog_title">Removing category</string>
     <string name="product_add_category_dialog_message">Please wait…</string>
     <string name="product_tag_empty">Add tag</string>
     <string name="product_tags">Tags</string>

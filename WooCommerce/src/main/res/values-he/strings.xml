@@ -1235,7 +1235,6 @@ Language: he_IL
     <string name="analytics_revenue_no_data">אין רווחים בתקופה זאת</string>
     <string name="analytics_revenue_card_title">רווחים</string>
     <string name="analytics_date_range_custom">%1$s – %2$s</string>
-    <string name="analytics_see_more">להציג עוד</string>
     <string name="signup_api_generic_error">מצטערים, לא הצלחנו ליצור חשבון עבור פרטי הכניסה שסופקו. יש לנסות שוב עם אימייל שונה.</string>
     <string name="signup_password_not_secure_enough">הסיסמה אינה תואמת להנחיות האבטחה שלנו. יש לנסות סיסמה מורכבת יותר.</string>
     <string name="signup_password_too_short">הסיסמה שלך קצרה מדי. יש לבחור סיסמה בת שישה תווים לפחות.</string>

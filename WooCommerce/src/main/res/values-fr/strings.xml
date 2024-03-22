@@ -1235,7 +1235,6 @@ Language: fr
     <string name="analytics_revenue_no_data">Pas de revenus durant cette période</string>
     <string name="analytics_revenue_card_title">Revenu</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">En savoir plus</string>
     <string name="signup_api_generic_error">Désolé, nous n’avons pas pu créer un compte pour les identifiants de connexion fournis. Veuillez essayer avec une autre adresse e-mail.</string>
     <string name="signup_password_not_secure_enough">Votre mot de passe ne respecte pas nos critères de sécurité. Merci de créer un mot de passe plus complexe.</string>
     <string name="signup_password_too_short">Votre mot de passe est trop court. Veuillez entrer un mot de passe d’au moins 6 caractères.</string>
