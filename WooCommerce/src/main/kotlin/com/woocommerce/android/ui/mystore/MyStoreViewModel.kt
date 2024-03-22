@@ -54,7 +54,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -136,15 +135,15 @@ class MyStoreViewModel @Inject constructor(
 
     private val _selectedDateRange = combine(
         _selectedRangeType,
-        customDateRangeDataStore.dateRange.filterNotNull()
+        customDateRangeDataStore.dateRange
     ) { selectionType, customRange ->
         when (selectionType) {
             SelectionType.CUSTOM -> {
                 selectionType.generateSelectionData(
                     calendar = Calendar.getInstance(),
                     locale = Locale.getDefault(),
-                    referenceStartDate = customRange.startDate,
-                    referenceEndDate = customRange.endDate
+                    referenceStartDate = customRange?.startDate ?: Date(),
+                    referenceEndDate = customRange?.endDate ?: Date()
                 )
             }
 
