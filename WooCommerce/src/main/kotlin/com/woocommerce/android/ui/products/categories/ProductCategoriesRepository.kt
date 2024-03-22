@@ -201,4 +201,33 @@ class ProductCategoriesRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun searchCategories(
+        searchQuery: String? = null
+    ): Result<List<ProductCategory>> {
+        if (searchQuery.isNullOrEmpty()) {
+            return fetchProductCategories()
+        } else {
+            return productStore.searchProductCategories(
+                selectedSite.get(),
+                searchString = searchQuery,
+                offset = offset,
+                pageSize = PRODUCT_CATEGORIES_PAGE_SIZE
+            ).let { result ->
+                if (result.isError) {
+                    WooLog.w(
+                        WooLog.T.PRODUCTS,
+                        "Searching product categories failed, error: ${result.error.type}: ${result.error.message}"
+                    )
+                    Result.failure(WooException(result.error))
+                } else {
+                    val searchResult = result.model!!
+                    Result.success(
+                        searchResult.categories
+                            .map { categoryDataModel -> categoryDataModel.toProductCategory() }
+                    )
+                }
+            }
+        }
+    }
 }
