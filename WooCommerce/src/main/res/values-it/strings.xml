@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-12 15:54:03+0000
+Translation-Revision-Date: 2024-03-20 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">Attendi…</string>
+    <string name="product_update_stock_status_dialog_title">Aggiornamento dello stato delle scorte</string>
+    <string name="product_update_stock_status_error">Si è verificato un problema. Riprova.</string>
+    <string name="product_update_stock_status_completed">Stato delle scorte aggiornato</string>
+    <string name="product_update_stock_status_variable_products">I prodotti variabili non possono essere aggiornati</string>
+    <string name="product_update_stock_status_managed_products">I prodotti gestiti non possono essere aggiornati</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 prodotto variabile verrà ignorato.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 prodotto con quantità di scorte gestita verrà ignorato.</string>
+    <string name="product_update_stock_status_update_count_singular">Lo stato delle scorte sarà aggiornato per 1 prodotto.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d prodotti variabili verranno ignorati.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d prodotti con quantità di scorte gestita verranno ignorati.</string>
+    <string name="product_update_stock_status_update_count">Lo stato delle scorte sarà aggiornato per %1$d prodotti.</string>
+    <string name="product_update_stock_status_current_status_single">Lo stato attuale delle scorte è %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">Lo stato attuale delle scorte è misto</string>
+    <string name="product_update_stock_status_done">FATTO</string>
+    <string name="product_update_stock_status_title">Aggiorna stato delle scorte</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Accedi con le credenziali del sito</string>
+    <string name="settings_woo_plugin_version">Versione WooCommerce.</string>
+    <string name="settings_option_installed_plugins">Plugin installati</string>
+    <string name="settings_plugins">Plugin</string>
+    <string name="settings_notifs_restore_chaching_sound_description">Il suono delle notifiche degli ordini è stato modificato, utilizza questo pulsante per ripristinare il suono della cassa.</string>
+    <string name="product_selection_menu_update_stock_status">Aggiorna stato delle scorte</string>
+    <string name="order_detail_trash_order_dialog_message">Vuoi spostare questo ordine nel cestino?</string>
+    <string name="order_detail_move_to_trash">Sposta nel cestino</string>
+    <string name="order_creation_recalculate_button">Ricalcola</string>
+    <string name="order_creation_scan_products">Scansiona prodotti</string>
+    <string name="order_creation_tablet_mode_fragment_title">Riepilogo degli ordini</string>
+    <string name="orderlist_order_trashed_error">Errore nel cestinare l\'ordine</string>
+    <string name="orderlist_order_trashed">Ordine cestinato</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Siamo spiacenti. Sembra che ci sia un problema con il tuo sito.\n\nContatta il tuo provider di hosting per ulteriore assistenza.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Siamo spiacenti. Sembra esserci un problema con la connessione Jetpack.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Siamo spiacenti. Sembra che non sia possibile lavorare correttamente con la risposta del sito.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Siamo spiacenti. Sembra che il tuo sito stia impiegando troppo tempo per rispondere.\n\nContatta il tuo provider di hosting per ulteriore assistenza.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Siamo spiacenti. Sembra che al momento non sia possibile connettersi a WordPress.com.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">Sembra non ci sia connessione a Internet.\n\nAssicurati che il Wi-Fi sia acceso. Se stai utilizzando i dati mobili, accertati che siano abilitati nelle impostazioni del dispositivo.</string>
     <string name="product_detail_product_not_selected">Prodotto non selezionato</string>
     <string name="orderlist_connectivity_tool_read_more_action">Continua a leggere</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contatta il supporto</string>

@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-12 09:54:03+0000
+Translation-Revision-Date: 2024-03-20 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">Harap tunggu…</string>
+    <string name="product_update_stock_status_dialog_title">Memperbarui status stok</string>
+    <string name="product_update_stock_status_error">Terjadi masalah. Coba lagi.</string>
+    <string name="product_update_stock_status_completed">Memperbarui status stok</string>
+    <string name="product_update_stock_status_variable_products">Produk variabel tidak dapat diperbarui</string>
+    <string name="product_update_stock_status_managed_products">Produk terkelola tidak dapat diperbarui</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 produk variabel akan diabaikan.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 produk dengan jumlah stok terkelola akan diabaikan.</string>
+    <string name="product_update_stock_status_update_count_singular">Status stok akan diperbarui untuk 1 produk.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d produk variabel akan diabaikan.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d produk dengan jumlah stok terkelola akan diabaikan.</string>
+    <string name="product_update_stock_status_update_count">Status stok akan diperbarui untuk %1$d produk.</string>
+    <string name="product_update_stock_status_current_status_single">Status stok saat ini %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">Status stok saat ini beragam</string>
+    <string name="product_update_stock_status_done">SELESAI</string>
+    <string name="product_update_stock_status_title">Perbarui Status Stok</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Login dengan kredensial situs Anda</string>
+    <string name="settings_woo_plugin_version">Versi WooCommerce</string>
+    <string name="settings_option_installed_plugins">Plugin Terpasang</string>
+    <string name="settings_plugins">Plugin</string>
+    <string name="settings_notifs_restore_chaching_sound_description">Bunyi pemberitahuan pesanan telah diubah, gunakan tombol ini untuk mengembalikan bunyi \'cring cring\'.</string>
+    <string name="product_selection_menu_update_stock_status">Perbarui status stok</string>
+    <string name="order_detail_trash_order_dialog_message">Ingin memindahkan pesanan ini ke tempat sampah?</string>
+    <string name="order_detail_move_to_trash">Pindahkan ke tempat sampah</string>
+    <string name="order_creation_recalculate_button">Hitung ulang</string>
+    <string name="order_creation_scan_products">Pindai produk</string>
+    <string name="order_creation_tablet_mode_fragment_title">Ringkasan Pesanan</string>
+    <string name="orderlist_order_trashed_error">Error saat memindahkan pesanan ke tempat sampah</string>
+    <string name="orderlist_order_trashed">Pesanan dipindahkan ke tempat sampah</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Ups! Tampaknya situs Anda mengalami masalah.\n\nHubungi penyedia hosting Anda untuk mendapatkan bantuan lebih lanjut.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Ups! Tampaknya terjadi masalah dengan koneksi Jetpack Anda.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami dan kami siap membantu Anda.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Ups! Tampaknya kami tidak dapat menangani respons situs Anda.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami dan kami siap membantu Anda.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Ups! Tampaknya situs Anda merespons terlalu lama.\n\nHubungi penyedia hosting Anda untuk mendapatkan bantuan lebih lanjut.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Ups! Tampaknya saat ini kami tidak dapat terhubung dengan WordPress.com.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami dan kami siap membantu Anda.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">Tampaknya Anda tidak terhubung ke internet.\n\nPastikan Wi-Fi Anda aktif. Jika Anda menggunakan data seluler, aktifkan di pengaturan perangkat Anda.</string>
     <string name="product_detail_product_not_selected">Produk tidak dipilih</string>
     <string name="orderlist_connectivity_tool_read_more_action">Baca Selengkapnya</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Hubungi Dukungan</string>

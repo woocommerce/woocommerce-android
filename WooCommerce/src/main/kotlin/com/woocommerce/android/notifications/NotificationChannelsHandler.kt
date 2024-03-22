@@ -82,7 +82,7 @@ class NotificationChannelsHandler @Inject constructor(
     private fun checkAndTrackNewOrderNotificationSound(channel: NotificationChannel) {
         val sound = channel.sound
         var updatedChannel = channel
-        if (sound.toString().matches("^.*\\d+$".toRegex())) {
+        if (sound?.toString()?.matches("^android\\.resource.*\\d+$".toRegex()) == true) {
             // The channel still uses the Uri based on the resource id, so we need to recreate it
             WooLog.d(WooLog.T.NOTIFS, "Orders notification channel still uses ID based sound, recreating it.")
             recreateNotificationChannel(NEW_ORDER)

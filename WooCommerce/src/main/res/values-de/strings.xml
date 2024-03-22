@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-11 17:54:05+0000
+Translation-Revision-Date: 2024-03-20 12:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">Bitte warten …</string>
+    <string name="product_update_stock_status_dialog_title">Lagerbestände werden aktualisiert</string>
+    <string name="product_update_stock_status_error">Etwas ist schiefgegangen. Bitte versuche es erneut.</string>
+    <string name="product_update_stock_status_completed">Lagerbestände aktualisiert</string>
+    <string name="product_update_stock_status_variable_products">Variable Produkte können nicht aktualisiert werden</string>
+    <string name="product_update_stock_status_managed_products">Verwaltete Produkte können nicht aktualisiert werden</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 variables Produkt wird ignoriert.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 Produkt mit verwalteter Lagerbestandsmenge wird ignoriert.</string>
+    <string name="product_update_stock_status_update_count_singular">Lagerbestand wird für 1 Produkt aktualisiert.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d variable Produkte werden ignoriert.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d Produkte mit verwalteter Lagerbestandsmenge werden ignoriert.</string>
+    <string name="product_update_stock_status_update_count">Lagerbestand wird für %1$d Produkte aktualisiert.</string>
+    <string name="product_update_stock_status_current_status_single">Aktueller Lagerbestand ist %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">Aktuelle Lagerbestände sind gemischt</string>
+    <string name="product_update_stock_status_done">FERTIG</string>
+    <string name="product_update_stock_status_title">Lagerbestand aktualisieren</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Melde dich mit deinen Website-Anmeldedaten an</string>
+    <string name="settings_woo_plugin_version">WooCommerce-Version</string>
+    <string name="settings_option_installed_plugins">Installierte Plugins</string>
+    <string name="settings_plugins">Plugins</string>
+    <string name="settings_notifs_restore_chaching_sound_description">Der Ton für Bestellbenachrichtigungen wurde geändert. Über diesen Button kannst du den „Ka-tsching“-Ton wiederherstellen.</string>
+    <string name="product_selection_menu_update_stock_status">Lagerbestand aktualisieren</string>
+    <string name="order_detail_trash_order_dialog_message">Möchtest du diese Bestellung in den Papierkorb verschieben?</string>
+    <string name="order_detail_move_to_trash">In den Papierkorb verschieben</string>
+    <string name="order_creation_recalculate_button">Neu berechnen</string>
+    <string name="order_creation_scan_products">Produkte scannen</string>
+    <string name="order_creation_tablet_mode_fragment_title">Zusammenfassung der Bestellung</string>
+    <string name="orderlist_order_trashed_error">Fehler beim Verschieben der Bestellung in den Papierkorb</string>
+    <string name="orderlist_order_trashed">Bestellung in den Papierkorb verschoben</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Ups! Es scheint ein Problem mit deiner Website zu geben.\n\nKontaktiere deinen Hosting-Anbieter für weitere Unterstützung.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Ups! Es scheint ein Problem mit deiner Jetpack-Verbindung zu geben.\n\nAber keine Sorge, unser Support-Team wird dich unterstützen. Kontaktiere uns und wir helfen dir gerne weiter.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Ups! Wir können mit der Antwort deiner Website anscheinend nicht richtig arbeiten.\n\nAber keine Sorge, unser Support-Team wird dich unterstützen. Kontaktiere uns und wir helfen dir gerne weiter.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Ups! Deine Website braucht scheinbar zu lange, um zu antworten.\n\nKontaktiere deinen Hosting-Anbieter für weitere Unterstützung.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Ups! Wir können derzeit scheinbar keine Verbindung zu WordPress.com herstellen.\n\nAber keine Sorge, unser Support-Team wird dich unterstützen. Kontaktiere uns und wir helfen dir gerne weiter.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">Du bist scheinbar nicht mit dem Internet verbunden.\n\nStelle sicher, dass dein WLAN eingeschaltet ist. Falls du mobile Daten verwendest, solltest du prüfen, ob sie in deinen Geräteeinstellungen aktiviert sind.</string>
     <string name="product_detail_product_not_selected">Produkt nicht ausgewählt</string>
     <string name="orderlist_connectivity_tool_read_more_action">Weitere Informationen</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Support kontaktieren</string>

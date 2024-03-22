@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-12 09:54:04+0000
+Translation-Revision-Date: 2024-03-20 12:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">請稍候…</string>
+    <string name="product_update_stock_status_dialog_title">正在更新庫存狀態</string>
+    <string name="product_update_stock_status_error">發生錯誤。 請再試一次。</string>
+    <string name="product_update_stock_status_completed">已更新庫存狀態</string>
+    <string name="product_update_stock_status_variable_products">無法更新多款式商品</string>
+    <string name="product_update_stock_status_managed_products">無法更新管理的商品</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">系統會忽略 1 個多款式商品。</string>
+    <string name="product_update_stock_status_ignored_count_singular">系統會忽略 1 個附有管理庫存量的商品。</string>
+    <string name="product_update_stock_status_update_count_singular">系統會更新 1 個商品的庫存狀態。</string>
+    <string name="product_update_stock_status_variable_ignored_count">系統會忽略 %1$d 個多款式商品。</string>
+    <string name="product_update_stock_status_ignored_count">系統會忽略 %1$d 個附有管理庫存量的商品。</string>
+    <string name="product_update_stock_status_update_count">系統會更新 %1$d 個商品的庫存狀態。</string>
+    <string name="product_update_stock_status_current_status_single">目前庫存狀態為：%1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">目前庫存狀態已混合</string>
+    <string name="product_update_stock_status_done">完成</string>
+    <string name="product_update_stock_status_title">更新庫存狀態</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">請使用你的網站憑證登入</string>
+    <string name="settings_woo_plugin_version">WooCommerce 版本</string>
+    <string name="settings_option_installed_plugins">已安裝的外掛程式</string>
+    <string name="settings_plugins">外掛程式</string>
+    <string name="settings_notifs_restore_chaching_sound_description">已調整訂單通知音效，使用此按鈕即可還原收銀機音效。</string>
+    <string name="product_selection_menu_update_stock_status">更新庫存狀態</string>
+    <string name="order_detail_trash_order_dialog_message">你要將此訂單移至垃圾桶嗎？</string>
+    <string name="order_detail_move_to_trash">移至垃圾桶</string>
+    <string name="order_creation_recalculate_button">重新計算</string>
+    <string name="order_creation_scan_products">掃描商品</string>
+    <string name="order_creation_tablet_mode_fragment_title">訂單摘要</string>
+    <string name="orderlist_order_trashed_error">將訂單移至垃圾桶時發生錯誤</string>
+    <string name="orderlist_order_trashed">已移至垃圾桶的訂單</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">糟糕！ 你的網站發生問題。\n\n聯絡你的主機服務提供者，尋求進一步協助。</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">糟糕！ 你的 Jetpack 連線發生問題。\n\n別擔心，我們的支援團隊可以提供協助。 聯絡我們，我們很樂意提供協助。</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">糟糕！ 你的網站回應無法正常運作。\n\n別擔心，我們的支援團隊可以提供協助。 聯絡我們，我們很樂意提供協助。</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">糟糕！ 你的網站太久沒有回應。\n\n聯絡你的主機服務提供者，尋求進一步協助。</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">糟糕！ 我們目前無法連結 WordPress.com。\n\n別擔心，我們的支援團隊可以提供協助。 聯絡我們，我們很樂意提供協助。</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">你目前沒有網際網路連線。\n\n請確認 Wi-Fi 已開啟。 如果你使用行動數據，請確認已在裝置設定中啟用。</string>
     <string name="product_detail_product_not_selected">未選取商品</string>
     <string name="orderlist_connectivity_tool_read_more_action">閱讀更多</string>
     <string name="orderlist_connectivity_tool_contact_support_action">聯絡支援團隊</string>
