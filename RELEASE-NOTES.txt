@@ -1,4 +1,8 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+18.0
+----
+- [*] Products: Fixed a bug that in some cases in 2 panes mode product was not selected [https://github.com/woocommerce/woocommerce-android/pull/11144]
+
 17.9
 -----
 - [*] Reviews: Fixed a bug when double toolbar was visible on the reviews in settings [https://github.com/woocommerce/woocommerce-android/pull/11072]
