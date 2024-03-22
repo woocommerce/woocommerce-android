@@ -24,12 +24,12 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.mystore.data.DateRange
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -53,12 +53,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
@@ -134,20 +136,22 @@ class MyStoreViewModel @Inject constructor(
     private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
     private val _selectedRangeType = savedState.getStateFlow(viewModelScope, getSelectedRangeTypeIfAny())
-    private val _customRange: MutableStateFlow<AnalyticsHubTimeRange> = MutableStateFlow(
-        AnalyticsHubTimeRange(
-            Date(),
-            Date()
+
+    private val customRange = customDateRangeDataStore.dateRange
+        .filterNotNull()
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = DateRange(Date(), Date())
         )
-    )
-    private val _selectedDateRange = combine(_selectedRangeType, _customRange) { selectionType, customRange ->
+    private val _selectedDateRange = combine(_selectedRangeType, customRange) { selectionType, customRange ->
         when (selectionType) {
             SelectionType.CUSTOM -> {
                 selectionType.generateSelectionData(
                     calendar = Calendar.getInstance(),
                     locale = Locale.getDefault(),
-                    referenceStartDate = customRange.start,
-                    referenceEndDate = customRange.end
+                    referenceStartDate = customRange.startDate,
+                    referenceEndDate = customRange.endDate
                 )
             }
 
@@ -240,15 +244,6 @@ class MyStoreViewModel @Inject constructor(
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         refreshTrigger.tryEmit(RefreshState(isForced = true))
     }
-
-    fun getSelectedSiteName(): String =
-        selectedSite.getIfExists()?.let { site ->
-            if (!site.displayName.isNullOrBlank()) {
-                site.displayName
-            } else {
-                site.name
-            }
-        } ?: ""
 
     fun onViewAnalyticsClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
@@ -463,12 +458,8 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(fromMillis: Long, toMillis: Long) {
-        onStatsGranularityChanged(SelectionType.CUSTOM)
-        _customRange.update {
-            AnalyticsHubTimeRange(
-                Date(fromMillis),
-                Date(toMillis)
-            )
+        if (_selectedRangeType.value != SelectionType.CUSTOM) {
+            onStatsGranularityChanged(SelectionType.CUSTOM)
         }
         viewModelScope.launch {
             customDateRangeDataStore.updateDateRange(fromMillis, toMillis)
@@ -478,8 +469,8 @@ class MyStoreViewModel @Inject constructor(
     fun onAddCustomRangeClicked() {
         triggerEvent(
             OpenDatePicker(
-                fromDate = _customRange.value.start,
-                toDate = _customRange.value.end
+                fromDate = customRange.value.startDate,
+                toDate = customRange.value.endDate
             )
         )
     }
