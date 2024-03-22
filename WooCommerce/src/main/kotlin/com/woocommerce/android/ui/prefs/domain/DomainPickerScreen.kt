@@ -159,7 +159,7 @@ private fun DomainSearchForm(
                     state.domainSuggestionsUi.isEmpty() -> item {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = stringResource(id = R.string.store_creation_domain_picker_empty_suggestions),
+                            text = stringResource(id = R.string.domain_picker_empty_suggestions),
                             textAlign = TextAlign.Center,
                         )
                     }
@@ -167,7 +167,7 @@ private fun DomainSearchForm(
                     else -> {
                         item {
                             Text(
-                                text = stringResource(id = R.string.store_creation_domain_picker_suggestions_title)
+                                text = stringResource(id = R.string.domain_picker_suggestions_title)
                                     .uppercase(),
                                 style = MaterialTheme.typography.caption,
                                 color = colorResource(id = R.color.color_on_surface_medium),
@@ -252,11 +252,11 @@ private fun SearchField(
             )
         } else {
             Text(
-                text = stringResource(id = R.string.store_creation_domain_picker_title),
+                text = stringResource(id = R.string.domain_picker_title),
                 style = MaterialTheme.typography.h5,
             )
             Text(
-                text = stringResource(id = R.string.store_creation_domain_picker_subtitle),
+                text = stringResource(id = R.string.domain_picker_subtitle),
                 style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
@@ -265,7 +265,7 @@ private fun SearchField(
         WCSearchField(
             value = domainQuery,
             onValueChange = onDomainQueryChanged,
-            hint = stringResource(id = R.string.store_creation_domain_picker_hint),
+            hint = stringResource(id = R.string.domain_picker_hint),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)

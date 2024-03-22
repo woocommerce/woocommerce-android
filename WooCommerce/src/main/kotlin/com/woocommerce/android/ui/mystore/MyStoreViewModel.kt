@@ -168,7 +168,7 @@ class MyStoreViewModel @Inject constructor(
             site?.displayName
         } else {
             site?.name
-        } ?: resourceProvider.getString(R.string.store_creation_store_name_default)
+        } ?: resourceProvider.getString(R.string.store_name_default)
     }.asLiveData()
 
     init {

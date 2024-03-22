@@ -10,7 +10,7 @@ class IsLocalTaskNameYourStoreCompleted @Inject constructor(
     private val resourceProvider: ResourceProvider
 ) {
     operator fun invoke(): Boolean {
-        val defaultStoreName = resourceProvider.getString(R.string.store_creation_store_name_default)
+        val defaultStoreName = resourceProvider.getString(R.string.store_name_default)
         return selectedSite.getIfExists()?.name != defaultStoreName
     }
 }

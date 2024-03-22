@@ -160,7 +160,7 @@ private fun WebView(
         loadWithOverviewMode = true,
         isReadOnly = isReadOnly,
         progressIndicator = Circular(
-            stringResource(id = string.store_creation_installation_rendering_preview_label)
+            stringResource(id = string.store_onboarding_launch_store_rendering_preview_label)
         ),
         modifier = Modifier
             .fillMaxSize()

@@ -101,7 +101,7 @@ abstract class DomainSuggestionsViewModel(
                     loadingState.value = Loading
                     domainSuggestionsRepository.fetchDomainSuggestions(query, searchOnlyFreeDomains)
                         .onFailure {
-                            triggerEvent(ShowSnackbar(R.string.store_creation_domain_picker_suggestions_error))
+                            triggerEvent(ShowSnackbar(R.string.domain_picker_suggestions_error))
                         }
                     loadingState.value = Idle
                 }
