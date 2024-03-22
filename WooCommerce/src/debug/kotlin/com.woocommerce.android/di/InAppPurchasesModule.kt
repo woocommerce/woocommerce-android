@@ -6,8 +6,8 @@ import com.woocommerce.android.iap.pub.IAPSitePurchasePlanFactory
 import com.woocommerce.android.iap.pub.PurchaseWPComPlanActions
 import com.woocommerce.android.iap.pub.PurchaseWpComPlanSupportChecker
 import com.woocommerce.android.iap.pub.network.SandboxTestingConfig
-import com.woocommerce.android.ui.login.storecreation.iap.IapMobilePayApiProvider
-import com.woocommerce.android.ui.login.storecreation.iap.WooIapLogWrapper
+import com.woocommerce.android.iapshowcase.IAPDebugLogWrapper
+import com.woocommerce.android.iapshowcase.IapMobilePayApiProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +25,7 @@ class InAppPurchasesModule {
     ): PurchaseWPComPlanActions =
         IAPSitePurchasePlanFactory.createIAPSitePurchasePlan(
             context,
-            WooIapLogWrapper(),
+            IAPDebugLogWrapper(),
             mobilePayAPIProvider::buildMobilePayAPI,
             SandboxTestingConfigImpl()
         )
@@ -35,7 +35,7 @@ class InAppPurchasesModule {
     fun providePurchaseWpComPlanSupportChecker(application: Application): PurchaseWpComPlanSupportChecker =
         IAPSitePurchasePlanFactory.createIAPPurchaseWpComPlanSupportChecker(
             application,
-            WooIapLogWrapper(),
+            IAPDebugLogWrapper(),
         )
 
     private class SandboxTestingConfigImpl(

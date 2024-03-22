@@ -18,7 +18,7 @@ import com.woocommerce.android.iap.pub.IAPActivityWrapper
 import com.woocommerce.android.iap.pub.IAPSitePurchasePlanFactory
 import com.woocommerce.android.iap.pub.network.SandboxTestingConfig
 import com.woocommerce.android.iapshowcase.IAPDebugLogWrapper
-import com.woocommerce.android.ui.login.storecreation.iap.IapMobilePayApiProvider
+import com.woocommerce.android.iapshowcase.IapMobilePayApiProvider
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

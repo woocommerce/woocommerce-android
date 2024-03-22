@@ -878,10 +878,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Analytics Hub
     ANALYTICS_HUB_WAITING_TIME_LOADED,
 
-    // Site creation native flow
-    SITE_CREATION_IAP_ELIGIBILITY(siteless = true),
-    SITE_CREATION_IAP_ELIGIBILITY_ERROR(siteless = true),
-
     // Domain change
     CUSTOM_DOMAINS_STEP,
     DOMAIN_CONTACT_INFO_VALIDATION_FAILED,

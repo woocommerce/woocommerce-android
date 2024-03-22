@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.storecreation.iap
+package com.woocommerce.android.iapshowcase
 
 import com.woocommerce.android.iap.pub.network.IAPMobilePayAPI
 import com.woocommerce.android.iap.pub.network.model.CreateAndConfirmOrderResponse
