@@ -276,7 +276,7 @@ class MainActivityViewModel @Inject constructor(
             )
             LocalNotificationType.fromString(notification.tag)?.let {
                 when (it) {
-                    FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
+                    FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED,
                     FREE_TRIAL_EXPIRED,
                     FREE_TRIAL_EXPIRING,
                     SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
@@ -348,7 +348,6 @@ class MainActivityViewModel @Inject constructor(
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
     object ShowPrivacySettings : Event()
     data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()
-    object OpenFreeTrialSurvey : Event()
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object NewFeature : MoreMenuBadgeState()

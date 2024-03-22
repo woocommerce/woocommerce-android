@@ -708,19 +708,12 @@
             app:popUpTo="@id/blazeCampaignCreationFragment"
             app:popUpToInclusive="true" />
     </fragment>
-    <fragment
-        android:id="@+id/freeTrialSurveyFragment"
-        android:name="com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyFragment"
-        android:label="FreeTrialSurveyFragment" />
     <action
         android:id="@+id/action_global_blazeCampaignCreationFragment"
         app:destination="@id/blazeCampaignCreationFragment" />
     <action
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />
-    <action
-        android:id="@+id/action_global_freeTrialSurveyFragment"
-        app:destination="@id/freeTrialSurveyFragment" />
     <dialog
         android:id="@+id/AIProductDescriptionDialogFragment"
         android:name="com.woocommerce.android.ui.mystore.AIProductDescriptionDialogFragment"

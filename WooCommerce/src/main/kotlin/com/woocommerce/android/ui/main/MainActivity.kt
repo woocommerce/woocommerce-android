@@ -76,7 +76,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.main.MainActivityViewModel.OpenFreeTrialSurvey
 import com.woocommerce.android.ui.main.MainActivityViewModel.RequestNotificationsPermission
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityEvent
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
@@ -817,8 +816,6 @@ class MainActivity :
                     showPrivacySettingsScreen(event.requestedAnalyticsValue)
                 }
 
-                is OpenFreeTrialSurvey -> openFreeTrialSurvey()
-
                 is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
                 is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
             }
@@ -828,12 +825,6 @@ class MainActivity :
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
-    }
-
-    private fun openFreeTrialSurvey() {
-        navController.navigateSafely(
-            NavGraphMainDirections.actionGlobalFreeTrialSurveyFragment()
-        )
     }
 
     private fun observeNotificationsPermissionBarVisibility() {
