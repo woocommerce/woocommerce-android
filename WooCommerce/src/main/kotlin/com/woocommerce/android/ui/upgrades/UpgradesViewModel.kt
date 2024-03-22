@@ -19,7 +19,6 @@ import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.domain.SitePlan.Type.FREE_TRIAL
 import com.woocommerce.android.ui.plans.domain.SitePlan.Type.OTHER
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSubscribeNow
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesEvent.OpenSupportRequestForm
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
 import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Loading
@@ -56,11 +55,6 @@ class UpgradesViewModel @Inject constructor(
         loadSubscriptionState()
     }
 
-    fun onSubscribeNowClicked() {
-        tracks.track(AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED, tracksProperties)
-        triggerEvent(OpenSubscribeNow)
-    }
-
     fun onReportSubscriptionIssueClicked() {
         tracks.track(AnalyticsEvent.UPGRADES_REPORT_SUBSCRIPTION_ISSUE_TAPPED, tracksProperties)
 
@@ -69,12 +63,6 @@ class UpgradesViewModel @Inject constructor(
             ?.let { listOf(ZendeskTags.freeTrialTag) }
             ?: emptyList()
         triggerEvent(OpenSupportRequestForm(HelpOrigin.UPGRADES, tags))
-    }
-
-    fun onPlanUpgraded() {
-        launch {
-            loadSubscriptionState()
-        }
     }
 
     private fun loadSubscriptionState() {
@@ -168,7 +156,6 @@ class UpgradesViewModel @Inject constructor(
     }
 
     sealed class UpgradesEvent : MultiLiveEvent.Event() {
-        object OpenSubscribeNow : UpgradesEvent()
         data class OpenSupportRequestForm(
             val origin: HelpOrigin,
             val extraTags: List<String>

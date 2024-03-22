@@ -691,15 +691,6 @@
         android:name="com.woocommerce.android.ui.onboarding.aboutyourstore.AboutYourStoreFragment"
         android:label="AboutYourStoreFragment" />
     <fragment
-        android:id="@+id/planUpgradeStartFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment"
-        android:label="PlanUpgradeStartFragment">
-        <argument
-            android:name="source"
-            app:argType="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment$PlanUpgradeStartSource"
-            app:nullable="false" />
-    </fragment>
-    <fragment
         android:id="@+id/blazeCampaignCreationFragment"
         android:name="com.woocommerce.android.ui.blaze.BlazeCampaignCreationFragment"
         android:label="BlazeWebViewFragment">
@@ -724,9 +715,6 @@
     <action
         android:id="@+id/action_global_blazeCampaignCreationFragment"
         app:destination="@id/blazeCampaignCreationFragment" />
-    <action
-        android:id="@+id/action_global_planUpgradeStartFragment"
-        app:destination="@id/planUpgradeStartFragment" />
     <action
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />

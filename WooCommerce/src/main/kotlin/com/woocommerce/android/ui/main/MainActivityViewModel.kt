@@ -26,8 +26,6 @@ import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -278,15 +276,12 @@ class MainActivityViewModel @Inject constructor(
             )
             LocalNotificationType.fromString(notification.tag)?.let {
                 when (it) {
+                    FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
                     FREE_TRIAL_EXPIRED,
                     FREE_TRIAL_EXPIRING,
-                    SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
-
-                    FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
-
+                    SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
                     STORE_CREATION_FINISHED,
-                    THREE_DAYS_AFTER_STILL_EXPLORING -> {
-                    }
+                    THREE_DAYS_AFTER_STILL_EXPLORING -> Unit
                 }
             }
         }
@@ -337,7 +332,6 @@ class MainActivityViewModel @Inject constructor(
     ) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
-    data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()
 
     sealed class RestartActivityEvent : Event()
     data class RestartActivityForLocalNotification(val notification: Notification) : RestartActivityEvent()
