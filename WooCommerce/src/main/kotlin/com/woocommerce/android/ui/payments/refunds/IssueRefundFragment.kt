@@ -72,7 +72,6 @@ class IssueRefundFragment : BaseFragment() {
             new.screenTitle?.takeIfNotEqualTo(old?.screenTitle) {
                 binding.toolbar.title = it
             }
-
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
