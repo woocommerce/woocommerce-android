@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -14,6 +15,7 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusUiState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils
@@ -47,22 +49,22 @@ class UpdateProductStockStatusFragment : DialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            viewModel.viewState.observeAsState().value?.let { uiState ->
-                UpdateProductStockStatusScreen(
-                    currentStockStatusState = uiState.currentStockStatusState,
-                    statusMessage = uiState.statusMessage,
-                    currentProductStockStatus = uiState.currentProductStockStatus,
-                    stockStatuses = uiState.stockStockStatuses,
-                    isProgressDialogVisible = uiState.isProgressDialogVisible,
-                    onStockStatusChanged = { newStatus ->
-                        viewModel.onStockStatusSelected(newStatus)
-                    },
-                    onNavigationUpClicked = { viewModel.onBackPressed() },
-                    onUpdateClicked = {
-                        viewModel.onDoneButtonClicked()
-                    }
-                )
-            }
+            val uiState by viewModel.viewState.observeAsState(UpdateStockStatusUiState())
+
+            UpdateProductStockStatusScreen(
+                currentStockStatusState = uiState.currentStockStatusState,
+                statusMessage = uiState.statusMessage,
+                currentProductStockStatus = uiState.currentProductStockStatus,
+                stockStatuses = uiState.stockStockStatuses,
+                isProgressDialogVisible = uiState.isProgressDialogVisible,
+                onStockStatusChanged = { newStatus ->
+                    viewModel.onStockStatusSelected(newStatus)
+                },
+                onNavigationUpClicked = { viewModel.onBackPressed() },
+                onUpdateClicked = {
+                    viewModel.onDoneButtonClicked()
+                }
+            )
         }
     }
 
