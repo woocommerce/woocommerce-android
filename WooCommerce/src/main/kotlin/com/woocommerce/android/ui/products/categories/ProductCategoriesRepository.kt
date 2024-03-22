@@ -155,6 +155,24 @@ class ProductCategoriesRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteProductCategory(remoteId: Long): Result<ProductCategory> {
+        val result = productStore.deleteProductCategory(
+            site = selectedSite.get(),
+            remoteId = remoteId
+        )
+        return when {
+            result.isError -> {
+                WooLog.e(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Error updating product category: ${result.error.type}, ${result.error.message}"
+                )
+                Result.failure(WooException(result.error))
+            }
+
+            else -> Result.success(result.model!!.toProductCategory())
+        }
+    }
+
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductCategoriesChanged(event: OnProductCategoryChanged) {

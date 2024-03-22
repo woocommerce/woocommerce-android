@@ -1,18 +1,22 @@
 package com.woocommerce.android.ui.products.categories
 
-import android.content.DialogInterface
 import android.os.Parcelable
 import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.R.string
 import com.woocommerce.android.WooException
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.CreatingCategory
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.DeletingCategory
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.Hidden
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.UpdatingCategory
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -40,7 +44,8 @@ class AddProductCategoryViewModel @Inject constructor(
         savedState,
         AddProductCategoryViewState(
             categoryName = navArgs.productCategory?.name ?: "",
-            selectedParentId = navArgs.productCategory?.parentId
+            selectedParentId = navArgs.productCategory?.parentId,
+            isEditingMode = navArgs.productCategory != null
         )
     )
     private var addProductCategoryViewState by addProductCategoryViewStateLiveData
@@ -62,11 +67,11 @@ class AddProductCategoryViewModel @Inject constructor(
         return if (hasChanges && addProductCategoryViewState.shouldShowDiscardDialog) {
             triggerEvent(
                 ShowDialog.buildDiscardDialogEvent(
-                    positiveBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    positiveBtnAction = { _, _ ->
                         addProductCategoryViewState = addProductCategoryViewState.copy(shouldShowDiscardDialog = false)
                         triggerEvent(Exit)
                     },
-                    negativeBtnAction = DialogInterface.OnClickListener { _, _ ->
+                    negativeBtnAction = { _, _ ->
                         addProductCategoryViewState = addProductCategoryViewState.copy(shouldShowDiscardDialog = true)
                     }
                 )
@@ -81,7 +86,7 @@ class AddProductCategoryViewModel @Inject constructor(
         addProductCategoryViewState = if (categoryName.isEmpty()) {
             addProductCategoryViewState.copy(
                 categoryName = categoryName,
-                categoryNameErrorMessage = string.add_product_category_empty
+                categoryNameErrorMessage = R.string.add_product_category_empty
             )
         } else {
             addProductCategoryViewState.copy(
@@ -91,37 +96,60 @@ class AddProductCategoryViewModel @Inject constructor(
         }
     }
 
+    fun onDeletedCategory() {
+        addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = DeletingCategory)
+        launch {
+            if (networkStatus.isConnected()) {
+                productCategoriesRepository.deleteProductCategory(navArgs.productCategory!!.remoteCategoryId)
+                    .onSuccess {
+                        triggerEvent(ShowSnackbar(R.string.delete_product_category_success))
+                        triggerEvent(
+                            ExitWithResult(CategoryUpdateResult(navArgs.productCategory!!, UpdateAction.Delete))
+                        )
+                    }
+                    .onFailure {
+                        WooLog.e(
+                            tag = WooLog.T.PRODUCTS,
+                            message = "Error deleting product category: ${it.message}"
+                        )
+                        triggerEvent(ShowSnackbar(R.string.delete_product_category_failed))
+                    }
+            } else {
+                triggerEvent(ShowSnackbar(R.string.offline_error))
+            }
+            addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = Hidden)
+        }
+    }
+
     fun saveProductCategory(categoryName: String, parentId: Long = getSelectedParentId()) {
         if (categoryName.isEmpty()) {
             addProductCategoryViewState = addProductCategoryViewState.copy(
-                categoryNameErrorMessage = string.add_product_category_empty
+                categoryNameErrorMessage = R.string.add_product_category_empty
             )
             return
         }
 
-        addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = true)
         launch {
             if (networkStatus.isConnected()) {
                 val categoryNameTrimmed = TextUtils.htmlEncode(categoryName.trim())
                 val requestResult = when {
-                    isEditingExistingCategory() -> productCategoriesRepository.updateProductCategory(
-                        navArgs.productCategory!!.remoteCategoryId,
-                        categoryName,
-                        parentId
-                    )
-
-                    else -> productCategoriesRepository.addProductCategory(categoryName, parentId)
+                    addProductCategoryViewState.isEditingMode -> updateProductCategory(categoryName, parentId)
+                    else -> addNewProductCategory(categoryName, parentId)
                 }
                 requestResult
                     .onSuccess {
                         val successString = when {
-                            isEditingExistingCategory() -> R.string.update_product_category_success
+                            addProductCategoryViewState.isEditingMode -> R.string.update_product_category_success
                             else -> R.string.add_product_category_success
                         }
                         triggerEvent(ShowSnackbar(successString))
                         val addedCategory = productCategoriesRepository
                             .getProductCategoryByNameAndParentId(categoryNameTrimmed, parentId)
-                        triggerEvent(ExitWithResult(addedCategory))
+                        val action =
+                            if (addProductCategoryViewState.isEditingMode) UpdateAction.Update else UpdateAction.Add
+                        triggerEvent(
+                            ExitWithResult(CategoryUpdateResult(addedCategory!!, action))
+                        )
                     }
                     .onFailure {
                         WooLog.e(
@@ -130,20 +158,42 @@ class AddProductCategoryViewModel @Inject constructor(
                         )
                         when ((it as WooException).error.type) {
                             RESOURCE_ALREADY_EXISTS -> addProductCategoryViewState = addProductCategoryViewState.copy(
-                                categoryNameErrorMessage = string.add_product_category_duplicate
+                                categoryNameErrorMessage = R.string.add_product_category_duplicate
                             )
 
-                            else -> triggerEvent(ShowSnackbar(string.add_product_category_failed))
+                            else -> triggerEvent(ShowSnackbar(R.string.add_product_category_failed))
                         }
                     }
             } else {
-                triggerEvent(ShowSnackbar(string.offline_error))
+                triggerEvent(ShowSnackbar(R.string.offline_error))
             }
-            addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = false)
+            addProductCategoryViewState = addProductCategoryViewState.copy(displayProgressDialog = Hidden)
         }
     }
 
-    private fun isEditingExistingCategory(): Boolean = navArgs.productCategory != null
+    private suspend fun addNewProductCategory(
+        categoryName: String,
+        parentId: Long
+    ): Result<ProductCategory> {
+        addProductCategoryViewState = addProductCategoryViewState.copy(
+            displayProgressDialog = CreatingCategory
+        )
+        return productCategoriesRepository.addProductCategory(categoryName, parentId)
+    }
+
+    private suspend fun updateProductCategory(
+        categoryName: String,
+        parentId: Long
+    ): Result<ProductCategory> {
+        addProductCategoryViewState = addProductCategoryViewState.copy(
+            displayProgressDialog = UpdatingCategory
+        )
+        return productCategoriesRepository.updateProductCategory(
+            navArgs.productCategory!!.remoteCategoryId,
+            categoryName,
+            parentId
+        )
+    }
 
     fun fetchParentCategories() {
         loadParentCategories()
@@ -241,7 +291,7 @@ class AddProductCategoryViewModel @Inject constructor(
                 isEmptyViewVisible = _parentCategories.value?.isEmpty() == true
             )
         } else {
-            triggerEvent(ShowSnackbar(string.offline_error))
+            triggerEvent(ShowSnackbar(R.string.offline_error))
         }
 
         parentCategoryListViewState = parentCategoryListViewState.copy(
@@ -254,11 +304,12 @@ class AddProductCategoryViewModel @Inject constructor(
 
     @Parcelize
     data class AddProductCategoryViewState(
-        val displayProgressDialog: Boolean? = null,
+        val displayProgressDialog: ProgressDialog = Hidden,
         val categoryNameErrorMessage: Int? = null,
         val categoryName: String = "",
         val selectedParentId: Long? = null,
-        val shouldShowDiscardDialog: Boolean = true
+        val shouldShowDiscardDialog: Boolean = true,
+        val isEditingMode: Boolean = false
     ) : Parcelable
 
     @Parcelize
@@ -270,4 +321,35 @@ class AddProductCategoryViewModel @Inject constructor(
         val isRefreshing: Boolean? = null,
         val isEmptyViewVisible: Boolean? = null
     ) : Parcelable
+
+    sealed interface ProgressDialog : Parcelable {
+        @Parcelize
+        object Hidden : ProgressDialog
+
+        @Parcelize
+        object CreatingCategory : ProgressDialog
+
+        @Parcelize
+        object UpdatingCategory : ProgressDialog
+
+        @Parcelize
+        object DeletingCategory : ProgressDialog
+    }
+
+    @Parcelize
+    data class CategoryUpdateResult(
+        val updatedCategory: ProductCategory,
+        val action: UpdateAction
+    ) : Parcelable, MultiLiveEvent.Event()
+
+    sealed interface UpdateAction : Parcelable {
+        @Parcelize
+        data object Add : UpdateAction
+
+        @Parcelize
+        data object Update : UpdateAction
+
+        @Parcelize
+        data object Delete : UpdateAction
+    }
 }
