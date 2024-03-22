@@ -19,9 +19,16 @@ class ShippingLabelOnboardingRepository @Inject constructor(
     }
 
     val isShippingPluginReady: Boolean by lazy {
-        val pluginInfo = orderDetailRepository.getWooServicesPluginInfo()
-        pluginInfo.isInstalled && pluginInfo.isActive &&
-            (pluginInfo.version ?: "0.0.0").semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
+        val legacyPluginInfo = orderDetailRepository.getWooServicesPluginInfo()
+        val isLegacyPluginInfoReady = legacyPluginInfo.isInstalled && legacyPluginInfo.isActive &&
+            (legacyPluginInfo.version ?: "0.0.0").semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
+
+        if (isLegacyPluginInfoReady) {
+            true
+        } else {
+            val shippingPluginInfo = orderDetailRepository.getWooShippingPluginInfo()
+            shippingPluginInfo.isInstalled && shippingPluginInfo.isActive
+        }
     }
 
     fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
