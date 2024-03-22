@@ -133,9 +133,11 @@ class MyStoreViewModel @Inject constructor(
     private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
     private val _selectedRangeType = savedState.getStateFlow(viewModelScope, getSelectedRangeTypeIfAny())
-    private val customRangeFlow = customDateRangeDataStore.dateRange.filterNotNull()
 
-    private val _selectedDateRange = combine(_selectedRangeType, customRangeFlow) { selectionType, customRange ->
+    private val _selectedDateRange = combine(
+        _selectedRangeType,
+        customDateRangeDataStore.dateRange.filterNotNull()
+    ) { selectionType, customRange ->
         when (selectionType) {
             SelectionType.CUSTOM -> {
                 selectionType.generateSelectionData(
