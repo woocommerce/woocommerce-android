@@ -15,13 +15,6 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
-import com.woocommerce.android.notifications.local.LocalNotificationType
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED
-import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED
-import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
-import com.woocommerce.android.notifications.local.LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
@@ -274,16 +267,6 @@ class MainActivityViewModel @Inject constructor(
                 AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
                 mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
             )
-            LocalNotificationType.fromString(notification.tag)?.let {
-                when (it) {
-                    FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED,
-                    FREE_TRIAL_EXPIRED,
-                    FREE_TRIAL_EXPIRING,
-                    SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED,
-                    STORE_CREATION_FINISHED,
-                    THREE_DAYS_AFTER_STILL_EXPLORING -> Unit
-                }
-            }
         }
     }
 
