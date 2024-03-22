@@ -10,7 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_ITEM
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_TAB_CHANGED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE
@@ -643,25 +642,6 @@ class IssueRefundViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED,
             mapOf(AnalyticsTracker.KEY_ORDER_ID to order.id)
-        )
-    }
-
-    // TODO: Temporarily unused; it will be used again in a future release - do not remove
-    @Suppress("unused")
-    fun onRefundTabChanged(type: RefundType) {
-        val refundAmount = when (type) {
-            ITEMS -> refundByItemsState.grandTotalRefund
-            AMOUNT -> refundByAmountState.enteredAmount
-        }
-        commonState = commonState.copy(refundType = type)
-        updateRefundTotal(refundAmount)
-
-        analyticsTrackerWrapper.track(
-            CREATE_ORDER_REFUND_TAB_CHANGED,
-            mapOf(
-                AnalyticsTracker.KEY_ORDER_ID to order.id,
-                AnalyticsTracker.KEY_TYPE to type.name
-            )
         )
     }
 
