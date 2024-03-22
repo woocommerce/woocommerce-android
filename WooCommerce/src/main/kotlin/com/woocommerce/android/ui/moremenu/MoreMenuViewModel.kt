@@ -155,8 +155,8 @@ class MoreMenuViewModel @Inject constructor(
             onClick = ::onSettingsClick
         ),
         MenuUiButton(
-            title = R.string.more_menu_button_upgrades,
-            description = R.string.more_menu_button_upgrades_description,
+            title = R.string.more_menu_button_subscriptions,
+            description = R.string.more_menu_button_subscriptions_description,
             icon = R.drawable.ic_more_menu_upgrades,
             isEnabled = moreMenuRepository.isUpgradesEnabled(),
             onClick = ::onUpgradesButtonClick

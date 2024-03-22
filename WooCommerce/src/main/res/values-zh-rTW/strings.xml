@@ -580,7 +580,6 @@ Language: zh_TW
     <string name="coupon_selector_empty_list_message">你尚未建立任何優惠券。 建立優惠券並套用至這份訂單。</string>
     <string name="coupon_selector_empty_list_button">前往優惠券</string>
     <string name="order_creation_select_coupon">選取優惠券</string>
-    <string name="signup_get_started_button">建立新商店</string>
     <string name="coupon_create_coupon_creation_failed">建立優惠券失敗</string>
     <string name="coupon_create_coupon_created">已建立優惠券</string>
     <string name="coupon_create_save_button">建立</string>
@@ -1236,13 +1235,11 @@ Language: zh_TW
     <string name="analytics_revenue_no_data">本期沒有收益</string>
     <string name="analytics_revenue_card_title">收益</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">查看更多</string>
     <string name="signup_api_generic_error">抱歉，無法為提供的憑證建立帳號。 請使用其他電子郵件。</string>
     <string name="signup_password_not_secure_enough">你的密碼不符合我們的安全性原則。 請使用更複雜的密碼。</string>
     <string name="signup_password_too_short">你的密碼太短了。 請選擇一個至少含有 6 個字元的密碼。</string>
     <string name="signup_email_invalid_input">請輸入有效的電子郵件地址。</string>
     <string name="signup_email_exist_input">已有其他帳號使用此電子郵件。</string>
-    <string name="login_create_an_account">建立帳號</string>
     <string name="login_try_another_email">嘗試其他地址</string>
     <string name="date_timeframe_custom_date_range_title">自訂日期範圍</string>
     <string name="date_timeframe_custom">自訂</string>

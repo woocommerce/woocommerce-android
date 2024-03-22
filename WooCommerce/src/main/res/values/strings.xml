@@ -231,6 +231,8 @@
     <string name="login_prologue_survey_button_manage_orders">Manage my orders</string>
     <string name="login_prologue_survey_button_switch_stores">Switch between multiple stores</string>
 
+    <string name="login_prologue_start_new_store">Starting a new store?</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_non_woo_stores_label">Other sites</string>
     <string name="login_connected_store">Connected store</string>
@@ -285,7 +287,7 @@
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
-    <string name="login_site_picker_add_a_store">Add a Store</string>
+    <string name="login_site_picker_add_a_store">Connect another store</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
@@ -298,7 +300,6 @@
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
-    <string name="login_create_an_account">Create An Account</string>
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
     <string name="login_jetpack_installation_screen_title">Connect store</string>
@@ -391,11 +392,16 @@
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
+    <string name="my_store_custom_range_granularity_label">%s interval</string>
+    <string name="my_store_custom_range_granularity_hour">Hourly</string>
+    <string name="my_store_custom_range_granularity_day">Daily</string>
+    <string name="my_store_custom_range_granularity_week">Weekly</string>
+    <string name="my_store_custom_range_granularity_month">Monthly</string>
+    <string name="my_store_custom_range_granularity_year">Yearly</string>
 
     <!--
         Sign Up Flow
     -->
-    <string name="signup_get_started_button">Create a new store</string>
     <string name="signup_get_started_label">Get started in minutes</string>
     <string name="signup_create_password_label">Create your password</string>
     <string name="signup_get_started_create_account_label">First, let’s create your account. </string>
@@ -412,7 +418,7 @@
     <!--
         Analytics View
     -->
-    <string name="analytics_see_more">See more</string>
+    <string name="analytics_section_see_all">See all store analytics</string>
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
@@ -1995,12 +2001,17 @@
     <string name="product_category_list_empty_message">Organise your products in categories</string>
     <string name="product_add_category">Add category</string>
     <string name="add_product_category_success">Product category added</string>
+    <string name="update_product_category_success">Product category updated</string>
+    <string name="delete_product_category_success">Product category deleted</string>
     <string name="add_product_category_duplicate">Error creating category - Name already exists on your site.</string>
     <string name="add_product_category_failed">Error creating category</string>
+    <string name="delete_product_category_failed">Error deleting category</string>
     <string name="add_product_category_empty">Enter a category name</string>
     <string name="product_category_name">Category name</string>
     <string name="product_category_parent">Parent category</string>
     <string name="product_add_category_dialog_title">Adding category</string>
+    <string name="product_update_category_dialog_title">Updating category</string>
+    <string name="product_removing_category_dialog_title">Removing category</string>
     <string name="product_add_category_dialog_message">Please wait…</string>
     <string name="product_tag_empty">Add tag</string>
     <string name="product_tags">Tags</string>
@@ -3204,7 +3215,7 @@
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
     <string name="simplified_login_prologue_intro">The ecommerce platform that grows with you</string>
-    <string name="simplified_login_prologue_title">Start with our 15-day free trial, no credit card needed. Join 3.4M stores thriving with Woo, from first sale to millions.</string>
+    <string name="simplified_login_prologue_title">From your first sale to millions in revenue, Woo is with you. See why merchants trust us to power 3.4 million online stores.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
@@ -3616,10 +3627,9 @@
     Upgrades
     -->
     <string name="upgrades_report_subscription_issue">Report subscription issue</string>
-    <string name="upgrades_upgrade_now">Upgrade now</string>
     <string name="upgrades_current_plan">Current: %s</string>
     <string name="upgrades_troubleshooting">Troubleshooting</string>
-    <string name="upgrades_title">Upgrades</string>
+    <string name="upgrades_title">Subscriptions</string>
     <string name="upgrades_subscription_status">Subscription status</string>
     <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$s. Upgrade to unlock new features and keep your store running.</string>
     <string name="upgrades_trial_ended_caption">Your free trial has ended and have limited access to all the features. Subscribe to %1$s now.</string>
@@ -3737,8 +3747,8 @@
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
 
-    <string name="more_menu_button_upgrades">Upgrades</string>
-    <string name="more_menu_button_upgrades_description">Manage your plans</string>
+    <string name="more_menu_button_subscriptions">Subscriptions</string>
+    <string name="more_menu_button_subscriptions_description">Manage your subscription</string>
 
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>

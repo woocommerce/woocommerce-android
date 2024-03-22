@@ -2,10 +2,15 @@
 17.9
 -----
 - [*] Reviews: Fixed a bug when double toolbar was visible on the reviews in settings [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internal] Removed WooExpress Store Creation from the app [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Products: Fixed a bug when in 2 pane mode bulk update menu item was not available [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Products: Fixed a bug when the removal of a product's picture was not saved [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Reviews: Optimised speed of showing reviews [https://github.com/woocommerce/woocommerce-android/pull/11083]
 
 17.8
 -----
 - [**] Introduces a Connectivity Tool to help merchants diagnose and resolve connectivity issues inside the Orders screen [https://github.com/woocommerce/woocommerce-android/pull/11107]
+- [*] Backend Generated Receipts: Fixed a bug when after error comes from the backend on the receipt generation action, the "see receipt" button was still disabled [https://github.com/woocommerce/woocommerce-android/pull/11065]
 - [*] Login: Enables login with site credentials for Jetpack connected sites as a fallback to WP.com email login [https://github.com/woocommerce/woocommerce-android/pull/11055]
 - [*] Products: Fixed a bug when changes to products were not reflected in the product list [https://github.com/woocommerce/woocommerce-android/pull/11048]
 - [*] [Internal] Added some improvements and tracks to the order push notification fix [https://github.com/woocommerce/woocommerce-android/pull/11080]

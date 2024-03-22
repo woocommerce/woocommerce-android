@@ -580,7 +580,6 @@ Language: ru
     <string name="coupon_selector_empty_list_message">Вы не создали ни одного купона. Создайте купон, чтобы применить его к этому заказу.</string>
     <string name="coupon_selector_empty_list_button">Перейти к купонам</string>
     <string name="order_creation_select_coupon">Выберите купон</string>
-    <string name="signup_get_started_button">Создать магазин</string>
     <string name="coupon_create_coupon_creation_failed">Не удалось создать купон</string>
     <string name="coupon_create_coupon_created">Купон создан</string>
     <string name="coupon_create_save_button">Создать</string>
@@ -1236,13 +1235,11 @@ Language: ru
     <string name="analytics_revenue_no_data">Нет доходов за указанный период</string>
     <string name="analytics_revenue_card_title">Доход</string>
     <string name="analytics_date_range_custom">%1$s — %2$s</string>
-    <string name="analytics_see_more">Подробнее</string>
     <string name="signup_api_generic_error">К сожалению, не удалось создать учётную запись с указанными учётными данными. Укажите другой адрес эл. почты.</string>
     <string name="signup_password_not_secure_enough">Указанный пароль не соответствует требованиям безопасности. Пароль должен быть более сложным.</string>
     <string name="signup_password_too_short">Пароль слишком короткий. Придумайте пароль, состоящий как минимум из шести символов.</string>
     <string name="signup_email_invalid_input">Введите допустимый адрес электронной почты.</string>
     <string name="signup_email_exist_input">Учётная запись с этим адресом эл. почты уже существует.</string>
-    <string name="login_create_an_account">Создать учётную запись</string>
     <string name="login_try_another_email">Использовать другой адрес</string>
     <string name="date_timeframe_custom_date_range_title">Произвольный период</string>
     <string name="date_timeframe_custom">Произвольный</string>

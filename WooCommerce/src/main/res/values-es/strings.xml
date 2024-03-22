@@ -580,7 +580,6 @@ Language: es
     <string name="coupon_selector_empty_list_message">Todavía no has creado ningún cupón. Crea un cupón para aplicarlo a este pedido.</string>
     <string name="coupon_selector_empty_list_button">Ir a Cupones</string>
     <string name="order_creation_select_coupon">Selecciona un cupón</string>
-    <string name="signup_get_started_button">Crea una nueva tienda</string>
     <string name="coupon_create_coupon_creation_failed">Se ha producido un error al crear el cupón</string>
     <string name="coupon_create_coupon_created">Cupón creado</string>
     <string name="coupon_create_save_button">Crear</string>
@@ -1236,13 +1235,11 @@ Language: es
     <string name="analytics_revenue_no_data">Sin ingresos en este periodo</string>
     <string name="analytics_revenue_card_title">Ingresos</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">Ver más</string>
     <string name="signup_api_generic_error">No hemos podido crear una cuenta con las credenciales proporcionadas. Inténtalo con otra dirección de correo electrónico.</string>
     <string name="signup_password_not_secure_enough">Tu contraseña no cumple nuestras instrucciones de seguridad. Prueba con una contraseña más compleja.</string>
     <string name="signup_password_too_short">La contraseña es demasiado corta. Elige otra contraseña que tenga al menos 6 caracteres.</string>
     <string name="signup_email_invalid_input">Introduce una dirección de correo electrónico válida.</string>
     <string name="signup_email_exist_input">Ya existe una cuenta con esta dirección de correo electrónico.</string>
-    <string name="login_create_an_account">Crear una cuenta</string>
     <string name="login_try_another_email">Prueba con otra dirección</string>
     <string name="date_timeframe_custom_date_range_title">Intervalo de fechas personalizado</string>
     <string name="date_timeframe_custom">Personalizado</string>
