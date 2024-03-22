@@ -49,7 +49,7 @@ class ProductImagesViewModel @Inject constructor(
     private val navArgs: ProductImagesFragmentArgs by savedState.navArgs()
     private val originalImages = navArgs.images.toList()
 
-    val isMultiSelectionAllowed = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES
+    private val isMultiSelectionAllowed = navArgs.requestCode == RequestCodes.PRODUCT_DETAIL_IMAGES
 
     val viewStateData = LiveDataDelegate(
         savedState,

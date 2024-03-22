@@ -1,9 +1,21 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+17.9
+-----
+- [*] Reviews: Fixed a bug when double toolbar was visible on the reviews in settings [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] Products: Fixed a bug when in 2 pane mode bulk update menu item was not available [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Products: Fixed a bug when the removal of a product's picture was not saved [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Reviews: Optimised speed of showing reviews [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 17.8
 -----
+- [*] Backend Generated Receipts: Fixed a bug when after error comes from the backend on the receipt generation action, the "see receipt" button was still disabled [https://github.com/woocommerce/woocommerce-android/pull/11065]
 - [*] Login: Enables login with site credentials for Jetpack connected sites as a fallback to WP.com email login [https://github.com/woocommerce/woocommerce-android/pull/11055]
-
 - [*] Products: Fixed a bug when changes to products were not reflected in the product list [https://github.com/woocommerce/woocommerce-android/pull/11048]
+- [*] [Internal] Added some improvements and tracks to the order push notification fix [https://github.com/woocommerce/woocommerce-android/pull/11080]
+- [***] Products: Merchants can now bulk update the stock status of their products [https://github.com/woocommerce/woocommerce-android/pull/10943]
+- [*] Products: Fixed a bug when changes to products were not reflected in the product list [https://github.com/woocommerce/woocommerce-android/pull/11048]
+- [**] Orders: Merchants can now move orders to trash [https://github.com/woocommerce/woocommerce-android/pull/11068]
+- [***] Push Notifications: fix a bug that caused new orders notification sound to not play after some app updates [https://github.com/woocommerce/woocommerce-android/pull/11095]
 
 17.7
 -----

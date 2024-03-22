@@ -363,12 +363,22 @@ class ProductNavigator @Inject constructor() {
                             variationIds = target.selectedVariationIds.toLongArray(),
                             productSelectorFlow = target.productSelectorFlow,
                             productSource = target.productSourceForTracking,
+                            screenMode = target.screenMode
                         )
                     }
 
                     ProductSelectorViewModel.SelectionMode.SINGLE -> {
                         ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationPickerFragment(
                             productId = target.productId
+                        )
+                    }
+                    ProductSelectorViewModel.SelectionMode.LIVE -> {
+                        ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
+                            productId = target.productId,
+                            variationIds = target.selectedVariationIds.toLongArray(),
+                            productSelectorFlow = target.productSelectorFlow,
+                            productSource = target.productSourceForTracking,
+                            screenMode = target.screenMode
                         )
                     }
                 }

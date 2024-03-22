@@ -231,6 +231,8 @@
     <string name="login_prologue_survey_button_manage_orders">Manage my orders</string>
     <string name="login_prologue_survey_button_switch_stores">Switch between multiple stores</string>
 
+    <string name="login_prologue_start_new_store">Starting a new store?</string>
+
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_non_woo_stores_label">Other sites</string>
     <string name="login_connected_store">Connected store</string>
@@ -285,7 +287,7 @@
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
-    <string name="login_site_picker_add_a_store">Add a Store</string>
+    <string name="login_site_picker_add_a_store">Connect another store</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
@@ -298,7 +300,6 @@
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
-    <string name="login_create_an_account">Create An Account</string>
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
     <string name="login_jetpack_installation_screen_title">Connect store</string>
@@ -395,7 +396,6 @@
     <!--
         Sign Up Flow
     -->
-    <string name="signup_get_started_button">Create a new store</string>
     <string name="signup_get_started_label">Get started in minutes</string>
     <string name="signup_create_password_label">Create your password</string>
     <string name="signup_get_started_create_account_label">First, let’s create your account. </string>
@@ -500,6 +500,8 @@
     <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oops! It seems we can\'t work properly with your site\'s response.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
     <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oops! There seems to be a problem with your jetpack connection.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
     <string name="orderlist_connectivity_tool_generic_error_suggestion">Oops! There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_order_trashed">Order trashed</string>
+    <string name="orderlist_order_trashed_error">Error trashing order</string>
 
     <!--
          Simple Payments
@@ -558,6 +560,7 @@
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
+    <string name="order_creation_tablet_mode_fragment_title">Order Summary</string>
     <string name="order_creation_price_after_discount">Price after discount</string>
     <string name="order_creation_products_order_count">Order count</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
@@ -572,6 +575,7 @@
     <string name="order_creation_add_products">Add products</string>
     <string name="order_creation_add_custom_amounts">Add custom amount</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
+    <string name="order_creation_scan_products">Scan products</string>
     <string name="order_creation_set_tax_rate">Set New Tax Rate</string>
     <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
     <string name="order_creation_add_fee">Add fee</string>
@@ -659,6 +663,7 @@
     <string name="order_creation_gift_card_text_field_hint">Enter code</string>
     <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
     <string name="order_creation_collect_payment_button">Collect Payment</string>
+    <string name="order_creation_recalculate_button">Recalculate</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
     <string name="order_creation_payment_shipping_tax_label">Shipping Tax</string>
     <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
@@ -922,6 +927,8 @@
     <string name="order_detail_attribution_campaign">Medium</string>
     <string name="order_detail_attribution_device_type">Device type</string>
     <string name="order_detail_attribution_session_page_views">Session page views</string>
+    <string name="order_detail_move_to_trash">Move to trash</string>
+    <string name="order_detail_trash_order_dialog_message">Do you want to move this order to the trash?</string>
 
     <!--
         Shipping label Refunds
@@ -2011,6 +2018,7 @@
     <string name="product_selection_count_single">%d product selected</string>
     <string name="product_selection_menu_update_status">Update status</string>
     <string name="product_selection_menu_update_price">Update price</string>
+    <string name="product_selection_menu_update_stock_status">Update stock status</string>
     <string name="product_selection_menu_select_all">Select all</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
     <string name="product_detail_linked_products">Linked products</string>
@@ -2310,6 +2318,7 @@
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
     <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
     <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
+    <string name="settings_notifs_restore_chaching_sound_description">Orders notifications sound has been modified, use this button to restore the \'cha-ching\' sound.</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
@@ -2337,6 +2346,11 @@
     <string name="settings_plugins">Plugins</string>
     <string name="settings_option_installed_plugins">Installed Plugins</string>
     <string name="settings_woo_plugin_version">WooCommerce Version</string>
+    <string name="plugin_state_up_to_date">Up-to-date</string>
+    <string name="plugin_state_update_available">Update available (%s)</string>
+    <string name="plugin_state_inactive">Inactive</string>
+    <string name="plugin_state_auto_managed">Auto-managed</string>
+    <string name="plugins_error_message">An error occurred while loading installed plugins</string>
 
     <!--
         Developer Options Screen
@@ -3191,7 +3205,7 @@
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
     <string name="simplified_login_prologue_intro">The ecommerce platform that grows with you</string>
-    <string name="simplified_login_prologue_title">Start with our 15-day free trial, no credit card needed. Join 3.4M stores thriving with Woo, from first sale to millions.</string>
+    <string name="simplified_login_prologue_title">From your first sale to millions in revenue, Woo is with you. See why merchants trust us to power 3.4 million online stores.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
@@ -4108,4 +4122,21 @@
     <string name="order_configuration_product_selection_control">Product selection</string>
     <string name="disabled">Disabled</string>
     <string name="see_report">See Report</string>
+
+    <string name="product_update_stock_status_title">Update Stock Status</string>
+    <string name="product_update_stock_status_done">DONE</string>
+    <string name="product_update_stock_status_current_status_mixed">Current stock statuses are mixed</string>
+    <string name="product_update_stock_status_current_status_single">Current stock status is %1$s</string>
+    <string name="product_update_stock_status_update_count">Stock status will be updated for %1$d products.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d products with managed stock quantity will be ignored.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d variable products will be ignored.</string>
+    <string name="product_update_stock_status_update_count_singular">Stock status will be updated for 1 product.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 product with managed stock quantity will be ignored.</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 variable product will be ignored.</string>
+    <string name="product_update_stock_status_managed_products">Managed products can\'t be updated</string>
+    <string name="product_update_stock_status_variable_products">Variable products can\'t be updated</string>
+    <string name="product_update_stock_status_completed">Updated stock statuses</string>
+    <string name="product_update_stock_status_error">Something went wrong. Please try again.</string>
+    <string name="product_update_stock_status_dialog_title">Updating stock statuses</string>
+    <string name="product_update_stock_status_dialog_subtitle">Please wait…</string>
 </resources>

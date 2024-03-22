@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 15:54:03+0000
+Translation-Revision-Date: 2024-03-12 19:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_detail_product_not_selected">Товар не выбран</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Читать далее</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Поддержка</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Заказы с вашего сайта</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Ваш сайт</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Серверы WordPress.com</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Подключение к Интернету</string>
+    <string name="orderlist_connectivity_tool_title">Проверка подключения</string>
+    <string name="my_store_custom_range_content_description">Добавить статистику за выбранный период</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Местоположение не найдено.\nПовторите попытку.</string>
     <string name="order_detail_attribution_session_page_views">Просмотры страниц сеанса</string>
     <string name="order_detail_attribution_device_type">Тип устройства</string>
@@ -571,7 +580,6 @@ Language: ru
     <string name="coupon_selector_empty_list_message">Вы не создали ни одного купона. Создайте купон, чтобы применить его к этому заказу.</string>
     <string name="coupon_selector_empty_list_button">Перейти к купонам</string>
     <string name="order_creation_select_coupon">Выберите купон</string>
-    <string name="signup_get_started_button">Создать магазин</string>
     <string name="coupon_create_coupon_creation_failed">Не удалось создать купон</string>
     <string name="coupon_create_coupon_created">Купон создан</string>
     <string name="coupon_create_save_button">Создать</string>
@@ -1233,7 +1241,6 @@ Language: ru
     <string name="signup_password_too_short">Пароль слишком короткий. Придумайте пароль, состоящий как минимум из шести символов.</string>
     <string name="signup_email_invalid_input">Введите допустимый адрес электронной почты.</string>
     <string name="signup_email_exist_input">Учётная запись с этим адресом эл. почты уже существует.</string>
-    <string name="login_create_an_account">Создать учётную запись</string>
     <string name="login_try_another_email">Использовать другой адрес</string>
     <string name="date_timeframe_custom_date_range_title">Произвольный период</string>
     <string name="date_timeframe_custom">Произвольный</string>

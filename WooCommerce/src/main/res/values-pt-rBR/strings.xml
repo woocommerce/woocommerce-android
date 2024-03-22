@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 22:54:03+0000
+Translation-Revision-Date: 2024-03-11 21:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="product_detail_product_not_selected">Produto não selecionado</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Leia mais</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Falar com o suporte</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Pedidos do seu site</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Seu site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Servidores do WordPress.com</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Conexão com a Internet</string>
+    <string name="orderlist_connectivity_tool_title">Teste de conectividade</string>
+    <string name="my_store_custom_range_content_description">Adicione estatísticas de períodos personalizados</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Nenhuma localização encontrada.\nTente novamente.</string>
     <string name="order_detail_attribution_session_page_views">Visualizações de página da sessão</string>
     <string name="order_detail_attribution_device_type">Tipo de dispositivo</string>
@@ -570,7 +579,6 @@ Language: pt_BR
     <string name="coupon_selector_empty_list_message">Você não criou nenhum cupom. Crie um cupom para aplicá-lo a este pedido.</string>
     <string name="coupon_selector_empty_list_button">Ir para Cupons</string>
     <string name="order_creation_select_coupon">Selecione um cupom</string>
-    <string name="signup_get_started_button">Criar uma nova loja</string>
     <string name="order_creation_remove_this_coupon">Remover cupom</string>
     <string name="coupon_create_coupon_creation_failed">Falha ao criar o cupom</string>
     <string name="coupon_create_coupon_created">Cupom criado</string>
@@ -1233,7 +1241,6 @@ Language: pt_BR
     <string name="signup_api_generic_error">Não foi possível criar uma conta com as credenciais fornecidas. Tente outro e-mail.</string>
     <string name="signup_password_not_secure_enough">Sua senha não atende às nossas diretrizes de segurança. Tente uma senha mais complexa.</string>
     <string name="signup_password_too_short">Sua senha é muito curta. Escolha uma com pelo menos seis caracteres.</string>
-    <string name="login_create_an_account">Criar uma conta</string>
     <string name="login_try_another_email">Tentar outro endereço</string>
     <string name="date_timeframe_custom_date_range_title">Período personalizado</string>
     <string name="date_timeframe_custom">Personalizado</string>

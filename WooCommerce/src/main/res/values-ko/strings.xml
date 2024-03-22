@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 09:54:16+0000
+Translation-Revision-Date: 2024-03-12 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="product_detail_product_not_selected">상품이 선택되지 않음</string>
+    <string name="orderlist_connectivity_tool_read_more_action">더 보기</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">지원 문의</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">회원님의 사이트 주문</string>
+    <string name="orderlist_connectivity_tool_store_check_title">회원님의 사이트</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">워드프레스닷컴 서버</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">인터넷 연결</string>
+    <string name="orderlist_connectivity_tool_title">연결 테스트</string>
+    <string name="my_store_custom_range_content_description">사용자 정의 날짜 범위 통계 추가</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">위치를 찾을 수 없습니다.\n다시 시도하세요.</string>
     <string name="order_detail_attribution_session_page_views">세션 페이지 조회수</string>
     <string name="order_detail_attribution_device_type">기기 유형</string>
@@ -571,7 +580,6 @@ Language: ko_KR
     <string name="coupon_selector_empty_list_message">아직 생성한 쿠폰이 없습니다. 이 주문에 적용할 쿠폰을 생성하세요.</string>
     <string name="coupon_selector_empty_list_button">쿠폰으로 이동</string>
     <string name="order_creation_select_coupon">쿠폰 선택</string>
-    <string name="signup_get_started_button">새 스토어 생성</string>
     <string name="coupon_create_coupon_creation_failed">쿠폰 생성 실패</string>
     <string name="coupon_create_coupon_created">쿠폰 생성됨</string>
     <string name="coupon_create_save_button">생성</string>
@@ -1233,7 +1241,6 @@ Language: ko_KR
     <string name="signup_password_too_short">비밀번호가 너무 짧습니다. 6자 이상의 비밀번호를 선택하세요.</string>
     <string name="signup_email_invalid_input">유효한 이메일 주소를 입력하세요.</string>
     <string name="signup_email_exist_input">이 이메일이 포함된 계정이 이미 있습니다.</string>
-    <string name="login_create_an_account">계정 만들기</string>
     <string name="login_try_another_email">다른 주소 시도</string>
     <string name="date_timeframe_custom_date_range_title">사용자 정의 날짜 범위</string>
     <string name="date_timeframe_custom">사용자 정의</string>

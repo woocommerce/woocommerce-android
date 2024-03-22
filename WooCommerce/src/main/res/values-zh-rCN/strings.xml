@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-06 13:54:03+0000
+Translation-Revision-Date: 2024-03-12 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_detail_product_not_selected">未选择产品</string>
+    <string name="orderlist_connectivity_tool_read_more_action">阅读更多</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">联系支持人员</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">您的站点订单</string>
+    <string name="orderlist_connectivity_tool_store_check_title">您的站点</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com 服务器</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">互联网连接</string>
+    <string name="orderlist_connectivity_tool_title">连接性测试</string>
+    <string name="my_store_custom_range_content_description">添加自定义日期范围统计信息</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">未找到位置。\n请重试。</string>
     <string name="order_detail_attribution_session_page_views">会话页面浏览量</string>
     <string name="order_detail_attribution_device_type">设备类型</string>
@@ -571,7 +580,6 @@ Language: zh_CN
     <string name="coupon_selector_empty_list_message">您尚未创建任何优惠券。 为此订单创建优惠券。</string>
     <string name="coupon_selector_empty_list_button">前往“优惠券”</string>
     <string name="order_creation_select_coupon">选择一个优惠券</string>
-    <string name="signup_get_started_button">创建新的商店</string>
     <string name="coupon_create_coupon_created">优惠券已创建</string>
     <string name="coupon_create_save_button">创建</string>
     <string name="coupon_create_screen_title_default">创建优惠券</string>
@@ -1233,7 +1241,6 @@ Language: zh_CN
     <string name="signup_password_too_short">您的密码太短。 请选择一个至少包含 6 个字符的密码。</string>
     <string name="signup_email_invalid_input">请输入有效的电子邮箱地址。</string>
     <string name="signup_email_exist_input">已存在使用此电子邮件的账户。</string>
-    <string name="login_create_an_account">创建账户</string>
     <string name="login_try_another_email">尝试其他地址</string>
     <string name="date_timeframe_custom_date_range_title">自定义日期范围</string>
     <string name="date_timeframe_custom">自定义</string>

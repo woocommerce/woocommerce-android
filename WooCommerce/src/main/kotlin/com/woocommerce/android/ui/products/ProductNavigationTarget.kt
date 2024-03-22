@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Pro
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 /**
@@ -135,7 +136,8 @@ sealed class ProductNavigationTarget : Event() {
         val selectedVariationIds: Set<Long>,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
         val productSourceForTracking: ProductSourceForTracking,
-        val selectionMode: ProductSelectorViewModel.SelectionMode
+        val selectionMode: ProductSelectorViewModel.SelectionMode,
+        val screenMode: VariationSelectorViewModel.ScreenMode,
     ) : ProductNavigationTarget()
 
     data class NavigateToProductConfiguration(val productId: Long) : ProductNavigationTarget()

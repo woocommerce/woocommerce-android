@@ -102,7 +102,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOGIN_JETPACK_CONNECTION_VERIFICATION_FAILED(siteless = true),
     LOGIN_WITH_QR_CODE_BUTTON_TAPPED(siteless = true),
     LOGIN_WITH_QR_CODE_SCANNED(siteless = true),
-    LOGIN_PROLOGUE_CREATE_SITE_TAPPED(siteless = true),
+    LOGIN_PROLOGUE_STARTING_A_NEW_STORE_TAPPED(siteless = true),
     LOGIN_MALFORMED_APP_LOGIN_LINK(siteless = true),
     LOGIN_APP_LOGIN_LINK_SUCCESS(siteless = true),
     SIGNUP_LOGIN_BUTTON_TAPPED(siteless = true),
@@ -255,6 +255,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAILS_SUBSCRIPTIONS_SHOWN,
     ORDER_DETAILS_GIFT_CARD_SHOWN,
     ORDER_PRODUCTS_LOADED,
+    ORDER_DETAIL_TRASH_TAPPED,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
@@ -701,6 +702,9 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Product images
     PRODUCT_IMAGE_ADDED,
 
+    // -- Product stock status
+    PRODUCT_STOCK_STATUSES_UPDATE_DONE_TAPPED,
+
     // -- Duplicate product
     DUPLICATE_PRODUCT_SUCCESS,
     DUPLICATE_PRODUCT_FAILED,
@@ -721,6 +725,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // -- Push notifications
     PUSH_NOTIFICATION_RECEIVED,
     PUSH_NOTIFICATION_TAPPED,
+    NEW_ORDER_PUSH_NOTIFICATION_SOUND,
+    NEW_ORDER_PUSH_NOTIFICATION_FIX_SHOWN,
+    NEW_ORDER_PUSH_NOTIFICATION_FIX_TAPPED,
+    NEW_ORDER_PUSH_NOTIFICATION_FIX_DISMISSED,
 
     // -- Notifications List
     NOTIFICATION_OPEN,
