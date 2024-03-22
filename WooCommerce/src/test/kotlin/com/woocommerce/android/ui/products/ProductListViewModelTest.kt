@@ -620,7 +620,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         viewModel.reloadProductsFromDb(excludeProductId = openProductId)
 
         // THEN
-        assertThat(savedStateHandle.get<Long>("key_product_opened")).isNull()
+        assertThat(savedStateHandle.get<Long>("key_product_selected_on_big_screen")).isNull()
     }
 
     @Test
