@@ -465,8 +465,8 @@ private fun MoreMenuPreview() {
                 R.drawable.ic_more_screen_settings
             ),
             MenuUiButton(
-                R.string.more_menu_button_upgrades,
-                R.string.more_menu_button_upgrades_description,
+                R.string.more_menu_button_subscriptions,
+                R.string.more_menu_button_subscriptions_description,
                 R.drawable.ic_more_menu_upgrades
             )
         ),

@@ -4,7 +4,6 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
-import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingRepository.OnboardingTaskType.values
 import com.woocommerce.android.util.WooLog
@@ -24,8 +23,7 @@ import javax.inject.Singleton
 class StoreOnboardingRepository @Inject constructor(
     private val onboardingStore: OnboardingStore,
     private val selectedSite: SelectedSite,
-    private val siteStore: SiteStore,
-    private val isLocalTaskNameYourStoreCompleted: IsLocalTaskNameYourStoreCompleted
+    private val siteStore: SiteStore
 ) {
 
     private val onboardingTasksCacheFlow: MutableSharedFlow<List<OnboardingTask>> = MutableSharedFlow()
@@ -43,8 +41,6 @@ class StoreOnboardingRepository @Inject constructor(
                 WooLog.d(WooLog.T.ONBOARDING, "Success fetching onboarding tasks")
                 val mobileSupportedTasks = result.model?.map { it.toOnboardingTask() }
                     ?.filter { it.type != MOBILE_UNSUPPORTED }
-                    ?.toMutableList()
-                    ?.apply { addLocalOnboardingTasks(this) }
                     ?.map {
                         if (shouldMarkLaunchStoreAsCompleted(it)) {
                             it.copy(isComplete = true)
@@ -59,28 +55,6 @@ class StoreOnboardingRepository @Inject constructor(
                 onboardingTasksCacheFlow.emit(mobileSupportedTasks)
             }
         }
-    }
-
-    private fun addLocalOnboardingTasks(onboardingTasks: MutableList<OnboardingTask>) {
-        if (!selectedSite.get().isFreeTrial) return
-        if (!onboardingTasks.any { it.type == LAUNCH_YOUR_STORE }) {
-            onboardingTasks.add(
-                OnboardingTask(
-                    type = LAUNCH_YOUR_STORE,
-                    isComplete = false,
-                    isVisible = true,
-                    isVisited = false
-                )
-            )
-        }
-        onboardingTasks.add(
-            OnboardingTask(
-                type = LOCAL_NAME_STORE,
-                isComplete = isLocalTaskNameYourStoreCompleted(),
-                isVisible = true,
-                isVisited = false
-            )
-        )
     }
 
     private fun shouldMarkLaunchStoreAsCompleted(task: OnboardingTask) =
