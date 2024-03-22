@@ -24,7 +24,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
@@ -53,7 +52,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -135,20 +133,16 @@ class MyStoreViewModel @Inject constructor(
     private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
     private val _selectedRangeType = savedState.getStateFlow(viewModelScope, getSelectedRangeTypeIfAny())
-    private val _customRange: MutableStateFlow<AnalyticsHubTimeRange> = MutableStateFlow(
-        AnalyticsHubTimeRange(
-            Date(),
-            Date()
-        )
-    )
-    private val _selectedDateRange = combine(_selectedRangeType, _customRange) { selectionType, customRange ->
+    private val customRangeFlow = customDateRangeDataStore.dateRange.filterNotNull()
+
+    private val _selectedDateRange = combine(_selectedRangeType, customRangeFlow) { selectionType, customRange ->
         when (selectionType) {
             SelectionType.CUSTOM -> {
                 selectionType.generateSelectionData(
                     calendar = Calendar.getInstance(),
                     locale = Locale.getDefault(),
-                    referenceStartDate = customRange.start,
-                    referenceEndDate = customRange.end
+                    referenceStartDate = customRange.startDate,
+                    referenceEndDate = customRange.endDate
                 )
             }
 
@@ -211,12 +205,6 @@ class MyStoreViewModel @Inject constructor(
         // A notification is only displayed when the store has never been opened before
         notificationScheduler.cancelScheduledNotification(STORE_CREATION_FINISHED)
         updateShareStoreButtonVisibility()
-        launch {
-            customDateRangeDataStore.dateRange
-                .filterNotNull()
-                .map { AnalyticsHubTimeRange(it.startDate, it.endDate) }
-                .collectLatest { _customRange.value = it }
-        }
     }
 
     private fun updateShareStoreButtonVisibility() {
@@ -469,8 +457,8 @@ class MyStoreViewModel @Inject constructor(
     fun onAddCustomRangeClicked() {
         triggerEvent(
             OpenDatePicker(
-                fromDate = _customRange.value.start,
-                toDate = _customRange.value.end
+                fromDate = selectedDateRange.value?.currentRange?.start ?: Date(),
+                toDate = selectedDateRange.value?.currentRange?.end ?: Date()
             )
         )
     }
