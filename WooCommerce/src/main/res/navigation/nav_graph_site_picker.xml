@@ -26,9 +26,6 @@
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_sitePickerFragment_to_addStoreBottomSheetFragment"
-            app:destination="@id/addStoreBottomSheetFragment" />
-        <action
             android:id="@+id/action_sitePickerFragment_to_closeAccountDialogFragment"
             app:destination="@id/closeAccountDialogFragment" />
     </fragment>
@@ -62,14 +59,6 @@
             android:name="errorType"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchErrorType" />
     </fragment>
-    <dialog
-        android:id="@+id/addStoreBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.sitepicker.AddStoreBottomSheetFragment"
-        android:label="AddSiteBottomSheetFragment">
-        <action
-            android:id="@+id/action_addSiteBottomSheetFragment_to_sitePickerSiteDiscoveryFragment"
-            app:destination="@id/sitePickerSiteDiscoveryFragment" />
-    </dialog>
     <dialog
         android:id="@+id/closeAccountDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.account.CloseAccountDialogFragment"
