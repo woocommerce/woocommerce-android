@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
-import com.woocommerce.android.util.IsTablet
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -73,7 +73,7 @@ class ProductListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val isTablet: IsTablet,
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -221,7 +221,7 @@ class ProductListViewModel @Inject constructor(
                 AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
                 mapOf(
                     AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenLargerThanCompactValue(
-                        isTablet()
+                        isWindowClassLargeThanCompact()
                     ).deviceTypeToAnalyticsString
                 )
             )
@@ -449,7 +449,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     private fun openFirstLoadedProductOnTablet(products: List<Product>) {
-        if (isTablet()) {
+        if (isWindowClassLargeThanCompact()) {
             if (products.isNotEmpty()) {
                 if (openedProductId == null) {
                     openedProductId = products.first().remoteId
@@ -466,7 +466,7 @@ class ProductListViewModel @Inject constructor(
             AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenLargerThanCompactValue(
-                    isTablet()
+                    isWindowClassLargeThanCompact()
                 ).deviceTypeToAnalyticsString
             )
         )
@@ -484,7 +484,7 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    fun isProductHighlighted(productId: Long) = if (isTablet()) productId == openedProductId else false
+    fun isProductHighlighted(productId: Long) = if (isWindowClassLargeThanCompact()) productId == openedProductId else false
 
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)

@@ -15,13 +15,13 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
-import com.woocommerce.android.util.IsTablet
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class ProductDetailsToolbarHelper @Inject constructor(
     private val activity: Activity,
-    private val isTablet: IsTablet,
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : DefaultLifecycleObserver,
     Toolbar.OnMenuItemClickListener {
     private var fragment: ProductDetailFragment? = null
@@ -69,7 +69,7 @@ class ProductDetailsToolbarHelper @Inject constructor(
 
         toolbar.navigationIcon =
             when {
-                isTablet() -> {
+                isWindowClassLargeThanCompact() -> {
                     val startMode = viewModel?.startMode
                     val isAddNewModeCreationFlow = startMode == ProductDetailFragment.Mode.AddNewProduct
                     val isProductShownAfterGenerationWithAi = startMode is ProductDetailFragment.Mode.ShowProduct &&
