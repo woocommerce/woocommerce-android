@@ -56,6 +56,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -210,6 +211,12 @@ class MyStoreViewModel @Inject constructor(
         // A notification is only displayed when the store has never been opened before
         notificationScheduler.cancelScheduledNotification(STORE_CREATION_FINISHED)
         updateShareStoreButtonVisibility()
+        launch {
+            customDateRangeDataStore.dateRange
+                .filterNotNull()
+                .map { AnalyticsHubTimeRange(it.startDate, it.endDate) }
+                .collectLatest { _customRange.value = it }
+        }
     }
 
     private fun updateShareStoreButtonVisibility() {
