@@ -248,15 +248,6 @@ class MyStoreViewModel @Inject constructor(
         refreshTrigger.tryEmit(RefreshState(isForced = true))
     }
 
-    fun getSelectedSiteName(): String =
-        selectedSite.getIfExists()?.let { site ->
-            if (!site.displayName.isNullOrBlank()) {
-                site.displayName
-            } else {
-                site.name
-            }
-        } ?: ""
-
     fun onViewAnalyticsClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         val targetPeriod = when (val state = revenueStatsState.value) {
