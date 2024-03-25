@@ -31,11 +31,11 @@ class CustomDateRangeDataStore @Inject constructor(
             }
         }
 
-    suspend fun updateDateRange(startDateMillis: Long, endDateMillis: Long) {
+    suspend fun updateDateRange(range: StatsTimeRange) {
         dataStore.updateData { preferences ->
             preferences.toBuilder()
-                .setStartDateMillis(startDateMillis)
-                .setEndDateMillis(endDateMillis)
+                .setStartDateMillis(range.start.time)
+                .setEndDateMillis(range.end.time)
                 .build()
         }
     }
