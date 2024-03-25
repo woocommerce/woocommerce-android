@@ -33,7 +33,6 @@ import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SETT
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_PHONE_NUMBER
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.notifications.NotificationChannelType
@@ -105,8 +104,6 @@ object AppPrefs {
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
         USE_SIMULATED_READER,
-        NEW_SIGN_UP,
-        STORE_CREATION_SOURCE,
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
         CUSTOM_DOMAINS_SOURCE,
@@ -877,18 +874,6 @@ object AppPrefs {
     }
 
     fun getActiveStatsGranularity() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
-
-    fun markAsNewSignUp(newSignUp: Boolean) {
-        setBoolean(DeletablePrefKey.NEW_SIGN_UP, newSignUp)
-    }
-
-    fun getIsNewSignUp() = getBoolean(DeletablePrefKey.NEW_SIGN_UP, false)
-
-    fun setStoreCreationSource(source: String) {
-        setString(DeletablePrefKey.STORE_CREATION_SOURCE, source)
-    }
-
-    fun getStoreCreationSource() = getString(DeletablePrefKey.STORE_CREATION_SOURCE, AnalyticsTracker.VALUE_OTHER)
 
     fun setCustomDomainsSource(source: String) {
         setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)

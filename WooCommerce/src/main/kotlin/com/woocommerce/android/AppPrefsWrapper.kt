@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
-    var storeCreationProfilerAnswers by AppPrefs::storeCreationProfilerAnswers
-
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
     var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
@@ -215,8 +213,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getActiveStatsGranularity() =
         AppPrefs.getActiveStatsGranularity()
-
-    fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
     fun setCustomDomainsSource(source: DomainFlowSource) {
         AppPrefs.setCustomDomainsSource(source.name)
