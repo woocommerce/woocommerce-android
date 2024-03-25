@@ -4,14 +4,12 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Theme
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.ui.login.storecreation.NewStore
 import com.woocommerce.android.ui.themes.ThemePreviewViewModel.ViewState.PreviewType
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -44,8 +42,6 @@ class ThemePreviewViewModel @Inject constructor(
     private val themeCoroutineStore: ThemeCoroutineStore,
     private val resourceProvider: ResourceProvider,
     private val themeRepository: ThemeRepository,
-    private val appPrefsWrapper: AppPrefsWrapper,
-    private val newStore: NewStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -82,7 +78,6 @@ class ThemePreviewViewModel @Inject constructor(
     ) { theme, selectedPage, isActivatingTheme, demoPages, previewType ->
         ViewState(
             themeName = theme.name,
-            isFromStoreCreation = navArgs.isFromStoreCreation,
             isActivatingTheme = isActivatingTheme,
             themePages = demoPages.map { page ->
                 page.copy(isLoaded = (selectedPage?.uri ?: theme.demoUrl) == page.uri)
@@ -119,39 +114,34 @@ class ThemePreviewViewModel @Inject constructor(
                 AnalyticsTracker.KEY_THEME_PICKER_THEME to navArgs.themeId
             )
         )
-        if (viewState.value?.isFromStoreCreation == true) {
-            appPrefsWrapper.saveThemeIdForStoreCreation(newStore.data.siteId!!, navArgs.themeId)
-            triggerEvent(ContinueStoreCreationWithTheme)
-        } else {
-            launch {
-                isActivatingTheme.value = true
-                themeRepository.activateTheme(navArgs.themeId).fold(
-                    onSuccess = {
-                        analyticsTrackerWrapper.track(
-                            stat = AnalyticsEvent.THEME_INSTALLATION_COMPLETED,
-                            properties = mapOf(
-                                AnalyticsTracker.KEY_THEME_PICKER_THEME to navArgs.themeId
-                            )
+        launch {
+            isActivatingTheme.value = true
+            themeRepository.activateTheme(navArgs.themeId).fold(
+                onSuccess = {
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.THEME_INSTALLATION_COMPLETED,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_THEME_PICKER_THEME to navArgs.themeId
                         )
-                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
-                        triggerEvent(
-                            ExitWithResult(
-                                SelectedTheme(navArgs.themeId, viewState.value?.themeName ?: "")
-                            )
+                    )
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activated_successfully))
+                    triggerEvent(
+                        ExitWithResult(
+                            SelectedTheme(navArgs.themeId, viewState.value?.themeName ?: "")
                         )
-                    },
-                    onFailure = {
-                        analyticsTrackerWrapper.track(
-                            stat = AnalyticsEvent.THEME_INSTALLATION_FAILED,
-                            properties = mapOf(
-                                AnalyticsTracker.KEY_THEME_PICKER_THEME to navArgs.themeId
-                            )
+                    )
+                },
+                onFailure = {
+                    analyticsTrackerWrapper.track(
+                        stat = AnalyticsEvent.THEME_INSTALLATION_FAILED,
+                        properties = mapOf(
+                            AnalyticsTracker.KEY_THEME_PICKER_THEME to navArgs.themeId
                         )
-                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))
-                    }
-                )
-                isActivatingTheme.value = false
-            }
+                    )
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.theme_activation_failed))
+                }
+            )
+            isActivatingTheme.value = false
         }
     }
 
@@ -190,7 +180,6 @@ class ThemePreviewViewModel @Inject constructor(
 
     data class ViewState(
         val themeName: String,
-        val isFromStoreCreation: Boolean,
         val themePages: List<ThemeDemoPage>,
         val shouldShowPagesDropdown: Boolean,
         val isActivatingTheme: Boolean,
@@ -227,6 +216,4 @@ class ThemePreviewViewModel @Inject constructor(
         val themeId: String,
         val themeName: String
     ) : Parcelable
-
-    object ContinueStoreCreationWithTheme : MultiLiveEvent.Event()
 }

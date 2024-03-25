@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-12 09:54:04+0000
+Translation-Revision-Date: 2024-03-20 10:54:18+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">请稍候…</string>
+    <string name="product_update_stock_status_dialog_title">正在更新库存状态</string>
+    <string name="product_update_stock_status_error">出错了。 请重试。</string>
+    <string name="product_update_stock_status_completed">已更新库存状态</string>
+    <string name="product_update_stock_status_variable_products">可变产品无法更新</string>
+    <string name="product_update_stock_status_managed_products">受管产品无法更新</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 种可变产品将被忽略。</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 种库存数量受管的产品将被忽略。</string>
+    <string name="product_update_stock_status_update_count_singular">1 种产品的库存状态将更新。</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d 种可变产品将被忽略。</string>
+    <string name="product_update_stock_status_ignored_count">%1$d 种库存数量受管的产品将被忽略。</string>
+    <string name="product_update_stock_status_update_count">%1$d 种产品的库存状态将更新。</string>
+    <string name="product_update_stock_status_current_status_single">当前库存状态为 %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">当前库存状态参差不齐</string>
+    <string name="product_update_stock_status_done">完成</string>
+    <string name="product_update_stock_status_title">更新库存状态</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">使用您的站点凭据登录</string>
+    <string name="settings_woo_plugin_version">WooCommerce 版本</string>
+    <string name="settings_option_installed_plugins">已安装的插件</string>
+    <string name="settings_plugins">插件</string>
+    <string name="settings_notifs_restore_chaching_sound_description">订单通知音效已修改，使用此按钮即可恢复“咔-亲”提示音。</string>
+    <string name="product_selection_menu_update_stock_status">更新库存状态</string>
+    <string name="order_detail_trash_order_dialog_message">您要将此订单移至回收站吗？</string>
+    <string name="order_detail_move_to_trash">移至回收站</string>
+    <string name="order_creation_recalculate_button">重新计算</string>
+    <string name="order_creation_scan_products">扫描产品</string>
+    <string name="order_creation_tablet_mode_fragment_title">订单摘要</string>
+    <string name="orderlist_order_trashed_error">将订单移至回收站时出错</string>
+    <string name="orderlist_order_trashed">订单已移至回收站</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">糟糕！ 您的站点似乎存在问题。\n\n联系您的托管服务提供商以获得进一步帮助。</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">糟糕！ 您的 Jetpack 连接似乎存在问题。\n\n但请别担心，我们的支持团队将随时为您提供帮助。 请联系我们，我们将很乐意为您提供帮助。</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">糟糕！ 我们似乎无法与您站点的响应正常配合。\n\n但请别担心，我们的支持团队将随时为您提供帮助。 请联系我们，我们将很乐意为您提供帮助。</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">糟糕！ 您的站点似乎响应时间过长。\n\n联系您的托管服务提供商以获得进一步帮助。</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">糟糕！ 我们目前似乎无法连接到 WordPress.com。\n\n但请别担心，我们的支持团队将随时为您提供帮助。 请联系我们，我们将很乐意为您提供帮助。</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">您似乎未连接到互联网。\n\n请确保您的 Wi-Fi 已打开。 如果您要使用移动数据，请确保在设备设置中已启用。</string>
     <string name="product_detail_product_not_selected">未选择产品</string>
     <string name="orderlist_connectivity_tool_read_more_action">阅读更多</string>
     <string name="orderlist_connectivity_tool_contact_support_action">联系支持人员</string>
@@ -1235,7 +1270,6 @@ Language: zh_CN
     <string name="analytics_revenue_no_data">本期无收益</string>
     <string name="analytics_revenue_card_title">收益</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">查看更多</string>
     <string name="signup_api_generic_error">抱歉，我们无法为所提供的凭证创建账户。 请尝试使用其他电子邮件。</string>
     <string name="signup_password_not_secure_enough">您的密码不符合我们的安全准则。 请尝试使用更复杂的密码。</string>
     <string name="signup_password_too_short">您的密码太短。 请选择一个至少包含 6 个字符的密码。</string>

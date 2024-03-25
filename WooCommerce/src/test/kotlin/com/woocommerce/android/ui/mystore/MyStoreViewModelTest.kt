@@ -11,6 +11,10 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.Content
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.GenericError
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.PluginNotActiveError
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
@@ -18,7 +22,9 @@ import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerPr
 import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
+import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,18 +36,23 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyList
+import org.mockito.ArgumentMatchers.eq
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import java.util.TimeZone
 import kotlin.test.assertTrue
 
@@ -55,14 +66,14 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val getTopPerformers: GetTopPerformers = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
     private val selectedSite: SelectedSite = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
+    private val appPrefsWrapper: AppPrefsWrapper = mock {
+        on { this.getActiveStatsGranularity() } doReturn DEFAULT_SELECTION_TYPE.identifier
+    }
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher = mock()
     private val localNotificationScheduler: LocalNotificationScheduler = mock()
-    private val customDateRangeDataStore: CustomDateRangeDataStore = mock {
-        onBlocking { this.dateRange } doReturn flowOf(null)
-    }
+    private val customDateRangeDataStore: CustomDateRangeDataStore = mock()
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock {
         onBlocking { invoke() } doReturn true
     }
@@ -70,6 +81,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val observeLastUpdate: ObserveLastUpdate = mock {
         onBlocking { invoke(any(), anyList()) } doReturn flowOf(DEFAULT_LAST_UPDATE)
     }
+    private val dateUtils: DateUtils = mock()
 
     private lateinit var sut: MyStoreViewModel
 
@@ -86,11 +98,11 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenObserveTopPerformersEmits(emptyList())
             whenViewModelIsCreated()
 
-            verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
+            verify(getStats).invoke(refresh = eq(false), selectedRange = any())
             verify(getTopPerformers).fetchTopPerformers(
-                granularity = DEFAULT_STATS_GRANULARITY,
-                refresh = false,
-                topPerformersCount = ANY_TOP_PERFORMERS_COUNT
+                selectedRange = any(),
+                refresh = eq(false),
+                topPerformersCount = any()
             )
         }
 
@@ -112,7 +124,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = false)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             verify(getStats, never()).invoke(any(), any())
             verify(getTopPerformers, never()).fetchTopPerformers(any(), any(), any())
@@ -121,22 +133,31 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `given cached stats, when stats granularity changes, then load stats for given granularity from cache`() =
         testBlocking {
+            val getStatsArgumentCaptor = argumentCaptor<StatsTimeRangeSelection>()
+            val topPerformersArgumentCaptor = argumentCaptor<StatsTimeRangeSelection>()
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
-            verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
-            verify(getTopPerformers).fetchTopPerformers(
-                ANY_SELECTED_STATS_GRANULARITY,
-                refresh = false,
-                ANY_TOP_PERFORMERS_COUNT
+            verify(getStats, times(2)).invoke(
+                refresh = eq(false),
+                selectedRange = getStatsArgumentCaptor.capture()
             )
+            assertThat(getStatsArgumentCaptor.firstValue.selectionType).isEqualTo(DEFAULT_SELECTION_TYPE)
+            assertThat(getStatsArgumentCaptor.secondValue.selectionType).isEqualTo(ANY_SELECTION_TYPE)
+            verify(getTopPerformers, times(2)).fetchTopPerformers(
+                selectedRange = topPerformersArgumentCaptor.capture(),
+                refresh = eq(false),
+                topPerformersCount = any()
+            )
+            assertThat(topPerformersArgumentCaptor.firstValue.selectionType).isEqualTo(DEFAULT_SELECTION_TYPE)
+            assertThat(topPerformersArgumentCaptor.secondValue.selectionType).isEqualTo(ANY_SELECTION_TYPE)
         }
 
     @Test
-    fun `given network connection, when on swipe to refresh, then stats are refreshed for selected granularity`() =
+    fun `given network connection, when on swipe to refresh, then stats are refreshed for selected range`() =
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
@@ -144,12 +165,14 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             sut.onPullToRefresh()
 
-            verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
+            verify(getStats).invoke(refresh = eq(true), selectedRange = any())
             verify(getTopPerformers).fetchTopPerformers(
-                DEFAULT_STATS_GRANULARITY,
-                refresh = true,
-                ANY_TOP_PERFORMERS_COUNT
+                selectedRange = any(),
+                refresh = eq(true),
+                eq(ANY_TOP_PERFORMERS_COUNT)
             )
+            assertThat(sut.selectedDateRange.getOrAwaitValue().selectionType)
+                .isEqualTo(DEFAULT_STATS_RANGE_SELECTION.selectionType)
         }
 
     @Test
@@ -165,20 +188,17 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given success loading revenue, when stats granularity changes, then UI is updated with revenue stats`() =
+    fun `given success loading revenue, when stats granularity changes, then UI is updated for new selection type`() =
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
-            assertThat(sut.revenueStatsState.value).isEqualTo(
-                MyStoreViewModel.RevenueStatsViewState.Content(
-                    null,
-                    ANY_SELECTED_STATS_GRANULARITY
-                )
+            assertThat((sut.revenueStatsState.value as Content).statsRangeSelection.selectionType).isEqualTo(
+                ANY_SELECTION_TYPE
             )
         }
 
@@ -190,11 +210,11 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
-                mapOf(AnalyticsTracker.KEY_RANGE to "weeks")
+                mapOf(AnalyticsTracker.KEY_RANGE to ANY_SELECTION_TYPE.identifier)
             )
         }
 
@@ -206,10 +226,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             verify(appPrefsWrapper).setActiveStatsGranularity(
-                ANY_SELECTED_STATS_GRANULARITY.name
+                ANY_SELECTION_TYPE.name
             )
         }
 
@@ -221,10 +241,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsError)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.revenueStatsState.value).isEqualTo(
-                MyStoreViewModel.RevenueStatsViewState.GenericError
+                GenericError
             )
         }
 
@@ -236,10 +256,10 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.PluginNotActive)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.revenueStatsState.value).isEqualTo(
-                MyStoreViewModel.RevenueStatsViewState.PluginNotActiveError
+                PluginNotActiveError
             )
         }
 
@@ -251,7 +271,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value).isEqualTo(
                 MyStoreViewModel.VisitorStatsViewState.Content(emptyMap())
@@ -266,7 +286,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsError)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value).isEqualTo(
                 MyStoreViewModel.VisitorStatsViewState.Error
@@ -286,7 +306,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel()))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value)
                 .isInstanceOf(MyStoreViewModel.VisitorStatsViewState.Unavailable::class.java)
@@ -300,7 +320,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = true))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.hasOrders.value).isEqualTo(
                 MyStoreViewModel.OrderState.AtLeastOne
@@ -315,7 +335,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = false))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertThat(sut.hasOrders.value).isEqualTo(
                 MyStoreViewModel.OrderState.Empty
@@ -345,11 +365,11 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenFetchTopPerformersResult(Result.success(Unit))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
-                mapOf(AnalyticsTracker.KEY_RANGE to "weeks")
+                mapOf(AnalyticsTracker.KEY_RANGE to ANY_SELECTION_TYPE.identifier)
             )
         }
 
@@ -361,7 +381,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenFetchTopPerformersResult(Result.failure(WooException(WOO_GENERIC_ERROR)))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
 
             assertTrue(sut.topPerformersState.value!!.isError)
         }
@@ -599,17 +619,17 @@ class MyStoreViewModelTest : BaseUnitTest() {
         whenViewModelIsCreated()
 
         // When ViewModel starts refresh is false
-        verify(getStats).invoke(refresh = false, DEFAULT_STATS_GRANULARITY)
+        verify(getStats).invoke(refresh = eq(false), any())
 
         sut.onPullToRefresh()
 
         // When pull-to-refresh refresh is true
-        verify(getStats).invoke(refresh = true, DEFAULT_STATS_GRANULARITY)
+        verify(getStats).invoke(refresh = eq(true), any())
 
-        sut.onStatsGranularityChanged(ANY_SELECTED_STATS_GRANULARITY)
+        sut.onStatsGranularityChanged(DEFAULT_SELECTION_TYPE)
 
         // When granularity changes refresh is false
-        verify(getStats).invoke(refresh = false, ANY_SELECTED_STATS_GRANULARITY)
+        verify(getStats).invoke(refresh = eq(false), any())
     }
 
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
@@ -658,8 +678,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             timezoneProvider,
             observeLastUpdate,
             customDateRangeDataStore,
+            dateUtils,
             localNotificationScheduler,
-            shouldShowPrivacyBanner
+            shouldShowPrivacyBanner,
         )
     }
 
@@ -668,8 +689,14 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     private companion object {
-        val DEFAULT_STATS_GRANULARITY = StatsGranularity.DAYS
-        val ANY_SELECTED_STATS_GRANULARITY = StatsGranularity.WEEKS
+        val DEFAULT_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.TODAY
+        val DEFAULT_STATS_RANGE_SELECTION = StatsTimeRangeSelection.build(
+            selectionType = DEFAULT_SELECTION_TYPE,
+            referenceDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault()
+        )
+        val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
         const val ANY_TOP_PERFORMERS_COUNT = 5
         val WOO_GENERIC_ERROR = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
         val TOP_PERFORMER_PRODUCT = TopPerformerProduct(

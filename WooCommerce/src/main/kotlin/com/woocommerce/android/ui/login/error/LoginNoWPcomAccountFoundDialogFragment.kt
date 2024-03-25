@@ -15,10 +15,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
-    interface Listener {
-        fun onCreateAccountClicked()
-    }
-
     companion object {
         const val TAG = "LoginNoWPcomAccountFoundFragment"
     }

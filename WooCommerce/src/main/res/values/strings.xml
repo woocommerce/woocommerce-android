@@ -158,6 +158,7 @@
     <string name="last_update">Last update: %s</string>
     <string name="last_update_with_frequency">Last update %s (Updates every 30 minutes)</string>
     <string name="receipt_fetching_error">Sorry, we couldn\'t load a receipt for this order</string>
+    <string name="store_name_default">Store name</string>
 
     <!--
         Date/Time Labels
@@ -214,7 +215,8 @@
     <string name="login_with_store_address">Log in with your store address</string>
     <string name="login_configure_link">Read the %1$sconfiguration instructions%2$s.</string>
     <string name="login_with_qr_code">Scan QR code to login</string>
-
+    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
+    <string name="login_application_passwords_help">What are Application Passwords?</string>
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
     <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
     <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
@@ -392,6 +394,12 @@
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
+    <string name="my_store_custom_range_granularity_label">%s interval</string>
+    <string name="my_store_custom_range_granularity_hour">Hourly</string>
+    <string name="my_store_custom_range_granularity_day">Daily</string>
+    <string name="my_store_custom_range_granularity_week">Weekly</string>
+    <string name="my_store_custom_range_granularity_month">Monthly</string>
+    <string name="my_store_custom_range_granularity_year">Yearly</string>
 
     <!--
         Sign Up Flow
@@ -412,7 +420,7 @@
     <!--
         Analytics View
     -->
-    <string name="analytics_see_more">See more</string>
+    <string name="analytics_section_see_all">See all store analytics</string>
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
@@ -729,6 +737,12 @@
     <string name="domain_registration_country_picker_dialog_title">Select Country</string>
     <string name="domain_registration_state_picker_dialog_title">Select State</string>
     <string name="domain_registration_generic_error">An error occurred during domain registration</string>
+    <string name="domain_picker_title">Choose a domain</string>
+    <string name="domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
+    <string name="domain_picker_hint">Type a domain</string>
+    <string name="domain_picker_suggestions_title">Suggestions</string>
+    <string name="domain_picker_empty_suggestions">No available domains for this search</string>
+    <string name="domain_picker_suggestions_error">Unable to load domain suggestions</string>
 
     <!--
         Order Editing
@@ -2318,6 +2332,7 @@
     <string name="settings_card_reader_manuals">Card Reader Manuals</string>
     <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
+    <string name="settings_store_name">Store name</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
     <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
@@ -3351,120 +3366,6 @@
     <string name="store_creation_iap_eligibility_check_generic_error">Store creation is currently unavailable. Please, try again later.</string>
     <string name="store_creation_iap_eligibility_network_error">A network error occurred. Please check your connection and try again.</string>
     <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">You already have an active eCommerce subscription, please contact support if you are experiencing issues with your current subscription not linked to your new site.</string>
-    <string name="store_creation_create_new_store_label">Create a new store</string>
-    <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
-    <string name="store_creation_in_progress">Creating your store…</string>
-    <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
-    <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
-    <string name="store_creation_confirm_and_leave">Confirm and leave</string>
-    <string name="store_creation_in_progress_title_1">Almost there! Your store\nis taking shape </string>
-    <string name="store_creation_in_progress_title_2">Extending your store\'s \ncapabilities</string>
-    <string name="store_creation_in_progress_title_3">Turning on the lights</string>
-    <string name="store_creation_in_progress_title_4">Opening the doors</string>
-    <string name="store_creation_in_progress_description_1">You will be notified once the store is ready! Sit back, relax, and let us work our magic while sharing helpful tips. 🔮</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Track sales and popular products:&lt;/b&gt; Stay on top of real-time sales and popular products to boost your store\'s profitability.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Manage and create orders:&lt;/b&gt; Search, update, or create new orders instantly. Simplify your order process.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Take payments in person:&lt;/b&gt; Enhance sales with in-person payments. Secure card transactions with our app or compatible readers.</string>
-
-    <string name="store_creation_domain_picker_title">Choose a domain</string>
-    <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
-    <string name="store_creation_domain_picker_hint">Type a domain</string>
-    <string name="store_creation_domain_picker_suggestions_title">Suggestions</string>
-    <string name="store_creation_domain_picker_empty_suggestions">No available domains for this search</string>
-    <string name="store_creation_domain_picker_suggestions_error">Unable to load domain suggestions</string>
-
-    <string name="store_creation_summary_title">My Store</string>
-    <string name="store_creation_summary_subtitle">Your store will be created based on the options of your choice!</string>
-    <string name="store_creation_summary_primary_button">Continue to payment</string>
-
-    <string name="store_creation_ecommerce_plan_error">Couldn\'t load the plan information…</string>
-    <string name="store_creation_ecommerce_plan_purchase_error">Couldn\'t complete the purchase…</string>
-    <string name="store_creation_ecommerce_store_loading_error">Couldn\'t load your new store. Please wait a bit and try again…</string>
-    <string name="store_creation_ecommerce_store_loading_permanent_error">Something went wrong during store installation…</string>
-    <string name="store_creation_ecommerce_plan_features_tagline">All the features you need, already built in.</string>
-    <string name="store_creation_ecommerce_plan_powered_by">Powered by</string>
-    <string name="store_creation_ecommerce_plan_wordpress" translatable="false">WordPress.com</string>
-    <string name="store_creation_ecommerce_plan_purchase_button_title">Create Store for %1$s</string>
-    <string name="store_creation_ecommerce_plan_refund_reminder">There\'s no risk, you can cancel for a full refund within 30 days.</string>
-    <string name="store_creation_ecommerce_plan_period_month">month</string>
-    <string name="store_creation_ecommerce_plan_period_year">year</string>
-    <string name="store_creation_ecommerce_plan_period_two_years">2 years</string>
-    <string name="store_creation_ecommerce_plan_feature_themes">Premium themes</string>
-    <string name="store_creation_ecommerce_plan_feature_products">Unlimited products</string>
-    <string name="store_creation_ecommerce_plan_feature_subscriptions">Subscriptions &amp; giftcards</string>
-    <string name="store_creation_ecommerce_plan_feature_reports">Ecommerce reports</string>
-    <string name="store_creation_ecommerce_plan_feature_payments">Multiple payment options</string>
-    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Shipping labels</string>
-    <string name="store_creation_ecommerce_plan_feature_sales">Sales channels</string>
-    <string name="store_creation_installation_error">An error occurred during installation, please try again…</string>
-    <string name="store_creation_installation_success">Your store has been created!</string>
-    <string name="store_creation_installation_manage_store_button">Manage my store</string>
-    <string name="store_creation_installation_show_preview_button">Store preview</string>
-    <string name="store_creation_installation_rendering_preview_label">Rendering preview…</string>
-    <string name="store_creation_installation_async_dialog_title">Your new store is ready</string>
-    <string name="store_creation_installation_async_dialog_message">Do you want to start managing it now?</string>
-    <string name="store_creation_installation_async_dialog_switch_store">Switch Store</string>
-    <string name="store_creation_store_name_caption">About your store</string>
-    <string name="store_creation_store_name_title">What’s your store name?</string>
-    <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
-    <string name="store_creation_store_name_hint">Store name</string>
-    <string name="store_creation_store_name_default">Store name</string>
-    <string name="store_creation_store_name_settings_option">Store name</string>
-
-    <string name="store_creation_store_profiler_industries_header">About your store</string>
-    <string name="store_creation_store_profiler_industries_title">What do you plan to sell\nin your store?</string>
-    <string name="store_creation_store_profiler_industries_description">Choose a category that defines\nyour business the best.</string>
-    <string name="store_creation_store_profiler_industries_search_hint">Type a category</string>
-    <string name="store_creation_profiler_options_search_empty">No available results for this search</string>
-    <string name="store_creation_store_profiler_journey_title">Which one of these best\ndescribes you?</string>
-    <string name="store_creation_store_profiler_journey_description">Let us know where you are in your\ncommerce journey so that we can tailor\nyour Woo experience for you.</string>
-    <string name="store_creation_store_profiler_platforms_title">Which platform(s) are\nyou currently using?</string>
-    <string name="store_creation_store_profiler_platforms_description">You can choose multiple ones.</string>
-    <string name="store_profiler_challenge_title">What challenges you in\nstarting or running an\nonline Store?</string>
-    <string name="store_profiler_challenge_description">Choose your concerns or difficulties below. You can select more than one option.</string>
-    <string name="store_profiler_challenge_setting_up_online_store">Setting up the online store</string>
-    <string name="store_profiler_challenge_finding_customers">Finding customers</string>
-    <string name="store_profiler_challenge_managing_inventory">Managing inventory</string>
-    <string name="store_profiler_challenge_shipping_and_logistics">Shipping and logistics</string>
-    <string name="store_profiler_challenge_other">Other</string>
-
-    <string name="store_profiler_features_title">Which features are you\nmost interested in?</string>
-    <string name="store_profiler_features_description">Let us know what you are looking\nforward to using in our app.</string>
-    <string name="store_profiler_features_main_button">Create my store</string>
-    <string name="store_profiler_features_product_management">Easy product management and inventory tracking</string>
-    <string name="store_profiler_features_sales_analytics">Comprehensive sales and analytics reports</string>
-    <string name="store_profiler_features_payment_options">Flexible and secure payment options</string>
-    <string name="store_profiler_features_ipp">In-person payment</string>
-    <string name="store_profiler_features_scale_business">Ability to scale as my business grows</string>
-    <string name="store_profiler_features_store_customization">Customization options for my store design</string>
-    <string name="store_profiler_features_plugins_and_extensions">Access to a wide range of plugins and extensions</string>
-    <string name="store_profiler_features_other">Other</string>
-
-    <string name="store_creation_country_picker_title">Where is your business located?</string>
-    <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping, and taxes.</string>
-    <string name="store_creation_country_picker_current_location">Current location</string>
-    <string name="store_creation_country_picker_current_location_description">We\'ve detected your location automatically. Please change it here if it\'s incorrect.</string>
-    <string name="store_creation_country_picker_countries_header">Countries</string>
-    <string name="store_creation_country_list_picker_toolbar_title">Select a country</string>
-
-    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
-    <string name="login_application_passwords_help">What are Application Passwords?</string>
-
-    <!-- Store profiler industries. To be removed when API is available to fetch these items localized
-     TODO Github issue https://github.com/woocommerce/woocommerce-android/issues/8218  -->
-    <string name="store_creation_profiler_industry_clothing_accessories">Clothing and accessories</string>
-    <string name="store_creation_profiler_industry_health_beauty">Health and beauty</string>
-    <string name="store_creation_profiler_industry_food_drink">Food and drink</string>
-    <string name="store_creation_profiler_industry_home_furniture_garden">Home, furniture, and garden</string>
-    <string name="store_creation_profiler_industry_education_learning">Education and learning</string>
-    <string name="store_creation_profiler_industry_electronic_computers">Electronics and computers</string>
-    <string name="store_creation_profiler_industry_other">Other</string>
-
-    <string name="store_creation_profiler_merchant_journey_starting_business">I\'m just starting my business</string>
-    <string name="store_creation_profiler_merchant_journey_selling_not_online">I\'m already selling, but not online</string>
-    <string name="store_creation_profiler_merchant_journey_selling_online">I\'m already selling online</string>
-    <string name="store_creation_theme_activation_loading">Activating your store\'s theme…</string>
-    <string name="store_creation_theme_activation_error">An error occurred while activating the theme you selected, please retry again!</string>
 
     <!--
     Store theme
@@ -3474,7 +3375,6 @@
     <string name="theme_picker_current_theme_title">Current theme</string>
     <string name="theme_picker_description">You can always change it later in the settings.</string>
     <string name="theme_picker_carousel_info_item_title">Looking for more?</string>
-    <string name="theme_picker_carousel_info_item_description">Once your store is set up, find your perfect theme in the WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_info_item_description_settings">You can find your perfect theme in the WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_error_placeholder_message">Sorry, it seems there is an issue with the template loading. Please %1$s for a live demo.</string>
     <string name="theme_picker_carousel_error_placeholder_message_cta">tap here</string>
@@ -3488,7 +3388,6 @@
     <string name="theme_preview_type_mobile">Mobile</string>
     <string name="theme_preview_type_tablet">Tablet</string>
     <string name="theme_preview_type_desktop">Desktop</string>
-    <string name="theme_preview_activate_theme_button_store_creation">Start with %1$s</string>
     <string name="theme_preview_activate_theme_button_settings">Use %1$s</string>
     <string name="theme_activation_failed">Theme activation failed, please try again!</string>
 
@@ -3558,6 +3457,7 @@
     <string name="store_onboarding_payments_pre_setup_title_generic">Payment Methods</string>
     <string name="store_onboarding_wcpay_setup_description">By using WooCommerce Payments you agree to be bound by our &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service&lt;/u&gt;&lt;/a&gt; and acknowledge that you have read our &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Privacy Policy&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="store_onboarding_payments_setup_description">Discover other payment providers and \nchoose a payment provider.</string>
+    <string name="store_onboarding_launch_store_rendering_preview_label">Rendering preview…</string>
 
     <!--
     Support Request
@@ -3594,37 +3494,12 @@
     <string name="free_trial_days_left_plural">%1$d days</string>
 
     <!--
-    Free trial Summary
-    -->
-    <string name="free_trial_summary_title">Launch in days,\ngrow for years</string>
-    <string name="free_trial_summary_advertise">We offer everything you need to build\nand grow an online store, powered by\nWooCommerce and hosted on\nWordPress.com.</string>
-    <string name="free_trial_summary_try_it">Try it free for 14 days.</string>
-    <string name="free_trial_summary_start_selling_quickly">Start selling quickly</string>
-    <string name="free_trial_summary_grow_your_business">Grow your business</string>
-    <string name="free_trial_summary_hassle_free_store_ownership">Hassle-free store ownership</string>
-    <string name="free_trial_summary_try_button">Try for free</string>
-    <string name="free_trial_summary_credit_card_message">No credit card required.</string>
-    <string name="free_trial_feature_premium_themes">Premium themes</string>
-    <string name="free_trial_feature_store_management">Store management tools</string>
-    <string name="free_trial_feature_design_editing">Code-free design and editing</string>
-    <string name="free_trial_feature_built_in_seo">Built-in SEO</string>
-    <string name="free_trial_feature_social_advertising">Social advertising</string>
-    <string name="free_trial_feature_automated_customer_emails">Automated customer emails</string>
-    <string name="free_trial_feature_hosting">Best-in-class hosting</string>
-    <string name="free_trial_feature_backups">Automated site backups</string>
-    <string name="free_trial_feature_support">24/7 priority support</string>
-    <string name="free_trial_summary_store_creation_error_title">Something went wrong</string>
-    <string name="free_trial_summary_store_creation_error_message">Sorry, we cannot create your store right now, please try again later.</string>
-    <string name="free_trial_summary_store_creation_error_dialog_action">Got It!</string>
-
-    <!--
     Upgrades
     -->
     <string name="upgrades_report_subscription_issue">Report subscription issue</string>
-    <string name="upgrades_upgrade_now">Upgrade now</string>
     <string name="upgrades_current_plan">Current: %s</string>
     <string name="upgrades_troubleshooting">Troubleshooting</string>
-    <string name="upgrades_title">Upgrades</string>
+    <string name="upgrades_title">Subscriptions</string>
     <string name="upgrades_subscription_status">Subscription status</string>
     <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$s. Upgrade to unlock new features and keep your store running.</string>
     <string name="upgrades_trial_ended_caption">Your free trial has ended and have limited access to all the features. Subscribe to %1$s now.</string>
@@ -3742,8 +3617,8 @@
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
 
-    <string name="more_menu_button_upgrades">Upgrades</string>
-    <string name="more_menu_button_upgrades_description">Manage your plans</string>
+    <string name="more_menu_button_subscriptions">Subscriptions</string>
+    <string name="more_menu_button_subscriptions_description">Manage your subscription</string>
 
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>

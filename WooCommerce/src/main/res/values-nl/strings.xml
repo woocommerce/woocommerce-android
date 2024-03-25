@@ -1235,7 +1235,6 @@ Language: nl
     <string name="analytics_revenue_no_data">Geen omzet deze periode</string>
     <string name="analytics_revenue_card_title">Inkomsten</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">Meer zien</string>
     <string name="signup_api_generic_error">Sorry, we konden met de opgegeven gegevens geen account aanmaken. Probeer het met een ander e-mailadres.</string>
     <string name="signup_password_not_secure_enough">Je wachtwoord voldoet niet aan onze veiligheidsrichtlijnen. Probeer een complexer wachtwoord.</string>
     <string name="signup_password_too_short">Je wachtwoord is te kort. Kies een wachtwoord met minstens zes tekens.</string>

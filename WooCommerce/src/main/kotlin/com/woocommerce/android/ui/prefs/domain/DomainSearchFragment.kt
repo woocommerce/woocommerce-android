@@ -13,7 +13,6 @@ import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.domainpicker.DomainPickerScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.prefs.domain.DomainSearchViewModel.NavigateToDomainRegistration
 import com.woocommerce.android.ui.prefs.domain.DomainSearchViewModel.ShowCheckoutWebView

@@ -7,8 +7,7 @@ import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrde
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding
-import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding.Source.SETTINGS
+import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.StringUtils
@@ -85,7 +84,7 @@ class MainSettingsPresenter @Inject constructor(
                 onToggleChange = { isChecked ->
                     shouldShowOnboarding.updateOnboardingVisibilitySetting(
                         show = isChecked,
-                        source = SETTINGS
+                        source = ShouldShowOnboarding.Source.SETTINGS
                     )
                 }
             )
