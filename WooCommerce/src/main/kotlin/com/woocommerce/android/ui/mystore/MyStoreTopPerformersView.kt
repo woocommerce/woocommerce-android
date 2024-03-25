@@ -19,9 +19,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.MyStoreTopPerformersBinding
 import com.woocommerce.android.databinding.TopPerformersListItemBinding
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.SkeletonView
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Locale
 
 class MyStoreTopPerformersView @JvmOverloads constructor(
@@ -55,17 +55,13 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
         binding.topPerformersRecycler.isMotionEventSplittingEnabled = false
     }
 
-    fun onDateGranularityChanged(granularity: StatsGranularity) {
-        trackDateRangeChanged(granularity)
-        binding.topPerformersRecycler.adapter = TopPerformersAdapter()
-        showEmptyView(false)
-    }
-
-    private fun trackDateRangeChanged(granularity: StatsGranularity) {
+    fun onDateGranularityChanged(selectionType: SelectionType) {
         AnalyticsTracker.track(
             AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_DATE,
-            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase(Locale.getDefault()))
+            mapOf(AnalyticsTracker.KEY_RANGE to selectionType.identifier)
         )
+        binding.topPerformersRecycler.adapter = TopPerformersAdapter()
+        showEmptyView(false)
     }
 
     fun showSkeleton(show: Boolean) {

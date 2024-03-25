@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.mystore.domain
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,7 +22,9 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
-import org.wordpress.android.fluxc.store.WCStatsStore
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class GetTopPerformersTest : BaseUnitTest() {
@@ -31,9 +34,7 @@ class GetTopPerformersTest : BaseUnitTest() {
     private val sut = GetTopPerformers(
         statsRepository,
         coroutinesTestRule.testDispatchers,
-        analyticsUpdateDataStore,
-        mock(),
-        mock()
+        analyticsUpdateDataStore
     )
 
     @Test
@@ -43,7 +44,7 @@ class GetTopPerformersTest : BaseUnitTest() {
             givenShouldUpdateAnalyticsReturns(true)
 
             val result = sut.fetchTopPerformers(
-                granularity = WCStatsStore.StatsGranularity.DAYS,
+                selectedRange = ANY_STATS_RANGE_SELECTION,
                 refresh = false,
                 topPerformersCount = ANY_TOP_PERFORMERS_NUMBER
             )
@@ -59,7 +60,7 @@ class GetTopPerformersTest : BaseUnitTest() {
             givenFetchTopPerformersResult(Result.failure(wooException))
 
             val result = sut.fetchTopPerformers(
-                granularity = WCStatsStore.StatsGranularity.DAYS,
+                selectedRange = ANY_STATS_RANGE_SELECTION,
                 refresh = false,
                 topPerformersCount = ANY_TOP_PERFORMERS_NUMBER
             )
@@ -74,7 +75,7 @@ class GetTopPerformersTest : BaseUnitTest() {
             givenTopPerformerEntityIsEmitted(emittedEntity)
 
             val observedDataModel = sut
-                .observeTopPerformers(WCStatsStore.StatsGranularity.DAYS)
+                .observeTopPerformers(ANY_STATS_RANGE_SELECTION)
                 .first()
 
             assertThat(observedDataModel).isEqualTo(EXPECTED_TOP_PERFORMER_PRODUCT_LIST)
@@ -133,6 +134,13 @@ class GetTopPerformersTest : BaseUnitTest() {
                 currency = "USD",
                 total = 10.50,
             )
+        )
+        val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
+        val ANY_STATS_RANGE_SELECTION = StatsTimeRangeSelection.build(
+            selectionType = ANY_SELECTION_TYPE,
+            referenceDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault()
         )
     }
 }

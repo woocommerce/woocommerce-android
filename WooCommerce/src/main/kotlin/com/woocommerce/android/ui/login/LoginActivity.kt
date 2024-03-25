@@ -52,9 +52,6 @@ import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.ui.login.qrcode.ValidateScannedValue
-import com.woocommerce.android.ui.login.signup.SignUpFragment
-import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
-import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
@@ -106,8 +103,6 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    LoginNoWPcomAccountFoundDialogFragment.Listener,
-    SignUpFragment.Listener,
     QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
@@ -331,10 +326,6 @@ class LoginActivity :
 
     override fun onNewToWooButtonClicked() {
         ChromeCustomTabUtils.launchUrl(this, AppUrls.HOSTING_OPTIONS_DOC)
-    }
-
-    override fun onGetStartedClicked() {
-        changeFragment(SignUpFragment.newInstance(STORE_CREATION), true, SignUpFragment.TAG)
     }
 
     private fun showMainActivityAndFinish() {
@@ -922,29 +913,8 @@ class LoginActivity :
         loginViaSiteCredentials(appPrefsWrapper.getLoginSiteAddress())
     }
 
-    override fun onCreateAccountClicked() {
-        changeFragment(SignUpFragment.newInstance(SITE_PICKER), true, SignUpFragment.TAG)
-    }
-
     override fun onCarouselFinished() {
         showPrologueFragment()
-    }
-
-    override fun onAccountCreated() {
-        showMainActivityAndFinish()
-    }
-
-    override fun onExistingEmail(email: String?) {
-        unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
-        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-        changeFragment(
-            fragment = WooLoginEmailFragment.newInstance(
-                prefilledEmail = email,
-                showSiteCredentialsFallback = false // We expect user to log in with the prefilled WP.com email
-            ) as Fragment,
-            shouldAddToBackStack = true,
-            LoginEmailFragment.TAG
-        )
     }
 
     @SuppressWarnings("unused")

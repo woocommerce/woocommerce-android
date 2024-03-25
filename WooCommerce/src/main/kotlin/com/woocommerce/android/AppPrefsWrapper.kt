@@ -14,12 +14,6 @@ import javax.inject.Inject
 class AppPrefsWrapper @Inject constructor() {
     var storeCreationProfilerAnswers by AppPrefs::storeCreationProfilerAnswers
 
-    /**
-     * Persists the ID of the last created site in case the app was closed while the site was being created.
-     * This allows to switch to the newly created site when the app is opened again.
-     */
-    var createdStoreSiteId: Long? by AppPrefs::createdStoreSiteId
-
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
     var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
@@ -222,16 +216,6 @@ class AppPrefsWrapper @Inject constructor() {
     fun getActiveStatsGranularity() =
         AppPrefs.getActiveStatsGranularity()
 
-    fun markAsNewSignUp(newSignUp: Boolean) {
-        AppPrefs.markAsNewSignUp(newSignUp)
-    }
-
-    fun getIsNewSignUp() = AppPrefs.getIsNewSignUp()
-
-    fun setStoreCreationSource(source: String) {
-        AppPrefs.setStoreCreationSource(source)
-    }
-
     fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
     fun setCustomDomainsSource(source: DomainFlowSource) {
@@ -382,13 +366,6 @@ class AppPrefsWrapper @Inject constructor() {
     fun setWCStoreID(siteID: Long, storeID: String?) {
         AppPrefs.setWCStoreID(siteID, storeID)
     }
-
-    fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) =
-        AppPrefs.saveThemeIdForStoreCreation(siteId, themeId)
-
-    fun clearThemeIdForStoreCreation() = AppPrefs.clearThemeIdForStoreCreation()
-
-    fun getThemeIdForStoreCreation(siteId: Long): String? = AppPrefs.getThemeIdForStoreCreation(siteId)
 
     fun incrementNotificationChannelTypeSuffix(channel: NotificationChannelType) =
         AppPrefs.incrementNotificationChannelTypeSuffix(channel)

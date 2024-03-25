@@ -1,0 +1,2 @@
+17.8:
+Welkom bij de nieuwste update voor onze mobiele WooCommerce-app! Now, seamlessly log in with your site credentials on Jetpack-connected sites, as an alternative to WP.com email login. Experience instant refreshing of product list. Plus, managing your inventory is easier than ever with our new bulk stock status update feature. For added convenience, you can now move orders directly to trash. Last but not least, we optimised the order creation flow for tablet devices! Geniet ervan!
