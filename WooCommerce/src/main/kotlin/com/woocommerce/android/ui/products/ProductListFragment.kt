@@ -405,6 +405,10 @@ class ProductListFragment :
         }
     }
 
+    fun displayListPaneOnly() {
+        tabletLayoutSetupHelper.displayListPaneOnly(this)
+    }
+
     private fun showProductUpdateStockStatusScreen(productRemoteIdsToUpdate: List<Long>) {
         val action = ProductListFragmentDirections.actionProductListFragmentToUpdateProductStockStatusFragment(
             productRemoteIdsToUpdate.toLongArray()
