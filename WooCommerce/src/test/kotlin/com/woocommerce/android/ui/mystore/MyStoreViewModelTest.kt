@@ -7,7 +7,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.offsetInHours
-import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -72,7 +71,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher = mock()
-    private val localNotificationScheduler: LocalNotificationScheduler = mock()
     private val customDateRangeDataStore: CustomDateRangeDataStore = mock()
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock {
         onBlocking { invoke() } doReturn true
@@ -679,7 +677,6 @@ class MyStoreViewModelTest : BaseUnitTest() {
             observeLastUpdate,
             customDateRangeDataStore,
             dateUtils,
-            localNotificationScheduler,
             shouldShowPrivacyBanner,
         )
     }

@@ -865,8 +865,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     LOCAL_NOTIFICATION_DISPLAYED,
     LOCAL_NOTIFICATION_TAPPED,
     LOCAL_NOTIFICATION_DISMISSED,
-    FREE_TRIAL_SURVEY_SENT,
-    FREE_TRIAL_SURVEY_DISPLAYED,
 
     // Widgets
     WIDGET_TAPPED,
@@ -877,10 +875,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
 
     // Analytics Hub
     ANALYTICS_HUB_WAITING_TIME_LOADED,
-
-    // Site creation native flow
-    SITE_CREATION_IAP_ELIGIBILITY(siteless = true),
-    SITE_CREATION_IAP_ELIGIBILITY_ERROR(siteless = true),
 
     // Domain change
     CUSTOM_DOMAINS_STEP,

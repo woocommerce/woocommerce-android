@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.upgrades
+package com.woocommerce.android.ui.plansubscriptions
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
@@ -25,27 +25,27 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Error
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.HasPlan
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.Loading
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.NonUpgradeable
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.PlanEnded
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialEnded
-import com.woocommerce.android.ui.upgrades.UpgradesViewModel.UpgradesViewState.TrialInProgress
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.Error
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.HasPlan
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.Loading
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.NonUpgradeable
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.PlanEnded
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.TrialEnded
+import com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionViewModel.UpgradesViewState.TrialInProgress
 import java.time.Period
 
 @Composable
-fun UpgradesScreen(viewModel: UpgradesViewModel) {
+fun PlanSubscriptionScreen(viewModel: PlanSubscriptionViewModel) {
     val upgradesState by viewModel.upgradesState.observeAsState(Loading)
-    UpgradesScreen(
+    PlanSubscriptionScreen(
         state = upgradesState,
         onReportSubscriptionIssueClicked = viewModel::onReportSubscriptionIssueClicked,
     )
 }
 
 @Composable
-fun UpgradesScreen(
+fun PlanSubscriptionScreen(
     state: UpgradesViewState,
     onReportSubscriptionIssueClicked: () -> Unit
 ) {
@@ -151,7 +151,7 @@ fun UpgradesScreen(
 @Composable
 private fun TrialInProgress() {
     WooThemeWithBackground {
-        UpgradesScreen(
+        PlanSubscriptionScreen(
             state =
             TrialInProgress("Free Trial", Period.ofDays(14), "6 days"),
             {}
@@ -165,7 +165,7 @@ private fun TrialInProgress() {
 @Composable
 private fun TrialEnded() {
     WooThemeWithBackground {
-        UpgradesScreen(
+        PlanSubscriptionScreen(
             state = TrialEnded("Trial ended"),
             {}
         )
@@ -178,7 +178,7 @@ private fun TrialEnded() {
 @Composable
 private fun NonUpgradeable() {
     WooThemeWithBackground {
-        UpgradesScreen(
+        PlanSubscriptionScreen(
             state =
             NonUpgradeable("eCommerce", "March 2, 2023"),
             {}
@@ -192,7 +192,7 @@ private fun NonUpgradeable() {
 @Composable
 private fun PlanEnded() {
     WooThemeWithBackground {
-        UpgradesScreen(state = PlanEnded("eCommerce ended"), {})
+        PlanSubscriptionScreen(state = PlanEnded("eCommerce ended"), {})
     }
 }
 
@@ -202,7 +202,7 @@ private fun PlanEnded() {
 @Composable
 private fun Loading() {
     WooThemeWithBackground {
-        UpgradesScreen(state = Loading, {})
+        PlanSubscriptionScreen(state = Loading, {})
     }
 }
 
@@ -212,6 +212,6 @@ private fun Loading() {
 @Composable
 private fun Error() {
     WooThemeWithBackground {
-        UpgradesScreen(state = Error, {})
+        PlanSubscriptionScreen(state = Error, {})
     }
 }

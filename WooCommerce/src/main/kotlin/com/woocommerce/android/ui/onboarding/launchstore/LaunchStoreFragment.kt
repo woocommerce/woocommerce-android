@@ -12,11 +12,8 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.BANNER
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.onboarding.launchstore.LaunchStoreViewModel.ShareStoreUrl
-import com.woocommerce.android.ui.onboarding.launchstore.LaunchStoreViewModel.UpgradeToEcommercePlan
-import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.LogLevel.e
 import com.woocommerce.android.util.WooLog.T
@@ -24,15 +21,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ToastUtils
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class LaunchStoreFragment : BaseFragment() {
     private val viewModel: LaunchStoreViewModel by viewModels()
     private lateinit var rootView: ComposeView
-
-    @Inject
-    lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -68,15 +61,10 @@ class LaunchStoreFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
-                is UpgradeToEcommercePlan -> startUpgradeFlow()
                 is ShareStoreUrl -> shareStoreUrl(event.url)
                 is ShowDialog -> event.showDialog()
             }
         }
-    }
-
-    private fun startUpgradeFlow() {
-        startUpgradeFlowFactory.create(findNavController()).invoke(BANNER)
     }
 
     private fun shareStoreUrl(storeUrl: String) {

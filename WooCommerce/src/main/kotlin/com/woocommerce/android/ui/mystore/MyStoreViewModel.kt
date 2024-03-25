@@ -18,8 +18,6 @@ import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.offsetInHours
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.notifications.local.LocalNotificationScheduler
-import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -94,7 +92,6 @@ class MyStoreViewModel @Inject constructor(
     private val observeLastUpdate: ObserveLastUpdate,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
     private val dateUtils: DateUtils,
-    notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -209,8 +206,6 @@ class MyStoreViewModel @Inject constructor(
             appPrefsWrapper.wasAIProductDescriptionPromoDialogShown = true
         }
 
-        // A notification is only displayed when the store has never been opened before
-        notificationScheduler.cancelScheduledNotification(STORE_CREATION_FINISHED)
         updateShareStoreButtonVisibility()
     }
 
