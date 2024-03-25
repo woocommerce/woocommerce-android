@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersR
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueError
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
@@ -282,7 +282,7 @@ class AnalyticsRepository @Inject constructor(
         this?.let { fetchStrategy == ForceNew && it.result.isCompleted } ?: true
 
     private suspend fun loadRevenueStats(
-        range: AnalyticsHubTimeRange,
+        range: StatsTimeRange,
         granularity: StatsGranularity,
         revenueRangeId: String,
         fetchStrategy: FetchStrategy
@@ -343,7 +343,7 @@ class AnalyticsRepository @Inject constructor(
     )
 
     private data class RevenueRangeId(
-        private val timeRange: AnalyticsHubTimeRange,
+        private val timeRange: StatsTimeRange,
         private val selectionType: SelectionType
     ) {
         val id: String = selectionType.identifier.asRevenueRangeId(timeRange.start, timeRange.end)

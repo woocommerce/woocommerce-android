@@ -207,12 +207,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
 
-    fun setActiveStatsGranularity(statsGranularity: String) {
-        AppPrefs.setActiveStatsGranularity(statsGranularity)
+    fun setActiveStatsTab(selectionName: String) {
+        AppPrefs.setActiveStatsTab(selectionName)
     }
 
-    fun getActiveStatsGranularity() =
-        AppPrefs.getActiveStatsGranularity()
+    fun getActiveStatsTab() =
+        AppPrefs.getActiveStatsTab()
 
     fun setCustomDomainsSource(source: DomainFlowSource) {
         AppPrefs.setCustomDomainsSource(source.name)

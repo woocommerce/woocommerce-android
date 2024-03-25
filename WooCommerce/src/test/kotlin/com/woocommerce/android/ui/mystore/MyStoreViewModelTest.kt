@@ -66,7 +66,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock()
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock {
-        on { this.getActiveStatsGranularity() } doReturn DEFAULT_SELECTION_TYPE.identifier
+        on { this.getActiveStatsTab() } doReturn DEFAULT_SELECTION_TYPE.identifier
     }
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -116,20 +116,20 @@ class MyStoreViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given there is no network, when granularity changed, stats are not fetched from API`() =
+    fun `given there is no network, when tab changed, stats are not fetched from API`() =
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = false)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             verify(getStats, never()).invoke(any(), any())
             verify(getTopPerformers, never()).fetchTopPerformers(any(), any(), any())
         }
 
     @Test
-    fun `given cached stats, when stats granularity changes, then load stats for given granularity from cache`() =
+    fun `given cached stats, when tab changes, then load stats for given tab from cache`() =
         testBlocking {
             val getStatsArgumentCaptor = argumentCaptor<StatsTimeRangeSelection>()
             val topPerformersArgumentCaptor = argumentCaptor<StatsTimeRangeSelection>()
@@ -137,7 +137,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenNetworkConnectivity(connected = true)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             verify(getStats, times(2)).invoke(
                 refresh = eq(false),
@@ -193,7 +193,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertThat((sut.revenueStatsState.value as Content).statsRangeSelection.selectionType).isEqualTo(
                 ANY_SELECTION_TYPE
@@ -208,7 +208,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
@@ -224,9 +224,9 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsSuccess(null))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
-            verify(appPrefsWrapper).setActiveStatsGranularity(
+            verify(appPrefsWrapper).setActiveStatsTab(
                 ANY_SELECTION_TYPE.name
             )
         }
@@ -239,7 +239,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.RevenueStatsError)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertThat(sut.revenueStatsState.value).isEqualTo(
                 GenericError
@@ -254,7 +254,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.PluginNotActive)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertThat(sut.revenueStatsState.value).isEqualTo(
                 PluginNotActiveError
@@ -269,7 +269,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value).isEqualTo(
                 MyStoreViewModel.VisitorStatsViewState.Content(emptyMap())
@@ -284,7 +284,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsError)
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value).isEqualTo(
                 MyStoreViewModel.VisitorStatsViewState.Error
@@ -304,7 +304,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel()))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value)
                 .isInstanceOf(MyStoreViewModel.VisitorStatsViewState.Unavailable::class.java)
@@ -318,7 +318,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = true))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertThat(sut.hasOrders.value).isEqualTo(
                 MyStoreViewModel.OrderState.AtLeastOne
@@ -333,7 +333,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenStatsLoadingResult(GetStats.LoadStatsResult.HasOrders(hasOrder = false))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertThat(sut.hasOrders.value).isEqualTo(
                 MyStoreViewModel.OrderState.Empty
@@ -363,7 +363,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenFetchTopPerformersResult(Result.success(Unit))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
@@ -379,7 +379,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             givenFetchTopPerformersResult(Result.failure(WooException(WOO_GENERIC_ERROR)))
             whenViewModelIsCreated()
 
-            sut.onStatsGranularityChanged(ANY_SELECTION_TYPE)
+            sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertTrue(sut.topPerformersState.value!!.isError)
         }
@@ -624,7 +624,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
         // When pull-to-refresh refresh is true
         verify(getStats).invoke(refresh = eq(true), any())
 
-        sut.onStatsGranularityChanged(DEFAULT_SELECTION_TYPE)
+        sut.onTabSelected(DEFAULT_SELECTION_TYPE)
 
         // When granularity changes refresh is false
         verify(getStats).invoke(refresh = eq(false), any())

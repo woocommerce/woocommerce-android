@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.mystore.data
 
 import androidx.datastore.core.DataStore
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -12,7 +13,7 @@ import javax.inject.Inject
 class CustomDateRangeDataStore @Inject constructor(
     private val dataStore: DataStore<CustomDateRange>
 ) {
-    val dateRange: Flow<DateRange?> = dataStore.data
+    val dateRange: Flow<StatsTimeRange?> = dataStore.data
         .catch { exception ->
             // dataStore.data throws an IOException when an error is encountered when reading data
             if (exception is IOException) {
@@ -26,7 +27,7 @@ class CustomDateRangeDataStore @Inject constructor(
             if (it == CustomDateRange.getDefaultInstance()) {
                 null
             } else {
-                DateRange(Date(it.startDateMillis), Date(it.endDateMillis))
+                StatsTimeRange(Date(it.startDateMillis), Date(it.endDateMillis))
             }
         }
 

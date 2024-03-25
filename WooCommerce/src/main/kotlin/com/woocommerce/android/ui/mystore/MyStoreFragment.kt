@@ -153,7 +153,7 @@ class MyStoreFragment :
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            myStoreViewModel.onStatsGranularityChanged(tab.tag as? SelectionType ?: SelectionType.TODAY)
+            myStoreViewModel.onTabSelected(tab.tag as? SelectionType ?: SelectionType.TODAY)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}

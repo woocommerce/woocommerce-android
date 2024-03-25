@@ -36,11 +36,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_RANGE
 import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
-import com.woocommerce.android.ui.mystore.data.DateRange
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -205,7 +205,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         applyCustomRange(statsTimeRangeSelection)
     }
 
-    fun handleCustomRangeTab(customRange: DateRange?) {
+    fun handleCustomRangeTab(customRange: StatsTimeRange?) {
         if (customRange != null) {
             customRangeButton.isVisible = false
             if (customRangeTab.view.parent == null) {
