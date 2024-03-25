@@ -231,10 +231,10 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    fun onStatsGranularityChanged(granularity: SelectionType) {
+    fun onTabSelected(selectionType: SelectionType) {
         usageTracksEventEmitter.interacted()
-        _selectedRangeType.update { granularity }
-        appPrefsWrapper.setActiveStatsGranularity(granularity.name)
+        _selectedRangeType.update { selectionType }
+        appPrefsWrapper.setActiveStatsTab(selectionType.name)
     }
 
     fun onPullToRefresh() {
@@ -356,8 +356,8 @@ class MyStoreViewModel @Inject constructor(
     private fun observeTopPerformerUpdates() {
         viewModelScope.launch {
             _selectedDateRange
-                .flatMapLatest { granularity ->
-                    getTopPerformers.observeTopPerformers(granularity)
+                .flatMapLatest { dateRange ->
+                    getTopPerformers.observeTopPerformers(dateRange)
                 }
                 .collectLatest {
                     _topPerformersState.value = _topPerformersState.value?.copy(
@@ -449,15 +449,15 @@ class MyStoreViewModel @Inject constructor(
         )
 
     private fun getSelectedRangeTypeIfAny(): SelectionType {
-        val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity()
+        val previouslySelectedTab = appPrefsWrapper.getActiveStatsTab()
         return runCatching {
-            SelectionType.valueOf(previouslySelectedGranularity)
+            SelectionType.valueOf(previouslySelectedTab)
         }.getOrDefault(SelectionType.TODAY)
     }
 
     fun onCustomRangeSelected(fromMillis: Long, toMillis: Long) {
         if (_selectedRangeType.value != SelectionType.CUSTOM) {
-            onStatsGranularityChanged(SelectionType.CUSTOM)
+            onTabSelected(SelectionType.CUSTOM)
         }
         viewModelScope.launch {
             customDateRangeDataStore.updateDateRange(fromMillis, toMillis)
