@@ -395,6 +395,12 @@ class ProductListFragment :
                 is ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated -> {
                     productListViewModel.reloadProductsFromDb()
                 }
+
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductSelected -> {
+                    productListViewModel.onOpenProduct(event.productId, null)
+                }
+
+                else -> event.isHandled = false
             }
         }
     }
