@@ -263,16 +263,6 @@ object AppPrefs {
         get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
 
-    var storeCreationProfilerAnswers: String?
-        get() = getString(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS, "")
-        set(value) {
-            if (value != null) {
-                setString(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS, value)
-            } else {
-                remove(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS)
-            }
-        }
-
     var chaChingSoundIssueDialogDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, value)
