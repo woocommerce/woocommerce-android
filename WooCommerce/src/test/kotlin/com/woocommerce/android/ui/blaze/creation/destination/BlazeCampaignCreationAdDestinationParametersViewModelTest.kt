@@ -24,18 +24,18 @@ class BlazeCampaignCreationAdDestinationParametersViewModelTest : BaseUnitTest()
     }
 
     @Test
-    fun `onBackPressed triggers correct event`() = testBlocking {
-        // Setup
+    fun `when tapping the back button, then destination parameters are returned`() = testBlocking {
+        // GIVEN
         setup()
         val expectedParameters = mapOf("key" to "value")
         viewModel.onAddParameterTapped()
         viewModel.onParameterChanged("key", "value")
         viewModel.onParameterSaved("key", "value")
 
-        // Act
+        // WHEN
         viewModel.onBackPressed()
 
-        // Assert
+        // THEN
         val event = viewModel.event.getOrAwaitValue()
         assertThat(event is ExitWithResult<*>).isTrue()
         val result = (event as ExitWithResult<*>).data as DestinationParameters
@@ -44,15 +44,15 @@ class BlazeCampaignCreationAdDestinationParametersViewModelTest : BaseUnitTest()
     }
 
     @Test
-    fun `onAddParameterTapped updates view state correctly`() = testBlocking {
-        // Setup
+    fun `when add parameters button tapped, then bottom sheet is displayed`() = testBlocking {
+        // GIVEN
         val params = mapOf("paramKey" to "paramValue")
         setup(params)
 
-        // Act
+        // WHEN
         viewModel.onAddParameterTapped()
 
-        // Assert
+        // THEN
         val state = viewModel.viewState.getOrAwaitValue()
         assertThat(state.bottomSheetState).isEqualTo(
             ParameterBottomSheetState.Editing(
@@ -63,8 +63,8 @@ class BlazeCampaignCreationAdDestinationParametersViewModelTest : BaseUnitTest()
     }
 
     @Test
-    fun `onParameterTapped updates view state correctly`() = testBlocking {
-        // Setup
+    fun `when a parameter is tapped, then the parameter data is loaded`() = testBlocking {
+        // GIVEN
         val key1 = "key1"
         val value1 = "value1"
         val params = mapOf(key1 to value1)
@@ -73,10 +73,10 @@ class BlazeCampaignCreationAdDestinationParametersViewModelTest : BaseUnitTest()
         viewModel.onParameterChanged("key2", "someValue")
         viewModel.onParameterSaved("key2", "newValue")
 
-        // Act
+        // WHEN
         viewModel.onParameterTapped(key1)
 
-        // Assert
+        // THEN
         val state = viewModel.viewState.getOrAwaitValue()
         assertThat(state.bottomSheetState is ParameterBottomSheetState.Editing).isTrue()
         assertThat((state.bottomSheetState as ParameterBottomSheetState.Editing).key).isEqualTo(key1)
@@ -84,31 +84,31 @@ class BlazeCampaignCreationAdDestinationParametersViewModelTest : BaseUnitTest()
     }
 
     @Test
-    fun `onDeleteParameterTapped updates view state correctly`() = testBlocking {
-        // Setup
+    fun `when parameter delete button is tapped, then parameter is removed`() = testBlocking {
+        // GIVEN
         val key = "key1"
         val value = "value1"
         val params = mapOf(key to value)
         setup(params)
 
-        // Act
+        // WHEN
         viewModel.onDeleteParameterTapped(key)
 
-        // Assert
+        // THEN
         val state = viewModel.viewState.getOrAwaitValue()
         assertThat(state.parameters).doesNotContainKey(key)
     }
 
     @Test
-    fun `onParameterBottomSheetDismissed updates view state correctly`() = testBlocking {
-        // Setup
+    fun `when parameter bottom is dismissed, then bottom sheet is hidden`() = testBlocking {
+        // GIVEN
         setup()
         viewModel.onAddParameterTapped()
 
-        // Act
+        // WHEN
         viewModel.onParameterBottomSheetDismissed()
 
-        // Assert
+        // THEN
         val state = viewModel.viewState.getOrAwaitValue()
         assertThat(state.bottomSheetState is ParameterBottomSheetState.Hidden).isTrue()
     }
