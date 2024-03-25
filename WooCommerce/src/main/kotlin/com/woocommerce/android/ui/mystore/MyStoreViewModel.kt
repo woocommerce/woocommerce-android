@@ -22,6 +22,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
@@ -450,12 +451,12 @@ class MyStoreViewModel @Inject constructor(
         }.getOrDefault(SelectionType.TODAY)
     }
 
-    fun onCustomRangeSelected(fromMillis: Long, toMillis: Long) {
+    fun onCustomRangeSelected(range: StatsTimeRange) {
         if (_selectedRangeType.value != SelectionType.CUSTOM) {
             onTabSelected(SelectionType.CUSTOM)
         }
         viewModelScope.launch {
-            customDateRangeDataStore.updateDateRange(fromMillis, toMillis)
+            customDateRangeDataStore.updateDateRange(range)
         }
     }
 

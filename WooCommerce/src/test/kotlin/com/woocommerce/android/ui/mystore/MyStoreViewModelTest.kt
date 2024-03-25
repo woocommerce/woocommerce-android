@@ -10,6 +10,8 @@ import com.woocommerce.android.extensions.offsetInHours
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.Content
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.GenericError
@@ -24,6 +26,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.util.getOrAwaitValue
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -78,6 +81,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val timezoneProvider: TimezoneProvider = mock()
     private val observeLastUpdate: ObserveLastUpdate = mock {
         onBlocking { invoke(any(), anyList()) } doReturn flowOf(DEFAULT_LAST_UPDATE)
+        onBlocking { invoke(any(), any<AnalyticsUpdateDataStore.AnalyticData>()) } doReturn flowOf(DEFAULT_LAST_UPDATE)
     }
     private val dateUtils: DateUtils = mock()
 
@@ -628,6 +632,56 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
         // When granularity changes refresh is false
         verify(getStats).invoke(refresh = eq(false), any())
+    }
+
+    @Test
+    fun `given no saved custom range, when view model is created, then start with null`() = testBlocking {
+        whenever(customDateRangeDataStore.dateRange) doReturn flowOf(null)
+        givenObserveTopPerformersEmits(emptyList())
+        givenNetworkConnectivity(connected = true)
+
+        whenViewModelIsCreated()
+
+        assertThat(sut.customRange.getOrAwaitValue()).isNull()
+    }
+
+    @Test
+    fun `given a saved custom range, when view model is created, then start with`() = testBlocking {
+        val customRange = StatsTimeRange(Date(), Date())
+        whenever(customDateRangeDataStore.dateRange) doReturn flowOf(customRange)
+        givenObserveTopPerformersEmits(emptyList())
+        givenNetworkConnectivity(connected = true)
+
+        whenViewModelIsCreated()
+
+        assertThat(sut.customRange.getOrAwaitValue()).isEqualTo(customRange)
+    }
+
+    @Test
+    fun `given no saved custom range, when a custom range is added, then switch to the custom tab`() = testBlocking {
+        whenever(customDateRangeDataStore.dateRange) doReturn flowOf(null)
+        givenObserveTopPerformersEmits(emptyList())
+        givenNetworkConnectivity(connected = true)
+
+        whenViewModelIsCreated()
+        val selectedRange = sut.selectedDateRange.runAndCaptureValues {
+            sut.onCustomRangeSelected(StatsTimeRange(Date(), Date()))
+        }.last()
+
+        assertThat(selectedRange.selectionType).isEqualTo(StatsTimeRangeSelection.SelectionType.CUSTOM)
+    }
+
+    @Test
+    fun `given no saved custom range, when a custom range is added, then save it`() = testBlocking {
+        whenever(customDateRangeDataStore.dateRange) doReturn flowOf(null)
+        givenObserveTopPerformersEmits(emptyList())
+        givenNetworkConnectivity(connected = true)
+
+        whenViewModelIsCreated()
+        val customRange = StatsTimeRange(Date(), Date())
+        sut.onCustomRangeSelected(customRange)
+
+        verify(customDateRangeDataStore).updateDateRange(customRange)
     }
 
     private suspend fun givenStatsLoadingResult(result: GetStats.LoadStatsResult) {
