@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
-import com.woocommerce.android.ui.mystore.data.DateRange
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -56,7 +55,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -137,21 +135,21 @@ class MyStoreViewModel @Inject constructor(
 
     private val _selectedRangeType = savedState.getStateFlow(viewModelScope, getSelectedRangeTypeIfAny())
 
-    private val customRange = customDateRangeDataStore.dateRange
-        .filterNotNull()
+    private val _customRange = customDateRangeDataStore.dateRange
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = DateRange(Date(), Date())
+            initialValue = null
         )
-    private val _selectedDateRange = combine(_selectedRangeType, customRange) { selectionType, customRange ->
+    val customRange = _customRange.asLiveData()
+    private val _selectedDateRange = combine(_selectedRangeType, _customRange) { selectionType, customRange ->
         when (selectionType) {
             SelectionType.CUSTOM -> {
                 selectionType.generateSelectionData(
                     calendar = Calendar.getInstance(),
                     locale = Locale.getDefault(),
-                    referenceStartDate = customRange.startDate,
-                    referenceEndDate = customRange.endDate
+                    referenceStartDate = customRange?.startDate ?: Date(),
+                    referenceEndDate = customRange?.endDate ?: Date()
                 )
             }
 
@@ -469,8 +467,8 @@ class MyStoreViewModel @Inject constructor(
     fun onAddCustomRangeClicked() {
         triggerEvent(
             OpenDatePicker(
-                fromDate = customRange.value.startDate,
-                toDate = customRange.value.endDate
+                fromDate = _customRange.value?.startDate ?: Date(),
+                toDate = _customRange.value?.endDate ?: Date()
             )
         )
     }

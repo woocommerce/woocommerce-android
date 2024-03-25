@@ -392,6 +392,9 @@ class MyStoreFragment :
     private fun setupStateObservers() {
         myStoreViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
+        myStoreViewModel.customRange.observe(viewLifecycleOwner) { customRange ->
+            binding.myStoreStats.handleCustomRangeTab(customRange)
+        }
         myStoreViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
             binding.myStoreStats.loadDashboardStats(statsTimeRangeSelection)
             binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
