@@ -148,8 +148,8 @@ class MyStoreViewModel @Inject constructor(
                 selectionType.generateSelectionData(
                     calendar = Calendar.getInstance(),
                     locale = Locale.getDefault(),
-                    referenceStartDate = customRange?.startDate ?: Date(),
-                    referenceEndDate = customRange?.endDate ?: Date()
+                    referenceStartDate = customRange?.start ?: Date(),
+                    referenceEndDate = customRange?.end ?: Date()
                 )
             }
 
@@ -467,8 +467,8 @@ class MyStoreViewModel @Inject constructor(
     fun onAddCustomRangeClicked() {
         triggerEvent(
             OpenDatePicker(
-                fromDate = _customRange.value?.startDate ?: Date(),
-                toDate = _customRange.value?.endDate ?: Date()
+                fromDate = _customRange.value?.start ?: Date(),
+                toDate = _customRange.value?.end ?: Date()
             )
         )
     }
