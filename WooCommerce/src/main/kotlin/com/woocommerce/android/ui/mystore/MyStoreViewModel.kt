@@ -18,18 +18,16 @@ import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.offsetInHours
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
-import com.woocommerce.android.notifications.local.LocalNotificationScheduler
-import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
-import com.woocommerce.android.ui.mystore.data.DateRange
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -56,7 +54,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -96,7 +93,6 @@ class MyStoreViewModel @Inject constructor(
     private val observeLastUpdate: ObserveLastUpdate,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
     private val dateUtils: DateUtils,
-    notificationScheduler: LocalNotificationScheduler,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -137,21 +133,21 @@ class MyStoreViewModel @Inject constructor(
 
     private val _selectedRangeType = savedState.getStateFlow(viewModelScope, getSelectedRangeTypeIfAny())
 
-    private val customRange = customDateRangeDataStore.dateRange
-        .filterNotNull()
+    private val _customRange = customDateRangeDataStore.dateRange
         .stateIn(
             viewModelScope,
             started = SharingStarted.WhileSubscribed(),
-            initialValue = DateRange(Date(), Date())
+            initialValue = null
         )
-    private val _selectedDateRange = combine(_selectedRangeType, customRange) { selectionType, customRange ->
+    val customRange = _customRange.asLiveData()
+    private val _selectedDateRange = combine(_selectedRangeType, _customRange) { selectionType, customRange ->
         when (selectionType) {
             SelectionType.CUSTOM -> {
                 selectionType.generateSelectionData(
                     calendar = Calendar.getInstance(),
                     locale = Locale.getDefault(),
-                    referenceStartDate = customRange.startDate,
-                    referenceEndDate = customRange.endDate
+                    referenceStartDate = customRange?.start ?: Date(),
+                    referenceEndDate = customRange?.end ?: Date()
                 )
             }
 
@@ -211,8 +207,6 @@ class MyStoreViewModel @Inject constructor(
             appPrefsWrapper.wasAIProductDescriptionPromoDialogShown = true
         }
 
-        // A notification is only displayed when the store has never been opened before
-        notificationScheduler.cancelScheduledNotification(STORE_CREATION_FINISHED)
         updateShareStoreButtonVisibility()
     }
 
@@ -233,10 +227,10 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    fun onStatsGranularityChanged(granularity: SelectionType) {
+    fun onTabSelected(selectionType: SelectionType) {
         usageTracksEventEmitter.interacted()
-        _selectedRangeType.update { granularity }
-        appPrefsWrapper.setActiveStatsGranularity(granularity.name)
+        _selectedRangeType.update { selectionType }
+        appPrefsWrapper.setActiveStatsTab(selectionType.name)
     }
 
     fun onPullToRefresh() {
@@ -358,8 +352,8 @@ class MyStoreViewModel @Inject constructor(
     private fun observeTopPerformerUpdates() {
         viewModelScope.launch {
             _selectedDateRange
-                .flatMapLatest { granularity ->
-                    getTopPerformers.observeTopPerformers(granularity)
+                .flatMapLatest { dateRange ->
+                    getTopPerformers.observeTopPerformers(dateRange)
                 }
                 .collectLatest {
                     _topPerformersState.value = _topPerformersState.value?.copy(
@@ -451,26 +445,26 @@ class MyStoreViewModel @Inject constructor(
         )
 
     private fun getSelectedRangeTypeIfAny(): SelectionType {
-        val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity()
+        val previouslySelectedTab = appPrefsWrapper.getActiveStatsTab()
         return runCatching {
-            SelectionType.valueOf(previouslySelectedGranularity)
+            SelectionType.valueOf(previouslySelectedTab)
         }.getOrDefault(SelectionType.TODAY)
     }
 
-    fun onCustomRangeSelected(fromMillis: Long, toMillis: Long) {
+    fun onCustomRangeSelected(range: StatsTimeRange) {
         if (_selectedRangeType.value != SelectionType.CUSTOM) {
-            onStatsGranularityChanged(SelectionType.CUSTOM)
+            onTabSelected(SelectionType.CUSTOM)
         }
         viewModelScope.launch {
-            customDateRangeDataStore.updateDateRange(fromMillis, toMillis)
+            customDateRangeDataStore.updateDateRange(range)
         }
     }
 
     fun onAddCustomRangeClicked() {
         triggerEvent(
             OpenDatePicker(
-                fromDate = customRange.value.startDate,
-                toDate = customRange.value.endDate
+                fromDate = _customRange.value?.start ?: Date(),
+                toDate = _customRange.value?.end ?: Date()
             )
         )
     }

@@ -1,10 +1,8 @@
 package com.woocommerce.android.ui.onboarding.launchstore
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,16 +23,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewAuthenticator
-import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -62,7 +57,6 @@ fun LaunchStoreScreen(viewModel: LaunchStoreViewModel) {
                 userAgent = viewModel.userAgent,
                 authenticator = viewModel.wpComWebViewAuthenticator,
                 onLaunchStoreClicked = viewModel::launchStore,
-                onBannerClicked = viewModel::onUpgradePlanBannerClicked,
                 onShareStoreUrl = viewModel::shareStoreUrl,
                 onBackToStoreClicked = viewModel::onBackPressed,
                 modifier = Modifier
@@ -80,7 +74,6 @@ fun LaunchStoreScreen(
     userAgent: UserAgent,
     authenticator: WPComWebViewAuthenticator,
     onLaunchStoreClicked: () -> Unit,
-    onBannerClicked: () -> Unit,
     onShareStoreUrl: () -> Unit,
     onBackToStoreClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -92,12 +85,6 @@ fun LaunchStoreScreen(
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (state.isTrialPlan) {
-                EcommerceTrialBanner(
-                    onBannerClicked = onBannerClicked,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
             if (state.isStoreLaunched) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
@@ -264,30 +251,5 @@ fun SitePreview(
                 isReadOnly = true
             )
         }
-    }
-}
-
-@Composable
-fun EcommerceTrialBanner(
-    onBannerClicked: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .background(color = colorResource(id = R.color.free_trial_component_background))
-            .clickable { onBannerClicked() }
-            .padding(dimensionResource(id = R.dimen.major_100)),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_tintable_info_outline_24dp),
-            contentDescription = "",
-            colorFilter = ColorFilter.tint(color = colorResource(id = R.color.color_icon))
-        )
-        Text(
-            text = annotatedStringRes(R.string.store_onboarding_upgrade_plan_to_launch_store_banner_text),
-            color = colorResource(id = R.color.free_trial_banner_content),
-            style = MaterialTheme.typography.body1,
-        )
     }
 }

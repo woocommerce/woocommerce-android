@@ -3,12 +3,11 @@ package com.woocommerce.android.ui.products
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.isVisible
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -25,10 +24,9 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
 import com.woocommerce.android.util.WooAnimUtils
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -36,7 +34,8 @@ class ProductImageViewerFragment :
     BaseFragment(R.layout.fragment_product_image_viewer),
     ImageViewerListener,
     BackPressListener {
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     companion object {
         private const val KEY_IS_CONFIRMATION_SHOWING = "is_confirmation_showing"
@@ -69,43 +68,41 @@ class ProductImageViewerFragment :
 
         setupViewPager()
 
-        binding.iconBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
-
-        if (navArgs.isDeletingAllowed) {
-            binding.iconTrash.setOnClickListener {
-                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
-                confirmRemoveProductImage()
-            }
-            binding.iconTrash.isVisible = true
-        } else {
-            binding.iconTrash.isVisible = false
-        }
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_images_title),
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = ::onCreateMenu
+        )
 
         savedInstanceState?.let { bundle ->
             if (bundle.getBoolean(KEY_IS_CONFIRMATION_SHOWING)) {
                 confirmRemoveProductImage()
             }
         }
-
-        @Suppress("MagicNumber")
-        // If we make the Activity full-screen directly, it'll prevent the fragment transition from finishing,
-        // which would prevent the previous fragment's view from getting destroyed, this causes an issue where the
-        // Toolbar doesn't get restored when navigating back.
-        // This seems like a bug in the fragment library.
-        viewLifecycleOwner.lifecycleScope.launch {
-            delay(500)
-            @Suppress("DEPRECATION")
-            requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        }
     }
+
+    private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+        toolbar.inflateMenu(R.menu.menu_product_delete_image)
+        toolbar.menu.findItem(R.id.menu_delete_image).isVisible = navArgs.isDeletingAllowed
+    }
+
+    private fun onMenuItemSelected(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.menu_delete_image -> {
+                AnalyticsTracker.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_DELETE_IMAGE_BUTTON_TAPPED)
+                confirmRemoveProductImage()
+                true
+            }
+
+            else -> false
+        }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        @Suppress("DEPRECATION")
-        requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -167,9 +164,11 @@ class ProductImageViewerFragment :
             newImageCount == 0 -> {
                 0
             }
+
             binding.viewPager.currentItem > 0 -> {
                 pagerAdapter.images[binding.viewPager.currentItem - 1].id
             }
+
             else -> {
                 pagerAdapter.images[binding.viewPager.currentItem + 1].id
             }

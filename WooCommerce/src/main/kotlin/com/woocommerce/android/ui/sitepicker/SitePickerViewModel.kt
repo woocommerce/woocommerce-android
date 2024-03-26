@@ -693,7 +693,6 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
         object NavigateToAddStoreEvent : SitePickerEvent()
-        object NavigateToStoreCreationEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpOrigin) : SitePickerEvent()
         data class NavigateToWPComWebView(
             val url: String,

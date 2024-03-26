@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.FREE_TRIAL_UPGRADE_NOW_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isFreeTrial
@@ -92,14 +91,6 @@ class LaunchStoreViewModel @Inject constructor(
         }
     }
 
-    fun onUpgradePlanBannerClicked() {
-        analyticsTrackerWrapper.track(
-            FREE_TRIAL_UPGRADE_NOW_TAPPED,
-            mapOf(AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_BANNER)
-        )
-        triggerEvent(UpgradeToEcommercePlan)
-    }
-
     fun onBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
@@ -118,6 +109,5 @@ class LaunchStoreViewModel @Inject constructor(
         val displayUrl: String
     )
 
-    object UpgradeToEcommercePlan : MultiLiveEvent.Event()
     data class ShareStoreUrl(val url: String) : MultiLiveEvent.Event()
 }

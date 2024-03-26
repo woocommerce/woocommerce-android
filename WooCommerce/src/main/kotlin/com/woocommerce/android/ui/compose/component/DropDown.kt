@@ -8,6 +8,7 @@ import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,9 +30,11 @@ fun <T> WcExposedDropDown(
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(currentValue) }
 
-    Box(
-        modifier = modifier
-    ) {
+    LaunchedEffect(currentValue) {
+        selectedText = currentValue
+    }
+
+    Box(modifier = modifier) {
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = {

@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
-    var storeCreationProfilerAnswers by AppPrefs::storeCreationProfilerAnswers
-
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
     var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
@@ -209,14 +207,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
 
-    fun setActiveStatsGranularity(statsGranularity: String) {
-        AppPrefs.setActiveStatsGranularity(statsGranularity)
+    fun setActiveStatsTab(selectionName: String) {
+        AppPrefs.setActiveStatsTab(selectionName)
     }
 
-    fun getActiveStatsGranularity() =
-        AppPrefs.getActiveStatsGranularity()
-
-    fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
+    fun getActiveStatsTab() =
+        AppPrefs.getActiveStatsTab()
 
     fun setCustomDomainsSource(source: DomainFlowSource) {
         AppPrefs.setCustomDomainsSource(source.name)

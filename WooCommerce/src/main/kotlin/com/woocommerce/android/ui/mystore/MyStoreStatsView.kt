@@ -36,6 +36,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_RANGE
 import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
@@ -129,7 +130,12 @@ class MyStoreStatsView @JvmOverloads constructor(
     val customRangeButton = binding.customRangeButton
 
     val tabLayout = binding.statsTabLayout
-    private var customRangeTab: Tab? = null
+    private val customRangeTab: Tab by lazy {
+        tabLayout.newTab().apply {
+            setText(getStringForRangeType(SelectionType.CUSTOM))
+            tag = SelectionType.CUSTOM
+        }
+    }
 
     private lateinit var coroutineScope: CoroutineScope
     private val chartUserInteractions = MutableSharedFlow<Unit>()
@@ -199,10 +205,22 @@ class MyStoreStatsView @JvmOverloads constructor(
         applyCustomRange(statsTimeRangeSelection)
     }
 
+    fun handleCustomRangeTab(customRange: StatsTimeRange?) {
+        if (customRange != null) {
+            customRangeButton.isVisible = false
+            if (customRangeTab.view.parent == null) {
+                tabLayout.addTab(customRangeTab)
+            }
+        } else {
+            customRangeButton.isVisible = true
+            if (customRangeTab.view.parent != null) {
+                tabLayout.removeTab(customRangeTab)
+            }
+        }
+    }
+
     private fun applyCustomRange(selectedTimeRange: StatsTimeRangeSelection) {
         if (selectedTimeRange.selectionType == SelectionType.CUSTOM) {
-            addCustomRangeTabIfMissing()
-            customRangeButton.isVisible = false
             customRangeLabel.isVisible = true
             customRangeGranularityLabel.isVisible = true
             customRangeLabel.text = selectedTimeRange.currentRangeDescription
@@ -210,17 +228,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         } else {
             customRangeLabel.isVisible = false
             customRangeGranularityLabel.isVisible = false
-        }
-    }
-
-    private fun addCustomRangeTabIfMissing() {
-        if (customRangeTab == null) {
-            val tab = tabLayout.newTab().apply {
-                setText(getStringForRangeType(SelectionType.CUSTOM))
-                tag = SelectionType.CUSTOM
-            }
-            customRangeTab = tab
-            tabLayout.addTab(tab)
         }
     }
 

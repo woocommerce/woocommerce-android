@@ -15,19 +15,10 @@ import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
-import com.woocommerce.android.notifications.local.LocalNotificationType
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED
-import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED
-import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
-import com.woocommerce.android.notifications.local.LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -276,19 +267,6 @@ class MainActivityViewModel @Inject constructor(
                 AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
                 mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
             )
-            LocalNotificationType.fromString(notification.tag)?.let {
-                when (it) {
-                    FREE_TRIAL_EXPIRED,
-                    FREE_TRIAL_EXPIRING,
-                    SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
-
-                    FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
-
-                    STORE_CREATION_FINISHED,
-                    THREE_DAYS_AFTER_STILL_EXPLORING -> {
-                    }
-                }
-            }
         }
     }
 
@@ -337,7 +315,6 @@ class MainActivityViewModel @Inject constructor(
     ) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
-    data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()
 
     sealed class RestartActivityEvent : Event()
     data class RestartActivityForLocalNotification(val notification: Notification) : RestartActivityEvent()
@@ -354,7 +331,6 @@ class MainActivityViewModel @Inject constructor(
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
     object ShowPrivacySettings : Event()
     data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()
-    object OpenFreeTrialSurvey : Event()
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object NewFeature : MoreMenuBadgeState()
