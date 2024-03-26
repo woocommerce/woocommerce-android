@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.appcompat.content.res.AppCompatResources
@@ -36,7 +37,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.UNREAD_FILTERED
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private val binding = WcEmptyViewBinding.inflate(LayoutInflater.from(context), this, true)
-    private val minimumHeightDp = 600
+    private val minimumHeightDp = 400
 
     enum class EmptyViewType {
         DASHBOARD,
@@ -61,18 +62,34 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
 
     private var lastEmptyViewType: EmptyViewType? = null
 
-    private fun isScreenHeightSufficient(): Boolean {
-        val screenHeightDp = context.resources.displayMetrics.heightPixels / context.resources.displayMetrics.density
-        return screenHeightDp >= minimumHeightDp
+    private fun isParentViewHeightSufficient(): Boolean {
+        var isSufficient = false
+        val parentView = this.parent as? View
+        parentView?.let {
+            val parentHeightDp = it.height / context.resources.displayMetrics.density
+            isSufficient = parentHeightDp >= minimumHeightDp
+        }
+        return isSufficient
     }
 
+    init {
+        // Add a global layout listener to check the height of the parent view
+        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                // Remove the listener to prevent it from being called multiple times
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+                // Update the visibility based on the parent view's height
+                binding.emptyViewImage.isVisible = isParentViewHeightSufficient()
+            }
+        })
+    }
     @Suppress("LongMethod", "ComplexMethod")
     fun show(
         type: EmptyViewType,
         searchQueryOrFilter: String? = null,
         onButtonClick: (() -> Unit)? = null
     ) {
-        binding.emptyViewImage.isVisible = isScreenHeightSufficient()
+        binding.emptyViewImage.isVisible = isParentViewHeightSufficient()
 
         // if empty view is already showing and it's a different type, fade out the existing view before fading in
         if (visibility == View.VISIBLE && type != lastEmptyViewType) {
