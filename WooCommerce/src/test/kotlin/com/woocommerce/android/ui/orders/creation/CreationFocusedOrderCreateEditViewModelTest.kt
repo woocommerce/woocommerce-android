@@ -168,7 +168,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
         whenever(selectedSite.get()).thenReturn(mockedSite)
         sut.onSetTaxRateClicked()
-        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED)
+        verify(
+            tracker
+        ).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
     }
 
     @Test
@@ -176,7 +178,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
         whenever(selectedSite.get()).thenReturn(mockedSite)
         sut.onSetNewTaxRateClicked()
-        verify(tracker).track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED)
+        verify(
+            tracker
+        ).track(
+            AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED,
+            mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact")
+        )
     }
 
     @Test
@@ -1373,7 +1380,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             verify(tracker).track(
                 AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS,
                 mapOf(
-                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list"
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
+                    KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -1497,7 +1505,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
-                    KEY_HAS_BUNDLE_CONFIGURATION to false
+                    KEY_HAS_BUNDLE_CONFIGURATION to false,
+                    KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -1543,7 +1552,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
-                    KEY_HAS_BUNDLE_CONFIGURATION to false
+                    KEY_HAS_BUNDLE_CONFIGURATION to false,
+                    KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -1981,14 +1991,16 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
                 mapOf(
                     KEY_FLOW to VALUE_FLOW_CREATION,
-                    KEY_EXPANDED to false
+                    KEY_EXPANDED to false,
+                    KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
             verify(tracker).track(
                 AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
                 mapOf(
                     KEY_FLOW to VALUE_FLOW_CREATION,
-                    KEY_EXPANDED to true
+                    KEY_EXPANDED to true,
+                    KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -2082,7 +2094,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onCustomAmountUpsert(customAmountUIModel)
 
-        verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
+        verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
     }
 
     @Test
@@ -2112,7 +2124,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onCustomAmountUpsert(customAmountUIModel)
 
-        verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
+        verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
     }
 
     @Test
@@ -2182,7 +2194,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             ORDER_FEE_UPDATE,
             mapOf(
                 KEY_FLOW to VALUE_FLOW_CREATION,
-                KEY_CUSTOM_AMOUNT_TAX_STATUS to "none"
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to "none",
+                KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -2234,7 +2247,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             ORDER_FEE_ADD,
             mapOf(
                 KEY_FLOW to VALUE_FLOW_CREATION,
-                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE,
+                KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -2255,7 +2269,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             ORDER_FEE_ADD,
             mapOf(
                 KEY_FLOW to VALUE_FLOW_CREATION,
-                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE,
+                KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -2315,7 +2330,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onCustomAmountRemoved(customAmountUIModel)
 
-        verify(tracker).track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
+        verify(tracker).track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
     }
     //endregion
 }

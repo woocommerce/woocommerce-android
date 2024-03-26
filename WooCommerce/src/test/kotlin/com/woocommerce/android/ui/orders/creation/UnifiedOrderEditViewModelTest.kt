@@ -207,7 +207,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                 KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
-                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
             ),
         )
     }
@@ -229,7 +230,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to 4,
                 KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
-                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
             ),
         )
     }
@@ -249,6 +251,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_HAS_DIFFERENT_SHIPPING_DETAILS to false,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -317,6 +320,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_STATUS to Order.Status.Pending,
                 AnalyticsTracker.KEY_TYPE to AnalyticsTracker.Companion.OrderNoteType.CUSTOMER,
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact",
             )
         )
     }
@@ -331,7 +335,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_ID to 0L,
                 AnalyticsTracker.KEY_FROM to Order.Status.Pending.value,
                 AnalyticsTracker.KEY_TO to Order.Status.Cancelled.value,
-                AnalyticsTracker.KEY_FLOW to tracksFlow
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -346,7 +351,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         sut.onIncreaseProductsQuantity(productId)
         verify(tracker).track(
             AnalyticsEvent.ORDER_PRODUCT_QUANTITY_CHANGE,
-            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
+            )
         )
     }
 
@@ -360,7 +368,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         sut.onDecreaseProductsQuantity(productId)
         verify(tracker).track(
             AnalyticsEvent.ORDER_PRODUCT_QUANTITY_CHANGE,
-            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
+            )
         )
     }
 
@@ -374,7 +385,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         sut.onDecreaseProductsQuantity(productId)
         verify(tracker).track(
             AnalyticsEvent.ORDER_PRODUCT_REMOVE,
-            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
+            )
         )
     }
 
@@ -395,7 +409,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         sut.onRemoveProduct(productToRemove)
         verify(tracker).track(
             AnalyticsEvent.ORDER_PRODUCT_REMOVE,
-            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
+            )
         )
     }
 
@@ -413,7 +430,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         sut.onFeeRemoved()
         verify(tracker).track(
             AnalyticsEvent.ORDER_FEE_REMOVE,
-            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
+            )
         )
     }
 
@@ -432,7 +452,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         sut.onShippingRemoved()
         verify(tracker).track(
             AnalyticsEvent.ORDER_SHIPPING_METHOD_REMOVE,
-            mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow)
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
+            )
         )
     }
 
@@ -487,7 +510,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to false
+                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to false,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -503,7 +527,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to false
+                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to false,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
 
@@ -513,7 +538,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to true
+                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to true,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -1405,7 +1431,10 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         sut.onScanClicked()
 
-        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED)
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_CREATION_PRODUCT_BARCODE_SCANNING_TAPPED,
+            mapOf(AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact")
+        )
     }
 
     @Test
@@ -1536,7 +1565,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             verify(tracker).track(
                 PRODUCT_SEARCH_VIA_SKU_SUCCESS,
                 mapOf(
-                    KEY_SCANNING_SOURCE to "order_creation"
+                    KEY_SCANNING_SOURCE to "order_creation",
+                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -1706,7 +1736,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
-                    AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
+                    AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false,
+                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -1739,7 +1770,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     AnalyticsTracker.KEY_PRODUCT_COUNT to 1,
                     KEY_SCANNING_SOURCE to ScanningSource.ORDER_CREATION.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
-                    AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
+                    AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false,
+                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -2296,7 +2328,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
                 mapOf(
                     AnalyticsTracker.KEY_FLOW to tracksFlow,
-                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CARD
+                    AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_CARD,
+                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -2416,7 +2449,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to selectedItems.size,
                 KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
-                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to true
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to true,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -2439,7 +2473,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
                 AnalyticsTracker.KEY_PRODUCT_COUNT to selectedItems.size,
                 KEY_PRODUCT_ADDED_VIA to ProductAddedVia.MANUALLY.addedVia,
-                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false
+                AnalyticsTracker.KEY_HAS_BUNDLE_CONFIGURATION to false,
+                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
