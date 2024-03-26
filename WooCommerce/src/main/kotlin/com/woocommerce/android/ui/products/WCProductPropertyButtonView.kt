@@ -4,9 +4,12 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewParent
 import android.widget.PopupWindow
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.text.HtmlCompat
+import androidx.core.widget.NestedScrollView
 import com.woocommerce.android.databinding.HighlightsTooltipLayoutBinding
 import com.woocommerce.android.databinding.ProductPropertyButtonViewLayoutBinding
 import com.woocommerce.android.ui.products.models.ProductProperty
@@ -17,9 +20,6 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    companion object {
-        const val TOOLTIP_VERTICAL_OFFSET = -8
-    }
     private val binding = ProductPropertyButtonViewLayoutBinding.inflate(LayoutInflater.from(context), this)
 
     fun show(
@@ -45,33 +45,94 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
         }
 
         tooltip?.let {
-            showPopupWindow(it)
+            addOnAttachStateChangeListener(
+                object : OnAttachStateChangeListener {
+                    override fun onViewDetachedFromWindow(v: View) {
+                        removeOnAttachStateChangeListener(this)
+                    }
+
+                    override fun onViewAttachedToWindow(v: View) {
+                        showPopupWindowWhenEnoughSpace(
+                            scrollableView = parent?.findParentNestedScrollView()
+                                ?: error("No NestedScrollView found in parent hierarchy that needed to show AI tooltip"),
+                            tooltip = it,
+                        )
+                        removeOnAttachStateChangeListener(this)
+                    }
+                }
+            )
         }
     }
 
-    private fun showPopupWindow(tooltip: ProductProperty.Button.Tooltip) {
+    private fun ViewParent.findParentNestedScrollView(): NestedScrollView? =
+        if (this is NestedScrollView) {
+            this
+        } else {
+            parent?.findParentNestedScrollView()
+        }
+
+    private fun showPopupWindowWhenEnoughSpace(
+        scrollableView: NestedScrollView,
+        tooltip: ProductProperty.Button.Tooltip
+    ) {
+        if (isEnoughSpaceToShowTooltip()) {
+            showTooltip(scrollableView.measuredWidth, tooltip)
+            return
+        }
+        scrollableView.setOnScrollChangeListener(
+            NestedScrollView.OnScrollChangeListener { _, _, _, _, _ ->
+                if (isEnoughSpaceToShowTooltip()) {
+                    scrollableView.setOnScrollChangeListener(null as NestedScrollView.OnScrollChangeListener?)
+                    showTooltip(
+                        parentViewWidth = scrollableView.measuredWidth,
+                        tooltip = tooltip,
+                    )
+                }
+            }
+        )
+    }
+
+    private fun isEnoughSpaceToShowTooltip(): Boolean {
+        val locationOnScreen = IntArray(2)
+        getLocationOnScreen(locationOnScreen)
+        val topPadding = context.resources.displayMetrics.heightPixels -
+            DisplayUtils.dpToPx(context, TOOLTIP_BOTTOM_OFFSET_BEFORE_SHOWING_DP)
+        return locationOnScreen[1] < topPadding
+    }
+
+    private fun showTooltip(
+        parentViewWidth: Int,
+        tooltip: ProductProperty.Button.Tooltip
+    ) {
         val popupBinding = HighlightsTooltipLayoutBinding.inflate(LayoutInflater.from(context), null, false)
 
-        val popupWindow = PopupWindow(popupBinding.root, LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        val popupWindow = PopupWindow(
+            popupBinding.root,
+            parentViewWidth,
+            LayoutParams.WRAP_CONTENT
+        )
 
         popupBinding.tooltipTitle.text = context.getString(tooltip.title)
         popupBinding.tooltipMessage.text = context.getString(tooltip.text)
         popupBinding.tooltipDismissButton.text = context.getString(tooltip.dismissButtonText)
 
-        popupBinding.tooltipDismissButton.setOnClickListener {
-            tooltip.onDismiss.invoke()
-            popupWindow.dismiss()
-        }
-
         // Make the popupWindow dismissible by clicking outside of it.
         popupWindow.isOutsideTouchable = true
         popupWindow.isFocusable = true
 
-        // Show the PopupWindow below the button
+        popupBinding.tooltipDismissButton.setOnClickListener {
+            tooltip.onDismiss.invoke()
+            popupWindow.dismiss()
+        }
         popupWindow.showAsDropDown(
             binding.productButton,
             0,
             DisplayUtils.dpToPx(context, TOOLTIP_VERTICAL_OFFSET)
         )
+    }
+
+    private companion object {
+        const val TOOLTIP_VERTICAL_OFFSET = -8
+        const val TOOLTIP_BOTTOM_OFFSET_BEFORE_SHOWING_DP = 230
     }
 }
