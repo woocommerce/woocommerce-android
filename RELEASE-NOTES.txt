@@ -2,6 +2,7 @@
 18.0
 -----
 - [*] Products: Improvements on the products photos screens [https://github.com/woocommerce/woocommerce-android/pull/11131]
+- [*] Products: Show full bottom sheet when spaces available [https://github.com/woocommerce/woocommerce-android/pull/11170]
 
 17.9
 -----
