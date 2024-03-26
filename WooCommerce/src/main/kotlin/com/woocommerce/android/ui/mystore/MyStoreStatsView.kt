@@ -312,9 +312,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         // update the total values of the chart here
         binding.chart.highlightValue(null)
         updateChartView()
-        visitorsValue.isVisible = true
-        binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = false
-        fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
+        showTotalVisitorStats()
         updateDate(revenueStatsModel, statsTimeRangeSelection)
         updateColorForStatsHeaderValues(R.color.color_on_surface_high)
         onUserInteractionWithChart()
@@ -525,11 +523,7 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
-        // Make sure the empty view is hidden
-        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
-
-        val totalVisitors = visitorStats.values.sum()
-        fadeInLabelValue(visitorsValue, totalVisitors.toString())
+        showTotalVisitorStats()
     }
 
     fun showVisitorStatsError() {
@@ -539,8 +533,31 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun handleUnavailableVisitorStats() {
-        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
+        binding.statsViewRow.jetpackEmptyVisitorsStatsGroup.isVisible = true
         binding.statsViewRow.visitorsValueTextview.isVisible = false
+    }
+
+    private fun showTotalVisitorStats() {
+        fun StatsTimeRangeSelection.isTotalVisitorCountUnavailable() = selectionType == SelectionType.CUSTOM &&
+            currentRange.end.time - currentRange.start.time > 2.days.inWholeMilliseconds
+
+        if (statsTimeRangeSelection.isTotalVisitorCountUnavailable()) {
+            // When using custom ranges, the total visitors value is not accurate, so we hide it
+            hideVisitorStatsForCustomRange()
+            return
+        } else {
+            // Make sure the empty view is hidden
+            binding.statsViewRow.jetpackEmptyVisitorsStatsGroup.isVisible = false
+            val totalVisitors = chartVisitorStats.values.sum()
+            fadeInLabelValue(visitorsValue, totalVisitors.toString())
+        }
+    }
+
+    private fun hideVisitorStatsForCustomRange() {
+        binding.statsViewRow.visitorsValueTextview.isVisible = false
+        binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
+        binding.statsViewRow.conversionValueTextView.isVisible = false
+        binding.statsViewRow.emptyConversionRateIndicator.isVisible = true
     }
 
     fun showLastUpdate(lastUpdateMillis: Long?) {
@@ -563,7 +580,9 @@ class MyStoreStatsView @JvmOverloads constructor(
     @Suppress("MagicNumber")
     private fun updateConversionRate() {
         val ordersCount = ordersValue.text.toString().toIntOrNull()
-        val visitorsCount = visitorsValue.text.toString().toIntOrNull()
+        val visitorsCount = visitorsValue.text.toString().toIntOrNull()?.takeIf {
+            visitorsValue.isVisible
+        }
 
         if (visitorsCount == null || ordersCount == null) {
             conversionValue.isVisible = false
@@ -713,7 +732,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     @StringRes
-    fun getStringForRangeType(rangeType: SelectionType): Int {
+    private fun getStringForRangeType(rangeType: SelectionType): Int {
         return when (rangeType) {
             SelectionType.TODAY -> R.string.today
             SelectionType.WEEK_TO_DATE -> R.string.this_week

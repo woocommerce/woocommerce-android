@@ -106,7 +106,7 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/emptyVisitorsStatsGroup"
+                android:id="@+id/jetpackEmptyVisitorsStatsGroup"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:visibility="gone"
