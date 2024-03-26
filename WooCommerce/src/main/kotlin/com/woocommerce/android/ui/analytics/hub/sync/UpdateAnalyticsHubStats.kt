@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
+import android.util.Log
 import com.woocommerce.android.model.AnalyticsCards
+import com.woocommerce.android.model.BundleItem
+import com.woocommerce.android.model.BundleStat
+import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -12,6 +16,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -37,6 +42,9 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val visitorsCountState = MutableStateFlow(VisitorsState.Available(0) as VisitorsState)
     val sessionState by lazy { combineSessionDataChanges() }
 
+    private val _bundlesState = MutableStateFlow(BundlesState.Available(BundleStat.EMPTY) as BundlesState)
+    val bundlesState: Flow<BundlesState> = _bundlesState
+
     private val fullStatsRequestState by lazy { combineFullUpdateState() }
 
     suspend operator fun invoke(
@@ -51,6 +59,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Orders -> _ordersState.update { OrdersState.Loading }
                 AnalyticsCards.Products -> _productsState.update { ProductsState.Loading }
                 AnalyticsCards.Session -> visitorsCountState.update { VisitorsState.Loading }
+                AnalyticsCards.Bundles -> _bundlesState.update { BundlesState.Loading }
             }
         }
 
@@ -73,6 +82,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Orders -> scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Products -> scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Session -> scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy)
+                AnalyticsCards.Bundles -> scope.fetchBundlesDataAsync(rangeSelection, fetchStrategy)
             }
         }
 
@@ -107,6 +117,11 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Session -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
                     rangeSelection,
                     AnalyticsUpdateDataStore.AnalyticData.VISITORS
+                )
+
+                AnalyticsCards.Bundles -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.BUNDLES
                 )
             }
         }
@@ -184,5 +199,42 @@ class UpdateAnalyticsHubStats @Inject constructor(
             .run { this as? AnalyticsRepository.ProductsResult.ProductsData }
             ?.let { _productsState.value = ProductsState.Available(it.productsStat) }
             ?: _productsState.update { ProductsState.Error }
+    }
+
+    private fun CoroutineScope.fetchBundlesDataAsync(
+        rangeSelection: StatsTimeRangeSelection,
+        fetchStrategy: FetchStrategy
+    ) = async {
+        delay(500)
+        Log.d("Bundle Request", "range: $rangeSelection,strategy: $fetchStrategy")
+        _bundlesState.value = BundlesState.Available(
+            BundleStat(
+                bundlesSold = 200,
+                bundlesSoldDelta = DeltaPercentage.Value(50),
+                bundles = listOf(
+                    BundleItem(
+                        netSales = 3000.00,
+                        name = "This is a sample bundle",
+                        image = null,
+                        quantity = 50,
+                        currencyCode = null
+                    ),
+                    BundleItem(
+                        netSales = 5000.00,
+                        name = "This is another bundle",
+                        image = null,
+                        quantity = 50,
+                        currencyCode = null
+                    ),
+                    BundleItem(
+                        netSales = 5000.00,
+                        name = "This is an amazing bundle",
+                        image = null,
+                        quantity = 50,
+                        currencyCode = null
+                    )
+                )
+            )
+        )
     }
 }
