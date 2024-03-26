@@ -54,22 +54,22 @@ class WCProductPropertyButtonView @JvmOverloads constructor(
                     override fun onViewAttachedToWindow(v: View) {
                         showPopupWindowWhenEnoughSpace(
                             scrollableView = parent?.findParentNestedScrollView()
-                                ?: error("No NestedScrollView found in parent hierarchy that needed to show AI tooltip"),
+                                ?: error("No NestedScrollView found in parent hierarchy needed to show AI tooltip"),
                             tooltip = it,
                         )
                         removeOnAttachStateChangeListener(this)
                     }
+
+                    fun ViewParent.findParentNestedScrollView(): NestedScrollView? =
+                        if (this is NestedScrollView) {
+                            this
+                        } else {
+                            parent?.findParentNestedScrollView()
+                        }
                 }
             )
         }
     }
-
-    private fun ViewParent.findParentNestedScrollView(): NestedScrollView? =
-        if (this is NestedScrollView) {
-            this
-        } else {
-            parent?.findParentNestedScrollView()
-        }
 
     private fun showPopupWindowWhenEnoughSpace(
         scrollableView: NestedScrollView,
