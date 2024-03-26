@@ -809,7 +809,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         clearInvocations(trackerEventEmitter)
 
         sut.onSeeReport("https://report-url", ReportCard.Revenue)
-        verify(trackerEventEmitter).interacted(any())
+        verify(trackerEventEmitter).interacted(any(), any())
     }
 
     @Test
