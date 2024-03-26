@@ -11,9 +11,11 @@ import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -37,15 +39,16 @@ fun ApplicationPasswordTutorialScreen(
         .fillMaxSize()
         .padding(dimensionResource(id = R.dimen.major_100))
     ) {
-        Text("We couldn't log in into your store")
-        Text("This could because your store has some extra security steps in place.")
+        Text(stringResource(id = R.string.login_app_password_title))
+        Text(stringResource(id = R.string.login_app_password_subtitle))
         Divider()
-        Text("Follow these steps to connect the Woo app directly to your store using an application password.")
-        Text("1. First, log in using your site credentials.")
-        Text("2. When prompted, approve the connection by tapping the confirmation button.")
+        Text(stringResource(id = R.string.login_app_password_instructions_title))
+        Text(stringResource(id = R.string.login_app_password_instructions_step_1))
+        Text(stringResource(id = R.string.login_app_password_instructions_step_2))
         Image(
             painter = painterResource(id = R.drawable.stats_today_widget_preview),
-            contentDescription = null
+            contentDescription = null,
+            modifier = modifier.align(alignment = Alignment.CenterHorizontally)
         )
         Divider()
 
@@ -53,13 +56,13 @@ fun ApplicationPasswordTutorialScreen(
             onClick = onContinueClicked,
             modifier = modifier.fillMaxWidth()
         ) {
-            Text("Continue")
+            Text(stringResource(id = R.string.login_app_password_continue_button))
         }
 
         Button(onClick = onContactSupportClicked,
             modifier = modifier.fillMaxWidth()
         ) {
-            Text("Contact support")
+            Text(stringResource(id = R.string.login_app_password_support_button))
         }
     }
 }
