@@ -37,7 +37,7 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.UNREAD_FILTERED
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private val binding = WcEmptyViewBinding.inflate(LayoutInflater.from(context), this, true)
-    private val minimumHeightDp = 400
+    private val minimumHeightDp = MINIMUM_HEIGHT_DP
 
     enum class EmptyViewType {
         DASHBOARD,
@@ -300,5 +300,9 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         if (visibility == View.VISIBLE) {
             WooAnimUtils.fadeOut(this, Duration.SHORT)
         }
+    }
+
+    companion object {
+        private const val MINIMUM_HEIGHT_DP = 400
     }
 }
