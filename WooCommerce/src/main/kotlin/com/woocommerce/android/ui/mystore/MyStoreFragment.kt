@@ -547,7 +547,7 @@ class MyStoreFragment :
         AnalyticsTracker.trackViewShown(this)
         // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
         if (wasPreviouslyStopped) {
-            usageTracksEventEmitter.interacted()
+            usageTracksEventEmitter.interacted(isCustomRange = myStoreViewModel)
             wasPreviouslyStopped = false
         }
     }
