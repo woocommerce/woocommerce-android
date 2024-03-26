@@ -83,6 +83,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
             }
         })
     }
+
     @Suppress("LongMethod", "ComplexMethod")
     fun show(
         type: EmptyViewType,
