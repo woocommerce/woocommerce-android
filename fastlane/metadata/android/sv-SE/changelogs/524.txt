@@ -1,0 +1,2 @@
+17.8:
+Upptäck vår senaste uppdatering av din WooCommerce-mobilapp. Du kan nu smidigt logga in med dina inloggningsuppgifter på Jetpack-anslutna webbplatser, som ett alternativ till e-postinloggning på WP.com. Få omedelbar uppdatering av produktlistan. Dessutom är det enklare än någonsin att hantera ditt lager med vår nya funktion för massuppdatering av lagerstatus. För att göra det ännu enklare kan du nu flytta ordrar direkt till papperskorgen. Sist men inte minst har vi optimerat flödet för orderskapande för surfplattor. Mycket nöje 💜

@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -56,7 +55,6 @@ class ThemePreviewFragment : BaseFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ThemePreviewViewModel.ContinueStoreCreationWithTheme -> continueStoreCreation()
                 is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(
                     CURRENT_THEME_UPDATED,
                     event.data
@@ -66,9 +64,5 @@ class ThemePreviewFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
             }
         }
-    }
-
-    private fun continueStoreCreation() {
-        navigateBackWithNotice(STORE_CREATION_THEME_SELECTED_NOTICE)
     }
 }

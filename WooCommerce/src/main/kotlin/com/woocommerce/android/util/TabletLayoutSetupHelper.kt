@@ -102,7 +102,9 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         }
 
         val windowWidth = DisplayUtils.getWindowPixelWidth(context)
-        rootView.children.filter { it !is Toolbar }.forEach { viewToApplyMargins ->
+        rootView.children.filter {
+            it !is Toolbar
+        }.forEach { viewToApplyMargins ->
             val layoutParams = viewToApplyMargins.layoutParams
             if (layoutParams is MarginLayoutParams) {
                 val marginHorizontal = (windowWidth * marginPart).toInt()
@@ -151,6 +153,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
             WindowSizeClass.Medium -> {
                 screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
             }
+
             WindowSizeClass.ExpandedAndBigger -> {
                 screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
             }

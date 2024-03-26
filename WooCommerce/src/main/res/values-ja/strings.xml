@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-12 09:54:04+0000
+Translation-Revision-Date: 2024-03-21 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">しばらくお待ちください…</string>
+    <string name="product_update_stock_status_dialog_title">在庫状況を更新しています</string>
+    <string name="product_update_stock_status_error">問題が発生しました。 もう一度お試しください。</string>
+    <string name="product_update_stock_status_completed">在庫状況を更新しました</string>
+    <string name="product_update_stock_status_variable_products">バリエーション商品は更新できません</string>
+    <string name="product_update_stock_status_managed_products">管理対象の商品は更新できません</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1件のバリエーション商品は無視されます。</string>
+    <string name="product_update_stock_status_ignored_count_singular">在庫数が管理されている1件の商品は無視されます。</string>
+    <string name="product_update_stock_status_update_count_singular">1件の商品の在庫状況が更新されます。</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d件のバリエーション商品は無視されます。</string>
+    <string name="product_update_stock_status_ignored_count">在庫数が管理されている%1$d件の商品は無視されます。</string>
+    <string name="product_update_stock_status_update_count">%1$d件の商品の在庫状況が更新されます。</string>
+    <string name="product_update_stock_status_current_status_single">現在の在庫状況は%1$sです</string>
+    <string name="product_update_stock_status_current_status_mixed">現在の在庫状況は混在しています</string>
+    <string name="product_update_stock_status_done">完了</string>
+    <string name="product_update_stock_status_title">在庫状況を更新</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">サイトのログイン情報でログイン</string>
+    <string name="settings_woo_plugin_version">WooCommerce バージョン</string>
+    <string name="settings_option_installed_plugins">インストールされたプラグイン</string>
+    <string name="settings_plugins">プラグイン</string>
+    <string name="settings_notifs_restore_chaching_sound_description">注文の通知音を変更した場合に、このボタンで「キャッシュレジスターの効果音」を元に戻すことができます。</string>
+    <string name="product_selection_menu_update_stock_status">在庫状況を更新</string>
+    <string name="order_detail_trash_order_dialog_message">この注文をゴミ箱に移動しますか ?</string>
+    <string name="order_detail_move_to_trash">ゴミ箱に移動</string>
+    <string name="order_creation_recalculate_button">再計算</string>
+    <string name="order_creation_scan_products">商品をスキャン</string>
+    <string name="order_creation_tablet_mode_fragment_title">ご注文内容</string>
+    <string name="orderlist_order_trashed_error">注文をゴミ箱へ移動する際にエラーが発生しました</string>
+    <string name="orderlist_order_trashed">注文をゴミ箱へ移動しました</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">エラーです。 サイトに問題があるようです。\n\nホスティングサービスに連絡のうえサポートを受けてください。</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">エラーです。 Jetpack 連携に問題があるようです。\n\nしかしご安心ください。サポートチームがお手伝いします。 いつでもお気軽にご相談ください。</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">エラーです。 サイトの応答が正常に機能していないようです。\n\nしかしご安心ください。サポートチームがお手伝いします。 いつでもお気軽にご相談ください。</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">エラーです。 サイトの応答が遅すぎるようです。\n\nホスティングサービスに連絡のうえサポートを受けてください。</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">エラーです。 現在 WordPress.com に接続できないようです。\n\nしかしご安心ください。サポートチームがお手伝いします。 いつでもお気軽にご相談ください。</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">インターネットに接続されていないようです。\n\nWi-Fi がオンになっていることをご確認ください。 モバイルデータを使用している場合、デバイスの設定で有効になっていることを確認してください。 </string>
     <string name="product_detail_product_not_selected">商品が選択されていません</string>
     <string name="orderlist_connectivity_tool_read_more_action">続きを読む</string>
     <string name="orderlist_connectivity_tool_contact_support_action">サポートに連絡</string>
@@ -580,7 +615,6 @@ Language: ja_JP
     <string name="coupon_selector_empty_list_message">クーポンはまだ作成されていません。 クーポンを作成してこの注文に適用します。</string>
     <string name="coupon_selector_empty_list_button">クーポンに移動</string>
     <string name="order_creation_select_coupon">クーポンを選択</string>
-    <string name="signup_get_started_button">新しいストアを作成</string>
     <string name="coupon_create_coupon_creation_failed">クーポンの作成に失敗しました</string>
     <string name="coupon_create_coupon_created">クーポンを作成しました</string>
     <string name="coupon_create_save_button">作成</string>
@@ -1236,13 +1270,11 @@ Language: ja_JP
     <string name="analytics_revenue_no_data">この期間には収益がありません</string>
     <string name="analytics_revenue_card_title">収益</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">もっと見る</string>
     <string name="signup_api_generic_error">提供されたログイン情報でアカウントを作成できませんでした。 別のメールアドレスでお試しください。</string>
     <string name="signup_password_not_secure_enough">パスワードがセキュリティガイドラインを満たしていません。 より複雑なパスワードをお試しください。</string>
     <string name="signup_password_too_short">パスワードが短すぎます。 6文字以上のパスワードを設定してください。</string>
     <string name="signup_email_invalid_input">有効なメールアドレスを入力してください。</string>
     <string name="signup_email_exist_input">このメールアドレスのアカウントはすでにあります。</string>
-    <string name="login_create_an_account">アカウントを作成</string>
     <string name="login_try_another_email">別のアドレスを試す</string>
     <string name="date_timeframe_custom_date_range_title">カスタムの日付の範囲</string>
     <string name="date_timeframe_custom">カスタム</string>

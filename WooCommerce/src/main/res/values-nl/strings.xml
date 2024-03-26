@@ -580,7 +580,6 @@ Language: nl
     <string name="coupon_selector_empty_list_message">Je hebt nog geen kortingsbonnen aangemaakt. Maak een kortingsbon aan en pas die toe op deze bestelling.</string>
     <string name="coupon_selector_empty_list_button">Naar kortingsbonnen</string>
     <string name="order_creation_select_coupon">Selecteer een kortingsbon</string>
-    <string name="signup_get_started_button">Een nieuwe winkel aanmaken</string>
     <string name="coupon_create_coupon_creation_failed">Aanmaken van coupon mislukt</string>
     <string name="coupon_create_coupon_created">Coupon aangemaakt</string>
     <string name="coupon_create_save_button">Aanmaken</string>
@@ -1236,13 +1235,11 @@ Language: nl
     <string name="analytics_revenue_no_data">Geen omzet deze periode</string>
     <string name="analytics_revenue_card_title">Inkomsten</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">Meer zien</string>
     <string name="signup_api_generic_error">Sorry, we konden met de opgegeven gegevens geen account aanmaken. Probeer het met een ander e-mailadres.</string>
     <string name="signup_password_not_secure_enough">Je wachtwoord voldoet niet aan onze veiligheidsrichtlijnen. Probeer een complexer wachtwoord.</string>
     <string name="signup_password_too_short">Je wachtwoord is te kort. Kies een wachtwoord met minstens zes tekens.</string>
     <string name="signup_email_invalid_input">Voer een geldig e-mailadres in.</string>
     <string name="signup_email_exist_input">Er bestaat al een account met dit e-mailadres.</string>
-    <string name="login_create_an_account">Een account maken</string>
     <string name="login_try_another_email">Probeer een ander adres</string>
     <string name="date_timeframe_custom_date_range_title">Aangepast datumbereik</string>
     <string name="date_timeframe_custom">Aangepast</string>

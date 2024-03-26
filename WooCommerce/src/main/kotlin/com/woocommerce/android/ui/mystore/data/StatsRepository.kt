@@ -6,7 +6,7 @@ import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
@@ -54,7 +54,7 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun fetchRevenueStats(
-        range: AnalyticsHubTimeRange,
+        range: StatsTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
         revenueRangeId: String = ""
@@ -67,7 +67,7 @@ class StatsRepository @Inject constructor(
     )
 
     private suspend fun fetchRevenueStats(
-        range: AnalyticsHubTimeRange,
+        range: StatsTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
         revenueRangeId: String = "",
@@ -117,7 +117,7 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun fetchVisitorStats(
-        range: AnalyticsHubTimeRange,
+        range: StatsTimeRange,
         granularity: StatsGranularity,
         forced: Boolean
     ): Result<Map<String, Int>> = fetchVisitorStats(
@@ -128,7 +128,7 @@ class StatsRepository @Inject constructor(
     )
 
     private suspend fun fetchVisitorStats(
-        range: AnalyticsHubTimeRange,
+        range: StatsTimeRange,
         granularity: StatsGranularity,
         forced: Boolean,
         site: SiteModel
@@ -163,7 +163,7 @@ class StatsRepository @Inject constructor(
     }
 
     fun observeTopPerformers(
-        range: AnalyticsHubTimeRange,
+        range: StatsTimeRange,
     ): Flow<List<TopPerformerProductEntity>> {
         val siteModel = selectedSite.get()
         val datePeriod = DateUtils.getDatePeriod(
@@ -186,7 +186,7 @@ class StatsRepository @Inject constructor(
 
     suspend fun fetchTopPerformerProducts(
         forceRefresh: Boolean,
-        range: AnalyticsHubTimeRange,
+        range: StatsTimeRange,
         quantity: Int
     ): Result<Unit> {
         return fetchTopPerformerProducts(
@@ -274,7 +274,7 @@ class StatsRepository @Inject constructor(
      * will be handled as null and only errors fetching the revenue stats will be processed.
      */
     suspend fun fetchStats(
-        range: AnalyticsHubTimeRange,
+        range: StatsTimeRange,
         revenueStatsGranularity: StatsGranularity,
         visitorStatsGranularity: StatsGranularity,
         forced: Boolean,

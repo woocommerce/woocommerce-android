@@ -209,6 +209,14 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
+            is ProductNavigationTarget.EditCategory -> {
+                val action = ProductCategoriesFragmentDirections
+                    .actionProductCategoriesFragmentToEditProductCategoryFragment(
+                        productCategory = target.category
+                    )
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is ProductNavigationTarget.ViewProductTags -> {
                 val action = ProductDetailFragmentDirections
                     .actionGlobalProductTagsFragment(target.remoteId)
@@ -358,6 +366,7 @@ class ProductNavigator @Inject constructor() {
                             screenMode = target.screenMode
                         )
                     }
+
                     ProductSelectorViewModel.SelectionMode.SINGLE -> {
                         ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationPickerFragment(
                             productId = target.productId

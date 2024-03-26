@@ -97,6 +97,9 @@ class ProductImagesFragment :
     }
 
     private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.setNavigationOnClickListener {
+            onExit()
+        }
         when (viewModel.viewStateData.liveData.value?.productImagesState) {
             is ProductImagesState.Dragging -> {
                 toolbar.inflateMenu(R.menu.menu_dragging)

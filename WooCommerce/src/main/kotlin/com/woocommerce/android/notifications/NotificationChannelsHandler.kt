@@ -55,10 +55,7 @@ class NotificationChannelsHandler @Inject constructor(
         // check for existing channel first
         notificationManagerCompat.getNotificationChannel(channelType.getChannelId())?.let {
             if (channelType == NEW_ORDER) {
-                analyticsTracker.track(
-                    AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_SOUND,
-                    mapOf("sound_status" to it.getNewOrderNotificationSoundStatus().name)
-                )
+                checkAndTrackNewOrderNotificationSound(it)
             }
             WooLog.i(WooLog.T.NOTIFS, "Notification channel already created with the following attributes: $it")
             return
@@ -80,6 +77,22 @@ class NotificationChannelsHandler @Inject constructor(
             .build()
 
         notificationManagerCompat.createNotificationChannel(channel)
+    }
+
+    private fun checkAndTrackNewOrderNotificationSound(channel: NotificationChannel) {
+        val sound = channel.sound
+        var updatedChannel = channel
+        if (sound?.toString()?.matches("^android\\.resource.*\\d+$".toRegex()) == true) {
+            // The channel still uses the Uri based on the resource id, so we need to recreate it
+            WooLog.d(WooLog.T.NOTIFS, "Orders notification channel still uses ID based sound, recreating it.")
+            recreateNotificationChannel(NEW_ORDER)
+            updatedChannel = notificationManagerCompat.getNotificationChannel(NEW_ORDER.getChannelId())!!
+        }
+
+        analyticsTracker.track(
+            AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_SOUND,
+            mapOf("sound_status" to updatedChannel.getNewOrderNotificationSoundStatus().name)
+        )
     }
 
     fun NotificationChannelType.getChannelId(): String {
@@ -107,9 +120,9 @@ class NotificationChannelsHandler @Inject constructor(
 
     private fun NotificationChannel.getNewOrderNotificationSoundStatus(): NewOrderNotificationSoundStatus {
         if (importance < NotificationManager.IMPORTANCE_DEFAULT) return NewOrderNotificationSoundStatus.DISABLED
-        return when {
-            sound.toString().contains(context.packageName) -> NewOrderNotificationSoundStatus.DEFAULT
-            sound == null -> NewOrderNotificationSoundStatus.DISABLED
+        return when (sound) {
+            context.getChaChingUri() -> NewOrderNotificationSoundStatus.DEFAULT
+            null -> NewOrderNotificationSoundStatus.DISABLED
             else -> NewOrderNotificationSoundStatus.SOUND_MODIFIED
         }
     }

@@ -4,7 +4,7 @@ import com.woocommerce.android.extensions.endOfCurrentMonth
 import com.woocommerce.android.extensions.formatAsRangeWith
 import com.woocommerce.android.extensions.oneMonthAgo
 import com.woocommerce.android.extensions.startOfCurrentMonth
-import com.woocommerce.android.ui.analytics.ranges.AnalyticsHubTimeRange
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeData
 import java.util.Calendar
 import java.util.Date
@@ -24,8 +24,8 @@ class LastMonthRangeData(
     locale: Locale,
     referenceCalendar: Calendar
 ) : StatsTimeRangeData(referenceCalendar) {
-    override val currentRange: AnalyticsHubTimeRange
-    override val previousRange: AnalyticsHubTimeRange
+    override val currentRange: StatsTimeRange
+    override val previousRange: StatsTimeRange
     override val formattedCurrentRange: String
     override val formattedPreviousRange: String
 
@@ -34,7 +34,7 @@ class LastMonthRangeData(
         calendar.time = oneMonthAgo
         val currentStart = calendar.startOfCurrentMonth()
         val currentEnd = calendar.endOfCurrentMonth()
-        currentRange = AnalyticsHubTimeRange(
+        currentRange = StatsTimeRange(
             start = currentStart,
             end = currentEnd
         )
@@ -44,7 +44,7 @@ class LastMonthRangeData(
         calendar.time = twoMonthsAgo
         val previousStart = calendar.startOfCurrentMonth()
         val previousEnd = calendar.endOfCurrentMonth()
-        previousRange = AnalyticsHubTimeRange(
+        previousRange = StatsTimeRange(
             start = previousStart,
             end = previousEnd
         )

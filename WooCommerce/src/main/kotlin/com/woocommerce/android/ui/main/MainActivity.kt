@@ -76,7 +76,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.main.MainActivityViewModel.OpenFreeTrialSurvey
 import com.woocommerce.android.ui.main.MainActivityViewModel.RequestNotificationsPermission
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityEvent
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
@@ -91,7 +90,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewStorePlanUpgrade
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
@@ -101,7 +99,6 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
@@ -183,9 +180,6 @@ class MainActivity :
 
     @Inject
     lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
-
-    @Inject
-    lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
 
     @Inject lateinit var animatorHelper: MainAnimatorHelper
 
@@ -801,7 +795,6 @@ class MainActivity :
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
                 is RequestNotificationsPermission -> requestNotificationsPermission()
-                is ViewStorePlanUpgrade -> startUpgradeFlowFactory.create(navController).invoke(event.source)
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
@@ -823,9 +816,6 @@ class MainActivity :
                     showPrivacySettingsScreen(event.requestedAnalyticsValue)
                 }
 
-                is OpenFreeTrialSurvey -> openFreeTrialSurvey()
-                is MainActivityViewModel.LaunchThemeActivation -> startThemeActivation(event.themeId)
-
                 is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
                 is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
             }
@@ -835,12 +825,6 @@ class MainActivity :
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
-    }
-
-    private fun openFreeTrialSurvey() {
-        navController.navigateSafely(
-            NavGraphMainDirections.actionGlobalFreeTrialSurveyFragment()
-        )
     }
 
     private fun observeNotificationsPermissionBarVisibility() {
@@ -893,8 +877,7 @@ class MainActivity :
 
                 is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
-                        context = this,
-                        startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
+                        context = this
                     ).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
                     animateBottomBar(binding.trialBar, show = true)
@@ -958,12 +941,6 @@ class MainActivity :
         startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
-    private fun startThemeActivation(themeId: String) {
-        navController.navigateSafely(
-            NavGraphMainDirections.actionGlobalThemeActivationFragmentDialog(themeId)
-        )
-    }
-
     private fun onRestartActivityEvent(event: RestartActivityEvent) {
         intent.apply {
             when (event) {
@@ -973,10 +950,6 @@ class MainActivity :
                     putExtra(FIELD_OPENED_FROM_PUSH, true)
                     putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
                     putExtra(FIELD_PUSH_ID, event.pushId)
-                }
-
-                else -> {
-                    // continue to restart the activity
                 }
             }
         }

@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-11 13:54:03+0000
+Translation-Revision-Date: 2024-03-20 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">Lütfen bekleyin…</string>
+    <string name="product_update_stock_status_dialog_title">Stok durumları güncelleniyor</string>
+    <string name="product_update_stock_status_error">Bir sorun oluştu. Lütfen tekrar deneyin.</string>
+    <string name="product_update_stock_status_completed">Stok durumları güncellendi</string>
+    <string name="product_update_stock_status_variable_products">Varyasyonlu ürünler güncellenemiyor</string>
+    <string name="product_update_stock_status_managed_products">Yönetilen ürünler güncellenemiyor</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 varyasyonlu ürün göz ardı edilir.</string>
+    <string name="product_update_stock_status_ignored_count_singular">Yönetilen stok miktarı olan 1 ürün göz ardı edilir.</string>
+    <string name="product_update_stock_status_update_count_singular">1 ürünün stok durumu güncellenir.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d varyasyonlu ürün göz ardı edilir.</string>
+    <string name="product_update_stock_status_ignored_count">Yönetilen stok miktarı olan %1$d ürün göz ardı edilir.</string>
+    <string name="product_update_stock_status_update_count">%1$d ürünün stok durumu güncellenir.</string>
+    <string name="product_update_stock_status_current_status_single">Mevcut stok durumu %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">Mevcut stok durumları karışık</string>
+    <string name="product_update_stock_status_done">TAMAMLANDI</string>
+    <string name="product_update_stock_status_title">Stok Durumunu Güncelleyin</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Site kimlik bilginizle oturum açın</string>
+    <string name="settings_woo_plugin_version">WooCommerce Sürümü</string>
+    <string name="settings_option_installed_plugins">Yüklü Eklentiler</string>
+    <string name="settings_plugins">Eklentiler</string>
+    <string name="settings_notifs_restore_chaching_sound_description">Sipariş bildirimleri sesi değiştirildi, \"yazar kasa\" sesini geri yüklemek için bu düğmeyi kullanın.</string>
+    <string name="product_selection_menu_update_stock_status">Stok durumunu güncelleyin</string>
+    <string name="order_detail_trash_order_dialog_message">Bu siparişi çöp kutusuna taşımak istiyor musunuz?</string>
+    <string name="order_detail_move_to_trash">Çöp kutusuna taşı</string>
+    <string name="order_creation_recalculate_button">Tekrar hesapla</string>
+    <string name="order_creation_scan_products">Ürünleri tara</string>
+    <string name="order_creation_tablet_mode_fragment_title">Sipariş Özeti</string>
+    <string name="orderlist_order_trashed_error">Sipariş çöp kutusuna taşınırken hata oluştu</string>
+    <string name="orderlist_order_trashed">Sipariş çöp kutusuna taşındı</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Üzgünüz! Görünüşe göre sitenizde bir sorun oluştu.\n\nDaha fazla yardım almak için barındırma sağlayıcınızla iletişime geçin.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Üzgünüz! Görünüşe göre Jetpack bağlantınızda bir sorun oluştu.\n\nAncak endişelenmeyin, destek ekibimiz yardımcı olmak için burada. Bizimle iletişime geçin, size yardımcı olmaktan memnuniyet duyarız.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Üzgünüz! Görünüşe göre sitenizin yanıtında düzgün bir çalışamıyoruz.\n\nAncak endişelenmeyin, destek ekibimiz yardımcı olmak için burada. Bizimle iletişime geçin, size yardımcı olmaktan memnuniyet duyarız.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Üzgünüz! Görünüşe göre sitenizin yanıt vermesi uzun sürüyor.\n\nDaha fazla yardım almak için barındırma sağlayıcınızla iletişime geçin.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Üzgünüz! Görünüşe göre şu anda WordPress.com\'a bağlanamıyoruz.\n\nAncak endişelenmeyin, destek ekibimiz yardımcı olmak için burada. Bizimle iletişime geçin, size yardımcı olmaktan memnuniyet duyarız.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">Görünüşe göre internete bağlı değilsiniz.\n\nWi-Fi ağınızın açık olduğundan emin olun. Mobil veri kullanıyorsanız cihazınızın ayarlarında etkinleştirildiğinden emin olun.</string>
     <string name="product_detail_product_not_selected">Ürün seçilmedi</string>
     <string name="orderlist_connectivity_tool_read_more_action">Tamamını Okuyun</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Desteğe Başvurun</string>
@@ -580,7 +615,6 @@ Language: tr
     <string name="coupon_selector_empty_list_message">Henüz hiçbir kupon oluşturmadınız. Bu siparişe uygulamak için bir kupon oluşturun.</string>
     <string name="coupon_selector_empty_list_button">Kuponlara Git</string>
     <string name="order_creation_select_coupon">Bir kupon seçin</string>
-    <string name="signup_get_started_button">Yeni bir mağaza oluştur</string>
     <string name="coupon_create_coupon_creation_failed">Kupon oluşturulamadı</string>
     <string name="coupon_create_coupon_created">Kupon oluşturuldu</string>
     <string name="coupon_create_save_button">Oluştur</string>
@@ -1236,13 +1270,11 @@ Language: tr
     <string name="analytics_revenue_no_data">Bu dönemde hiç gelir yok</string>
     <string name="analytics_revenue_card_title">Kazanç</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">Daha fazla gör</string>
     <string name="signup_api_generic_error">Maalesef sağlanan kimlik bilgileri için bir hesap oluşturamadık. Lütfen farklı bir e-posta ile deneyin.</string>
     <string name="signup_password_not_secure_enough">Şifreniz güvenlik yönergelerimize uymuyor. Lütfen daha karmaşık bir parola deneyin.</string>
     <string name="signup_password_too_short">Şifreniz çok kısa. Lütfen en az 6 karakterden oluşan bir şifre seçin.</string>
     <string name="signup_email_invalid_input">Lütfen geçerli bir e-posta adresi girin.</string>
     <string name="signup_email_exist_input">Bu e-postayla kayıtlı bir hesap zaten var</string>
-    <string name="login_create_an_account">Bir Hesap Oluşturun</string>
     <string name="login_try_another_email">Başka Bir Adres Deneyin</string>
     <string name="date_timeframe_custom_date_range_title">Özel tarih aralığı</string>
     <string name="date_timeframe_custom">Özel</string>

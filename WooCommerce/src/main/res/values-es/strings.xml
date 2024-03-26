@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-12 19:54:03+0000
+Translation-Revision-Date: 2024-03-20 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">Espera…</string>
+    <string name="product_update_stock_status_dialog_title">Actualizando estado de existencias</string>
+    <string name="product_update_stock_status_error">Se ha producido un error. Inténtalo de nuevo.</string>
+    <string name="product_update_stock_status_completed">Estado de existencias actualizado</string>
+    <string name="product_update_stock_status_variable_products">Los productos variables no se pueden actualizar</string>
+    <string name="product_update_stock_status_managed_products">Los productos gestionados no se pueden actualizar</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">Se ignorará 1 producto variable.</string>
+    <string name="product_update_stock_status_ignored_count_singular">Se ignorará 1 producto con la cantidad de existencias gestionada.</string>
+    <string name="product_update_stock_status_update_count_singular">El estado de existencias se actualizará para 1 producto.</string>
+    <string name="product_update_stock_status_variable_ignored_count">Se ignorarán %1$d productos variables.</string>
+    <string name="product_update_stock_status_ignored_count">Se ignorarán %1$d productos con la cantidad de existencias gestionada.</string>
+    <string name="product_update_stock_status_update_count">El estado de existencias se actualizará para %1$d productos.</string>
+    <string name="product_update_stock_status_current_status_single">El estado actual de las existencias es %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">El estado actual de las existencias es heterogéneo</string>
+    <string name="product_update_stock_status_done">HECHO</string>
+    <string name="product_update_stock_status_title">Actualizar estado de existencias</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Accede con las credenciales de tu sitio.</string>
+    <string name="settings_woo_plugin_version">Versión de WooCommerce</string>
+    <string name="settings_option_installed_plugins">Plugins instalados</string>
+    <string name="settings_plugins">Plugins</string>
+    <string name="settings_notifs_restore_chaching_sound_description">El sonido de las notificaciones de los pedidos se ha modificado. Utiliza este botón para restaurar el sonido «clin, clin».</string>
+    <string name="product_selection_menu_update_stock_status">Actualizar estado de existencias</string>
+    <string name="order_detail_trash_order_dialog_message">¿Quieres mover este pedido a la papelera?</string>
+    <string name="order_detail_move_to_trash">Mover a la papelera</string>
+    <string name="order_creation_recalculate_button">Recalcular</string>
+    <string name="order_creation_scan_products">Escanear productos</string>
+    <string name="order_creation_tablet_mode_fragment_title">Resumen del pedido</string>
+    <string name="orderlist_order_trashed_error">Error al mover el pedido a la papelera</string>
+    <string name="orderlist_order_trashed">Pedido movido a la papelera</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">¡Vaya! Parece que hay un problema con tu sitio.\n\nPide ayuda a tu proveedor de alojamiento.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">¡Vaya! Parece que hay un problema con tu conexión de Jetpack.\n\nPero no te preocupes, puedes confiar en nuestro equipo de soporte. Cuéntanos qué pasa y estaremos encantados de ayudarte.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">¡Vaya! Parece que no podemos dar con la tecla con la respuesta de tu sistema.\n\nPero no te preocupes, puedes confiar en nuestro equipo de soporte. Cuéntanos qué pasa y estaremos encantados de ayudarte.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">¡Vaya! Parece que a tu sitio le cuesta responder.\n\nPide ayuda a tu proveedor de alojamiento.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">¡Vaya! Parece que no podemos conectarnos a WordPress.com ahora mismo.\n\nPero no te preocupes, puedes confiar en nuestro equipo de soporte. Cuéntanos qué pasa y estaremos encantados de ayudarte.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">Parece que no estás conectado a Internet.\n\nComprueba que tienes activado el wifi. Si te vas a conectar con datos móviles, asegúrate de que estén activados en los ajustes de tu dispositivo.</string>
     <string name="product_detail_product_not_selected">Producto no elegido</string>
     <string name="orderlist_connectivity_tool_read_more_action">Leer más</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contactar con el servicio de soporte</string>
@@ -580,7 +615,6 @@ Language: es
     <string name="coupon_selector_empty_list_message">Todavía no has creado ningún cupón. Crea un cupón para aplicarlo a este pedido.</string>
     <string name="coupon_selector_empty_list_button">Ir a Cupones</string>
     <string name="order_creation_select_coupon">Selecciona un cupón</string>
-    <string name="signup_get_started_button">Crea una nueva tienda</string>
     <string name="coupon_create_coupon_creation_failed">Se ha producido un error al crear el cupón</string>
     <string name="coupon_create_coupon_created">Cupón creado</string>
     <string name="coupon_create_save_button">Crear</string>
@@ -1236,13 +1270,11 @@ Language: es
     <string name="analytics_revenue_no_data">Sin ingresos en este periodo</string>
     <string name="analytics_revenue_card_title">Ingresos</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">Ver más</string>
     <string name="signup_api_generic_error">No hemos podido crear una cuenta con las credenciales proporcionadas. Inténtalo con otra dirección de correo electrónico.</string>
     <string name="signup_password_not_secure_enough">Tu contraseña no cumple nuestras instrucciones de seguridad. Prueba con una contraseña más compleja.</string>
     <string name="signup_password_too_short">La contraseña es demasiado corta. Elige otra contraseña que tenga al menos 6 caracteres.</string>
     <string name="signup_email_invalid_input">Introduce una dirección de correo electrónico válida.</string>
     <string name="signup_email_exist_input">Ya existe una cuenta con esta dirección de correo electrónico.</string>
-    <string name="login_create_an_account">Crear una cuenta</string>
     <string name="login_try_another_email">Prueba con otra dirección</string>
     <string name="date_timeframe_custom_date_range_title">Intervalo de fechas personalizado</string>
     <string name="date_timeframe_custom">Personalizado</string>
