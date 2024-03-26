@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.LifecycleCoroutineScope
@@ -26,6 +27,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout.Tab
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -83,6 +85,8 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
+
+    private var isChartValueSelected = false
 
     private var skeletonView = SkeletonView()
 
@@ -317,6 +321,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         updateColorForStatsHeaderValues(R.color.color_on_surface_high)
         onUserInteractionWithChart()
         if (statsTimeRangeSelection.selectionType == SelectionType.CUSTOM) statsDateValue.isVisible = false
+        isChartValueSelected = false
     }
 
     private fun onUserInteractionWithChart() {
@@ -432,6 +437,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         updateColorForStatsHeaderValues(R.color.color_secondary)
         onUserInteractionWithChart()
         statsDateValue.isVisible = true
+        isChartValueSelected = true
     }
 
     private fun updateVisitorsValue(date: String) {
@@ -442,7 +448,7 @@ class MyStoreStatsView @JvmOverloads constructor(
             binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
         } else {
             visitorsValue.isVisible = true
-            binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = false
+            binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
             visitorsValue.text = chartVisitorStats[date]?.toString() ?: "0"
         }
     }
@@ -528,36 +534,63 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     fun showVisitorStatsError() {
         binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
-        binding.statsViewRow.jetpackIconImageView.isVisible = false
+        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
-    fun handleUnavailableVisitorStats() {
-        binding.statsViewRow.jetpackEmptyVisitorsStatsGroup.isVisible = true
+    fun handleJetpackUnavailableVisitorStats() {
+        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
         binding.statsViewRow.visitorsValueTextview.isVisible = false
+        binding.statsViewRow.emptyVisitorStatsIcon.apply {
+            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_jetpack_logo))
+            imageTintList = null
+        }
     }
 
     private fun showTotalVisitorStats() {
-        fun StatsTimeRangeSelection.isTotalVisitorCountUnavailable() = selectionType == SelectionType.CUSTOM &&
-            currentRange.end.time - currentRange.start.time > 2.days.inWholeMilliseconds
-
-        if (statsTimeRangeSelection.isTotalVisitorCountUnavailable()) {
+        if (statsTimeRangeSelection.isTotalVisitorsUnavailable()) {
             // When using custom ranges, the total visitors value is not accurate, so we hide it
             hideVisitorStatsForCustomRange()
             return
         } else {
             // Make sure the empty view is hidden
-            binding.statsViewRow.jetpackEmptyVisitorsStatsGroup.isVisible = false
+            binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
             val totalVisitors = chartVisitorStats.values.sum()
             fadeInLabelValue(visitorsValue, totalVisitors.toString())
         }
     }
 
     private fun hideVisitorStatsForCustomRange() {
+        fun showDialog() {
+            // Make sure the dialog is shown only when appropriate
+            if (!statsTimeRangeSelection.isTotalVisitorsUnavailable() || isChartValueSelected) return
+
+            val dialog = MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.my_store_custom_range_visitors_stats_unavailable_title)
+                .setMessage(R.string.my_store_custom_range_visitors_stats_unavailable_message)
+                .setPositiveButton(R.string.dialog_ok, null)
+                .show()
+
+            doOnDetach {
+                // To prevent leaking the dialog's window
+                dialog.dismiss()
+            }
+        }
+
         binding.statsViewRow.visitorsValueTextview.isVisible = false
-        binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
+        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
         binding.statsViewRow.conversionValueTextView.isVisible = false
         binding.statsViewRow.emptyConversionRateIndicator.isVisible = true
+
+        binding.statsViewRow.emptyVisitorStatsIcon.apply {
+            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_tintable_info_outline_24dp))
+            imageTintList = ContextCompat.getColorStateList(context, R.color.color_primary)
+            setOnClickListener { showDialog() }
+        }
+
+        binding.statsViewRow.emptyVisitorStatsIndicator.setOnClickListener {
+            showDialog()
+        }
     }
 
     fun showLastUpdate(lastUpdateMillis: Long?) {
@@ -714,10 +747,10 @@ class MyStoreStatsView @JvmOverloads constructor(
         val delay = duration.toMillis(context) + 100
         fadeHandler.postDelayed(
             {
+                WooAnimUtils.fadeIn(view, duration)
                 val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
                 view.setTextColor(color)
                 view.text = value
-                WooAnimUtils.fadeIn(view, duration)
             },
             delay
         )
@@ -788,6 +821,9 @@ class MyStoreStatsView @JvmOverloads constructor(
             )
         }
     }
+
+    private fun StatsTimeRangeSelection.isTotalVisitorsUnavailable() = selectionType == SelectionType.CUSTOM &&
+        currentRange.end.time - currentRange.start.time > 2.days.inWholeMilliseconds
 
     private inner class StartEndDateAxisFormatter : ValueFormatter() {
         override fun getAxisLabel(value: Float, axis: AxisBase): String {

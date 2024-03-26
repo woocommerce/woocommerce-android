@@ -400,6 +400,8 @@
     <string name="my_store_custom_range_granularity_week">Weekly</string>
     <string name="my_store_custom_range_granularity_month">Monthly</string>
     <string name="my_store_custom_range_granularity_year">Yearly</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
 
     <!--
         Sign Up Flow

@@ -106,16 +106,16 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/jetpackEmptyVisitorsStatsGroup"
+                android:id="@+id/emptyVisitorsStatsGroup"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:visibility="gone"
-                app:constraint_referenced_ids="emptyVisitorStatsIndicator, jetpackIconImageView" />
+                app:constraint_referenced_ids="emptyVisitorStatsIndicator, emptyVisitorStatsIcon" />
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/jetpackIconImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/emptyVisitorStatsIcon"
+                android:layout_width="@dimen/image_minor_40"
+                android:layout_height="@dimen/image_minor_40"
                 android:src="@drawable/ic_jetpack_logo"
                 app:layout_constraintBottom_toTopOf="@id/emptyVisitorStatsIndicator"
                 app:layout_constraintStart_toEndOf="@id/emptyVisitorStatsIndicator" />
