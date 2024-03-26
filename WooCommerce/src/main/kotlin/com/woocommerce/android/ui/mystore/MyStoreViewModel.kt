@@ -232,6 +232,12 @@ class MyStoreViewModel @Inject constructor(
         usageTracksEventEmitter.interacted(isCustomRange = isCustomRange)
         _selectedRangeType.update { selectionType }
         appPrefsWrapper.setActiveStatsTab(selectionType.name)
+
+        if (isCustomRange) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
+            )
+        }
     }
 
     fun onPullToRefresh() {
@@ -453,6 +459,13 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(range: StatsTimeRange) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_EDITING to (_customRange.value != null),
+            )
+        )
+
         if (_selectedRangeType.value != SelectionType.CUSTOM) {
             onTabSelected(SelectionType.CUSTOM)
         }
@@ -468,6 +481,13 @@ class MyStoreViewModel @Inject constructor(
                 toDate = _customRange.value?.end ?: Date()
             )
         )
+
+        val event = if (_customRange.value == null) {
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
+        } else {
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED
+        }
+        analyticsTrackerWrapper.track(event)
     }
 
     sealed class RevenueStatsViewState {
