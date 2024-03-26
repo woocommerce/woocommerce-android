@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.ProductFile
 import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
@@ -14,6 +15,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Pro
 import com.woocommerce.android.ui.products.selector.ProductSourceForTracking
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
+import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 /**
@@ -86,6 +88,7 @@ sealed class ProductNavigationTarget : Event() {
     object ExitProduct : ProductNavigationTarget()
     data class ViewProductCategories(val remoteId: Long) : ProductNavigationTarget()
     object AddProductCategory : ProductNavigationTarget()
+    data class EditCategory(val category: ProductCategory) : ProductNavigationTarget()
     data class ViewProductTags(val remoteId: Long) : ProductNavigationTarget()
     data class ViewProductDetailBottomSheet(val productType: ProductType) : ProductNavigationTarget()
     data class ViewProductTypes(
@@ -133,7 +136,8 @@ sealed class ProductNavigationTarget : Event() {
         val selectedVariationIds: Set<Long>,
         val productSelectorFlow: ProductSelectorFlow = ProductSelectorFlow.Undefined,
         val productSourceForTracking: ProductSourceForTracking,
-        val selectionMode: ProductSelectorViewModel.SelectionMode
+        val selectionMode: ProductSelectorViewModel.SelectionMode,
+        val screenMode: VariationSelectorViewModel.ScreenMode,
     ) : ProductNavigationTarget()
 
     data class NavigateToProductConfiguration(val productId: Long) : ProductNavigationTarget()

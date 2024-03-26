@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.annotation.StringRes
+import androidx.appcompat.widget.Toolbar
+import androidx.core.text.parseAsHtml
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -16,7 +16,14 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.CreatingCategory
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.DeletingCategory
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.Hidden
+import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.ProgressDialog.UpdatingCategory
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -30,13 +37,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AddProductCategoryFragment :
     BaseFragment(R.layout.fragment_add_product_category),
-    BackPressListener,
-    MenuProvider {
+    BackPressListener {
     companion object {
-        const val ARG_ADDED_CATEGORY = "arg-added-category"
+        const val ARG_CATEGORY_UPDATE_RESULT = "arg-category-update-result"
     }
 
     private var doneMenuItem: MenuItem? = null
+    private var deleteMenuItem: MenuItem? = null
 
     private var progressDialog: CustomProgressDialog? = null
 
@@ -49,7 +56,8 @@ class AddProductCategoryFragment :
         navGraphId = R.id.nav_graph_add_product_category
     )
 
-    override fun getFragmentTitle() = getString(R.string.product_add_category)
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     override fun onResume() {
         super.onResume()
@@ -61,19 +69,26 @@ class AddProductCategoryFragment :
         activity?.let { ActivityUtils.hideKeyboard(it) }
     }
 
-    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_done, menu)
-        doneMenuItem = menu.findItem(R.id.menu_done)
+    private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.inflateMenu(R.menu.menu_product_category_detail)
+        doneMenuItem = toolbar.menu.findItem(R.id.menu_item_done)
+        deleteMenuItem = toolbar.menu.findItem(R.id.menu_item_delete)
     }
 
-    override fun onMenuItemSelected(item: MenuItem): Boolean {
+    private fun onMenuItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_done -> {
+            R.id.menu_item_done -> {
                 AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_CATEGORY_SAVE_TAPPED)
-                viewModel.addProductCategory(getCategoryName())
+                viewModel.saveProductCategory(binding.productCategoryName.text)
                 true
             }
+
+            R.id.menu_item_delete -> {
+                AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_CATEGORY_DELETE_TAPPED)
+                viewModel.onDeletedCategory()
+                true
+            }
+
             else -> false
         }
     }
@@ -83,7 +98,6 @@ class AddProductCategoryFragment :
 
         _binding = FragmentAddProductCategoryBinding.bind(view)
 
-        requireActivity().addMenuProvider(this, viewLifecycleOwner)
         setupObservers(viewModel)
 
         binding.productCategoryName.setOnTextChangedListener {
@@ -93,7 +107,7 @@ class AddProductCategoryFragment :
         }
 
         with(binding.productCategoryParent) {
-            viewModel.getSelectedParentCategoryName()?.let { post { setHtmlText(it) } }
+            viewModel.getSelectedParentCategoryName()?.let { setText(it) }
             setClickListener {
                 val action = AddProductCategoryFragmentDirections
                     .actionAddProductCategoryFragmentToParentCategoryListFragment(
@@ -102,6 +116,23 @@ class AddProductCategoryFragment :
                 findNavController().navigateSafely(action)
             }
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_add_category),
+            onMenuItemSelected = ::onMenuItemSelected,
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    if (viewModel.onBackButtonClicked(
+                            binding.productCategoryName.text,
+                            binding.productCategoryParent.getText()
+                        )
+                    ) {
+                        findNavController().navigateUp()
+                    }
+                }
+                onCreateMenu(toolbar)
+            }
+        )
     }
 
     override fun onDestroyView() {
@@ -110,15 +141,30 @@ class AddProductCategoryFragment :
     }
 
     override fun onRequestAllowBackPress(): Boolean {
-        return viewModel.onBackButtonClicked(getCategoryName(), binding.productCategoryParent.getText())
+        return viewModel.onBackButtonClicked(
+            binding.productCategoryName.text,
+            binding.productCategoryParent.getText()
+        )
     }
 
     private fun setupObservers(viewModel: AddProductCategoryViewModel) {
-        viewModel.addProductCategoryViewStateData.observe(viewLifecycleOwner) { old, new ->
+        viewModel.addProductCategoryViewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.categoryNameErrorMessage?.takeIfNotEqualTo(old?.categoryNameErrorMessage) {
                 displayCategoryNameError(it)
             }
-            new.displayProgressDialog?.takeIfNotEqualTo(old?.displayProgressDialog) { showProgressDialog(it) }
+            new.displayProgressDialog.takeIfNotEqualTo(old?.displayProgressDialog) { showProgressDialog(it) }
+            new.categoryName.takeIfNotEqualTo(old?.categoryName) {
+                if (it != binding.productCategoryName.text) {
+                    binding.productCategoryName.text = it.parseAsHtml().toString()
+                }
+            }
+            new.selectedParentId.takeIfNotEqualTo(old?.selectedParentId) {
+                val parentCategoryName = viewModel.getSelectedParentCategoryName()
+                parentCategoryName?.let { binding.productCategoryParent.setHtmlText(it) }
+            }
+            new.isEditingMode.takeIfNotEqualTo(old?.isEditingMode) {
+                deleteMenuItem?.isVisible = it
+            }
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -126,7 +172,7 @@ class AddProductCategoryFragment :
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
                 is ShowDialog -> event.showDialog()
-                is ExitWithResult<*> -> navigateBackWithResult(ARG_ADDED_CATEGORY, event.data)
+                is ExitWithResult<*> -> navigateBackWithResult(ARG_CATEGORY_UPDATE_RESULT, event.data)
                 else -> event.isHandled = false
             }
         }
@@ -135,34 +181,36 @@ class AddProductCategoryFragment :
     private fun displayCategoryNameError(messageId: Int) {
         if (messageId != 0) {
             binding.productCategoryName.error = getString(messageId)
-            showDoneMenuItem(false)
+            doneMenuItem?.isVisible = false
         } else {
             binding.productCategoryName.clearError()
-            showDoneMenuItem(true)
+            doneMenuItem?.isVisible = true
         }
     }
 
-    private fun showDoneMenuItem(show: Boolean) {
-        doneMenuItem?.isVisible = show
+    private fun showProgressDialog(progressDialog: ProgressDialog) {
+        hideProgressDialog()
+        when (progressDialog) {
+            CreatingCategory -> showProgressDialog(R.string.product_add_category_dialog_title)
+            UpdatingCategory -> showProgressDialog(R.string.product_update_category_dialog_title)
+            DeletingCategory -> showProgressDialog(R.string.product_removing_category_dialog_title)
+            Hidden -> hideProgressDialog()
+        }
     }
 
-    private fun showProgressDialog(show: Boolean) {
-        if (show) {
-            hideProgressDialog()
-            progressDialog = CustomProgressDialog.show(
-                getString(R.string.product_add_category_dialog_title),
-                getString(R.string.product_add_category_dialog_message)
-            ).also { it.show(parentFragmentManager, CustomProgressDialog.TAG) }
-            progressDialog?.isCancelable = false
-        } else {
-            hideProgressDialog()
-        }
+    private fun showProgressDialog(
+        @StringRes title: Int,
+        @StringRes messageId: Int = R.string.product_add_category_dialog_message
+    ) {
+        this.progressDialog = CustomProgressDialog.show(getString(title), getString(messageId))
+            .also {
+                it.show(parentFragmentManager, CustomProgressDialog.TAG)
+                it.isCancelable = false
+            }
     }
 
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null
     }
-
-    private fun getCategoryName() = binding.productCategoryName.text
 }

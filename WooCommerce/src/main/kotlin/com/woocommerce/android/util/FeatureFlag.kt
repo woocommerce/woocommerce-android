@@ -8,13 +8,13 @@ import android.content.Context
 enum class FeatureFlag {
     DB_DOWNGRADE,
     MORE_MENU_INBOX,
-    BETTER_TABLETS_SUPPORT_PRODUCTS,
     WC_SHIPPING_BANNER,
     IAP_FOR_STORE_CREATION,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     BLAZE_I3,
-    EXPANDED_ANALYTIC_HUB_M2;
+    CUSTOM_RANGE_ANALYTICS,
+    CONNECTIVITY_TOOL;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -22,13 +22,14 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            BETTER_TABLETS_SUPPORT_PRODUCTS,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
             BLAZE_I3,
-            EXPANDED_ANALYTIC_HUB_M2 -> PackageUtils.isDebugBuild()
+            CUSTOM_RANGE_ANALYTICS -> PackageUtils.isDebugBuild()
+
+            CONNECTIVITY_TOOL -> true
 
             IAP_FOR_STORE_CREATION -> false
         }

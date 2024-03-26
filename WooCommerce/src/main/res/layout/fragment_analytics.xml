@@ -50,49 +50,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-            <com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
-                android:id="@+id/analyticsRevenueCard"
-                style="@style/Woo.Card.WithoutPadding"
-                android:layout_width="0dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/cards"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
-                app:cardElevation="@dimen/minor_10"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/analyticsDateSelectorCard" />
-
-            <com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
-                android:id="@+id/analyticsOrdersCard"
-                style="@style/Woo.Card.WithoutPadding"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
-                app:cardElevation="@dimen/minor_10"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/analyticsRevenueCard" />
-
-            <com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardView
-                android:id="@+id/analyticsProductsCard"
-                style="@style/Woo.Card.WithoutPadding"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
-                app:cardElevation="@dimen/minor_10"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/analyticsOrdersCard" />
-
-            <com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationCardView
-                android:id="@+id/analyticsVisitorsCard"
-                style="@style/Woo.Card.WithoutPadding"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/major_100"
-                app:cardElevation="@dimen/minor_10"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/analyticsProductsCard" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

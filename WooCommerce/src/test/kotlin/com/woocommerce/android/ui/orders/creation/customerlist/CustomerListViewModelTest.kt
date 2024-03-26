@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation.customerlist
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -43,7 +42,6 @@ class CustomerListViewModelTest : BaseUnitTest() {
 
         onBlocking { getCustomerList(any()) }.thenReturn(emptyList())
     }
-    private val savedState: SavedStateHandle = SavedStateHandle()
     private val mockCustomer: CustomerListViewState.CustomerList.Item.Customer = mock()
     private val customerListViewModelMapper: CustomerListViewModelMapper = mock {
         on { mapFromWCCustomerToItem(any(), any(), any()) }.thenReturn(mockCustomer)
@@ -1109,12 +1107,15 @@ class CustomerListViewModelTest : BaseUnitTest() {
     }
 
     private fun initViewModel() = CustomerListViewModel(
-        savedState,
-        customerListRepository,
-        customerListViewModelMapper,
-        isAdvancedSearchSupported,
-        getSupportedSearchModes,
-        analyticsTrackerWrapper,
-        stringUtils,
+        savedState = CustomerListDialogFragmentArgs(
+            allowCustomerCreation = true,
+            allowGuests = true
+        ).toSavedStateHandle(),
+        repository = customerListRepository,
+        mapper = customerListViewModelMapper,
+        isAdvancedSearchSupported = isAdvancedSearchSupported,
+        getSupportedSearchModes = getSupportedSearchModes,
+        analyticsTracker = analyticsTrackerWrapper,
+        stringUtils = stringUtils,
     )
 }

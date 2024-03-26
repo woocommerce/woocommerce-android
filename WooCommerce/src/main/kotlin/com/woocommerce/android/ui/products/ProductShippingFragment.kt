@@ -16,6 +16,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.products.ProductShippingClassFragment.Companion.SELECTED_SHIPPING_CLASS_RESULT
+import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -51,8 +52,6 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
         super.onDestroyView()
         _binding = null
     }
-
-    override fun getFragmentTitle() = getString(R.string.product_shipping_settings)
 
     private fun setupObservers(viewModel: ProductShippingViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
@@ -125,13 +124,25 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
         binding.productOneTimeShipping.setOnCheckedChangeListener { _, value ->
             viewModel.onDataChanged(oneTimeShipping = value)
         }
+
+        setupTabletSecondPaneToolbar(
+            title = getString(R.string.product_shipping_settings),
+            onMenuItemSelected = { _ -> false },
+            onCreateMenu = { toolbar ->
+                toolbar.setNavigationOnClickListener {
+                    onExit()
+                }
+            }
+        )
     }
 
     private fun editableToFloat(editable: Editable?): Float {
         val str = editable?.toString() ?: ""
         return if (str.isFloat()) {
             str.toFloat()
-        } else 0.0f
+        } else {
+            0.0f
+        }
     }
 
     /**

@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-19 19:54:04+0000
+Translation-Revision-Date: 2024-03-20 17:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">يُرجى الانتظار…</string>
+    <string name="product_update_stock_status_dialog_title">تحديث حالات المخزون</string>
+    <string name="product_update_stock_status_error">حدث خطأ. ترجى المحاولة مجددًا.</string>
+    <string name="product_update_stock_status_completed">حالات المخزون التي تم تحديثها</string>
+    <string name="product_update_stock_status_variable_products">يتعذر تحديث المنتجات المتغيرة</string>
+    <string name="product_update_stock_status_managed_products">يتعذر تحديث المنتجات المدارة</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">سيتم تجاهل منتج متغير واحد.</string>
+    <string name="product_update_stock_status_ignored_count_singular">سيتم تجاهل منتج واحد يتضمن كمية مخزون مدارة.</string>
+    <string name="product_update_stock_status_update_count_singular">سيتم تحديث حالة المخزون لمنتج واحد.</string>
+    <string name="product_update_stock_status_variable_ignored_count">سيتم تجاهل ⁦%1$d⁩ من المنتجات المتغيرة.</string>
+    <string name="product_update_stock_status_ignored_count">سيتم تجاهل ⁦%1$d⁩ من المنتجات تتضمن كمية مخزون مدارة.</string>
+    <string name="product_update_stock_status_update_count">سيتم تحديث حالة المخزون لـ ⁦%1$d⁩ من المنتجات.</string>
+    <string name="product_update_stock_status_current_status_single">وضع المخزون الحالي هي ⁦%1$s⁩</string>
+    <string name="product_update_stock_status_current_status_mixed">تم خلط حالات المخزون الحالية</string>
+    <string name="product_update_stock_status_done">تم</string>
+    <string name="product_update_stock_status_title">تحديث حالة المخزون</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">تسجيل الدخول باستخدام بيانات اعتماد موقعك</string>
+    <string name="settings_woo_plugin_version">إصدار WooCommerce</string>
+    <string name="settings_option_installed_plugins">الإضافات المثبتة</string>
+    <string name="settings_plugins">إضافات</string>
+    <string name="settings_notifs_restore_chaching_sound_description">تم تعديل صوت تنبيهات الطلبات، استخدم هذا الزر لاستعادة صوت \"تشا تشينج\".</string>
+    <string name="product_selection_menu_update_stock_status">تحديث حالة المخزون</string>
+    <string name="order_detail_trash_order_dialog_message">هل تريد نقل هذا الطلب إلى سلة المهملات؟</string>
+    <string name="order_detail_move_to_trash">نقل إلى سلة المهملات</string>
+    <string name="order_creation_recalculate_button">إعادة الحساب</string>
+    <string name="order_creation_scan_products">فحص المنتجات</string>
+    <string name="order_creation_tablet_mode_fragment_title">ملخص الطلبات</string>
+    <string name="orderlist_order_trashed_error">حدث خطأ في أثناء وضع الطلب في سلة المهملات</string>
+    <string name="orderlist_order_trashed">تم وضع الطلب في سلة المهملات</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">عفوًا! يبدو أن هناك مشكلة في موقعك.\n\nاتصل بمزوّد خدمة الاستضافة للحصول على مزيد من المساعدة.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">عفوًا! يبدو أن هناك مشكلة في الربط بـ Jetpack الخاص بك.\n\nلكن لا داعي للقلق، فريق الدعم لدينا موجود هنا لمساعدتك. اتصل بنا وستسعدنا مساعدتك.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">عفوًا! يبدو أنه يتعذر علينا التعامل بشكل صحيح مع استجابة موقعك. \n\nلكن لا داعي للقلق، فريق الدعم لدينا موجود هنا لمساعدتك. اتصل بنا وستسعدنا مساعدتك.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">عفوًا! يبدو أن موقعك يستغرق وقتًا طويلاً للغاية لكي يستجيب.\n\nاتصل بمزوّد خدمة الاستضافة للحصول على مزيد من المساعدة.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">عفوًا! يبدو أنه يتعذر علينا الربط بووردبريس.كوم في الوقت الحالي.\n\nلكن لا داعي للقلق، فريق الدعم لدينا موجود هنا لمساعدتك. اتصل بنا وستسعدنا مساعدتك.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">يبدو أنك أنتَ غير متصل بالإنترنت.\n\nتأكد من تشغيل شبكة Wi-Fi الخاصة بك. إذا كنت تستخدم بيانات الهاتف المحمول، فتأكد من تمكينها ضمن إعدادات الجهاز لديك.</string>
+    <string name="product_detail_product_not_selected">لم يتم تحديد منتجات</string>
+    <string name="orderlist_connectivity_tool_read_more_action">قراءة المزيد</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">الاتصال بالدعم</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">الطلبات في موقعك</string>
+    <string name="orderlist_connectivity_tool_store_check_title">موقعك</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">خوادم ووردبريس.كوم</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">الاتصال بالإنترنت</string>
+    <string name="orderlist_connectivity_tool_title">اختبار إمكانية الربط</string>
+    <string name="my_store_custom_range_content_description">إضافة إحصاءات نطاق التاريخ المخصصة</string>
+    <string name="blaze_campaign_creation_location_search_no_results_message">لم يتم العثور على الموقع.\nترجى المحاولة مجددًا.</string>
+    <string name="order_detail_attribution_session_page_views">مشاهدات صفحة الجلسة</string>
+    <string name="order_detail_attribution_device_type">نوع الجهاز</string>
+    <string name="order_detail_attribution_campaign">متوسط</string>
+    <string name="order_detail_attribution_medium">متوسط</string>
+    <string name="order_detail_attribution_source">المصدر</string>
+    <string name="order_detail_attribution_source_type">نوع المصدر</string>
+    <string name="order_detail_attribution_unknown_origin">غير معروف</string>
+    <string name="order_detail_attribution_mobile_origin">تطبيق للهواتف المحمولة</string>
+    <string name="order_detail_attribution_admin_origin">مسؤول الويب</string>
+    <string name="order_detail_attribution_direct_origin">مباشر</string>
+    <string name="order_detail_attribution_utm_origin">المصدر: ⁦%1$s⁩</string>
+    <string name="order_detail_attribution_referral_origin">الإحالة: ⁦%1$s⁩</string>
+    <string name="order_detail_attribution_organic_origin">عضوي: ⁦%1$s⁩</string>
+    <string name="order_detail_attribution_origin">الأصل</string>
+    <string name="order_detail_attribution_header">تخصيص الطلب</string>
+    <string name="orderdetail_message_customer_using_telegram">التواصل باستخدام Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">التواصل باستخدام WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">المُعرّف: %d</string>
+    <string name="orderfilters_customer_filter">العميل</string>
+    <string name="orderfilters_product_filter">المنتج</string>
+    <string name="customer_picker_guest">ضيف</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">هذا المستخدم هو ضيف، ويتعذر استخدام الضيوف لتصفية الطلبات.</string>
+    <string name="orderlist_timeout_error_message">يرجى المحاولة مرة أخرى لاحقًا أو تواصل معنا وستسرنا مساعدتك</string>
+    <string name="orderlist_timeout_error_title">يستغرق موقعك فترة طويلة للاستجابة</string>
+    <string name="show_details">مشاهدة التفاصيل</string>
+    <string name="order_creation_payment_shipping_tax_label">ضريبة الشحن</string>
+    <string name="customize_analytics">تخصيص التحليلات</string>
     <string name="blaze_campaign_creation_error">هناك شيء ليس صحيحًا تمامًا.\nتعذر علينا إنشاء حملتك.</string>
     <string name="blaze_campaign_creation_error_media_fetch">فشل إحضار تفاصيل صورة الحملة</string>
     <string name="blaze_campaign_creation_error_media_upload">فشل رفع صورة الحملة.</string>
@@ -38,14 +110,13 @@ Language: ar
     <string name="blaze_campaign_preview_missing_image_dialog_text">ترجى إضافة صورة لحملة Blaze</string>
     <string name="drag_handle">سحب المقبض</string>
     <string name="analytic_cards">بطاقات تحليلية</string>
-    <string name="manage_analytics">إدارة التحليلات</string>
     <string name="see_report">الاطلاع على التقرير</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">الصفحة الرئيسية للموقع</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">عنوان URL للمنتج</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">معايير عناوين URL</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">عنوان URL للوجهة</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">الإدخال يدويًا</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">لم يتم العثور على الموقع.\nترجى المحاولة مجددًا.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">فشل البحث.\nيرجى المحاولة مجددًا</string>
     <string name="blaze_campaign_creation_location_search_message">بدء كتابة البلد أو الولاية أو المدينة للاطلاع على الخيارات المتوافرة</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">يعني النقر على \"إرسال الحملة\" أنك توافق على &lt;a href=\'termsOfService\'&gt;&lt;u&gt;شروط الخدمة&lt;/u&gt;&lt;/a&gt; و&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;سياسة الإعلانات&lt;/u&gt;&lt;/a&gt;، والسماح بطريقة الدفع الخاصة بك ليتم تحصيلها من الميزانية والمدة التي اخترتها. &lt;a href=\'learnMore\'&gt;&lt;u&gt;تعرّف على المزيد&lt;/u&gt;&lt;/a&gt; حول كيفية عمل الميزانيات والمدفوعات الخاصة بالتدوينات التي تم الترويج لها.</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">إرسال حملتك</string>
@@ -544,7 +615,6 @@ Language: ar
     <string name="coupon_selector_empty_list_message">لم تنشئ أي قسائم حتى الآن. أنشئ قسيمة لتطبيقها على هذا الطلب.</string>
     <string name="coupon_selector_empty_list_button">الانتقال إلى القسائم</string>
     <string name="order_creation_select_coupon">تحديد قسيمة</string>
-    <string name="signup_get_started_button">إنشاء متجر جديد</string>
     <string name="coupon_create_coupon_creation_failed">فشل إنشاء القسيمة</string>
     <string name="coupon_create_coupon_created">تم إنشاء القسيمة</string>
     <string name="coupon_create_save_button">إنشاء</string>
@@ -1200,13 +1270,11 @@ Language: ar
     <string name="analytics_revenue_no_data">لا توجد إيرادات في هذه الفترة</string>
     <string name="analytics_revenue_card_title">الإيرادات</string>
     <string name="analytics_date_range_custom">من ⁦%1$s⁩ إلى ⁦%2$s⁩</string>
-    <string name="analytics_see_more">مشاهدة المزيد</string>
     <string name="signup_api_generic_error">عذرًا، تعذر علينا إنشاء حساب حسب بيانات الاعتماد المقدّمة. ترجى المحاولة ببريد إلكتروني مختلف.</string>
     <string name="signup_password_not_secure_enough">لا تستوفي كلمة مرورك توجيهات الأمان لدينا. يُرجى محاولة إدخال كلمة مرور أكثر تعقيدًا.</string>
     <string name="signup_password_too_short">كلمة مرورك قصيرة للغاية. يرجى اختيار كلمة مرور تحتوي على 6 أحرف على الأقل.</string>
     <string name="signup_email_invalid_input">الرجاء إدخال عنوان بريد إلكتروني صالح.</string>
     <string name="signup_email_exist_input">يوجد حساب موجود لهذا البريد الإلكتروني بالفعل.</string>
-    <string name="login_create_an_account">إنشاء حساب</string>
     <string name="login_try_another_email">تجربة عنوان آخر</string>
     <string name="date_timeframe_custom_date_range_title">نطاق تاريخ مخصص</string>
     <string name="date_timeframe_custom">مخصص</string>

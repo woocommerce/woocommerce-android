@@ -1,11 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-22 13:54:04+0000
+Translation-Revision-Date: 2024-03-12 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_detail_product_not_selected"> product geselecteerd</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Meer informatie</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Neem contact op met de ondersteuning</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">De bestellingen van je site worden opgehaald</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Je site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Gebruik WordPress.com naamservers</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Internetverbinding</string>
+    <string name="orderlist_connectivity_tool_title">Connectiviteitstest</string>
+    <string name="my_store_custom_range_content_description">Add custom date range stats</string>
+    <string name="blaze_campaign_creation_location_search_no_results_message">Geen locatie gevonden.\nProbeer het opnieuw.</string>
+    <string name="order_detail_attribution_session_page_views">Paginaweergaven sessie</string>
+    <string name="order_detail_attribution_device_type">Apparaattype</string>
+    <string name="order_detail_attribution_campaign">Medium</string>
+    <string name="order_detail_attribution_medium">Medium</string>
+    <string name="order_detail_attribution_source">Bron</string>
+    <string name="order_detail_attribution_source_type">Brontype</string>
+    <string name="order_detail_attribution_unknown_origin">Onbekend</string>
+    <string name="order_detail_attribution_mobile_origin">Mobiele app</string>
+    <string name="order_detail_attribution_admin_origin">Webbeheerder</string>
+    <string name="order_detail_attribution_direct_origin">Direct</string>
+    <string name="order_detail_attribution_utm_origin">Bron: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Doorverwijzing: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">Biologisch: %1$s</string>
+    <string name="order_detail_attribution_origin">Oorsprong</string>
+    <string name="order_detail_attribution_header">Bestellingseigenschap</string>
+    <string name="orderdetail_message_customer_using_telegram">Contact opnemen via Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Contact opnemen via WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID: %d</string>
+    <string name="orderfilters_customer_filter">Klant</string>
+    <string name="orderfilters_product_filter">Product</string>
+    <string name="customer_picker_guest">Gast</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">Deze gebruiker is een gast en gasten kunnen niet gebruikt worden om bestellingen te filteren.</string>
+    <string name="orderlist_timeout_error_message">Probeer het later opnieuw of neem contact met ons op zodat wij je kunnen helpen.</string>
+    <string name="orderlist_timeout_error_title">Het duurt lang voordat je site reageert</string>
+    <string name="show_details">Details tonen</string>
+    <string name="order_creation_payment_shipping_tax_label">Belasting op verzending</string>
+    <string name="customize_analytics">Analyses aanpassen</string>
     <string name="blaze_campaign_creation_error">Er klopt iets niet helemaal.\nWe konden je campagne niet aanmaken.</string>
     <string name="blaze_campaign_creation_error_media_fetch">Ophalen van gegevens campagneafbeelding mislukt</string>
     <string name="blaze_campaign_creation_error_media_upload">Uploaden van campagneafbeelding mislukt.</string>
@@ -38,14 +75,13 @@ Language: nl
     <string name="blaze_campaign_preview_missing_image_dialog_text">Voeg een afbeelding toe voor de Blaze-campagne</string>
     <string name="drag_handle">Hendel slepen</string>
     <string name="analytic_cards">Analysekaarten</string>
-    <string name="manage_analytics">Analyses beheren</string>
     <string name="see_report">Rapport inzien</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">De startpagina van de site</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">De product-URL</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL-parameters</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">URL van bestemming</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Enter manually</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Geen locatie gevonden.\nProbeer het opnieuw.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Zoekopdracht mislukt.\nProbeer het nog eens</string>
     <string name="blaze_campaign_creation_location_search_message">Begin met het typen van land, provincie of plaats om de beschikbare opties te bekijken</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">Door op \'Campagne indienen\' te klikken ga je akkoord met de &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Servicevoorwaarden&lt;/u&gt;&lt;/a&gt; en het &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Reclamebeleid&lt;/u&gt;&lt;/a&gt;, en geef er goedkeuring voor dat er via je betaalmethode kosten in rekening worden gebracht voor het bedrag en de periode die je kiest. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Kom meer te weten&lt;/u&gt;&lt;/a&gt; over hoe budgetten en betalingen voor Gepromote berichten werken.</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Campagne indienen</string>
@@ -544,7 +580,6 @@ Language: nl
     <string name="coupon_selector_empty_list_message">Je hebt nog geen kortingsbonnen aangemaakt. Maak een kortingsbon aan en pas die toe op deze bestelling.</string>
     <string name="coupon_selector_empty_list_button">Naar kortingsbonnen</string>
     <string name="order_creation_select_coupon">Selecteer een kortingsbon</string>
-    <string name="signup_get_started_button">Een nieuwe winkel aanmaken</string>
     <string name="coupon_create_coupon_creation_failed">Aanmaken van coupon mislukt</string>
     <string name="coupon_create_coupon_created">Coupon aangemaakt</string>
     <string name="coupon_create_save_button">Aanmaken</string>
@@ -1200,13 +1235,11 @@ Language: nl
     <string name="analytics_revenue_no_data">Geen omzet deze periode</string>
     <string name="analytics_revenue_card_title">Inkomsten</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">Meer zien</string>
     <string name="signup_api_generic_error">Sorry, we konden met de opgegeven gegevens geen account aanmaken. Probeer het met een ander e-mailadres.</string>
     <string name="signup_password_not_secure_enough">Je wachtwoord voldoet niet aan onze veiligheidsrichtlijnen. Probeer een complexer wachtwoord.</string>
     <string name="signup_password_too_short">Je wachtwoord is te kort. Kies een wachtwoord met minstens zes tekens.</string>
     <string name="signup_email_invalid_input">Voer een geldig e-mailadres in.</string>
     <string name="signup_email_exist_input">Er bestaat al een account met dit e-mailadres.</string>
-    <string name="login_create_an_account">Een account maken</string>
     <string name="login_try_another_email">Probeer een ander adres</string>
     <string name="date_timeframe_custom_date_range_title">Aangepast datumbereik</string>
     <string name="date_timeframe_custom">Aangepast</string>

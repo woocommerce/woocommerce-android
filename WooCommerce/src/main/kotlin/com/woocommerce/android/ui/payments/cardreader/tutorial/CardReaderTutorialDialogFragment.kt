@@ -21,6 +21,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CardReaderTutorialDialogFragment : PaymentsBaseDialogFragment(R.layout.card_reader_tutorial_dialog) {
     private val args: CardReaderTutorialDialogFragmentArgs by navArgs()
+
     @Inject lateinit var appPrefs: AppPrefs
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

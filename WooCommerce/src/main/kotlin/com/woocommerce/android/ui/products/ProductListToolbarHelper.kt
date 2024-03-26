@@ -9,25 +9,27 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductListBinding
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.util.IsTabletLogicNeeded
+import com.woocommerce.android.util.IsTablet
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class ProductListToolbarHelper @Inject constructor(
     private val activity: Activity,
-    private val isTabletLogicNeeded: IsTabletLogicNeeded,
+    private val isTablet: IsTablet,
 ) : DefaultLifecycleObserver,
     MenuItem.OnActionExpandListener,
     SearchView.OnQueryTextListener,
     Toolbar.OnMenuItemClickListener,
     WCProductSearchTabView.ProductSearchTypeChangedListener {
-    private var fragment: ProductListFragment? = null
+    private var listFragment: ProductListFragment? = null
     private var viewModel: ProductListViewModel? = null
     private var binding: FragmentProductListBinding? = null
 
@@ -40,12 +42,24 @@ class ProductListToolbarHelper @Inject constructor(
             owner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (isTabletLogicNeeded()) {
-                        fragment?.findNavController()?.navigateUp()
+                    if (isTablet()) {
+                        val navHostFragment = binding?.detailNavContainer?.getFragment<NavHostFragment?>()
+                        val detailsFragment = navHostFragment?.childFragmentManager?.fragments?.getOrNull(0)
+                        if (detailsFragment is MainActivity.Companion.BackPressListener) {
+                            if (detailsFragment.onRequestAllowBackPress()) {
+                                if (!navHostFragment.findNavController().popBackStack()) {
+                                    listFragment?.findNavController()?.popBackStack()
+                                }
+                            }
+                        } else {
+                            if (navHostFragment?.findNavController()?.popBackStack() == false) {
+                                listFragment?.findNavController()?.popBackStack()
+                            }
+                        }
                     } else if (searchMenuItem?.isActionViewExpanded == true) {
                         searchMenuItem?.collapseActionView()
                     } else {
-                        fragment?.findNavController()?.navigateUp()
+                        listFragment?.findNavController()?.navigateUp()
                     }
                 }
             }
@@ -57,7 +71,7 @@ class ProductListToolbarHelper @Inject constructor(
         productListViewModel: ProductListViewModel,
         binding: FragmentProductListBinding
     ) {
-        this.fragment = fragment
+        this.listFragment = fragment
         this.viewModel = productListViewModel
         this.binding = binding
 
@@ -72,13 +86,13 @@ class ProductListToolbarHelper @Inject constructor(
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
-        fragment = null
+        disableSearchListeners()
+        listFragment = null
         searchMenuItem = null
         scanBarcodeMenuItem = null
         searchView = null
         viewModel = null
         binding = null
-        disableSearchListeners()
     }
 
     override fun onMenuItemClick(item: MenuItem): Boolean =
@@ -92,7 +106,7 @@ class ProductListToolbarHelper @Inject constructor(
             R.id.menu_scan_barcode -> {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_PRODUCT_BARCODE_SCANNING_TAPPED)
                 ProductListFragmentDirections.actionProductListFragmentToScanToUpdateInventory().let {
-                    fragment?.findNavController()?.navigate(it)
+                    listFragment?.findNavController()?.navigate(it)
                 }
                 searchMenuItem?.collapseActionView()
                 true
@@ -135,7 +149,6 @@ class ProductListToolbarHelper @Inject constructor(
         toolbar.navigationIcon = null
 
         searchMenuItem = toolbar.menu.findItem(R.id.menu_search)
-        searchMenuItem?.setOnActionExpandListener(this)
 
         searchView = searchMenuItem?.actionView as SearchView
         searchView?.queryHint = activity.getString(R.string.product_search_hint)
@@ -143,7 +156,11 @@ class ProductListToolbarHelper @Inject constructor(
 
         scanBarcodeMenuItem = toolbar.menu.findItem(R.id.menu_scan_barcode)
 
-        refreshOptionsMenu()
+        // We want to refresh the options menu after the toolbar has been inflated
+        // Otherwise, logic in it will be executed before the toolbar is in restored state after configuration change
+        toolbar.post {
+            refreshOptionsMenu()
+        }
     }
 
     private fun refreshOptionsMenu() {
@@ -152,8 +169,10 @@ class ProductListToolbarHelper @Inject constructor(
             if (menuItem.isVisible != showSearch) menuItem.isVisible = showSearch
 
             val isSearchActive = viewModel?.viewStateLiveData?.liveData?.value?.isSearchActive == true
-            if (menuItem.isActionViewExpanded != isSearchActive) {
-                if (isSearchActive) {
+            if (isSearchActive) {
+                if (menuItem.isActionViewExpanded) {
+                    enableSearchListeners()
+                } else {
                     disableSearchListeners()
                     menuItem.expandActionView()
                     val queryHint = getSearchQueryHint()

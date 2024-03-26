@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -41,7 +43,10 @@ import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.captureValues
+import com.woocommerce.android.util.getOrAwaitValue
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -68,6 +73,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -87,6 +93,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         private const val ORDER_SITE_ID = 1
     }
 
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefs = mock {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
@@ -165,28 +172,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     )
 
     private fun createViewModel() {
-        viewModel = spy(
-            OrderDetailViewModel(
-                savedState,
-                appPrefsWrapper,
-                networkStatus,
-                resources,
-                orderDetailRepository,
-                addonsRepository,
-                selectedSite,
-                productImageMap,
-                paymentCollectibilityChecker,
-                paymentsFlowTracker,
-                orderDetailTracker,
-                shippingLabelOnboardingRepository,
-                orderDetailsTransactionLauncher,
-                getOrderSubscriptions,
-                giftCardRepository,
-                orderProductMapper,
-                productDetailRepository,
-                paymentReceiptHelper,
-            )
-        )
+        createViewModel(newSavedState = savedState)
     }
 
     private fun createViewModel(newSavedState: SavedStateHandle) {
@@ -209,7 +195,8 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 giftCardRepository,
                 orderProductMapper,
                 productDetailRepository,
-                paymentReceiptHelper
+                paymentReceiptHelper,
+                analyticsTracker
             )
         )
     }
@@ -879,7 +866,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         verify(orderDetailRepository, times(2)).updateOrderStatus(eq(order.id), statusChangeCaptor.capture())
 
         assertThat(listOf(initialStatus) + statusChangeCaptor.allValues).containsExactly(
-            initialStatus, newStatus, initialStatus
+            initialStatus,
+            newStatus,
+            initialStatus
         )
     }
 
@@ -2146,5 +2135,49 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
 
         assertThat(viewModel.orderNavigationIsEnabled()).isFalse
+    }
+
+    @Test
+    fun `when order attribution is loaded, then update state`() = testBlocking {
+        val attribution = OrderAttributionInfo(
+            sourceType = "referral",
+            source = "Woo.com"
+        )
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(addonsRepository.containsAddonsFrom(any())).thenReturn(false)
+        whenever(orderDetailRepository.getOrderAttributionInfo(ORDER_ID)).thenReturn(attribution)
+
+        createViewModel()
+        viewModel.start()
+
+        val attributionState = viewModel.orderAttributionInfo.getOrAwaitValue()
+
+        assertThat(attributionState).isEqualTo(attribution)
+    }
+
+    @Test
+    fun `when trash button is clicked, then show an alert`() = testBlocking {
+        createViewModel()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onTrashOrderClicked()
+        }.last()
+
+        assertThat(event).isInstanceOf(MultiLiveEvent.Event.ShowDialog::class.java)
+    }
+
+    @Test
+    fun `when trash is confirmed, then communicate event to the parent fragment`() = testBlocking {
+        createViewModel()
+
+        val dialogEvent = viewModel.event.runAndCaptureValues {
+            viewModel.onTrashOrderClicked()
+        }.last() as MultiLiveEvent.Event.ShowDialog
+        val event = viewModel.event.runAndCaptureValues {
+            dialogEvent.positiveBtnAction?.onClick(mock(), 0)
+        }.last()
+
+        assertThat(event).isEqualTo(OrderDetailViewModel.TrashOrder(ORDER_ID))
+        verify(analyticsTracker).track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
     }
 }

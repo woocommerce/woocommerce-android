@@ -18,6 +18,7 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.support.zendesk.ZendeskSettings
@@ -85,27 +86,45 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     @Inject lateinit var crashLogging: CrashLogging
+
     @Inject lateinit var fluxCCrashLogger: FluxCCrashLogger
+
     @Inject lateinit var androidInjector: DispatchingAndroidInjector<Any>
 
     @Inject lateinit var dispatcher: Dispatcher
+
     @Inject lateinit var accountStore: AccountStore
+
     @Inject lateinit var accountRepository: Lazy<AccountRepository>
+
     @Inject lateinit var siteStore: SiteStore // Required to ensure the SiteStore is initialized
+
     @Inject lateinit var wooCommerceStore: WooCommerceStore // Required to ensure the WooCommerceStore is initialized
 
     @Inject lateinit var selectedSite: SelectedSite
+
     @Inject lateinit var networkStatus: NetworkStatus
+
     @Inject lateinit var zendeskSettings: ZendeskSettings
+
     @Inject lateinit var userEligibilityFetcher: UserEligibilityFetcher
+
     @Inject lateinit var uploadEncryptedLogs: UploadEncryptedLogs
+
     @Inject lateinit var observeEncryptedLogsUploadResults: ObserveEncryptedLogsUploadResult
+
     @Inject lateinit var sendTelemetry: SendTelemetry
+
     @Inject lateinit var siteObserver: SiteObserver
+
     @Inject lateinit var wooLog: WooLogWrapper
+
     @Inject lateinit var registerDevice: RegisterDevice
+
     @Inject lateinit var applicationPasswordsNotifier: ApplicationPasswordsNotifier
+
     @Inject lateinit var featureFlagRepository: WPComRemoteFeatureFlagRepository
+
     @Inject lateinit var analyticsTracker: AnalyticsTrackerWrapper
 
     @Inject lateinit var explat: ExPlat
@@ -115,11 +134,16 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var prefs: AppPrefs
 
-    @Inject @AppCoroutineScope lateinit var appCoroutineScope: CoroutineScope
+    @Inject @AppCoroutineScope
+    lateinit var appCoroutineScope: CoroutineScope
 
     @Inject lateinit var cardReaderOnboardingChecker: CardReaderOnboardingChecker
+
     @Inject lateinit var jitmStoreInMemoryCache: JitmStoreInMemoryCache
+
     @Inject lateinit var trackStoreSnapshot: TrackStoreSnapshot
+
+    @Inject lateinit var notificationChannelsHandler: NotificationChannelsHandler
 
     private var connectionReceiverRegistered = false
 
@@ -170,6 +194,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         AppRatingDialog.init(application)
 
         initAnalytics()
+
+        notificationChannelsHandler.init()
 
         // Developers can uncomment the line below to clear the db tables at startup
         // wellSqlConfig.resetDatabase()

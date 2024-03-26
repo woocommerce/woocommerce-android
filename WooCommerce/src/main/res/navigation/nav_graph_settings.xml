@@ -54,13 +54,13 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_themePickerFragment"
             app:destination="@id/nav_graph_themes" >
-            <argument
-                android:name="isFromStoreCreation"
-                app:argType="boolean" />
         </action>
         <action
             android:id="@+id/action_mainSettingsFragment_to_notificationSettingsFragment"
             app:destination="@id/notificationSettingsFragment" />
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_pluginsFragment"
+            app:destination="@id/pluginsFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -184,7 +184,7 @@
         android:label="CloseAccountDialogFragment" />
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
+        android:name="com.woocommerce.android.ui.onboarding.NameYourStoreDialogFragment"
         android:label="NameYourStoreDialogFragment">
         <argument
             android:name="fromOnboarding"
@@ -195,4 +195,8 @@
         android:id="@+id/notificationSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.notifications.NotificationSettingsFragment"
         android:label="NotificationSettingsFragment" />
+    <fragment
+        android:id="@+id/pluginsFragment"
+        android:name="com.woocommerce.android.ui.prefs.plugins.PluginsFragment"
+        android:label="PluginsFragment" />
 </navigation>

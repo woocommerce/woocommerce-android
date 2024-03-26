@@ -1,0 +1,2 @@
+17.7:
+Buenas noticias para los usuarios de WooCommerce. Hemos solucionado un error y los cambios ya no afectan a las búsquedas de productos, y la visualización en las tabletas se ha optimizado con una pantalla dividida. Personaliza fácilmente tus análisis en Analytics Hub. Los pedidos realizados en la aplicación cuentan ahora con etiquetas claras para mejorar el seguimiento. Disfruta de un ciclo de venta y compra más personalizado y aún más logrado. Actualiza ya tu aplicación.

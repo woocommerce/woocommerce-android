@@ -123,6 +123,7 @@ class OrderCreateEditTotalsHelperTest {
         val onGiftClicked = mock<() -> Unit>()
         val onTaxesLearnMore = mock<() -> Unit>()
         val onMainButtonClicked = mock<() -> Unit>()
+        val onRecalculateButtonClicked = mock<() -> Unit>()
         val onExpandCollapseClicked = mock<() -> Unit>()
         val onHeightChanged = mock<(Int) -> Unit>()
 
@@ -140,6 +141,7 @@ class OrderCreateEditTotalsHelperTest {
             onGiftClicked,
             onTaxesLearnMore,
             onMainButtonClicked,
+            onRecalculateButtonClicked,
             onExpandCollapseClicked,
             onHeightChanged,
         )
@@ -217,6 +219,7 @@ class OrderCreateEditTotalsHelperTest {
             {},
             {},
             {},
+            {},
         )
 
         // THEN
@@ -243,6 +246,7 @@ class OrderCreateEditTotalsHelperTest {
             localOrder,
             OrderCreateEditViewModel.Mode.Creation,
             OrderCreateEditViewModel.ViewState(),
+            {},
             {},
             {},
             {},
@@ -278,6 +282,7 @@ class OrderCreateEditTotalsHelperTest {
             localOrder,
             OrderCreateEditViewModel.Mode.Creation,
             OrderCreateEditViewModel.ViewState(),
+            {},
             {},
             {},
             {},

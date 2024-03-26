@@ -181,8 +181,11 @@ private fun WCOutlinedTextFieldLayout(
             Text(
                 text = helperText,
                 style = MaterialTheme.typography.caption,
-                color = if (!isError) colorResource(id = R.color.color_on_surface_medium)
-                else MaterialTheme.colors.error,
+                color = if (!isError) {
+                    colorResource(id = R.color.color_on_surface_medium)
+                } else {
+                    MaterialTheme.colors.error
+                },
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
             )
         }
@@ -291,8 +294,11 @@ fun WCPasswordField(
                 painterResource(id = org.wordpress.android.login.R.drawable.ic_password_visibility_off)
             }
 
-            val description = if (isPasswordVisible) stringResource(id = R.string.hide_password_content_description)
-            else stringResource(id = R.string.show_password_content_description)
+            val description = if (isPasswordVisible) {
+                stringResource(id = R.string.hide_password_content_description)
+            } else {
+                stringResource(id = R.string.show_password_content_description)
+            }
 
             IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                 Icon(painter = image, description)

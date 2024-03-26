@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.details
 
-import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
@@ -34,17 +34,18 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ORDER_ID
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_START_PAYMENT_FLOW
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.databinding.FragmentOrderDetailBinding
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.SHIPPING_LABEL_M4
 import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState
@@ -72,8 +73,10 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
+import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
 import com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView.Mode
 import com.woocommerce.android.ui.orders.fulfill.OrderFulfillViewModel
 import com.woocommerce.android.ui.orders.list.OrderListFragment
@@ -87,14 +90,17 @@ import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
 import dagger.hilt.android.AndroidEntryPoint
+import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderDetailFragment :
     BaseFragment(R.layout.fragment_order_detail),
@@ -107,19 +113,26 @@ class OrderDetailFragment :
 
     private val viewModel: OrderDetailViewModel by viewModels()
     private val orderEditingViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
 
     @Inject
     lateinit var navigator: OrderNavigator
+
     @Inject
     lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     lateinit var productImageMap: ProductImageMap
+
     @Inject
     lateinit var dateUtils: DateUtils
+
     @Inject
     lateinit var cardReaderManager: CardReaderManager
+
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
 
@@ -190,10 +203,11 @@ class OrderDetailFragment :
          * during the payment collection process. If this is the case, it navigates to the
          * Select Payment screen on both phone and tablet devices.
          */
-        if (isOrderListFragmentNotVisible() && isTablet() && !navArgs.startPaymentFlow) {
+        val isScreenLargerThanCompact = requireContext().windowSizeClass != WindowSizeClass.Compact
+        if (isOrderListFragmentNotVisible() && isScreenLargerThanCompact && !navArgs.startPaymentFlow) {
             navigateBackWithResult(KEY_ORDER_ID, navArgs.orderId)
             return
-        } else if (isOrderListFragmentNotVisible() && isTablet() && navArgs.startPaymentFlow) {
+        } else if (isOrderListFragmentNotVisible() && isScreenLargerThanCompact && navArgs.startPaymentFlow) {
             navigateBackWithResult(KEY_START_PAYMENT_FLOW, navArgs.orderId)
             return
         }
@@ -217,9 +231,11 @@ class OrderDetailFragment :
         binding.customFieldsCard.customFieldsButton.setOnClickListener {
             viewModel.onCustomFieldsButtonClicked()
         }
-
         binding.orderDetailsAICard.aiThankYouNoteButton.setOnClickListener {
             viewModel.onAIThankYouNoteButtonClicked()
+        }
+        binding.orderDetailTrash.setOnClickListener {
+            viewModel.onTrashOrderClicked()
         }
 
         ViewCompat.setTransitionName(
@@ -231,14 +247,10 @@ class OrderDetailFragment :
     private fun isOrderListFragmentNotVisible() = parentFragment?.parentFragment !is OrderListFragment
 
     private fun setMarginsIfTablet() {
-        val isSmallTablet = !resources.getBoolean(R.bool.is_at_least_720sw)
-        val isPortrait = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-        if (isTablet()) {
-            val windowWidth = DisplayUtils.getWindowPixelWidth(requireContext())
-            val layoutParams = binding.orderDetailContainer.layoutParams as FrameLayout.LayoutParams
-
-            if (isSmallTablet && isPortrait) {
+        val windowWidth = DisplayUtils.getWindowPixelWidth(requireContext())
+        val layoutParams = binding.orderDetailContainer.layoutParams as FrameLayout.LayoutParams
+        when (requireContext().windowSizeClass) {
+            WindowSizeClass.Medium -> {
                 val marginHorizontal = (windowWidth * MARGINS_FOR_SMALL_TABLET_PORTRAIT).toInt()
                 layoutParams.setMargins(
                     marginHorizontal,
@@ -246,7 +258,9 @@ class OrderDetailFragment :
                     marginHorizontal,
                     layoutParams.bottomMargin
                 )
-            } else {
+            }
+
+            WindowSizeClass.ExpandedAndBigger -> {
                 val marginHorizontal = (windowWidth * MARGINS_FOR_TABLET).toInt()
                 layoutParams.setMargins(
                     marginHorizontal,
@@ -256,8 +270,9 @@ class OrderDetailFragment :
                 )
             }
 
-            binding.orderDetailContainer.layoutParams = layoutParams
+            WindowSizeClass.Compact -> return
         }
+        binding.orderDetailContainer.layoutParams = layoutParams
     }
 
     private fun setupToolbar() {
@@ -272,7 +287,7 @@ class OrderDetailFragment :
 
     private fun setupToolbarMenu(menu: Menu) {
         onPrepareMenu(menu)
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             binding.toolbar.navigationIcon = null
         } else {
             binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
@@ -351,7 +366,7 @@ class OrderDetailFragment :
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
                 showOrderDetail(it.order!!, it.isPaymentCollectableWithCardReader, it.receiptButtonStatus)
-                if (isTablet()) {
+                if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
                     orderEditingViewModel.setOrderId(it.order.id)
                 }
                 onPrepareMenu(binding.toolbar.menu)
@@ -418,6 +433,8 @@ class OrderDetailFragment :
             showGiftCards(it, viewModel.order.currency)
         }
 
+        setupOrderAttributionInfoCard(viewModel.orderAttributionInfo)
+
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> {
@@ -432,6 +449,14 @@ class OrderDetailFragment :
                 }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 is InstallWCShippingViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
+                is OrderDetailViewModel.TrashOrder -> {
+                    if (findNavController().previousBackStackEntry != null) {
+                        findNavController().popBackStack()
+                    }
+
+                    communicationViewModel.trashOrder(event.orderId)
+                }
+                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
                 else -> event.isHandled = false
             }
         }
@@ -474,6 +499,20 @@ class OrderDetailFragment :
             giftCardSummaries = giftCardSummaries,
             formatCurrencyForDisplay = currencyFormatter.buildBigDecimalFormatter(currencyCode)
         )
+    }
+
+    private fun setupOrderAttributionInfoCard(orderAttributionInfo: LiveData<OrderAttributionInfo>) {
+        binding.orderDetailOrderAttributionInfo.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                orderAttributionInfo.observeAsState().value?.let {
+                    WooThemeWithBackground {
+                        OrderDetailAttributionInfoView(attributionInfo = it)
+                    }
+                }
+            }
+        }
     }
 
     private fun navigateToInstallWcShippingFlow() {
@@ -558,7 +597,7 @@ class OrderDetailFragment :
                 viewModel.onSeeReceiptClicked()
             },
             onCollectPaymentClickListener = {
-                viewModel.onCollectPaymentClicked(isTablet())
+                viewModel.onCollectPaymentClicked(requireContext().windowSizeClass != WindowSizeClass.Compact)
             },
             onPrintingInstructionsClickListener = {
                 viewModel.onPrintingInstructionsClicked()
@@ -734,7 +773,9 @@ class OrderDetailFragment :
                 onGiveFeedbackClick = { onGiveFeedbackClicked() },
                 onDismissClick = { onDismissProductWIPNoticeCardClicked() }
             )
-        } else binding.orderDetailShippingLabelsWipCard.isVisible = false
+        } else {
+            binding.orderDetailShippingLabelsWipCard.isVisible = false
+        }
     }
 
     private fun onGiveFeedbackClicked() {

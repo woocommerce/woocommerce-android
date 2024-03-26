@@ -305,8 +305,11 @@ class EditShippingLabelPackagesViewModel @Inject constructor(
                 ?.items
                 ?.find { it.uniqueId == item.productId }
                 ?.let {
-                    if (it.isVariation) variationDetailRepository.getVariation(it.productId, it.variationId)
-                    else productDetailRepository.getProduct(it.productId)
+                    if (it.isVariation) {
+                        variationDetailRepository.getVariation(it.productId, it.variationId)
+                    } else {
+                        productDetailRepository.getProduct(it.productId)
+                    }
                 }
 
             val individualPackage = item.createIndividualShippingPackage(product)

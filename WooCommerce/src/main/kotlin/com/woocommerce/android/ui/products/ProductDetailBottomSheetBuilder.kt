@@ -118,7 +118,9 @@ class ProductDetailBottomSheetBuilder(
                                     }
                                 }
                             )
-                        } else null
+                        } else {
+                            null
+                        }
                     )
                 ),
                 AnalyticsEvent.PRODUCT_DETAIL_VIEW_SHIPPING_SETTINGS_TAPPED

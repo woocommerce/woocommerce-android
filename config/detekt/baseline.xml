@@ -1,40 +1,64 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" ?>
 <SmellBaseline>
-  <ManuallySuppressedIssues/>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
+    <ID>ArgumentListWrapping:CardReaderOnboardingChecker.kt$CardReaderOnboardingChecker$("Developer error:`preferredPlugin` should be WCPay")</ID>
+    <ID>ArgumentListWrapping:PaymentsHubDepositSummaryStateMapper.kt$PaymentsHubDepositSummaryStateMapper$(it)</ID>
+    <ID>ClassNaming:ProductDetailViewModel_AddFlowTest.kt$ProductDetailViewModel_AddFlowTest : BaseUnitTest</ID>
+    <ID>CommentWrapping:IssueRefundViewModel.kt$IssueRefundViewModel$/* Fees lines that haven't been refunded */</ID>
+    <ID>CommentWrapping:IssueRefundViewModel.kt$IssueRefundViewModel$/* Shipping lines that haven't been refunded */</ID>
+    <ID>CommentWrapping:RefundFeeListAdapter.kt$RefundFeeListAdapter.FeeRefundListItem$/* Hardcoded because a fee line always has a quantity of 1 */</ID>
+    <ID>CommentWrapping:RefundShippingListAdapter.kt$RefundShippingListAdapter.ShippingRefundListItem$/* Hardcoded because a shipping line always has a quantity of 1 */</ID>
+    <ID>CommentWrapping:ShippingLabelCreateCustomPackageViewModel.kt$ShippingLabelCreateCustomPackageViewModel$/* Safe to set as empty, as it's not used for package creation */</ID>
+    <ID>CommentWrapping:ShippingPackage.kt$ShippingPackage$/* Can be empty, only needed by predefined packages */</ID>
     <ID>ComplexCondition:ProductImageViewerFragment.kt$ProductImageViewerFragment$(show &amp;&amp; binding.fakeToolbar.visibility == View.VISIBLE) || (!show &amp;&amp; binding.fakeToolbar.visibility != View.VISIBLE)</ID>
     <ID>ComplexCondition:ReviewListAdapter.kt$ReviewListAdapter$it.remoteId == review.remoteId &amp;&amp; it.review == review.review &amp;&amp; it.read == (review.read != false) &amp;&amp; it.status == review.status</ID>
-    <ID>ComplexMethod:AddOrderShipmentTrackingFragment.kt$AddOrderShipmentTrackingFragment$private fun setupObservers(binding: FragmentAddShipmentTrackingBinding)</ID>
-    <ID>ComplexMethod:CreateShippingLabelFragment.kt$CreateShippingLabelFragment$private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding)</ID>
-    <ID>ComplexMethod:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$private fun initializeStateMachine()</ID>
-    <ID>ComplexMethod:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$private fun updateViewState(stateMachineData: StateMachineData)</ID>
-    <ID>ComplexMethod:MainActivity.kt$MainActivity$ override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?)</ID>
-    <ID>ComplexMethod:OrderDetailShippingLabelsAdapter.kt$OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder$fun bind(shippingLabel: ShippingLabel)</ID>
-    <ID>ComplexMethod:OrderNavigator.kt$OrderNavigator$fun navigate(fragment: Fragment, target: OrderNavigationTarget)</ID>
-    <ID>ComplexMethod:Product.kt$Product$fun isSameProduct(product: Product): Boolean</ID>
-    <ID>ComplexMethod:Product.kt$fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductModel</ID>
-    <ID>ComplexMethod:ProductImagesFragment.kt$ProductImagesFragment$private fun setupObservers(viewModel: ProductImagesViewModel)</ID>
-    <ID>ComplexMethod:ProductNavigator.kt$ProductNavigator$fun navigate(fragment: Fragment, target: ProductNavigationTarget)</ID>
-    <ID>ComplexMethod:ProductPricingFragment.kt$ProductPricingFragment$private fun setupViews(currency: String, isCurrencyPrefix: Boolean, pricingData: PricingData)</ID>
-    <ID>ComplexMethod:ProductVariation.kt$ProductVariation$fun toDataModel(cachedVariation: WCProductVariationModel? = null): WCProductVariationModel</ID>
-    <ID>ComplexMethod:ProductVariation.kt$ProductVariation$override fun equals(other: Any?): Boolean</ID>
-    <ID>ComplexMethod:ReviewListAdapter.kt$ReviewListAdapter$fun setReviews(reviews: List&lt;ProductReview>)</ID>
-    <ID>ComplexMethod:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
-    <ID>ComplexMethod:ShippingCustomsViewModel.kt$ShippingCustomsViewModel$private fun CustomsPackage.validate(): PackageValidationState</ID>
-    <ID>ComplexMethod:WCEmptyView.kt$WCEmptyView$fun show( type: EmptyViewType, searchQueryOrFilter: String? = null, onButtonClick: (() -> Unit)? = null )</ID>
+    <ID>CyclomaticComplexMethod:AddOrderShipmentTrackingFragment.kt$AddOrderShipmentTrackingFragment$private fun setupObservers(binding: FragmentAddShipmentTrackingBinding)</ID>
+    <ID>CyclomaticComplexMethod:CreateShippingLabelFragment.kt$CreateShippingLabelFragment$private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding)</ID>
+    <ID>CyclomaticComplexMethod:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$private fun initializeStateMachine()</ID>
+    <ID>CyclomaticComplexMethod:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$private fun updateViewState(stateMachineData: StateMachineData)</ID>
+    <ID>CyclomaticComplexMethod:OrderDetailShippingLabelsAdapter.kt$OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder$fun bind(shippingLabel: ShippingLabel)</ID>
+    <ID>CyclomaticComplexMethod:OrderNavigator.kt$OrderNavigator$fun navigate(fragment: Fragment, target: OrderNavigationTarget)</ID>
+    <ID>CyclomaticComplexMethod:Product.kt$Product$fun isSameProduct(product: Product): Boolean</ID>
+    <ID>CyclomaticComplexMethod:Product.kt$fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductModel</ID>
+    <ID>CyclomaticComplexMethod:ProductImagesFragment.kt$ProductImagesFragment$private fun setupObservers(viewModel: ProductImagesViewModel)</ID>
+    <ID>CyclomaticComplexMethod:ProductNavigator.kt$ProductNavigator$fun navigate(fragment: Fragment, target: ProductNavigationTarget)</ID>
+    <ID>CyclomaticComplexMethod:ProductPricingFragment.kt$ProductPricingFragment$private fun setupViews(currency: String, isCurrencyPrefix: Boolean, pricingData: PricingData)</ID>
+    <ID>CyclomaticComplexMethod:ProductVariation.kt$ProductVariation$fun toDataModel(cachedVariation: WCProductVariationModel? = null): WCProductVariationModel</ID>
+    <ID>CyclomaticComplexMethod:ProductVariation.kt$ProductVariation$override fun equals(other: Any?): Boolean</ID>
+    <ID>CyclomaticComplexMethod:ReviewListAdapter.kt$ReviewListAdapter$fun setReviews(reviews: List&lt;ProductReview&gt;)</ID>
+    <ID>CyclomaticComplexMethod:ShippingCustomsViewModel.kt$ShippingCustomsViewModel$private fun CustomsPackage.validate(): PackageValidationState</ID>
+    <ID>CyclomaticComplexMethod:WCEmptyView.kt$WCEmptyView$fun show( type: EmptyViewType, searchQueryOrFilter: String? = null, onButtonClick: (() -&gt; Unit)? = null )</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:DomainDashboardScreen.kt$val (title, description, claimLink, image) = createRefs()</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:ExpandableGroupedProductCard.kt$val (img, name, stock, sku, quantity, discount, price, chevron, expandedPart) = createRefs()</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:ExpandableProductCard.kt$val ( topDivider, bottomDivider, orderCount, price, discountButton, discountAmount, priceAfterDiscountLabel, priceAfterDiscountValue, removeButton, configurationButton, configurationDivider ) = createRefs()</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:ExpandableProductCard.kt$val (img, name, stock, sku, quantity, discount, price, chevron, expandedPart) = createRefs()</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:OrderCreateEditProductDiscountScreen.kt$val (asyncImage, productNameText, productDetailsText, totalText) = createRefs()</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:PlansScreen.kt$val (icon, image, title, price, period, features) = createRefs()</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:StoreInstallationScreen.kt$val (image, title, progress, description) = createRefs()</ID>
+    <ID>DestructuringDeclarationWithTooManyEntries:TaxRateSelectorScreen.kt$val (label, subtitle, autoRateSwitch, divider) = createRefs()</ID>
     <ID>EmptyDefaultConstructor:DisabledAppBarLayoutBehavior.kt$DisabledAppBarLayoutBehavior$()</ID>
-    <ID>EmptyFunctionBlock:AddAttributeTermsFragment.kt$AddAttributeTermsFragment.&lt;no name provided>${}</ID>
+    <ID>EmptyFunctionBlock:AddAttributeTermsFragment.kt$AddAttributeTermsFragment.&lt;no name provided&gt;${}</ID>
     <ID>EmptyFunctionBlock:ApplicationLifecycleMonitor.kt$ApplicationLifecycleMonitor${}</ID>
-    <ID>EmptyFunctionBlock:CardReaderManagerImpl.kt$CardReaderManagerImpl.&lt;no name provided>${}</ID>
-    <ID>EmptyFunctionBlock:DiscoverReadersAction.kt$&lt;no name provided>${}</ID>
-    <ID>EmptyFunctionBlock:MyStoreFragment.kt$MyStoreFragment.&lt;no name provided>${}</ID>
-    <ID>EmptyFunctionBlock:ProductReviewsFragment.kt$ProductReviewsFragment.&lt;no name provided>${ }</ID>
+    <ID>EmptyFunctionBlock:DiscoverReadersAction.kt$&lt;no name provided&gt;${}</ID>
+    <ID>EmptyFunctionBlock:MyStoreFragment.kt$MyStoreFragment.&lt;no name provided&gt;${}</ID>
     <ID>EmptyFunctionBlock:SequenceExt.kt$OtherwiseIgnore${ }</ID>
-    <ID>EnumNaming:WooLog.kt$WooLog.LogLevel.d$d</ID>
-    <ID>EnumNaming:WooLog.kt$WooLog.LogLevel.e$e</ID>
-    <ID>EnumNaming:WooLog.kt$WooLog.LogLevel.i$i</ID>
-    <ID>EnumNaming:WooLog.kt$WooLog.LogLevel.v$v</ID>
-    <ID>EnumNaming:WooLog.kt$WooLog.LogLevel.w$w</ID>
+    <ID>EnumEntryNameCase:WooLog.kt$WooLog.LogLevel$d</ID>
+    <ID>EnumEntryNameCase:WooLog.kt$WooLog.LogLevel$e</ID>
+    <ID>EnumEntryNameCase:WooLog.kt$WooLog.LogLevel$i</ID>
+    <ID>EnumEntryNameCase:WooLog.kt$WooLog.LogLevel$v</ID>
+    <ID>EnumEntryNameCase:WooLog.kt$WooLog.LogLevel$w</ID>
+    <ID>EnumNaming:WooLog.kt$WooLog.LogLevel$d</ID>
+    <ID>EnumNaming:WooLog.kt$WooLog.LogLevel$e</ID>
+    <ID>EnumNaming:WooLog.kt$WooLog.LogLevel$i</ID>
+    <ID>EnumNaming:WooLog.kt$WooLog.LogLevel$v</ID>
+    <ID>EnumNaming:WooLog.kt$WooLog.LogLevel$w</ID>
+    <ID>ExplicitItLambdaParameter:WCSSRModelExt.kt${ it -&gt; it.keys().forEach { key -&gt; val tableData = it.optJSONObject(key) tableData?.let { data -&gt; sb.append("$key: " + parseFormatSingleTableData(data)) } } }</ID>
+    <ID>ExplicitItLambdaParameter:WCSSRModelExt.kt${ it -&gt; sb.append(parseFormatTablesData(it, "woocommerce")) .append(parseFormatTablesData(it, "other")) }</ID>
+    <ID>ExplicitItLambdaParameter:WCSSRModelExt.kt${ it -&gt; try { sb.append(formatEnvironmentData(JSONObject(it))) } catch (e: JSONException) { WooLog.e(WooLog.T.UTILS, e) } }</ID>
+    <ID>ExplicitItLambdaParameter:ZendeskTicketRepository.kt$ZendeskTicketRepository${ it -&gt; // Add wpcom tag if at least one site is WordPress.com site if (it.any { it.isWPCom }) { tags.add(ZendeskTags.wpComTag) } // Add Jetpack tag if at least one site is Jetpack connected. Even if a site is Jetpack connected, // it does not necessarily mean that user is connected with the REST API, but we don't care about that here if (it.any { it.isJetpackConnected }) { tags.add(ZendeskTags.jetpackTag) } // Find distinct plans and add them val plans = it.asSequence().mapNotNull { it.planShortName }.distinct().toList() tags.addAll(plans) }</ID>
+    <ID>Filename:JSONArray+iterator.kt$com.woocommerce.android.e2e.helpers.util.JSONArray+iterator.kt</ID>
+    <ID>ForEachOnRange:AlignedDividerDecoration.kt$AlignedDividerDecoration$(0..adjustedChildCount) .map { parent.getChildAt(it) }</ID>
     <ID>ForbiddenComment:AddressUtils.kt$AddressUtils$// TODO: soon to be deprecated</ID>
     <ID>ForbiddenComment:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
     <ID>ForbiddenComment:GroupedProductListRepository.kt$GroupedProductListRepository$// TODO: add tracking event</ID>
@@ -56,31 +80,30 @@
     <ID>ForbiddenComment:RefundByItemsFragment.kt$RefundByItemsFragment$// TODO: Temporarily disabled, this will be used in a future release - do not remove</ID>
     <ID>ForbiddenComment:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
     <ID>FunctionOnlyReturningConstant:Screen.kt$Screen.Companion$fun isVisible(): Boolean</ID>
-    <ID>ImplicitDefaultLocale:WPComWebViewFragment.kt$WPComWebViewFragment$String.format( "log=%s&amp;redirect_to=%s", URLEncoder.encode(StringUtils.notNullStr(username), utf8), URLEncoder.encode(StringUtils.notNullStr(urlToLoad), utf8) )</ID>
+    <ID>KdocWrapping:AddProductCategoryViewModel.kt$AddProductCategoryViewModel$/** No action needed */</ID>
     <ID>LargeClass:ProductDetailViewModel.kt$ProductDetailViewModel : ScopedViewModel</ID>
     <ID>LongMethod:AddOrderShipmentTrackingFragment.kt$AddOrderShipmentTrackingFragment$private fun setupObservers(binding: FragmentAddShipmentTrackingBinding)</ID>
+    <ID>LongMethod:CardReaderDetailFragment.kt$CardReaderDetailFragment$private fun observeViewState(binding: FragmentCardReaderDetailBinding)</ID>
+    <ID>LongMethod:CardReaderPaymentDialogFragment.kt$CardReaderPaymentDialogFragment$private fun initObservers(binding: CardReaderPaymentDialogBinding)</ID>
     <ID>LongMethod:CreateShippingLabelFragment.kt$CreateShippingLabelFragment$private fun subscribeObservers(binding: FragmentCreateShippingLabelBinding)</ID>
     <ID>LongMethod:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$private fun initializeStateMachine()</ID>
     <ID>LongMethod:EditShippingLabelPaymentFragment.kt$EditShippingLabelPaymentFragment$private fun setupObservers(binding: FragmentEditShippingLabelPaymentBinding)</ID>
     <ID>LongMethod:LoginNoJetpackFragment.kt$LoginNoJetpackFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
-    <ID>LongMethod:MainActivity.kt$MainActivity$ override fun onDestinationChanged(controller: NavController, destination: NavDestination, arguments: Bundle?)</ID>
     <ID>LongMethod:OrderDetailFragment.kt$OrderDetailFragment$private fun setupObservers(viewModel: OrderDetailViewModel)</ID>
     <ID>LongMethod:OrderDetailShippingLabelsAdapter.kt$OrderDetailShippingLabelsAdapter.ShippingLabelsViewHolder$fun bind(shippingLabel: ShippingLabel)</ID>
     <ID>LongMethod:OrderNavigator.kt$OrderNavigator$fun navigate(fragment: Fragment, target: OrderNavigationTarget)</ID>
     <ID>LongMethod:Product.kt$fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductModel</ID>
     <ID>LongMethod:Product.kt$fun WCProductModel.toAppModel(): Product</ID>
+    <ID>LongMethod:ProductDetailCardBuilder.kt$ProductDetailCardBuilder$private fun Product.shipping(): ProductProperty?</ID>
     <ID>LongMethod:ProductInventoryFragment.kt$ProductInventoryFragment$private fun setupObservers(viewModel: ProductInventoryViewModel)</ID>
     <ID>LongMethod:ProductNavigator.kt$ProductNavigator$fun navigate(fragment: Fragment, target: ProductNavigationTarget)</ID>
     <ID>LongMethod:ProductPricingFragment.kt$ProductPricingFragment$private fun setupViews(currency: String, isCurrencyPrefix: Boolean, pricingData: PricingData)</ID>
     <ID>LongMethod:RefundByItemsFragment.kt$RefundByItemsFragment$private fun setupObservers()</ID>
     <ID>LongMethod:ShippingCarrierRatesAdapter.kt$ShippingCarrierRatesAdapter.RateListAdapter.RateViewHolder$private fun bindOptions(rateItem: ShippingRateItem, isExpanded: Boolean)</ID>
-    <ID>LongMethod:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$@Suppress("UNCHECKED_CAST") private fun generateRateModels(packageRates: List&lt;ShippingPackage>): List&lt;PackageRateListItem></ID>
+    <ID>LongMethod:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$@Suppress("UNCHECKED_CAST") private fun generateRateModels(packageRates: List&lt;ShippingPackage&gt;): List&lt;PackageRateListItem&gt;</ID>
     <ID>LongMethod:ShippingLabelsStateMachine.kt$ShippingLabelsStateMachine$private fun createStateMachine(initialState: State = State.Idle)</ID>
-    <ID>LongMethod:WCEmptyView.kt$WCEmptyView$fun show( type: EmptyViewType, searchQueryOrFilter: String? = null, onButtonClick: (() -> Unit)? = null )</ID>
-    <ID>LongParameterList:ShippingLabelRepository.kt$ShippingLabelRepository$( orderId: Long, origin: Address, destination: Address, packages: List&lt;ShippingLabelPackage>, rates: List&lt;ShippingRate>, customsPackages: List&lt;CustomsPackage>? )</ID>
-    <ID>LongParameterList:WooNotificationBuilder.kt$WooNotificationBuilder$( channelId: String, inboxMessage: String, subject: String, summaryText: String, notification: Notification, shouldDisplaySummaryText: Boolean, )</ID>
-    <ID>LongParameterList:WooNotificationBuilder.kt$WooNotificationBuilder$( pushId: Int, defaults: Int, channelId: String, notification: Notification, addCustomNotificationSound: Boolean, isGroupNotification: Boolean )</ID>
-    <ID>LoopWithTooManyJumpStatements:RoundedBarChartRenderer.kt$RoundedBarChartRenderer$for (high in indices) { val set = barData.getDataSetByIndex(high.dataSetIndex) if (set == null || !set.isHighlightEnabled) continue val e = set.getEntryForXValue(high.x, high.y) if (!isInBoundsX(e, set)) continue val trans = mChart.getTransformer(set.axisDependency) mHighlightPaint.color = set.highLightColor mHighlightPaint.alpha = set.highLightAlpha val isStack = high.stackIndex >= 0 &amp;&amp; e.isStacked val y1: Float val y2: Float if (isStack) { if (mChart.isHighlightFullBarEnabled) { y1 = e.positiveSum y2 = -e.negativeSum } else { val range = e.ranges[high.stackIndex] y1 = range.from y2 = range.to } } else { y1 = e.y y2 = 0f } prepareBarHighlight(e.x, y1, y2, barData.barWidth / 2f, trans) setHighlightDrawPos(high, mBarRect) c.drawRoundRect(mBarRect, mRadius, mRadius, mHighlightPaint) }</ID>
+    <ID>LongMethod:WCEmptyView.kt$WCEmptyView$fun show( type: EmptyViewType, searchQueryOrFilter: String? = null, onButtonClick: (() -&gt; Unit)? = null )</ID>
+    <ID>LongParameterList:ShippingLabelRepository.kt$ShippingLabelRepository$( orderId: Long, origin: Address, destination: Address, packages: List&lt;ShippingLabelPackage&gt;, rates: List&lt;ShippingRate&gt;, customsPackages: List&lt;CustomsPackage&gt;? )</ID>
     <ID>MagicNumber:AttributeTermsListAdapter.kt$AttributeTermsListAdapter$300</ID>
     <ID>MagicNumber:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$1000.0</ID>
     <ID>MagicNumber:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$4</ID>
@@ -103,8 +126,6 @@
     <ID>MagicNumber:ProductTagsAdapter.kt$ProductTagsAdapter.ProductTagViewHolder$3</ID>
     <ID>MagicNumber:ReviewDetailFragment.kt$ReviewDetailFragment$256</ID>
     <ID>MagicNumber:ReviewListAdapter.kt$ReviewListAdapter.ItemViewHolder$100F</ID>
-    <ID>MagicNumber:RoundedBarChartRenderer.kt$RoundedBarChartRenderer$3</ID>
-    <ID>MagicNumber:RoundedBarChartRenderer.kt$RoundedBarChartRenderer$4</ID>
     <ID>MagicNumber:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$3</ID>
     <ID>MagicNumber:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$4</ID>
     <ID>MagicNumber:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$5</ID>
@@ -115,7 +136,6 @@
     <ID>MagicNumber:StyleAttrUtils.kt$StyleAttrUtils$26</ID>
     <ID>MagicNumber:TagView.kt$TagView$4</ID>
     <ID>MagicNumber:TimeGroup.kt$TimeGroup.Companion$2</ID>
-    <ID>MagicNumber:UiHelpers.kt$UiHelpers$0.8</ID>
     <ID>MagicNumber:UnreadItemDecoration.kt$UnreadItemDecoration$3</ID>
     <ID>MagicNumber:ViewUtils.kt$0.5f</ID>
     <ID>MagicNumber:WCEmptyView.kt$WCEmptyView$50L</ID>
@@ -125,240 +145,78 @@
     <ID>MagicNumber:WooWellSqlConfig.kt$WooWellSqlConfig$1024L</ID>
     <ID>MagicNumber:WooWellSqlConfig.kt$WooWellSqlConfig$5L</ID>
     <ID>MatchingDeclarationName:NavController.kt$CallThrottler</ID>
-    <ID>MaxLineLength:CreateShippingLabelViewModel.kt$CreateShippingLabelViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
-    <ID>MaxLineLength:MainActivity.kt$MainActivity.&lt;no name provided>$// We need to post this to the view handler to make sure shouldExpandToolbar returns the correct value</ID>
-    <ID>MaxLineLength:MainPresenter.kt$MainPresenter$// Magic link login is now complete - notify the activity to set the selected site and proceed with loading UI</ID>
-    <ID>MaxLineLength:OrderListItemDataSource.kt$OrderListItemDataSource$*</ID>
-    <ID>MaxLineLength:ReviewListRepository.kt$ReviewListRepository$/* * Fetch notifications so we can match them to reviews to get the read state. This * will wait for completion. If this fails we still consider fetching reviews to be successful since it * failing won't block the user. Just log the exception. */</ID>
-    <ID>MaxLineLength:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
-    <ID>MayBeConst:ProductListFragment.kt$ProductListFragment.Companion$val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"</ID>
+    <ID>MaximumLineLength:CardReaderOnboardingChecker.kt$CardReaderOnboardingChecker$ </ID>
+    <ID>MaximumLineLength:MainSettingsModule.kt$MainSettingsModule$ </ID>
+    <ID>MaximumLineLength:PaymentsHubDepositSummaryStateMapper.kt$PaymentsHubDepositSummaryStateMapper$ </ID>
+    <ID>MaximumLineLength:ProductSelectorViewModel.kt$ProductSelectorViewModel$ </ID>
     <ID>MayBeConst:TestBase.kt$TestBase.Companion$val wireMockPort = 8080</ID>
     <ID>MemberNameEqualsClassName:CurrencyFormatter.kt$CurrencyFormatter.Companion$// Formats the value to two decimal places private val currencyFormatter: DecimalFormat by lazy { DecimalFormat("0.00") }</ID>
     <ID>MemberNameEqualsClassName:SkeletonView.kt$SkeletonView$private lateinit var skeletonView: View</ID>
-    <ID>NestedBlockDepth:ProductListViewModel.kt$ProductListViewModel$private suspend fun fetchProductList( searchQuery: String? = null, loadMore: Boolean = false, scrollToTop: Boolean = false )</ID>
     <ID>NestedBlockDepth:ProductSelectionListViewModel.kt$ProductSelectionListViewModel$private suspend fun fetchProductList( searchQuery: String? = null, loadMore: Boolean = false )</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>NestedBlockDepth:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.AppInitializer.kt:26</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.AppPrefsTest.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.cardreader.internal.payments.PaymentErrorMapper.kt:12</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.cardreader.internal.payments.PaymentManager.kt:20</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.extensions.LiveDataExt.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.media.ProductImagesUploadWorker.kt:13</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.media.ProductImagesUploadWorker.kt:14</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.media.ProductImagesUploadWorker.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.FeatureFeedbackSettingsTest.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.Notification.kt:5</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.Product.kt:16</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.Product.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.Product.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.model.Refund.kt:8</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.push.NotificationChannelType.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.push.NotificationMessageHandlerTest.kt:12</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.push.NotificationRegistrationHandlerTest.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.push.UnseenReviewsCountHandler.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.screenshots.orders.OrderCreationScreen.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.screenshots.orders.OrderSelectProductScreen.kt:5</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.screenshots.orders.SingleOrderScreen.kt:5</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.screenshots.util.Screen.kt:18</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.screenshots.util.Screen.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.common.UserEligibilityErrorViewModelTest.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.compose.animations.SkeletonAnimation.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.compose.component.InfiniteListHandler.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.compose.theme.Theme.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.details.CouponDetailsScreen.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.details.CouponDetailsScreen.kt:19</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.details.CouponDetailsScreen.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.details.CouponDetailsScreen.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.kt:19</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.details.CouponDetailsViewModelTest.kt:23</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.coupons.details.CouponDetailsViewModelTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.jetpack.JetpackInstallProgressDialog.kt:17</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.jetpack.JetpackInstallProgressDialog.kt:20</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.jetpack.JetpackInstallProgressDialog.kt:22</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.kt:8</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.login.MagicLinkInterceptRepository.kt:22</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.login.MagicLinkInterceptRepository.kt:8</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.main.MainActivity.kt:31</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.main.MainActivity.kt:48</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.main.MainActivity.kt:49</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.main.MainActivityViewModelTest.kt:18</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.main.MainActivityViewModelTest.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.main.MainActivityViewModelTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.main.MainPresenterTest.kt:17</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.moremenu.MoreMenu.kt:11</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.moremenu.MoreMenu.kt:17</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.moremenu.MoreMenuFragment.kt:18</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreViewModel.kt:18</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreViewModel.kt:29</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.MyStoreViewModelTest.kt:18</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.mystore.data.StatsRepository.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:20</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:33</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:36</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderDetailViewModelTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.OrderListViewModelTest.kt:23</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModelTest.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.ReceiptPreviewViewModelTest.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentErrorMapper.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentViewModel.kt:14</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentViewModel.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.cardreader.payment.CardReaderPaymentViewModel.kt:24</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.CreateOrUpdateOrderDraft.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.OrderCreationCustomerAddFragment.kt:27</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.OrderCreationFormFragment.kt:39</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.kt:31</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.kt:37</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.OrderCreationViewModel.kt:41</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.OrderCreationViewModelTest.kt:11</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.OrderCreationViewModelTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigator.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.creation.variations.OrderCreationVariationSelectionViewModel.kt:13</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailFragment.kt:27</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailFragment.kt:28</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailFragment.kt:31</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderDetailRepository.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog.kt:13</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.kt:11</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.details.editing.address.AddressViewModelTest.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.filters.OrderFilterCategoriesViewModelTest.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.list.OrderListFragment.kt:21</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.list.OrderListFragment.kt:25</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.list.OrderListFragment.kt:27</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.list.OrderListFragment.kt:28</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.list.OrderListViewModel.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.notes.AddOrderNoteViewModel.kt:14</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.notes.AddOrderNoteViewModelTest.kt:20</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormFragment.kt:27</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.PrintShippingLabelCustomsFormViewModelTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.ShippingLabelRepository.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelFragment.kt:21</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelTestUtils.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.kt:32</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.kt:36</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.kt:44</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.kt:49</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelViewModel.kt:50</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelAddressViewModelTest.kt:8</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.kt:20</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModelTest.kt:20</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentFragment.kt:16</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModelTest.kt:8</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelCreateCustomPackageViewModelTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.kt:16</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.kt:5</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachineTest.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachineTest.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachineTest.kt:8</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachineTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.AboutConfigBuilder.kt:5</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.AppSettingsPresenterTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.MainSettingsFragment.kt:17</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.MainSettingsFragment.kt:26</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.CardReaderTracker.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackerTest.kt:18</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.CardReaderTrackerTest.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.kt:11</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.kt:12</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.kt:20</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModel.kt:21</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.kt:19</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.kt:26</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewModelTest.kt:40</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.detail.CardReaderDetailViewModelTest.kt:16</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker.kt:17</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingChecker.kt:24</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingCheckerTest.kt:22</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingFragment.kt:11</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModelTest.kt:14</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingViewModelTest.kt:21</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.kt:20</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModelTest.kt:16</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModelTest.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.BaseProductFragment.kt:13</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.GroupedProductListFragment.kt:19</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailFragment.kt:28</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailFragment.kt:34</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailFragment.kt:47</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailRepository.kt:22</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailRepository.kt:26</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailRepository.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductDetailRepository.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductImagesViewModel.kt:25</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductInventoryViewModelTest.kt:14</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductListFragment.kt:35</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductListFragment.kt:42</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductListViewModel.kt:14</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductListViewModel.kt:21</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductListViewModel.kt:30</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductSelectionListFragment.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductShippingViewModelTest.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.ProductTestUtils.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.addons.AddonTestFixtures.kt:8</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.addons.AddonsExt.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.downloads.AddProductDownloadBottomSheetFragment.kt:23</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.downloads.ProductDownloadDetailsViewModelTest.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.reviews.ProductReviewsViewModel.kt:19</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailFragment.kt:20</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailFragment.kt:37</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailViewModel.kt:37</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationDetailViewModelTest.kt:24</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.products.variations.VariationListAdapter.kt:22</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailRepository.kt:6</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewDetailViewModel.kt:9</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewListRepository.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewListRepository.kt:32</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewModerationHandler.kt:14</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewModerationHandler.kt:15</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.ReviewModerationHandler.kt:7</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.reviews.domain.MarkAllReviewsAsSeen.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.ui.whatsnew.FeatureAnnouncementDialogFragment.kt:5</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.util.CurrencyFormatterTest.kt:10</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.util.NumberRounding.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.viewmodel.ResourceProvider.kt:4</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.viewmodel.ScopedViewModel.kt:3</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.kt:28</ID>
-    <ID>NoWildcardImports:com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView.kt:34</ID>
+    <ID>NoSemicolons:CardReaderDetailFragment.kt$CardReaderDetailFragment$;</ID>
+    <ID>NoWildcardImports:AboutConfigBuilder.kt$import com.automattic.about.model.*</ID>
+    <ID>NoWildcardImports:AddOrderNoteViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
+    <ID>NoWildcardImports:AddonTestFixtures.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*</ID>
+    <ID>NoWildcardImports:AddonsExt.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.*</ID>
+    <ID>NoWildcardImports:CreateShippingLabelEvent.kt$import com.woocommerce.android.model.*</ID>
+    <ID>NoWildcardImports:CreateShippingLabelTestUtils.kt$import com.woocommerce.android.model.*</ID>
+    <ID>NoWildcardImports:EditShippingLabelPaymentViewModelTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.*</ID>
+    <ID>NoWildcardImports:FeatureAnnouncementDialogFragment.kt$import android.view.*</ID>
+    <ID>NoWildcardImports:FeatureFeedbackSettingsTest.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.*</ID>
+    <ID>NoWildcardImports:InfiniteListHandler.kt$import androidx.compose.runtime.*</ID>
+    <ID>NoWildcardImports:MagicLinkInterceptRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>
+    <ID>NoWildcardImports:MagicLinkInterceptRepository.kt$import org.wordpress.android.fluxc.store.AccountStore.*</ID>
+    <ID>NoWildcardImports:MarkAllReviewsAsSeen.kt$import com.woocommerce.android.model.RequestResult.*</ID>
+    <ID>NoWildcardImports:MoveShippingItemViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.*</ID>
+    <ID>NoWildcardImports:NumberRounding.kt$import kotlin.math.*</ID>
+    <ID>NoWildcardImports:PaymentManager.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*</ID>
+    <ID>NoWildcardImports:PrintShippingLabelCustomsFormFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
+    <ID>NoWildcardImports:ProductImagesUploadWorker.kt$import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*</ID>
+    <ID>NoWildcardImports:ProductImagesUploadWorker.kt$import kotlinx.coroutines.*</ID>
+    <ID>NoWildcardImports:ProductImagesUploadWorker.kt$import kotlinx.coroutines.flow.*</ID>
+    <ID>NoWildcardImports:Refund.kt$import org.wordpress.android.fluxc.model.refunds.WCRefundModel.*</ID>
+    <ID>NoWildcardImports:ReviewListRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>
+    <ID>NoWildcardImports:ReviewListRepository.kt$import org.wordpress.android.fluxc.store.NotificationStore.*</ID>
+    <ID>NoWildcardImports:ReviewModerationHandler.kt$import com.woocommerce.android.model.ActionStatus.*</ID>
+    <ID>NoWildcardImports:ReviewModerationHandler.kt$import kotlinx.coroutines.*</ID>
+    <ID>NoWildcardImports:ReviewModerationHandler.kt$import kotlinx.coroutines.flow.*</ID>
+    <ID>NoWildcardImports:ShippingLabelsStateMachine.kt$import com.woocommerce.android.model.*</ID>
+    <ID>NoWildcardImports:ShippingLabelsStateMachine.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
+    <ID>NoWildcardImports:ShippingLabelsStateMachine.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
+    <ID>NoWildcardImports:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.model.*</ID>
+    <ID>NoWildcardImports:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*</ID>
+    <ID>NoWildcardImports:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
+    <ID>NoWildcardImports:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
+    <ID>ParameterListWrapping:MainSettingsModule.kt$MainSettingsModule$(mainSettingsPresenter: MainSettingsPresenter)</ID>
     <ID>PrintStackTrace:TestIdler.kt$TestIdler$e</ID>
-    <ID>ProtectedMemberInFinalClass:OrderListViewModel.kt$OrderListViewModel$protected val lifecycleRegistry: LifecycleRegistry by lazy { LifecycleRegistry(this) }</ID>
     <ID>ReturnCount:AddOrderShipmentTrackingViewModel.kt$AddOrderShipmentTrackingViewModel$fun onAddButtonTapped()</ID>
-    <ID>ReturnCount:ChromeCustomTabUtils.kt$ChromeCustomTabUtils$ private fun canUseCustomTabs(context: Context): Boolean</ID>
+    <ID>ReturnCount:ChromeCustomTabUtils.kt$ChromeCustomTabUtils$private fun canUseCustomTabs(context: Context): Boolean</ID>
     <ID>ReturnCount:DrawableMatcher.kt$DrawableMatcher$override fun matchesSafely(item: View?): Boolean</ID>
     <ID>ReturnCount:EditShippingLabelPackagesViewModel.kt$EditShippingLabelPackagesViewModel$suspend fun fetchVariationIfNeeded(productId: Long, variationId: Long): Boolean</ID>
     <ID>ReturnCount:MainActivity.kt$MainActivity$override fun onCreate(savedInstanceState: Bundle?)</ID>
-    <ID>ReturnCount:OrderListAdapter.kt$&lt;no name provided>$override fun areItemsTheSame(oldItem: OrderListItemUIType, newItem: OrderListItemUIType): Boolean</ID>
-    <ID>ReturnCount:Product.kt$Product$ private fun isSameCategories(updatedCategories: List&lt;ProductCategory>): Boolean</ID>
-    <ID>ReturnCount:Product.kt$Product$ private fun isSameTags(updatedTags: List&lt;ProductTag>): Boolean</ID>
+    <ID>ReturnCount:OrderListAdapter.kt$&lt;no name provided&gt;$override fun areItemsTheSame(oldItem: OrderListItemUIType, newItem: OrderListItemUIType): Boolean</ID>
     <ID>ReturnCount:Product.kt$Product$fun hasAttributeChanges(updatedProduct: Product?): Boolean</ID>
-    <ID>ReturnCount:ProductDetailViewModel.kt$ProductDetailViewModel$ fun onBackButtonClickedProductDetail(): Boolean</ID>
-    <ID>ReturnCount:ProductDetailViewModel.kt$ProductDetailViewModel$ fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String): Boolean</ID>
-    <ID>ReturnCount:ProductFilterListViewModel.kt$ProductFilterListViewModel.FilterListItemUiModel$ private fun List&lt;FilterListOptionItemUiModel>.isSameFilterOptions( updatedFilterOptions: List&lt;FilterListOptionItemUiModel> ): Boolean</ID>
-    <ID>ReturnCount:ProductHelper.kt$ProductHelper$ fun productOrVariationId(productId: Long?, variationId: Long?): Long</ID>
+    <ID>ReturnCount:Product.kt$Product$private fun isSameCategories(updatedCategories: List&lt;ProductCategory&gt;): Boolean</ID>
+    <ID>ReturnCount:Product.kt$Product$private fun isSameTags(updatedTags: List&lt;ProductTag&gt;): Boolean</ID>
+    <ID>ReturnCount:ProductDetailViewModel.kt$ProductDetailViewModel$fun onBackButtonClickedProductDetail(): Boolean</ID>
+    <ID>ReturnCount:ProductDetailViewModel.kt$ProductDetailViewModel$fun renameAttributeInDraft(attributeId: Long, oldAttributeName: String, newAttributeName: String): Boolean</ID>
+    <ID>ReturnCount:ProductHelper.kt$ProductHelper$fun productOrVariationId(productId: Long?, variationId: Long?): Long</ID>
     <ID>ReturnCount:ProductImageMap.kt$ProductImageMap$fun get(remoteProductId: Long): String?</ID>
-    <ID>ReturnCount:ReviewListAdapter.kt$ReviewListAdapter$ fun getItemTypeAtRecyclerPosition(position: Int): ItemType</ID>
-    <ID>ReturnCount:ReviewListAdapter.kt$ReviewListAdapter$private fun isSameList(reviews: List&lt;ProductReview>): Boolean</ID>
+    <ID>ReturnCount:ReviewListAdapter.kt$ReviewListAdapter$fun getItemTypeAtRecyclerPosition(position: Int): ItemType</ID>
+    <ID>ReturnCount:ReviewListAdapter.kt$ReviewListAdapter$private fun isSameList(reviews: List&lt;ProductReview&gt;): Boolean</ID>
     <ID>ReturnCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun getItemViewType(position: Int): Int</ID>
     <ID>ReturnCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)</ID>
-    <ID>ReturnCount:StringExt.kt$ fun String.fastStripHtml(): String</ID>
+    <ID>ReturnCount:StringExt.kt$fun String.fastStripHtml(): String</ID>
     <ID>ReturnCount:StringExt.kt$fun String.semverCompareTo(otherVersion: String): Int</ID>
     <ID>ReturnCount:TestBase.kt$LocaleAwareRenderableDate$override fun toString(): String</ID>
-    <ID>ReturnCount:WCProductImageGalleryView.kt$WCProductImageGalleryView.ImageGalleryAdapter$ private fun isSameImageList(images: List&lt;Product.Image>): Boolean</ID>
+    <ID>ReturnCount:WCProductImageGalleryView.kt$WCProductImageGalleryView.ImageGalleryAdapter$private fun isSameImageList(images: List&lt;Product.Image&gt;): Boolean</ID>
     <ID>SerialVersionUIDInSerializableClass:InfoScreenFragment.kt$InfoScreenFragment$InfoScreenLinkAction : Serializable</ID>
     <ID>SpreadOperator:OrderDetailFragment.kt$OrderDetailFragment$(event.message, *event.args)</ID>
     <ID>SpreadOperator:RefundSummaryFragment.kt$RefundSummaryFragment$(event.message, *event.args)</ID>
     <ID>SpreadOperator:ShippingLabelRefundFragment.kt$ShippingLabelRefundFragment$(event.message, *event.args)</ID>
-    <ID>SpreadOperator:UiHelpers.kt$UiHelpers$( uiString.stringRes, *uiString.params.map { value -> getTextOfUiString( context, value ) }.toTypedArray() )</ID>
-    <ID>SwallowedException:ActivityUtils.kt$ActivityUtils$e: ActivityNotFoundException</ID>
+    <ID>SpreadOperator:UiHelpers.kt$UiHelpers$( uiString.stringRes, *uiString.params.map { value -&gt; getTextOfUiString( context, value ) }.toTypedArray() )</ID>
     <ID>SwallowedException:ActivityUtils.kt$ActivityUtils$exception: ActivityNotFoundException</ID>
     <ID>SwallowedException:AppPrefs.kt$AppPrefs$ex: Throwable</ID>
     <ID>SwallowedException:AppRatingDialog.kt$AppRatingDialog$e: android.content.ActivityNotFoundException</ID>
@@ -371,7 +229,7 @@
     <ID>SwallowedException:ProductListViewModel.kt$ProductListViewModel$e: CancellationException</ID>
     <ID>SwallowedException:ProductSelectionListViewModel.kt$ProductSelectionListViewModel$e: CancellationException</ID>
     <ID>SwallowedException:ProductShippingClassViewModel.kt$ProductShippingClassViewModel$e: CancellationException</ID>
-    <ID>SwallowedException:RecyclerViewMatcher.kt$RecyclerViewMatcher.&lt;no name provided>$var4: Resources.NotFoundException</ID>
+    <ID>SwallowedException:RecyclerViewMatcher.kt$RecyclerViewMatcher.&lt;no name provided&gt;$var4: Resources.NotFoundException</ID>
     <ID>SwallowedException:Screen.kt$Screen$e: Throwable</ID>
     <ID>SwallowedException:Screen.kt$Screen$e: java.lang.Exception</ID>
     <ID>SwallowedException:Screen.kt$Screen$ex: Exception</ID>
@@ -385,11 +243,8 @@
     <ID>ThrowingExceptionsWithoutMessageOrCause:ShippingLabelPaymentMethodsAdapter.kt$ShippingLabelPaymentMethodsAdapter.PaymentMethodViewHolder$IllegalArgumentException()</ID>
     <ID>ThrowingExceptionsWithoutMessageOrCause:ShippingLabelServicePackageAdapter.kt$ShippingLabelServicePackageAdapter$IllegalArgumentException()</ID>
     <ID>ThrowingExceptionsWithoutMessageOrCause:ShippingPackagesAdapter.kt$ShippingPackagesAdapter$IllegalArgumentException()</ID>
-    <ID>ThrowsCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$ fun notifyNotLoadedStateChanged(section: Section, previousState: State)</ID>
-    <ID>ThrowsCount:SectionedRecyclerViewAdapter.kt$SectionedRecyclerViewAdapter$ fun notifyStateChangedToLoaded(section: Section, previousState: State)</ID>
     <ID>TooGenericExceptionCaught:Address.kt$Address$e: NullPointerException</ID>
     <ID>TooGenericExceptionCaught:AppPrefs.kt$AppPrefs$ex: Throwable</ID>
-    <ID>TooGenericExceptionCaught:DateExt.kt$e: Exception</ID>
     <ID>TooGenericExceptionCaught:DateUtils.kt$DateUtils$e: Exception</ID>
     <ID>TooGenericExceptionCaught:DateUtils.kt$DateUtils$e: IndexOutOfBoundsException</ID>
     <ID>TooGenericExceptionCaught:FileDownloader.kt$FileDownloader$e: Exception</ID>
@@ -400,148 +255,59 @@
     <ID>TooGenericExceptionCaught:TokenProvider.kt$TokenProvider$e: RuntimeException</ID>
     <ID>TooGenericExceptionCaught:WooLogViewerActivity.kt$WooLogViewerActivity$e: Exception</ID>
     <ID>TooGenericExceptionThrown:ActionableEmptyView.kt$ActionableEmptyView$throw RuntimeException("$context: ActionableEmptyView must have a title (aevTitle)")</ID>
-    <ID>TopLevelPropertyNaming:ZendeskHelper.kt$private const val enablePushNotificationsDelayAfterIdentityChange: Long = 2500</ID>
-    <ID>TopLevelPropertyNaming:ZendeskHelper.kt$private const val maxLogfileLength: Int = 63000 // Max characters allowed in the system status report field</ID>
-    <ID>TopLevelPropertyNaming:ZendeskHelper.kt$private const val zendeskNeedsToBeEnabledError = "Zendesk needs to be setup before this method can be called"</ID>
-    <ID>UnusedPrivateMember:AttributesAddedFragment.kt$AttributesAddedFragment$view: View</ID>
-    <ID>UnusedPrivateMember:MainPresenter.kt$MainPresenter$event: SelectedSiteChangedEvent</ID>
-    <ID>UnusedPrivateMember:OrderDetailOrderNoteItemView.kt$OrderDetailOrderNoteItemView$showBottomPadding: Boolean</ID>
-    <ID>UnusedPrivateMember:ProductDetailViewModel.kt$ProductDetailViewModel$image: Product.Image</ID>
-    <ID>UnusedPrivateMember:ProductDetailViewModel.kt$ProductDetailViewModel$isOnSale: Boolean? = null</ID>
-    <ID>UnusedPrivateMember:SequenceExt.kt$element: T</ID>
-    <ID>UnusedPrivateMember:ShippingLabelCreatePackageViewModel.kt$ShippingLabelCreatePackageViewModel$private var viewState by viewStateData</ID>
-    <ID>VariableNaming:ScopedViewModel.kt$ScopedViewModel$protected open val _event: MutableLiveData&lt;Event> = MultiLiveEvent()</ID>
+    <ID>TopLevelPropertyNaming:AnalyticsHubTestFixtures.kt$const val testVisitorsCount = 150</ID>
+    <ID>UseCheckOrError:BlazeCampaignTargetSelectionViewModel.kt$BlazeCampaignTargetSelectionViewModel$throw IllegalStateException("Location selection should not use this view model")</ID>
+    <ID>UseCheckOrError:CardReaderOnboardingChecker.kt$CardReaderOnboardingChecker$throw IllegalStateException("Developer error:`preferredPlugin` should be WCPay")</ID>
+    <ID>UseCheckOrError:CardReaderPaymentViewModel.kt$CardReaderPaymentViewModel$throw IllegalStateException("Accessing refund amount on $param flow")</ID>
+    <ID>UseCheckOrError:CheckDigitRemoverFactory.kt$CheckDigitRemoverFactory$throw IllegalStateException( "Cannot remove check digit for this barcode format: ${barcodeFormat.formatName}" )</ID>
+    <ID>UseCheckOrError:LiveDataDelegate.kt$LiveDataDelegate$throw(IllegalStateException("Multiple observers registered but only one is supported."))</ID>
+    <ID>UseCheckOrError:MoveShippingItemViewModel.kt$MoveShippingItemViewModel$throw IllegalStateException("move button listener invoked while no package is selected")</ID>
+    <ID>UseCheckOrError:MultipleCardReadersFoundAdapter.kt$MultipleCardReadersFoundAdapter$throw IllegalStateException("The view type '$viewType' needs to be handled")</ID>
+    <ID>UseCheckOrError:OrderListAdapter.kt$OrderListAdapter$throw IllegalStateException("The view type '$viewType' needs to be handled")</ID>
+    <ID>UseCheckOrError:Section.kt$Section$throw IllegalStateException("Missing 'empty mState' resource id")</ID>
+    <ID>UseCheckOrError:Section.kt$Section$throw IllegalStateException("Missing 'failed mState' resource id")</ID>
+    <ID>UseCheckOrError:Section.kt$Section$throw IllegalStateException("Missing 'loading mState' resource id")</ID>
+    <ID>UseCheckOrError:SitePickerAdapter.kt$SitePickerAdapter$throw IllegalStateException("Wrong view type: $viewType")</ID>
+    <ID>UseCheckOrError:SkeletonView.kt$SkeletonView$throw IllegalStateException("Source view isn't attached")</ID>
+    <ID>UseCheckOrError:StatsTimeRangeSelection.kt$StatsTimeRangeSelection.Factory$throw IllegalStateException("Custom selection type should use the correct constructor")</ID>
+    <ID>UseRequire:AddProductElementView.kt$AddProductElementView$throw IllegalArgumentException("AddProductElementView must have a text for its button (buttonText)")</ID>
+    <ID>UseRequire:AlignedDividerDecoration.kt$AlignedDividerDecoration$throw IllegalArgumentException("Invalid orientation. It should either be HORIZONTAL or VERTICAL.")</ID>
+    <ID>UseRequire:StatelessSection.kt$StatelessSection$throw IllegalArgumentException("Stateless section shouldn't have a failed state resource")</ID>
+    <ID>UseRequire:StatelessSection.kt$StatelessSection$throw IllegalArgumentException("Stateless section shouldn't have a loading state resource")</ID>
+    <ID>UseRequire:StatelessSection.kt$StatelessSection$throw IllegalArgumentException("Stateless section shouldn't have an empty state resource")</ID>
+    <ID>VariableNaming:ScopedViewModel.kt$ScopedViewModel$protected open val _event: MutableLiveData&lt;Event&gt; = MultiLiveEvent()</ID>
     <ID>WildcardImport:AboutConfigBuilder.kt$import com.automattic.about.model.*</ID>
     <ID>WildcardImport:AddOrderNoteViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:AddProductDownloadBottomSheetFragment.kt$import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.*</ID>
+    <ID>WildcardImport:AddonTestFixtures.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.*</ID>
     <ID>WildcardImport:AddonsExt.kt$import org.wordpress.android.fluxc.domain.Addon.HasAdjustablePrice.Price.Adjusted.PriceType.*</ID>
-    <ID>WildcardImport:AddressViewModel.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:AddressViewModel.kt$import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.*</ID>
-    <ID>WildcardImport:AnalyticsViewModel.kt$import com.woocommerce.android.ui.analytics.daterangeselector.*</ID>
-    <ID>WildcardImport:AppInitializer.kt$import com.woocommerce.android.util.*</ID>
-    <ID>WildcardImport:BaseProductFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:CardReaderConnectViewModel.kt$import com.woocommerce.android.cardreader.connection.*</ID>
-    <ID>WildcardImport:CardReaderConnectViewModel.kt$import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.*</ID>
-    <ID>WildcardImport:CardReaderConnectViewModel.kt$import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectEvent.*</ID>
-    <ID>WildcardImport:CardReaderConnectViewModel.kt$import com.woocommerce.android.ui.prefs.cardreader.connect.CardReaderConnectViewState.*</ID>
-    <ID>WildcardImport:CardReaderOnboardingChecker.kt$import com.woocommerce.android.ui.prefs.cardreader.onboarding.CardReaderOnboardingState.*</ID>
-    <ID>WildcardImport:CardReaderOnboardingChecker.kt$import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.*</ID>
-    <ID>WildcardImport:CardReaderOnboardingFragment.kt$import com.woocommerce.android.databinding.*</ID>
-    <ID>WildcardImport:CardReaderPaymentErrorMapper.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.*</ID>
-    <ID>WildcardImport:CardReaderPaymentViewModel.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*</ID>
-    <ID>WildcardImport:CardReaderPaymentViewModel.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.AdditionalInfoType.*</ID>
-    <ID>WildcardImport:CardReaderPaymentViewModel.kt$import com.woocommerce.android.ui.orders.cardreader.payment.ViewState.*</ID>
-    <ID>WildcardImport:CardReaderTracker.kt$import com.woocommerce.android.analytics.AnalyticsEvent.*</ID>
-    <ID>WildcardImport:CardReaderUpdateViewModel.kt$import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateStatus.*</ID>
-    <ID>WildcardImport:CardReaderUpdateViewModel.kt$import com.woocommerce.android.ui.prefs.cardreader.update.CardReaderUpdateViewModel.ViewState.*</ID>
-    <ID>WildcardImport:CouponDetailsScreen.kt$import androidx.compose.foundation.layout.*</ID>
-    <ID>WildcardImport:CouponDetailsScreen.kt$import androidx.compose.material.*</ID>
-    <ID>WildcardImport:CouponDetailsScreen.kt$import androidx.compose.runtime.*</ID>
-    <ID>WildcardImport:CouponDetailsScreen.kt$import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.*</ID>
-    <ID>WildcardImport:CouponDetailsViewModel.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:CouponListFragment.kt$import android.view.*</ID>
-    <ID>WildcardImport:CouponListScreen.kt$import androidx.compose.foundation.layout.*</ID>
-    <ID>WildcardImport:CouponListViewModel.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:CreateOrUpdateOrderDraft.kt$import kotlinx.coroutines.flow.*</ID>
     <ID>WildcardImport:CreateShippingLabelEvent.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:CreateShippingLabelFragment.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:CreateShippingLabelViewModel.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:CreateShippingLabelViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*</ID>
-    <ID>WildcardImport:CreateShippingLabelViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*</ID>
-    <ID>WildcardImport:CreateShippingLabelViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Event.*</ID>
-    <ID>WildcardImport:CreateShippingLabelViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
-    <ID>WildcardImport:EditShippingLabelAddressViewModel.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:EditShippingLabelAddressViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelEvent.*</ID>
-    <ID>WildcardImport:EditShippingLabelPackagesViewModel.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:EditShippingLabelPackagesViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:EditShippingLabelPaymentFragment.kt$import com.woocommerce.android.extensions.*</ID>
+    <ID>WildcardImport:CreateShippingLabelTestUtils.kt$import com.woocommerce.android.model.*</ID>
+    <ID>WildcardImport:EditShippingLabelPaymentViewModelTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPaymentViewModel.*</ID>
     <ID>WildcardImport:FeatureAnnouncementDialogFragment.kt$import android.view.*</ID>
-    <ID>WildcardImport:GroupedProductListFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
+    <ID>WildcardImport:FeatureFeedbackSettingsTest.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.*</ID>
     <ID>WildcardImport:InfiniteListHandler.kt$import androidx.compose.runtime.*</ID>
-    <ID>WildcardImport:JetpackInstallProgressDialog.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:JetpackInstallProgressDialog.kt$import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*</ID>
-    <ID>WildcardImport:JetpackInstallProgressDialog.kt$import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*</ID>
-    <ID>WildcardImport:JetpackInstallViewModel.kt$import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.FailureType.*</ID>
-    <ID>WildcardImport:JetpackInstallViewModel.kt$import com.woocommerce.android.ui.jetpack.JetpackInstallViewModel.InstallStatus.*</ID>
     <ID>WildcardImport:MagicLinkInterceptRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>
     <ID>WildcardImport:MagicLinkInterceptRepository.kt$import org.wordpress.android.fluxc.store.AccountStore.*</ID>
-    <ID>WildcardImport:MainActivity.kt$import com.woocommerce.android.*</ID>
-    <ID>WildcardImport:MainActivity.kt$import com.woocommerce.android.ui.main.BottomNavigationPosition.*</ID>
-    <ID>WildcardImport:MainActivity.kt$import com.woocommerce.android.ui.main.MainActivityViewModel.*</ID>
-    <ID>WildcardImport:MainSettingsFragment.kt$import com.woocommerce.android.analytics.AnalyticsEvent.*</ID>
-    <ID>WildcardImport:MainSettingsFragment.kt$import com.woocommerce.android.util.*</ID>
     <ID>WildcardImport:MarkAllReviewsAsSeen.kt$import com.woocommerce.android.model.RequestResult.*</ID>
-    <ID>WildcardImport:MoreMenu.kt$import androidx.compose.foundation.layout.*</ID>
-    <ID>WildcardImport:MoreMenu.kt$import androidx.compose.material.*</ID>
-    <ID>WildcardImport:MoreMenuFragment.kt$import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuEvent.*</ID>
     <ID>WildcardImport:MoveShippingItemViewModel.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.MoveShippingItemViewModel.DestinationPackage.*</ID>
-    <ID>WildcardImport:MyStoreViewModel.kt$import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.*</ID>
-    <ID>WildcardImport:MyStoreStatsView.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:MyStoreViewModel.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:Notification.kt$import com.woocommerce.android.push.*</ID>
-    <ID>WildcardImport:NotificationChannelType.kt$import com.woocommerce.android.push.NotificationChannelType.*</ID>
     <ID>WildcardImport:NumberRounding.kt$import kotlin.math.*</ID>
-    <ID>WildcardImport:OrderCreationCustomerAddFragment.kt$import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.*</ID>
-    <ID>WildcardImport:OrderCreationFormFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:OrderCreationNavigator.kt$import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*</ID>
-    <ID>WildcardImport:OrderCreationVariationSelectionViewModel.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:OrderCreationViewModel.kt$import com.woocommerce.android.ui.orders.creation.navigation.OrderCreationNavigationTarget.*</ID>
-    <ID>WildcardImport:OrderCreationViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:OrderCreationViewModel.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:OrderDetailFragment.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:OrderDetailFragment.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:OrderDetailFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.*</ID>
-    <ID>WildcardImport:OrderDetailRepository.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.*</ID>
-    <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.*</ID>
-    <ID>WildcardImport:OrderListFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.Feature.*</ID>
-    <ID>WildcardImport:OrderStatusSelectorDialog.kt$import com.woocommerce.android.ui.orders.details.OrderDetailViewModel.*</ID>
-    <ID>WildcardImport:PaymentErrorMapper.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.DeclinedByBackendError.CardDeclined.*</ID>
     <ID>WildcardImport:PaymentManager.kt$import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*</ID>
     <ID>WildcardImport:PrintShippingLabelCustomsFormFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:Product.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:Product.kt$import com.woocommerce.android.ui.products.*</ID>
-    <ID>WildcardImport:ProductDetailFragment.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:ProductDetailFragment.kt$import com.woocommerce.android.ui.products.ProductDetailViewModel.*</ID>
-    <ID>WildcardImport:ProductDetailFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:ProductDetailRepository.kt$import com.woocommerce.android.analytics.AnalyticsEvent.*</ID>
-    <ID>WildcardImport:ProductDetailRepository.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:ProductDetailRepository.kt$import org.wordpress.android.fluxc.action.WCProductAction.*</ID>
-    <ID>WildcardImport:ProductDetailRepository.kt$import org.wordpress.android.fluxc.store.WCProductStore.*</ID>
-    <ID>WildcardImport:ProductDetailViewModel.kt$import kotlinx.coroutines.flow.*</ID>
     <ID>WildcardImport:ProductImagesUploadWorker.kt$import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*</ID>
     <ID>WildcardImport:ProductImagesUploadWorker.kt$import kotlinx.coroutines.*</ID>
     <ID>WildcardImport:ProductImagesUploadWorker.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:ProductImagesViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:ProductListFragment.kt$import com.woocommerce.android.model.FeatureFeedbackSettings.FeedbackState.*</ID>
-    <ID>WildcardImport:ProductListFragment.kt$import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.*</ID>
-    <ID>WildcardImport:ProductListViewModel.kt$import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.*</ID>
-    <ID>WildcardImport:ProductListViewModel.kt$import kotlinx.coroutines.*</ID>
-    <ID>WildcardImport:ProductListViewModel.kt$import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.*</ID>
-    <ID>WildcardImport:ProductReviewsViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:ProductSelectionListFragment.kt$import android.view.*</ID>
     <ID>WildcardImport:Refund.kt$import org.wordpress.android.fluxc.model.refunds.WCRefundModel.*</ID>
-    <ID>WildcardImport:ResourceProvider.kt$import androidx.annotation.*</ID>
-    <ID>WildcardImport:ReviewDetailRepository.kt$import com.woocommerce.android.model.*</ID>
-    <ID>WildcardImport:ReviewDetailViewModel.kt$import com.woocommerce.android.model.RequestResult.*</ID>
     <ID>WildcardImport:ReviewListRepository.kt$import com.woocommerce.android.model.RequestResult.*</ID>
     <ID>WildcardImport:ReviewListRepository.kt$import org.wordpress.android.fluxc.store.NotificationStore.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import com.woocommerce.android.model.ActionStatus.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.*</ID>
     <ID>WildcardImport:ReviewModerationHandler.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:ShippingLabelRepository.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachine.kt$import com.woocommerce.android.model.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachine.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
     <ID>WildcardImport:ShippingLabelsStateMachine.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
-    <ID>WildcardImport:SkeletonAnimation.kt$import androidx.compose.animation.core.*</ID>
-    <ID>WildcardImport:StatsRepository.kt$import org.wordpress.android.fluxc.store.WCStatsStore.*</ID>
-    <ID>WildcardImport:Theme.kt$import androidx.compose.material.*</ID>
-    <ID>WildcardImport:UnseenReviewsCountHandler.kt$import kotlinx.coroutines.flow.*</ID>
-    <ID>WildcardImport:VariationDetailFragment.kt$import com.woocommerce.android.extensions.*</ID>
-    <ID>WildcardImport:VariationDetailFragment.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:VariationDetailViewModel.kt$import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.*</ID>
-    <ID>WildcardImport:VariationListAdapter.kt$import com.woocommerce.android.ui.products.ProductStockStatus.*</ID>
-    <ID>WildcardImport:WCMaterialOutlinedCurrencyEditTextView.kt$import org.wordpress.android.fluxc.model.WCSettingsModel.CurrencyPosition.*</ID>
+    <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.model.*</ID>
+    <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.*</ID>
+    <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.Step.*</ID>
+    <ID>WildcardImport:ShippingLabelsStateMachineTest.kt$import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelsStateMachine.StepStatus.*</ID>
   </CurrentIssues>
 </SmellBaseline>

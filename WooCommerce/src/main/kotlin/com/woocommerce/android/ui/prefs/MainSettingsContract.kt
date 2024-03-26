@@ -19,6 +19,7 @@ interface MainSettingsContract {
         val isDomainOptionVisible: Boolean
         val isCloseAccountOptionVisible: Boolean
         val isThemePickerOptionVisible: Boolean
+        val wooPluginVersion: String
     }
 
     interface View : BaseView<Presenter> {

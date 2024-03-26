@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -16,8 +17,6 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyBoolean
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -25,10 +24,12 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
-import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsError
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType.PLUGIN_NOT_ACTIVE
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class GetStatsTest : BaseUnitTest() {
@@ -38,13 +39,11 @@ class GetStatsTest : BaseUnitTest() {
     private val analyticsUpdateDataStore: AnalyticsUpdateDataStore = mock()
 
     private val getStats = GetStats(
-        selectedSite,
-        mock(),
-        statsRepository,
-        appPrefsWrapper,
-        coroutinesTestRule.testDispatchers,
-        analyticsUpdateDataStore,
-        mock()
+        selectedSite = selectedSite,
+        statsRepository = statsRepository,
+        appPrefsWrapper = appPrefsWrapper,
+        coroutineDispatchers = coroutinesTestRule.testDispatchers,
+        analyticsUpdateDataStore = analyticsUpdateDataStore,
     )
 
     @Before
@@ -61,7 +60,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenCheckIfStoreHasNoOrdersFlow(Result.success(true))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
+            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.HasOrders }
                 .first()
 
@@ -73,7 +72,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenCheckIfStoreHasNoOrdersFlow(Result.success(false))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
+            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.HasOrders }
                 .first()
 
@@ -85,7 +84,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
+            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.RevenueStatsSuccess }
                 .first()
 
@@ -97,7 +96,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
+            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.RevenueStatsError }
                 .first()
 
@@ -109,7 +108,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.failure(StatsException(PLUGIN_NOT_ACTIVE_ORDER_STATS_ERROR)))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
+            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.PluginNotActive }
                 .first()
 
@@ -121,7 +120,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
             verify(appPrefsWrapper).setV4StatsSupported(true)
         }
@@ -131,7 +130,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.failure(StatsException(PLUGIN_NOT_ACTIVE_ORDER_STATS_ERROR)))
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
             verify(appPrefsWrapper).setV4StatsSupported(false)
         }
@@ -141,7 +140,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchVisitorStats(Result.success(ANY_VISITOR_STATS))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
+            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.VisitorsStatsSuccess }
                 .first()
 
@@ -153,7 +152,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchVisitorStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
+            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.VisitorsStatsError }
                 .first()
 
@@ -165,7 +164,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenIsJetpackConnected(true)
 
-            val result = getStats(refresh = false, granularity = ANY_GRANULARITY)
+            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.VisitorStatUnavailable }
                 .first()
 
@@ -181,7 +180,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
             verify(analyticsUpdateDataStore).shouldUpdateAnalytics(
                 any(),
@@ -200,7 +199,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
-            getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
+            getStats(refresh = true, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
             verify(analyticsUpdateDataStore, never())
                 .shouldUpdateAnalytics(any(), any(), any())
@@ -211,7 +210,7 @@ class GetStatsTest : BaseUnitTest() {
         testBlocking {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
 
-            getStats(refresh = true, granularity = ANY_GRANULARITY).collect()
+            getStats(refresh = true, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
             verify(analyticsUpdateDataStore)
                 .storeLastAnalyticsUpdate(
@@ -226,7 +225,7 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
             givenShouldUpdateAnalyticsReturns(true)
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
             verify(analyticsUpdateDataStore).storeLastAnalyticsUpdate(
                 any(),
@@ -240,7 +239,7 @@ class GetStatsTest : BaseUnitTest() {
             getRevenueStatsById(Result.success(ANY_REVENUE_STATS))
             givenShouldUpdateAnalyticsReturns(false)
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
             verify(analyticsUpdateDataStore, never())
                 .storeLastAnalyticsUpdate(
@@ -255,9 +254,9 @@ class GetStatsTest : BaseUnitTest() {
             getRevenueStatsById(Result.success(ANY_REVENUE_STATS))
             givenShouldUpdateAnalyticsReturns(false)
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
-            verify(statsRepository, never()).fetchRevenueStats(any(), any(), any(), any(), any())
+            verify(statsRepository, never()).fetchRevenueStats(any(), any(), any(), any())
         }
 
     @Test
@@ -266,9 +265,9 @@ class GetStatsTest : BaseUnitTest() {
             getRevenueStatsById(Result.success(null))
             givenShouldUpdateAnalyticsReturns(false)
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
-            verify(statsRepository).fetchRevenueStats(any(), eq(false), any(), any(), any())
+            verify(statsRepository).fetchRevenueStats(any(), any(), eq(false), any())
         }
 
     @Test
@@ -277,7 +276,7 @@ class GetStatsTest : BaseUnitTest() {
             givenFetchRevenueStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
             givenShouldUpdateAnalyticsReturns(true)
 
-            getStats(refresh = false, granularity = ANY_GRANULARITY).collect()
+            getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION).collect()
 
             verify(analyticsUpdateDataStore, never())
                 .storeLastAnalyticsUpdate(
@@ -293,23 +292,27 @@ class GetStatsTest : BaseUnitTest() {
     }
 
     private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?>) {
-        whenever(statsRepository.fetchRevenueStats(any(), anyBoolean(), anyString(), anyString(), any()))
-            .thenReturn(flow { emit(result) })
+        whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
+            .thenReturn(result)
     }
+
     private suspend fun getRevenueStatsById(result: Result<WCRevenueStatsModel?>) {
-        whenever(statsRepository.getRevenueStatsById(any())).thenReturn(flow { emit(result) })
+        whenever(statsRepository.getRevenueStatsById(any())).thenReturn(result)
     }
 
     private fun givenIsJetpackConnected(isJetPackConnected: Boolean) {
         whenever(selectedSite.connectionType).thenReturn(
-            if (isJetPackConnected) SiteConnectionType.JetpackConnectionPackage
-            else SiteConnectionType.Jetpack
+            if (isJetPackConnected) {
+                SiteConnectionType.JetpackConnectionPackage
+            } else {
+                SiteConnectionType.Jetpack
+            }
         )
     }
 
     private suspend fun givenFetchVisitorStats(result: Result<Map<String, Int>>) {
-        whenever(statsRepository.fetchVisitorStats(any(), anyBoolean(), anyString(), anyString()))
-            .thenReturn(flow { emit(result) })
+        whenever(statsRepository.fetchVisitorStats(any(), any(), any()))
+            .thenReturn(result)
     }
 
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
@@ -327,7 +330,13 @@ class GetStatsTest : BaseUnitTest() {
         const val ANY_ERROR_MESSAGE = "Error message"
         val GENERIC_ORDER_STATS_ERROR = OrderStatsError(GENERIC_ERROR, ANY_ERROR_MESSAGE)
         val PLUGIN_NOT_ACTIVE_ORDER_STATS_ERROR = OrderStatsError(PLUGIN_NOT_ACTIVE, ANY_ERROR_MESSAGE)
-        val ANY_GRANULARITY = WCStatsStore.StatsGranularity.DAYS
+        val ANY_SELECTION_TYPE = StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
+        val ANY_STATS_RANGE_SELECTION = StatsTimeRangeSelection.build(
+            selectionType = ANY_SELECTION_TYPE,
+            referenceDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault()
+        )
         val ANY_REVENUE_STATS = WCRevenueStatsModel()
         val ANY_VISITOR_STATS = mapOf(
             "2020-10-01" to 1,

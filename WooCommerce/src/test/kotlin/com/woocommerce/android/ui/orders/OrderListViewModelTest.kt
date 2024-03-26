@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
@@ -14,6 +15,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -40,6 +42,7 @@ import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
@@ -93,6 +96,7 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
+        on { getString(any(), any()) } doAnswer { it.arguments[0].toString() + it.arguments[1].toString() }
     }
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
@@ -215,9 +219,9 @@ class OrderListViewModelTest : BaseUnitTest() {
     }
 
     /* Test order status options are emitted via [OrderListViewModel.orderStatusOptions]
-    * once fetched, and verify expected methods are called the correct number of
-    * times.
-    */
+     * once fetched, and verify expected methods are called the correct number of
+     * times.
+     */
     @Test
     fun `Request to fetch order status options emits options`() = testBlocking {
         doReturn(RequestResult.SUCCESS).whenever(orderListRepository).fetchOrderStatusOptionsFromApi()
@@ -604,6 +608,53 @@ class OrderListViewModelTest : BaseUnitTest() {
             assertThat(viewModel.viewState.isSimplePaymentsAndOrderCreationFeedbackVisible).isEqualTo(false)
         }
 
+    @Test
+    fun `when fetching orders for the first time fails with timeout, then trigger a retry event`() = testBlocking {
+        // given
+        var lastReceivedEvent: Event? = null
+        val listError = MutableLiveData(null as ListStore.ListError?)
+        whenever(pagedListWrapper.listError).doReturn(listError)
+        whenever(pagedListWrapper.fetchFirstPage()) doAnswer {
+            listError.value = ListStore.ListError(ListStore.ListErrorType.TIMEOUT_ERROR)
+        }
+        viewModel.event.observeForever {
+            lastReceivedEvent = it
+        }
+
+        // when
+        viewModel.loadOrders()
+
+        // then
+        assertThat(lastReceivedEvent).isEqualTo(OrderListEvent.RetryLoadingOrders)
+    }
+
+    @Test
+    fun `when retrying to fetch orders fails with timeout, then display the troubleshooting banner`() = testBlocking {
+        // given
+        var lastReceivedEvent: Event? = null
+        var shouldDisplayTroubleshootingBanner: Boolean? = null
+        val listError = MutableLiveData(null as ListStore.ListError?)
+        whenever(pagedListWrapper.listError).doReturn(listError)
+        whenever(pagedListWrapper.fetchFirstPage()) doAnswer {
+            listError.value = ListStore.ListError(ListStore.ListErrorType.TIMEOUT_ERROR)
+        }
+        viewModel.event.observeForever {
+            lastReceivedEvent = it
+        }
+        viewModel.viewStateLiveData.observeForever { _, new ->
+            shouldDisplayTroubleshootingBanner = new.shouldDisplayTroubleshootingBanner
+        }
+
+        // when
+        viewModel.loadOrders()
+        assertThat(lastReceivedEvent).isEqualTo(OrderListEvent.RetryLoadingOrders)
+        assertThat(shouldDisplayTroubleshootingBanner).isFalse
+        viewModel.fetchOrdersAndOrderDependencies()
+
+        // then
+        assertThat(shouldDisplayTroubleshootingBanner).isTrue
+    }
+
     // region barcode scanner
 
     @Test
@@ -762,8 +813,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given cha-ching sound disabled, when order list is loaded, then show a dialog`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -785,8 +836,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `when cha-ching dialog is shown, then clicking turn on sound should re-create notification channel`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -803,8 +854,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `when cha-ching dialog is shown, then clicking turn keep silent should mark dialog as dismissed`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -821,8 +872,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given cha-ching dialog dismissed, when order list is loaded, then don't show a dialog`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(true)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -839,6 +890,34 @@ class OrderListViewModelTest : BaseUnitTest() {
                 it.positiveButtonId == R.string.cha_ching_sound_issue_dialog_turn_on_sound &&
                 it.negativeButtonId == R.string.cha_ching_sound_issue_dialog_keep_silent
         }
+    }
+
+    @Test
+    fun `when order trash is requested, then trash order and show an undo snackbar`() = testBlocking {
+        whenever(orderListRepository.trashOrder(any())).thenReturn(Result.success(Unit))
+        viewModel.loadOrders()
+
+        val undoSnackbar = viewModel.event.runAndCaptureValues {
+            viewModel.trashOrder(1L)
+        }.last() as ShowUndoSnackbar
+        undoSnackbar.dismissAction.onDismissed(null, Snackbar.Callback.DISMISS_EVENT_TIMEOUT)
+
+        verify(orderListRepository).trashOrder(1L)
+    }
+
+    @Test
+    fun `when order trash fails, then show a snackbar`() = testBlocking {
+        whenever(orderListRepository.trashOrder(any())).thenReturn(Result.failure(Exception()))
+        viewModel.loadOrders()
+
+        val undoSnackbar = viewModel.event.runAndCaptureValues {
+            viewModel.trashOrder(1L)
+        }.last() as ShowUndoSnackbar
+        val event = viewModel.event.runAndCaptureValues {
+            undoSnackbar.dismissAction.onDismissed(null, Snackbar.Callback.DISMISS_EVENT_TIMEOUT)
+        }.last()
+
+        assertThat(event).isInstanceOf(ShowErrorSnack::class.java)
     }
 
     //endregion

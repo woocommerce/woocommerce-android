@@ -222,11 +222,18 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         binding.optionSiteThemes.setOnClickListener {
             findNavController()
                 .navigateSafely(
-                    MainSettingsFragmentDirections.actionMainSettingsFragmentToThemePickerFragment(
-                        isFromStoreCreation = false
-                    )
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToThemePickerFragment()
                 )
         }
+
+        binding.optionSitePlugins.setOnClickListener {
+            findNavController()
+                .navigateSafely(
+                    MainSettingsFragmentDirections.actionMainSettingsFragmentToPluginsFragment()
+                )
+        }
+
+        binding.wooPluginVersion.text = presenter.wooPluginVersion
     }
 
     private fun showDomainDashboard() {

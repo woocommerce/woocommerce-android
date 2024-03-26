@@ -12,16 +12,26 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderFilterListBinding
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleResult
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.windowSizeClass
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment.Companion.KEY_CUSTOMER_RESULT
 import com.woocommerce.android.ui.orders.filters.adapter.OrderFilterCategoryAdapter
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.CUSTOMER
+import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory.PRODUCT
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiModel
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.list.OrderListFragment
+import com.woocommerce.android.ui.products.selector.ProductSelectorFragment
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ProductSelectorFlow.Undefined
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionHandling.SIMPLE
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionMode.SINGLE
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,9 +65,8 @@ class OrderFilterCategoriesFragment :
         binding.showOrdersButton.setOnClickListener {
             viewModel.onShowOrdersClicked()
         }
-        handleResult<OrderFilterCategoryUiModel>(KEY_UPDATED_FILTER_OPTIONS) {
-            viewModel.onFilterOptionsUpdated(it)
-        }
+
+        handleResults()
     }
 
     private fun setupToolbar(binding: FragmentOrderFilterListBinding) {
@@ -77,6 +86,24 @@ class OrderFilterCategoriesFragment :
         binding.toolbar.inflateMenu(R.menu.menu_clear)
     }
 
+    private fun handleResults() {
+        handleResult<OrderFilterCategoryUiModel>(KEY_UPDATED_FILTER_OPTIONS) {
+            viewModel.onFilterOptionsUpdated(it)
+        }
+
+        handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
+            viewModel.onProductSelected(it.first().id)
+        }
+
+        handleResult<Order.Customer>(KEY_CUSTOMER_RESULT) {
+            viewModel.onCustomerSelected(it)
+        }
+    }
+
+//    override fun onCreateMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.menu_clear, menu)
+//    }
+
     fun onPrepareMenu(menu: Menu) {
         updateClearButtonVisibility(menu.findItem(R.id.menu_clear))
     }
@@ -88,6 +115,7 @@ class OrderFilterCategoriesFragment :
                 updateClearButtonVisibility(item)
                 true
             }
+
             else -> false
         }
     }
@@ -95,7 +123,7 @@ class OrderFilterCategoriesFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             setStyle(STYLE_NO_TITLE, R.style.Theme_Woo_Dialog_RoundedCorners_NoMinWidth)
         } else {
             /* This draws the dialog as full screen */
@@ -105,13 +133,14 @@ class OrderFilterCategoriesFragment :
 
     override fun onStart() {
         super.onStart()
-        if (isTablet()) {
+        if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             dialog?.window?.setLayout(
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
                 (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
             )
         }
     }
+
     private fun setUpFiltersRecyclerView(binding: FragmentOrderFilterListBinding) {
         orderFilterCategoryAdapter = OrderFilterCategoryAdapter(
             onFilterCategoryClicked = { selectedFilterCategory ->
@@ -131,8 +160,30 @@ class OrderFilterCategoriesFragment :
     }
 
     private fun navigateToFilterOptions(category: OrderFilterCategoryUiModel) {
-        val action = OrderFilterCategoriesFragmentDirections
-            .actionOrderFilterListFragmentToOrderFilterOptionListFragment(category)
+        val action = when (category.categoryKey) {
+            CUSTOMER -> {
+                OrderFilterCategoriesFragmentDirections.actionOrderFilterListFragmentToCustomerListDialogFragment(
+                    allowCustomerCreation = false,
+                    allowGuests = false
+                )
+            }
+            PRODUCT -> {
+                OrderFilterCategoriesFragmentDirections
+                    .actionOrderFilterCategoriesFragmentToProductSelectorDialogFragment(
+                        selectionMode = SINGLE,
+                        selectionHandling = SIMPLE,
+                        screenTitleOverride = getString(R.string.product),
+                        ctaButtonTextOverride = getString(R.string.done),
+                        selectedItems = category.orderFilterOptions.firstOrNull { it.isSelected }
+                            ?.let { arrayOf(SelectedItem.Product(it.key.toLong())) },
+                        productSelectorFlow = Undefined
+                    )
+            }
+            else -> {
+                OrderFilterCategoriesFragmentDirections
+                    .actionOrderFilterListFragmentToOrderFilterOptionListFragment(category)
+            }
+        }
         findNavController().navigateSafely(action)
     }
 
@@ -150,6 +201,7 @@ class OrderFilterCategoriesFragment :
                 is OnShowOrders -> navigateBackWithNotice(
                     OrderListFragment.FILTER_CHANGE_NOTICE_KEY
                 )
+
                 is Exit -> findNavController().navigateUp()
                 else -> event.isHandled = false
             }

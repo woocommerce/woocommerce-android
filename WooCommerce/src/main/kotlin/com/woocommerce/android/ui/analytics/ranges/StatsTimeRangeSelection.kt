@@ -31,13 +31,13 @@ import java.util.Date
 import java.util.Locale
 
 @Parcelize
-data class AnalyticsHubTimeRange(
+data class StatsTimeRange(
     val start: Date,
     val end: Date
 ) : Parcelable
 
 /**
- * This class represents the date range selection for the Analytics Hub
+ * This class represents the date range selection for the Analytics Hub and the Stats screen
  *
  * You can create it through the [StatsTimeRangeSelection.SelectionType.generateSelectionData]
  * function since it will return the correct data for the given selection type
@@ -47,8 +47,8 @@ data class AnalyticsHubTimeRange(
 @Parcelize
 class StatsTimeRangeSelection private constructor(
     val selectionType: SelectionType,
-    val currentRange: AnalyticsHubTimeRange,
-    val previousRange: AnalyticsHubTimeRange,
+    val currentRange: StatsTimeRange,
+    val previousRange: StatsTimeRange,
     val currentRangeDescription: String,
     val previousRangeDescription: String,
 ) : Parcelable {
@@ -166,6 +166,7 @@ class StatsTimeRangeSelection private constructor(
                     StatsGranularity.WEEKS -> WEEK_TO_DATE
                     StatsGranularity.MONTHS -> MONTH_TO_DATE
                     StatsGranularity.YEARS -> YEAR_TO_DATE
+                    StatsGranularity.HOURS -> error("Hours shouldn't be used now")
                 }
 
             fun from(description: String): SelectionType {

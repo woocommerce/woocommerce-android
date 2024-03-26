@@ -10,10 +10,10 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         style="@style/Widget.Woo.Toolbar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="@dimen/toolbar_height"
         app:layout_collapseMode="pin"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/two_pane_layout_guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:title="@string/products" />
@@ -42,20 +42,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:visibility="visible" />
 
-            <!-- Products work in progress notice card -->
-            <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
-                android:id="@+id/products_wip_card"
-                style="@style/Woo.Card.Expandable"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/minor_100"
-                android:visibility="gone"
-                app:layout_constraintBottom_toTopOf="@+id/products_sort_filter_card"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/productsSearchTabView"
-                tools:visibility="visible" />
-
             <!-- Products filter and sort view -->
             <com.woocommerce.android.ui.products.ProductSortAndFiltersCard
                 android:id="@+id/products_sort_filter_card"
@@ -66,7 +52,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/products_wip_card"
+                app:layout_constraintTop_toBottomOf="@+id/productsSearchTabView"
                 tools:visibility="visible" />
 
             <androidx.compose.ui.platform.ComposeView
@@ -144,7 +130,10 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

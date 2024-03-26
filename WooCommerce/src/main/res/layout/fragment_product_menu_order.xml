@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:orientation="vertical">
 
-    <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
-        android:id="@+id/product_menu_order"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/major_100"
-        android:hint="@string/product_menu_order"
-        android:inputType="numberSigned"
-        app:helperText="@string/product_menu_order_caption" />
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        tools:title="@string/app_name" />
 
-</ScrollView>
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
+        <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
+            android:id="@+id/product_menu_order"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/major_100"
+            android:hint="@string/product_menu_order"
+            android:inputType="numberSigned"
+            app:helperText="@string/product_menu_order_caption" />
+
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

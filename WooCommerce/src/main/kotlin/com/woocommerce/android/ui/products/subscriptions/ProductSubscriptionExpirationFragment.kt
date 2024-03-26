@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,11 +24,11 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.fragment.navArgs
-import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.BaseProductFragment
@@ -45,8 +46,6 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
     private val resourceProvider: ResourceProvider by lazy { ResourceProvider(requireContext()) }
     private var selectedExpiration: Int? = null
 
-    override fun getFragmentTitle() = getString(R.string.product_subscription_expiration_title)
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -56,7 +55,8 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
                 WooThemeWithBackground {
                     SubscriptionExpirationPicker(
                         items = subscription.expirationDisplayOptions(resourceProvider),
-                        currentValue = subscription.expirationDisplayValue(resourceProvider)
+                        currentValue = subscription.expirationDisplayValue(resourceProvider),
+                        onBackPressed = { viewModel.onBackButtonClicked(ExitProductSubscriptionExpiration) }
                     )
                 }
             }
@@ -82,32 +82,43 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
     @Composable
     private fun SubscriptionExpirationPicker(
         items: Map<String, Int>,
-        currentValue: String
+        currentValue: String,
+        onBackPressed: () -> Unit,
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(),
-        ) {
-            Card(
-                shape = RectangleShape,
+        Scaffold(
+            topBar = {
+                Toolbar(
+                    title = stringResource(id = string.product_subscription_expiration_title),
+                    onNavigationButtonClick = onBackPressed,
+                )
+            }
+        ) { paddingValues ->
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize(),
             ) {
-                Row(
+                Card(
+                    shape = RectangleShape,
                     modifier = Modifier
-                        .background(colorResource(id = color.color_surface))
-                        .padding(dimensionResource(id = dimen.major_100)),
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth()
+                        .padding(paddingValues)
                 ) {
-                    Text(stringResource(id = string.subscription_expire))
-                    WcExposedDropDown(
-                        items = items.keys.toTypedArray(),
-                        onSelected = { selectedExpiration = items[it] },
-                        currentValue = currentValue,
+                    Row(
                         modifier = Modifier
                             .background(colorResource(id = color.color_surface))
-                            .padding(start = dimensionResource(id = dimen.major_100))
-                    )
+                            .padding(dimensionResource(id = dimen.major_100)),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(stringResource(id = string.subscription_expire))
+                        WcExposedDropDown(
+                            items = items.keys.toTypedArray(),
+                            onSelected = { selectedExpiration = items[it] },
+                            currentValue = currentValue,
+                            modifier = Modifier
+                                .background(colorResource(id = color.color_surface))
+                                .padding(start = dimensionResource(id = dimen.major_100))
+                        )
+                    }
                 }
             }
         }
@@ -118,7 +129,8 @@ class ProductSubscriptionExpirationFragment : BaseProductFragment() {
     private fun PreviewSubscriptionExpirationPicker() {
         SubscriptionExpirationPicker(
             items = mapOf("Never" to 0, "1 month" to 1, "2 months" to 2, "3 months" to 3, "4 months" to 4),
-            currentValue = "Never"
+            currentValue = "Never",
+            onBackPressed = { }
         )
     }
 }

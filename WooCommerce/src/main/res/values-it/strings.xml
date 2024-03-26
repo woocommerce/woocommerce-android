@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 09:54:04+0000
+Translation-Revision-Date: 2024-03-20 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">Attendi…</string>
+    <string name="product_update_stock_status_dialog_title">Aggiornamento dello stato delle scorte</string>
+    <string name="product_update_stock_status_error">Si è verificato un problema. Riprova.</string>
+    <string name="product_update_stock_status_completed">Stato delle scorte aggiornato</string>
+    <string name="product_update_stock_status_variable_products">I prodotti variabili non possono essere aggiornati</string>
+    <string name="product_update_stock_status_managed_products">I prodotti gestiti non possono essere aggiornati</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 prodotto variabile verrà ignorato.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 prodotto con quantità di scorte gestita verrà ignorato.</string>
+    <string name="product_update_stock_status_update_count_singular">Lo stato delle scorte sarà aggiornato per 1 prodotto.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d prodotti variabili verranno ignorati.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d prodotti con quantità di scorte gestita verranno ignorati.</string>
+    <string name="product_update_stock_status_update_count">Lo stato delle scorte sarà aggiornato per %1$d prodotti.</string>
+    <string name="product_update_stock_status_current_status_single">Lo stato attuale delle scorte è %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">Lo stato attuale delle scorte è misto</string>
+    <string name="product_update_stock_status_done">FATTO</string>
+    <string name="product_update_stock_status_title">Aggiorna stato delle scorte</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Accedi con le credenziali del sito</string>
+    <string name="settings_woo_plugin_version">Versione WooCommerce.</string>
+    <string name="settings_option_installed_plugins">Plugin installati</string>
+    <string name="settings_plugins">Plugin</string>
+    <string name="settings_notifs_restore_chaching_sound_description">Il suono delle notifiche degli ordini è stato modificato, utilizza questo pulsante per ripristinare il suono della cassa.</string>
+    <string name="product_selection_menu_update_stock_status">Aggiorna stato delle scorte</string>
+    <string name="order_detail_trash_order_dialog_message">Vuoi spostare questo ordine nel cestino?</string>
+    <string name="order_detail_move_to_trash">Sposta nel cestino</string>
+    <string name="order_creation_recalculate_button">Ricalcola</string>
+    <string name="order_creation_scan_products">Scansiona prodotti</string>
+    <string name="order_creation_tablet_mode_fragment_title">Riepilogo degli ordini</string>
+    <string name="orderlist_order_trashed_error">Errore nel cestinare l\'ordine</string>
+    <string name="orderlist_order_trashed">Ordine cestinato</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Siamo spiacenti. Sembra che ci sia un problema con il tuo sito.\n\nContatta il tuo provider di hosting per ulteriore assistenza.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Siamo spiacenti. Sembra esserci un problema con la connessione Jetpack.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Siamo spiacenti. Sembra che non sia possibile lavorare correttamente con la risposta del sito.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Siamo spiacenti. Sembra che il tuo sito stia impiegando troppo tempo per rispondere.\n\nContatta il tuo provider di hosting per ulteriore assistenza.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Siamo spiacenti. Sembra che al momento non sia possibile connettersi a WordPress.com.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">Sembra non ci sia connessione a Internet.\n\nAssicurati che il Wi-Fi sia acceso. Se stai utilizzando i dati mobili, accertati che siano abilitati nelle impostazioni del dispositivo.</string>
+    <string name="product_detail_product_not_selected">Prodotto non selezionato</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Continua a leggere</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Contatta il supporto</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Gli ordini del sito</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Il tuo sito</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Server di WordPress.com</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Connessione Internet</string>
+    <string name="orderlist_connectivity_tool_title">Test di connettività</string>
+    <string name="my_store_custom_range_content_description">Aggiungi statistiche sugli intervalli di date personalizzate</string>
+    <string name="blaze_campaign_creation_location_search_no_results_message">Non è stata trovata alcuna posizione.\nRiprova.</string>
+    <string name="order_detail_attribution_session_page_views">Visualizzazioni della pagina delle sessioni</string>
+    <string name="order_detail_attribution_device_type">Tipo di dispositivo</string>
+    <string name="order_detail_attribution_campaign">Media</string>
+    <string name="order_detail_attribution_medium">Media</string>
+    <string name="order_detail_attribution_source">Sorgente</string>
+    <string name="order_detail_attribution_source_type">Tipo di sorgente</string>
+    <string name="order_detail_attribution_unknown_origin">Sconosciuto</string>
+    <string name="order_detail_attribution_mobile_origin">App per dispositivi mobili</string>
+    <string name="order_detail_attribution_admin_origin">Admin web</string>
+    <string name="order_detail_attribution_direct_origin">Diretto</string>
+    <string name="order_detail_attribution_utm_origin">Sorgente: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Referral: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">Dati organici: %1$s</string>
+    <string name="order_detail_attribution_origin">Origine</string>
+    <string name="order_detail_attribution_header">Attribuzione degli ordini</string>
+    <string name="orderdetail_message_customer_using_telegram">Contatta tramite Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Contatta tramite WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID: %d</string>
+    <string name="orderfilters_customer_filter">Cliente</string>
+    <string name="orderfilters_product_filter">Prodotto</string>
+    <string name="customer_picker_guest">Ospite</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">Questo utente è un ospite e non è possibile filtrare gli ordini per gli ospiti.</string>
+    <string name="orderlist_timeout_error_message">Riprova più tardi o contattaci per ricevere assistenza.</string>
+    <string name="orderlist_timeout_error_title">Il tuo sito impiega molto tempo per rispondere</string>
+    <string name="show_details">Mostra dettagli</string>
+    <string name="order_creation_payment_shipping_tax_label">Tariffa di spedizione</string>
+    <string name="customize_analytics">Personalizza analisi</string>
     <string name="blaze_campaign_creation_error">Qualcosa non va.\nImpossibile creare la campagna.</string>
     <string name="blaze_campaign_creation_error_media_fetch">Impossibile recuperare i dettagli dell\'immagine della campagna</string>
     <string name="blaze_campaign_creation_error_media_upload">Impossibile caricare l\'immagine della campagna.</string>
@@ -38,14 +110,13 @@ Language: it
     <string name="blaze_campaign_preview_missing_image_dialog_text">Aggiungi un\'immagine per la campagna Blaze</string>
     <string name="drag_handle">Gestione del quadratino di ridimensionamento</string>
     <string name="analytic_cards">Carte analisi</string>
-    <string name="manage_analytics">Gestisci analisi</string>
     <string name="see_report">Visualizza report</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Home del sito</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">URL del prodotto</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">Parametri URL</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">URL di destinazione</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Inserisci manualmente</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Non è stata trovata alcuna posizione.\nRiprova.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Ricerca non riuscita.\nRiprova</string>
     <string name="blaze_campaign_creation_location_search_message">Inizia a digitare il Paese, lo Stato o la città per visualizzare le opzioni disponibili</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">Facendo clic su \"Invia campagna\" accetti i &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Termini di servizio&lt;/u&gt;&lt;/a&gt; e la &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Politica sulla pubblicità&lt;/u&gt;&lt;/a&gt; e autorizzi gli addebiti tramite il tuo metodo di pagamento per il budget e la durata scelti. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Scopri di più&lt;/u&gt;&lt;/a&gt; sui budget e sui pagamenti per il lavoro legato ad Articoli promossi.</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Invia campagna</string>
@@ -544,7 +615,6 @@ Language: it
     <string name="coupon_selector_empty_list_message">Non hai ancora creato nessun codice promozionale. Crea un codice promozionale per applicarlo a questo ordine.</string>
     <string name="coupon_selector_empty_list_button">Vai ai codici promozionali</string>
     <string name="order_creation_select_coupon">Seleziona un codice promozionale</string>
-    <string name="signup_get_started_button">Crea un nuovo negozio</string>
     <string name="coupon_create_coupon_creation_failed">Impossibile creare il codice promozionale</string>
     <string name="coupon_create_coupon_created">Codice promozionale creato</string>
     <string name="coupon_create_save_button">Crea</string>
@@ -1200,13 +1270,11 @@ Language: it
     <string name="analytics_revenue_no_data">Nessuna entrata per questo periodo</string>
     <string name="analytics_revenue_card_title">Guadagno</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">Scopri di più</string>
     <string name="signup_api_generic_error">Spiacenti, non è stato possibile creare un account per le credenziali fornite. Prova con un altro indirizzo e-mail.</string>
     <string name="signup_password_not_secure_enough">La password non è conforme alle nostre linea guida sulla sicurezza. Riprova con una password più complessa.</string>
     <string name="signup_password_too_short">La password è troppo breve. Per favore scegli una password composta da almeno 6 caratteri.</string>
     <string name="signup_email_invalid_input">Inserisci un indirizzo e-mail valido.</string>
     <string name="signup_email_exist_input">Esiste già un account con questa e-mail.</string>
-    <string name="login_create_an_account">Crea un account</string>
     <string name="login_try_another_email">Prova con un altro indirizzo</string>
     <string name="date_timeframe_custom_date_range_title">Intervallo di date personalizzato</string>
     <string name="date_timeframe_custom">Personalizza</string>

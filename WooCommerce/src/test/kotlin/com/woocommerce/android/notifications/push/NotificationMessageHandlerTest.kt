@@ -249,7 +249,10 @@ class NotificationMessageHandlerTest {
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any()
+            any(),
+            any(),
+            any(),
+            any()
         )
 
         // new incoming review notification
@@ -287,12 +290,16 @@ class NotificationMessageHandlerTest {
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any()
+            any(),
+            any(),
+            any(),
+            any()
         )
 
         // new incoming order notification
         val orderNotificationPayload2 = NotificationTestUtils.generateTestNewOrderNotificationPayload(
-            userId = accountModel.userId, noteData = TEST_ORDER_NOTE_FULL_DATA_2
+            userId = accountModel.userId,
+            noteData = TEST_ORDER_NOTE_FULL_DATA_2
         )
         val orderNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             orderNotificationPayload2
@@ -331,12 +338,16 @@ class NotificationMessageHandlerTest {
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any()
+            any(),
+            any(),
+            any(),
+            any()
         )
 
         // new incoming review notification
         val reviewNotificationPayload2 = NotificationTestUtils.generateTestNewReviewNotificationPayload(
-            userId = accountModel.userId, noteData = TEST_REVIEW_NOTE_FULL_DATA_2
+            userId = accountModel.userId,
+            noteData = TEST_REVIEW_NOTE_FULL_DATA_2
         )
         val reviewNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             reviewNotificationPayload2
@@ -375,12 +386,16 @@ class NotificationMessageHandlerTest {
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any()
+            any(),
+            any(),
+            any(),
+            any()
         )
 
         // new incoming order notification for different store
         val orderNotificationPayload2 = NotificationTestUtils.generateTestNewOrderNotificationPayload(
-            userId = accountModel.userId, noteData = TEST_ORDER_NOTE_FULL_DATA_SITE_2
+            userId = accountModel.userId,
+            noteData = TEST_ORDER_NOTE_FULL_DATA_SITE_2
         )
         val orderNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             orderNotificationPayload2
@@ -419,12 +434,16 @@ class NotificationMessageHandlerTest {
         )
 
         verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(), any(), any(), any()
+            any(),
+            any(),
+            any(),
+            any()
         )
 
         // new incoming review notification
         val reviewNotificationPayload2 = NotificationTestUtils.generateTestNewReviewNotificationPayload(
-            userId = accountModel.userId, noteData = TEST_REVIEW_NOTE_FULL_DATA_SITE_2
+            userId = accountModel.userId,
+            noteData = TEST_REVIEW_NOTE_FULL_DATA_SITE_2
         )
         val reviewNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
             reviewNotificationPayload2
@@ -485,7 +504,8 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.markNotificationTapped(orderNotification.remoteNoteId)
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
-            eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED), eq(orderNotification)
+            eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
+            eq(orderNotification)
         )
     }
 
@@ -496,7 +516,8 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.markNotificationsOfTypeTapped(orderNotification.channelType)
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
-            eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED), eq(orderNotification)
+            eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
+            eq(orderNotification)
         )
     }
 

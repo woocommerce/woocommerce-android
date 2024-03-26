@@ -10,7 +10,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_ITEM
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_NEXT_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_SELECT_ALL_ITEMS_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.CREATE_ORDER_REFUND_TAB_CHANGED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD_FAILED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_NOTE_ADD_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsEvent.REFUND_CREATE
@@ -117,7 +116,8 @@ class IssueRefundViewModel @Inject constructor(
     val commonStateLiveData = LiveDataDelegate(savedState, CommonViewState())
     val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
     val refundByItemsStateLiveData = LiveDataDelegate(
-        savedState, RefundByItemsViewState(),
+        savedState,
+        RefundByItemsViewState(),
         onChange = { _, new ->
             updateRefundTotal(new.grandTotalRefund)
         }
@@ -645,25 +645,6 @@ class IssueRefundViewModel @Inject constructor(
         )
     }
 
-    // TODO: Temporarily unused; it will be used again in a future release - do not remove
-    @Suppress("unused")
-    fun onRefundTabChanged(type: RefundType) {
-        val refundAmount = when (type) {
-            ITEMS -> refundByItemsState.grandTotalRefund
-            AMOUNT -> refundByAmountState.enteredAmount
-        }
-        commonState = commonState.copy(refundType = type)
-        updateRefundTotal(refundAmount)
-
-        analyticsTrackerWrapper.track(
-            CREATE_ORDER_REFUND_TAB_CHANGED,
-            mapOf(
-                AnalyticsTracker.KEY_ORDER_ID to order.id,
-                AnalyticsTracker.KEY_TYPE to type.name
-            )
-        )
-    }
-
     private fun updateRefundItems(items: List<ProductRefundListItem>) {
         _refundItems.value = items.filter { it.maxQuantity > 0 }
 
@@ -951,7 +932,8 @@ class IssueRefundViewModel @Inject constructor(
             get() = grandTotalRefund > BigDecimal.ZERO
 
         // TODO: @Ruttkay Issue: https://github.com/woocommerce/woocommerce-android/issues/6895
-        @Suppress("PROPERTY_WONT_BE_SERIALIZED") val isRefundNoticeVisible = !refundNotice.isNullOrEmpty()
+        @Suppress("PROPERTY_WONT_BE_SERIALIZED")
+        val isRefundNoticeVisible = !refundNotice.isNullOrEmpty()
     }
 
     @Parcelize

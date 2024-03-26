@@ -23,13 +23,15 @@ object WooRequestFormatter : RequestFormatter {
 
     private fun String.replaceOrderId(): String {
         return replace(
-            Regex("/orders/[\\S]*?/"), "/orders/<order_id>/"
+            Regex("/orders/[\\S]*?/"),
+            "/orders/<order_id>/"
         )
     }
 
     private fun String.replaceLabelId(): String {
         return replace(
-            Regex("/label/[\\S]*?/"), "/label/<label_id>/"
+            Regex("/label/[\\S]*?/"),
+            "/label/<label_id>/"
         )
     }
 

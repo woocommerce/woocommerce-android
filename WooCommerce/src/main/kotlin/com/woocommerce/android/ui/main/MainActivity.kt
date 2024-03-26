@@ -48,14 +48,12 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_COMPACT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_DEVICE_TYPE_REGULAR
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
-import com.woocommerce.android.extensions.isTablet
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.help.HelpActivity
@@ -78,7 +76,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.BottomBarState
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
-import com.woocommerce.android.ui.main.MainActivityViewModel.OpenFreeTrialSurvey
 import com.woocommerce.android.ui.main.MainActivityViewModel.RequestNotificationsPermission
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityEvent
 import com.woocommerce.android.ui.main.MainActivityViewModel.RestartActivityForAppLink
@@ -93,7 +90,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewOrderList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewPayments
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewDetail
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
-import com.woocommerce.android.ui.main.MainActivityViewModel.ViewStorePlanUpgrade
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
@@ -103,7 +99,6 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.plans.di.StartUpgradeFlowFactory
 import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
@@ -167,20 +162,25 @@ class MainActivity :
 
     @Inject
     lateinit var presenter: MainContract.Presenter
+
     @Inject
     lateinit var loginAnalyticsListener: LoginAnalyticsListener
+
     @Inject
     lateinit var selectedSite: SelectedSite
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject
     lateinit var crashLogging: CrashLogging
+
     @Inject
     lateinit var appWidgetUpdaters: WidgetUpdater.StatsWidgetUpdaters
+
     @Inject
     lateinit var trialStatusBarFormatterFactory: TrialStatusBarFormatterFactory
-    @Inject
-    lateinit var startUpgradeFlowFactory: StartUpgradeFlowFactory
+
     @Inject lateinit var animatorHelper: MainAnimatorHelper
 
     private val viewModel: MainActivityViewModel by viewModels()
@@ -238,7 +238,9 @@ class MainActivity :
                     }
                     binding.appBarLayout.elevation = if (appBarStatus.hasShadow) {
                         resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
-                    } else 0f
+                    } else {
+                        0f
+                    }
                     binding.appBarDivider.isVisible = appBarStatus.hasDivider
                 }
 
@@ -721,15 +723,7 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_SELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_SELECTED
         }
-        when (navPos) {
-            ORDERS -> {
-                val property = mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString())
-                AnalyticsTracker.track(stat, property)
-            }
-            else -> {
-                AnalyticsTracker.track(stat)
-            }
-        }
+        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
 
         if (navPos == ORDERS) {
             viewModel.removeOrderNotifications()
@@ -743,15 +737,7 @@ class MainActivity :
             PRODUCTS -> AnalyticsEvent.MAIN_TAB_PRODUCTS_RESELECTED
             MORE -> AnalyticsEvent.MAIN_TAB_HUB_MENU_RESELECTED
         }
-        when (navPos) {
-            ORDERS -> {
-                val property = mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString())
-                AnalyticsTracker.track(stat, property)
-            }
-            else -> {
-                AnalyticsTracker.track(stat)
-            }
-        }
+        AnalyticsTracker.track(stat, mapOf(KEY_HORIZONTAL_SIZE_CLASS to deviceTypeToAnalyticsString))
 
         // if we're at the root scroll the active fragment to the top
         // TODO bring back clearing the backstack when the navgraphs are fixed to support multiple backstacks:
@@ -765,13 +751,6 @@ class MainActivity :
         }
     }
     // endregion
-
-    private fun deviceTypeToAnalyticsString(): String {
-        if (isTablet()) {
-            return VALUE_DEVICE_TYPE_REGULAR
-        }
-        return VALUE_DEVICE_TYPE_COMPACT
-    }
 
     // region Fragment Processing
     private fun initFragment(savedInstanceState: Bundle?) {
@@ -816,7 +795,6 @@ class MainActivity :
                 is ShowFeatureAnnouncement -> navigateToFeatureAnnouncement(event)
                 is ViewUrlInWebView -> navigateToWebView(event)
                 is RequestNotificationsPermission -> requestNotificationsPermission()
-                is ViewStorePlanUpgrade -> startUpgradeFlowFactory.create(navController).invoke(event.source)
                 ViewPayments -> showPayments()
                 ViewTapToPay -> showTapToPaySummary()
                 ShortcutOpenPayments -> shortcutShowPayments()
@@ -838,9 +816,6 @@ class MainActivity :
                     showPrivacySettingsScreen(event.requestedAnalyticsValue)
                 }
 
-                is OpenFreeTrialSurvey -> openFreeTrialSurvey()
-                is MainActivityViewModel.LaunchThemeActivation -> startThemeActivation(event.themeId)
-
                 is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
                 is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
             }
@@ -850,12 +825,6 @@ class MainActivity :
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
-    }
-
-    private fun openFreeTrialSurvey() {
-        navController.navigateSafely(
-            NavGraphMainDirections.actionGlobalFreeTrialSurveyFragment()
-        )
     }
 
     private fun observeNotificationsPermissionBarVisibility() {
@@ -908,8 +877,7 @@ class MainActivity :
 
                 is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
-                        context = this,
-                        startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
+                        context = this
                     ).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
                     animateBottomBar(binding.trialBar, show = true)
@@ -973,12 +941,6 @@ class MainActivity :
         startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
-    private fun startThemeActivation(themeId: String) {
-        navController.navigateSafely(
-            NavGraphMainDirections.actionGlobalThemeActivationFragmentDialog(themeId)
-        )
-    }
-
     private fun onRestartActivityEvent(event: RestartActivityEvent) {
         intent.apply {
             when (event) {
@@ -988,10 +950,6 @@ class MainActivity :
                     putExtra(FIELD_OPENED_FROM_PUSH, true)
                     putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
                     putExtra(FIELD_PUSH_ID, event.pushId)
-                }
-
-                else -> {
-                    // continue to restart the activity
                 }
             }
         }

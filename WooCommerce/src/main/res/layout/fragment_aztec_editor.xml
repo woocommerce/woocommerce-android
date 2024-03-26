@@ -3,14 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/color_surface">
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name" />
 
     <LinearLayout
-        android:id="@+id/toolbar"
+        android:id="@+id/bottomToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:background="@color/color_surface"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -21,8 +31,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/box_button_bg"
-            android:padding="@dimen/minor_100"
             android:contentDescription="@string/ai_product_toolbar_button_tooltip"
+            android:padding="@dimen/minor_100"
             android:src="@drawable/ic_ai" />
 
         <org.wordpress.aztec.toolbar.AztecToolbar
@@ -35,11 +45,13 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/color_surface"
         android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@+id/toolbar"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/bottomToolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,8 +64,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start|center_horizontal"
-                android:paddingTop="@dimen/major_100"
                 android:paddingStart="@dimen/major_100"
+                android:paddingTop="@dimen/major_100"
                 android:paddingEnd="@dimen/major_100"
                 android:visibility="gone"
                 tools:text="@string/product_purchase_note_caption"

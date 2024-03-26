@@ -4,50 +4,46 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
-import org.wordpress.android.fluxc.store.WCStatsStore
 import javax.inject.Inject
 
 class GetTopPerformers @Inject constructor(
     private val statsRepository: StatsRepository,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore,
-    private val localeProvider: LocaleProvider,
-    private val dateUtils: DateUtils
+    private val analyticsUpdateDataStore: AnalyticsUpdateDataStore
 ) {
     private companion object {
         const val NUM_TOP_PERFORMERS = 5
     }
 
-    fun observeTopPerformers(granularity: WCStatsStore.StatsGranularity): Flow<List<TopPerformerProduct>> =
-        statsRepository.observeTopPerformers(granularity)
+    fun observeTopPerformers(selectedRange: StatsTimeRangeSelection): Flow<List<TopPerformerProduct>> {
+        return statsRepository.observeTopPerformers(selectedRange.currentRange)
             .map { topPerformersProductEntities ->
                 topPerformersProductEntities
                     .map { it.toTopPerformerProduct() }
                     .sortDescByQuantityAndTotal()
             }.flowOn(coroutineDispatchers.computation)
+    }
 
     suspend fun fetchTopPerformers(
-        granularity: WCStatsStore.StatsGranularity,
+        selectedRange: StatsTimeRangeSelection,
         refresh: Boolean = false,
         topPerformersCount: Int = NUM_TOP_PERFORMERS,
     ): Result<Unit> {
-        val selectionRange = granularity.asRangeSelection(
-            dateUtils = dateUtils,
-            locale = localeProvider.provideLocale()
+        val isForcedRefresh = shouldUpdateStats(selectedRange, refresh)
+        return statsRepository.fetchTopPerformerProducts(
+            forceRefresh = isForcedRefresh,
+            range = selectedRange.currentRange,
+            quantity = topPerformersCount
         )
-        val isForcedRefresh = shouldUpdateStats(selectionRange, refresh)
-        return statsRepository.fetchTopPerformerProducts(isForcedRefresh, granularity, topPerformersCount)
             .let { result ->
                 if (result.isSuccess && isForcedRefresh) {
                     analyticsUpdateDataStore.storeLastAnalyticsUpdate(
-                        rangeSelection = selectionRange,
+                        rangeSelection = selectedRange,
                         analyticData = AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
                     )
                 }

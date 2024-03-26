@@ -24,6 +24,7 @@ class DomainPurchaseFragment : BaseFragment() {
     private val viewModel: DomainPurchaseViewModel by viewModels()
 
     @Inject internal lateinit var authenticator: WPComWebViewAuthenticator
+
     @Inject internal lateinit var userAgent: UserAgent
 
     override val activityAppBarStatus: AppBarStatus

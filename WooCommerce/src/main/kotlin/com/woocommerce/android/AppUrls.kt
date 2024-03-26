@@ -47,8 +47,11 @@ object AppUrls {
 
     const val CROWDSIGNAL_TAP_TO_PAY_SURVEY = "https://automattic.survey.fm/woo-app-%E2%80%93-first-ttp-survey"
     val CROWDSIGNAL_PRODCUT_CREATION_WITH_AI_SURVEY =
-        if (BuildConfig.DEBUG) "https://automattic.survey.fm/testing-debug-product-creation-with-ai-dec-2023"
-        else "https://automattic.survey.fm/product-creation-with-ai-dec-2023"
+        if (BuildConfig.DEBUG) {
+            "https://automattic.survey.fm/testing-debug-product-creation-with-ai-dec-2023"
+        } else {
+            "https://automattic.survey.fm/product-creation-with-ai-dec-2023"
+        }
 
     // Will be used later when the feature is fully launched.
     const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"
@@ -60,6 +63,7 @@ object AppUrls {
         "https://woo.com/document/woocommerce-shipping-and-tax/woocommerce-shipping/#section-29"
 
     const val WPCOM_ADD_PAYMENT_METHOD = "https://wordpress.com/me/purchases/add-payment-method"
+    const val FETCH_PAYMENT_METHOD_URL_PATH = "me/payment-methods"
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS =
         "https://woo.com/document/woopayments/in-person-payments/getting-started-with-in-person-payments/"
     const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS =
@@ -88,6 +92,7 @@ object AppUrls {
         "https://woo.com/document/what-is-a-wordpress-com-account/"
 
     const val NEW_TO_WOO_DOC = "https://woo.com/woocommerce-features/"
+    const val HOSTING_OPTIONS_DOC = "https://woo.com/hosting-solutions/"
 
     const val WORPRESS_COM_TERMS = "https://wordpress.com/tos"
     const val JETPACK_SYNC_POLICY = "https://jetpack.com/support/what-data-does-jetpack-sync"

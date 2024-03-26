@@ -48,7 +48,6 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.util.ChromeCustomTabUtils
-import java.util.Date
 
 @Composable
 fun BlazeCampaignPaymentSummaryScreen(viewModel: BlazeCampaignPaymentSummaryViewModel) {
@@ -124,7 +123,7 @@ private fun PaymenSummaryContent(
         )
 
         PaymentTotals(
-            budget = state.budget,
+            budget = state.budgetFormatted,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -264,7 +263,7 @@ private fun CampaignCreationErrorUi(
 
 @Composable
 private fun PaymentTotals(
-    budget: BlazeRepository.Budget,
+    budget: String,
     modifier: Modifier
 ) {
     Column(
@@ -286,8 +285,7 @@ private fun PaymentTotals(
             )
 
             Text(
-                // TODO format correctly
-                text = "${budget.currencyCode}${budget.totalBudget}",
+                text = budget,
                 style = MaterialTheme.typography.body2
             )
         }
@@ -302,8 +300,7 @@ private fun PaymentTotals(
             )
 
             Text(
-                // TODO format correctly
-                text = "${budget.currencyCode}${budget.totalBudget}",
+                text = budget,
                 style = MaterialTheme.typography.subtitle2
             )
         }
@@ -406,13 +403,7 @@ private fun BlazeCampaignPaymentSummaryScreenPreview() {
     WooThemeWithBackground {
         BlazeCampaignPaymentSummaryScreen(
             state = BlazeCampaignPaymentSummaryViewModel.ViewState(
-                budget = BlazeRepository.Budget(
-                    100f,
-                    spentBudget = 0f,
-                    durationInDays = 7,
-                    startDate = Date(),
-                    currencyCode = "$"
-                ),
+                budgetFormatted = "100 USD",
                 paymentMethodsState = BlazeCampaignPaymentSummaryViewModel.PaymentMethodsState.Success(
                     BlazeRepository.PaymentMethodsData(
                         listOf(
@@ -428,7 +419,6 @@ private fun BlazeCampaignPaymentSummaryScreenPreview() {
                         BlazeRepository.PaymentMethodUrls(
                             formUrl = "https://example.com/form",
                             successUrl = "https://example.com/success",
-                            idUrlParameter = "id"
                         )
                     ),
                     onClick = {}

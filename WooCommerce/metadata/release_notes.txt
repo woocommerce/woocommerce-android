@@ -1,1 +1,6 @@
-We're thrilled to roll out a shiny new update that marks our first leap towards jazzing up order management on tablets! This update brings a slicker interface, turning the task of managing orders into a breeze on your tablet. Keep your eyes peeled for more enhancements as we keep working to make your experience even cooler!
+- [*] Reviews: Fixed a bug when double toolbar was visible on the reviews in settings [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internal] Removed WooExpress Store Creation from the app [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Products: Fixed a bug when in 2 pane mode bulk update menu item was not available [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Products: Fixed a bug when the removal of a product's picture was not saved [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Reviews: Optimised speed of showing reviews [https://github.com/woocommerce/woocommerce-android/pull/11083]
+

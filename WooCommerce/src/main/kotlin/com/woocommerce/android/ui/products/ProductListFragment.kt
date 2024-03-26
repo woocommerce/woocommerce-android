@@ -11,8 +11,9 @@ import androidx.core.view.MenuCompat
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
@@ -22,33 +23,33 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.FeedbackPrefs
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
+import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenEmptyProduct
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenProduct
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
+import com.woocommerce.android.ui.products.UpdateProductStockStatusFragment.Companion.UPDATE_STOCK_STATUS_EXIT_STATE_KEY
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusExitState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.TabletLayoutSetupHelper
@@ -69,6 +70,7 @@ class ProductListFragment :
     companion object {
         val TAG: String = ProductListFragment::class.java.simpleName
         const val PRODUCT_FILTER_RESULT_KEY = "product_filter_result"
+        private const val TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY = "non_root_navigation_in_detail_pane"
     }
 
     @Inject
@@ -89,6 +91,8 @@ class ProductListFragment :
     @Inject
     lateinit var productListToolbar: ProductListToolbarHelper
 
+    private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
+
     private var _productAdapter: ProductListAdapter? = null
     private val productAdapter: ProductListAdapter
         get() = _productAdapter!!
@@ -107,24 +111,22 @@ class ProductListFragment :
     private var _binding: FragmentProductListBinding? = null
     private val binding get() = _binding!!
 
-    private val feedbackState: FeatureFeedbackSettings.FeedbackState
-        get() =
-            feedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
-                ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
-
-    override val twoPaneLayoutGuideline by lazy { binding.twoPaneLayoutGuideline }
-
-    override val lifecycleKeeper: Lifecycle by lazy { viewLifecycleOwner.lifecycle }
-
-    override val secondPaneNavigation by lazy {
-        TabletLayoutSetupHelper.Screen.Navigation(
-            childFragmentManager,
-            R.navigation.nav_graph_products,
-            ProductDetailFragmentArgs(
+    override val twoPaneLayoutGuideline
+        get() = binding.twoPaneLayoutGuideline
+    override val listPaneContainer: View
+        get() = binding.productsRefreshLayout
+    override val detailPaneContainer: View
+        get() = binding.detailNavContainer
+    override var twoPanesWereShownBeforeConfigChange: Boolean = false
+    override val listFragment: Fragment
+        get() = this
+    override val navigation
+        get() = TabletLayoutSetupHelper.Screen.Navigation(
+            detailsNavGraphId = R.navigation.nav_graph_products,
+            detailsInitialBundle = ProductDetailFragmentArgs(
                 mode = ProductDetailFragment.Mode.Loading,
             ).toBundle()
         )
-    }
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -137,11 +139,16 @@ class ProductListFragment :
         enterTransition = fadeThroughTransition
         exitTransition = fadeThroughTransition
         reenterTransition = fadeThroughTransition
+
+        twoPanesWereShownBeforeConfigChange = savedInstanceState?.getBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            false
+        ) ?: false
+        tabletLayoutSetupHelper.onRootFragmentCreated(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tabletLayoutSetupHelper.onViewCreated(this)
 
         postponeEnterTransition()
 
@@ -201,7 +208,8 @@ class ProductListFragment :
                     val selectionCount = tracker?.selection?.size() ?: 0
                     productListViewModel.onSelectionChanged(selectionCount)
                 }
-            })
+            }
+        )
     }
 
     private fun enableProductsRefresh(enable: Boolean) {
@@ -238,6 +246,10 @@ class ProductListFragment :
 
     override fun onSaveInstanceState(outState: Bundle) {
         tracker?.onSaveInstanceState(outState)
+        outState.putBoolean(
+            TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
+            _binding?.detailNavContainer?.isVisible == true && _binding?.productsRefreshLayout?.isVisible == true
+        )
         super.onSaveInstanceState(outState)
     }
 
@@ -256,7 +268,7 @@ class ProductListFragment :
         binding.productsRefreshLayout.isRefreshing = isRefreshing
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "ComplexMethod")
     private fun setupObservers(viewModel: ProductListViewModel) {
         viewModel.viewStateLiveData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
@@ -316,7 +328,7 @@ class ProductListFragment :
         }
 
         viewModel.productList.observe(viewLifecycleOwner) {
-            showProductList(it)
+            productAdapter.submitList(it)
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -336,7 +348,7 @@ class ProductListFragment :
                 is SelectProducts -> tracker?.setItemsSelected(event.productsIds, true)
                 is ShowUpdateDialog -> handleUpdateDialogs(event)
                 is OpenProduct -> {
-                    tabletLayoutSetupHelper.onItemClicked(
+                    tabletLayoutSetupHelper.openItemDetails(
                         tabletNavigateTo = {
                             productAdapter.notifyItemChanged(event.oldPosition)
                             productAdapter.notifyItemChanged(event.newPosition)
@@ -351,9 +363,47 @@ class ProductListFragment :
                         }
                     )
                 }
+
+                is OpenEmptyProduct -> {
+                    tabletLayoutSetupHelper.openItemDetails(
+                        tabletNavigateTo = {
+                            R.id.nav_graph_products to ProductDetailFragmentArgs(
+                                mode = ProductDetailFragment.Mode.Empty,
+                                isTrashEnabled = true,
+                            ).toBundle()
+                        },
+                        navigateWithPhoneNavigation = {
+                            error("Should not be invoked on a phone")
+                        }
+                    )
+                }
+
+                is ShowProductUpdateStockStatusScreen -> {
+                    showProductUpdateStockStatusScreen(event.productsIds)
+                }
+
                 else -> event.isHandled = false
             }
         }
+
+        productsCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductTrashed -> {
+                    trashProduct(event.productId)
+                }
+
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated -> {
+                    productListViewModel.reloadProductsFromDb()
+                }
+            }
+        }
+    }
+
+    private fun showProductUpdateStockStatusScreen(productRemoteIdsToUpdate: List<Long>) {
+        val action = ProductListFragmentDirections.actionProductListFragmentToUpdateProductStockStatusFragment(
+            productRemoteIdsToUpdate.toLongArray()
+        )
+        findNavController().navigateSafely(action)
     }
 
     private fun handleUpdateDialogs(event: ShowUpdateDialog) {
@@ -431,14 +481,6 @@ class ProductListFragment :
     }
 
     private fun setupResultHandlers() {
-        handleResult<Bundle>(ProductDetailFragment.KEY_PRODUCT_DETAIL_RESULT) { bundle ->
-            if (bundle.getBoolean(ProductDetailFragment.KEY_PRODUCT_DETAIL_DID_TRASH)) {
-                // User chose to trash from product detail, but we do the actual trashing here
-                // so we can show a snackbar enabling the user to undo the trashing.
-                val remoteProductId = bundle.getLong(ProductDetailFragment.KEY_REMOTE_PRODUCT_ID)
-                trashProduct(remoteProductId)
-            }
-        }
         handleResult<ProductFilterResult>(PRODUCT_FILTER_RESULT_KEY) { result ->
             productListViewModel.onFiltersChanged(
                 stockStatus = result.stockStatus,
@@ -447,6 +489,19 @@ class ProductListFragment :
                 productCategory = result.productCategory,
                 productCategoryName = result.productCategoryName
             )
+        }
+
+        handleDialogResult<UpdateStockStatusExitState>(UPDATE_STOCK_STATUS_EXIT_STATE_KEY, R.id.products) { result ->
+            when (result) {
+                UpdateStockStatusExitState.Success -> {
+                    productListViewModel.onRefreshRequested()
+                    productListViewModel.exitSelectionMode()
+                }
+
+                UpdateStockStatusExitState.Error, UpdateStockStatusExitState.NoChange -> {
+                    productListViewModel.exitSelectionMode()
+                }
+            }
         }
     }
 
@@ -463,7 +518,6 @@ class ProductListFragment :
 
         val callback = object : Snackbar.Callback() {
             override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                super.onDismissed(transientBottomBar, event)
                 pendingTrashProductId = null
                 if (trashProductCancelled) {
                     productListViewModel.reloadProductsFromDb()
@@ -489,7 +543,6 @@ class ProductListFragment :
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            showProductWIPNoticeCard(false)
             skeletonView.show(binding.productsRecycler, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
@@ -498,30 +551,6 @@ class ProductListFragment :
 
     private fun showLoadMoreProgress(show: Boolean) {
         binding.loadMoreProgress.isVisible = show
-    }
-
-    private fun showProductList(products: List<Product>) {
-        productAdapter.submitList(products)
-
-        // set to false to remove the new feature banner temporarily
-        showProductWIPNoticeCard(false)
-    }
-
-    private fun showProductWIPNoticeCard(show: Boolean) {
-        if (show && feedbackState != FeatureFeedbackSettings.FeedbackState.DISMISSED) {
-            val wipCardTitleId = R.string.product_wip_title_m5
-            val wipCardMessageId = R.string.product_wip_message_variations
-
-            binding.productsWipCard.visibility = View.VISIBLE
-            binding.productsWipCard.initView(
-                title = getString(wipCardTitleId),
-                message = getString(wipCardMessageId),
-                onGiveFeedbackClick = ::onGiveFeedbackClicked,
-                onDismissClick = ::onDismissProductWIPNoticeCardClicked
-            )
-        } else {
-            binding.productsWipCard.visibility = View.GONE
-        }
     }
 
     private fun showProductSortAndFiltersCard(show: Boolean) {
@@ -569,8 +598,11 @@ class ProductListFragment :
     private fun shouldPreventDetailNavigation(remoteProductId: Long): Boolean {
         if (productListViewModel.isSelecting()) {
             tracker?.let { selectionTracker ->
-                if (selectionTracker.isSelected(remoteProductId)) selectionTracker.deselect(remoteProductId)
-                else selectionTracker.select(remoteProductId)
+                if (selectionTracker.isSelected(remoteProductId)) {
+                    selectionTracker.deselect(remoteProductId)
+                } else {
+                    selectionTracker.select(remoteProductId)
+                }
             }
             return true
         }
@@ -634,39 +666,6 @@ class ProductListFragment :
         productListViewModel.onSortButtonTapped()
     }
 
-    private fun onGiveFeedbackClicked() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-            )
-        )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
-        NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
-            .apply { findNavController().navigateSafely(this) }
-    }
-
-    private fun onDismissProductWIPNoticeCardClicked() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-            )
-        )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-        showProductWIPNoticeCard(false)
-    }
-
-    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
-        FeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS,
-            state
-        ).registerItself(feedbackPrefs)
-    }
-
     override fun shouldExpandToolbar(): Boolean {
         val isNotSearching = !productListViewModel.isSearching()
         val isNotSelecting = !productListViewModel.isSelecting()
@@ -695,6 +694,11 @@ class ProductListFragment :
 
             R.id.menu_select_all -> {
                 productListViewModel.onSelectAllProductsClicked()
+                true
+            }
+
+            R.id.menu_update_stock_status -> {
+                productListViewModel.onBulkUpdateStockStatusClicked(tracker?.selection?.toList().orEmpty())
                 true
             }
 

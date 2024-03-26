@@ -2,7 +2,11 @@ package com.woocommerce.android.ui.analytics.hub.settings
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.AnalyticCardConfiguration
+import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -18,6 +22,7 @@ import javax.inject.Inject
 class AnalyticsHubSettingsViewModel @Inject constructor(
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
     private val saveAnalyticsCardsConfiguration: SaveAnalyticsCardsConfiguration,
+    private val tracker: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -81,13 +86,34 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
             viewState = AnalyticsHubSettingsViewState.Loading
             val configuration = draftConfiguration.map { it.toConfigurationModel() }
             saveAnalyticsCardsConfiguration(configuration)
+            trackSettingsSaved(configuration)
             delay(LOADING_DELAY_MS)
             triggerEvent(MultiLiveEvent.Event.Exit)
         }
     }
 
-    fun onSelectionChange(id: Int, isSelected: Boolean) {
-        updateSelection(id, isSelected)
+    private fun trackSettingsSaved(configuration: List<AnalyticCardConfiguration>) {
+        val enabledCards = mutableListOf<String>()
+        val disabledCards = mutableListOf<String>()
+        configuration.forEach { cardConfiguration ->
+            val cardName = cardConfiguration.card.name.lowercase()
+            if (cardConfiguration.isVisible) {
+                enabledCards.add(cardName)
+            } else {
+                disabledCards.add(cardName)
+            }
+        }
+        tracker.track(
+            AnalyticsEvent.ANALYTICS_HUB_SETTINGS_SAVED,
+            mapOf(
+                AnalyticsTracker.KEY_ENABLED_CARDS to enabledCards.joinToString(","),
+                AnalyticsTracker.KEY_DISABLED_CARDS to disabledCards.joinToString(","),
+            )
+        )
+    }
+
+    fun onSelectionChange(card: AnalyticsCards, isSelected: Boolean) {
+        updateSelection(card, isSelected)
         checkVisibleCards()
         viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
             cardsConfiguration = draftConfiguration,
@@ -96,19 +122,34 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         )
     }
 
-    private fun updateSelection(id: Int, isSelected: Boolean) {
-        draftConfiguration = draftConfiguration.map { card ->
-            if (card.id == id) card.copy(isVisible = isSelected)
-            else card
+    private fun updateSelection(card: AnalyticsCards, isSelected: Boolean) {
+        draftConfiguration = draftConfiguration.map { cardConfiguration ->
+            if (cardConfiguration.card == card) {
+                cardConfiguration.copy(isVisible = isSelected)
+            } else {
+                cardConfiguration
+            }
         }
     }
 
     private fun checkVisibleCards() {
         val visibleCards = draftConfiguration.count { card -> card.isVisible }
         draftConfiguration = draftConfiguration.map { card ->
-            if (visibleCards == 1 && card.isVisible) card.copy(isEnabled = false)
-            else card.copy(isEnabled = true)
+            if (visibleCards == 1 && card.isVisible) {
+                card.copy(isEnabled = false)
+            } else {
+                card.copy(isEnabled = true)
+            }
         }
+    }
+
+    fun onOrderChange(fromIndex: Int, toIndex: Int) {
+        draftConfiguration = draftConfiguration.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+        viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
+            cardsConfiguration = draftConfiguration,
+            showDiscardDialog = false,
+            isSaveButtonEnabled = hasChanges()
+        )
     }
 }
 
@@ -125,7 +166,7 @@ sealed class AnalyticsHubSettingsViewState : Parcelable {
 
 @Parcelize
 data class AnalyticCardConfigurationUI(
-    val id: Int,
+    val card: AnalyticsCards,
     val title: String,
     val isVisible: Boolean = true,
     val isEnabled: Boolean = true
@@ -133,7 +174,7 @@ data class AnalyticCardConfigurationUI(
 
 fun AnalyticCardConfiguration.toConfigurationUI(): AnalyticCardConfigurationUI {
     return AnalyticCardConfigurationUI(
-        id = this.id,
+        card = this.card,
         title = this.title,
         isVisible = this.isVisible,
         isEnabled = true
@@ -142,7 +183,7 @@ fun AnalyticCardConfiguration.toConfigurationUI(): AnalyticCardConfigurationUI {
 
 fun AnalyticCardConfigurationUI.toConfigurationModel(): AnalyticCardConfiguration {
     return AnalyticCardConfiguration(
-        id = this.id,
+        card = this.card,
         title = this.title,
         isVisible = this.isVisible,
     )

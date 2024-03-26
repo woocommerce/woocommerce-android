@@ -37,6 +37,7 @@ class AddProductWithAIFragment : BaseFragment(), MediaPickerResultHandler {
         get() = AppBarStatus.Hidden
 
     private val viewModel: AddProductWithAIViewModel by viewModels()
+
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
@@ -66,8 +67,10 @@ class AddProductWithAIFragment : BaseFragment(), MediaPickerResultHandler {
                 is NavigateToAIProductNameBottomSheet -> navigateToAIProductName(event.initialName)
                 is NavigateToProductDetailScreen -> findNavController().navigateSafely(
                     directions = NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
-                        isAIContent = true
+                        mode = ProductDetailFragment.Mode.ShowProduct(
+                            remoteProductId = event.productId,
+                            afterGeneratedWithAi = true,
+                        )
                     ),
                     navOptions = navOptions {
                         popUpTo(R.id.addProductWithAIFragment) { inclusive = true }

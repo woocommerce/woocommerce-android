@@ -41,6 +41,7 @@ class RefundByItemsFragment :
     OnCheckedChangeListener,
     OnFeeLineCheckedChangeListener {
     @Inject lateinit var currencyFormatter: CurrencyFormatter
+
     @Inject lateinit var imageMap: ProductImageMap
 
     private var _binding: FragmentRefundByItemsBinding? = null
@@ -112,11 +113,6 @@ class RefundByItemsFragment :
             viewModel.onFeesRefundMainSwitchChanged(isChecked)
             binding.issueRefundFeesSection.root.isVisible = isChecked
         }
-
-        // TODO: Temporarily disabled, this will be used in a future release - do not remove
-//        issueRefund_productsTotal.setOnClickListener {
-//            viewModel.onProductRefundAmountTapped()
-//        }
     }
 
     private fun setupObservers() {

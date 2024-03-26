@@ -8,6 +8,14 @@
     android:orientation="vertical"
     tools:context="com.woocommerce.android.ui.products.variations.attributes.RenameAttributeFragment">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        tools:title="@string/app_name" />
+
     <com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
         android:id="@+id/attributeName"
         android:layout_width="match_parent"

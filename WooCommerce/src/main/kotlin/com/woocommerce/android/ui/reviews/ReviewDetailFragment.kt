@@ -55,6 +55,7 @@ class ReviewDetailFragment :
     BaseFragment(R.layout.fragment_review_detail),
     BackPressListener {
     @Inject lateinit var uiMessageResolver: UIMessageResolver
+
     @Inject lateinit var productImageMap: ProductImageMap
 
     private val viewModel: ReviewDetailViewModel by viewModels()
@@ -153,7 +154,7 @@ class ReviewDetailFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is Exit -> exitDetailView()
+                is Exit -> findNavController().popBackStack()
                 is NavigateBackFromNotification -> exitReviewDetailOpenedFromNotification()
                 is Reply -> navigateToReply()
             }
@@ -239,16 +240,6 @@ class ReviewDetailFragment :
             skeletonView.show(binding.container, R.layout.skeleton_notif_detail, delayed = true)
         } else {
             skeletonView.hide()
-        }
-    }
-
-    private fun exitDetailView() {
-        if (isStateSaved) {
-            runOnStartFunc = { findNavController().popBackStack() }
-        } else {
-            findNavController().navigateSafely(
-                ReviewDetailFragmentDirections.actionReviewDetailFromNotificationToReviewListFragment()
-            )
         }
     }
 

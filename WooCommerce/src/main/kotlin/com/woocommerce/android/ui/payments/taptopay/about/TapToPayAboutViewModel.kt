@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.ui.login.storecreation.countrypicker.LocalCountriesRepository
+import com.woocommerce.android.ui.common.LocalCountriesRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider

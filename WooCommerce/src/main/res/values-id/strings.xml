@@ -1,11 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-02-20 09:54:04+0000
+Translation-Revision-Date: 2024-03-20 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">Harap tunggu…</string>
+    <string name="product_update_stock_status_dialog_title">Memperbarui status stok</string>
+    <string name="product_update_stock_status_error">Terjadi masalah. Coba lagi.</string>
+    <string name="product_update_stock_status_completed">Memperbarui status stok</string>
+    <string name="product_update_stock_status_variable_products">Produk variabel tidak dapat diperbarui</string>
+    <string name="product_update_stock_status_managed_products">Produk terkelola tidak dapat diperbarui</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 produk variabel akan diabaikan.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 produk dengan jumlah stok terkelola akan diabaikan.</string>
+    <string name="product_update_stock_status_update_count_singular">Status stok akan diperbarui untuk 1 produk.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d produk variabel akan diabaikan.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d produk dengan jumlah stok terkelola akan diabaikan.</string>
+    <string name="product_update_stock_status_update_count">Status stok akan diperbarui untuk %1$d produk.</string>
+    <string name="product_update_stock_status_current_status_single">Status stok saat ini %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">Status stok saat ini beragam</string>
+    <string name="product_update_stock_status_done">SELESAI</string>
+    <string name="product_update_stock_status_title">Perbarui Status Stok</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Login dengan kredensial situs Anda</string>
+    <string name="settings_woo_plugin_version">Versi WooCommerce</string>
+    <string name="settings_option_installed_plugins">Plugin Terpasang</string>
+    <string name="settings_plugins">Plugin</string>
+    <string name="settings_notifs_restore_chaching_sound_description">Bunyi pemberitahuan pesanan telah diubah, gunakan tombol ini untuk mengembalikan bunyi \'cring cring\'.</string>
+    <string name="product_selection_menu_update_stock_status">Perbarui status stok</string>
+    <string name="order_detail_trash_order_dialog_message">Ingin memindahkan pesanan ini ke tempat sampah?</string>
+    <string name="order_detail_move_to_trash">Pindahkan ke tempat sampah</string>
+    <string name="order_creation_recalculate_button">Hitung ulang</string>
+    <string name="order_creation_scan_products">Pindai produk</string>
+    <string name="order_creation_tablet_mode_fragment_title">Ringkasan Pesanan</string>
+    <string name="orderlist_order_trashed_error">Error saat memindahkan pesanan ke tempat sampah</string>
+    <string name="orderlist_order_trashed">Pesanan dipindahkan ke tempat sampah</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Ups! Tampaknya situs Anda mengalami masalah.\n\nHubungi penyedia hosting Anda untuk mendapatkan bantuan lebih lanjut.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Ups! Tampaknya terjadi masalah dengan koneksi Jetpack Anda.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami dan kami siap membantu Anda.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Ups! Tampaknya kami tidak dapat menangani respons situs Anda.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami dan kami siap membantu Anda.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Ups! Tampaknya situs Anda merespons terlalu lama.\n\nHubungi penyedia hosting Anda untuk mendapatkan bantuan lebih lanjut.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Ups! Tampaknya saat ini kami tidak dapat terhubung dengan WordPress.com.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami dan kami siap membantu Anda.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">Tampaknya Anda tidak terhubung ke internet.\n\nPastikan Wi-Fi Anda aktif. Jika Anda menggunakan data seluler, aktifkan di pengaturan perangkat Anda.</string>
+    <string name="product_detail_product_not_selected">Produk tidak dipilih</string>
+    <string name="orderlist_connectivity_tool_read_more_action">Baca Selengkapnya</string>
+    <string name="orderlist_connectivity_tool_contact_support_action">Hubungi Dukungan</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Pesanan situs Anda</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Situs Anda</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Server WordPress.com</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Koneksi Internet</string>
+    <string name="orderlist_connectivity_tool_title">Uji Konektivitas</string>
+    <string name="my_store_custom_range_content_description">Tambahkan statistik rentang tanggal kustom</string>
+    <string name="blaze_campaign_creation_location_search_no_results_message">Lokasi tidak ditemukan.\nCoba lagi.</string>
+    <string name="order_detail_attribution_session_page_views">Kunjungan halaman sesi</string>
+    <string name="order_detail_attribution_device_type">Jenis perangkat</string>
+    <string name="order_detail_attribution_campaign">Sedang</string>
+    <string name="order_detail_attribution_medium">Sedang</string>
+    <string name="order_detail_attribution_source">Sumber</string>
+    <string name="order_detail_attribution_source_type">Jenis sumber</string>
+    <string name="order_detail_attribution_unknown_origin">Tidak diketahui</string>
+    <string name="order_detail_attribution_mobile_origin">Aplikasi Seluler</string>
+    <string name="order_detail_attribution_admin_origin">Admin web</string>
+    <string name="order_detail_attribution_direct_origin">Langsung</string>
+    <string name="order_detail_attribution_utm_origin">Sumber: %1$s</string>
+    <string name="order_detail_attribution_referral_origin">Referensi: %1$s</string>
+    <string name="order_detail_attribution_organic_origin">Organik: %1$s</string>
+    <string name="order_detail_attribution_origin">Asal</string>
+    <string name="order_detail_attribution_header">Atribusi pesanan</string>
+    <string name="orderdetail_message_customer_using_telegram">Hubungi dengan Telegram</string>
+    <string name="orderdetail_message_customer_using_whatsapp">Hubungi dengan WhatsApp</string>
+    <string name="orderfilters_selected_filter_fallback_display_value">ID: %d</string>
+    <string name="orderfilters_customer_filter">Pelanggan</string>
+    <string name="orderfilters_product_filter">Produk</string>
+    <string name="customer_picker_guest">Tamu</string>
+    <string name="customer_picker_guest_customer_not_allowed_message">Pengguna ini adalah tamu sehingga tidak dapat digunakan untuk menyaring pesanan.</string>
+    <string name="orderlist_timeout_error_message">Coba lagi nanti atau hubungi kami dan kami siap membantu Anda</string>
+    <string name="orderlist_timeout_error_title">Situs tidak kunjung merespons</string>
+    <string name="show_details">Tampilkan Detail</string>
+    <string name="order_creation_payment_shipping_tax_label">Pajak Pengiriman</string>
+    <string name="customize_analytics">Sesuaikan Analitik</string>
     <string name="blaze_campaign_creation_error">Terjadi kesalahan.\nKami tidak bisa membuat kampanye Anda.</string>
     <string name="blaze_campaign_creation_error_media_fetch">Gagal mengambil detail gambar kampanye</string>
     <string name="blaze_campaign_creation_error_media_upload">Gagal mengunggah gambar kampanye.</string>
@@ -38,14 +110,13 @@ Language: id
     <string name="blaze_campaign_preview_missing_image_dialog_text">Tambahkan gambar untuk kampanye Blaze</string>
     <string name="drag_handle">Handle seret</string>
     <string name="analytic_cards">Kartu Analitik</string>
-    <string name="manage_analytics">Kelola Analitik</string>
     <string name="see_report">Lihat Laporan</string>
     <string name="blaze_campaign_edit_ad_destination_site_url_option">Beranda situs</string>
     <string name="blaze_campaign_edit_ad_destination_product_url_option">URL produk</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">Parameter URL</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">URL Tujuan</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">Masukkan secara manual</string>
-    <string name="blaze_campaign_creation_location_search_failed_message">Lokasi tidak ditemukan.\nCoba lagi.</string>
+    <string name="blaze_campaign_creation_location_search_failed_message">Gagal mencari.\nCoba lagi</string>
     <string name="blaze_campaign_creation_location_search_message">Mulai ketik negara, provinsi, atau kota untuk melihat pilihan yang tersedia</string>
     <string name="blaze_campaign_payment_summary_terms_and_conditions">Dengan mengeklik \"Kirim kampanye\", Anda menyetujui &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Ketentuan Layanan&lt;/u&gt;&lt;/a&gt; dan &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;Kebijakan Iklan&lt;/u&gt;&lt;/a&gt; serta menyepakati metode pembayaran untuk penagihan sesuai anggaran dan durasi yang dipilih. &lt;a href=\'learnMore\'&gt;&lt;u&gt;Baca selengkapnya&lt;/u&gt;&lt;/a&gt; tentang cara kerja anggaran dan pembayaran untuk Pos Dipromosikan.</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">Kirim kampanye</string>
@@ -544,7 +615,6 @@ Language: id
     <string name="coupon_selector_empty_list_message">Anda belum membuat kupon apa pun. Buat kupon untuk diterapkan ke pesanan ini.</string>
     <string name="coupon_selector_empty_list_button">Buka Kupon</string>
     <string name="order_creation_select_coupon">Pilih kupon</string>
-    <string name="signup_get_started_button">Buat toko baru</string>
     <string name="coupon_create_coupon_creation_failed">Gagal membuat kupon</string>
     <string name="coupon_create_coupon_created">Kupon dibuat</string>
     <string name="coupon_create_save_button">Buat</string>
@@ -1200,13 +1270,11 @@ Language: id
     <string name="analytics_revenue_no_data">Tidak ada pendapatan dalam periode ini</string>
     <string name="analytics_revenue_card_title">Pendapatan</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
-    <string name="analytics_see_more">Lihat Selengkapnya</string>
     <string name="signup_api_generic_error">Maaf, kami tidak dapat membuat akun dengan kredensial yang diberikan. Coba alamat email lain.</string>
     <string name="signup_password_not_secure_enough">Kata sandi Anda tidak memenuhi pedoman keamanan kami. Coba gunakan kata sandi yang lebih rumit.</string>
     <string name="signup_password_too_short">Kata sandi Anda terlalu pendek. Gunakan kata sandi yang terdiri dari sedikitnya 6 karakter.</string>
     <string name="signup_email_invalid_input">Masukkan alamat email yang valid.</string>
     <string name="signup_email_exist_input">Akun dengan email ini sudah ada.</string>
-    <string name="login_create_an_account">Buat Akun</string>
     <string name="login_try_another_email">Coba Alamat Lainnya</string>
     <string name="date_timeframe_custom_date_range_title">Rentang tanggal kustom</string>
     <string name="date_timeframe_custom">Kustom</string>

@@ -15,6 +15,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -26,6 +27,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.viewModels
@@ -40,6 +42,7 @@ import com.woocommerce.android.model.SubscriptionPeriod.Month
 import com.woocommerce.android.model.SubscriptionPeriod.Week
 import com.woocommerce.android.model.SubscriptionPeriod.Year
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
@@ -59,8 +62,6 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
 
     private val trialViewModel: ProductSubscriptionFreeTrialViewModel by viewModels()
 
-    override fun getFragmentTitle() = getString(R.string.product_subscription_free_trial_title)
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -74,7 +75,8 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
                             period = state.period,
                             isError = state.isError,
                             onTrialLengthUpdated = { trialViewModel.onLengthChanged(it) },
-                            onTrialPeriodUpdated = { trialViewModel.onPeriodChanged(it) }
+                            onTrialPeriodUpdated = { trialViewModel.onPeriodChanged(it) },
+                            onBackPressed = { trialViewModel.onExitRequested() }
                         )
                     }
                 }
@@ -95,6 +97,7 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
                 is Exit -> {
                     findNavController().navigateUp()
                 }
+
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(KEY_SUBSCRIPTION_FREE_TRIAL_RESULT, event.data)
                 }
@@ -117,71 +120,82 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
         period: SubscriptionPeriod,
         isError: Boolean,
         onTrialLengthUpdated: (Int) -> Unit,
-        onTrialPeriodUpdated: (SubscriptionPeriod) -> Unit
+        onTrialPeriodUpdated: (SubscriptionPeriod) -> Unit,
+        onBackPressed: () -> Unit
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-        ) {
-            Card(
-                shape = RectangleShape,
+        Scaffold(
+            topBar = {
+                Toolbar(
+                    title = stringResource(id = R.string.product_subscription_free_trial_title),
+                    onNavigationButtonClick = onBackPressed,
+                )
+            }
+        ) { paddingValues ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
+                    .padding(paddingValues),
             ) {
+                Card(
+                    shape = RectangleShape,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .background(colorResource(id = color.color_surface))
+                            .padding(dimensionResource(id = dimen.major_100)),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = if (length == 0) "" else length.toString(),
+                            isError = isError,
+                            onValueChange = { input ->
+                                val trialLength = if (input.isNotBlank()) {
+                                    input.filter { it.isDigit() }.toIntOrNull() ?: 0
+                                } else {
+                                    0
+                                }
+                                onTrialLengthUpdated(trialLength)
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            modifier = Modifier
+                                .weight(.3f)
+                                .padding(end = dimensionResource(id = dimen.major_100))
+                        )
+                        WcExposedDropDown(
+                            items = items.toTypedArray(),
+                            onSelected = { onTrialPeriodUpdated(it) },
+                            currentValue = period,
+                            mapper = { it.getPeriodString(resourceProvider, length) },
+                            modifier = Modifier
+                                .weight(.7f)
+                                .background(colorResource(id = color.color_surface))
+                        )
+                    }
+                }
+
                 Row(
                     modifier = Modifier
-                        .background(colorResource(id = color.color_surface))
                         .padding(dimensionResource(id = dimen.major_100)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedTextField(
-                        value = if (length == 0) "" else length.toString(),
-                        isError = isError,
-                        onValueChange = { input ->
-                            val trialLength = if (input.isNotBlank()) {
-                                input.filter { it.isDigit() }.toIntOrNull() ?: 0
-                            } else {
-                                0
-                            }
-                            onTrialLengthUpdated(trialLength)
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_deprecated_info_outline_24dp),
+                        contentDescription = "",
+                        tint = colorResource(id = if (isError) color.color_error else color.color_on_surface_medium),
                         modifier = Modifier
-                            .weight(.3f)
-                            .padding(end = dimensionResource(id = dimen.major_100))
+                            .align(Alignment.Top)
                     )
-                    WcExposedDropDown(
-                        items = items.toTypedArray(),
-                        onSelected = { onTrialPeriodUpdated(it) },
-                        currentValue = period,
-                        mapper = { it.getPeriodString(resourceProvider, length) },
+                    Text(
+                        text = resourceProvider.getString(R.string.product_subscription_free_trial_info),
+                        style = MaterialTheme.typography.caption,
+                        color = colorResource(id = if (isError) color.color_error else color.color_on_surface_medium),
                         modifier = Modifier
-                            .weight(.7f)
-                            .background(colorResource(id = color.color_surface))
+                            .align(Alignment.Top)
+                            .padding(start = dimensionResource(id = dimen.major_100))
                     )
                 }
-            }
-
-            Row(
-                modifier = Modifier
-                    .padding(dimensionResource(id = dimen.major_100)),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_deprecated_info_outline_24dp),
-                    contentDescription = "",
-                    tint = colorResource(id = if (isError) color.color_error else color.color_on_surface_medium),
-                    modifier = Modifier
-                        .align(Alignment.Top)
-                )
-                Text(
-                    text = resourceProvider.getString(R.string.product_subscription_free_trial_info),
-                    style = MaterialTheme.typography.caption,
-                    color = colorResource(id = if (isError) color.color_error else color.color_on_surface_medium),
-                    modifier = Modifier
-                        .align(Alignment.Top)
-                        .padding(start = dimensionResource(id = dimen.major_100))
-                )
             }
         }
     }
@@ -195,7 +209,8 @@ class ProductSubscriptionFreeTrialFragment : BaseFragment(), BackPressListener {
             period = Day,
             isError = true,
             onTrialLengthUpdated = {},
-            onTrialPeriodUpdated = {}
+            onTrialPeriodUpdated = {},
+            onBackPressed = {}
         )
     }
 }

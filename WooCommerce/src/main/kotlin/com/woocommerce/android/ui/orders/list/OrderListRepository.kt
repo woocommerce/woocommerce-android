@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
@@ -17,6 +18,7 @@ import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
+import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WCGatewayStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
@@ -27,6 +29,7 @@ class OrderListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val coroutineDispatchers: CoroutineDispatchers,
     private val orderStore: WCOrderStore,
+    private val orderUpdateStore: OrderUpdateStore,
     private val gatewayStore: WCGatewayStore,
     private val selectedSite: SelectedSite
 ) {
@@ -61,7 +64,9 @@ class OrderListRepository @Inject constructor(
                 is Cancellation -> RequestResult.ERROR
                 is Success -> result.value
             }
-        } else RequestResult.NO_ACTION_NEEDED
+        } else {
+            RequestResult.NO_ACTION_NEEDED
+        }
     }
 
     suspend fun getCachedOrderStatusOptions(): Map<String, WCOrderStatusModel> {
@@ -89,13 +94,32 @@ class OrderListRepository @Inject constructor(
                 if (result.isError) {
                     WooLog.e(ORDERS, "${result.error.type.name}: ${result.error.message}")
                     RequestResult.ERROR
-                } else RequestResult.SUCCESS
-            } else RequestResult.NO_ACTION_NEEDED
+                } else {
+                    RequestResult.SUCCESS
+                }
+            } else {
+                RequestResult.NO_ACTION_NEEDED
+            }
         }
     }
 
     fun getAllPaymentGateways(site: SiteModel): List<WCGatewayModel> {
         return gatewayStore.getAllGateways(site)
+    }
+
+    suspend fun trashOrder(orderId: Long): Result<Unit> {
+        val result = orderUpdateStore.deleteOrder(
+            orderId = orderId,
+            site = selectedSite.get(),
+            trash = true
+        )
+
+        return if (result.isError) {
+            WooLog.e(ORDERS, "Error trashing order: ${result.error.message}")
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
     }
 
     @Suppress("unused")
