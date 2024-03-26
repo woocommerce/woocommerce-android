@@ -69,9 +69,16 @@ fun ApplicationPasswordTutorialScreen(
             modifier = modifier.align(alignment = Alignment.CenterHorizontally)
         )
 
-        Text(stringResource(id = R.string.login_app_password_instructions_step_3))
+        Text(stringResource(
+            id = R.string.login_app_password_instructions_step_3),
+            modifier = modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
+        )
         Divider()
-        Text(stringResource(id = R.string.login_app_password_instructions_footer))
+
+        Text(stringResource(
+            id = R.string.login_app_password_instructions_footer),
+            modifier = modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
+        )
         Divider()
 
         Button(
