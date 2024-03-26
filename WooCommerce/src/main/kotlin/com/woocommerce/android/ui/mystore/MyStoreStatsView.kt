@@ -86,8 +86,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
 
-    private var isChartValueSelected = false
-
     private var skeletonView = SkeletonView()
 
     private var isRequestingStats = false
@@ -145,6 +143,10 @@ class MyStoreStatsView @JvmOverloads constructor(
     private lateinit var coroutineScope: CoroutineScope
     private val chartUserInteractions = MutableSharedFlow<Unit>()
     private lateinit var chartUserInteractionsJob: Job
+
+    private var isChartValueSelected = false
+
+    private var isJetpackVisitorStatsUnavailable = false
 
     @Suppress("LongParameterList")
     fun initView(
@@ -441,6 +443,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun updateVisitorsValue(date: String) {
+        if (isJetpackVisitorStatsUnavailable) return
         if (statsTimeRangeSelection.revenueStatsGranularity == StatsGranularity.HOURS) {
             // The visitor stats don't support hours granularity, so we need to hide them
             visitorsValue.isVisible = false
@@ -528,6 +531,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
+        isJetpackVisitorStatsUnavailable = false
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
         showTotalVisitorStats()
     }
@@ -539,6 +543,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun handleJetpackUnavailableVisitorStats() {
+        isJetpackVisitorStatsUnavailable = true
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
         binding.statsViewRow.visitorsValueTextview.isVisible = false
         binding.statsViewRow.emptyVisitorStatsIcon.apply {
@@ -548,6 +553,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun showTotalVisitorStats() {
+        if (isJetpackVisitorStatsUnavailable) return
         if (statsTimeRangeSelection.isTotalVisitorsUnavailable()) {
             // When using custom ranges, the total visitors value is not accurate, so we hide it
             hideVisitorStatsForCustomRange()
