@@ -58,6 +58,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import kotlin.math.round
+import kotlin.time.Duration.Companion.days
 
 @FlowPreview
 class MyStoreStatsView @JvmOverloads constructor(
@@ -436,7 +437,8 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun updateVisitorsValue(date: String) {
-        if (statsTimeRangeSelection.selectionType == SelectionType.TODAY) {
+        if (statsTimeRangeSelection.revenueStatsGranularity == StatsGranularity.HOURS) {
+            // The visitor stats don't support hours granularity, so we need to hide them
             visitorsValue.isVisible = false
             visitorsValue.setText(R.string.emdash)
             binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
