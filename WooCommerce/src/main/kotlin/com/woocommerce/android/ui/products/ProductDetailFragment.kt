@@ -44,8 +44,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
-import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
-import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Loading
