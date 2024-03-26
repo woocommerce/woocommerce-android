@@ -450,11 +450,15 @@
     <string name="analytics_total_orders_title">Total Orders</string>
     <string name="analytics_avg_orders_title">Average Order Value</string>
     <string name="analytics_products_list_items_sold">Items sold</string>
+    <string name="analytics_bundles_list_items_sold">Bundles sold</string>
     <string name="analytics_products_card_title">Products</string>
     <string name="analytics_products_list_header_title">Products</string>
+    <string name="analytics_bundles_list_header_title">Bundles</string>
     <string name="analytics_products_list_header_subtitle">Items sold</string>
+    <string name="analytics_bundles_list_header_subtitle">Bundles sold</string>
     <string name="analytics_products_list_item_description">Net sales: %1$s</string>
     <string name="analytics_session_card_title">Sessions</string>
+    <string name="analytics_bundles_card_title">Bundles</string>
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
     <string name="analytics_item">item</string>
