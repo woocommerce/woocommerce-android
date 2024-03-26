@@ -2,11 +2,17 @@ package com.woocommerce.android.ui.login.applicationpassword
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -26,7 +32,11 @@ fun ApplicationPasswordTutorialScreen(
     onContinueClicked: () -> Unit,
     onContactSupportClicked: () -> Unit
 ) {
-    Column(modifier) {
+    Column(modifier = modifier
+        .verticalScroll(rememberScrollState())
+        .fillMaxSize()
+        .padding(dimensionResource(id = R.dimen.major_100))
+    ) {
         Text("We couldn't log in into your store")
         Text("This could because your store has some extra security steps in place.")
         Divider()
@@ -39,11 +49,16 @@ fun ApplicationPasswordTutorialScreen(
         )
         Divider()
 
-        Button(onClick = onContinueClicked) {
+        Button(
+            onClick = onContinueClicked,
+            modifier = modifier.fillMaxWidth()
+        ) {
             Text("Continue")
         }
 
-        Button(onClick = onContactSupportClicked) {
+        Button(onClick = onContactSupportClicked,
+            modifier = modifier.fillMaxWidth()
+        ) {
             Text("Contact support")
         }
     }
