@@ -21,7 +21,6 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToHelpFragmentEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToMainActivityEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToNewToWooEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToStoreCreationEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.ShowWooUpgradeDialogEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.NoStoreState
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerState.StoreListState
@@ -339,24 +338,6 @@ class SitePickerViewModelTest : BaseUnitTest() {
             assertThat(sites?.first()?.isSelected).isTrue
             assertThat(event).isEqualTo(NavigateToMainActivityEvent)
             verify(repository, times(2)).verifySiteWooAPIVersion(sites?.first()?.site!!)
-        }
-
-    @Test
-    fun `given login with wp email, when no stores are available, then trigger store creation flow`() =
-        testBlocking {
-            givenTheScreenIsFromLogin(calledFromLogin = true)
-            givenThatSiteVerificationIsCompleted()
-            whenSitesAreFetched(sitesFromDb = emptyList(), sitesFromApi = emptyList())
-            whenever(appPrefsWrapper.getIsNewSignUp()).thenReturn(false)
-
-            whenViewModelIsCreated()
-            advanceUntilIdle()
-            val event = viewModel.event.captureValues().last()
-            val sitePickerState = viewModel.sitePickerViewStateData.liveData.captureValues().last()
-
-            assertThat(event).isEqualTo(NavigateToStoreCreationEvent)
-            assertThat(sitePickerState.currentSitePickerState).isEqualTo(NoStoreState)
-            verify(appPrefsWrapper).markAsNewSignUp(false)
         }
 
     @Test

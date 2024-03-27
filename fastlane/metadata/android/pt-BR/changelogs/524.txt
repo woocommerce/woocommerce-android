@@ -1,0 +1,2 @@
+17.8:
+Obtenha a última atualização do app do WooCommerce! Faça login sem problemas com suas credenciais em sites conectados ao Jetpack como uma alternativa ao login com o e-mail do WP.com. A lista de produtos agora atualiza de imediato. Aliás, nunca foi tão fácil gerenciar seu inventário: conheça a funcionalidade de atualização do status do estoque em massa. Para sua conveniência, agora você pode mover os pedidos direto para a lixeira. Por fim, otimizamos a criação de pedidos para tablets! Aproveite 💜

@@ -109,7 +109,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onDescriptionChanged(description: String) {
-        updateSuggestion(AiSuggestionForAd(_viewState.value.tagLine, description.take(TAGLINE_MAX_LENGTH)))
+        updateSuggestion(AiSuggestionForAd(_viewState.value.tagLine, description.take(DESCRIPTION_MAX_LENGTH)))
     }
 
     fun onLocalImageSelected(uri: String) {

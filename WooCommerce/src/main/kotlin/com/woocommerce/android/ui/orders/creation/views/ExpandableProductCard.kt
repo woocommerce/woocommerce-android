@@ -168,6 +168,8 @@ fun ExpandableProductCard(
                 }
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
             style = MaterialTheme.typography.body2,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             color = colorResource(id = R.color.color_on_surface_disabled)
         )
         if (!isExpanded && product.productInfo.hasDiscount) {
@@ -209,6 +211,8 @@ fun ExpandableProductCard(
                         .constrainAs(quantity) {
                             start.linkTo(name.start)
                             top.linkTo(stock.bottom)
+                            end.linkTo(price.start)
+                            width = Dimension.fillToConstraints
                         }
                         .padding(
                             start = dimensionResource(id = R.dimen.major_100),
@@ -216,6 +220,8 @@ fun ExpandableProductCard(
                             bottom = dimensionResource(id = R.dimen.major_100),
                         ),
                     style = MaterialTheme.typography.body2,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     text = getQuantityWithTotalText(product),
                     color = colorResource(id = R.color.color_on_surface_disabled)
                 )
@@ -223,6 +229,7 @@ fun ExpandableProductCard(
                     modifier = Modifier.constrainAs(price) {
                         end.linkTo(chevron.start)
                         top.linkTo(quantity.top)
+                        start.linkTo(quantity.end)
                     },
                     style = MaterialTheme.typography.body2,
                     text = product.productInfo.priceAfterDiscount,
@@ -682,7 +689,9 @@ fun AmountPickerPreview() {
     }
 }
 
+@Preview(widthDp = 220)
 @Preview
+@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES, widthDp = 220)
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ExpandableProductCardPreview() {
@@ -699,11 +708,11 @@ fun ExpandableProductCardPreview() {
             isStockManaged = true,
             stockQuantity = 3.0,
             stockStatus = ProductStockStatus.InStock,
-            pricePreDiscount = "$10",
-            priceTotal = "$30",
-            priceSubtotal = "$30",
+            pricePreDiscount = "$1000",
+            priceTotal = "$3000",
+            priceSubtotal = "$3000",
             discountAmount = "$5",
-            priceAfterDiscount = "$25",
+            priceAfterDiscount = "$2995",
             hasDiscount = true,
             isConfigurable = false,
             productType = ProductType.SIMPLE

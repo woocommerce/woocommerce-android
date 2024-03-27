@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.login.UnifiedLoginTracker
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAccountMismatchScreen
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToAddStoreEvent
-import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToStoreCreationEvent
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitePickerEvent.NavigateToWPComWebView
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.Header
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
@@ -91,11 +90,7 @@ class SitePickerViewModel @Inject constructor(
         }
         updateSiteViewDetails()
         loadAndDisplayUserInfo()
-        if (appPrefsWrapper.getIsNewSignUp()) {
-            onEmptyStoresList()
-        } else {
-            loadAndDisplaySites()
-        }
+        loadAndDisplaySites()
         if (selectedSiteId.value == null && selectedSite.exists()) {
             selectedSiteId.value = selectedSite.getSelectedSiteId()
         }
@@ -193,7 +188,6 @@ class SitePickerViewModel @Inject constructor(
         if (sites.isEmpty()) {
             when {
                 loginSiteAddress != null -> showAccountMismatchScreen(loginSiteAddress!!)
-                navArgs.openedFromLogin -> onEmptyStoresList()
                 else -> loadNoStoreView()
             }
             return
@@ -244,16 +238,6 @@ class SitePickerViewModel @Inject constructor(
         if (navArgs.openedFromLogin && wooSites.size == 1) {
             onSiteSelected(wooSites.first())
             onContinueButtonClick(isAutoLogin = true)
-        }
-    }
-
-    private fun onEmptyStoresList() {
-        startStoreCreationFlow()
-        launch {
-            // Delay to avoid flickering between empty stores screen and store creation flow transition
-            @Suppress("MagicNumber")
-            delay(200)
-            loadNoStoreView()
         }
     }
 
@@ -434,7 +418,6 @@ class SitePickerViewModel @Inject constructor(
 
     fun onAddStoreClick() {
         analyticsTrackerWrapper.track(AnalyticsEvent.SITE_PICKER_ADD_A_STORE_TAPPED)
-        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_STORE_PICKER)
         triggerEvent(NavigateToAddStoreEvent)
     }
 
@@ -632,15 +615,6 @@ class SitePickerViewModel @Inject constructor(
         fetchSitesFromApi(showSkeleton = true)
     }
 
-    private fun startStoreCreationFlow() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.SITE_CREATION_FLOW_STARTED,
-            mapOf(AnalyticsTracker.KEY_SOURCE to appPrefsWrapper.getStoreCreationSource())
-        )
-        appPrefsWrapper.markAsNewSignUp(newSignUp = false)
-        triggerEvent(NavigateToStoreCreationEvent)
-    }
-
     private fun trackLoginEvent(
         currentFlow: UnifiedLoginTracker.Flow? = null,
         currentStep: UnifiedLoginTracker.Step? = null,
@@ -719,7 +693,6 @@ class SitePickerViewModel @Inject constructor(
         object NavigateToEmailHelpDialogEvent : SitePickerEvent()
         object NavigateToNewToWooEvent : SitePickerEvent()
         object NavigateToAddStoreEvent : SitePickerEvent()
-        object NavigateToStoreCreationEvent : SitePickerEvent()
         data class NavigateToHelpFragmentEvent(val origin: HelpOrigin) : SitePickerEvent()
         data class NavigateToWPComWebView(
             val url: String,

@@ -108,7 +108,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="visible"
-                app:optionTitle="@string/store_creation_store_name_settings_option"
+                app:optionTitle="@string/settings_store_name"
                 tools:visibility="visible" />
 
             <!--

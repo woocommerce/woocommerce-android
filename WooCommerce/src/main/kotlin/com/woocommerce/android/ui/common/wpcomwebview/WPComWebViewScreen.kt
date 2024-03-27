@@ -15,19 +15,7 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.Disp
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode.REGULAR
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartViewModel
 import org.wordpress.android.fluxc.network.UserAgent
-
-@Composable
-fun PlanUpgradeViewScreen(viewViewModel: PlanUpgradeStartViewModel) {
-    WPComWebViewScreen(
-        viewState = viewViewModel.viewState,
-        wpcomWebViewAuthenticator = viewViewModel.wpComWebViewAuthenticator,
-        userAgent = viewViewModel.userAgent,
-        onUrlLoaded = viewViewModel::onUrlLoaded,
-        onClose = viewViewModel::onClose
-    )
-}
 
 @Composable
 fun WPComWebViewScreen(viewViewModel: WPComWebViewViewModel) {

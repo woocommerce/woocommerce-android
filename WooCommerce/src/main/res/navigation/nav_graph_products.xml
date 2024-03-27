@@ -544,7 +544,14 @@
     <action
         android:id="@+id/action_productCategoriesFragment_to_addProductCategoryFragment"
         app:destination="@id/nav_graph_add_product_category" />
-
+    <action
+        android:id="@+id/action_productCategoriesFragment_to_editProductCategoryFragment"
+        app:destination="@id/nav_graph_add_product_category">
+        <argument
+            android:name="productCategory"
+            app:argType="com.woocommerce.android.model.ProductCategory"
+            app:nullable="false" />
+    </action>
     <action
         android:id="@+id/action_global_aztecEditorFragment"
         app:destination="@id/aztecEditorFragment" />
