@@ -400,6 +400,10 @@ class ProductListFragment :
                     productListViewModel.onOpenProduct(event.productId, null)
                 }
 
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductChanges -> {
+                    productListViewModel.onProductChanges(event.hasChanges)
+                }
+
                 else -> event.isHandled = false
             }
         }

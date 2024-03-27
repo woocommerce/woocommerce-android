@@ -81,6 +81,7 @@ class ProductListViewModel @Inject constructor(
         private const val KEY_PRODUCT_OPENED = "key_product_opened"
     }
 
+    private var productHasChanges: Boolean = false
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList.map {
         openFirstLoadedProductOnTablet(it)
@@ -462,6 +463,11 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onOpenProduct(productId: Long, sharedView: View?) {
+        if (productHasChanges) {
+            productHasChanges = false
+            return
+        }
+
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED,
             mapOf(
@@ -482,6 +488,10 @@ class ProductListViewModel @Inject constructor(
                 sharedView = sharedView,
             )
         )
+    }
+
+    fun onProductChanges(hasChanges: Boolean) {
+        productHasChanges = hasChanges
     }
 
     fun isProductHighlighted(productId: Long) = if (isTablet()) productId == openedProductId else false
