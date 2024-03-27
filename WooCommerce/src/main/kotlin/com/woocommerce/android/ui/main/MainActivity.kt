@@ -661,7 +661,7 @@ class MainActivity :
         startActivityForResult(intent, RequestCodes.SETTINGS)
     }
 
-    override fun showAnalytics(targetPeriod: StatsTimeRangeSelection.SelectionType) {
+    override fun showAnalytics(targetPeriod: StatsTimeRangeSelection) {
         val action = MyStoreFragmentDirections.actionMyStoreToAnalytics(targetPeriod)
         navController.navigateSafely(action)
     }

@@ -241,11 +241,9 @@ class MyStoreViewModel @Inject constructor(
 
     fun onViewAnalyticsClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
-        val targetPeriod = when (val state = revenueStatsState.value) {
-            is RevenueStatsViewState.Content -> state.statsRangeSelection.selectionType
-            else -> SelectionType.TODAY
+        selectedDateRange.value?.let {
+            triggerEvent(MyStoreEvent.OpenAnalytics(it))
         }
-        triggerEvent(MyStoreEvent.OpenAnalytics(targetPeriod))
     }
 
     fun onShareStoreClicked() {
@@ -510,7 +508,7 @@ class MyStoreViewModel @Inject constructor(
             val productId: Long
         ) : MyStoreEvent()
 
-        data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
+        data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MyStoreEvent()
 
         data object ShowPrivacyBanner : MyStoreEvent()
 
