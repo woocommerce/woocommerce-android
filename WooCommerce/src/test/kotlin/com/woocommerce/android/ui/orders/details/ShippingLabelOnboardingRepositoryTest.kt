@@ -120,6 +120,21 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `Given WC legacy is ready, then isShippingPluginReady is true`() {
+
+    }
+
+    @Test
+    fun `Given WC legacy shipping is not ready and Shipping plugin is, then isShippingPluginReady is true`() {
+
+    }
+
+    @Test
+    fun `Given both WC legacy and shipping plugins are not ready, then isShippingPluginReady is false`() {
+
+    }
+
     private fun givenWcShippingPlugin(
         installed: Boolean,
         active: Boolean,
