@@ -17,6 +17,7 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 
 @ExperimentalCoroutinesApi
 class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
@@ -122,17 +123,41 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `Given WC legacy shipping is ready, then isShippingPluginReady is true`() {
+        // Given
+        givenWCLegacyShippingPlugin(installed = true, active = true)
+        givenWCShippingPlugin(installed = false, active = false)
 
+        // When
+        val isShippingPluginReady = sut.isShippingPluginReady
+
+        // Then
+        assertThat(isShippingPluginReady).isTrue
     }
 
     @Test
     fun `Given WC legacy shipping is not ready and Shipping plugin is, then isShippingPluginReady is true`() {
+        // Given
+        givenWCLegacyShippingPlugin(installed = false, active = false)
+        givenWCShippingPlugin(installed = true, active = true)
 
+        // When
+        val isShippingPluginReady = sut.isShippingPluginReady
+
+        // Then
+        assertThat(isShippingPluginReady).isTrue
     }
 
     @Test
     fun `Given both WC legacy and shipping plugins are not ready, then isShippingPluginReady is false`() {
+        // Given
+        givenWCLegacyShippingPlugin(installed = false, active = false)
+        givenWCShippingPlugin(installed = false, active = false)
 
+        // When
+        val isShippingPluginReady = sut.isShippingPluginReady
+
+        // Then
+        assertThat(isShippingPluginReady).isFalse
     }
 
     private fun givenWCLegacyShippingPlugin(
