@@ -384,7 +384,10 @@ class ProductListFragment :
                 }
 
                 is ShowDiscardProductChangesConfirmationDialog -> {
-                    showDiscardProductChangesConfirmationDialog(event)
+                    showDiscardProductChangesConfirmationDialog(
+                        event.productName,
+                        event.productId
+                    )
                 }
 
                 else -> event.isHandled = false
@@ -425,14 +428,14 @@ class ProductListFragment :
         findNavController().navigateSafely(action)
     }
 
-    private fun showDiscardProductChangesConfirmationDialog(event: ShowDiscardProductChangesConfirmationDialog) {
+    private fun showDiscardProductChangesConfirmationDialog(productName: String, productId: Long) {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.product_list_unsaved_product_unselected_title, event.productName))
+            .setTitle(getString(R.string.product_list_unsaved_product_unselected_title, productName))
             .setMessage(R.string.product_list_unsaved_product_unselected_message)
             .setCancelable(false)
             .setPositiveButton(R.string.dialog_ok) { _, _ ->
                 productListViewModel.productHasChanges = false
-                productListViewModel.onOpenProduct(event.productId, null)
+                productListViewModel.onOpenProduct(productId, null)
             }
             .setNegativeButton(R.string.cancel, null)
             .show()

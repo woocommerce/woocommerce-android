@@ -463,7 +463,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onOpenProduct(productId: Long, sharedView: View?) {
-        if (productHasChanges) {
+        if (productHasChanges && isTablet()) {
             triggerEvent(
                 ProductListEvent.ShowDiscardProductChangesConfirmationDialog(
                     productId,
