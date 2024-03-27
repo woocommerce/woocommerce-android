@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.details
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import javax.inject.Inject
 
@@ -19,16 +20,12 @@ class ShippingLabelOnboardingRepository @Inject constructor(
     }
 
     val isShippingPluginReady: Boolean by lazy {
-        val legacyPluginInfo = orderDetailRepository.getWooServicesPluginInfo()
-        val isLegacyPluginInfoReady = legacyPluginInfo.isInstalled && legacyPluginInfo.isActive &&
-            (legacyPluginInfo.version ?: "0.0.0").semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
+        orderDetailRepository.getWooServicesPluginInfo()
+            .takeIf { it.isLegacyPluginInfoReady() }
+            ?.let { return@lazy true }
 
-        if (isLegacyPluginInfoReady) {
-            true
-        } else {
-            val shippingPluginInfo = orderDetailRepository.getWooShippingPluginInfo()
-            shippingPluginInfo.isInstalled && shippingPluginInfo.isActive
-        }
+        val shippingPluginInfo = orderDetailRepository.getWooShippingPluginInfo()
+        shippingPluginInfo.isInstalled && shippingPluginInfo.isActive
     }
 
     fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
@@ -51,5 +48,10 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         } else {
             false
         }
+    }
+
+    private fun WooPlugin.isLegacyPluginInfoReady(): Boolean {
+        val pluginVersion = version ?: "0.0.0"
+        return isInstalled && isActive && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
     }
 }
