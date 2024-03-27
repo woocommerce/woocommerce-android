@@ -37,7 +37,6 @@ import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.UNREAD_FILTERED
 
 class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? = null) : LinearLayout(ctx, attrs) {
     private val binding = WcEmptyViewBinding.inflate(LayoutInflater.from(context), this, true)
-    private val minimumHeightDp = MINIMUM_HEIGHT_DP
 
     enum class EmptyViewType {
         DASHBOARD,
@@ -67,7 +66,7 @@ class WCEmptyView @JvmOverloads constructor(ctx: Context, attrs: AttributeSet? =
         val parentView = this.parent as? View
         parentView?.let {
             val parentHeightDp = it.height / context.resources.displayMetrics.density
-            isSufficient = parentHeightDp >= minimumHeightDp
+            isSufficient = parentHeightDp >= MINIMUM_HEIGHT_DP
         }
         return isSufficient
     }
