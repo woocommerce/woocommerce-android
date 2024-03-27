@@ -355,11 +355,9 @@ class ProductDetailFragment :
         }
 
         viewModel.hasChanges.observe(viewLifecycleOwner) { hasChanges ->
-            if (hasChanges) {
-                productsCommunicationViewModel.pushEvent(
-                    ProductsCommunicationViewModel.CommunicationEvent.ProductHasChanges
-                )
-            }
+            productsCommunicationViewModel.pushEvent(
+                ProductsCommunicationViewModel.CommunicationEvent.ProductChanges(hasChanges)
+            )
         }
 
         observeEvents(viewModel)
