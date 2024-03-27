@@ -21,11 +21,13 @@ class ShippingLabelOnboardingRepository @Inject constructor(
 
     val isShippingPluginReady: Boolean by lazy {
         orderDetailRepository.getWooServicesPluginInfo()
-            .takeIf { it.isLegacyPluginInfoReady() }
-            ?.let { return@lazy true }
+            .takeIf {
+                val pluginVersion = it.version ?: "0.0.0"
+                it.isPluginReady() && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
+            }?.let { return@lazy true }
 
-        val shippingPluginInfo = orderDetailRepository.getWooShippingPluginInfo()
-        shippingPluginInfo.isInstalled && shippingPluginInfo.isActive
+        orderDetailRepository.getWooShippingPluginInfo()
+            .isPluginReady()
     }
 
     fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
@@ -50,8 +52,5 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         }
     }
 
-    private fun WooPlugin.isLegacyPluginInfoReady(): Boolean {
-        val pluginVersion = version ?: "0.0.0"
-        return isInstalled && isActive && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
-    }
+    private fun WooPlugin.isPluginReady() = isInstalled && isActive
 }
