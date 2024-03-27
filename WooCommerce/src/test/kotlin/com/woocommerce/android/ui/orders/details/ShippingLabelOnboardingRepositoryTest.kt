@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingReposito
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.Companion.SUPPORTED_WCS_CURRENCY
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -17,7 +18,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import org.assertj.core.api.Assertions.assertThat
 
 @ExperimentalCoroutinesApi
 class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
