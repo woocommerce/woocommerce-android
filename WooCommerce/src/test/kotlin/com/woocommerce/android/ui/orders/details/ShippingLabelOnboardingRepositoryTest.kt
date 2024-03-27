@@ -46,6 +46,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        givenWCShippingPlugin(installed = false, active = false)
         whenever(selectedSite.getSelectedSiteId()).thenReturn(SITE_ID)
     }
 
