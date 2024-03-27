@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -24,6 +25,7 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
@@ -32,6 +34,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.aztec.AztecEditorFragment
@@ -124,6 +127,8 @@ class ProductDetailFragment :
 
     private val productsCommunicationViewModel: ProductsCommunicationViewModel by activityViewModels()
 
+    private val navArgs: ProductDetailFragmentArgs by navArgs()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
@@ -152,6 +157,34 @@ class ProductDetailFragment :
         )
         initializeViews(savedInstanceState)
         initializeViewModel()
+        handleOnePaneToTwoPaneConversion()
+    }
+
+    /**
+     * When product details open in one pane mode and the screen size changes to two pane mode,
+     * we need to handle the back stack and navigate to the product list fragment
+     * to show selected product in the right pane.
+     */
+    private fun handleOnePaneToTwoPaneConversion() {
+        val isScreenLargerThanCompact = requireContext().windowSizeClass != WindowSizeClass.Compact
+        val isProductListFragmentUpInBackStack =
+            findNavController().previousBackStackEntry?.destination?.id == R.id.products
+        if (isScreenLargerThanCompact && isProductListFragmentUpInBackStack) {
+            val mode = navArgs.mode
+            when (mode) {
+                is Mode.ShowProduct -> {
+                    findNavController().popBackStack()
+                    productsCommunicationViewModel.pushEvent(
+                        ProductsCommunicationViewModel.CommunicationEvent.ProductSelected(mode.remoteProductId)
+                    )
+                }
+                is Mode.Loading, is Mode.Empty -> {
+                    findNavController().popBackStack()
+                }
+                is Mode.AddNewProduct -> {
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
