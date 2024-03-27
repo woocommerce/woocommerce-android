@@ -2,6 +2,7 @@
 18.0
 -----
 - [*] Products: Improvements on the products photos screens [https://github.com/woocommerce/woocommerce-android/pull/11131]
+- [**] Products: Fixes for 2 to 1 (and visa-versa) panes transitions [https://github.com/woocommerce/woocommerce-android/pull/11159]
 
 17.9
 -----
