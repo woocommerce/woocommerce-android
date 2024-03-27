@@ -32,11 +32,7 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out">
-            <argument
-                android:name="rangeSelection"
-                app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection" />
-        </action>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_myStore_to_onboardingFragment"
             app:destination="@id/storeOnboardingFragment" />
