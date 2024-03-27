@@ -88,7 +88,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private val rangeSelectionState: MutableStateFlow<StatsTimeRangeSelection> = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = navArgs.targetGranularity.generateLocalizedSelectionData()
+        initialValue = navArgs.rangeSelection
     )
 
     private val mutableState = MutableStateFlow(
