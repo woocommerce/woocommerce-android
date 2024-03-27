@@ -260,6 +260,11 @@ class OrderDetailRepository @Inject constructor(
         return WooPlugin(info != null, info?.isActive ?: false, info?.version)
     }
 
+    fun getWooShippingPluginInfo(): WooPlugin {
+        val info = wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_SHIPPING)
+        return WooPlugin(info != null, info?.isActive ?: false, info?.version)
+    }
+
     suspend fun getOrderDetailsPluginsInfo(): Map<String, WooPlugin> {
         // Add WOO_CORE to the list to make sure if there is data in the plugins table
         val plugins = listOf(

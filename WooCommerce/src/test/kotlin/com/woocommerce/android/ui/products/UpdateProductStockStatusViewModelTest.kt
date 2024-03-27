@@ -390,6 +390,64 @@ class UpdateProductStockStatusViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given all products are OutOfStock, when viewModel is initialized, then OutOfStock is pre-selected`() =
+        testBlocking {
+            // Given
+            val stockStatusInfos = listOf(
+                ProductStockStatusInfo(
+                    productId = 1L,
+                    stockStatus = ProductStockStatus.OutOfStock,
+                    manageStock = false,
+                    isVariable = false
+                ),
+                ProductStockStatusInfo(
+                    productId = 2L,
+                    stockStatus = ProductStockStatus.OutOfStock,
+                    manageStock = false,
+                    isVariable = false
+                )
+            )
+            mockFetchStockStatuses(stockStatusInfos)
+            setupViewModel(stockStatusInfos.map { it.productId })
+
+            // When
+            var state: UpdateStockStatusUiState? = null
+            viewModel.viewState.observeForever { state = it }
+
+            // Then
+            assertThat(state?.currentProductStockStatus).isEqualTo(ProductStockStatus.OutOfStock)
+        }
+
+    @Test
+    fun `given products have mixed stock statuses, when viewModel is initialized, then InStock is pre-selected`() =
+        testBlocking {
+            // Given
+            val stockStatusInfos = listOf(
+                ProductStockStatusInfo(
+                    productId = 1L,
+                    stockStatus = ProductStockStatus.OutOfStock,
+                    manageStock = false,
+                    isVariable = false
+                ),
+                ProductStockStatusInfo(
+                    productId = 2L,
+                    stockStatus = ProductStockStatus.InStock,
+                    manageStock = false,
+                    isVariable = false
+                )
+            )
+            mockFetchStockStatuses(stockStatusInfos)
+            setupViewModel(stockStatusInfos.map { it.productId })
+
+            // When
+            var state: UpdateStockStatusUiState? = null
+            viewModel.viewState.observeForever { state = it }
+
+            // Then
+            assertThat(state?.currentProductStockStatus).isEqualTo(ProductStockStatus.InStock)
+        }
+
     private fun setupViewModel(selectedProductIds: List<Long>) {
         viewModel = UpdateProductStockStatusViewModel(
             savedStateHandle = UpdateProductStockStatusFragmentArgs(

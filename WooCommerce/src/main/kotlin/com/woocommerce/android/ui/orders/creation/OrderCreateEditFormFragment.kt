@@ -106,7 +106,7 @@ class OrderCreateEditFormFragment :
     BackPressListener {
     private companion object {
         private const val TABLET_PANES_WIDTH_RATIO = 0.5F
-        private const val XL_TABLET_PANES_WIDTH_RATIO = 0.68F
+        private const val XL_TABLET_PANES_WIDTH_RATIO = 0.6F
     }
     private val viewModel by fixedHiltNavGraphViewModels<OrderCreateEditViewModel>(R.id.nav_graph_order_creations)
     private val sharedViewModel: ProductSelectorSharedViewModel by activityViewModels()

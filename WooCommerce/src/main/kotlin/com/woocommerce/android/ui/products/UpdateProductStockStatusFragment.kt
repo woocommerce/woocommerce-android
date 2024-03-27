@@ -31,11 +31,11 @@ class UpdateProductStockStatusFragment : DialogFragment() {
     companion object {
         const val UPDATE_STOCK_STATUS_EXIT_STATE_KEY = "update_stock_status_exit_state_key"
 
-        private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
-        private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
+        private const val LANDSCAPE_WIDTH_RATIO = 0.5f
+        private const val LANDSCAPE_HEIGHT_RATIO = 0.8f
 
-        private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.8f
-        private const val TABLET_PORTRAIT_HEIGHT_RATIO = 0.5f
+        private const val PORTRAIT_WIDTH_RATIO = 0.7f
+        private const val PORTRAIT_HEIGHT_RATIO = 0.5f
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,30 +74,22 @@ class UpdateProductStockStatusFragment : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        if (isTabletLandscape()) {
-            dialog?.window?.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
-            )
-        } else if (isTabletPortrait()) {
-            dialog?.window?.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_PORTRAIT_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_PORTRAIT_HEIGHT_RATIO).toInt()
-            )
-        }
-    }
+        val windowSizeClass = context?.windowSizeClass
+        val width = DisplayUtils.getWindowPixelWidth(requireContext())
+        val height = DisplayUtils.getWindowPixelHeight(requireContext())
 
-    private fun isTabletLandscape(): Boolean {
         val isLandscape = DisplayUtils.isLandscape(context)
 
-        return (context?.windowSizeClass != WindowSizeClass.Compact) && isLandscape
-    }
+        val (widthRatio, heightRatio) = when {
+            windowSizeClass == WindowSizeClass.Compact -> 1f to 1f
+            isLandscape -> LANDSCAPE_WIDTH_RATIO to LANDSCAPE_HEIGHT_RATIO
+            else -> PORTRAIT_WIDTH_RATIO to PORTRAIT_HEIGHT_RATIO
+        }
 
-    private fun isTabletPortrait(): Boolean {
-        val isTablet = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
-        val isPortrait = !DisplayUtils.isLandscape(context)
-
-        return isTablet && isPortrait
+        dialog?.window?.setLayout(
+            (width * widthRatio).toInt(),
+            (height * heightRatio).toInt()
+        )
     }
 
     private fun setupObservers() {

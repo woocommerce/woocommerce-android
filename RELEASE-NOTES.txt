@@ -2,6 +2,7 @@
 18.0
 -----
 - [*] Products: Improvements on the products photos screens [https://github.com/woocommerce/woocommerce-android/pull/11131]
+- [**] Products: Fixes for 2 to 1 (and visa-versa) panes transitions [https://github.com/woocommerce/woocommerce-android/pull/11159]
 
 17.9
 -----
@@ -10,6 +11,7 @@
 - [*] Products: Fixed a bug when in 2 pane mode bulk update menu item was not available [https://github.com/woocommerce/woocommerce-android/pull/11127]
 - [*] Products: Fixed a bug when the removal of a product's picture was not saved [https://github.com/woocommerce/woocommerce-android/pull/11124]
 - [*] Reviews: Optimised speed of showing reviews [https://github.com/woocommerce/woocommerce-android/pull/11083]
+- [***] Blaze: Enables native campaign creation [https://github.com/woocommerce/woocommerce-android/issues/10457]
 
 17.8
 -----

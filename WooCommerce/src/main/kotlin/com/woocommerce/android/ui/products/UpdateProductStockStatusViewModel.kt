@@ -159,9 +159,16 @@ class UpdateProductStockStatusViewModel @Inject constructor(
                 StockStatusState.Common(distinctStatuses.firstOrNull() ?: ProductStockStatus.InStock)
             }
 
+            val commonProductStockStatus = if (distinctStatuses.size == 1) {
+                distinctStatuses.first()
+            } else {
+                ProductStockStatus.InStock
+            }
+
             stockStatusUiState.update {
                 it.copy(
                     statusMessage = statusMessage,
+                    currentProductStockStatus = commonProductStockStatus,
                     currentStockStatusState = stockStatusState
                 )
             }

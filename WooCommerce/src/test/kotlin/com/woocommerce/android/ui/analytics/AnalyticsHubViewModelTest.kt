@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics
 
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -92,7 +93,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     private val updateStats: UpdateAnalyticsHubStats = mock()
     private val observeLastUpdate: ObserveLastUpdate = mock()
-    private val savedState = AnalyticsHubFragmentArgs(targetGranularity = TODAY).toSavedStateHandle()
+    private lateinit var savedState: SavedStateHandle
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
     private val feedbackRepository: FeedbackRepository = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
@@ -127,6 +128,14 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         localeProvider = mock {
             on { provideLocale() } doReturn testLocale
         }
+        savedState = AnalyticsHubFragmentArgs(
+            TODAY.generateSelectionData(
+                calendar = testCalendar,
+                locale = testLocale,
+                referenceStartDate = Date(),
+                referenceEndDate = Date()
+            )
+        ).toSavedStateHandle()
     }
 
     @Test
