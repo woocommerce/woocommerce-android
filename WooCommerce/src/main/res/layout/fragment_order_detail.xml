@@ -1,219 +1,219 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/orderRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.woocommerce.android.ui.orders.details.OrderDetailFragment">
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_collapseMode="pin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name" />
+
+    <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+        android:id="@+id/orderRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        tools:context="com.woocommerce.android.ui.orders.details.OrderDetailFragment">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            style="@style/Widget.Woo.Toolbar"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/toolbar_height"
-            android:elevation="@dimen/appbar_elevation"
-            app:layout_collapseMode="pin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:title="@string/app_name" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <View
-            android:id="@+id/app_bar_divider"
-            android:layout_gravity="bottom"
-            style="@style/Woo.Divider" />
-
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/scrollView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <!-- The FrameLayout is needed to display the skeleton view dynamically -->
-            <FrameLayout
-                android:id="@+id/skeleton_view"
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scrollView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:id="@+id/orderDetail_container"
+                <!-- The FrameLayout is needed to display the skeleton view dynamically -->
+                <FrameLayout
+                    android:id="@+id/skeleton_view"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    tools:ignore="UselessParent">
+                    android:layout_height="wrap_content">
 
-                    <!-- Shipping Labels work in progress notice card -->
-                    <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
-                        android:id="@+id/orderDetail_shippingLabelsWipCard"
-                        style="@style/Woo.Card.Expandable"
+                    <LinearLayout
+                        android:id="@+id/orderDetail_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
+                        android:orientation="vertical"
+                        tools:ignore="UselessParent">
 
-                    <!-- Order Status -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
-                        android:id="@+id/orderDetail_orderStatus"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <!-- Order Details AI -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailAICard
-                        android:id="@+id/orderDetailsAICard"
-                        style="@style/Woo.Card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
-                    <!-- Order Shipping method warning card -->
-                    <com.woocommerce.android.ui.orders.OrderDetailShippingMethodNoticeCard
-                        android:id="@+id/orderDetail_shippingMethodNotice"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
-                    <!-- Product List -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailProductListView
-                        android:id="@+id/orderDetail_productList"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clipToPadding="false"
-                        android:contentDescription="@string/products"
-                        android:visibility="gone"
-                        app:contentPaddingTop="@dimen/minor_00"
-                        tools:visibility="visible" />
-
-                    <!-- Custom Amounts List -->
-                    <androidx.compose.ui.platform.ComposeView
-                        android:id="@+id/orderDetail_customAmount"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clipToPadding="false"
-                        android:contentDescription="@string/custom_amounts" />
-
-                    <!-- Custom fields button -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomFieldsCard
-                        android:id="@+id/customFieldsCard"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
-                    <!-- Refunds Info -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailRefundsView
-                        android:id="@+id/orderDetail_refundsInfo"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clipToPadding="false"
-                        android:contentDescription="@string/refunds"
-                        android:visibility="gone" />
-
-                    <!-- Install WC shipping plugin banner -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailInstallWcShippingBanner
-                        android:id="@+id/orderDetail_installWcShippingBanner"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/minor_100"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
-                    <!-- Shipping Labels List -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailShippingLabelsView
-                        android:id="@+id/orderDetail_shippingLabelList"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clipToPadding="false"
-                        android:contentDescription="@string/shipping_labels"
-                        android:visibility="gone" />
-
-                    <!-- Payments -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailPaymentInfoView
-                        android:id="@+id/orderDetail_paymentInfo"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:animateLayoutChanges="true"
-                        android:focusable="true"
-                        app:contentPaddingTop="@dimen/minor_00" />
-
-                    <!-- Customer Info -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomerInfoView
-                        android:id="@+id/orderDetail_customerInfo"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailSubscriptionListView
-                        android:id="@+id/orderDetail_subscriptionList"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone" />
-
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailGiftCardListView
-                        android:id="@+id/orderDetail_giftCardList"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone" />
-
-                    <!-- Shipment Tracking -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailShipmentTrackingListView
-                        android:id="@+id/orderDetail_shipmentList"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clipToPadding="false"
-                        android:contentDescription="@string/order_shipment_tracking_section_cd"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
-                    <androidx.compose.ui.platform.ComposeView
-                        android:id="@+id/orderDetail_orderAttributionInfo"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <!-- Order Notes -->
-                    <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderNotesView
-                        android:id="@+id/orderDetail_noteList"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <!-- Trash button -->
-                    <androidx.cardview.widget.CardView
-                        style="@style/Woo.Card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/major_100"
-                        app:contentPadding="@dimen/major_100" >
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/orderDetail_trash"
-                            style="@style/Woo.Button.TextButton"
+                        <!-- Shipping Labels work in progress notice card -->
+                        <com.woocommerce.android.ui.products.FeatureWIPNoticeCard
+                            android:id="@+id/orderDetail_shippingLabelsWipCard"
+                            style="@style/Woo.Card.Expandable"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/order_detail_move_to_trash"
-                            android:textAllCaps="false"
-                            android:textColor="@color/color_error" />
-                    </androidx.cardview.widget.CardView>
+                            android:visibility="gone"
+                            tools:visibility="visible" />
 
+                        <!-- Order Status -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderStatusView
+                            android:id="@+id/orderDetail_orderStatus"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
 
-                </LinearLayout>
-            </FrameLayout>
-        </androidx.core.widget.NestedScrollView>
-    </LinearLayout>
-</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+                        <!-- Order Details AI -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailAICard
+                            android:id="@+id/orderDetailsAICard"
+                            style="@style/Woo.Card"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+
+                        <!-- Order Shipping method warning card -->
+                        <com.woocommerce.android.ui.orders.OrderDetailShippingMethodNoticeCard
+                            android:id="@+id/orderDetail_shippingMethodNotice"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+
+                        <!-- Product List -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailProductListView
+                            android:id="@+id/orderDetail_productList"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:contentDescription="@string/products"
+                            android:visibility="gone"
+                            app:contentPaddingTop="@dimen/minor_00"
+                            tools:visibility="visible" />
+
+                        <!-- Custom Amounts List -->
+                        <androidx.compose.ui.platform.ComposeView
+                            android:id="@+id/orderDetail_customAmount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:contentDescription="@string/custom_amounts" />
+
+                        <!-- Custom fields button -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomFieldsCard
+                            android:id="@+id/customFieldsCard"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+
+                        <!-- Refunds Info -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailRefundsView
+                            android:id="@+id/orderDetail_refundsInfo"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:contentDescription="@string/refunds"
+                            android:visibility="gone" />
+
+                        <!-- Install WC shipping plugin banner -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailInstallWcShippingBanner
+                            android:id="@+id/orderDetail_installWcShippingBanner"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/minor_100"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+
+                        <!-- Shipping Labels List -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailShippingLabelsView
+                            android:id="@+id/orderDetail_shippingLabelList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:contentDescription="@string/shipping_labels"
+                            android:visibility="gone" />
+
+                        <!-- Payments -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailPaymentInfoView
+                            android:id="@+id/orderDetail_paymentInfo"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:animateLayoutChanges="true"
+                            android:focusable="true"
+                            app:contentPaddingTop="@dimen/minor_00" />
+
+                        <!-- Customer Info -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomerInfoView
+                            android:id="@+id/orderDetail_customerInfo"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailSubscriptionListView
+                            android:id="@+id/orderDetail_subscriptionList"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone" />
+
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailGiftCardListView
+                            android:id="@+id/orderDetail_giftCardList"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone" />
+
+                        <!-- Shipment Tracking -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailShipmentTrackingListView
+                            android:id="@+id/orderDetail_shipmentList"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:contentDescription="@string/order_shipment_tracking_section_cd"
+                            android:visibility="gone"
+                            tools:visibility="visible" />
+
+                        <androidx.compose.ui.platform.ComposeView
+                            android:id="@+id/orderDetail_orderAttributionInfo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- Order Notes -->
+                        <com.woocommerce.android.ui.orders.details.views.OrderDetailOrderNotesView
+                            android:id="@+id/orderDetail_noteList"
+                            style="@style/Woo.Card.WithoutPadding"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- Trash button -->
+                        <androidx.cardview.widget.CardView
+                            style="@style/Woo.Card"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/major_100"
+                            app:contentPadding="@dimen/major_100" >
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/orderDetail_trash"
+                                style="@style/Woo.Button.TextButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/order_detail_move_to_trash"
+                                android:textAllCaps="false"
+                                android:textColor="@color/color_error" />
+                        </androidx.cardview.widget.CardView>
+
+                    </LinearLayout>
+                </FrameLayout>
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+    </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+</LinearLayout>

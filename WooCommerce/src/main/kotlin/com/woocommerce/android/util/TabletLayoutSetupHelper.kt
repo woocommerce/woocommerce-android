@@ -17,6 +17,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.windowSizeClass
+import com.woocommerce.android.ui.payments.refunds.RefundByAmountFragment
+import com.woocommerce.android.ui.payments.refunds.RefundByItemsFragment
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
@@ -60,13 +62,20 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
                     v: View,
                     savedInstanceState: Bundle?
                 ) {
-                    if (f != navHostFragment && f !is BottomSheetDialogFragment) {
+                    if (shouldSetDetailsMargins(f)) {
                         setDetailsMargins(v)
                     }
                 }
             },
             true
         )
+    }
+
+    private fun shouldSetDetailsMargins(fragment: Fragment): Boolean {
+        return fragment != navHostFragment &&
+            fragment !is BottomSheetDialogFragment &&
+            fragment !is RefundByItemsFragment &&
+            fragment !is RefundByAmountFragment
     }
 
     fun openItemDetails(
@@ -125,13 +134,13 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         val navGraphId = screen.navigation.detailsNavGraphId
         val bundle = screen.navigation.detailsInitialBundle
 
-        val existingFragment = fragmentManager.findFragmentById(R.id.detail_nav_container)
+        val existingFragment = fragmentManager.findFragmentById(screen.detailPaneContainerId)
 
         navHostFragment = if (existingFragment == null) {
             NavHostFragment.create(navGraphId, bundle).apply {
                 fragmentManager
                     .beginTransaction()
-                    .replace(R.id.detail_nav_container, this)
+                    .replace(screen.detailPaneContainerId, this)
                     .commit()
             }
         } else {
@@ -194,6 +203,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         val twoPaneLayoutGuideline: Guideline
         val listPaneContainer: View
         val detailPaneContainer: View
+        val detailPaneContainerId: Int
 
         val navigation: Navigation
 
