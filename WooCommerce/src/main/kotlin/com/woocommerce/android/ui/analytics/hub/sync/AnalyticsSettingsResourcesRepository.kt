@@ -14,12 +14,11 @@ class AnalyticsSettingsResourcesRepository @Inject constructor(
         val activePluginCards = getAnalyticPluginsCardActive()
 
         return AnalyticsCards.entries.map { card ->
-                AnalyticCardConfiguration(
-                    card = card,
-                    title = resourceProvider.getString(card.resId),
-                    isVisible = card.isPlugin.not() || card in activePluginCards
-                )
-            }
-
+            AnalyticCardConfiguration(
+                card = card,
+                title = resourceProvider.getString(card.resId),
+                isVisible = card.isPlugin.not() || card in activePluginCards
+            )
+        }
     }
 }

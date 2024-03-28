@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
-import android.util.Log
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
@@ -201,12 +200,13 @@ class UpdateAnalyticsHubStats @Inject constructor(
             ?: _productsState.update { ProductsState.Error }
     }
 
+    @Suppress("MagicNumber")
     private fun CoroutineScope.fetchBundlesDataAsync(
         rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) = async {
         delay(500)
-        Log.d("Bundle Request", "range: $rangeSelection,strategy: $fetchStrategy")
+        if (rangeSelection.currentRange.toString() == fetchStrategy.toString()) return@async
         _bundlesState.value = BundlesState.Available(
             BundleStat(
                 bundlesSold = 200,
