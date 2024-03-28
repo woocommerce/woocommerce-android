@@ -1,0 +1,7 @@
+17.9:
+- [*] Recensioner: Vi har åtgärdat en bugg som gjorde att verktygsfältet visades dubbelt för recensioner i inställningarna [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internt] Vi har tagit bort WooExpress-butiksskapande från appen [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produkter: Vi har åtgärdat en bugg som gjorde att menyvalet Massuppdatera inte var tillgängligt i tvåpanelsläge [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produkter: Vi har åtgärdat en bugg som gjorde att borttagningar av produktbilder inte sparades [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Recensioner: Vi har optimerat inläsningshastigheten för recensioner [https://github.com/woocommerce/woocommerce-android/pull/11083]
+

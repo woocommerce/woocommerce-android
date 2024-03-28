@@ -400,6 +400,8 @@
     <string name="my_store_custom_range_granularity_week">Weekly</string>
     <string name="my_store_custom_range_granularity_month">Monthly</string>
     <string name="my_store_custom_range_granularity_year">Yearly</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
 
     <!--
         Sign Up Flow
@@ -1924,6 +1926,8 @@
     <string name="product_list_filters_selected">Filters \u2022 %d</string>
     <string name="product_list_filters_show_products">Show products</string>
     <string name="product_list_filters_list_item">Selected filter option</string>
+    <string name="product_list_unsaved_product_unselected_title">You about to discard changes to %s</string>
+    <string name="product_list_unsaved_product_unselected_message">Are you sure you want to discard the changes you made to this product?</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_search_hint_active_filters">Search filtered products</string>
     <string name="product_search_all">All products</string>
