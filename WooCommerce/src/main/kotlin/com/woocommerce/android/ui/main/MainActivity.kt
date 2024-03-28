@@ -824,7 +824,6 @@ class MainActivity :
                 }
 
                 is OpenFreeTrialSurvey -> openFreeTrialSurvey()
-                is MainActivityViewModel.LaunchThemeActivation -> startThemeActivation(event.themeId)
 
                 is MainActivityViewModel.CreateNewProductUsingImages -> showAddProduct(event.imageUris)
                 is MultiLiveEvent.Event.ShowDialog -> event.showIn(this)
@@ -893,8 +892,7 @@ class MainActivity :
 
                 is TrialStatusBarState.Visible -> {
                     binding.trialBar.text = trialStatusBarFormatterFactory.create(
-                        context = this,
-                        startUpgradeFlowFactory = startUpgradeFlowFactory.create(navController)
+                        context = this
                     ).format(trialStatusBarState.daysLeft)
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
                     animateBottomBar(binding.trialBar, show = true)
@@ -958,12 +956,6 @@ class MainActivity :
         startActivity(HelpActivity.createIntent(this, HelpOrigin.ZENDESK_NOTIFICATION, null))
     }
 
-    private fun startThemeActivation(themeId: String) {
-        navController.navigateSafely(
-            NavGraphMainDirections.actionGlobalThemeActivationFragmentDialog(themeId)
-        )
-    }
-
     private fun onRestartActivityEvent(event: RestartActivityEvent) {
         intent.apply {
             when (event) {
@@ -973,10 +965,6 @@ class MainActivity :
                     putExtra(FIELD_OPENED_FROM_PUSH, true)
                     putExtra(FIELD_REMOTE_NOTIFICATION, event.notification)
                     putExtra(FIELD_PUSH_ID, event.pushId)
-                }
-
-                else -> {
-                    // continue to restart the activity
                 }
             }
         }

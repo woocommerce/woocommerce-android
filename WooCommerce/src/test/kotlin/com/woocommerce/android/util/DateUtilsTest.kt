@@ -88,11 +88,11 @@ class DateUtilsTest {
 
     @Test
     fun `getShortMonthDayStringForWeek() returns correct values`() {
-        assertEquals("Mar 12", dateUtilsUnderTest.getShortMonthDayStringForWeek("2018-W11"))
+        assertEquals("Mar 12", dateUtilsUnderTest.getShortMonthDayStringForWeek("2018-11"))
         // Jan 1 2018 happened to be a Monday, so the first day of the first week happens to also be
         // the first day of the year
-        assertEquals("Jan 1", dateUtilsUnderTest.getShortMonthDayStringForWeek("2018-W1"))
-        assertEquals("Jan 2", dateUtilsUnderTest.getShortMonthDayStringForWeek("2017-W1"))
+        assertEquals("Jan 1", dateUtilsUnderTest.getShortMonthDayStringForWeek("2018-1"))
+        assertEquals("Jan 2", dateUtilsUnderTest.getShortMonthDayStringForWeek("2017-1"))
 
         // Test for invalid value handling
         assertNull(dateUtilsUnderTest.getShortMonthDayString("22"))

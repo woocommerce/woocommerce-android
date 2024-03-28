@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-12 13:54:03+0000
+Translation-Revision-Date: 2024-03-20 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_update_stock_status_dialog_subtitle">Vänta …</string>
+    <string name="product_update_stock_status_dialog_title">Uppdateringar lagerstatus</string>
+    <string name="product_update_stock_status_error">Något gick fel. Försök igen.</string>
+    <string name="product_update_stock_status_completed">Uppdaterade lagerstatusar</string>
+    <string name="product_update_stock_status_variable_products">Variabla produkter kan inte uppdateras</string>
+    <string name="product_update_stock_status_managed_products">Hanterade produkter kan inte uppdateras</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 variabel produkt kommer att ignoreras.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 produkt med hanterad lagerkvantitet kommer att ignoreras.</string>
+    <string name="product_update_stock_status_update_count_singular">Lagerstatus kommer att uppdateras för 1 produkt.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d variabla produkter kommer att ignoreras.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d produkter med hanterad lagerkvantitet kommer att ignoreras.</string>
+    <string name="product_update_stock_status_update_count">Lagerstatus kommer att uppdateras för %1$d produkter.</string>
+    <string name="product_update_stock_status_current_status_single">Nuvarande lagerstatus är %1$s</string>
+    <string name="product_update_stock_status_current_status_mixed">Nuvarande lagerstatus är blandat</string>
+    <string name="product_update_stock_status_done">KLART</string>
+    <string name="product_update_stock_status_title">Uppdatera lagerstatus</string>
+    <string name="wp_email_input_fallback_log_in_with_site_credentials">Logga in med dina inloggningsuppgifter för webbplatsen</string>
+    <string name="settings_woo_plugin_version">WooCommerce-version</string>
+    <string name="settings_option_installed_plugins">Installerade tillägg</string>
+    <string name="settings_plugins">Tillägg</string>
+    <string name="settings_notifs_restore_chaching_sound_description">Ljudet för orderaviseringar har ändrats. Använd den här knappen för att återställa \"cha-ching\"-ljudet.</string>
+    <string name="product_selection_menu_update_stock_status">Uppdatera lagerstatus</string>
+    <string name="order_detail_trash_order_dialog_message">Vill du flytta denna beställning till papperskorgen?</string>
+    <string name="order_detail_move_to_trash">Flytta till papperskorgen</string>
+    <string name="order_creation_recalculate_button">Räkna om</string>
+    <string name="order_creation_scan_products">Skanna produkter</string>
+    <string name="order_creation_tablet_mode_fragment_title">Ordersammanfattning</string>
+    <string name="orderlist_order_trashed_error">Ett fel uppstod när ordern togs bort</string>
+    <string name="orderlist_order_trashed">Ordern borttagen</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Hoppsan! Det verkar vara ett problem med din webbplats.\n\nKontakta ditt webbhotell för att få ytterligare hjälp.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Hoppsan! Det verkar ha uppstått ett problem med din Jetpack-anslutning.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Hoppsan! Det verkar som att vi inte kan arbeta korrekt med din webbplats svar.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Hoppsan! Det verkar ta för lång tid för din webbplats att svara.\n\nKontakta ditt webbhotell för att få ytterligare hjälp.</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Hoppsan! Det verkar som att vi inte kan ansluta till WordPress.com för tillfället.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
+    <string name="orderlist_connectivity_tool_internet_check_suggestion">Det verkar som att du inte är ansluten till internet.\n\nKontrollera att ditt Wi-Fi är på. Se till att mobildata är aktiverat i dina enhetsinställningar om du använder detta.</string>
     <string name="product_detail_product_not_selected">Ingen produkt vald</string>
     <string name="orderlist_connectivity_tool_read_more_action">Läs mer</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Kontakta supporten</string>
@@ -580,7 +615,6 @@ Language: sv_SE
     <string name="coupon_selector_empty_list_message">Du har inte skapat några rabattkoder ännu. Skapa en rabattkod för att tillämpa den på denna beställning.</string>
     <string name="coupon_selector_empty_list_button">Gå till rabattkoder</string>
     <string name="order_creation_select_coupon">Välj en rabattkod</string>
-    <string name="signup_get_started_button">Skapa en ny butik</string>
     <string name="coupon_create_coupon_creation_failed">Misslyckades skapa rabattkod</string>
     <string name="coupon_create_coupon_created">Rabattkod skapad</string>
     <string name="coupon_create_save_button">Skapa</string>
@@ -1236,13 +1270,11 @@ Language: sv_SE
     <string name="analytics_revenue_no_data">Inga intäkter denna period</string>
     <string name="analytics_revenue_card_title">Intäkt</string>
     <string name="analytics_date_range_custom">%1$s – %2$s</string>
-    <string name="analytics_see_more">Se mer</string>
     <string name="signup_api_generic_error">Vi kunde inte skapa ett konto med de angivna autentiseringsuppgifterna. Prova med en annan e-postadress.</string>
     <string name="signup_password_not_secure_enough">Ditt lösenord uppfyller inte våra säkerhetsriktlinjer. Försök med ett mer komplext lösenord.</string>
     <string name="signup_password_too_short">Ditt lösenord är för kort. Välj ett lösenord som har minst 6 tecken.</string>
     <string name="signup_email_invalid_input">Ange en giltig e-postadress.</string>
     <string name="signup_email_exist_input">Ett konto med denna e-post finns redan.</string>
-    <string name="login_create_an_account">Skapa ett konto</string>
     <string name="login_try_another_email">Försök med en annan adress</string>
     <string name="date_timeframe_custom_date_range_title">Anpassat datumintervall</string>
     <string name="date_timeframe_custom">Anpassat</string>

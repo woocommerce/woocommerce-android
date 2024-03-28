@@ -36,8 +36,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_RANGE
 import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.mystore.MyStoreFragment.Companion.DEFAULT_STATS_GRANULARITY
-import com.woocommerce.android.ui.mystore.data.DateRange
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -52,7 +54,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity.HOURS
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import kotlin.math.round
@@ -67,12 +68,10 @@ class MyStoreStatsView @JvmOverloads constructor(
 
     companion object {
         private const val LINE_CHART_DOT_OFFSET = -5
-
         private const val EVENT_EMITTER_INTERACTION_DEBOUNCE = 1000L
     }
 
-    private lateinit var activeGranularity: StatsGranularity
-
+    private lateinit var statsTimeRangeSelection: StatsTimeRangeSelection
     private lateinit var selectedSite: SelectedSite
     private lateinit var dateUtils: DateUtils
     private lateinit var currencyFormatter: CurrencyFormatter
@@ -82,7 +81,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
     private var chartVisitorStats = mapOf<String, Int>()
-    private var customRange: DateRange? = null
 
     private var skeletonView = SkeletonView()
 
@@ -122,17 +120,23 @@ class MyStoreStatsView @JvmOverloads constructor(
     private val conversionValue
         get() = binding.statsViewRow.conversionValueTextView
 
+    val customRangeLabel
+        get() = binding.statsViewRow.statsCustomDateRangeTextView
+
+    private val customRangeGranularityLabel
+        get() = binding.customRangeGranularityLabel
+
+    val customRangeButton = binding.customRangeButton
+
+    val tabLayout = binding.statsTabLayout
+    private var customRangeTab: Tab? = null
+
     private lateinit var coroutineScope: CoroutineScope
     private val chartUserInteractions = MutableSharedFlow<Unit>()
     private lateinit var chartUserInteractionsJob: Job
 
-    val customRangeButton = binding.customRangeButton
-    val tabLayout = binding.statsTabLayout
-    private lateinit var customRangeTab: Tab
-
     @Suppress("LongParameterList")
     fun initView(
-        period: StatsGranularity = DEFAULT_STATS_GRANULARITY,
         selectedSite: SelectedSite,
         dateUtils: DateUtils,
         currencyFormatter: CurrencyFormatter,
@@ -141,7 +145,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         onViewAnalyticsClick: () -> Unit
     ) {
         this.selectedSite = selectedSite
-        this.activeGranularity = period
         this.dateUtils = dateUtils
         this.currencyFormatter = currencyFormatter
         this.usageTracksEventEmitter = usageTracksEventEmitter
@@ -167,21 +170,17 @@ class MyStoreStatsView @JvmOverloads constructor(
                 .collect { usageTracksEventEmitter.interacted() }
         }
 
+        customRangeButton.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
         // Create tabs and add to appbar
-        StatsGranularity.entries
-            .filterNot { it == HOURS }
-            .forEach { granularity ->
+        SUPPORTED_RANGES_ON_MY_STORE_TAB
+            .filter { it != SelectionType.CUSTOM }
+            .forEach { rangeType ->
                 val tab = tabLayout.newTab().apply {
-                    setText(getStringForGranularity(granularity))
-                    tag = granularity
+                    setText(getStringForRangeType(rangeType))
+                    tag = rangeType
                 }
                 tabLayout.addTab(tab)
             }
-        customRangeTab = tabLayout.newTab().apply {
-            setText(R.string.orderfilters_date_range_filter_custom_range)
-            view.isVisible = false
-        }
-        tabLayout.addTab(customRangeTab)
     }
 
     override fun onDetachedFromWindow() {
@@ -189,22 +188,40 @@ class MyStoreStatsView @JvmOverloads constructor(
         chartUserInteractionsJob.cancel()
     }
 
-    fun loadDashboardStats(granularity: StatsGranularity) {
-        this.activeGranularity = granularity
+    fun loadDashboardStats(selectedTimeRange: StatsTimeRangeSelection) {
+        this.statsTimeRangeSelection = selectedTimeRange
         // Track range change
         AnalyticsTracker.track(
             AnalyticsEvent.DASHBOARD_MAIN_STATS_DATE,
-            mapOf(AnalyticsTracker.KEY_RANGE to granularity.toString().lowercase())
+            mapOf(KEY_RANGE to selectedTimeRange.selectionType.toString().lowercase())
         )
         isRequestingStats = true
+        applyCustomRange(statsTimeRangeSelection)
     }
 
-    fun updateCustomDateRange(customDateRange: DateRange?) {
-        customRange = customDateRange
-        customRangeButton.isVisible = customDateRange == null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
-        customRangeTab.view.isVisible = customDateRange != null && FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
-        tabLayout.selectTab(customRangeTab)
-        tabLayout.scrollX = tabLayout.width
+    private fun applyCustomRange(selectedTimeRange: StatsTimeRangeSelection) {
+        if (selectedTimeRange.selectionType == SelectionType.CUSTOM) {
+            addCustomRangeTabIfMissing()
+            customRangeButton.isVisible = false
+            customRangeLabel.isVisible = true
+            customRangeGranularityLabel.isVisible = true
+            customRangeLabel.text = selectedTimeRange.currentRangeDescription
+            customRangeGranularityLabel.text = getStringForGranularity(selectedTimeRange.revenueStatsGranularity)
+        } else {
+            customRangeLabel.isVisible = false
+            customRangeGranularityLabel.isVisible = false
+        }
+    }
+
+    private fun addCustomRangeTabIfMissing() {
+        if (customRangeTab == null) {
+            val tab = tabLayout.newTab().apply {
+                setText(getStringForRangeType(SelectionType.CUSTOM))
+                tag = SelectionType.CUSTOM
+            }
+            customRangeTab = tab
+            tabLayout.addTab(tab)
+        }
     }
 
     fun showSkeleton(show: Boolean) {
@@ -220,12 +237,13 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun getChartXAxisLabelCount(): Int {
-        val resId = when (activeGranularity) {
-            StatsGranularity.DAYS -> R.integer.stats_label_count_days
-            StatsGranularity.WEEKS -> R.integer.stats_label_count_weeks
-            StatsGranularity.MONTHS -> R.integer.stats_label_count_months
-            StatsGranularity.YEARS -> R.integer.stats_label_count_years
-            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
+        val resId = when (statsTimeRangeSelection.selectionType) {
+            SelectionType.TODAY -> R.integer.stats_label_count_days
+            SelectionType.WEEK_TO_DATE -> R.integer.stats_label_count_weeks
+            SelectionType.MONTH_TO_DATE -> R.integer.stats_label_count_months
+            SelectionType.YEAR_TO_DATE -> R.integer.stats_label_count_years
+            SelectionType.CUSTOM -> R.integer.stats_label_count_custom_range
+            else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
         }
         val chartRevenueStatsSize = chartRevenueStats.keys.size
         val barLabelCount = context.resources.getInteger(resId)
@@ -289,9 +307,10 @@ class MyStoreStatsView @JvmOverloads constructor(
         visitorsValue.isVisible = true
         binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = false
         fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
-        updateDate(revenueStatsModel, activeGranularity)
+        updateDate(revenueStatsModel, statsTimeRangeSelection)
         updateColorForStatsHeaderValues(R.color.color_on_surface_high)
         onUserInteractionWithChart()
+        if (statsTimeRangeSelection.selectionType == SelectionType.CUSTOM) statsDateValue.isVisible = false
     }
 
     private fun onUserInteractionWithChart() {
@@ -309,7 +328,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     /**
-     * Method to update the date value for a given [revenueStatsModel] based on the [granularity]
+     * Method to update the date value for a given [revenueStatsModel] based on the [rangeType]
      * This is used to display the date bar when the **stats tab is loaded**
      * [StatsGranularity.DAYS] would be Tuesday, Aug 08
      * [StatsGranularity.WEEKS] would be Aug 4 - Aug 08
@@ -318,47 +337,73 @@ class MyStoreStatsView @JvmOverloads constructor(
      */
     private fun updateDate(
         revenueStats: RevenueStatsUiModel?,
-        granularity: StatsGranularity
+        statsTimeRangeSelection: StatsTimeRangeSelection
     ) {
         if (revenueStats?.intervalList.isNullOrEmpty()) {
             statsDateValue.visibility = View.GONE
         } else {
+            val rangeType = statsTimeRangeSelection.selectionType
             val startInterval = revenueStats?.intervalList?.first()?.interval
-            val startDate = startInterval?.let { getDateValue(it, granularity) }
+            val startDate = startInterval?.let { getDateValueFromRangeType(it, rangeType) }
 
-            val dateRangeString = when (granularity) {
-                StatsGranularity.WEEKS -> {
+            val dateRangeString = when (rangeType) {
+                SelectionType.WEEK_TO_DATE -> {
                     val endInterval = revenueStats?.intervalList?.last()?.interval
-                    val endDate = endInterval?.let { getDateValue(it, granularity) }
+                    val endDate = endInterval?.let { getDateValueFromRangeType(it, rangeType) }
                     String.format(Locale.getDefault(), "%s – %s", startDate, endDate)
                 }
-                else -> {
-                    startDate
-                }
+
+                else -> startDate
             }
-            statsDateValue.visibility = View.VISIBLE
+            if (statsTimeRangeSelection.selectionType != SelectionType.CUSTOM) statsDateValue.isVisible = true
             statsDateValue.text = dateRangeString
         }
     }
 
     /**
-     * Method to get the date value for a given [dateString] based on the [activeGranularity]
+     * Method to get the date value for a given [dateString] based on the [rangeType]
+     * This is used to populate the date bar when the **stats tab is loaded**
+     * [TODAY] would be Tuesday, Aug 08
+     * [WEEK_TO_DATE] would be Aug 4
+     * [MONTH_TO_DATE] would be August
+     * [YEAR_TO_DATE] would be 2019
+     * [CUSTOM] Any of the above formats depending on the custom range length
+     */
+    private fun getDateValueFromRangeType(
+        dateString: String,
+        rangeType: SelectionType
+    ): String {
+        return when (rangeType) {
+            SelectionType.TODAY -> dateUtils.getDayMonthDateString(dateString).orEmpty()
+            SelectionType.WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+            SelectionType.MONTH_TO_DATE -> dateUtils.getMonthString(dateString).orEmpty()
+            SelectionType.YEAR_TO_DATE -> dateUtils.getYearString(dateString).orEmpty()
+            SelectionType.CUSTOM -> getDateValueFromGranularity(
+                dateString,
+                statsTimeRangeSelection.revenueStatsGranularity
+            )
+            else -> error("Unsupported range value used in my store tab: $rangeType")
+        }.also { result -> trackUnexpectedFormat(result, dateString) }
+    }
+
+    /**
+     * Method to get the date value for a given [dateString] based on the [rangeType]
      * This is used to populate the date bar when the **stats tab is loaded**
      * [StatsGranularity.DAYS] would be Tuesday, Aug 08
      * [StatsGranularity.WEEKS] would be Aug 4
      * [StatsGranularity.MONTHS] would be August
      * [StatsGranularity.YEARS] would be 2019
      */
-    private fun getDateValue(
+    private fun getDateValueFromGranularity(
         dateString: String,
         activeGranularity: StatsGranularity
     ): String {
         return when (activeGranularity) {
+            StatsGranularity.HOURS -> dateUtils.getFriendlyDayHourString(dateString).orEmpty()
             StatsGranularity.DAYS -> dateUtils.getDayMonthDateString(dateString).orEmpty()
             StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
             StatsGranularity.MONTHS -> dateUtils.getMonthString(dateString).orEmpty()
-            StatsGranularity.YEARS -> dateUtils.getYearString(dateString).orEmpty()
-            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
+            StatsGranularity.YEARS -> dateString
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
@@ -377,13 +422,14 @@ class MyStoreStatsView @JvmOverloads constructor(
         ordersValue.text = orderCount.toString()
         updateVisitorsValue(date)
         updateConversionRate()
-        updateDateOnScrubbing(date, activeGranularity)
+        updateDateOnScrubbing(date, statsTimeRangeSelection.selectionType)
         updateColorForStatsHeaderValues(R.color.color_secondary)
         onUserInteractionWithChart()
+        statsDateValue.isVisible = true
     }
 
     private fun updateVisitorsValue(date: String) {
-        if (activeGranularity == StatsGranularity.DAYS) {
+        if (statsTimeRangeSelection.selectionType == SelectionType.TODAY) {
             visitorsValue.isVisible = false
             visitorsValue.setText(R.string.emdash)
             binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
@@ -395,22 +441,45 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     /**
-     * Method to update the date value for a given [dateString] based on the [activeGranularity]
+     * Method to update the date value for a given [dateString] based on the [SelectionType]
      * This is used to display the date bar when the **scrubbing interaction is taking place**
-     * [StatsGranularity.DAYS] would be Tuesday, Aug 08›7am
-     * [StatsGranularity.WEEKS] would be Aug 08
-     * [StatsGranularity.MONTHS] would be August›08
-     * [StatsGranularity.YEARS] would be 2019›August
+     * [SelectionType.TODAY] would be Tuesday, Aug 08›7am
+     * [SelectionType.WEEK_TO_DATE] would be Tuesday, Aug 08›7am
+     * [SelectionType.MONTH_TO_DATE] would be Aug 08
+     * [SelectionType.YEAR_TO_DATE] would be August›08
+     * [SelectionType.CUSTOM] Any of the above formats depending on the custom range length
      */
-    private fun updateDateOnScrubbing(dateString: String, activeGranularity: StatsGranularity) {
-        statsDateValue.text = when (activeGranularity) {
-            StatsGranularity.DAYS -> dateUtils.getFriendlyDayHourString(dateString).orEmpty()
-            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            StatsGranularity.MONTHS -> dateUtils.getLongMonthDayString(dateString).orEmpty()
-            StatsGranularity.YEARS -> dateUtils.getFriendlyLongMonthYear(dateString).orEmpty()
-            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
+    private fun updateDateOnScrubbing(dateString: String, rangeType: SelectionType) {
+        statsDateValue.text = when (rangeType) {
+            SelectionType.TODAY -> dateUtils.getFriendlyDayHourString(dateString).orEmpty()
+            SelectionType.WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+            SelectionType.MONTH_TO_DATE -> dateUtils.getLongMonthDayString(dateString).orEmpty()
+            SelectionType.YEAR_TO_DATE -> dateUtils.getFriendlyLongMonthYear(dateString).orEmpty()
+            SelectionType.CUSTOM -> getDisplayDateForGranularity(
+                dateString,
+                statsTimeRangeSelection.revenueStatsGranularity
+            )
+
+            else -> error("Unsupported range value used in my store tab: $rangeType")
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
+
+    /**
+     * Returns a display date for the given date and granularity [StatsGranularity]
+     * [StatsGranularity.HOURS] would be 7am, 8am, 9am
+     * [StatsGranularity.DAYS] would be Aug 1, 2, 3
+     * [StatsGranularity.WEEKS] would be 31 Jan, 5 Feb, 12 Feb, 19 Feb, 26 Feb
+     * [StatsGranularity.MONTHS] would be Sept, Oct, Nov, Dec
+     * [StatsGranularity.YEARS] would be 2019, 2020, 2021, 2022
+     */
+    private fun getDisplayDateForGranularity(dateString: String, statsGranularity: StatsGranularity): String =
+        when (statsGranularity) {
+            StatsGranularity.HOURS -> dateUtils.getShortHourString(dateString).orEmpty()
+            StatsGranularity.DAYS -> dateUtils.getDayString(dateString).orEmpty()
+            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayStringForWeek(dateString).orEmpty()
+            StatsGranularity.MONTHS -> dateUtils.getShortMonthString(dateString).orEmpty()
+            StatsGranularity.YEARS -> dateString
+        }.also { result -> trackUnexpectedFormat(result, dateString) }
 
     /**
      * Method called when a touch-gesture has ended on the chart (ACTION_UP, ACTION_CANCEL)
@@ -423,7 +492,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
-        updateDate(revenueStatsModel, activeGranularity)
+        updateDate(revenueStatsModel, statsTimeRangeSelection)
         this.revenueStatsModel = revenueStatsModel
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
@@ -594,7 +663,7 @@ class MyStoreStatsView @JvmOverloads constructor(
      * [StatsGranularity.DAYS] format is the same for both
      */
     private fun getFormattedVisitorStats(visitorStats: Map<String, Int>): Map<String, Int> {
-        return if (activeGranularity == StatsGranularity.YEARS) {
+        return if (statsTimeRangeSelection.selectionType == SelectionType.YEAR_TO_DATE) {
             visitorStats.mapKeys {
                 dateUtils.getYearMonthString(it.key) ?: it.key.take("yyyy-MM".length)
             }
@@ -635,23 +704,47 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     @StringRes
-    fun getStringForGranularity(timeframe: StatsGranularity): Int {
-        return when (timeframe) {
-            StatsGranularity.DAYS -> R.string.today
-            StatsGranularity.WEEKS -> R.string.this_week
-            StatsGranularity.MONTHS -> R.string.this_month
-            StatsGranularity.YEARS -> R.string.this_year
-            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
+    fun getStringForRangeType(rangeType: SelectionType): Int {
+        return when (rangeType) {
+            SelectionType.TODAY -> R.string.today
+            SelectionType.WEEK_TO_DATE -> R.string.this_week
+            SelectionType.MONTH_TO_DATE -> R.string.this_month
+            SelectionType.YEAR_TO_DATE -> R.string.this_year
+            SelectionType.CUSTOM -> R.string.orderfilters_date_range_filter_custom_range
+            else -> error("Unsupported range value used in my store tab: $rangeType")
         }
     }
 
-    private fun getEntryValue(dateString: String): String {
-        return when (activeGranularity) {
-            StatsGranularity.DAYS -> dateUtils.getShortHourString(dateString).orEmpty()
+    private fun getStringForGranularity(granularity: StatsGranularity): String {
+        val granularityLabel = when (granularity) {
+            StatsGranularity.HOURS -> resources.getString(R.string.my_store_custom_range_granularity_hour)
+            StatsGranularity.DAYS -> resources.getString(R.string.my_store_custom_range_granularity_day)
+            StatsGranularity.WEEKS -> resources.getString(R.string.my_store_custom_range_granularity_week)
+            StatsGranularity.MONTHS -> resources.getString(R.string.my_store_custom_range_granularity_month)
+            StatsGranularity.YEARS -> resources.getString(R.string.my_store_custom_range_granularity_year)
+        }
+        return resources.getString(R.string.my_store_custom_range_granularity_label, granularityLabel)
+    }
+
+    private fun getEntryValueFromRangeType(dateString: String): String {
+        return when (statsTimeRangeSelection.selectionType) {
+            SelectionType.TODAY -> dateUtils.getShortHourString(dateString).orEmpty()
+            SelectionType.WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+            SelectionType.MONTH_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+            SelectionType.YEAR_TO_DATE -> dateUtils.getShortMonthString(dateString).orEmpty()
+            SelectionType.CUSTOM -> getEntryValuesForCustomType(dateString)
+            else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
+        }.also { result -> trackUnexpectedFormat(result, dateString) }
+    }
+
+    private fun getEntryValuesForCustomType(dateString: String): String {
+        return when (statsTimeRangeSelection.revenueStatsGranularity) {
+            StatsGranularity.HOURS -> dateUtils.getShortHourString(dateString).orEmpty()
+            StatsGranularity.DAYS -> dateUtils.getDayString(dateString).orEmpty()
+
             StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            StatsGranularity.MONTHS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            StatsGranularity.YEARS -> dateUtils.getShortMonthString(dateString).orEmpty()
-            StatsGranularity.HOURS -> error("Hours shouldn't be used now")
+            StatsGranularity.MONTHS -> dateUtils.getShortMonthString(dateString).orEmpty()
+            StatsGranularity.YEARS -> dateString
         }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
@@ -661,7 +754,7 @@ class MyStoreStatsView @JvmOverloads constructor(
                 AnalyticsEvent.STATS_UNEXPECTED_FORMAT,
                 mapOf(
                     KEY_DATE to dateString,
-                    KEY_GRANULARITY to activeGranularity.name,
+                    KEY_GRANULARITY to statsTimeRangeSelection.selectionType.identifier,
                     KEY_RANGE to revenueStatsModel?.rangeId
                 )
             )
@@ -677,9 +770,9 @@ class MyStoreStatsView @JvmOverloads constructor(
                 // for weekly and monthly stats
                 val dateString = chartRevenueStats.keys.elementAt(index)
                 if (value == axis.mEntries.first()) {
-                    getEntryValue(dateString)
+                    getEntryValueFromRangeType(dateString)
                 } else {
-                    getLabelValue(dateString)
+                    getAxisLabelFromRangeType(dateString)
                 }
             } else {
                 ""
@@ -687,19 +780,24 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
 
         /**
-         * Displays the x-axis labels in the following format based on [StatsGranularity]
-         * [StatsGranularity.DAYS] would be 7am, 8am, 9am
-         * [StatsGranularity.WEEKS] would be Aug 31, Sept 1, 2, 3
-         * [StatsGranularity.MONTHS] would be Aug 1, 2, 3
-         * [StatsGranularity.YEARS] would be Jan, Feb, Mar
+         * Displays the x-axis labels in the following format based on [SelectionType]
+         * [SelectionType.TODAY] would be 7am, 8am, 9am
+         * [SelectionType.WEEK_TO_DATE] would be 7am, 8am, 9am
+         * [SelectionType.MONTH_TO_DATE] would be Aug 31, Sept 1, 2, 3
+         * [SelectionType.YEAR_TO_DATE] would be Aug 1, 2, 3
+         * [SelectionType.CUSTOM] Any of the above formats depending on the custom range length
          */
-        private fun getLabelValue(dateString: String): String {
-            return when (activeGranularity) {
-                StatsGranularity.DAYS -> dateUtils.getShortHourString(dateString).orEmpty()
-                StatsGranularity.WEEKS -> getWeekLabelValue(dateString)
-                StatsGranularity.MONTHS -> dateUtils.getDayString(dateString).orEmpty()
-                StatsGranularity.YEARS -> dateUtils.getShortMonthString(dateString).orEmpty()
-                StatsGranularity.HOURS -> error("Hours shouldn't be used now")
+        private fun getAxisLabelFromRangeType(dateString: String): String {
+            return when (statsTimeRangeSelection.selectionType) {
+                SelectionType.TODAY -> dateUtils.getShortHourString(dateString).orEmpty()
+                SelectionType.WEEK_TO_DATE -> getWeekLabelValue(dateString)
+                SelectionType.MONTH_TO_DATE -> dateUtils.getDayString(dateString).orEmpty()
+                SelectionType.YEAR_TO_DATE -> dateUtils.getShortMonthString(dateString).orEmpty()
+                SelectionType.CUSTOM -> getDisplayDateForGranularity(
+                    dateString,
+                    statsTimeRangeSelection.revenueStatsGranularity
+                )
+                else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
             }.also { result -> trackUnexpectedFormat(result, dateString) }
         }
 

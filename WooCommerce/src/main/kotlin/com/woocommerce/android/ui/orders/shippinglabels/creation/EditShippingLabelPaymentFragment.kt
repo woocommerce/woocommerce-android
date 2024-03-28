@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.AppUrls.FETCH_PAYMENT_METHOD_URL_PATH
 import com.woocommerce.android.NavGraphOrdersDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentEditShippingLabelPaymentBinding
@@ -34,8 +35,6 @@ import com.woocommerce.android.widgets.SkeletonView
 import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-
-private const val FETCH_PAYMENT_METHOD_URL_PATH = "me/payment-methods"
 
 @AndroidEntryPoint
 class EditShippingLabelPaymentFragment :

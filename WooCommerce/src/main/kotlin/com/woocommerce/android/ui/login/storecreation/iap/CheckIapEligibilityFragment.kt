@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -57,11 +56,6 @@ class CheckIapEligibilityFragment : BaseFragment() {
     }
 
     private fun navigateToCreateStoreSummaryStep() {
-        findNavController()
-            .navigateSafely(
-                CheckIapEligibilityFragmentDirections
-                    .actionCheckIapEligibilityFragmentToStoreCreationSummaryFragment(),
-                skipThrottling = true
-            )
+        TODO()
     }
 }

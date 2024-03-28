@@ -177,8 +177,7 @@ class ProductImagesFragment :
                 binding.addImageButton.setText(titleRes)
             }
             new.productImagesState.takeIfNotEqualTo(old?.productImagesState) {
-                updateMenuState(binding.toolbar)
-
+                requireActivity().invalidateOptionsMenu()
                 when (new.productImagesState) {
                     ProductImagesState.Browsing -> {
                         binding.addImageButton.isEnabled = true

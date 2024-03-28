@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -41,7 +40,6 @@ fun UpgradesScreen(viewModel: UpgradesViewModel) {
     val upgradesState by viewModel.upgradesState.observeAsState(Loading)
     UpgradesScreen(
         state = upgradesState,
-        onUpgradeNowClicked = viewModel::onSubscribeNowClicked,
         onReportSubscriptionIssueClicked = viewModel::onReportSubscriptionIssueClicked,
     )
 }
@@ -49,7 +47,6 @@ fun UpgradesScreen(viewModel: UpgradesViewModel) {
 @Composable
 fun UpgradesScreen(
     state: UpgradesViewState,
-    onUpgradeNowClicked: () -> Unit,
     onReportSubscriptionIssueClicked: () -> Unit
 ) {
     Scaffold { paddingValues ->
@@ -76,56 +73,54 @@ fun UpgradesScreen(
                             text = stringResource(R.string.upgrades_current_plan, state.name),
                         )
                     }
-                    if (state is TrialInProgress || state is TrialEnded) {
-                        Divider()
-                        WCOutlinedButton(
-                            onClick = onUpgradeNowClicked,
-                            modifier = Modifier.padding(vertical = 8.dp),
-                        ) {
-                            Text(stringResource(R.string.upgrades_upgrade_now))
+
+                    when (state) {
+                        is Loading -> {
+                            SkeletonView(width = 132.dp, height = 24.dp)
                         }
-                    }
 
-                    if (state is Loading) {
-                        SkeletonView(width = 132.dp, height = 24.dp)
-                    } else if (state is Error) {
-                        Row {
-                            Icon(
-                                imageVector = Icons.Default.Warning,
-                                contentDescription = null
-                            )
-                            Text(
-                                stringResource(R.string.upgrades_error_fetching_data),
-                                modifier = Modifier.padding(start = 8.dp),
-                            )
-                        }
-                    } else {
-                        Text(
-                            style = MaterialTheme.typography.caption,
-                            text = when (state) {
-                                Loading, Error -> ""
-                                is PlanEnded -> stringResource(
-                                    R.string.upgrades_current_plan_ended_caption,
-                                    state.name
+                        is Error -> {
+                            Row {
+                                Icon(
+                                    imageVector = Icons.Default.Warning,
+                                    contentDescription = null
                                 )
-                                is NonUpgradeable -> stringResource(
-                                    R.string.upgrades_non_upgradeable_caption,
-                                    state.name,
-                                    state.currentPlanEndDate
-                                )
-
-                                is TrialEnded -> stringResource(
-                                    R.string.upgrades_trial_ended_caption,
-                                    state.planToUpgrade
-                                )
-
-                                is TrialInProgress -> stringResource(
-                                    R.string.upgrades_upgradeable_caption,
-                                    state.freeTrialDuration.days,
-                                    state.daysLeftInFreeTrial,
+                                Text(
+                                    stringResource(R.string.upgrades_error_fetching_data),
+                                    modifier = Modifier.padding(start = 8.dp),
                                 )
                             }
-                        )
+                        }
+
+                        else -> {
+                            Text(
+                                style = MaterialTheme.typography.caption,
+                                text = when (state) {
+                                    Loading, Error -> ""
+                                    is PlanEnded -> stringResource(
+                                        R.string.upgrades_current_plan_ended_caption,
+                                        state.name
+                                    )
+
+                                    is NonUpgradeable -> stringResource(
+                                        R.string.upgrades_non_upgradeable_caption,
+                                        state.name,
+                                        state.currentPlanEndDate
+                                    )
+
+                                    is TrialEnded -> stringResource(
+                                        R.string.upgrades_trial_ended_caption,
+                                        state.planToUpgrade
+                                    )
+
+                                    is TrialInProgress -> stringResource(
+                                        R.string.upgrades_upgradeable_caption,
+                                        state.freeTrialDuration.days,
+                                        state.daysLeftInFreeTrial,
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -159,7 +154,6 @@ private fun TrialInProgress() {
         UpgradesScreen(
             state =
             TrialInProgress("Free Trial", Period.ofDays(14), "6 days"),
-            {},
             {}
         )
     }
@@ -173,7 +167,6 @@ private fun TrialEnded() {
     WooThemeWithBackground {
         UpgradesScreen(
             state = TrialEnded("Trial ended"),
-            {},
             {}
         )
     }
@@ -188,7 +181,6 @@ private fun NonUpgradeable() {
         UpgradesScreen(
             state =
             NonUpgradeable("eCommerce", "March 2, 2023"),
-            {},
             {}
         )
     }
@@ -200,7 +192,7 @@ private fun NonUpgradeable() {
 @Composable
 private fun PlanEnded() {
     WooThemeWithBackground {
-        UpgradesScreen(state = PlanEnded("eCommerce ended"), {}, {})
+        UpgradesScreen(state = PlanEnded("eCommerce ended"), {})
     }
 }
 
@@ -210,7 +202,7 @@ private fun PlanEnded() {
 @Composable
 private fun Loading() {
     WooThemeWithBackground {
-        UpgradesScreen(state = Loading, {}, {})
+        UpgradesScreen(state = Loading, {})
     }
 }
 
@@ -220,6 +212,6 @@ private fun Loading() {
 @Composable
 private fun Error() {
     WooThemeWithBackground {
-        UpgradesScreen(state = Error, {}, {})
+        UpgradesScreen(state = Error, {})
     }
 }

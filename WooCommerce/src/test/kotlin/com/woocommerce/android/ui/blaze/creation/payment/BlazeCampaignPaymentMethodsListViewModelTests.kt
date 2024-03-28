@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation.payment
 
+import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.captureValues
@@ -11,11 +12,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
 
     private val accountRepository: AccountRepository = mock()
+    private val blazeRepository: BlazeRepository = mock()
     private lateinit var viewModel: BlazeCampaignPaymentMethodsListViewModel
 
     suspend fun setup(
@@ -33,7 +36,8 @@ class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
             accountRepository = accountRepository,
             userAgent = mock(),
             wpComWebViewAuthenticator = mock(),
-            analyticsTrackerWrapper = mock()
+            analyticsTrackerWrapper = mock(),
+            blazeRepository = blazeRepository
         )
     }
 
@@ -98,7 +102,24 @@ class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
 
     @Test
     fun `when payment success URL is detected, then select the added payment method`() = testBlocking {
-        setup()
+        val newPayment = BlazeRepository.PaymentMethod(
+            id = "3",
+            name = "MasterCard 5678",
+            info = BlazeRepository.PaymentMethod.PaymentMethodInfo.CreditCard(
+                cardHolderName = "Jane Doe",
+                creditCardType = CreditCardType.MASTERCARD
+            )
+        )
+        setup {
+            whenever(blazeRepository.fetchPaymentMethods()).thenReturn(
+                Result.success(
+                    BlazeRepository.PaymentMethodsData(
+                        savedPaymentMethods = BlazePaymentSampleData.userPaymentMethods + newPayment,
+                        addPaymentMethodUrls = BlazePaymentSampleData.paymentMethodsUrls
+                    )
+                )
+            )
+        }
         val urls = BlazePaymentSampleData.paymentMethodsUrls
 
         val viewState = viewModel.viewState.captureValues()
@@ -108,9 +129,9 @@ class BlazeCampaignPaymentMethodsListViewModelTests : BaseUnitTest() {
             val webViewState = viewState.last()
                 as BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView
 
-            webViewState.onUrlLoaded("${urls.successUrl}?${urls.idUrlParameter}=123")
+            webViewState.onUrlLoaded(urls.successUrl)
         }.last()
 
-        assertThat(event).isEqualTo(MultiLiveEvent.Event.ExitWithResult("123"))
+        assertThat(event).isEqualTo(MultiLiveEvent.Event.ExitWithResult(newPayment.id))
     }
 }
