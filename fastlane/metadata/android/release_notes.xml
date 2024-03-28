@@ -1,68 +1,153 @@
 <ar>
-17.8:
-اكتشف آخر تحديث لدينا من تطبيق WooCommerce الخاص بك للهاتف المحمول! الآن، سجِّل الدخول بسلاسة باستخدام بيانات اعتماد موقعك على المواقع المتصلة بـ Jetpack، وذلك كبديل لتسجيل الدخول عبر البريد الإلكتروني WP.com. جرِّب التحديث الفوري لقائمة المنتجات. إضافة إلى ذلك، أصبحت إدارة مخزونك أسهل من أي وقت مضى بفضل ميزة تحديث حالة المخزون المجمعة الجديدة لدينا. للحصول على مزيد من الراحة، يمكنك الآن نقل الطلبات مباشرة إلى سلة المهملات. أخيرًا وليس آخرًا، قمنا بتحسين تدفق إنشاء الطلب في الأجهزة اللوحية! استمتع 💜
+17.9:
+- [*] المراجعات: تم إصلاح خطأ عندما كان شريط الأدوات المزدوج مرئيًا في المراجعات ضمن الإعدادات [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [داخلي] تمت إزالة إنشاء متجر WooExpress من التطبيق [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] المنتجات: تم إصلاح خطأ عندما لا يكون عنصر قائمة التحديث المجمع في الوضع المكوّن من جزأين متاحًا [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] المنتجات: تم إصلاح خطأ عند عدم حفظ إزالة صورة المنتج [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] المراجعات: تم تحسين سرعة عرض المراجعات [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </ar>
 <de-DE>
-17.8:
-Das neueste Update an der WooCommerce-Mobil-App! Als Alternative zur WP.com-E-Mail-Anmeldung kannst du dich nun auf mit Jetpack verbundenen Websites mit deinen Website-Anmeldedaten anmelden. Außerdem werden Produktlisten nun sofort aktualisiert. Die Lagerbestandsverwaltung ist dank der neuen Funktion zum Massenupdate des Lagerbestands nun einfacher als je zuvor. Du kannst Bestellungen nun direkt in den Papierkorb verschieben. Zudem wurde die Bestellerstellung für Tablets optimiert! Viel Spaß 💜
+17.9:
+– [*] Bewertungen: Fehler behoben, wodurch eine doppelte Toolbar bei den Bewertungen in den Einstellungen zu sehen war [https://github.com/woocommerce/woocommerce-android/pull/11072]
+– [*] [Intern] Die Shop-Erstellung in WooExpress wurde aus der App entfernt [https://github.com/woocommerce/woocommerce-android/issues/11115]
+– [*] Produkte: Fehler behoben, wodurch im 2-Fenster-Modus der Menüeintrag „Massenupdate“ nicht verfügbar war [https://github.com/woocommerce/woocommerce-android/pull/11127]
+– [*] Produkte: 
+ Fehler behoben, wodurch das Entfernen des Produktbildes nicht gespeichert wurde [https://github.com/woocommerce/woocommerce-android/pull/11124]– [*] Bewertungen: Erhöhte Geschwindigkeit beim Anzeigen von Bewertungen [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </de-DE>
 <es-ES>
-17.8:
-Descubre nuestra última actualización de tu aplicación móvil de WooCommerce. Ahora, accede sin problemas con las credenciales de tu sitio a los sitios conectados a Jetpack, como alternativa al acceso mediante correo electrónico de WP.com. Experimenta la actualización instantánea de la lista de productos. Además, la gestión de tu inventario es más fácil que nunca con nuestra nueva función de actualización masiva del estado de las existencias. Para mayor comodidad, ahora puedes mover los pedidos directamente a la papelera. Por último, hemos optimizado el flujo de creación de pedidos para tabletas. Que lo disfrutes 💜
+17.9:
+- [*] Reseñas: error solucionado cuando la barra de herramientas doble estaba visible en las reseñas en los ajustes [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Interno] Se ha eliminado la creación de la tienda WooExpress de la aplicación [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Productos: error solucionado cuando, en el modo de 2 paneles, el elemento del menú de actualización en lote no estaba disponible [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Productos: error solucionado cuando la imagen de un producto no se guardaba al eliminarse [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Reseñas: velocidad optimizada para mostrar las reseñas [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </es-ES>
 <fr-FR>
-17.8 :
-Découvrez la mise à jour de notre application mobile WooCommerce ! Connectez-vous avec vos identifiants de site sur les sites connectés à Jetpack, alternative à l’e-mail WP.com. Découvrez le rafraîchissement instantané de la liste de produits. Gérer votre inventaire est plus facile que jamais avec la mise à jour de l’état du stock en bloc. Vous pouvez envoyer vos commandes directement dans la corbeille. Nous avons optimisé le flux de création de commande pour les tablettes ! Profitez-en bien 💜
+17.9 :
+- [*] Avis : correction d’un bug affichant une double barre d’outils sur les avis dans les réglages [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Interne] Suppression de la création de boutique WooExpress dans l’application [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produits : correction d’un bug rendant indisponible l’élément de menu de mise à jour groupée en mode deux volets [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produits : correction d’un bug n’enregistrant pas la suppression de la photo d’un produit [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Avis : vitesse d’affichage des avis optimisée [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </fr-FR>
 <iw-IL>
-17.8:
-כדאי להתרשם מהעדכון האחרון שלנו לאפליקציה של WooCommerce לנייד! כעת, ניתן להתחבר עם פרטי הכניסה שלך לאתר בצורה יעילה דרך אתרים שמחוברים ל-Jetpack, במקום להתחבר באמצעות האימייל של WP.com. רשימת המוצרים מתרעננת עכשיו באופן מיידי. בנוסף, ניהול המלאי קל יותר הודות לאפשרות החדשה לעדכון גורף של מצב המלאי. כדי לאפשר חוויה נוחה יותר, ניתן כעת להעביר הזמנות ישירות לפח. אחרון חביב, מיטבנו את תהליך היצירה של הזמנות במכשירי טאבלט! עבודה מהנה 💜
+17.9:
+- [*] ביקורות: תיקנו באג שהציג סרגל כלים כפול בביקורות שבהגדרות [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [פנימי] הסרנו את האפשרות 'יצירת חנות WooCommerce' מהאפליקציה [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] מוצרים: תיקנו באג שמנע זמינות של פריטי תפריט בעדכון גורף בתצוגה של שני חלונות [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] מוצרים: תיקנו באג שמנע שמירה של הסרת תמונה במוצר [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] ביקורות: מיטבנו את המהירות של תצוגת הביקורות [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </iw-IL>
 <id>
-17.8:
-Temukan pembaruan terkini aplikasi seluler WooCommerce! Kini, Anda dapat login dengan lancar menggunakan kredensial situs Anda di situs yang terhubung Jetpack, sebagai alternatif dari login email WP.com. Segarkan daftar produk secara instan. Pengelolaan inventaris juga makin mudah berkat fitur pembaruan status stok massal yang baru. Agar makin praktis, pesanan kini dapat dipindahkan langsung ke tempat sampah. Terakhir, kami mengoptimalkan alur pembuatan pesanan untuk tablet! Selamat mencoba 💜
+17.9:
+- [*] Ulasan: Memperbaiki bug yang menampilkan bilah peralatan ganda pada ulasan dalam pengaturan [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internal] Menghapus fitur Pembuatan Toko WooExpress dari aplikasi [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produk: Memperbaiki bug yang menyebabkan item menu pembaruan massal tidak tersedia saat berada di mode 2 panel [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produk: Memperbaiki bug yang menyebabkan penghapusan gambar produk tidak tersimpan [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Ulasan: Mengoptimalkan kecepatan dalam menampilkan ulasan [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </id>
 <it-IT>
-17.8:
-Scopri il nostro ultimo aggiornamento dell'app WooCommerce per dispositivi mobili. Ora, accedi in modo semplice con le credenziali del sito su siti connessi a Jetpack, come alternativa al login con email WP.com. Scopri l'aggiornamento immediato della lista dei prodotti. Inoltre, la gestione dell'inventario è più semplice che mai con la nostra nuova funzione di aggiornamento in blocco dello stato delle scorte. Per una maggiore comodità, ora puoi spostare gli ordini direttamente nel cestino. Ultimo ma non meno importante, abbiamo ottimizzato il flusso di creazione degli ordini per i tablet! Buon divertimento 💜
+17.9:
+- [*] Recensioni: corretto un bug in cui la barra degli strumenti doppia era visibile nelle recensioni nelle impostazioni [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Interno] Rimossa la creazione del negozio WooExpress dall'app [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Prodotti: corretto un bug in cui nella modalità a 2 pannelli l'elemento del menu dell'aggiornamento in blocco non era disponibile [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Prodotti: corretto un bug in cui la rimozione dell'immagine di un prodotto non veniva salvata [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Recensioni: velocità nel mostrare le recensioni ottimizzata [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </it-IT>
 <ja-JP>
-17.8:
-WooCommerce モバイルアプリの最新アップデートをご紹介します ! Jetpack と連携したサイトで、WP.com  のメールアドレスを使ってログインする代わりに、サイトのログイン情報でシームレスにログインできるようになりました。 商品リストの即時更新をご利用いただけます。 さらに、在庫状況を一括で更新できる新機能により、在庫管理がこれまで以上に簡単になりました。 さらに便利なことに、注文を直接ゴミ箱に移動できるようになりました。 そしてもうひとつは、注文作成フローがタブレット端末向けに最適化されたことです。 どうぞご活用ください 💜
+17.9:
+- [*] レビュー: 設定のレビューでツールバーが二重に表示されていたバグを修正 [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [内部] アプリから WooExpress ストア作成機能を削除 [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] 製品: 2ペインモードで一括更新メニュー項目が利用できなかったバグを修正 [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] 製品: 商品画像の削除が保存されなかったバグを修正 [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] レビュー: レビューの表示速度を最適化 [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </ja-JP>
 <ko-KR>
-17.8:
-우커머스 모바일 앱의 최신 업데이트가 나왔습니다! 이제는 WP.com 이메일 주소 로그인 대신에 젯팩이 연결된 연결 사이트에서 사이트 자격 증명으로 원활하게 로그인하세요. 제품 목록이 즉시 새로 고쳐지는 것을 경험해 보세요. 새로운 대량 재고 상태 업데이트 기능을 통해 재고 관리도 그 어느 때보다 쉬워졌습니다. 더 편리하도록 이제는 주문을 바로 휴지통으로 이동할 수 있습니다. 마지막으로 무엇보다도 태블릿 기기의 주문 생성 절차를 최적화했습니다! 즐기세요 💜
+17.9:
+- [*] 리뷰: 설정의 리뷰에 이중 도구 모음이 표시되는 버그를 수정함 [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [내부] 앱에서 WooExpress 스토어 생성을 제거함 [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] 상품: 2개 창 모드에서 대량 업데이트 메뉴 항목을 사용할 수 없는 버그를 수정함 [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] 상품: 상품의 사진 제거 시 저장되지 않는 버그를 수정함 [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] 리뷰 표시 속도를 최적화함 [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </ko-KR>
 <nl-NL>
-17.8:
-Welkom bij de nieuwste update voor onze mobiele WooCommerce-app! Now, seamlessly log in with your site credentials on Jetpack-connected sites, as an alternative to WP.com email login. Experience instant refreshing of product list. Plus, managing your inventory is easier than ever with our new bulk stock status update feature. For added convenience, you can now move orders directly to trash. Last but not least, we optimised the order creation flow for tablet devices! Geniet ervan!
+17.9:
+- [*] Beoordelingen: Bug verholpen waarbij een dubbele werkbalk zichtbaar was bij de beoordelingen in de instellingen [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Intern] WooExpress-winkelcreatie uit de app verwijderd [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Producten: Bug verholpen waarbij het menu-item bulkupdate niet beschikbaar was in de weergave met twee kolommen [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Producten: Bug verholpen waarbij het verwijderen van een productfoto niet werd opgeslagen [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Beoordelingen: Snelheid geoptimaliseerd van de weergave van beoordelingen [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </nl-NL>
 <pt-BR>
-17.8:
-Obtenha a última atualização do app do WooCommerce! Faça login sem problemas com suas credenciais em sites conectados ao Jetpack como uma alternativa ao login com o e-mail do WP.com. A lista de produtos agora atualiza de imediato. Aliás, nunca foi tão fácil gerenciar seu inventário: conheça a funcionalidade de atualização do status do estoque em massa. Para sua conveniência, agora você pode mover os pedidos direto para a lixeira. Por fim, otimizamos a criação de pedidos para tablets! Aproveite 💜
+17.9:
+- [*] Avaliações: corrigimos um bug que ocorria quando duas barras de ferramentas apareciam nas configurações das avaliações [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internal] Removemos do aplicativo a criação de lojas do WooExpress [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produtos: corrigimos um bug em que não era possível atualizar itens de menu em massa ao usar o modo de dois painéis [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produtos: corrigimos um bug em que a remoção da imagem de um produto não era salva [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Avaliações: otimizamos a velocidade de exibição das avaliações [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </pt-BR>
 <ru-RU>
-17.8:
-Представляем очередное обновление мобильного приложения WooCommerce! Теперь вы можете свободно входить на любые сайты, подключённые к Jetpack, с учётными данными вашего сайта, а не только по электронной почте WP.com. Попробуйте моментальное обновление списка товаров. А ещё новая функция массового обновления статуса наличия на складе до предела упрощает управление складскими запасами. И ещё одно удобство: теперь вы можете перемещать заказы прямиком в корзину. И последнее, но не менее важное: мы оптимизировали процесс создания заказов для планшетных устройств! Надеемся, вам понравится!💜
+17.9:
+- [*] Отзывы: исправлена ошибка, из-за которой в настройках на отзывах отображалась двойная панель инструментов. [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Внутреннее] Из приложения удалена функция «Создание магазина WooExpress». [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Товары: исправлена ошибка, из-за которой был недоступен элемент меню «Пакетное обновление» в двухпанельном режиме. [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Товары: исправлена ошибка, из-за которой результат удаления изображения товара не сохранялся. [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Отзывы: оптимизирована скорость показа отзывов. [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </ru-RU>
 <sv-SE>
-17.8:
-Upptäck vår senaste uppdatering av din WooCommerce-mobilapp. Du kan nu smidigt logga in med dina inloggningsuppgifter på Jetpack-anslutna webbplatser, som ett alternativ till e-postinloggning på WP.com. Få omedelbar uppdatering av produktlistan. Dessutom är det enklare än någonsin att hantera ditt lager med vår nya funktion för massuppdatering av lagerstatus. För att göra det ännu enklare kan du nu flytta ordrar direkt till papperskorgen. Sist men inte minst har vi optimerat flödet för orderskapande för surfplattor. Mycket nöje 💜
+17.9:
+- [*] Recensioner: Vi har åtgärdat en bugg som gjorde att verktygsfältet visades dubbelt för recensioner i inställningarna [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internt] Vi har tagit bort WooExpress-butiksskapande från appen [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produkter: Vi har åtgärdat en bugg som gjorde att menyvalet Massuppdatera inte var tillgängligt i tvåpanelsläge [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produkter: Vi har åtgärdat en bugg som gjorde att borttagningar av produktbilder inte sparades [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Recensioner: Vi har optimerat inläsningshastigheten för recensioner [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </sv-SE>
 <tr-TR>
-17.8:
-WooCommerce mobil uygulamanızdaki en yeni güncellemelerimizi keşfedin! Artık WP.com e-postasıyla oturum açmaya bir alternatif olarak Jetpack'e bağlı sitelerde site kimlik bilgilerinizle sorunsuz şekilde oturum açın. Ürün listesinin anında yenilenmesini deneyimleyin. Ayrıca yeni toplu stok durumu güncelleme özelliğimiz sayesinde envanterinizi yönetmek her zamankinden daha kolay. Daha fazla kolaylık sağlamak için artık siparişleri doğrudan çöpe taşıyabilirsiniz. Son olarak, sipariş oluşturma akışını tablet cihazlar için optimize ettik! Keyfini çıkarın 💜
+17.9:
+- [*] İncelemeler: Ayarlarda incelemelerde çift araç çubuğunun görünmesine neden olan bir hata düzeltildi [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Dahili] WooExpress Mağaza Oluşturma, uygulamadan kaldırıldı [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Ürünler: 2 bölme modundayken toplu güncelleme menü elemanının kullanılmamasına neden olan bir hata düzeltildi [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Ürünler: Ürünün fotoğrafının kaldırılması işleminin kaydedilmemesine neden olan bir hata düzeltildi [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] İncelemeler: İncelemelerin gösterilme hızı optimize edildi [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </tr-TR>
 <zh-CN>
-17.8：
-探索我们对 WooCommerce 移动应用程序的最新更新！ 现在，您可以使用您的站点凭据无缝登录与 Jetpack 连接的站点，无需再通过 WP.com 电子邮件地址登录。 体验产品列表即时刷新功能。 此外，借助我们全新的批量库存状态更新功能，管理库存也将变得前所未有的轻松。 您现在可以直接将订单移至回收站，便捷性进一步提升。 最后但同样重要的是，我们还针对平板设备优化了订单创建流程！ 尽情享受吧 💜
+17.9：
+- [*] 评论：修复了在设置中的评论部分可以看到两个工具栏的错误 [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [内部] 从应用程序中移除了 WooExpress 商店创建功能 [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] 产品：修复了双窗格模式下批量更新菜单项功能无法使用的错误 [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] 产品：修复了删除产品图片时无法保存的错误 [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] 评论：优化了评论的显示速度 [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </zh-CN>
 <zh-TW>
-17.8:
-探索 WooCommerce 行動應用程式的最新更新！ 現已提供 WP.com 電子郵件登入的替代方式，你可在 Jetpack 連結的網站中，透過網站憑證順暢登入。 體驗商品清單的立即重新整理功能。 此外，有了我們的全新大量庫存狀態更新功能，管理庫存變得更加簡單。 為了方便起見，你現在可以直接將訂單移至垃圾桶。 最後，我們已將平板電腦的訂單建立流程最佳化！ 祝你使用愉快 💜
+17.9:
+- [*] 評論：已修正雙重工具列顯示於設定評論中的錯誤 [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [內部] 已從應用程式移除 WooExpress 商店建立 [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] 商品：已修正在雙窗格模式中，無法使用批次更新選單項目的錯誤 [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] 商品：已修正移除商品圖片後無法加以儲存的錯誤 [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] 評論：已將評論顯示的速度最佳化 [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </zh-TW>
 <en-US>
-17.8:
-Discover our latest update to your WooCommerce mobile app! Now, seamlessly log in with your site credentials on Jetpack-connected sites, as an alternative to WP.com email login. Experience instant refreshing of product list. Plus, managing your inventory is easier than ever with our new bulk stock status update feature. For added convenience, you can now move orders directly to trash. Last but not least, we optimised the order creation flow for tablet devices! Enjoy 💜
+17.9:
+- [*] Reviews: Fixed a bug when double toolbar was visible on the reviews in settings [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internal] Removed WooExpress Store Creation from the app [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Products: Fixed a bug when in 2 pane mode bulk update menu item was not available [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Products: Fixed a bug when the removal of a product's picture was not saved [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Reviews: Optimised speed of showing reviews [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </en-US>

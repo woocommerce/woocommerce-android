@@ -1,0 +1,7 @@
+17.9:
+- [*] レビュー: 設定のレビューでツールバーが二重に表示されていたバグを修正 [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [内部] アプリから WooExpress ストア作成機能を削除 [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] 製品: 2ペインモードで一括更新メニュー項目が利用できなかったバグを修正 [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] 製品: 商品画像の削除が保存されなかったバグを修正 [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] レビュー: レビューの表示速度を最適化 [https://github.com/woocommerce/woocommerce-android/pull/11083]
+

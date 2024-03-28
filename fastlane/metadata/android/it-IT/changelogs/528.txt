@@ -1,0 +1,7 @@
+17.9:
+- [*] Recensioni: corretto un bug in cui la barra degli strumenti doppia era visibile nelle recensioni nelle impostazioni [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Interno] Rimossa la creazione del negozio WooExpress dall'app [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Prodotti: corretto un bug in cui nella modalità a 2 pannelli l'elemento del menu dell'aggiornamento in blocco non era disponibile [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Prodotti: corretto un bug in cui la rimozione dell'immagine di un prodotto non veniva salvata [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Recensioni: velocità nel mostrare le recensioni ottimizzata [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
