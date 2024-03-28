@@ -80,7 +80,7 @@ class ProductDetailsToolbarHelper @Inject constructor(
                         null
                     }
                 }
-                fragment?.findNavController()?.hasBackStackEntry(R.id.products) == true -> {
+                isPartOfProductListFlow() -> {
                     AppCompatResources.getDrawable(activity, R.drawable.ic_back_24dp)
                 }
 
@@ -119,6 +119,9 @@ class ProductDetailsToolbarHelper @Inject constructor(
             toolbar.menu.updateOptions(it)
         }
     }
+
+    private fun isPartOfProductListFlow() = fragment?.findNavController()?.hasBackStackEntry(R.id.products) == true ||
+        fragment?.parentFragment?.parentFragment is ProductListFragment
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         return when (item.itemId) {

@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
@@ -59,7 +60,16 @@ class ProductListToolbarHelper @Inject constructor(
                     } else if (searchMenuItem?.isActionViewExpanded == true) {
                         searchMenuItem?.collapseActionView()
                     } else {
-                        listFragment?.findNavController()?.navigateUp()
+                        val detailsPaneIsNotNavigationRoot =
+                            binding?.detailNavContainer?.findNavController()?.navigateUp() ?: false
+                        if (!detailsPaneIsNotNavigationRoot && binding?.productsRefreshLayout?.isVisible == false) {
+                            // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
+                            // and now it's a single pane layout (phone), e.g. due to a configuration change.
+                            // In this case we need to switch panes – show the list pane instead of details pane.
+                            listFragment?.displayListPaneOnly()
+                        } else {
+                            listFragment?.findNavController()?.navigateUp()
+                        }
                     }
                 }
             }

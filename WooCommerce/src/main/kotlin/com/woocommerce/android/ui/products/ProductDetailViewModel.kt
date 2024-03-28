@@ -249,7 +249,7 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Returns the filtered list of attributes assigned to the product who are enabled for Variations
      */
-    val productDraftVariationAttributes
+    private val productDraftVariationAttributes
         get() = viewState.productDraft?.variationEnabledAttributes ?: emptyList()
 
     /**

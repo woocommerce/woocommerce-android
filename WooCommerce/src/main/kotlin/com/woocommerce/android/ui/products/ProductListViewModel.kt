@@ -81,6 +81,7 @@ class ProductListViewModel @Inject constructor(
         private const val KEY_PRODUCT_SELECTED_ON_BIG_SCREEN = "key_product_selected_on_big_screen"
     }
 
+    var productHasChanges: Boolean = false
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList.map {
         openFirstLoadedProductOnTablet(it)
@@ -462,6 +463,16 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onOpenProduct(productId: Long, sharedView: View?) {
+        if (productHasChanges && isTablet()) {
+            triggerEvent(
+                ProductListEvent.ShowDiscardProductChangesConfirmationDialog(
+                    productId,
+                    getProduct(productId)?.name.orEmpty()
+                )
+            )
+            return
+        }
+
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED,
             mapOf(
@@ -779,6 +790,10 @@ class ProductListViewModel @Inject constructor(
             data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
             data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
         }
+        data class ShowDiscardProductChangesConfirmationDialog(
+            val productId: Long,
+            val productName: String,
+        ) : ProductListEvent()
         data class OpenProduct(
             val productId: Long,
             val oldPosition: Int,
