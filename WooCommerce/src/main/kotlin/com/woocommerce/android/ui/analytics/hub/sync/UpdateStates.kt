@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
+import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -46,4 +47,11 @@ sealed class VisitorsState {
     data class Available(val visitors: Int) : VisitorsState()
     object Loading : VisitorsState()
     object Error : VisitorsState()
+}
+
+sealed class BundlesState {
+    data class Available(val bundles: BundleStat) : BundlesState()
+    data object Loading : BundlesState()
+    data object Error : BundlesState()
+    val isIdle get() = this !is Loading
 }
