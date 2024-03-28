@@ -2,6 +2,7 @@
 18.0
 -----
 - [*] Products: Improvements on the products photos screens [https://github.com/woocommerce/woocommerce-android/pull/11131]
+- [*] Products: Fixed position of the AI tooltip on the 2 pane mode [https://github.com/woocommerce/woocommerce-android/pull/11166]
 - [*] Products: Show full bottom sheet when spaces available [https://github.com/woocommerce/woocommerce-android/pull/11170]
 - [**] Products: Fixes for 2 to 1 (and visa-versa) panes transitions [https://github.com/woocommerce/woocommerce-android/pull/11159]
 - [*] Products: Confirmation dialog before switching to another product if current was modified [https://github.com/woocommerce/woocommerce-android/pull/11177]
