@@ -793,28 +793,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         return resources.getString(R.string.my_store_custom_range_granularity_label, granularityLabel)
     }
 
-    private fun getEntryValueFromRangeType(dateString: String): String {
-        return when (statsTimeRangeSelection.selectionType) {
-            SelectionType.TODAY -> dateUtils.getShortHourString(dateString).orEmpty()
-            SelectionType.WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            SelectionType.MONTH_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            SelectionType.YEAR_TO_DATE -> dateUtils.getShortMonthString(dateString).orEmpty()
-            SelectionType.CUSTOM -> getEntryValuesForCustomType(dateString)
-            else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
-        }.also { result -> trackUnexpectedFormat(result, dateString) }
-    }
-
-    private fun getEntryValuesForCustomType(dateString: String): String {
-        return when (statsTimeRangeSelection.revenueStatsGranularity) {
-            StatsGranularity.HOURS -> dateUtils.getShortHourString(dateString).orEmpty()
-            StatsGranularity.DAYS -> dateUtils.getDayString(dateString).orEmpty()
-
-            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            StatsGranularity.MONTHS -> dateUtils.getShortMonthString(dateString).orEmpty()
-            StatsGranularity.YEARS -> dateString
-        }.also { result -> trackUnexpectedFormat(result, dateString) }
-    }
-
     private fun trackUnexpectedFormat(result: String, dateString: String) {
         if (result.isEmpty()) {
             AnalyticsTracker.track(
@@ -839,14 +817,25 @@ class MyStoreStatsView @JvmOverloads constructor(
                 // if this is the first entry in the chart, then display the month as well as the date
                 // for weekly and monthly stats
                 val dateString = chartRevenueStats.keys.elementAt(index)
-                if (value == axis.mEntries.first()) {
-                    getEntryValueFromRangeType(dateString)
+                if (value == axis.mEntries.first() && statsTimeRangeSelection.selectionType != SelectionType.CUSTOM) {
+                    getEntryValueForFirstItemOfXAxis(dateString)
                 } else {
                     getAxisLabelFromRangeType(dateString)
                 }
             } else {
                 ""
             }
+        }
+
+        private fun getEntryValueForFirstItemOfXAxis(dateString: String): String {
+            return when (statsTimeRangeSelection.selectionType) {
+                SelectionType.TODAY -> dateUtils.getShortHourString(dateString).orEmpty()
+                SelectionType.WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+                SelectionType.MONTH_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+                SelectionType.YEAR_TO_DATE -> dateUtils.getShortMonthString(dateString).orEmpty()
+                SelectionType.CUSTOM -> error("Custom range is unsupported to set a special x axis label")
+                else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
+            }.also { result -> trackUnexpectedFormat(result, dateString) }
         }
 
         /**
