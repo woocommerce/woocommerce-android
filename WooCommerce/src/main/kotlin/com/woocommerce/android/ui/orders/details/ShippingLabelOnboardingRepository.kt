@@ -5,6 +5,7 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 
 class ShippingLabelOnboardingRepository @Inject constructor(
@@ -26,8 +27,13 @@ class ShippingLabelOnboardingRepository @Inject constructor(
                 it.isPluginReady() && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
             }?.let { return@lazy true }
 
-        orderDetailRepository.getWooShippingPluginInfo()
-            .isPluginReady()
+        if (FeatureFlag.NEW_SHIPPING_SUPPORT.isEnabled()) {
+            orderDetailRepository.getWooShippingPluginInfo()
+                .takeIf { it.isPluginReady() }
+                ?.let { return@lazy true }
+        }
+
+        return@lazy false
     }
 
     fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
