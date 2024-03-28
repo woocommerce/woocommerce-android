@@ -44,6 +44,7 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         }
     }
 
+    @Suppress("ReturnCount")
     private fun isShippingLabelSupported(): Boolean {
         orderDetailRepository.getWooServicesPluginInfo()
             .takeIf {
