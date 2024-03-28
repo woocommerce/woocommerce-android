@@ -232,7 +232,7 @@ class MyStoreViewModel @Inject constructor(
         _selectedRangeType.update { selectionType }
         appPrefsWrapper.setActiveStatsTab(selectionType.name)
 
-        if (isCustomRange) {
+        if (selectionType == SelectionType.CUSTOM) {
             analyticsTrackerWrapper.track(
                 AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
             )
