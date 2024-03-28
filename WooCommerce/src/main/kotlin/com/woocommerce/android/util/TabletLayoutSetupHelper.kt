@@ -91,7 +91,6 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         }
     }
 
-    @Suppress("NestedBlockDepth")
     private fun setDetailsMargins(rootView: View) {
         if (rootView !is ViewGroup) return
 
