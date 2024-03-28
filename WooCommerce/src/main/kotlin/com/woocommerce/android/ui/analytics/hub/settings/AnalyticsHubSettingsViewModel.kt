@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
+import com.woocommerce.android.ui.analytics.hub.GetAnalyticPluginsCardActive
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -22,6 +23,7 @@ import javax.inject.Inject
 class AnalyticsHubSettingsViewModel @Inject constructor(
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
     private val saveAnalyticsCardsConfiguration: SaveAnalyticsCardsConfiguration,
+    private val getAnalyticPluginsCardActive: GetAnalyticPluginsCardActive,
     private val tracker: AnalyticsTrackerWrapper,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -36,14 +38,15 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
     private var viewState by viewStateData
     private lateinit var currentConfiguration: List<AnalyticCardConfigurationUI>
     private lateinit var draftConfiguration: List<AnalyticCardConfigurationUI>
+    private lateinit var activePluginCards: Set<AnalyticsCards>
 
     private fun hasChanges() = currentConfiguration != draftConfiguration
 
     init {
         launch {
-            delay(LOADING_DELAY_MS)
+            activePluginCards = getAnalyticPluginsCardActive()
             observeAnalyticsCardsConfiguration().first().let { configuration ->
-                currentConfiguration = configuration.map { it.toConfigurationUI() }
+                currentConfiguration = configuration.map { it.toConfigurationUI(activePluginCards) }
                 draftConfiguration = currentConfiguration
                 checkVisibleCards()
                 viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
@@ -138,7 +141,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
             if (visibleCards == 1 && card.isVisible) {
                 card.copy(isEnabled = false)
             } else {
-                card.copy(isEnabled = true)
+                card.copy(isEnabled = card.card.isPlugin.not() || card.card in activePluginCards)
             }
         }
     }
@@ -172,12 +175,12 @@ data class AnalyticCardConfigurationUI(
     val isEnabled: Boolean = true
 ) : Parcelable
 
-fun AnalyticCardConfiguration.toConfigurationUI(): AnalyticCardConfigurationUI {
+fun AnalyticCardConfiguration.toConfigurationUI(activePluginCards: Set<AnalyticsCards>): AnalyticCardConfigurationUI {
     return AnalyticCardConfigurationUI(
         card = this.card,
         title = this.title,
         isVisible = this.isVisible,
-        isEnabled = true
+        isEnabled = this.card.isPlugin.not() || this.card in activePluginCards
     )
 }
 
