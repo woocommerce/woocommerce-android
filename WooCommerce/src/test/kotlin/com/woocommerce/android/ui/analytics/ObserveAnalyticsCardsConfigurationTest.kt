@@ -64,4 +64,38 @@ class ObserveAnalyticsCardsConfigurationTest : BaseUnitTest() {
         assertThat(result).isEqualTo(savedConfiguration)
         verify(resourcesRepository, never()).getDefaultAnalyticsCardsConfiguration()
     }
+
+    @Test
+    fun `when the configuration contains plugin card as visible but the plugin is not active, then hide the card`() = testBlocking {
+        val pluginCardsActive = emptySet<AnalyticsCards>()
+        val savedConfiguration = listOf(
+            AnalyticCardConfiguration(AnalyticsCards.Session, "Visitors", true),
+            AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
+            AnalyticCardConfiguration(AnalyticsCards.Products, "Products", true),
+            AnalyticCardConfiguration(AnalyticsCards.Bundles, "Bundles", true),
+        )
+        whenever(settingsDataStore.observeCardsConfiguration()).thenReturn(flowOf(savedConfiguration))
+        whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(pluginCardsActive)
+
+        initializeViewModel()
+        val result = sut.invoke().first()
+        assertThat(result).contains( AnalyticCardConfiguration(AnalyticsCards.Bundles, "Bundles", false))
+    }
+
+    @Test
+    fun `when the configuration contains plugin card as visible and the plugin is active, then show the card`() = testBlocking {
+        val pluginCardsActive = setOf(AnalyticsCards.Bundles)
+        val savedConfiguration = listOf(
+            AnalyticCardConfiguration(AnalyticsCards.Session, "Visitors", true),
+            AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
+            AnalyticCardConfiguration(AnalyticsCards.Products, "Products", true),
+            AnalyticCardConfiguration(AnalyticsCards.Bundles, "Bundles", true),
+        )
+        whenever(settingsDataStore.observeCardsConfiguration()).thenReturn(flowOf(savedConfiguration))
+        whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(pluginCardsActive)
+
+        initializeViewModel()
+        val result = sut.invoke().first()
+        assertThat(result).contains( AnalyticCardConfiguration(AnalyticsCards.Bundles, "Bundles", true))
+    }
 }

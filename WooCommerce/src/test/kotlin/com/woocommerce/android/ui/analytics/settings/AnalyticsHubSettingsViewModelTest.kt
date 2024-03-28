@@ -39,6 +39,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
     private val defaultConfiguration = listOf(
         AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
         AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
+        AnalyticCardConfiguration(AnalyticsCards.Bundles, "Bundles", true),
         AnalyticCardConfiguration(AnalyticsCards.Session, "Visitors", false)
     )
 
@@ -293,4 +294,24 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `when a plugin is not active, then the plugin card is disabled`() = testBlocking {
+        whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(defaultConfiguration))
+        whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(emptySet())
+        setup()
+
+        var viewState: AnalyticsHubSettingsViewState? = null
+        sut.viewStateData.observeForever { _, new -> viewState = new }
+
+        assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
+        assertThat((viewState as CardsConfiguration).cardsConfiguration).contains(
+            AnalyticCardConfigurationUI(
+                card = AnalyticsCards.Bundles,
+                title = AnalyticsCards.Bundles.name,
+                isVisible = true,
+                isEnabled = false
+            )
+        )
+    }
 }
