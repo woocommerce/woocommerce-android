@@ -35,3 +35,12 @@ val StatsTimeRangeSelection.visitorStatsGranularity: StatsGranularity
         // Visitor stats do not support hours granularity
         if (it == StatsGranularity.HOURS) StatsGranularity.DAYS else it
     }
+
+val StatsTimeRangeSelection.visitorSummaryStatsGranularity: StatsGranularity
+    get() = when (selectionType) {
+        SelectionType.TODAY, SelectionType.YESTERDAY -> StatsGranularity.DAYS
+        SelectionType.LAST_WEEK, SelectionType.WEEK_TO_DATE -> StatsGranularity.WEEKS
+        SelectionType.LAST_MONTH, SelectionType.MONTH_TO_DATE -> StatsGranularity.MONTHS
+        SelectionType.LAST_YEAR, SelectionType.YEAR_TO_DATE -> StatsGranularity.YEARS
+        else -> error("Summary visitor stats unsupported for selection type $selectionType")
+    }

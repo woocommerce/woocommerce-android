@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
+import com.woocommerce.android.ui.analytics.ranges.visitorSummaryStatsGranularity
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
@@ -161,14 +162,14 @@ class GetStats @Inject constructor(
         }
 
         statsRepository.getTotalVisitorStats(
-            date = rangeSelection.currentRange.start,
-            granularity = rangeSelection.visitorStatsGranularity
+            date = rangeSelection.currentRange.end,
+            granularity = rangeSelection.visitorSummaryStatsGranularity
         )?.let { emit(Result.success(it)) }
 
         emit(
             statsRepository.fetchTotalVisitorStats(
-                date = rangeSelection.currentRange.start,
-                granularity = rangeSelection.visitorStatsGranularity,
+                date = rangeSelection.currentRange.end,
+                granularity = rangeSelection.visitorSummaryStatsGranularity,
                 forced = forceRefresh
             )
         )
@@ -198,7 +199,7 @@ class GetStats @Inject constructor(
 
         data class VisitorsStatsSuccess(
             val stats: Map<String, Int>,
-            val totalVisitorsCount: Int?
+            val totalVisitorCount: Int?
         ) : LoadStatsResult()
 
         data class HasOrders(
