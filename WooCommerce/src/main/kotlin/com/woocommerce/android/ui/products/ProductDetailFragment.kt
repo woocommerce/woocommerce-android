@@ -354,6 +354,12 @@ class ProductDetailFragment :
             showProductCards(it)
         }
 
+        viewModel.hasChanges.observe(viewLifecycleOwner) { hasChanges ->
+            productsCommunicationViewModel.pushEvent(
+                ProductsCommunicationViewModel.CommunicationEvent.ProductChanges(hasChanges)
+            )
+        }
+
         observeEvents(viewModel)
     }
 
