@@ -16,7 +16,7 @@
     <include app:graph="@navigation/nav_graph_site_picker" />
     <include app:graph="@navigation/nav_graph_domain_change" />
     <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
-    <include app:graph="@navigation/nav_graph_order_creations"/>
+    <include app:graph="@navigation/nav_graph_order_creations" />
 
     <fragment
         android:id="@+id/dashboard"
@@ -32,11 +32,7 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out">
-            <argument
-                android:name="targetGranularity"
-                app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection$SelectionType" />
-        </action>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_myStore_to_onboardingFragment"
             app:destination="@id/storeOnboardingFragment" />
@@ -96,8 +92,8 @@
         tools:layout="@layout/fragment_order_list">
         <argument
             android:name="orderId"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="-1L"
+            app:argType="long" />
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders">
@@ -210,8 +206,7 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out">
-        </action>
+            app:popExitAnim="@anim/activity_fade_out"></action>
     </fragment>
     <dialog
         android:id="@+id/updateStockStatusFragment"
@@ -219,7 +214,7 @@
         android:label="UpdateProductStockStatusFragment">
         <argument
             android:name="selectedProductIds"
-            app:argType="long[]"/>
+            app:argType="long[]" />
     </dialog>
     <fragment
         android:id="@+id/scanToUpdateInventory"
@@ -240,8 +235,8 @@
         android:label="fragment_analytics"
         tools:layout="@layout/fragment_analytics">
         <argument
-            android:name="targetGranularity"
-            app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection$SelectionType" />
+            android:name="rangeSelection"
+            app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection" />
         <action
             android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
             app:destination="@id/analyticsDateRangeSelectorDialog" />
@@ -252,8 +247,7 @@
     <fragment
         android:id="@+id/analyticsSettings"
         android:name="com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingFragment"
-        android:label="fragment_analytics_settings"
-        />
+        android:label="fragment_analytics_settings" />
     <dialog
         android:id="@+id/analyticsDateRangeSelectorDialog"
         android:name="com.woocommerce.android.ui.ItemSelectorDialog"
@@ -357,26 +351,26 @@
         <argument
             android:name="sku"
             app:argType="string"
-            app:nullable="true"/>
+            app:nullable="true" />
         <argument
             android:name="barcodeFormat"
             app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
-            app:nullable="true"/>
+            app:nullable="true" />
         <argument
             android:name="couponEditResult"
+            android:defaultValue="@null"
             app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
         <argument
             android:name="giftCardCode"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
         <argument
             android:name="giftCardAmount"
+            android:defaultValue="@null"
             app:argType="java.math.BigDecimal"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
 
     </action>
 
@@ -770,5 +764,5 @@
     <fragment
         android:id="@+id/orderConnectivityToolFragment"
         android:name="com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolFragment"
-        android:label="OrderConnectivityToolFragment"/>
+        android:label="OrderConnectivityToolFragment" />
 </navigation>

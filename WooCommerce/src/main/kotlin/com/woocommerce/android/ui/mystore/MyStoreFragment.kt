@@ -600,7 +600,7 @@ class MyStoreFragment :
     }
 
     private fun handleUnavailableVisitorStats() {
-        binding.myStoreStats.handleUnavailableVisitorStats()
+        binding.myStoreStats.handleJetpackUnavailableVisitorStats()
     }
 
     private fun showErrorSnack() {

@@ -1,2 +1,0 @@
-17.8:
-Das neueste Update an der WooCommerce-Mobil-App! Als Alternative zur WP.com-E-Mail-Anmeldung kannst du dich nun auf mit Jetpack verbundenen Websites mit deinen Website-Anmeldedaten anmelden. Außerdem werden Produktlisten nun sofort aktualisiert. Die Lagerbestandsverwaltung ist dank der neuen Funktion zum Massenupdate des Lagerbestands nun einfacher als je zuvor. Du kannst Bestellungen nun direkt in den Papierkorb verschieben. Zudem wurde die Bestellerstellung für Tablets optimiert! Viel Spaß 💜

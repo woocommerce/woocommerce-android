@@ -1,2 +1,0 @@
-17.8:
-Temukan pembaruan terkini aplikasi seluler WooCommerce! Kini, Anda dapat login dengan lancar menggunakan kredensial situs Anda di situs yang terhubung Jetpack, sebagai alternatif dari login email WP.com. Segarkan daftar produk secara instan. Pengelolaan inventaris juga makin mudah berkat fitur pembaruan status stok massal yang baru. Agar makin praktis, pesanan kini dapat dipindahkan langsung ke tempat sampah. Terakhir, kami mengoptimalkan alur pembuatan pesanan untuk tablet! Selamat mencoba 💜

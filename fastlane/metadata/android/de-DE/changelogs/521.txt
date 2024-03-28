@@ -1,2 +1,0 @@
-17.7:
-Aufregende News für Benutzer der WooCommerce-App! Wir haben einen Fehler behoben, um Produktsuchen nach Änderungen beizubehalten. Außerdem wurde das Anzeigeerlebnis für Produkte auf Tablets mit Zwei-Fenster-Layout optimiert. Passe deine Analysen im Analyse-Hub kinderleicht an. Außerdem sind Bestellungen über die App nun eindeutig verschlagwortet, um das Tracking zu verbessern. Profitiere von einem reibungsloseren, personalisierteren Shopping- und Verkaufserlebnis. Aktualisiere deine App jetzt!

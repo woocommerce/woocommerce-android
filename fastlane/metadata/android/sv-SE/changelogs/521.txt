@@ -1,2 +1,0 @@
-17.7:
-Spännande nyheter för användare av WooCommerce-appen. Vi har åtgärdat en bugg för att hålla produktsökningar intakta efter ändringar, samt optimerat produktvisningsupplevelsen på surfplattor med en tvåpanelslayout. Anpassa enkelt dina analyser i analyshubben. Beställningar som görs i appen är nu dessutom tydligt etiketterade, vilket förbättrar spårningen. Ta del a en smidigare och mer personlig shopping- och säljupplevelse. Uppdatera din app nu.

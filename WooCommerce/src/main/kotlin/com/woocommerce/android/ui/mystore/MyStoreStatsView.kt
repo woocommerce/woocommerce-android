@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.LifecycleCoroutineScope
@@ -26,6 +27,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout.Tab
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -58,6 +60,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import kotlin.math.round
+import kotlin.time.Duration.Companion.days
 
 @FlowPreview
 class MyStoreStatsView @JvmOverloads constructor(
@@ -140,6 +143,10 @@ class MyStoreStatsView @JvmOverloads constructor(
     private lateinit var coroutineScope: CoroutineScope
     private val chartUserInteractions = MutableSharedFlow<Unit>()
     private lateinit var chartUserInteractionsJob: Job
+
+    private var isChartValueSelected = false
+
+    private var isJetpackVisitorStatsUnavailable = false
 
     @Suppress("LongParameterList")
     fun initView(
@@ -311,13 +318,12 @@ class MyStoreStatsView @JvmOverloads constructor(
         // update the total values of the chart here
         binding.chart.highlightValue(null)
         updateChartView()
-        visitorsValue.isVisible = true
-        binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = false
-        fadeInLabelValue(visitorsValue, chartVisitorStats.values.sum().toString())
+        showTotalVisitorStats()
         updateDate(revenueStatsModel, statsTimeRangeSelection)
         updateColorForStatsHeaderValues(R.color.color_on_surface_high)
         onUserInteractionWithChart()
         if (statsTimeRangeSelection.selectionType == SelectionType.CUSTOM) statsDateValue.isVisible = false
+        isChartValueSelected = false
     }
 
     private fun onUserInteractionWithChart() {
@@ -433,16 +439,19 @@ class MyStoreStatsView @JvmOverloads constructor(
         updateColorForStatsHeaderValues(R.color.color_secondary)
         onUserInteractionWithChart()
         statsDateValue.isVisible = true
+        isChartValueSelected = true
     }
 
     private fun updateVisitorsValue(date: String) {
-        if (statsTimeRangeSelection.selectionType == SelectionType.TODAY) {
+        if (isJetpackVisitorStatsUnavailable) return
+        if (statsTimeRangeSelection.revenueStatsGranularity == StatsGranularity.HOURS) {
+            // The visitor stats don't support hours granularity, so we need to hide them
             visitorsValue.isVisible = false
             visitorsValue.setText(R.string.emdash)
             binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
         } else {
             visitorsValue.isVisible = true
-            binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = false
+            binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
             visitorsValue.text = chartVisitorStats[date]?.toString() ?: "0"
         }
     }
@@ -522,23 +531,72 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     fun showVisitorStats(visitorStats: Map<String, Int>) {
+        isJetpackVisitorStatsUnavailable = false
         chartVisitorStats = getFormattedVisitorStats(visitorStats)
-        // Make sure the empty view is hidden
-        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
-
-        val totalVisitors = visitorStats.values.sum()
-        fadeInLabelValue(visitorsValue, totalVisitors.toString())
+        showTotalVisitorStats()
     }
 
     fun showVisitorStatsError() {
         binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
-        binding.statsViewRow.jetpackIconImageView.isVisible = false
+        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
-    fun handleUnavailableVisitorStats() {
+    fun handleJetpackUnavailableVisitorStats() {
+        isJetpackVisitorStatsUnavailable = true
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
         binding.statsViewRow.visitorsValueTextview.isVisible = false
+        binding.statsViewRow.emptyVisitorStatsIcon.apply {
+            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_jetpack_logo))
+            imageTintList = null
+        }
+    }
+
+    private fun showTotalVisitorStats() {
+        if (isJetpackVisitorStatsUnavailable) return
+        if (statsTimeRangeSelection.isTotalVisitorsUnavailable()) {
+            // When using custom ranges, the total visitors value is not accurate, so we hide it
+            hideVisitorStatsForCustomRange()
+            return
+        } else {
+            // Make sure the empty view is hidden
+            binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
+            val totalVisitors = chartVisitorStats.values.sum()
+            fadeInLabelValue(visitorsValue, totalVisitors.toString())
+        }
+    }
+
+    private fun hideVisitorStatsForCustomRange() {
+        fun showDialog() {
+            // Make sure the dialog is shown only when appropriate
+            if (!statsTimeRangeSelection.isTotalVisitorsUnavailable() || isChartValueSelected) return
+
+            val dialog = MaterialAlertDialogBuilder(context)
+                .setTitle(R.string.my_store_custom_range_visitors_stats_unavailable_title)
+                .setMessage(R.string.my_store_custom_range_visitors_stats_unavailable_message)
+                .setPositiveButton(R.string.dialog_ok, null)
+                .show()
+
+            doOnDetach {
+                // To prevent leaking the dialog's window
+                dialog.dismiss()
+            }
+        }
+
+        binding.statsViewRow.visitorsValueTextview.isVisible = false
+        binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
+        binding.statsViewRow.conversionValueTextView.isVisible = false
+        binding.statsViewRow.emptyConversionRateIndicator.isVisible = true
+
+        binding.statsViewRow.emptyVisitorStatsIcon.apply {
+            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_tintable_info_outline_24dp))
+            imageTintList = ContextCompat.getColorStateList(context, R.color.color_primary)
+            setOnClickListener { showDialog() }
+        }
+
+        binding.statsViewRow.emptyVisitorStatsIndicator.setOnClickListener {
+            showDialog()
+        }
     }
 
     fun showLastUpdate(lastUpdateMillis: Long?) {
@@ -561,7 +619,9 @@ class MyStoreStatsView @JvmOverloads constructor(
     @Suppress("MagicNumber")
     private fun updateConversionRate() {
         val ordersCount = ordersValue.text.toString().toIntOrNull()
-        val visitorsCount = visitorsValue.text.toString().toIntOrNull()
+        val visitorsCount = visitorsValue.text.toString().toIntOrNull()?.takeIf {
+            visitorsValue.isVisible
+        }
 
         if (visitorsCount == null || ordersCount == null) {
             conversionValue.isVisible = false
@@ -693,10 +753,10 @@ class MyStoreStatsView @JvmOverloads constructor(
         val delay = duration.toMillis(context) + 100
         fadeHandler.postDelayed(
             {
+                WooAnimUtils.fadeIn(view, duration)
                 val color = ContextCompat.getColor(context, R.color.color_on_surface_high)
                 view.setTextColor(color)
                 view.text = value
-                WooAnimUtils.fadeIn(view, duration)
             },
             delay
         )
@@ -711,7 +771,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     @StringRes
-    fun getStringForRangeType(rangeType: SelectionType): Int {
+    private fun getStringForRangeType(rangeType: SelectionType): Int {
         return when (rangeType) {
             SelectionType.TODAY -> R.string.today
             SelectionType.WEEK_TO_DATE -> R.string.this_week
@@ -733,28 +793,6 @@ class MyStoreStatsView @JvmOverloads constructor(
         return resources.getString(R.string.my_store_custom_range_granularity_label, granularityLabel)
     }
 
-    private fun getEntryValueFromRangeType(dateString: String): String {
-        return when (statsTimeRangeSelection.selectionType) {
-            SelectionType.TODAY -> dateUtils.getShortHourString(dateString).orEmpty()
-            SelectionType.WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            SelectionType.MONTH_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            SelectionType.YEAR_TO_DATE -> dateUtils.getShortMonthString(dateString).orEmpty()
-            SelectionType.CUSTOM -> getEntryValuesForCustomType(dateString)
-            else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
-        }.also { result -> trackUnexpectedFormat(result, dateString) }
-    }
-
-    private fun getEntryValuesForCustomType(dateString: String): String {
-        return when (statsTimeRangeSelection.revenueStatsGranularity) {
-            StatsGranularity.HOURS -> dateUtils.getShortHourString(dateString).orEmpty()
-            StatsGranularity.DAYS -> dateUtils.getDayString(dateString).orEmpty()
-
-            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            StatsGranularity.MONTHS -> dateUtils.getShortMonthString(dateString).orEmpty()
-            StatsGranularity.YEARS -> dateString
-        }.also { result -> trackUnexpectedFormat(result, dateString) }
-    }
-
     private fun trackUnexpectedFormat(result: String, dateString: String) {
         if (result.isEmpty()) {
             AnalyticsTracker.track(
@@ -768,6 +806,9 @@ class MyStoreStatsView @JvmOverloads constructor(
         }
     }
 
+    private fun StatsTimeRangeSelection.isTotalVisitorsUnavailable() = selectionType == SelectionType.CUSTOM &&
+        currentRange.end.time - currentRange.start.time > 2.days.inWholeMilliseconds
+
     private inner class StartEndDateAxisFormatter : ValueFormatter() {
         override fun getAxisLabel(value: Float, axis: AxisBase): String {
             var index = round(value).toInt() - 1
@@ -776,14 +817,25 @@ class MyStoreStatsView @JvmOverloads constructor(
                 // if this is the first entry in the chart, then display the month as well as the date
                 // for weekly and monthly stats
                 val dateString = chartRevenueStats.keys.elementAt(index)
-                if (value == axis.mEntries.first()) {
-                    getEntryValueFromRangeType(dateString)
+                if (value == axis.mEntries.first() && statsTimeRangeSelection.selectionType != SelectionType.CUSTOM) {
+                    getEntryValueForFirstItemOfXAxis(dateString)
                 } else {
                     getAxisLabelFromRangeType(dateString)
                 }
             } else {
                 ""
             }
+        }
+
+        private fun getEntryValueForFirstItemOfXAxis(dateString: String): String {
+            return when (statsTimeRangeSelection.selectionType) {
+                SelectionType.TODAY -> dateUtils.getShortHourString(dateString).orEmpty()
+                SelectionType.WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+                SelectionType.MONTH_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+                SelectionType.YEAR_TO_DATE -> dateUtils.getShortMonthString(dateString).orEmpty()
+                SelectionType.CUSTOM -> error("Custom range is unsupported to set a special x axis label")
+                else -> error("Unsupported range value used in my store tab: ${statsTimeRangeSelection.selectionType}")
+            }.also { result -> trackUnexpectedFormat(result, dateString) }
         }
 
         /**
