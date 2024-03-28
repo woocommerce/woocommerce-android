@@ -1,0 +1,7 @@
+17.9:
+- [*] Ulasan: Memperbaiki bug yang menampilkan bilah peralatan ganda pada ulasan dalam pengaturan [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internal] Menghapus fitur Pembuatan Toko WooExpress dari aplikasi [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produk: Memperbaiki bug yang menyebabkan item menu pembaruan massal tidak tersedia saat berada di mode 2 panel [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produk: Memperbaiki bug yang menyebabkan penghapusan gambar produk tidak tersimpan [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Ulasan: Mengoptimalkan kecepatan dalam menampilkan ulasan [https://github.com/woocommerce/woocommerce-android/pull/11083]
+

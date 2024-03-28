@@ -1,2 +1,0 @@
-17.7:
-WooCommerce uygulaması kullanıcıları için heyecan verici haberlerimiz var! Değişikliklerden sonra ürün aramalarını olduğu gibi tutmak için bir hatayı düzelttik ve iki panelli yerleşim kullanan tabletlerdeki ürün görüntüleme deneyimini optimize ettik. Analytics Hub ile analizlerinizi kolayca özelleştirin. Ayrıca uygulamada verilen siparişler artık açık şekilde etiketlenir, böylece takip süreci iyileştirilir. Daha sorunsuz, daha kişiselleştirilmiş bir alışveriş ve satış deneyimine geçin. Hemen uygulamanızı güncelleyin!
