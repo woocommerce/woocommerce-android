@@ -180,7 +180,13 @@ class MyStoreStatsView @JvmOverloads constructor(
         chartUserInteractionsJob = coroutineScope.launch {
             chartUserInteractions
                 .debounce(EVENT_EMITTER_INTERACTION_DEBOUNCE)
-                .collect { usageTracksEventEmitter.interacted() }
+                .collect {
+                    usageTracksEventEmitter.interacted()
+
+                    if (statsTimeRangeSelection.selectionType == SelectionType.CUSTOM) {
+                        usageTracksEventEmitter.interactedWithCustomRange()
+                    }
+                }
         }
 
         customRangeButton.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
