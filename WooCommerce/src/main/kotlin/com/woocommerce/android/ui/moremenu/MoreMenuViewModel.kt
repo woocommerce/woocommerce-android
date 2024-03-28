@@ -21,7 +21,6 @@ import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
@@ -58,7 +57,6 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val blazeUrlsHelper: BlazeUrlsHelper,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
@@ -231,10 +229,7 @@ class MoreMenuViewModel @Inject constructor(
                 triggerEvent(MoreMenuEvent.OpenBlazeCampaignListEvent)
             } else {
                 triggerEvent(
-                    MoreMenuEvent.OpenBlazeCampaignCreationEvent(
-                        url = blazeUrlsHelper.buildUrlForSite(BlazeFlowSource.MORE_MENU_ITEM),
-                        source = BlazeFlowSource.MORE_MENU_ITEM
-                    )
+                    MoreMenuEvent.OpenBlazeCampaignCreationEvent(source = BlazeFlowSource.MORE_MENU_ITEM)
                 )
             }
         }
@@ -315,7 +310,7 @@ class MoreMenuViewModel @Inject constructor(
         object StartSitePickerEvent : MoreMenuEvent()
         object ViewPayments : MoreMenuEvent()
         object OpenBlazeCampaignListEvent : MoreMenuEvent()
-        data class OpenBlazeCampaignCreationEvent(val url: String, val source: BlazeFlowSource) : MoreMenuEvent()
+        data class OpenBlazeCampaignCreationEvent(val source: BlazeFlowSource) : MoreMenuEvent()
         data class ViewAdminEvent(val url: String) : MoreMenuEvent()
         data class ViewStoreEvent(val url: String) : MoreMenuEvent()
         object ViewReviewsEvent : MoreMenuEvent()

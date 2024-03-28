@@ -19,7 +19,6 @@ import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -48,7 +47,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
-import com.woocommerce.android.ui.products.ProductDetailViewModel.NavigateToBlazeWebView
 import com.woocommerce.android.ui.products.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error
 import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Loading
@@ -389,7 +387,6 @@ class ProductDetailFragment :
                 is ShowLinkedProductPromoBanner -> showLinkedProductPromoBanner()
                 is OpenProductDetails -> openProductDetails(event.productRemoteId)
                 is ShowDuplicateProductError -> showDuplicateProductError()
-                is NavigateToBlazeWebView -> openBlazeWebView(event)
                 is ShowBlazeCreationScreen -> openBlazeCreationFlow(event.productId)
                 is ShowDuplicateProductInProgress -> showProgressDialog(
                     R.string.product_duplicate_progress_title,
@@ -432,15 +429,6 @@ class ProductDetailFragment :
                 productId = productId
             )
         }
-    }
-
-    private fun openBlazeWebView(event: NavigateToBlazeWebView) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
-                urlToLoad = event.url,
-                source = event.source
-            )
-        )
     }
 
     private fun showDuplicateProductError() {
