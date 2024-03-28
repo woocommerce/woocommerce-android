@@ -228,8 +228,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onTabSelected(selectionType: SelectionType) {
-        val isCustomRange = selectionType == SelectionType.CUSTOM
-        usageTracksEventEmitter.interacted(isCustomRange = isCustomRange)
+        usageTracksEventEmitter.interacted()
         _selectedRangeType.update { selectionType }
         appPrefsWrapper.setActiveStatsTab(selectionType.name)
 
@@ -241,7 +240,7 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onPullToRefresh() {
-        usageTracksEventEmitter.interacted(isCustomRange = _selectedRangeType.value == SelectionType.CUSTOM)
+        usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         refreshTrigger.tryEmit(RefreshState(isForced = true))
     }
@@ -400,7 +399,7 @@ class MyStoreViewModel @Inject constructor(
     private fun onTopPerformerSelected(productId: Long) {
         triggerEvent(MyStoreEvent.OpenTopPerformer(productId))
         analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
-        usageTracksEventEmitter.interacted(isCustomRange = _selectedRangeType.value == SelectionType.CUSTOM)
+        usageTracksEventEmitter.interacted()
     }
 
     private fun WCRevenueStatsModel.toStoreStatsUiModel(): RevenueStatsUiModel {

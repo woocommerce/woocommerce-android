@@ -547,8 +547,7 @@ class MyStoreFragment :
         AnalyticsTracker.trackViewShown(this)
         // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
         if (wasPreviouslyStopped) {
-            val isCustomRange = myStoreViewModel.selectedDateRange.value?.selectionType == SelectionType.CUSTOM
-            usageTracksEventEmitter.interacted(isCustomRange = isCustomRange)
+            usageTracksEventEmitter.interacted()
             wasPreviouslyStopped = false
         }
     }

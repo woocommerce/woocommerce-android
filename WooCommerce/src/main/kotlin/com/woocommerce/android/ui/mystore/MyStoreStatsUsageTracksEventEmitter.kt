@@ -68,7 +68,7 @@ class MyStoreStatsUsageTracksEventEmitter @Inject constructor(
             .launchIn(appCoroutineScope)
     }
 
-    fun interacted(interactionTime: Date = Date(), isCustomRange: Boolean = false) {
+    fun interacted(interactionTime: Date = Date()) {
         // Check if they were idle for some time.
         lastInteractionTime?.let {
             if (DateTimeUtils.secondsBetween(interactionTime, it) >= IDLE_TIME_THRESHOLD) {
@@ -91,12 +91,7 @@ class MyStoreStatsUsageTracksEventEmitter @Inject constructor(
             interactions >= INTERACTIONS_THRESHOLD
         ) {
             reset()
-
-            if (isCustomRange) {
-                analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_INTERACTED)
-            } else {
-                analyticsTrackerWrapper.track(AnalyticsEvent.USED_ANALYTICS)
-            }
+            analyticsTrackerWrapper.track(AnalyticsEvent.USED_ANALYTICS)
         }
     }
 
