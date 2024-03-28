@@ -20,21 +20,7 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         const val SUPPORTED_WCS_COUNTRY = "US"
     }
 
-    val isShippingPluginReady: Boolean by lazy {
-        orderDetailRepository.getWooServicesPluginInfo()
-            .takeIf {
-                val pluginVersion = it.version ?: "0.0.0"
-                it.isPluginReady() && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
-            }?.let { return@lazy true }
-
-        if (FeatureFlag.NEW_SHIPPING_SUPPORT.isEnabled()) {
-            orderDetailRepository.getWooShippingPluginInfo()
-                .takeIf { it.isPluginReady() }
-                ?.let { return@lazy true }
-        }
-
-        return@lazy false
-    }
+    val isShippingPluginReady: Boolean by lazy { isShippingLabelSupported() }
 
     fun shouldShowWcShippingBanner(order: Order, eligibleForIpp: Boolean): Boolean =
         !isShippingPluginReady &&
@@ -56,6 +42,20 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         } else {
             false
         }
+    }
+
+    private fun isShippingLabelSupported(): Boolean {
+        orderDetailRepository.getWooServicesPluginInfo()
+            .takeIf {
+                val pluginVersion = it.version ?: "0.0.0"
+                it.isPluginReady() && pluginVersion.semverCompareTo(SUPPORTED_WCS_VERSION) >= 0
+            }?.let { return true }
+
+        orderDetailRepository.getWooShippingPluginInfo()
+            .takeIf { it.isPluginReady() && FeatureFlag.NEW_SHIPPING_SUPPORT.isEnabled() }
+            ?.let { return true }
+
+        return false
     }
 
     private fun WooPlugin.isPluginReady() = isInstalled && isActive
