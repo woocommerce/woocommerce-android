@@ -21,7 +21,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
-import com.woocommerce.android.util.IsTablet
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -55,7 +55,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     private val savedStateHandle: SavedStateHandle = SavedStateHandle()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val isTablet: IsTablet = mock()
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
 
     private val productList = ProductTestUtils.generateProductList()
     private lateinit var viewModel: ProductListViewModel
@@ -76,7 +76,7 @@ class ProductListViewModelTest : BaseUnitTest() {
                 analyticsTracker,
                 selectedSite,
                 wooCommerceStore,
-                isTablet,
+                isWindowClassLargeThanCompact,
             )
         )
     }
@@ -620,13 +620,13 @@ class ProductListViewModelTest : BaseUnitTest() {
         viewModel.reloadProductsFromDb(excludeProductId = openProductId)
 
         // THEN
-        assertThat(savedStateHandle.get<Long>("key_product_opened")).isNull()
+        assertThat(savedStateHandle.get<Long>("key_product_selected_on_big_screen")).isNull()
     }
 
     @Test
     fun `give tablet, when onOpenProduct invoked, then horizontal_size_class regular tracked`() = testBlocking {
         // given
-        whenever(isTablet()).thenReturn(true)
+        whenever(isWindowClassLargeThanCompact()).thenReturn(true)
 
         createViewModel()
 
@@ -643,7 +643,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `give phone, when onOpenProduct invoked, then horizontal_size_class compact tracked`() = testBlocking {
         // given
-        whenever(isTablet()).thenReturn(false)
+        whenever(isWindowClassLargeThanCompact()).thenReturn(false)
 
         createViewModel()
 
@@ -660,7 +660,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `give tablet, when onAddProductButtonClicked invoked, then horizontal_size_class regular tracked`() = testBlocking {
         // given
-        whenever(isTablet()).thenReturn(true)
+        whenever(isWindowClassLargeThanCompact()).thenReturn(true)
 
         createViewModel()
 
@@ -677,7 +677,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `give phone, when onAddProductButtonClicked invoked, then horizontal_size_class compact tracked`() = testBlocking {
         // given
-        whenever(isTablet()).thenReturn(false)
+        whenever(isWindowClassLargeThanCompact()).thenReturn(false)
 
         createViewModel()
 

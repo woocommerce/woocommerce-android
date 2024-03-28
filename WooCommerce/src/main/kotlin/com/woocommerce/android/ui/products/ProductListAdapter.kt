@@ -43,7 +43,8 @@ class ProductListAdapter(
             product,
             currencyFormatter,
             isActivated = tracker?.isSelected(product.remoteId) ?: false,
-            isProductHighlighted = isProductHighlighted(product.remoteId)
+            isProductHighlighted = isProductHighlighted(product.remoteId),
+            isLastItem = position == itemCount - 1,
         )
 
         holder.itemView.setOnClickListener {

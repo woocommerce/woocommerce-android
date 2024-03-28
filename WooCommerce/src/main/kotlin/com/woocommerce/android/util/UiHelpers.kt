@@ -86,6 +86,6 @@ object UiHelpers {
     }
 }
 
-class IsTablet @Inject constructor(val context: Context) {
+class IsWindowClassLargeThanCompact @Inject constructor(val context: Context) {
     operator fun invoke() = context.windowSizeClass != WindowSizeClass.Compact
 }
