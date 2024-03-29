@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.applicationpassword
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,49 +39,52 @@ fun ApplicationPasswordTutorialScreen(
     onContinueClicked: () -> Unit,
     onContactSupportClicked: () -> Unit
 ) {
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .fillMaxSize()
-    ) {
+    Column {
         Column(
-            modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
+            modifier = modifier
+                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
         ) {
+            Column(
+                modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
+            ) {
+                Text(
+                    text = stringResource(id = R.string.login_app_password_title),
+                    style = MaterialTheme.typography.h4,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(stringResource(id = R.string.login_app_password_subtitle))
+            }
+
+            Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
+
+            Column(
+                modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
+            ) {
+                Text(stringResource(id = R.string.login_app_password_instructions_title))
+                Text(stringResource(id = R.string.login_app_password_instructions_step_1))
+                Text(stringResource(id = R.string.login_app_password_instructions_step_2))
+
+                Image(
+                    painter = painterResource(id = R.drawable.app_password_tutorial_hint),
+                    contentDescription = null,
+                    modifier = modifier.align(alignment = Alignment.CenterHorizontally)
+                )
+
+                Text(stringResource(id = R.string.login_app_password_instructions_step_3))
+            }
+
+            Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
+
             Text(
-                text = stringResource(id = R.string.login_app_password_title),
-                style = MaterialTheme.typography.h4,
-                fontWeight = FontWeight.Bold
+                text = stringResource(id = R.string.login_app_password_instructions_footer),
+                modifier = modifier.padding(dimensionResource(id = R.dimen.major_100))
             )
-            Text(stringResource(id = R.string.login_app_password_subtitle))
         }
 
-        Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
-
-        Column(
-            modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
-        ) {
-            Text(stringResource(id = R.string.login_app_password_instructions_title))
-            Text(stringResource(id = R.string.login_app_password_instructions_step_1))
-            Text(stringResource(id = R.string.login_app_password_instructions_step_2))
-
-            Image(
-                painter = painterResource(id = R.drawable.app_password_tutorial_hint),
-                contentDescription = null,
-                modifier = modifier.align(alignment = Alignment.CenterHorizontally)
-            )
-
-            Text(stringResource(id = R.string.login_app_password_instructions_step_3))
-        }
-
-        Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
-
-        Text(
-            text = stringResource(id = R.string.login_app_password_instructions_footer),
-            modifier = modifier.padding(dimensionResource(id = R.dimen.major_100))
-        )
-
+        Spacer(modifier.weight(1f))
         Divider()
 
         Column(
