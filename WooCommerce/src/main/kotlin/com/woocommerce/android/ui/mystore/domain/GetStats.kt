@@ -161,10 +161,12 @@ class GetStats @Inject constructor(
             return@flow
         }
 
-        statsRepository.getTotalVisitorStats(
-            date = rangeSelection.currentRange.end,
-            granularity = rangeSelection.visitorSummaryStatsGranularity
-        )?.let { emit(Result.success(it)) }
+        if (!forceRefresh) {
+            statsRepository.getTotalVisitorStats(
+                date = rangeSelection.currentRange.end,
+                granularity = rangeSelection.visitorSummaryStatsGranularity
+            )?.let { emit(Result.success(it)) }
+        }
 
         emit(
             statsRepository.fetchTotalVisitorStats(
