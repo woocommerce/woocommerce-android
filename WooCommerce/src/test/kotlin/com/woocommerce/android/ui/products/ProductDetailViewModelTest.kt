@@ -31,7 +31,7 @@ import com.woocommerce.android.ui.products.tags.ProductTagsRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCandidates
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.IsTablet
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
@@ -134,7 +134,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productWithTagsAndCategories = ProductTestUtils.generateProductWithTagsAndCategories(PRODUCT_REMOTE_ID)
     private val offlineProduct = ProductTestUtils.generateProduct(OFFLINE_PRODUCT_REMOTE_ID)
     private val productCategories = ProductTestUtils.generateProductCategories()
-    private val isTablet: IsTablet = mock()
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
 
     private lateinit var viewModel: ProductDetailViewModel
 
@@ -273,7 +273,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 isBlazeEnabled = isBlazeEnabled,
                 blazeUrlsHelper = BlazeUrlsHelper(selectedSite),
                 isProductCurrentlyPromoted = mock(),
-                isTablet = isTablet,
+                isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
             )
         )
 
@@ -1025,7 +1025,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given tablet, when loaded remote products, then PRODUCT_DETAIL_LOADED tracked with regular horizontal class`() = testBlocking {
         // GIVEN
-        whenever(isTablet()).thenReturn(true)
+        whenever(isWindowClassLargeThanCompact()).thenReturn(true)
 
         // WHEN
         setup()
@@ -1040,7 +1040,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given not tablet, when loaded remote products, then PRODUCT_DETAIL_LOADED tracked with compact horizontal class`() = testBlocking {
         // GIVEN
-        whenever(isTablet()).thenReturn(false)
+        whenever(isWindowClassLargeThanCompact()).thenReturn(false)
 
         // WHEN
         setup()

@@ -30,7 +30,11 @@ class GroupedProductListAdapter(
     override fun onBindViewHolder(holder: ProductItemViewHolder, position: Int) {
         val product = getItem(position)
 
-        holder.bind(product, currencyFormatter)
+        holder.bind(
+            product,
+            currencyFormatter,
+            isLastItem = position == itemCount - 1
+        )
         holder.setOnDeleteClickListener(product, onItemDeleted)
     }
 }
