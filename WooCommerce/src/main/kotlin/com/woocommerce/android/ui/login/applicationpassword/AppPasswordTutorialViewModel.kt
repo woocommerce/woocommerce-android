@@ -1,11 +1,22 @@
 package com.woocommerce.android.ui.login.applicationpassword
 
-class AppPasswordTutorialViewModel {
+import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+
+@HiltViewModel
+class AppPasswordTutorialViewModel(
+    savedState: SavedStateHandle
+) : ScopedViewModel(savedState) {
     fun onContinueClicked() {
-        // TODO: add implementation
+        triggerEvent(OnContinue)
     }
 
     fun onContactSupportClicked() {
-        // TODO: add implementation
+        triggerEvent(OnContactSupport)
     }
+
+    object OnContinue : MultiLiveEvent.Event()
+    object OnContactSupport : MultiLiveEvent.Event()
 }
