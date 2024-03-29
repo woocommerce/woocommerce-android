@@ -42,7 +42,7 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
     private fun openSupportRequestScreen() {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
-            origin = HelpOrigin.ORDERS_LIST,
+            origin = HelpOrigin.APPLICATION_PASSWORD_TUTORIAL,
             extraTags = ArrayList()
         ).let { activity?.startActivity(it) }
     }
