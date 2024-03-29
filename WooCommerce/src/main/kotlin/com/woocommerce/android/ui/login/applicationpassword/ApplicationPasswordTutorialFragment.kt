@@ -7,8 +7,11 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.support.help.HelpOrigin
+import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialViewModel.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,5 +27,23 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.event.observe(viewLifecycleOwner) {
+            when (it) {
+                is OnContinue -> {}
+                is OnContactSupport -> openSupportRequestScreen()
+            }
+        }
+    }
+
+    private fun openSupportRequestScreen() {
+        SupportRequestFormActivity.createIntent(
+            context = requireContext(),
+            origin = HelpOrigin.ORDERS_LIST,
+            extraTags = ArrayList()
+        ).let { activity?.startActivity(it) }
     }
 }
