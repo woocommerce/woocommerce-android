@@ -1,6 +1,6 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 18.0
------
+- [*] Products: Fixed a bug that in some cases in 2 panes mode product was not selected [https://github.com/woocommerce/woocommerce-android/pull/11144]
 - [*] Products: Improvements on the products photos screens [https://github.com/woocommerce/woocommerce-android/pull/11131]
 - [*] Products: Fixed position of the AI tooltip on the 2 pane mode [https://github.com/woocommerce/woocommerce-android/pull/11166]
 - [*] Products: Show full bottom sheet when spaces available [https://github.com/woocommerce/woocommerce-android/pull/11170]
