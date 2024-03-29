@@ -11,7 +11,8 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialViewModel.*
+import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialViewModel.OnContactSupport
+import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialViewModel.OnContinue
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

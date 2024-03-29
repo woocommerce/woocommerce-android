@@ -102,8 +102,6 @@ fun ApplicationPasswordTutorialScreen(
                 Text(stringResource(id = R.string.login_app_password_support_button))
             }
         }
-
-
     }
 }
 
