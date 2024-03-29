@@ -256,7 +256,7 @@ class MyStoreViewModel @Inject constructor(
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) {
             _revenueStatsState.value = RevenueStatsViewState.Content(null, selectedRange)
-            _visitorStatsState.value = VisitorStatsViewState.Content(emptyMap())
+            _visitorStatsState.value = VisitorStatsViewState.NotLoaded
             return
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
@@ -266,7 +266,10 @@ class MyStoreViewModel @Inject constructor(
                     is RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
                     is RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
                     PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
-                    is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
+                    is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(
+                        stats = it.stats, totalVisitorCount = it.totalVisitorCount
+                    )
+
                     is VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
                     is VisitorStatUnavailable -> onVisitorStatsUnavailable(it.connectionType)
                     is HasOrders -> _hasOrders.value = if (it.hasOrder) OrderState.AtLeastOne else OrderState.Empty
@@ -479,12 +482,14 @@ class MyStoreViewModel @Inject constructor(
 
     sealed class VisitorStatsViewState {
         data object Error : VisitorStatsViewState()
+        data object NotLoaded : VisitorStatsViewState()
         data class Unavailable(
             val benefitsBanner: JetpackBenefitsBannerUiModel
         ) : VisitorStatsViewState()
 
         data class Content(
-            val stats: Map<String, Int>
+            val stats: Map<String, Int>,
+            val totalVisitorCount: Int?
         ) : VisitorStatsViewState()
     }
 
