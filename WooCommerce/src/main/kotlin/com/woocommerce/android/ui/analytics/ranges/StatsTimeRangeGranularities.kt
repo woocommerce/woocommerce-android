@@ -3,19 +3,18 @@ package com.woocommerce.android.ui.analytics.ranges
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.milliseconds
 
 @Suppress("MagicNumber")
 val StatsTimeRangeSelection.revenueStatsGranularity: StatsGranularity
     get() {
         fun calculateCustomRangeGranularity(): StatsGranularity {
-            val daysDifference = (currentRange.end.time - currentRange.start.time).milliseconds.inWholeDays
+            val daysDifference = currentRange.end.time - currentRange.start.time
 
             return when {
-                daysDifference < 2 -> StatsGranularity.HOURS
-                daysDifference <= 28 -> StatsGranularity.DAYS
-                daysDifference <= 90 -> StatsGranularity.WEEKS
-                daysDifference <= 3 * 365 -> StatsGranularity.MONTHS
+                daysDifference <= 1.days.inWholeMilliseconds -> StatsGranularity.HOURS
+                daysDifference <= 28.days.inWholeMilliseconds -> StatsGranularity.DAYS
+                daysDifference <= 90.days.inWholeMilliseconds -> StatsGranularity.WEEKS
+                daysDifference <= (3 * 365).days.inWholeMilliseconds -> StatsGranularity.MONTHS
                 else -> StatsGranularity.YEARS
             }
         }
