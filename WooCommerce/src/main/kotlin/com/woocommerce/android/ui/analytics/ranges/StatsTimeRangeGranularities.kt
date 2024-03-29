@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 
 @Suppress("MagicNumber")
@@ -42,5 +43,15 @@ val StatsTimeRangeSelection.visitorSummaryStatsGranularity: StatsGranularity
         SelectionType.LAST_WEEK, SelectionType.WEEK_TO_DATE -> StatsGranularity.WEEKS
         SelectionType.LAST_MONTH, SelectionType.MONTH_TO_DATE -> StatsGranularity.MONTHS
         SelectionType.LAST_YEAR, SelectionType.YEAR_TO_DATE -> StatsGranularity.YEARS
-        else -> error("Summary visitor stats unsupported for selection type $selectionType")
+        SelectionType.LAST_QUARTER, SelectionType.QUARTER_TO_DATE ->
+            error("Summary visitor stats unsupported quarter ranges")
+
+        SelectionType.CUSTOM -> {
+            val difference = currentRange.end.time - currentRange.start.time
+
+            when {
+                difference <= 1.days.inWholeMilliseconds -> StatsGranularity.DAYS
+                else -> error("Summary visitor stats unsupported for custom ranges with more than 1 day")
+            }
+        }
     }

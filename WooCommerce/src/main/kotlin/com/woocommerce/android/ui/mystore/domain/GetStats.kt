@@ -157,7 +157,7 @@ class GetStats @Inject constructor(
         forceRefresh: Boolean
     ): Flow<Result<Int?>> = flow {
         if (rangeSelection.selectionType == SelectionType.CUSTOM &&
-            rangeSelection.currentRange.end.time - rangeSelection.currentRange.start.time > 2.days.inWholeMilliseconds
+            rangeSelection.currentRange.end.time - rangeSelection.currentRange.start.time > 1.days.inWholeMilliseconds
         ) {
             // Total visitor stats are not available for custom ranges
             emit(Result.success(null))
