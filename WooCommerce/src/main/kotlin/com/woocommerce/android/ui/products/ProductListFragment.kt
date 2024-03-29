@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowDiscardProductChangesConfirmationDialog
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
@@ -382,6 +383,13 @@ class ProductListFragment :
                     showProductUpdateStockStatusScreen(event.productsIds)
                 }
 
+                is ShowDiscardProductChangesConfirmationDialog -> {
+                    showDiscardProductChangesConfirmationDialog(
+                        event.productName,
+                        event.productId
+                    )
+                }
+
                 else -> event.isHandled = false
             }
         }
@@ -400,6 +408,10 @@ class ProductListFragment :
                     productListViewModel.onOpenProduct(event.productId, null)
                 }
 
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductChanges -> {
+                    productListViewModel.productHasChanges = event.hasChanges
+                }
+
                 else -> event.isHandled = false
             }
         }
@@ -414,6 +426,19 @@ class ProductListFragment :
             productRemoteIdsToUpdate.toLongArray()
         )
         findNavController().navigateSafely(action)
+    }
+
+    private fun showDiscardProductChangesConfirmationDialog(productName: String, productId: Long) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.product_list_unsaved_product_unselected_title, productName))
+            .setMessage(R.string.product_list_unsaved_product_unselected_message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.dialog_ok) { _, _ ->
+                productListViewModel.productHasChanges = false
+                productListViewModel.onOpenProduct(productId, null)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun handleUpdateDialogs(event: ShowUpdateDialog) {

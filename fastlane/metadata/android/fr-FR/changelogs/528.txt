@@ -1,0 +1,7 @@
+17.9 :
+- [*] Avis : correction d’un bug affichant une double barre d’outils sur les avis dans les réglages [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Interne] Suppression de la création de boutique WooExpress dans l’application [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produits : correction d’un bug rendant indisponible l’élément de menu de mise à jour groupée en mode deux volets [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produits : correction d’un bug n’enregistrant pas la suppression de la photo d’un produit [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Avis : vitesse d’affichage des avis optimisée [https://github.com/woocommerce/woocommerce-android/pull/11083]
+

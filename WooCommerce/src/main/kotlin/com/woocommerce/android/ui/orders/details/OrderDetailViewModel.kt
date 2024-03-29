@@ -746,9 +746,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]
-
-        if (plugin == null || plugin.isOperational) {
+        if (shippingLabelOnboardingRepository.isShippingPluginReady) {
             orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
