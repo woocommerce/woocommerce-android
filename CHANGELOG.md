@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 18.0
+Discover a smoother shopping experience in our latest update! We've squashed some pesky bugs in the products section for a flawless selection and viewing, especially in 2-pane mode. Photos now shine brighter with our enhanced screens. Transitioning between panes? We've polished that too, ensuring seamless shifts. Plus, we're introducing a helpful confirmation dialog for unsaved changes. Most excitingly, dive into your store's performance with custom date ranges in the My Store tab. Update now for these improvements and more!
+
 ## 17.8
 Discover our latest update to your WooCommerce mobile app! Now, seamlessly log in with your site credentials on Jetpack-connected sites, as an alternative to WP.com email login. Experience instant refreshing of product list. Plus, managing your inventory is easier than ever with our new bulk stock status update feature. For added convenience, you can now move orders directly to trash. Last but not least, we optimised the order creation flow for tablet devices! Enjoy 💜
 
@@ -35,7 +38,7 @@ Fresh out of the oven! Our latest WooCommerce app update brings you a sleeker sh
 We've polished your WooCommerce app experience! Check out the sleek new design for the deposit summary on the payments screen. Say goodbye to crashes after resetting your selected site, and enjoy a smoother store switching process right after you create a new store. Plus, managing custom amounts is now a breeze with our full-screen feature. Update now for a more seamless and stable business management journey!
 
 ## 16.7
-In our latest update, we've fine-tuned the In Person Payments onboarding flow for a more seamless and intuitive experience. Additionally, we've addressed various fixes to enhance the stability and performance of animations. Update now to enjoy a smoother and more reliable WooCommerce experience! 
+In our latest update, we've fine-tuned the In Person Payments onboarding flow for a more seamless and intuitive experience. Additionally, we've addressed various fixes to enhance the stability and performance of animations. Update now to enjoy a smoother and more reliable WooCommerce experience!
 
 ## 16.6
 Exciting news, everyone! The latest update enhances your WooCommerce experience in multiple ways. Enjoy swift inventory updates by effortlessly scanning barcodes directly from the Products page—imagine the convenience! Our revamped UI now introduces percentage-based custom amounts for added flexibility. Begin your product creation journey seamlessly by incorporating images from other apps. Internal optimizations guarantee a snappier performance, promising an exhilarating and more user-friendly exploration. Dive in now and explore these fantastic enhancements!
@@ -122,7 +125,7 @@ This release includes several bug fixes and improvements to help you get your bu
 We've introduced a new feature that allows you to search for products by SKU in the product selector screen, making it even easier to find the items you're looking for. Please try it out and share your feedback!
 
 ## 13.8
-Exciting news! You can now scan the barcode of a product when creating an order from the app! No need to manually scroll in search of a product anymore! We also fixed a couple of crash issues in the order list and product detail screens. Please continue to send us feedback – we are listening! 
+Exciting news! You can now scan the barcode of a product when creating an order from the app! No need to manually scroll in search of a product anymore! We also fixed a couple of crash issues in the order list and product detail screens. Please continue to send us feedback – we are listening!
 
 ## 13.7
 Lots of exciting updates on this one! You can create orders on the go and add discounts for the order! You can also quickly take a payment for the order by generating a QR code for your customers to scan and pay. You’ve asked for it, and now it’s here!

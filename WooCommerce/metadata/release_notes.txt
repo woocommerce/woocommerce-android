@@ -1,7 +1,1 @@
-- [*] Products: Improvements on the products photos screens [https://github.com/woocommerce/woocommerce-android/pull/11131]
-- [*] Products: Fixed position of the AI tooltip on the 2 pane mode [https://github.com/woocommerce/woocommerce-android/pull/11166]
-- [*] Products: Show full bottom sheet when spaces available [https://github.com/woocommerce/woocommerce-android/pull/11170]
-- [**] Products: Fixes for 2 to 1 (and visa-versa) panes transitions [https://github.com/woocommerce/woocommerce-android/pull/11159]
-- [*] Products: Confirmation dialog before switching to another product if current was modified [https://github.com/woocommerce/woocommerce-android/pull/11177]
-- [***] My Store: Users can now set a custom date range in My Store tab and see the stats for their preferred date interval [https://github.com/woocommerce/woocommerce-android/issues/10963]
-
+Discover a smoother shopping experience in our latest update! We've squashed some pesky bugs in the products section for a flawless selection and viewing, especially in 2-pane mode. Photos now shine brighter with our enhanced screens. Transitioning between panes? We've polished that too, ensuring seamless shifts. Plus, we're introducing a helpful confirmation dialog for unsaved changes. Most excitingly, dive into your store's performance with custom date ranges in the My Store tab. Update now for these improvements and more!
