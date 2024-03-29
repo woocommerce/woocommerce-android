@@ -24,7 +24,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun ApplicationPasswordTutorialScreen(viewModel: AppPasswordTutorialViewModel) {
+fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialViewModel) {
     ApplicationPasswordTutorialScreen(
         onContinueClicked = viewModel::onContinueClicked,
         onContactSupportClicked = viewModel::onContactSupportClicked

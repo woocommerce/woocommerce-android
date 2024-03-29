@@ -6,7 +6,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
-class AppPasswordTutorialViewModel(
+class ApplicationPasswordTutorialViewModel(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     fun onContinueClicked() {

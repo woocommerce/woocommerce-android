@@ -12,8 +12,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AppPasswordTutorialFragment : BaseFragment() {
-    val viewModel: AppPasswordTutorialViewModel by viewModels()
+class ApplicationPasswordTutorialFragment : BaseFragment() {
+    val viewModel: ApplicationPasswordTutorialViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
