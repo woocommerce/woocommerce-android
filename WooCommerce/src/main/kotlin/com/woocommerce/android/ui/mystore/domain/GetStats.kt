@@ -75,10 +75,10 @@ class GetStats @Inject constructor(
                 }
             }
 
-    private suspend fun revenueStats(
+    private fun revenueStats(
         rangeSelection: StatsTimeRangeSelection,
         forceRefresh: Boolean
-    ): Flow<LoadStatsResult> {
+    ): Flow<LoadStatsResult> = flow {
         val revenueRangeId = rangeSelection.selectionType.identifier.asRevenueRangeId(
             startDate = rangeSelection.currentRange.start,
             endDate = rangeSelection.currentRange.end
@@ -86,7 +86,10 @@ class GetStats @Inject constructor(
         if (forceRefresh.not()) {
             statsRepository.getRevenueStatsById(revenueRangeId)
                 .takeIf { it.isSuccess && it.getOrNull() != null }
-                ?.let { return flowOf(LoadStatsResult.RevenueStatsSuccess(it.getOrNull())) }
+                ?.let {
+                    emit(LoadStatsResult.RevenueStatsSuccess(it.getOrNull()))
+                    return@flow
+                }
         }
 
         val revenueStatsResult = statsRepository.fetchRevenueStats(
@@ -110,7 +113,7 @@ class GetStats @Inject constructor(
                 }
             )
         }
-        return flowOf(revenueStatsResult)
+        emit(revenueStatsResult)
     }
 
     private fun visitorStats(
