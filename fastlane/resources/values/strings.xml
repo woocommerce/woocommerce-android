@@ -400,6 +400,8 @@
     <string name="my_store_custom_range_granularity_week">Weekly</string>
     <string name="my_store_custom_range_granularity_month">Monthly</string>
     <string name="my_store_custom_range_granularity_year">Yearly</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
 
     <!--
         Sign Up Flow
@@ -1920,6 +1922,8 @@
     <string name="product_list_filters_selected">Filters \u2022 %d</string>
     <string name="product_list_filters_show_products">Show products</string>
     <string name="product_list_filters_list_item">Selected filter option</string>
+    <string name="product_list_unsaved_product_unselected_title">You about to discard changes to %s</string>
+    <string name="product_list_unsaved_product_unselected_message">Are you sure you want to discard the changes you made to this product?</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_search_hint_active_filters">Search filtered products</string>
     <string name="product_search_all">All products</string>
@@ -3356,18 +3360,6 @@
     <string name="stats_widget_last_updated_message">As of %1$s</string>
 
     <!--
-    Store creation
-    -->
-    <string name="store_creation_iap_eligibility_loading_title">We are getting ready for your store creation</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Please remain connected.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Store Creation Unavailable </string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Store creation from the mobile app is currently unavailable for your country.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">You can only purchase the eCommerce plan from the mobile app once. To create additional sites visit our website.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Store creation is currently unavailable. Please, try again later.</string>
-    <string name="store_creation_iap_eligibility_network_error">A network error occurred. Please check your connection and try again.</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">You already have an active eCommerce subscription, please contact support if you are experiencing issues with your current subscription not linked to your new site.</string>
-
-    <!--
     Store theme
     -->
     <string name="theme_picker_title">Choose a theme</string>
@@ -3644,22 +3636,6 @@
     <string name="shipping_notice_learn_more">Learn More</string>
     <string name="shipping_notice_dismiss">Dismiss</string>
 
-    <!--
-    Local Notifications
-    -->
-    <string name="local_notification_store_creation_complete_title">🎉 Your store is ready!</string>
-    <string name="local_notification_store_creation_complete_description">Hi %1$s! Welcome to your 14-day free trial of Woo Express – everything you need to start and grow a successful online business, all in one place. Ready to explore?</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Time’s running out on your free trial!</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Your free trial of Woo Express ends tomorrow (%1$s). Now’s the time to own your future – pick a plan and get ready to grow.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Keep your business going with our plan!</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we have paused your store, but you can continue by picking a plan that suits you best.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Keep your business going!</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Discover advanced features and personalized recommendations for your store! Tap to pick a plan that suits you best.</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Help Us Understand Your Subscription Decision</string>
-    <string name="local_notification_survey_after_24_hours_description">We’re interested in your decision-making journey. Could you please tell us about your current status?</string>
-    <string name="free_trial_survey_screen_title">Help Us Understand Your Subscription Decision</string>
-    <string name="local_notification_still_exploring_title">🧭 Still Exploring WooCommerce?</string>
-    <string name="local_notification_still_exploring_description">No rush, take your time! If you have any questions or need assistance, we\'re always here to help. Happy exploring!</string>
     <!--
     First product published congratulatory feature
     -->
