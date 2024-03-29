@@ -1,0 +1,7 @@
+17.9:
+- [*] Beoordelingen: Bug verholpen waarbij een dubbele werkbalk zichtbaar was bij de beoordelingen in de instellingen [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Intern] WooExpress-winkelcreatie uit de app verwijderd [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Producten: Bug verholpen waarbij het menu-item bulkupdate niet beschikbaar was in de weergave met twee kolommen [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Producten: Bug verholpen waarbij het verwijderen van een productfoto niet werd opgeslagen [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Beoordelingen: Snelheid geoptimaliseerd van de weergave van beoordelingen [https://github.com/woocommerce/woocommerce-android/pull/11083]
+

@@ -859,11 +859,11 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
     }
 
-    fun setActiveStatsGranularity(activeStatsGranularity: String) {
-        setString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY, activeStatsGranularity)
+    fun setActiveStatsTab(selectionName: String) {
+        setString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY, selectionName)
     }
 
-    fun getActiveStatsGranularity() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
+    fun getActiveStatsTab() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
 
     fun setCustomDomainsSource(source: String) {
         setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)

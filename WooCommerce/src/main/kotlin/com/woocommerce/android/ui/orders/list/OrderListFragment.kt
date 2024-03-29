@@ -730,7 +730,7 @@ class OrderListFragment :
         viewModel.trackOrderClickEvent(
             orderId,
             orderStatus,
-            requireContext().windowSizeClass != WindowSizeClass.Compact
+            requireContext().windowSizeClass
         )
 
         if (requireContext().windowSizeClass != WindowSizeClass.Compact) {

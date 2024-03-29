@@ -15,13 +15,13 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
-import com.woocommerce.android.util.IsTablet
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject
 
 class ProductDetailsToolbarHelper @Inject constructor(
     private val activity: Activity,
-    private val isTablet: IsTablet,
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : DefaultLifecycleObserver,
     Toolbar.OnMenuItemClickListener {
     private var fragment: ProductDetailFragment? = null
@@ -69,7 +69,7 @@ class ProductDetailsToolbarHelper @Inject constructor(
 
         toolbar.navigationIcon =
             when {
-                isTablet() -> {
+                isWindowClassLargeThanCompact() -> {
                     val startMode = viewModel?.startMode
                     val isAddNewModeCreationFlow = startMode == ProductDetailFragment.Mode.AddNewProduct
                     val isProductShownAfterGenerationWithAi = startMode is ProductDetailFragment.Mode.ShowProduct &&
@@ -80,7 +80,7 @@ class ProductDetailsToolbarHelper @Inject constructor(
                         null
                     }
                 }
-                fragment?.findNavController()?.hasBackStackEntry(R.id.products) == true -> {
+                isPartOfProductListFlow() -> {
                     AppCompatResources.getDrawable(activity, R.drawable.ic_back_24dp)
                 }
 
@@ -119,6 +119,9 @@ class ProductDetailsToolbarHelper @Inject constructor(
             toolbar.menu.updateOptions(it)
         }
     }
+
+    private fun isPartOfProductListFlow() = fragment?.findNavController()?.hasBackStackEntry(R.id.products) == true ||
+        fragment?.parentFragment?.parentFragment is ProductListFragment
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         return when (item.itemId) {

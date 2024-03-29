@@ -5,8 +5,9 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/two_pane_mode_toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:elevation="@dimen/appbar_elevation"
@@ -151,5 +152,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
         android:visibility="gone"/>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="@color/divider_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/product_selector_nav_container"
+        app:layout_constraintTop_toBottomOf="@id/two_pane_mode_toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

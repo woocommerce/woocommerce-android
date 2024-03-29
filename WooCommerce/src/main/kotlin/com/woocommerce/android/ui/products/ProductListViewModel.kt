@@ -36,7 +36,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
-import com.woocommerce.android.util.IsTablet
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -73,14 +73,15 @@ class ProductListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val isTablet: IsTablet,
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
-        private const val KEY_PRODUCT_OPENED = "key_product_opened"
+        private const val KEY_PRODUCT_SELECTED_ON_BIG_SCREEN = "key_product_selected_on_big_screen"
     }
 
+    var productHasChanges: Boolean = false
     private val _productList = MutableLiveData<List<Product>>()
     val productList: LiveData<List<Product>> = _productList.map {
         openFirstLoadedProductOnTablet(it)
@@ -100,9 +101,9 @@ class ProductListViewModel @Inject constructor(
     private var selectedCategoryName: String? = null
     private var searchJob: Job? = null
     private var loadJob: Job? = null
-    private var openedProductId: Long?
-        get() = savedState[KEY_PRODUCT_OPENED]
-        set(value) = savedState.set(KEY_PRODUCT_OPENED, value)
+    private var selectedProductIdOnBigScreen: Long?
+        get() = savedState[KEY_PRODUCT_SELECTED_ON_BIG_SCREEN]
+        set(value) = savedState.set(KEY_PRODUCT_SELECTED_ON_BIG_SCREEN, value)
 
     init {
         EventBus.getDefault().register(this)
@@ -221,7 +222,7 @@ class ProductListViewModel @Inject constructor(
                 AnalyticsEvent.PRODUCT_LIST_ADD_PRODUCT_BUTTON_TAPPED,
                 mapOf(
                     AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenLargerThanCompactValue(
-                        isTablet()
+                        isWindowClassLargeThanCompact()
                     ).deviceTypeToAnalyticsString
                 )
             )
@@ -300,8 +301,8 @@ class ProductListViewModel @Inject constructor(
     }
 
     private fun resetOpenProductIfNotInList(products: List<Product>) {
-        val isOpenProductInTheList = products.firstOrNull { openedProductId == it.remoteId } != null
-        if (!isOpenProductInTheList) openedProductId = null
+        val isOpenProductInTheList = products.firstOrNull { selectedProductIdOnBigScreen == it.remoteId } != null
+        if (!isOpenProductInTheList) selectedProductIdOnBigScreen = null
     }
 
     @Suppress("LongMethod")
@@ -449,11 +450,11 @@ class ProductListViewModel @Inject constructor(
     }
 
     private fun openFirstLoadedProductOnTablet(products: List<Product>) {
-        if (isTablet()) {
+        if (isWindowClassLargeThanCompact()) {
             if (products.isNotEmpty()) {
-                if (openedProductId == null) {
-                    openedProductId = products.first().remoteId
-                    onOpenProduct(openedProductId!!, null)
+                if (selectedProductIdOnBigScreen == null) {
+                    selectedProductIdOnBigScreen = products.first().remoteId
+                    onOpenProduct(selectedProductIdOnBigScreen!!, null)
                 }
             } else {
                 triggerEvent(ProductListEvent.OpenEmptyProduct)
@@ -462,17 +463,29 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun onOpenProduct(productId: Long, sharedView: View?) {
+        if (productHasChanges && isWindowClassLargeThanCompact()) {
+            triggerEvent(
+                ProductListEvent.ShowDiscardProductChangesConfirmationDialog(
+                    productId,
+                    getProduct(productId)?.name.orEmpty()
+                )
+            )
+            return
+        }
+
         analyticsTracker.track(
             AnalyticsEvent.PRODUCT_LIST_PRODUCT_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to IsScreenLargerThanCompactValue(
-                    isTablet()
+                    isWindowClassLargeThanCompact()
                 ).deviceTypeToAnalyticsString
             )
         )
 
-        val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == openedProductId } ?: 0
-        openedProductId = productId
+        val oldPositionInList = _productList.value?.indexOfFirst { it.remoteId == selectedProductIdOnBigScreen } ?: 0
+        if (isWindowClassLargeThanCompact()) {
+            selectedProductIdOnBigScreen = productId
+        }
         val newPositionInList = _productList.value?.indexOfFirst { it.remoteId == productId } ?: 0
         triggerEvent(
             ProductListEvent.OpenProduct(
@@ -484,7 +497,8 @@ class ProductListViewModel @Inject constructor(
         )
     }
 
-    fun isProductHighlighted(productId: Long) = if (isTablet()) productId == openedProductId else false
+    fun isProductHighlighted(productId: Long) =
+        if (isWindowClassLargeThanCompact()) productId == selectedProductIdOnBigScreen else false
 
     fun onSelectAllProductsClicked() {
         analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
@@ -776,6 +790,10 @@ class ProductListViewModel @Inject constructor(
             data class Price(override val productsIds: List<Long>) : ShowUpdateDialog()
             data class Status(override val productsIds: List<Long>) : ShowUpdateDialog()
         }
+        data class ShowDiscardProductChangesConfirmationDialog(
+            val productId: Long,
+            val productName: String,
+        ) : ProductListEvent()
         data class OpenProduct(
             val productId: Long,
             val oldPosition: Int,

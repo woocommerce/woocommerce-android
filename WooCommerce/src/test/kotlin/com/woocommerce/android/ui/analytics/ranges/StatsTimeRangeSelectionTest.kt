@@ -47,11 +47,11 @@ internal class StatsTimeRangeSelectionTest {
         val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
             .apply { time = today }
             .endOfCurrentYear()
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2020-01-01"),
             end = expectedCurrentEndDate
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2019-01-01"),
             end = midDayFrom("2019-02-28")
         )
@@ -73,11 +73,11 @@ internal class StatsTimeRangeSelectionTest {
     fun `when selection type is last year, then generate expected date information`() {
         // Given
         val today = midDayFrom("2020-02-29")
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2019-01-01"),
             end = dayEndFrom("2019-12-31")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2018-01-01"),
             end = dayEndFrom("2018-12-31")
         )
@@ -102,11 +102,11 @@ internal class StatsTimeRangeSelectionTest {
         val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
             .apply { time = today }
             .endOfCurrentQuarter()
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-01-01"),
             end = expectedCurrentEndDate
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2021-10-01"),
             end = midDayFrom("2021-11-15")
         )
@@ -128,11 +128,11 @@ internal class StatsTimeRangeSelectionTest {
     fun `when selection type is last quarter, then generate expected date information`() {
         // Given
         val today = midDayFrom("2022-05-15")
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-01-01"),
             end = dayEndFrom("2022-03-31")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2021-10-01"),
             end = dayEndFrom("2021-12-31")
         )
@@ -157,11 +157,11 @@ internal class StatsTimeRangeSelectionTest {
         val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
             .apply { time = today }
             .endOfCurrentMonth()
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2010-07-01"),
             end = expectedCurrentEndDate
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2010-06-01"),
             end = midDayFrom("2010-06-30")
         )
@@ -183,11 +183,11 @@ internal class StatsTimeRangeSelectionTest {
     fun `when selection type is last month, then generate expected date information`() {
         // Given
         val today = midDayFrom("2010-07-15")
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2010-06-01"),
             end = dayEndFrom("2010-06-30")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2010-05-01"),
             end = dayEndFrom("2010-05-31")
         )
@@ -212,11 +212,11 @@ internal class StatsTimeRangeSelectionTest {
         val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
             .apply { time = today }
             .endOfCurrentWeek()
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-06-27"),
             end = expectedCurrentEndDate
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2022-06-20"),
             end = midDayFrom("2022-06-24")
         )
@@ -238,11 +238,11 @@ internal class StatsTimeRangeSelectionTest {
     fun `when selection type is last week, then generate expected date information`() {
         // Given
         val today = midDayFrom("2022-07-01")
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-06-20"),
             end = dayEndFrom("2022-06-26")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2022-06-13"),
             end = dayEndFrom("2022-06-19")
         )
@@ -267,11 +267,11 @@ internal class StatsTimeRangeSelectionTest {
         val expectedCurrentEndDate = (testCalendar.clone() as Calendar)
             .apply { time = today }
             .endOfCurrentDay()
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-07-01"),
             end = expectedCurrentEndDate
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2022-06-30"),
             end = midDayFrom("2022-06-30")
         )
@@ -293,11 +293,11 @@ internal class StatsTimeRangeSelectionTest {
     fun `when selection type is yesterday, then generate expected date information`() {
         // Given
         val today = midDayFrom("2022-07-01")
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-06-30"),
             end = dayEndFrom("2022-06-30")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2022-06-29"),
             end = dayEndFrom("2022-06-29")
         )
@@ -318,11 +318,11 @@ internal class StatsTimeRangeSelectionTest {
     @Test
     fun `when selection type is custom, then generate expected date information`() {
         // Given
-        val expectedCurrentRange = AnalyticsHubTimeRange(
+        val expectedCurrentRange = StatsTimeRange(
             start = dayStartFrom("2022-12-05"),
             end = dayEndFrom("2022-12-07")
         )
-        val expectedPreviousRange = AnalyticsHubTimeRange(
+        val expectedPreviousRange = StatsTimeRange(
             start = dayStartFrom("2022-12-02"),
             end = dayEndFrom("2022-12-04")
         )

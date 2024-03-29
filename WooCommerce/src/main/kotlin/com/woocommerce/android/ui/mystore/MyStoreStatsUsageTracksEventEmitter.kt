@@ -100,4 +100,8 @@ class MyStoreStatsUsageTracksEventEmitter @Inject constructor(
         firstInteractionTime = null
         lastInteractionTime = null
     }
+
+    fun interactedWithCustomRange() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_INTERACTED)
+    }
 }

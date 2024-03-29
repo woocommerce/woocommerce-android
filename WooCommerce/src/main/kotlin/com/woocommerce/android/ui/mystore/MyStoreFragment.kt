@@ -40,6 +40,7 @@ import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
@@ -86,6 +87,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -153,7 +155,7 @@ class MyStoreFragment :
 
     private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            myStoreViewModel.onStatsGranularityChanged(tab.tag as? SelectionType ?: SelectionType.TODAY)
+            myStoreViewModel.onTabSelected(tab.tag as? SelectionType ?: SelectionType.TODAY)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab) {}
@@ -468,7 +470,7 @@ class MyStoreFragment :
                     fromMillis = event.fromDate.time,
                     toMillis = event.toDate.time
                 ) { start, end ->
-                    myStoreViewModel.onCustomRangeSelected(start, end)
+                    myStoreViewModel.onCustomRangeSelected(StatsTimeRange(Date(start), Date(end)))
                 }
 
                 else -> event.isHandled = false
@@ -612,7 +614,7 @@ class MyStoreFragment :
     }
 
     private fun handleUnavailableVisitorStats() {
-        binding.myStoreStats.handleUnavailableVisitorStats()
+        binding.myStoreStats.handleJetpackUnavailableVisitorStats()
     }
 
     private fun showErrorSnack() {

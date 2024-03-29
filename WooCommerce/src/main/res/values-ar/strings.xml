@@ -1,11 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-20 17:54:04+0000
+Translation-Revision-Date: 2024-03-26 17:54:08+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="more_menu_button_subscriptions_description">إدارة اشتراكك</string>
+    <string name="more_menu_button_subscriptions">الاشتراكات</string>
+    <string name="upgrades_title">الاشتراكات</string>
+    <string name="store_onboarding_launch_store_rendering_preview_label">جارٍ استدعاء المعاينة…</string>
+    <string name="plugins_error_message">حدث خطأ في أثناء تحميل الإضافات المثبَّتة</string>
+    <string name="plugin_state_auto_managed">إدارة تلقائية</string>
+    <string name="plugin_state_inactive">غير نشط</string>
+    <string name="plugin_state_update_available">التحديث متوفر (%s)</string>
+    <string name="plugin_state_up_to_date">محدَّث</string>
+    <string name="settings_store_name">اسم المتجر</string>
+    <string name="product_removing_category_dialog_title">إزالة التصنيف</string>
+    <string name="product_update_category_dialog_title">تحديث التصنيف</string>
+    <string name="delete_product_category_failed">خطأ في أثناء حذف التصنيف</string>
+    <string name="delete_product_category_success">تم حذف تصنيف المنتج</string>
+    <string name="update_product_category_success">تم تحديث تصنيف المنتج</string>
+    <string name="domain_picker_suggestions_error">يتعذر تحميل اقتراحات النطاق</string>
+    <string name="domain_picker_suggestions_title">اقتراحات</string>
+    <string name="domain_picker_hint">كتابة نطاق</string>
+    <string name="domain_picker_title">اختيار نطاق</string>
+    <string name="analytics_section_see_all">رؤية كل تحليلات المتجر</string>
+    <string name="my_store_custom_range_granularity_year">سنويًا</string>
+    <string name="my_store_custom_range_granularity_month">شهريًا</string>
+    <string name="my_store_custom_range_granularity_week">أسبوعيًا</string>
+    <string name="my_store_custom_range_granularity_day">يوميًا</string>
+    <string name="my_store_custom_range_granularity_hour">كل ساعة</string>
+    <string name="my_store_custom_range_granularity_label">الفاصل الزمني %s</string>
+    <string name="login_site_picker_add_a_store">ربط متجر آخر</string>
+    <string name="login_prologue_start_new_store">هل تريد بدء متجر جديد؟</string>
+    <string name="store_name_default">اسم المتجر</string>
     <string name="product_update_stock_status_dialog_subtitle">يُرجى الانتظار…</string>
     <string name="product_update_stock_status_dialog_title">تحديث حالات المخزون</string>
     <string name="product_update_stock_status_error">حدث خطأ. ترجى المحاولة مجددًا.</string>
@@ -192,10 +221,6 @@ Language: ar
     <string name="blaze_campaign_creation_product_selector_title">جاهز للترويج</string>
     <string name="blaze_campaign_creation_new_intro_title">تمكين الملايين من مشاهدة منتجاتك</string>
     <string name="theme_preview_activate_theme_button_settings">استخدام ⁦%1$s⁩</string>
-    <string name="theme_preview_activate_theme_button_store_creation">البدء بـ ⁦%1$s⁩</string>
-    <string name="store_creation_installation_async_dialog_switch_store">تبديل المتجر</string>
-    <string name="store_creation_installation_async_dialog_message">هل تريد بدء إدارته الآن؟</string>
-    <string name="store_creation_installation_async_dialog_title">أصبح متجرك الجديد جاهزًا</string>
     <string name="card_reader_hub_deposit_funds_deposits_title">الوديعة الأخيرة</string>
     <string name="order_creation_expand_collapse_order_totals">توسيع إجماليات طلبات الطي</string>
     <string name="order_creation_collect_payment_button">تحصيل المدفوعات</string>
@@ -258,12 +283,9 @@ Language: ar
     <string name="theme_preview_bottom_sheet_pages_subtitle">الضغط للعرض</string>
     <string name="theme_preview_bottom_sheet_pages_title">الصحفات الموجودة على هذا القالب</string>
     <string name="theme_preview_title">معاينة</string>
-    <string name="theme_picker_carousel_info_item_description">بمجرد إعداد متجرك، اعثر على قالبك المثالي في متجر قوالب WooCommerce.</string>
     <string name="theme_picker_carousel_info_item_title">هل تبحث عن المزيد؟</string>
     <string name="theme_picker_description">يمكنك دومًا تغييره لاحقًا ضمن الإعدادات.</string>
     <string name="theme_picker_title">اختيار قالب</string>
-    <string name="store_creation_theme_activation_error">حدث خطأ في أثناء تفعيل القالب الذي حددته، يرجى المحاولة مجددًا!</string>
-    <string name="store_creation_theme_activation_loading">جارٍ تفعيل قالب متجرك…</string>
     <string name="settings_themes">القوالب</string>
     <string name="product_filter_explore_plugin">استكشاف!</string>
     <string name="configuration_required">التكوين مطلوب</string>
@@ -515,7 +537,6 @@ Language: ar
     <string name="store_onboarding_task_woopayments_celebration_message">تهانينا! لقد أكملت عملية الإعداد بنجاح وأصبح نظام الدفع الخاص بك جاهزًا للعمل.</string>
     <string name="store_onboarding_task_woopayments_celebration_header">لقد فعلتها!</string>
     <string name="store_onboarding_task_woopayments_setup_description">أدر المدفوعات بسلاسة باستخدام WooPayments، مجانًا بدءًا من الإعداد أو الرسوم الشهرية.</string>
-    <string name="store_creation_store_name_settings_option">اسم المتجر</string>
     <string name="settings_account">إعدادات الحساب</string>
     <string name="shipping_label_package_details_hazmat_select_category_action">تحديد تصنيف</string>
     <string name="shipping_label_package_details_hazmat_selection_title">تصنيف المواد الخطيرة</string>
@@ -535,23 +556,6 @@ Language: ar
     <string name="store_onboarding_name_your_store_dialog_label">اسم المتجر</string>
     <string name="store_onboarding_task_name_store_description">يمكن أن يؤدي تخصيص اسم متجرك أيضًا إلى المساعدة على تحسين محركات البحث الخاصة بمتجرك.</string>
     <string name="store_onboarding_task_name_store_title">تسمية متجرك</string>
-    <string name="store_profiler_features_other">أخرى</string>
-    <string name="store_profiler_features_plugins_and_extensions">الوصول إلى مجموعة كبيرة من الإضافات والامتدادات</string>
-    <string name="store_profiler_features_store_customization">خيارات التخصيص الخاصة بتصميم متجري</string>
-    <string name="store_profiler_features_scale_business">إمكانية التطوير كلما شهدت أعمالي نموًا</string>
-    <string name="store_profiler_features_ipp">المدفوعات الشخصية</string>
-    <string name="store_profiler_features_payment_options">خيارات الدفع المرنة والآمنة</string>
-    <string name="store_profiler_features_sales_analytics">المبيعات الشاملة وتقارير التحليلات</string>
-    <string name="store_profiler_features_product_management">سهولة إدارة المنتجات وتعقّب المخزون</string>
-    <string name="store_profiler_features_main_button">إنشاء متجري</string>
-    <string name="store_profiler_features_description">دعنا نتعرف على ما تتطلع\nإلى استخدامه في تطبيقنا.</string>
-    <string name="store_profiler_features_title">ما الميزات التي\nتهتم بها أكثر؟</string>
-    <string name="store_creation_store_name_default">اسم المتجر</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#الحصول على المبيعات شخصيًا:&lt;/b&gt; حسِّن المبيعات من خلال المبيعات الشخصية. قم بتأمين معاملات البطاقات من خلال تطبيقنا أو القراء المتوافقين لدينا.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;إدارة الطلبات وإنشاؤها:&lt;/b&gt; ابحث عن طلبات جديدة أو حدِّثها أو أنشئها على الفور. بسِّط عملية طلبك.</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#تتبُّع المبيعات والمنتجات الرائجة:&lt;/b&gt; اطلع دومًا على المبيعات في الوقت الفعلي والمنتجات الرائجة لتعزيز إمكانية الربح في متجرك.</string>
-    <string name="store_creation_in_progress_title_2">توسيع إمكانات \n فيمتجرك</string>
-    <string name="store_creation_in_progress_title_1">تقريبًا هناك! أصبح\nلمتجرك شكل  </string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">تمكين ميزة NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">طرود توفير الكميات الصغيرة (لا بد من وضع علامات عليها)</string>
     <string name="shipping_label_hazmat_option_limited_quantity">طرود محدودة الكمية منقولة برًا - الأيروسولات، ومطهرات الرذاذ، والطلاء بالرش، ورذاذ الشعر، والبروبان، والبيوتان، ومنتجات التنظيف، وغير ذلك - العطور، وطلاء الأظافر، ومزيل طلاء الأظافر، والمذيبات، ومعقم اليدين، والكحول المحمر، ومنتجات الإيثانول القاعدية، وغير ذلك - مواد سطحية أخرى محدودة الكمية (مستحضرات التجميل، ومنتجات التنظيف، والطلاءات، وغير ذلك)</string>
@@ -580,34 +584,9 @@ Language: ar
     <string name="shipping_label_hazmat_option_class_1">الفئة 1 - طرود الألعاب المسيَّرة/صمامات الأمان</string>
     <string name="shipping_label_hazmat_option_air_eligible_ethanol">طرود الإيثانول المؤهلة للنقل جوًا - (شحنات العطور ومعقِّمات اليدين المعتمدة)</string>
     <string name="dialog_ok">موافق</string>
-    <string name="store_creation_country_list_picker_toolbar_title">تحديد بلد</string>
-    <string name="store_creation_country_picker_current_location_description">لقد اكتشفنا موقعك تلقائيًا. يرجى تغييره هنا إذا كان غير صحيح.</string>
-    <string name="store_creation_country_picker_title">أين تقع شركتك؟</string>
-    <string name="store_profiler_challenge_other">أخرى</string>
-    <string name="store_profiler_challenge_shipping_and_logistics">الشحن والإمداد والتموين</string>
-    <string name="store_profiler_challenge_managing_inventory">إدارة المخزون</string>
-    <string name="store_profiler_challenge_finding_customers">العثور على العملاء</string>
-    <string name="store_profiler_challenge_setting_up_online_store">إعداد المتجر على الإنترنت</string>
-    <string name="store_profiler_challenge_description">اختر المخاوف التي تشعر بها أو الصعوبات التي تواجهها أدناه. يمكنك تحديث أكثر من خيار واحد.</string>
-    <string name="store_profiler_challenge_title">ما التحديات التي تواجهها\nعند بدء متجر على الإنترنت\nأو تشغيله؟</string>
     <string name="shipping_label_package_details_hazmat_content_description">تشمل المواد محتملة الخطورة عناصر، مثل: البطاريات والثلج الجاف والسوائل القابلة للاشتعال والأهباء الجوية والذخائر والألعاب النارية وطلاء الأظافر والعطور والدهانات والمذيبات والمزيد. يجب شحن العناصر الخطرة في حاويات منفصلة.</string>
     <string name="shipping_label_package_details_hazmat_content_checkbox_title">يحتوي على مواد خطرة</string>
     <string name="ai_product_description_title_hint">أدخل عنوان المنتج.</string>
-    <string name="free_trial_feature_support">دعم ذو أولوية على مدار الساعة وطوال أيام الأسبوع</string>
-    <string name="free_trial_feature_backups">عمليات النسخ الاحتياطي التلقائية في الموقع</string>
-    <string name="free_trial_feature_hosting">أفضل استضافة</string>
-    <string name="free_trial_feature_automated_customer_emails">رسائل البريد الإلكتروني التلقائية إلى العملاء</string>
-    <string name="free_trial_feature_built_in_seo">تحسين محركات البحث مدمج</string>
-    <string name="free_trial_feature_design_editing">تصميم خالٍ من الرموز والتحرير</string>
-    <string name="free_trial_feature_store_management">أدوات إدارة المتجر</string>
-    <string name="free_trial_summary_hassle_free_store_ownership">ملكية متجر خال من العقبات</string>
-    <string name="free_trial_summary_grow_your_business">نمو أعمالك</string>
-    <string name="free_trial_summary_start_selling_quickly">بدء البيع بسرعة</string>
-    <string name="store_creation_store_profiler_journey_description">دعنا نعرف مكانك في\nرحلة التجارة التي تقوم بها حتى نتمكن من تخصيص\nتجربتك في Woo من أجلك.</string>
-    <string name="store_creation_store_profiler_journey_title">أي من هذه الأشياء تصفك\nعلى أفضل نحو؟</string>
-    <string name="store_creation_store_profiler_industries_title">ما الذي تنوي بيعه\nفي متجرك؟</string>
-    <string name="store_creation_store_profiler_industries_header">نبذة عن متجرك</string>
-    <string name="simplified_login_prologue_title">ابدأ إصدارك التجريبي المجاني لمدة 15 يومًا، لا تلزم بطاقة الائتمان. انضم إلى 3.4 ملايين متجر يحقق ازدهارًا مع Woo، بدءًا من عملية البيع الأولى وحتى ملايين عمليات البيع.</string>
     <string name="simplified_login_prologue_intro">منصة للتجارة الإلكترونية تتطور معك</string>
     <string name="product_type_variable_subscription">اشتراك متغير</string>
     <string name="order_creation_remove_this_coupon">إزالة القسيمة</string>
@@ -722,7 +701,6 @@ Language: ar
     <string name="more_settings">مزيد من الإعدادات</string>
     <string name="maybe_later">ربما لاحقًا</string>
     <string name="product_sharing_regenerate">الكتابة مجددًا</string>
-    <string name="store_creation_in_progress_description_1">ستُخطر بمجرد أن يصبح المتجر جاهزًا! اجلس واسترخِ ودعنا ننثر سحرنا في أثناء مشاركة النصائح المفيدة. 🔮</string>
     <string name="card_reader_payment_failed_pin_required_tap_to_pay">رمز PIN مطلوب، لكن لا تدعمه ميزة \"Tap To Pay\" حتى الآن. التفكير في استخدام قارئ البطاقات الخارجي</string>
     <string name="card_reader_payment_payment_failed_purchase_hardware_reader">شراء قارئ البطاقات</string>
     <string name="order_sync_coupon_removed">يتعذر تطبيق القسيمة وتمت إزالتها من الطلب</string>
@@ -827,13 +805,6 @@ Language: ar
     <string name="product_component_single_count">مكوّن واحد</string>
     <string name="product_component_settings">إعدادات المكوّنات</string>
     <string name="product_components">المكوّنات</string>
-    <string name="store_creation_profiler_industry_electronic_computers">الأجهزة الإلكترونية وأجهزة الحاسوب</string>
-    <string name="store_creation_profiler_industry_education_learning">التعليم والتعلُّم</string>
-    <string name="store_creation_profiler_industry_home_furniture_garden">المنزل والأثاث والحديقة</string>
-    <string name="store_creation_profiler_industry_food_drink">الطعام والشراب</string>
-    <string name="store_creation_profiler_industry_health_beauty">الصحة والجمال</string>
-    <string name="store_creation_in_progress_title_4">فتح الأبواب</string>
-    <string name="store_creation_in_progress_title_3">تشغيل المصابيح</string>
     <string name="notifications_permission_description">نحتاج إلى صلاحية إرسال تنبيهات الدفع للطلبات والمراجعات الجديدة وغير ذلك، ويتم توصيلها إلى جهازك.</string>
     <string name="notifications_permission_title">التنبيهات</string>
     <string name="product_type_composite">المنتجات المركّبة</string>
@@ -843,7 +814,6 @@ Language: ar
     <string name="allow">السماح</string>
     <string name="more_menu_button_settings_description">تحديث تفضيلاتك</string>
     <string name="more_menu_button_settings">الإعدادات</string>
-    <string name="more_menu_button_upgrades_description">إدارة خططي</string>
     <string name="more_menu_button_reviews_description">الحصول على مراجعات لمتجرك</string>
     <string name="more_menu_button_coupons_description">زيادة المبيعات من خلال العروض الخاصة</string>
     <string name="more_menu_button_store_description">عرض متجرك</string>
@@ -859,9 +829,6 @@ Language: ar
     <string name="empty_group_of">غير مجمعة</string>
     <string name="empty_max_quantity">بلا حد أقصى</string>
     <string name="empty_min_quantity">بلا حد أدنى</string>
-    <string name="free_trial_summary_store_creation_error_dialog_action">فهمت!</string>
-    <string name="free_trial_summary_store_creation_error_message">عذرًا، يتعذر علينا إنشاء متجرك على الفور، ترجى المحاولة مجددًا لاحقًا.</string>
-    <string name="free_trial_summary_store_creation_error_title">حدث خطأ</string>
     <string name="product_type_bundle">حزمة</string>
     <string name="quantity_rules_info_notice">يمكنك تحرير قواعد كميات المنتجات في لوحة تحكم الويب.</string>
     <string name="group_of">مجموعة</string>
@@ -870,13 +837,6 @@ Language: ar
     <string name="product_quantity_rules_title">قواعد الكميات</string>
     <string name="gift_cards">بطاقات الهدايا</string>
     <string name="order_gift_card">بطاقة الهدايا</string>
-    <string name="free_trial_feature_social_advertising">الإعلانات الاجتماعية</string>
-    <string name="free_trial_feature_premium_themes">قوالب مميزة</string>
-    <string name="free_trial_summary_credit_card_message">لن يلزم بطاقة ائتمان.</string>
-    <string name="free_trial_summary_try_button">التجربة مجانًا</string>
-    <string name="free_trial_summary_try_it">جرِّبه مجانًا لمدة 14 يومًا.</string>
-    <string name="free_trial_summary_advertise">نقدّم كل ما تحتاج إليه لإنشاء متجر على الإنترنت وتطويره، ويكون مدعومًا من WooCommerce ومستضافًا على ووردبريس.كوم.</string>
-    <string name="free_trial_summary_title">البدء في غضون أيام، والتطوير لمدة أعوام</string>
     <string name="product_selector_products_heading">المنتجات</string>
     <string name="product_selector_recent_products_heading">آخر عملية بيع</string>
     <string name="product_selector_popular_products_heading">شائع</string>
@@ -911,6 +871,7 @@ Language: ar
     <string name="subscription_id">رقم الاشتراك⁦%1$d⁩</string>
     <string name="order_subscription">الاشتراك</string>
     <string name="store_onboarding_launch_store_ok">موافق</string>
+    <string name="simplified_login_prologue_title">بدءًا من أول عملية بيع لك وصولاً إلى الملايين في الإيرادات، يكون Woo بجوارك. تعرّف على سبب ثقة التجار بنا لتشغيل 3.4 ملايين متجر على الإنترنت.</string>
     <string name="product_type_subscription">الاشتراك</string>
     <string name="otp_incorrect">رمز OTP غير صالح. يرجى التحقق مجددًا من معلوماتك والمحاولة مرة أخرى.</string>
     <string name="requesting_sms_otp_failure">فشل طلب الرسالة النصية القصيرة. ترجى المحاولة مجددًا.</string>
@@ -933,7 +894,6 @@ Language: ar
     <string name="store_onboarding_get_paid_loading_label">جارٍ التحميل…</string>
     <string name="store_onboarding_get_paid_title">إعداد المدفوعات</string>
     <string name="store_onboarding_task_about_your_store_toolbar_title">نبذة عن متجرك</string>
-    <string name="store_creation_installation_rendering_preview_label">جارٍ استدعاء المعاينة…</string>
     <string name="shipping_label_address_phone_required">رقم الهاتف مطلوب</string>
     <string name="analytics_list_item_products_sold">تم بيع ⁦%1$s⁩ و⁦%2$s⁩ و⁦%3$s⁩ و⁦%4$s⁩</string>
     <string name="analytics_items">عناصر</string>
@@ -943,10 +903,8 @@ Language: ar
     <string name="upgrades_trial_ended_caption">انتهى الإصدار التجريبي المجاني الخاص بك وأصبح لديك وصول محدود إلى كل الميزات. اشترك في ⁦%1$s⁩ الآن.</string>
     <string name="upgrades_upgradeable_caption">أنت في الإصدار التجريبي المجاني الذي تبلغ مدته ⁦%1$d⁩. سينتهي الإصدار التجريبي المجاني في ⁦%2$s⁩. يمكنك الترقية لفتح ميزات جديدة والاستمرار في تشغيل متجرك.</string>
     <string name="upgrades_subscription_status">حالة الاشتراك</string>
-    <string name="upgrades_title">ترقيات</string>
     <string name="upgrades_troubleshooting">حل المشكلات</string>
     <string name="upgrades_current_plan">الحالي: %s</string>
-    <string name="upgrades_upgrade_now">قم بالترقية الآن</string>
     <string name="upgrades_report_subscription_issue">الإبلاغ بمشكلة في الاشتراك</string>
     <string name="free_trial_upgrade_now">قم بالترقية الآن</string>
     <string name="free_trial_days_left">مازال %1$s⁩ أيام في إصدارك التجريبي.</string>
@@ -969,7 +927,6 @@ Language: ar
     <string name="login_site_credentials_custom_admin_url">يتعذر تسجيل لدخول نظرًا إلى عدم تمكنا من التعرف على عنوان URL لمسؤول متجرك</string>
     <string name="login_site_credentials_custom_login_url">يتعذر تسجيل لدخول نظرًا إلى عدم تمكنا من التعرف على عنوان URL لتسجيل الدخول إلى متجرك</string>
     <string name="login_site_credentials_invalid_response">فشل تسجيل الدخول مع وجود استجابة غير متوقعة من موقعك. إننا نعمل على إصلاح هذه المشكلة.</string>
-    <string name="more_menu_button_upgrades">ترقيات</string>
     <string name="something_went_wrong_try_again">هناك خطأ ما. ترجى المحاولة مجددًا في وقت لاحق.</string>
     <string name="card_reader_onboarding_account_pending_requirements_without_date_hint">توجد متطلبات معلقة في حسابك. يرجى إكمال هذه المتطلبات للاستمرار في قبول المدفوعات الشخصية.</string>
     <string name="analytics_banner_message">يرجى تقييم خبرة التحليلات الخاصة بك</string>
@@ -1091,13 +1048,6 @@ Language: ar
     <string name="feedback_banner_ipp_title_beginner">هل تستمتع بميزة المدفوعات الشخصية لديك؟</string>
     <string name="feedback_banner_ipp_message_newbie">شارك تجربتك الخاصة بشأن كيفية التحصيل من ميزة المدفوعات الشخصية.</string>
     <string name="feedback_banner_ipp_title_newbie">كيف يمكننا مساعدتك على البيع بشكل شخصي.</string>
-    <string name="store_creation_profiler_merchant_journey_selling_online">أبيع بالفعل وأنا متصل بالإنترنت </string>
-    <string name="store_creation_profiler_merchant_journey_selling_not_online">أبيع بالفعل، ولكنني لست متصلاً بالإنترنت </string>
-    <string name="store_creation_profiler_merchant_journey_starting_business">سأبدأ عملي التجاري</string>
-    <string name="store_creation_profiler_industry_clothing_accessories">الملابس والإكسسوارات</string>
-    <string name="store_creation_profiler_industry_other">أخرى</string>
-    <string name="store_creation_profiler_options_search_empty">لا تتوافر نتائج لهذا البحث</string>
-    <string name="store_creation_store_profiler_industries_search_hint">كتابة تصنيف</string>
     <string name="product_duplicate_copied_product_name">نسخ ⁦%1$s⁩</string>
     <string name="product_duplicate_progress_body">يرجى الانتظار بينما نحفظ نسخة من هذا المنتج إلى متجرك</string>
     <string name="product_duplicate_progress_title">جارٍ تكرار منتجك…</string>
@@ -1115,12 +1065,6 @@ Language: ar
     <string name="date_compared_to">تمت المقارنة مع</string>
     <string name="domain">نطاق</string>
     <string name="login_application_passwords_help">ما المقصود بكلمات مرور التطبيقات؟</string>
-    <string name="store_creation_country_picker_countries_header">البلدان</string>
-    <string name="store_creation_country_picker_current_location">الموقع الحالي</string>
-    <string name="store_creation_country_picker_description">سنستخدم هذه المعلومات لإعداد المدفوعات والشحن والضرائب.</string>
-    <string name="store_creation_store_profiler_platforms_description">يمكنك اختيار العديد منها.</string>
-    <string name="store_creation_store_profiler_platforms_title">ما المنصة (المنصات) التي\nتستخدمها حاليًا؟</string>
-    <string name="store_creation_store_profiler_industries_description">اختر تصنيفًا يُعرِّف\nعملك على أفضل وجه.</string>
     <string name="login_application_passwords_unavailable">يبدو أن ميزة كلمات مرور التطبيقات قد تم تعطيلها في موقعك ⁦%1$s⁩.\n يرجى تمكينها لاستخدام تطبيق WooCommerce.</string>
     <string name="login_open_installation_page">فتح صفحة التثبيت</string>
     <string name="not_a_valid_qr_code">رمز Qr الذي تم مسحه ضوئيًا ليس رمز WooCommerce</string>
@@ -1138,15 +1082,10 @@ Language: ar
     <string name="product_bulk_update_status">تحديث الحالة</string>
     <string name="product_bulk_update_price_updated">تم تحديث السعر!</string>
     <string name="product_bulk_update_regular_price">تحديث السعر العادي</string>
-    <string name="store_creation_ecommerce_plan_period_two_years">عامان</string>
-    <string name="store_creation_ecommerce_store_loading_permanent_error">حدث خطأ ما في أثناء تثبيت المتجر…</string>
     <string name="variations_bulk_creation_no_candidates_message">يتم إنشاء كل التباينات بالفعل.</string>
     <string name="variations_bulk_creation_no_candidates_title">لا توجد تباينات مطلوب إنشائها</string>
     <string name="product_list_multiselect">تحديد متعدد</string>
-    <string name="store_creation_ecommerce_store_loading_error">يتعذر تحميل متجرك الجديد. يرجى الانتظار قليلاً والمحاولة مرة أخرى…</string>
-    <string name="store_creation_ecommerce_plan_purchase_error">يتعذر إكمال عملية الشراء…</string>
-    <string name="store_creation_domain_picker_suggestions_error">يتعذر تحميل اقتراحات النطاق</string>
-    <string name="store_creation_domain_picker_empty_suggestions">لا تتوافر نطاقات لهذا البحث</string>
+    <string name="domain_picker_empty_suggestions">لا توجد نطاقات متوفرة لهذا البحث</string>
     <string name="variations_bulk_creation_progress_title">إنشاء تباينات</string>
     <string name="variations_bulk_creation_confirmation_message">سيؤدي ذلك إلى إنشاء تباين جديد لكل مجموعة محتملة من سمات التباين (⁦%1$d⁩ من التباينات).</string>
     <string name="variations_bulk_creation_confirmation_title">هل تريد إنشاء كل التباينات؟</string>
@@ -1197,31 +1136,6 @@ Language: ar
     <string name="login_jetpack_installation_explanation">يرجى تثبيت إضافة Jetpack المجانية للوصول إلى متجرك على هذا التطبيق.</string>
     <string name="login_no_stores_subtitle">انهض وقم بالبيع سريعًا من خلال متجر رائع على الإنترنت. </string>
     <string name="login_no_stores_header">إنشاء متجرك الأول</string>
-    <string name="store_creation_store_name_hint">اسم المتجر</string>
-    <string name="store_creation_store_name_subtitle">لا داعي للقلق، يمكنك دائمًا تغييره لاحقًا. </string>
-    <string name="store_creation_store_name_title">ما اسم متجرك؟</string>
-    <string name="store_creation_store_name_caption">نبذة عن متجرك</string>
-    <string name="store_creation_installation_show_preview_button">معاينة المتجر</string>
-    <string name="store_creation_installation_manage_store_button">إدارة متجري</string>
-    <string name="store_creation_installation_success">تم إنشاء متجرك!</string>
-    <string name="store_creation_installation_error">حدث خطأ في أثناء التثبيت، ترجى المحاولة مجددًا…</string>
-    <string name="store_creation_ecommerce_plan_feature_sales">قنوات المبيعات</string>
-    <string name="store_creation_ecommerce_plan_feature_shipping_labels">بطاقات الشحن</string>
-    <string name="store_creation_ecommerce_plan_feature_payments">خيارات الدفع المتعددة</string>
-    <string name="store_creation_ecommerce_plan_feature_reports">تقارير التجارة الإلكترونية</string>
-    <string name="store_creation_ecommerce_plan_feature_subscriptions">الاشتراكات وبطاقات الهدايا</string>
-    <string name="store_creation_ecommerce_plan_feature_products">منتجات غير محدودة</string>
-    <string name="store_creation_ecommerce_plan_feature_themes">قوالب مميزة</string>
-    <string name="store_creation_ecommerce_plan_period_year">سنة</string>
-    <string name="store_creation_ecommerce_plan_period_month">شهر</string>
-    <string name="store_creation_ecommerce_plan_refund_reminder">لا يوجد خطر، يمكنك الإلغاء لاسترداد الأموال بالكامل في غضون 30 يومًا.</string>
-    <string name="store_creation_ecommerce_plan_purchase_button_title">إنشاء متجر لـ ⁦%1$s⁩</string>
-    <string name="store_creation_ecommerce_plan_powered_by">مدعوم من</string>
-    <string name="store_creation_ecommerce_plan_features_tagline">كل الميزات التي تحتاج إليها مدمجة بالفعل.</string>
-    <string name="store_creation_ecommerce_plan_error">يتعذر تحميل معلومات الخطة…</string>
-    <string name="store_creation_summary_primary_button">المواصلة إلى الدفع</string>
-    <string name="store_creation_summary_subtitle">سيتم إنشاء متجرك استنادًا إلى الخيارات التي تحددها!</string>
-    <string name="store_creation_summary_title">مخزني</string>
     <string name="randomly_update_reader">بشكل عشوائي</string>
     <string name="never_update_reader">أبدًا</string>
     <string name="always_update_reader">دائمًا</string>
@@ -1229,17 +1143,8 @@ Language: ar
     <string name="update_simulated_reader">تحديث قارئ البطاقة المحاكي</string>
     <string name="login_jetpack_connect">الاتصال بـ Jetpack</string>
     <string name="login_jetpack_installation_screen_title">ربط المتجر</string>
-    <string name="store_creation_domain_picker_suggestions_title">اقتراحات</string>
-    <string name="store_creation_domain_picker_hint">كتابة نطاق</string>
-    <string name="store_creation_domain_picker_subtitle">هذا هو المكان الذي سيجدك فيه الأشخاص على الإنترنت. لا داعي للقلق، يمكنك تغييرها لاحقًا.</string>
-    <string name="store_creation_domain_picker_title">اختيار نطاق</string>
+    <string name="domain_picker_subtitle">هذا هو المكان الذي سيجدك فيه الأشخاص على الإنترنت. لا داعي للقلق، يمكنك تغييره لاحقًا.</string>
     <string name="analytics_visitors_subtitle">الزائرون</string>
-    <string name="store_creation_confirm_and_leave">تأكيد ومغادرة</string>
-    <string name="store_creation_exit_dialog_message">ستفقد كل معلومات المتجر الخاصة بك.</string>
-    <string name="store_creation_exit_dialog_title">هل تريد المغادرة؟</string>
-    <string name="store_creation_in_progress">جارٍ إنشاء متجرك…</string>
-    <string name="store_creation_cannot_load_store">يتعذر تحميل متجرك.\nترجى المحاولة مجددًا…</string>
-    <string name="store_creation_create_new_store_label">إنشاء متجر جديد</string>
     <string name="or_use_password_below_qr_code_scan_option">أو تسجيل الدخول باستخدام كلمة المرور</string>
     <string name="or_scan_qr_code_to_log_in">مسح رمز الاستجابة السريعة ضوئيًا لتسجيل الدخول</string>
     <string name="simulated_reader_toast">تم تعطيل قارئ البطاقات المحاكي</string>
@@ -1254,7 +1159,6 @@ Language: ar
     <string name="orderlist_search_hint_active_filters">البحث عن الطلبات التي تمت تصفيتها</string>
     <string name="site_picker_connect_existing_store">الاتصال بمتجر موجود</string>
     <string name="site_picker_create_new_store">إنشاء متجر جديد</string>
-    <string name="login_site_picker_add_a_store">إضافة متجر</string>
     <string name="analytics_products_list_item_description">صافي المبيعات: ⁦%1$s⁩</string>
     <string name="analytics_products_list_header_subtitle">العناصر المباعة</string>
     <string name="analytics_products_list_header_title">المنتجات</string>

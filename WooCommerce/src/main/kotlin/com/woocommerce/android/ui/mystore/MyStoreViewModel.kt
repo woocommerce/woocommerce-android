@@ -22,6 +22,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
@@ -145,8 +146,8 @@ class MyStoreViewModel @Inject constructor(
                 selectionType.generateSelectionData(
                     calendar = Calendar.getInstance(),
                     locale = Locale.getDefault(),
-                    referenceStartDate = customRange?.startDate ?: Date(),
-                    referenceEndDate = customRange?.endDate ?: Date()
+                    referenceStartDate = customRange?.start ?: Date(),
+                    referenceEndDate = customRange?.end ?: Date()
                 )
             }
 
@@ -226,10 +227,16 @@ class MyStoreViewModel @Inject constructor(
         }
     }
 
-    fun onStatsGranularityChanged(granularity: SelectionType) {
+    fun onTabSelected(selectionType: SelectionType) {
         usageTracksEventEmitter.interacted()
-        _selectedRangeType.update { granularity }
-        appPrefsWrapper.setActiveStatsGranularity(granularity.name)
+        _selectedRangeType.update { selectionType }
+        appPrefsWrapper.setActiveStatsTab(selectionType.name)
+
+        if (selectionType == SelectionType.CUSTOM) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
+            )
+        }
     }
 
     fun onPullToRefresh() {
@@ -240,11 +247,9 @@ class MyStoreViewModel @Inject constructor(
 
     fun onViewAnalyticsClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
-        val targetPeriod = when (val state = revenueStatsState.value) {
-            is RevenueStatsViewState.Content -> state.statsRangeSelection.selectionType
-            else -> SelectionType.TODAY
+        selectedDateRange.value?.let {
+            triggerEvent(MyStoreEvent.OpenAnalytics(it))
         }
-        triggerEvent(MyStoreEvent.OpenAnalytics(targetPeriod))
     }
 
     fun onShareStoreClicked() {
@@ -351,8 +356,8 @@ class MyStoreViewModel @Inject constructor(
     private fun observeTopPerformerUpdates() {
         viewModelScope.launch {
             _selectedDateRange
-                .flatMapLatest { granularity ->
-                    getTopPerformers.observeTopPerformers(granularity)
+                .flatMapLatest { dateRange ->
+                    getTopPerformers.observeTopPerformers(dateRange)
                 }
                 .collectLatest {
                     _topPerformersState.value = _topPerformersState.value?.copy(
@@ -444,28 +449,42 @@ class MyStoreViewModel @Inject constructor(
         )
 
     private fun getSelectedRangeTypeIfAny(): SelectionType {
-        val previouslySelectedGranularity = appPrefsWrapper.getActiveStatsGranularity()
+        val previouslySelectedTab = appPrefsWrapper.getActiveStatsTab()
         return runCatching {
-            SelectionType.valueOf(previouslySelectedGranularity)
+            SelectionType.valueOf(previouslySelectedTab)
         }.getOrDefault(SelectionType.TODAY)
     }
 
-    fun onCustomRangeSelected(fromMillis: Long, toMillis: Long) {
+    fun onCustomRangeSelected(range: StatsTimeRange) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_EDITING to (_customRange.value != null),
+            )
+        )
+
         if (_selectedRangeType.value != SelectionType.CUSTOM) {
-            onStatsGranularityChanged(SelectionType.CUSTOM)
+            onTabSelected(SelectionType.CUSTOM)
         }
         viewModelScope.launch {
-            customDateRangeDataStore.updateDateRange(fromMillis, toMillis)
+            customDateRangeDataStore.updateDateRange(range)
         }
     }
 
     fun onAddCustomRangeClicked() {
         triggerEvent(
             OpenDatePicker(
-                fromDate = _customRange.value?.startDate ?: Date(),
-                toDate = _customRange.value?.endDate ?: Date()
+                fromDate = _customRange.value?.start ?: Date(),
+                toDate = _customRange.value?.end ?: Date()
             )
         )
+
+        val event = if (_customRange.value == null) {
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
+        } else {
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED
+        }
+        analyticsTrackerWrapper.track(event)
     }
 
     sealed class RevenueStatsViewState {
@@ -509,7 +528,7 @@ class MyStoreViewModel @Inject constructor(
             val productId: Long
         ) : MyStoreEvent()
 
-        data class OpenAnalytics(val analyticsPeriod: SelectionType) : MyStoreEvent()
+        data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MyStoreEvent()
 
         data object ShowPrivacyBanner : MyStoreEvent()
 
