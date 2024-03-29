@@ -1,0 +1,7 @@
+17.9:
+- [*] Отзывы: исправлена ошибка, из-за которой в настройках на отзывах отображалась двойная панель инструментов. [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Внутреннее] Из приложения удалена функция «Создание магазина WooExpress». [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Товары: исправлена ошибка, из-за которой был недоступен элемент меню «Пакетное обновление» в двухпанельном режиме. [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Товары: исправлена ошибка, из-за которой результат удаления изображения товара не сохранялся. [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Отзывы: оптимизирована скорость показа отзывов. [https://github.com/woocommerce/woocommerce-android/pull/11083]
+

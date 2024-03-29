@@ -14,7 +14,8 @@ enum class FeatureFlag {
     ORDER_CREATION_AUTO_TAX_RATE,
     BLAZE_I3,
     CUSTOM_RANGE_ANALYTICS,
-    CONNECTIVITY_TOOL;
+    CONNECTIVITY_TOOL,
+    NEW_SHIPPING_SUPPORT;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -26,10 +27,11 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            CUSTOM_RANGE_ANALYTICS -> PackageUtils.isDebugBuild()
+            NEW_SHIPPING_SUPPORT -> PackageUtils.isDebugBuild()
 
             CONNECTIVITY_TOOL,
-            BLAZE_I3 -> true
+            BLAZE_I3,
+            CUSTOM_RANGE_ANALYTICS -> true
 
             IAP_FOR_STORE_CREATION -> false
         }
