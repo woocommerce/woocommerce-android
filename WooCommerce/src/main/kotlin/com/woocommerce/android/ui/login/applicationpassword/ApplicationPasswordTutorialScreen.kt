@@ -66,7 +66,7 @@ fun ApplicationPasswordTutorialScreen(
             Text(stringResource(id = R.string.login_app_password_instructions_step_2))
 
             Image(
-                painter = painterResource(id = R.drawable.stats_today_widget_preview),
+                painter = painterResource(id = R.drawable.app_password_tutorial_hint),
                 contentDescription = null,
                 modifier = modifier.align(alignment = Alignment.CenterHorizontally)
             )
