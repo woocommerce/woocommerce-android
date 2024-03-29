@@ -37,10 +37,11 @@ fun ApplicationPasswordTutorialScreen(
     onContinueClicked: () -> Unit,
     onContactSupportClicked: () -> Unit
 ) {
-    Column(modifier = modifier
-        .verticalScroll(rememberScrollState())
-        .fillMaxSize()
-        .padding(dimensionResource(id = R.dimen.major_100))
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .fillMaxSize()
+            .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         Text(
             text = stringResource(id = R.string.login_app_password_title),
@@ -69,14 +70,18 @@ fun ApplicationPasswordTutorialScreen(
             modifier = modifier.align(alignment = Alignment.CenterHorizontally)
         )
 
-        Text(stringResource(
-            id = R.string.login_app_password_instructions_step_3),
+        Text(
+            stringResource(
+                id = R.string.login_app_password_instructions_step_3
+            ),
             modifier = modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
         )
         Divider()
 
-        Text(stringResource(
-            id = R.string.login_app_password_instructions_footer),
+        Text(
+            stringResource(
+                id = R.string.login_app_password_instructions_footer
+            ),
             modifier = modifier.padding(vertical = dimensionResource(id = R.dimen.major_100))
         )
         Divider()
@@ -88,7 +93,8 @@ fun ApplicationPasswordTutorialScreen(
             Text(stringResource(id = R.string.login_app_password_continue_button))
         }
 
-        OutlinedButton(onClick = onContactSupportClicked,
+        OutlinedButton(
+            onClick = onContactSupportClicked,
             modifier = modifier.fillMaxWidth()
         ) {
             Text(stringResource(id = R.string.login_app_password_support_button))
