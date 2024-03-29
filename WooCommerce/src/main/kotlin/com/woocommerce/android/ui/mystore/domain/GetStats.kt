@@ -48,7 +48,7 @@ class GetStats @Inject constructor(
         return merge(
             hasOrders(),
             revenueStats(selectedRange, shouldRefreshRevenue),
-            visitorStats(selectedRange, shouldRefreshRevenue)
+            visitorStats(selectedRange, shouldRefreshVisitors)
         ).onEach { result ->
             if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
