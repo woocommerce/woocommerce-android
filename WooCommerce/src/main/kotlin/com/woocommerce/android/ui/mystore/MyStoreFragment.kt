@@ -46,8 +46,6 @@ import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.MyStoreBlazeView
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -104,7 +102,6 @@ class MyStoreFragment :
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -226,45 +223,14 @@ class MyStoreFragment :
     }
 
     private fun setUpBlazeCampaignView() {
-        myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) {
-                binding.blazeCampaignView.hide()
-            } else {
-                binding.blazeCampaignView.apply {
-                    setContent {
-                        WooThemeWithBackground {
-                            MyStoreBlazeView(
-                                state = blazeCampaignState,
-                                onDismissBlazeView = myStoreBlazeViewModel::onBlazeViewDismissed,
-                            )
+        binding.blazeCampaignView.apply {
+            setContent {
+                WooThemeWithBackground {
+                    MyStoreBlazeView(
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                        onHidden = {
+                            binding.blazeCampaignView.hide()
                         }
-                    }
-                    show()
-                }
-            }
-        }
-        myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreationUsingWebView -> openBlazeWebView(
-                    url = event.url,
-                    source = event.source
-                )
-
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
-
-                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
-                    findNavController().navigateSafely(
-                        MyStoreFragmentDirections.actionMyStoreToBlazeCampaignListFragment()
-                    )
-                }
-
-                is MyStoreBlazeViewModel.ShowCampaignDetails -> {
-                    findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
-                            title = getString(R.string.blaze_campaign_details_title)
-                        )
                     )
                 }
             }

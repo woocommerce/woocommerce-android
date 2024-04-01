@@ -159,7 +159,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         )
     }
 
-    private fun NavController.navigateToBlazeGraph(
+    fun NavController.navigateToBlazeGraph(
         startDestination: Int,
         bundle: android.os.Bundle? = null,
     ) {

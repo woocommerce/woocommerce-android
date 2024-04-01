@@ -21,9 +21,14 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -32,12 +37,98 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignItem
+import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
+import kotlinx.coroutines.launch
+
+@Composable
+fun MyStoreBlazeView(
+    blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    onHidden: () -> Unit,
+    viewModel: MyStoreBlazeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+) {
+    val lifecycle = LocalLifecycleOwner.current
+    val view = LocalView.current
+    val coroutineScope = rememberCoroutineScope()
+
+    viewModel.blazeViewState.observeAsState().value?.let {
+        val isHidden = it is MyStoreBlazeCampaignState.Hidden
+
+        LaunchedEffect(isHidden) {
+            if (isHidden) {
+                onHidden()
+            }
+        }
+
+        if (!isHidden) {
+            MyStoreBlazeView(
+                state = it,
+                onDismissBlazeView = viewModel::onBlazeViewDismissed
+            )
+        }
+    }
+
+    // This is not needed now since we attach the fragment in the BlazeCampaignCreationDispatcher, but it's just a sample
+    // of we can use this on difference scenarios if needed
+//    HandleResult<Collection<SelectedItem>>(key = ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) { items ->
+//        with(blazeCampaignCreationDispatcher) {
+//            view.findNavController().navigateToBlazeGraph(
+//                startDestination = R.id.blazeCampaignCreationPreviewFragment,
+//                bundle = BlazeCampaignCreationPreviewFragmentArgs(
+//                    productId = items.first().id,
+//                    source = BlazeFlowSource.MY_STORE_SECTION
+//                ).toBundle()
+//            )
+//        }
+//    }
+
+    LaunchedEffect(viewModel) {
+        viewModel.event.observe(lifecycle) { event ->
+            when (event) {
+                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreationUsingWebView -> view.findNavController()
+                    .navigateSafely(
+                        NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
+                            urlToLoad = event.url,
+                            source = event.source
+                        )
+                    )
+
+                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> coroutineScope.launch {
+                    blazeCampaignCreationDispatcher.startCampaignCreation(
+                        source = BlazeFlowSource.MY_STORE_SECTION,
+                        productId = event.productId
+                    )
+                }
+
+                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
+                    view.findNavController().navigateSafely(
+                        MyStoreFragmentDirections.actionMyStoreToBlazeCampaignListFragment()
+                    )
+                }
+
+                is MyStoreBlazeViewModel.ShowCampaignDetails -> {
+                    view.findNavController().navigateSafely(
+                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+                            urlToLoad = event.url,
+                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
+                            title = view.resources.getString(R.string.blaze_campaign_details_title)
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun MyStoreBlazeView(
