@@ -344,8 +344,8 @@ class AnalyticsRepository @Inject constructor(
             BundlesResult.BundlesError
         } else {
             val delta = calculateDeltaPercentage(
-                currentBundleStats.netRevenue,
-                previousBundleStats.netRevenue,
+                previousVal = previousBundleStats.netRevenue,
+                currentVal = currentBundleStats.netRevenue,
             )
             val bundles = bundlesReport.map { item ->
                 BundleItem(
