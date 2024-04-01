@@ -567,7 +567,7 @@ class AnalyticsHubViewModel @Inject constructor(
                 },
             reportUrl = getReportUrl(
                 selection = ranges,
-                card = ReportCard.Revenue
+                card = ReportCard.Bundles
             )
         )
     }
