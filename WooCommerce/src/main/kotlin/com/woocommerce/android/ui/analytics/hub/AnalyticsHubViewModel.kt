@@ -565,7 +565,10 @@ class AnalyticsHubViewModel @Inject constructor(
                         index != bundles.size - 1
                     )
                 },
-            reportUrl = null
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.Revenue
+            )
         )
     }
 
@@ -632,13 +635,14 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 }
 
-enum class ReportCard { Revenue, Orders, Products }
+enum class ReportCard { Revenue, Orders, Products, Bundles }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
     return when (this) {
         AnalyticsCards.Revenue -> ReportCard.Revenue
         AnalyticsCards.Orders -> ReportCard.Orders
         AnalyticsCards.Products -> ReportCard.Products
+        AnalyticsCards.Bundles -> ReportCard.Bundles
         else -> null
     }
 }
