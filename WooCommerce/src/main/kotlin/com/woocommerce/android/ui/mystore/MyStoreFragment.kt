@@ -58,6 +58,7 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenEditWidgets
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShareStore
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
@@ -70,7 +71,7 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.ui.products.ProductDetailFragment
+import com.woocommerce.android.ui.products.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -441,11 +442,25 @@ class MyStoreFragment :
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
+        myStoreViewModel.lastUpdateStats.observe(viewLifecycleOwner) { lastUpdateMillis ->
+            binding.myStoreStats.showLastUpdate(lastUpdateMillis)
+        }
+        myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
+            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
+        }
+        myStoreViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
+            ((activity) as MainActivity).setSubtitle(storeName)
+        }
+
+        observeMyStoreEvents()
+    }
+
+    private fun observeMyStoreEvents() {
         myStoreViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
                     NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
+                        mode = ShowProduct(event.productId),
                         isTrashEnabled = false
                     )
                 )
@@ -473,17 +488,14 @@ class MyStoreFragment :
                     myStoreViewModel.onCustomRangeSelected(StatsTimeRange(Date(start), Date(end)))
                 }
 
+                is OpenEditWidgets -> {
+                    findNavController().navigateSafely(
+                        MyStoreFragmentDirections.actionMyStoreToEditWidgetsFragment()
+                    )
+                }
+
                 else -> event.isHandled = false
             }
-        }
-        myStoreViewModel.lastUpdateStats.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreStats.showLastUpdate(lastUpdateMillis)
-        }
-        myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
-        }
-        myStoreViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
-            ((activity) as MainActivity).setSubtitle(storeName)
         }
     }
 
@@ -737,6 +749,11 @@ class MyStoreFragment :
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
+            R.id.menu_edit_screen_widgets -> {
+                myStoreViewModel.onEditWidgetsClicked()
+                true
+            }
+
             R.id.menu_share_store -> {
                 myStoreViewModel.onShareStoreClicked()
                 true

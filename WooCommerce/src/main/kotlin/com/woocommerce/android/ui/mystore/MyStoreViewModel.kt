@@ -259,6 +259,11 @@ class MyStoreViewModel @Inject constructor(
         )
     }
 
+    fun onEditWidgetsClicked() {
+        // TODO ADD TRACKING HERE
+        triggerEvent(MyStoreEvent.OpenEditWidgets)
+    }
+
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) {
             _revenueStatsState.value = RevenueStatsViewState.Content(null, selectedRange)
@@ -537,6 +542,8 @@ class MyStoreViewModel @Inject constructor(
         data class ShareStore(val storeUrl: String) : MyStoreEvent()
 
         data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MyStoreEvent()
+
+        data object OpenEditWidgets : MyStoreEvent()
     }
 
     data class RefreshState(private val isForced: Boolean = false) {

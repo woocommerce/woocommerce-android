@@ -84,6 +84,9 @@
         <action
             android:id="@+id/action_myStore_to_blazeCampaignListFragment"
             app:destination="@id/blazeCampaignListFragment" />
+        <action
+            android:id="@+id/action_myStore_to_editWidgetsFragment"
+            app:destination="@id/myStoreWidgetEditorFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -786,4 +789,8 @@
         android:id="@+id/orderConnectivityToolFragment"
         android:name="com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolFragment"
         android:label="OrderConnectivityToolFragment" />
+    <fragment
+        android:id="@+id/myStoreWidgetEditorFragment"
+        android:name="com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorFragment"
+        android:label="MyStoreWidgetEditorFragment" />
 </navigation>
