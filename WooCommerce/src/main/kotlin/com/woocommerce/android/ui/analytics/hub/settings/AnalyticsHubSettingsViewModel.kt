@@ -112,8 +112,8 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
         )
     }
 
-    fun onSelectionChange(card: AnalyticsCards, isSelected: Boolean) {
-        updateSelection(card, isSelected)
+    fun onSelectionChange(selectedItem: AnalyticCardConfigurationUI, isSelected: Boolean) {
+        updateSelection(selectedItem.card, isSelected)
         checkVisibleCards()
         viewState = AnalyticsHubSettingsViewState.CardsConfiguration(
             cardsConfiguration = draftConfiguration,
