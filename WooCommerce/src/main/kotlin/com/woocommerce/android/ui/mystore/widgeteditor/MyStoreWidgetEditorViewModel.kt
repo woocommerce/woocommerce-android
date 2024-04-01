@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewMo
 import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.StoreOnboarding
 import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.StoreStats
 import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.TopProducts
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,7 +52,7 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
     val viewState = widgetEditorState.asLiveData()
 
     fun onBackPressed() {
-        TODO("Not yet implemented")
+        triggerEvent(Exit)
     }
 
     fun onSaveChanges() {
