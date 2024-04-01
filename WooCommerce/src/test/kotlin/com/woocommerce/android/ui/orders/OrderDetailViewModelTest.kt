@@ -113,7 +113,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
-    private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock()
+    private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
+        doReturn(true).whenever(it).isShippingPluginReady
+    }
 
     private val savedState = OrderDetailFragmentArgs(
         orderId = ORDER_ID,
@@ -1000,10 +1002,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
+            doReturn(false).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1046,11 +1047,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `hide shipping label creation if wcs plugin is not installed`() =
         testBlocking {
+            doReturn(false).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1676,12 +1677,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when service plugin is installed and active, then fetch plugin data`() = testBlocking {
-        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
-        pluginsInfo[services] = WooPlugin(
-            isInstalled = true,
-            isActive = true,
-            version = "1.0.0"
-        )
+        doReturn(true).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1695,12 +1691,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when service plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
-        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
-        pluginsInfo[services] = WooPlugin(
-            isInstalled = true,
-            isActive = false,
-            version = "1.0.0"
-        )
+        doReturn(false).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1714,12 +1705,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when service plugin is NOT installed, then DON'T fetch plugin data`() = testBlocking {
-        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
-        pluginsInfo[services] = WooPlugin(
-            isInstalled = false,
-            isActive = false,
-            version = null
-        )
+        doReturn(false).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1790,6 +1776,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when there is no info about the plugins, then optimistically fetch plugin data`() = testBlocking {
+        doReturn(true).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
