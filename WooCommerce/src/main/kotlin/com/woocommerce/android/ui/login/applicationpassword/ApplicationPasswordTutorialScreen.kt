@@ -39,11 +39,11 @@ fun ApplicationPasswordTutorialScreen(
     onContinueClicked: () -> Unit,
     onContactSupportClicked: () -> Unit
 ) {
-    Column {
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
         Column(
-            modifier = modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxSize()
+            modifier = modifier.verticalScroll(rememberScrollState())
         ) {
             Column(
                 modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
