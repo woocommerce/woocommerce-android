@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.blaze.creation
 
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.findNavController
@@ -11,7 +12,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.intro.BlazeCampaignCreationIntroFragmentArgs
@@ -38,9 +38,9 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val analyticsTracker: AnalyticsTrackerWrapper,
 ) {
-    private var fragmentReference: WeakReference<BaseFragment> = WeakReference(null)
+    private var fragmentReference: WeakReference<Fragment> = WeakReference(null)
 
-    fun attachFragment(fragment: BaseFragment, source: BlazeFlowSource) {
+    fun attachFragment(fragment: Fragment, source: BlazeFlowSource) {
         this.fragmentReference = WeakReference(fragment)
         fragment.handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             this.fragmentReference.get()?.showCampaignPreview(
@@ -123,7 +123,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         }
     }
 
-    private fun BaseFragment.showIntro(productId: Long?, blazeSource: BlazeFlowSource) {
+    private fun Fragment.showIntro(productId: Long?, blazeSource: BlazeFlowSource) {
         findNavController().navigateToBlazeGraph(
             startDestination = R.id.blazeCampaignCreationIntroFragment,
             bundle = BlazeCampaignCreationIntroFragmentArgs(
@@ -133,7 +133,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         )
     }
 
-    private fun BaseFragment.showCampaignPreview(productId: Long, source: BlazeFlowSource) {
+    private fun Fragment.showCampaignPreview(productId: Long, source: BlazeFlowSource) {
         findNavController().navigateToBlazeGraph(
             startDestination = R.id.blazeCampaignCreationPreviewFragment,
             bundle = BlazeCampaignCreationPreviewFragmentArgs(
@@ -143,7 +143,7 @@ class BlazeCampaignCreationDispatcher @Inject constructor(
         )
     }
 
-    private fun BaseFragment.showProductSelector() {
+    private fun Fragment.showProductSelector() {
         val navGraph = findNavController().graph.findNode(R.id.nav_graph_blaze_campaign_creation) as NavGraph
         navGraph.setStartDestination(R.id.nav_graph_product_selector)
 

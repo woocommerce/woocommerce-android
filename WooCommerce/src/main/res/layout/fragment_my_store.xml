@@ -71,12 +71,11 @@
                         android:layout_marginBottom="@dimen/minor_100"
                         android:visibility="gone" />
 
-                    <androidx.compose.ui.platform.ComposeView
+                    <androidx.fragment.app.FragmentContainerView
                         android:id="@+id/blaze_campaign_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/minor_100"
-                        android:visibility="gone" />
+                        android:layout_marginBottom="@dimen/minor_100" />
 
                     <com.woocommerce.android.widgets.WCEmptyView
                         android:id="@+id/empty_view"

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.blaze
+package com.woocommerce.android.ui.mystore.blaze
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,11 +33,17 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
+import com.woocommerce.android.ui.blaze.BlazeCampaignStat
+import com.woocommerce.android.ui.blaze.BlazeCampaignUi
+import com.woocommerce.android.ui.blaze.BlazeProductUi
+import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignItem
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.mystore.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
+import com.woocommerce.android.ui.mystore.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState.Campaign
+import com.woocommerce.android.ui.mystore.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState.NoCampaign
 
 @Composable
 fun MyStoreBlazeView(
@@ -217,10 +223,10 @@ fun MyStoreBlazeViewCampaignPreview() {
         imgUrl = "",
     )
     MyStoreBlazeView(
-        state = MyStoreBlazeCampaignState.Campaign(
+        state = Campaign(
             campaign = BlazeCampaignUi(
                 product = product,
-                status = CampaignStatusUi.Active,
+                status = Active,
                 stats = listOf(
                     BlazeCampaignStat(
                         name = R.string.blaze_campaign_status_impressions,
@@ -253,7 +259,7 @@ fun MyStoreBlazeViewCampaignPreview() {
 @Composable
 fun MyStoreBlazeViewNoCampaignPreview() {
     MyStoreBlazeView(
-        state = MyStoreBlazeCampaignState.NoCampaign(
+        state = NoCampaign(
             product = BlazeProductUi(
                 name = "Product name",
                 imgUrl = "",

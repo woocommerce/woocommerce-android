@@ -10,6 +10,7 @@ import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -44,11 +45,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.MyStoreBlazeView
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
-import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
@@ -65,6 +61,7 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowPriv
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.mystore.blaze.MyStoreBlazeCampaignFragment
 import com.woocommerce.android.ui.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
@@ -104,7 +101,6 @@ class MyStoreFragment :
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -129,9 +125,6 @@ class MyStoreFragment :
 
     @Inject
     lateinit var addProductNavigator: AddProductNavigator
-
-    @Inject
-    lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
@@ -173,7 +166,6 @@ class MyStoreFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.RESUMED)
-        blazeCampaignCreationDispatcher.attachFragment(this, BlazeFlowSource.MY_STORE_SECTION)
 
         _binding = FragmentMyStoreBinding.bind(view)
 
@@ -220,73 +212,14 @@ class MyStoreFragment :
 
         setupStateObservers()
         setupOnboardingView()
-        setUpBlazeCampaignView()
-
         initJitm(savedInstanceState)
-    }
 
-    private fun setUpBlazeCampaignView() {
-        myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) {
-                binding.blazeCampaignView.hide()
-            } else {
-                binding.blazeCampaignView.apply {
-                    setContent {
-                        WooThemeWithBackground {
-                            MyStoreBlazeView(
-                                state = blazeCampaignState,
-                                onDismissBlazeView = myStoreBlazeViewModel::onBlazeViewDismissed,
-                            )
-                        }
-                    }
-                    show()
-                }
-            }
+        if (binding.blazeCampaignView.getFragment<Fragment?>() == null) {
+            val fragment = MyStoreBlazeCampaignFragment()
+            childFragmentManager.beginTransaction()
+                .replace(binding.blazeCampaignView.id, fragment, MyStoreBlazeCampaignFragment.TAG)
+                .commit()
         }
-        myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreationUsingWebView -> openBlazeWebView(
-                    url = event.url,
-                    source = event.source
-                )
-
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
-
-                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
-                    findNavController().navigateSafely(
-                        MyStoreFragmentDirections.actionMyStoreToBlazeCampaignListFragment()
-                    )
-                }
-
-                is MyStoreBlazeViewModel.ShowCampaignDetails -> {
-                    findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
-                            title = getString(R.string.blaze_campaign_details_title)
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private fun openBlazeCreationFlow(productId: Long?) {
-        lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(
-                source = BlazeFlowSource.MY_STORE_SECTION,
-                productId = productId
-            )
-        }
-    }
-
-    private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
-                urlToLoad = url,
-                source = source
-            )
-        )
     }
 
     @Suppress("LongMethod")
@@ -749,5 +682,9 @@ class MyStoreFragment :
     override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.menu_share_store).isVisible =
             myStoreViewModel.appbarState.value?.showShareStoreButton ?: false
+    }
+
+    fun setBlazeCampaignVisibility(visibility: Boolean) {
+        binding.blazeCampaignView.isVisible = visibility
     }
 }
