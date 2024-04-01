@@ -62,6 +62,7 @@ class GetAnalyticPluginsCardActiveTest : BaseUnitTest() {
         val result = sut.invoke()
         assertThat(result).doesNotContain(AnalyticsCards.Bundles)
     }
+
     @Test
     fun `when selected site fails the the list of active plugins is empty`() = testBlocking {
         whenever(selectedSite.getOrNull()).thenReturn(null)

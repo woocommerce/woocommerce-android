@@ -79,7 +79,7 @@ class ObserveAnalyticsCardsConfigurationTest : BaseUnitTest() {
 
         initializeViewModel()
         val result = sut.invoke().first()
-        assertThat(result).contains( AnalyticCardConfiguration(AnalyticsCards.Bundles, "Bundles", false))
+        assertThat(result).contains(AnalyticCardConfiguration(AnalyticsCards.Bundles, "Bundles", false))
     }
 
     @Test
@@ -96,6 +96,6 @@ class ObserveAnalyticsCardsConfigurationTest : BaseUnitTest() {
 
         initializeViewModel()
         val result = sut.invoke().first()
-        assertThat(result).contains( AnalyticCardConfiguration(AnalyticsCards.Bundles, "Bundles", true))
+        assertThat(result).contains(AnalyticCardConfiguration(AnalyticsCards.Bundles, "Bundles", true))
     }
 }
