@@ -16,17 +16,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewModel
-import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState.CardsConfiguration
-import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState.Loading
 import com.woocommerce.android.ui.analytics.hub.settings.LoadingCardsConfiguration
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.DragAndDropItemsList
+import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetEditorViewState
+import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetEditorViewState.WidgetEditorContent
 
 @Composable
-fun MyStoreWidgetEditorScreen(viewModel: AnalyticsHubSettingsViewModel) {
+fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
     BackHandler(onBack = viewModel::onBackPressed)
-    viewModel.viewStateData.liveData.observeAsState().value?.let { state ->
+    viewModel.viewState.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.customize_analytics)) },
@@ -42,7 +41,7 @@ fun MyStoreWidgetEditorScreen(viewModel: AnalyticsHubSettingsViewModel) {
                 actions = {
                     TextButton(
                         onClick = viewModel::onSaveChanges,
-                        enabled = state is CardsConfiguration && state.isSaveButtonEnabled
+                        enabled = state is WidgetEditorContent && state.isSaveButtonEnabled
                     ) {
                         Text(
                             text = stringResource(id = R.string.save).uppercase()
@@ -52,14 +51,14 @@ fun MyStoreWidgetEditorScreen(viewModel: AnalyticsHubSettingsViewModel) {
             )
         }) { padding ->
             when (state) {
-                is CardsConfiguration -> {
+                is WidgetEditorContent -> {
                     DragAndDropItemsList(
-                        items = state.cardsConfiguration,
-                        selectedItems = state.cardsConfiguration.filter { it.isVisible },
+                        items = state.widgetList,
+                        selectedItems = state.widgetList.filter { it.isSelected },
                         onSelectionChange = viewModel::onSelectionChange,
                         onOrderChange = viewModel::onOrderChange,
                         itemFormatter = { title },
-                        itemKey = { _, card -> card.card },
+                        itemKey = { _, widget -> widget.type },
                         modifier = Modifier.padding(padding)
                     )
 
@@ -71,7 +70,7 @@ fun MyStoreWidgetEditorScreen(viewModel: AnalyticsHubSettingsViewModel) {
                     }
                 }
 
-                is Loading -> LoadingCardsConfiguration()
+                is WidgetEditorViewState.Loading -> LoadingCardsConfiguration()
             }
         }
     }

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.material.Text
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
@@ -20,7 +19,7 @@ class MyStoreWidgetEditorFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            Text("MyStoreWidgetEditorFragment")
+            MyStoreWidgetEditorScreen(viewModel)
         }
     }
 
