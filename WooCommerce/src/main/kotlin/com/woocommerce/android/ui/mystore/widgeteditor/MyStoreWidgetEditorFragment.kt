@@ -22,8 +22,4 @@ class MyStoreWidgetEditorFragment : BaseFragment() {
             MyStoreWidgetEditorScreen(viewModel)
         }
     }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
 }
