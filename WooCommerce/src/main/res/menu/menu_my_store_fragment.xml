@@ -2,9 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menu_edit_widgets"
+        android:icon="@drawable/ic_configuration"
+        android:visible="false"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/menu_share_store"
         android:icon="@drawable/ic_share_24dp"
-        android:title="@string/scan_barcode"
         android:visible="false"
         app:showAsAction="always" />
 </menu>
