@@ -3995,6 +3995,9 @@
     <string name="product_update_stock_status_dialog_title">Updating stock statuses</string>
     <string name="product_update_stock_status_dialog_subtitle">Please wait…</string>
 
+    <string name="empty_order_detail_title">No Order Details Yet</string>
+    <string name="empty_order_detail_message">Your order details will show here when you\'ve made an order.</string>
+
     <!--
     Application Password Tutorial
     -->
