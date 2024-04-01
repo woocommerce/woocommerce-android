@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.model.AnalyticsCards
-import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
-import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -15,7 +13,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -81,7 +78,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Orders -> scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Products -> scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Session -> scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy)
-                AnalyticsCards.Bundles -> scope.fetchBundlesDataAsync(rangeSelection, fetchStrategy)
+                AnalyticsCards.Bundles -> scope.fetchBundlesDataAsync(rangeSelection)
             }
         }
 
@@ -145,8 +142,14 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private fun combineFullUpdateState() =
-        combine(_revenueState, _productsState, _ordersState, sessionState) { revenue, products, orders, session ->
-            revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle
+        combine(
+            _revenueState,
+            _productsState,
+            _ordersState,
+            sessionState,
+            _bundlesState
+        ) { revenue, products, orders, session, bundles ->
+            revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle && bundles.isIdle
         }.map { if (it) Finished else Loading }
 
     private fun combineSessionDataChanges() =
@@ -200,41 +203,12 @@ class UpdateAnalyticsHubStats @Inject constructor(
             ?: _productsState.update { ProductsState.Error }
     }
 
-    @Suppress("MagicNumber")
     private fun CoroutineScope.fetchBundlesDataAsync(
-        rangeSelection: StatsTimeRangeSelection,
-        fetchStrategy: FetchStrategy
+        rangeSelection: StatsTimeRangeSelection
     ) = async {
-        delay(500)
-        if (rangeSelection.currentRange.toString() == fetchStrategy.toString()) return@async
-        _bundlesState.value = BundlesState.Available(
-            BundleStat(
-                bundlesSold = 200,
-                bundlesSoldDelta = DeltaPercentage.Value(50),
-                bundles = listOf(
-                    BundleItem(
-                        netSales = 3000.00,
-                        name = "This is a sample bundle",
-                        image = null,
-                        quantity = 50,
-                        currencyCode = null
-                    ),
-                    BundleItem(
-                        netSales = 5000.00,
-                        name = "This is another bundle",
-                        image = null,
-                        quantity = 50,
-                        currencyCode = null
-                    ),
-                    BundleItem(
-                        netSales = 5000.00,
-                        name = "This is an amazing bundle",
-                        image = null,
-                        quantity = 50,
-                        currencyCode = null
-                    )
-                )
-            )
-        )
+        analyticsRepository.fetchProductBundlesStats(rangeSelection)
+            .run { this as? AnalyticsRepository.BundlesResult.BundlesData }
+            ?.let { _bundlesState.value = BundlesState.Available(it.bundleStat) }
+            ?: _bundlesState.update { BundlesState.Error }
     }
 }

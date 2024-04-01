@@ -20,7 +20,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCBundleStats
+import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -326,6 +329,24 @@ class StatsRepository @Inject constructor(
         val currentWooCoreVersion =
             wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version ?: "0.0"
         return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEADERBOARD_REPORT_MIN_WC_VERSION) >= 0
+    }
+
+    suspend fun fetchProductBundlesStats(
+        startDate: String,
+        endDate: String,
+        interval: String = "",
+    ): WooResult<WCBundleStats> {
+        val site = selectedSite.get()
+        return wcStatsStore.fetchProductBundlesStats(site, startDate, endDate, interval)
+    }
+
+    suspend fun fetchBundleReport(
+        startDate: String,
+        endDate: String,
+        quantity: Int = 5,
+    ): WooResult<List<WCProductBundleItemReport>> {
+        val site = selectedSite.get()
+        return wcStatsStore.fetchProductBundlesReport(site, startDate, endDate, quantity)
     }
 }
 
