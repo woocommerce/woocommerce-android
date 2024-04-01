@@ -109,6 +109,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock {
         on { softwareUpdateAvailability }.thenReturn(softwareUpdateAvailability)
     }
+    private val simplePaymentsMigrationEnabled: PaymentsHuSimplePaymentsMigrationEnabled = mock()
 
     private val clearCardReaderDataAction: ClearCardReaderDataAction = ClearCardReaderDataAction(
         cardReaderManager,
@@ -2028,6 +2029,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
             paymentsHubTapToPayUnavailableHandler,
             clearCardReaderDataAction,
             cardReaderManager,
+            simplePaymentsMigrationEnabled,
         )
         viewModel.onViewVisible()
     }
