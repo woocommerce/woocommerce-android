@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.analytics
 
+import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.BundlesResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult
@@ -12,6 +14,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Product
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.VisitorsResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.hub.sync.BundlesState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -244,6 +247,52 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when syncing bundles stats data successfully, then update the bundles with the expected states`() = testBlocking {
+        // Given
+        configureSuccessResponseStub()
+        val bundleStatsUpdates = mutableListOf<BundlesState>()
+        val job = sut.bundlesState
+            .onEach { bundleStatsUpdates.add(it) }
+            .launchIn(this)
+
+        // When
+        sut(testRangeSelection, this)
+
+        advanceUntilIdle()
+
+        // Then
+        assertThat(bundleStatsUpdates).hasSize(3)
+        assertThat(bundleStatsUpdates[0]).isEqualTo(BundlesState.Available(BundleStat.EMPTY))
+        assertThat(bundleStatsUpdates[1]).isEqualTo(BundlesState.Loading)
+        assertThat(bundleStatsUpdates[2]).isEqualTo(BundlesState.Available(testBundleStat))
+
+        job.cancel()
+    }
+
+    @Test
+    fun `when syncing bundles stats data fails, then update the bundles with the expected states`() = testBlocking {
+        // Given
+        configureErrorResponseStub()
+        val bundleStatsUpdates = mutableListOf<BundlesState>()
+        val job = sut.bundlesState
+            .onEach { bundleStatsUpdates.add(it) }
+            .launchIn(this)
+
+        // When
+        sut(testRangeSelection, this)
+
+        advanceUntilIdle()
+
+        // Then
+        assertThat(bundleStatsUpdates).hasSize(3)
+        assertThat(bundleStatsUpdates[0]).isEqualTo(BundlesState.Available(BundleStat.EMPTY))
+        assertThat(bundleStatsUpdates[1]).isEqualTo(BundlesState.Loading)
+        assertThat(bundleStatsUpdates[2]).isEqualTo(BundlesState.Error)
+
+        job.cancel()
+    }
+
+    @Test
     fun `when data store allows new stats fetch, then request data with ForceNew strategy`() = testBlocking {
         // When
         sut(testRangeSelection, this)
@@ -413,6 +462,9 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             onBlocking {
                 repository.fetchVisitorsData(testRangeSelection, ForceNew)
             } doReturn testVisitorsResult
+            onBlocking {
+                repository.fetchProductBundlesStats(testRangeSelection)
+            } doReturn testBundlesResult
         }
     }
 
@@ -433,6 +485,9 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             onBlocking {
                 repository.fetchVisitorsData(testRangeSelection, ForceNew)
             } doReturn VisitorsResult.VisitorsError
+            onBlocking {
+                repository.fetchProductBundlesStats(testRangeSelection)
+            } doReturn BundlesResult.BundlesError
         }
     }
 }
