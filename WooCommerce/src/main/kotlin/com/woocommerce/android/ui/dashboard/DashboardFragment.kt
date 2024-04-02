@@ -158,9 +158,9 @@ class DashboardFragment :
             myStoreViewModel.onTabSelected(tab.tag as? SelectionType ?: SelectionType.TODAY)
         }
 
-        override fun onTabUnselected(tab: TabLayout.Tab) {}
+        override fun onTabUnselected(tab: TabLayout.Tab) = Unit
 
-        override fun onTabReselected(tab: TabLayout.Tab) {}
+        override fun onTabReselected(tab: TabLayout.Tab) = Unit
     }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -342,7 +342,8 @@ class DashboardFragment :
             is StoreOnboardingViewModel.NavigateToAddProduct ->
                 with(addProductNavigator) {
                     findNavController().navigateToAddProducts(
-                        aiBottomSheetAction = DashboardFragmentDirections.actionDashboardToAddProductWithAIBottomSheet(),
+                        aiBottomSheetAction = DashboardFragmentDirections
+                            .actionDashboardToAddProductWithAIBottomSheet(),
                         typesBottomSheetAction = DashboardFragmentDirections.actionDashboardToProductTypesBottomSheet()
                     )
                 }
