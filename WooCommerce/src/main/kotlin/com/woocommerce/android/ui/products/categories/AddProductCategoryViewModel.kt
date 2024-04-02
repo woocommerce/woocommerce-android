@@ -247,7 +247,9 @@ class AddProductCategoryViewModel @Inject constructor(
                 if (productsInDb.isEmpty()) {
                     showSkeleton = true
                 } else {
-                    _parentCategories.value = productsInDb.sortCategories(resourceProvider)
+                    _parentCategories.value = productsInDb
+                        .sortCategories(resourceProvider)
+                        .filter { parentCategoryIsElegible(it) }
                     showSkeleton = false
                 }
             }
@@ -260,6 +262,10 @@ class AddProductCategoryViewModel @Inject constructor(
             fetchParentCategories(loadMore = loadMore)
         }
     }
+
+    private fun parentCategoryIsElegible(it: ProductCategoryItemUiModel) =
+        it.category.remoteCategoryId != navArgs.productCategory?.remoteCategoryId &&
+            it.category.parentId != navArgs.productCategory?.remoteCategoryId
 
     /**
      * Triggered when the user scrolls past the point of loaded categories
@@ -284,6 +290,7 @@ class AddProductCategoryViewModel @Inject constructor(
                     productCategoriesRepository.getProductCategoriesList()
                 }
                 .sortCategories(resourceProvider)
+                .filter { parentCategoryIsElegible(it) }
 
             parentCategoryListViewState = parentCategoryListViewState.copy(
                 isLoading = true,
