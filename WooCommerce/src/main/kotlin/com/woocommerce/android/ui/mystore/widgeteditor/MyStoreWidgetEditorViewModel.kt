@@ -4,11 +4,13 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.BlazeCampaigns
 import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.StoreOnboarding
 import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.StoreStats
 import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.TopProducts
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MyStoreWidgetEditorViewModel @Inject constructor(
+    private val resourceProvider: ResourceProvider,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val widgetEditorState: MutableStateFlow<WidgetEditorState> = savedState.getStateFlow(
@@ -26,22 +29,22 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
         WidgetEditorState(
             widgetList = listOf(
                 MyStoreWidget(
-                    title = "Store Stats",
+                    title = resourceProvider.getString(R.string.my_store_edit_screen_widget_stats),
                     isSelected = true,
                     StoreStats
                 ),
                 MyStoreWidget(
-                    title = "Top Products",
+                    title = resourceProvider.getString(R.string.my_store_edit_screen_widget_top_performers),
                     isSelected = true,
                     TopProducts
                 ),
                 MyStoreWidget(
-                    title = "Blaze Campaigns",
+                    title = resourceProvider.getString(R.string.my_store_edit_screen_widget_blaze_campaigns),
                     isSelected = true,
                     BlazeCampaigns
                 ),
                 MyStoreWidget(
-                    title = "Store Onboarding",
+                    title = resourceProvider.getString(R.string.my_store_edit_screen_widget_onboarding_list),
                     isSelected = false,
                     StoreOnboarding
                 ),
