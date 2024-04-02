@@ -52,28 +52,33 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
     )
     val viewState = widgetEditorState.asLiveData()
 
-    private val existingSections = widgetEditorState.value.widgetList
-    private var editedSections = widgetEditorState.value.widgetList
+    private val existingWidgetConfiguration = widgetEditorState.value.widgetList
+    private var editedWidgets = widgetEditorState.value.widgetList
 
     fun onBackPressed() {
         triggerEvent(Exit)
     }
 
-    fun onSaveChanges() {
+    fun onSaveClicked() {
         TODO("Not yet implemented")
     }
 
-    @Suppress("unused_parameter")
     fun onSelectionChange(myStoreWidget: MyStoreWidget, selected: Boolean) {
-
+        editedWidgets = editedWidgets
+            .map { if (it == myStoreWidget) it.copy(isSelected = selected) else it }
+        updateWidgetStateWith(editedWidgets)
     }
 
     fun onOrderChange(fromIndex: Int, toIndex: Int) {
-        editedSections = editedSections.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+        editedWidgets = editedWidgets.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+        updateWidgetStateWith(editedWidgets)
+    }
+
+    private fun updateWidgetStateWith(editedWidgets: List<MyStoreWidget>) {
         widgetEditorState.update {
             it.copy(
-                widgetList = editedSections,
-                isSaveButtonEnabled = editedSections != existingSections
+                widgetList = editedWidgets,
+                isSaveButtonEnabled = editedWidgets != existingWidgetConfiguration
             )
         }
     }

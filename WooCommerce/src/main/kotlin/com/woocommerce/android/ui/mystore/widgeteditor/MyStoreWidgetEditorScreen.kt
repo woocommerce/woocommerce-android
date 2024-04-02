@@ -38,7 +38,7 @@ fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
                 backgroundColor = colorResource(id = R.color.color_toolbar),
                 actions = {
                     TextButton(
-                        onClick = viewModel::onSaveChanges,
+                        onClick = viewModel::onSaveClicked,
                         enabled = state.isSaveButtonEnabled
                     ) {
                         Text(
