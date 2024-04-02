@@ -32,9 +32,7 @@ class DashboardDataStore @Inject constructor(
 
     suspend fun updateDashboard(dashboard: DashboardDataModel) {
         runCatching {
-            dataStore.updateData {
-                dashboard
-            }
+            dataStore.updateData { dashboard }
         }.onFailure {
             WooLog.e(T.DASHBOARD, "Failed to update dashboard data")
         }
