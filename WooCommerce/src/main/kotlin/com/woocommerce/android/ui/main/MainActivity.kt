@@ -1129,12 +1129,10 @@ class MainActivity :
         giftCardCode: String?,
         giftCardAmount: BigDecimal?
     ) {
-        NavGraphMainDirections.actionGlobalToOrdercreationfragment(
+        NavGraphMainDirections.actionGlobalToOrderCreationFragment(
             mode = mode,
-            barcodeFormat = null,
             giftCardCode = giftCardCode,
             giftCardAmount = giftCardAmount,
-            sku = null,
         ).apply {
             navController.navigateSafely(this)
         }
