@@ -12,10 +12,11 @@ import com.woocommerce.android.datastore.DataStoreType.ANALYTICS_UI_CACHE
 import com.woocommerce.android.datastore.DataStoreType.TRACKER
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.data.DashboardSerializer
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.mystore.data.CustomDateRange
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeSerializer
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
-import com.woocommerce.android.ui.mystore.data.DashboardSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -83,10 +84,13 @@ class DataStoreModule {
     fun provideDashboardDataStore(
         appContext: Context,
         @AppCoroutineScope appCoroutineScope: CoroutineScope,
-        site: SelectedSite
+        site: SelectedSite,
+        accountRepository: AccountRepository
     ): DataStore<DashboardDataModel> = DataStoreFactory.create(
         produceFile = {
-            appContext.dataStoreFile("dashboard_configuration_${site.get().id}")
+            val userId = accountRepository.getUserAccount()?.id ?: 0
+            val siteId = site.get().id
+            appContext.dataStoreFile("dashboard_configuration_${userId}_$siteId")
         },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = DashboardSerializer
