@@ -28,11 +28,10 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
             NEW_SHIPPING_SUPPORT -> PackageUtils.isDebugBuild()
-
+            DYNAMIC_DASHBOARD -> PackageUtils.isDebugBuild() && !PackageUtils.isTesting()
             CONNECTIVITY_TOOL,
             BLAZE_I3,
-            CUSTOM_RANGE_ANALYTICS,
-            DYNAMIC_DASHBOARD -> true
+            CUSTOM_RANGE_ANALYTICS -> true
         }
     }
 }
