@@ -15,7 +15,8 @@ enum class FeatureFlag {
     BLAZE_I3,
     CUSTOM_RANGE_ANALYTICS,
     CONNECTIVITY_TOOL,
-    NEW_SHIPPING_SUPPORT;
+    NEW_SHIPPING_SUPPORT,
+    DYNAMIC_DASHBOARD;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -31,7 +32,8 @@ enum class FeatureFlag {
 
             CONNECTIVITY_TOOL,
             BLAZE_I3,
-            CUSTOM_RANGE_ANALYTICS -> true
+            CUSTOM_RANGE_ANALYTICS,
+            DYNAMIC_DASHBOARD -> true
 
             IAP_FOR_STORE_CREATION -> false
         }
