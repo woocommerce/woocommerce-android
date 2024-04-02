@@ -27,12 +27,4 @@ class OrderNavigationLogger @Inject constructor(private val crashLogging: CrashL
         }
         crashLogging.recordEvent(logMessage)
     }
-
-    fun logGraphChangeIfNeeded(navController: NavController, previousGraphId: Int, actionDescription: String) {
-        val newGraphId = navController.graph.id
-        if (previousGraphId != newGraphId) {
-            val newGraphName = navController.graph.label ?: "Unknown"
-            crashLogging.recordEvent("$actionDescription: Graph changed to ID=$newGraphId, Name=$newGraphName")
-        }
-    }
 }
