@@ -141,13 +141,20 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
             setup()
 
-            val expectedConfiguration = defaultConfiguration.map { it.copy(isVisible = false) }
+            val itemsToChange = listOf(AnalyticsCards.Revenue, AnalyticsCards.Orders, AnalyticsCards.Session)
+            val expectedConfiguration = defaultConfiguration.map {
+                if (it.card in itemsToChange) {
+                    it.copy(isVisible = false)
+                } else {
+                    it
+                }
+            }
 
             advanceTimeBy(501)
 
-            sut.onSelectionChange(AnalyticsCards.Revenue, false)
-            sut.onSelectionChange(AnalyticsCards.Orders, false)
-            sut.onSelectionChange(AnalyticsCards.Session, false)
+            itemsToChange.forEach { card ->
+                sut.onSelectionChange(card, false)
+            }
 
             sut.onSaveChanges()
 
