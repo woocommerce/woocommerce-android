@@ -1983,6 +1983,40 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given simple payment migration enabled, on onCollectPaymentClicked, then navigate to order creation screen emitted`() {
+        // GIVEN
+        whenever(simplePaymentsMigrationEnabled()).thenReturn(true)
+
+        // WHEN
+        initViewModel()
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+            it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
+        }!!.onClick!!.invoke()
+
+        // THEN
+        assertThat(viewModel.event.value).isInstanceOf(
+            PaymentsHubViewModel.PaymentsHubEvents.NavigateToOrderCreationScreen::class.java
+        )
+    }
+
+    @Test
+    fun `given simple payment migration disabled, on onCollectPaymentClicked, then navigate to payment collection screen emitted`() {
+        // GIVEN
+        whenever(simplePaymentsMigrationEnabled()).thenReturn(false)
+
+        // WHEN
+        initViewModel()
+        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
+            it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
+        }!!.onClick!!.invoke()
+
+        // THEN
+        assertThat(viewModel.event.value).isInstanceOf(
+            PaymentsHubViewModel.PaymentsHubEvents.NavigateToPaymentCollectionScreen::class.java
+        )
+    }
+
     //endregion
 
     private fun getSuccessWooResult() = WooResult(
