@@ -80,29 +80,28 @@ class OrdersRealAPI : TestBase() {
             .tapFilters()
             .filterByPropertyAndValue("Order Status", "Completed")
             .showOrders(true)
-            .assertOrderCard(order41)
+            .assertOrderCard(completedOrder)
             .assertOrdersCount(1)
             // Check that "Clear" button works
             .tapFilters()
             .clearFilters()
             .showOrders(true)
-            .assertOrderCard(order40)
-            .assertOrderCard(order41)
+            .assertOrderCard(pendingOrder)
+            .assertOrderCard(completedOrder)
             .assertOrdersCount(2)
     }
 
     @Test
-    @Ignore
     fun e2eRealApiOrdersSearch() {
         OrderListScreen()
             // Make sure all orders are listed
-            .assertOrderCard(order40)
-            .assertOrderCard(order41)
+            .assertOrderCard(pendingOrder)
+            .assertOrderCard(completedOrder)
             .assertOrdersCount(2)
             // Search by Customer Name (AKA Order Name)
             .openSearchPane()
-            .enterSearchTerm(order40.customerName)
-            .assertOrderCard(order40)
+            .enterSearchTerm(pendingOrder.customerName)
+            .assertOrderCard(pendingOrder)
             .assertOrdersCount(1)
             .leaveSearchMode()
             // Search for non-existing order
@@ -111,8 +110,8 @@ class OrdersRealAPI : TestBase() {
             .assertSearchResultsAbsent("Absent Order")
             // Leave search and make sure all orders are listed
             .leaveSearchMode()
-            .assertOrderCard(order40)
-            .assertOrderCard(order41)
+            .assertOrderCard(pendingOrder)
+            .assertOrderCard(completedOrder)
             .assertOrdersCount(2)
     }
 
@@ -121,14 +120,14 @@ class OrdersRealAPI : TestBase() {
     fun e2eRealApiOrderDetails() {
         try {
             OrderListScreen()
-                .selectOrderById(order40.id)
-                .assertOrderId(order40.id)
-                .assertCustomerName(order40.customerName)
-                .assertOrderStatus(order40.status)
+                .selectOrderById(pendingOrder.id)
+                .assertOrderId(pendingOrder.id)
+                .assertCustomerName(pendingOrder.customerName)
+                .assertOrderStatus(pendingOrder.status)
                 .assertOrderHasProduct(productSalad)
                 .assertOrderHasProduct(productCappuccinoCocoMedium)
-                .assertPayments(order40)
-                .assertCustomerNote(order40.customerNote)
+                .assertPayments(pendingOrder)
+                .assertCustomerNote(pendingOrder.customerNote)
         } finally {
             SingleOrderScreen()
                 .goBackToOrdersScreen()
