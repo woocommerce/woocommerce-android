@@ -8,7 +8,7 @@ const val PRODUCTS_POSITION = 2
 const val MORE_POSITION = 3
 
 enum class BottomNavigationPosition(val position: Int, val id: Int) {
-    MY_STORE(MY_STORE_POSITION, R.id.dashboard),
+    MY_STORE(MY_STORE_POSITION, R.id.my_store),
     ORDERS(ORDERS_POSITION, R.id.orders),
     PRODUCTS(PRODUCTS_POSITION, R.id.products),
     MORE(MORE_POSITION, R.id.moreMenu)

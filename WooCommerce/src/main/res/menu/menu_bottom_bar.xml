@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/dashboard"
+        android:id="@+id/my_store"
         android:icon="@drawable/as_menu_dashboard"
         android:title="@string/my_store" />
 
