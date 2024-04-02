@@ -26,12 +26,14 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE,
-            NEW_SHIPPING_SUPPORT -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
+
             DYNAMIC_DASHBOARD -> PackageUtils.isDebugBuild() && !PackageUtils.isTesting()
+
             CONNECTIVITY_TOOL,
             BLAZE_I3,
-            CUSTOM_RANGE_ANALYTICS -> true
+            CUSTOM_RANGE_ANALYTICS,
+            NEW_SHIPPING_SUPPORT -> true
         }
     }
 }
