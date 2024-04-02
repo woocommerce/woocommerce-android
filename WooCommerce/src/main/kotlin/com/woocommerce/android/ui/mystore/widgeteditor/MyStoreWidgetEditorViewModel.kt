@@ -83,7 +83,6 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
         }
     }
 
-
     fun onDismissDiscardChanges() {
         TODO("Not yet implemented")
     }
