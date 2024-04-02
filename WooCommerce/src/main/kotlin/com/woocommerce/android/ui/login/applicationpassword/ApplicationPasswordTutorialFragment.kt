@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.connectivitytool
+package com.woocommerce.android.ui.login.applicationpassword
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,26 +7,24 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenSupportRequest
-import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenWebView
-import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialViewModel.OnContactSupport
+import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialViewModel.OnContinue
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderConnectivityToolFragment : BaseFragment() {
-    val viewModel: OrderConnectivityToolViewModel by viewModels()
+class ApplicationPasswordTutorialFragment : BaseFragment() {
+    val viewModel: ApplicationPasswordTutorialViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    OrderConnectivityToolScreen(viewModel = viewModel)
+                    ApplicationPasswordTutorialScreen(viewModel = viewModel)
                 }
             }
         }
@@ -36,22 +34,17 @@ class OrderConnectivityToolFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
-                is OpenSupportRequest -> openSupportRequestScreen()
-                is OpenWebView -> openWebView(it.url)
+                is OnContinue -> {}
+                is OnContactSupport -> openSupportRequestScreen()
             }
         }
-        viewModel.startConnectionChecks()
     }
-
-    override fun getFragmentTitle() = getString(R.string.orderlist_connectivity_tool_title)
 
     private fun openSupportRequestScreen() {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
-            origin = HelpOrigin.CONNECTIVITY_TOOL,
+            origin = HelpOrigin.APPLICATION_PASSWORD_TUTORIAL,
             extraTags = ArrayList()
         ).let { activity?.startActivity(it) }
     }
-
-    private fun openWebView(url: String) { ChromeCustomTabUtils.launchUrl(requireContext(), url) }
 }
