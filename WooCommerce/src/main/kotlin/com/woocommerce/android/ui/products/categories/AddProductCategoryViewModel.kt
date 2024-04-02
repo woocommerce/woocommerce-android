@@ -63,7 +63,9 @@ class AddProductCategoryViewModel @Inject constructor(
     }
 
     fun onBackButtonClicked(categoryName: String, parentId: String): Boolean {
-        val hasChanges = categoryName.isNotEmpty() || parentId.isNotEmpty()
+        val hasChanges = (categoryName.isNotEmpty() || parentId.isNotEmpty()) &&
+            navArgs.productCategory?.name != addProductCategoryViewState.categoryName ||
+            navArgs.productCategory?.parentId != addProductCategoryViewState.selectedParentId
         return if (hasChanges && addProductCategoryViewState.shouldShowDiscardDialog) {
             triggerEvent(
                 ShowDialog.buildDiscardDialogEvent(
