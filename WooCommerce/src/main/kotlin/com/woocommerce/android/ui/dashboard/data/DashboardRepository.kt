@@ -1,8 +1,9 @@
-package com.woocommerce.android.ui.mystore.data
+package com.woocommerce.android.ui.dashboard.data
 
 import com.woocommerce.android.model.Widget
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.model.toWidgetModelList
+import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.flowOn
