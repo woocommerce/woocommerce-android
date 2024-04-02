@@ -9,7 +9,6 @@ enum class FeatureFlag {
     DB_DOWNGRADE,
     MORE_MENU_INBOX,
     WC_SHIPPING_BANNER,
-    IAP_FOR_STORE_CREATION,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     BLAZE_I3,
@@ -34,8 +33,6 @@ enum class FeatureFlag {
             BLAZE_I3,
             CUSTOM_RANGE_ANALYTICS,
             DYNAMIC_DASHBOARD -> true
-
-            IAP_FOR_STORE_CREATION -> false
         }
     }
 }
