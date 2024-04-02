@@ -1036,7 +1036,9 @@ class MainActivity :
         binding.bottomNav.currentPosition = ORDERS
         binding.bottomNav.active(ORDERS.position)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-            mode = OrderCreateEditViewModel.Mode.Creation
+            OrderCreateEditViewModel.Mode.Creation,
+            null,
+            null,
         )
         navController.navigateSafely(action)
     }
@@ -1127,12 +1129,10 @@ class MainActivity :
         giftCardCode: String?,
         giftCardAmount: BigDecimal?
     ) {
-        NavGraphMainDirections.actionGlobalToOrdercreationfragment(
+        NavGraphMainDirections.actionGlobalToOrderCreationFragment(
             mode = mode,
-            barcodeFormat = null,
             giftCardCode = giftCardCode,
             giftCardAmount = giftCardAmount,
-            sku = null,
         ).apply {
             navController.navigateSafely(this)
         }

@@ -125,6 +125,14 @@
             <argument
                 android:name="mode"
                 app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+            <argument
+                android:name="sku"
+                app:argType="string"
+                app:nullable="true" />
+            <argument
+                android:name="barcodeFormat"
+                app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
+                app:nullable="true" />
         </action>
         <action
             android:id="@+id/action_orderListFragment_to_barcodeScanningFragment"
@@ -335,17 +343,19 @@
     </fragment>
 
     <action
-        android:id="@+id/action_global_to_ordercreationfragment"
+        android:id="@+id/action_global_to_orderCreationFragment"
         app:destination="@id/nav_graph_order_creations">
         <argument
             android:name="mode"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
         <argument
             android:name="sku"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="barcodeFormat"
+            android:defaultValue="@null"
             app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
             app:nullable="true" />
         <argument
