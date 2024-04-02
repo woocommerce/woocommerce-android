@@ -63,7 +63,7 @@ fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
 
                     if (state.showDiscardDialog) {
                         DiscardChangesDialog(
-                            dismissButton = viewModel::onDismissDiscardChanges,
+                            dismissButton = viewModel::onDismissDiscardDialog,
                             discardButton = viewModel::onDiscardChanges
                         )
                     }

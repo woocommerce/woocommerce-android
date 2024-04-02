@@ -59,7 +59,10 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
     private var editedWidgets = widgetEditorState.value.widgetList
 
     fun onBackPressed() {
-        triggerEvent(Exit)
+        when {
+            hasChanges(editedWidgets) -> widgetEditorState.update { it.copy(showDiscardDialog = true) }
+            else -> triggerEvent(Exit)
+        }
     }
 
     fun onSaveClicked() {
@@ -81,18 +84,20 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
         widgetEditorState.update {
             it.copy(
                 widgetList = editedWidgets,
-                isSaveButtonEnabled = editedWidgets != existingWidgetConfiguration
+                isSaveButtonEnabled = hasChanges(editedWidgets)
             )
         }
     }
 
-    fun onDismissDiscardChanges() {
-        TODO("Not yet implemented")
+    fun onDismissDiscardDialog() {
+        widgetEditorState.update { it.copy(showDiscardDialog = false) }
     }
 
     fun onDiscardChanges() {
-        TODO("Not yet implemented")
+        triggerEvent(Exit)
     }
+
+    private fun hasChanges(editedWidgets: List<MyStoreWidget>) = editedWidgets != existingWidgetConfiguration
 
     @Parcelize
     data class WidgetEditorState(
