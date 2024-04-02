@@ -80,14 +80,14 @@ fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
                     }
                 }
 
-                is AnalyticsHubSettingsViewState.Loading -> LoadingCardsConfiguration()
+                is AnalyticsHubSettingsViewState.Loading -> LoadWidgetsConfiguration()
             }
         }
     }
 }
 
 @Composable
-fun LoadingCardsConfiguration(modifier: Modifier = Modifier) {
+fun LoadWidgetsConfiguration(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -136,6 +136,6 @@ fun AnalyticCardItemPreview() {
 @Preview(name = "Screen", device = Devices.PIXEL_4)
 fun LoadingCardsConfigurationPreview() {
     WooThemeWithBackground {
-        LoadingCardsConfiguration()
+        LoadWidgetsConfiguration()
     }
 }

@@ -4,7 +4,6 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetEditorViewState.WidgetEditorContent
 import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.BlazeCampaigns
 import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.StoreOnboarding
 import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.StoreStats
@@ -14,6 +13,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -21,9 +21,9 @@ import javax.inject.Inject
 class MyStoreWidgetEditorViewModel @Inject constructor(
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
-    private val widgetEditorState: MutableStateFlow<WidgetEditorViewState> = savedState.getStateFlow(
+    private val widgetEditorState: MutableStateFlow<WidgetEditorState> = savedState.getStateFlow(
         viewModelScope,
-        WidgetEditorContent(
+        WidgetEditorState(
             widgetList = listOf(
                 MyStoreWidget(
                     title = "Store Stats",
@@ -47,9 +47,13 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
                 ),
             ),
             showDiscardDialog = false,
+            isLoading = false,
         )
     )
     val viewState = widgetEditorState.asLiveData()
+
+    private val existingSections = widgetEditorState.value.widgetList
+    private var editedSections = widgetEditorState.value.widgetList
 
     fun onBackPressed() {
         triggerEvent(Exit)
@@ -64,10 +68,16 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
 
     }
 
-    @Suppress("unused_parameter")
     fun onOrderChange(fromIndex: Int, toIndex: Int) {
-
+        editedSections = editedSections.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+        widgetEditorState.update {
+            it.copy(
+                widgetList = editedSections,
+                isSaveButtonEnabled = editedSections != existingSections
+            )
+        }
     }
+
 
     fun onDismissDiscardChanges() {
         TODO("Not yet implemented")
@@ -78,15 +88,12 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
     }
 
     @Parcelize
-    sealed class WidgetEditorViewState : Parcelable {
-        data class WidgetEditorContent(
-            val widgetList: List<MyStoreWidget>,
-            val showDiscardDialog: Boolean = false,
-            val isSaveButtonEnabled: Boolean = false
-        ) : WidgetEditorViewState()
-
-        data object Loading : WidgetEditorViewState()
-    }
+    data class WidgetEditorState(
+        val widgetList: List<MyStoreWidget>,
+        val showDiscardDialog: Boolean = false,
+        val isSaveButtonEnabled: Boolean = false,
+        val isLoading: Boolean = false
+    ) : Parcelable
 
     @Parcelize
     data class MyStoreWidget(

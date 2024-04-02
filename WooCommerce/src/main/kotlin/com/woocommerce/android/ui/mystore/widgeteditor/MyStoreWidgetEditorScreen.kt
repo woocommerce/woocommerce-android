@@ -16,11 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.analytics.hub.settings.LoadingCardsConfiguration
+import com.woocommerce.android.ui.analytics.hub.settings.LoadWidgetsConfiguration
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.DragAndDropItemsList
-import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetEditorViewState
-import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetEditorViewState.WidgetEditorContent
 
 @Composable
 fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
@@ -28,7 +26,7 @@ fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
     viewModel.viewState.observeAsState().value?.let { state ->
         Scaffold(topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.customize_analytics)) },
+                title = { Text(text = stringResource(id = R.string.my_store_edit_screen_widgets)) },
                 navigationIcon = {
                     IconButton(viewModel::onBackPressed) {
                         Icon(
@@ -41,7 +39,7 @@ fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
                 actions = {
                     TextButton(
                         onClick = viewModel::onSaveChanges,
-                        enabled = state is WidgetEditorContent && state.isSaveButtonEnabled
+                        enabled = state.isSaveButtonEnabled
                     ) {
                         Text(
                             text = stringResource(id = R.string.save).uppercase()
@@ -50,8 +48,9 @@ fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
                 },
             )
         }) { padding ->
-            when (state) {
-                is WidgetEditorContent -> {
+            when {
+                state.isLoading -> LoadWidgetsConfiguration()
+                else -> {
                     DragAndDropItemsList(
                         items = state.widgetList,
                         selectedItems = state.widgetList.filter { it.isSelected },
@@ -69,8 +68,6 @@ fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
                         )
                     }
                 }
-
-                is WidgetEditorViewState.Loading -> LoadingCardsConfiguration()
             }
         }
     }
