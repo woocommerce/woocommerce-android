@@ -10,13 +10,13 @@ enum class FeatureFlag {
     MORE_MENU_INBOX,
     WC_SHIPPING_BANNER,
     MIGRATION_SIMPLE_PAYMENTS,
-    IAP_FOR_STORE_CREATION,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     BLAZE_I3,
     CUSTOM_RANGE_ANALYTICS,
     CONNECTIVITY_TOOL,
-    NEW_SHIPPING_SUPPORT;
+    NEW_SHIPPING_SUPPORT,
+    DYNAMIC_DASHBOARD;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -33,9 +33,8 @@ enum class FeatureFlag {
 
             CONNECTIVITY_TOOL,
             BLAZE_I3,
-            CUSTOM_RANGE_ANALYTICS -> true
-
-            IAP_FOR_STORE_CREATION -> false
+            CUSTOM_RANGE_ANALYTICS,
+            DYNAMIC_DASHBOARD -> true
         }
     }
 }
