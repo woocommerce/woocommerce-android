@@ -64,7 +64,7 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    val startDestination = if (selectedSite.exists()) R.id.my_store else R.id.nav_graph_site_picker
+    val startDestination = if (selectedSite.exists()) DashboardDestination.id else R.id.nav_graph_site_picker
 
     val moreMenuBadgeState = combine(
         unseenReviewsCountHandler.observeUnseenCount(),
