@@ -10,5 +10,5 @@ message DashboardWidgetDataModel {
 }
 
 message DashboardDataModel {
-  repeated DashboardWidgetDataModel widget = 1;
+  repeated DashboardWidgetDataModel widgets = 1;
 }

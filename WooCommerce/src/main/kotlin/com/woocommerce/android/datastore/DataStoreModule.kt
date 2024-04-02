@@ -79,7 +79,6 @@ class DataStoreModule {
         serializer = CustomDateRangeSerializer
     )
 
-
     @Provides
     fun provideDashboardDataStore(
         appContext: Context,

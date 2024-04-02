@@ -27,4 +27,4 @@ fun DashboardWidgetDataModel.toModel() =
     Widget(Widget.Type.valueOf(type), isAdded)
 
 fun DashboardDataModel.toWidgetModelList(): List<Widget> =
-    widgetList.map { it.toModel() }
+    widgetsList.map { it.toModel() }

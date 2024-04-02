@@ -29,7 +29,7 @@ class DashboardRepository @Inject constructor(
         runCatching {
             dashboardDataStore.updateDashboard(
                 DashboardDataModel.newBuilder()
-                    .addAllWidget(widgets.map { it.toDataModel() })
+                    .addAllWidgets(widgets.map { it.toDataModel() })
                     .build()
             )
         }.onFailure { throwable ->
