@@ -27,32 +27,35 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
     private val widgetEditorState: MutableStateFlow<WidgetEditorState> = savedState.getStateFlow(
         viewModelScope,
         WidgetEditorState(
-            widgetList = listOf(
-                MyStoreWidget(
-                    title = resourceProvider.getString(R.string.my_store_edit_screen_widget_stats),
-                    isSelected = true,
-                    StoreStats
-                ),
-                MyStoreWidget(
-                    title = resourceProvider.getString(R.string.my_store_edit_screen_widget_top_performers),
-                    isSelected = true,
-                    TopProducts
-                ),
-                MyStoreWidget(
-                    title = resourceProvider.getString(R.string.my_store_edit_screen_widget_blaze_campaigns),
-                    isSelected = true,
-                    BlazeCampaigns
-                ),
-                MyStoreWidget(
-                    title = resourceProvider.getString(R.string.my_store_edit_screen_widget_onboarding_list),
-                    isSelected = false,
-                    StoreOnboarding
-                ),
-            ),
+            widgetList = getWidgetsCurrentSelection(),
             showDiscardDialog = false,
             isLoading = false,
         )
     )
+
+    private fun getWidgetsCurrentSelection() = listOf(
+        MyStoreWidget(
+            title = resourceProvider.getString(R.string.my_store_edit_screen_widget_stats),
+            isSelected = true,
+            StoreStats
+        ),
+        MyStoreWidget(
+            title = resourceProvider.getString(R.string.my_store_edit_screen_widget_top_performers),
+            isSelected = true,
+            TopProducts
+        ),
+        MyStoreWidget(
+            title = resourceProvider.getString(R.string.my_store_edit_screen_widget_blaze_campaigns),
+            isSelected = true,
+            BlazeCampaigns
+        ),
+        MyStoreWidget(
+            title = resourceProvider.getString(R.string.my_store_edit_screen_widget_onboarding_list),
+            isSelected = false,
+            StoreOnboarding
+        ),
+    )
+
     val viewState = widgetEditorState.asLiveData()
 
     private val existingWidgetConfiguration = widgetEditorState.value.widgetList
@@ -66,7 +69,7 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
     }
 
     fun onSaveClicked() {
-        TODO("Not yet implemented")
+        TODO("Saving selected widgets is not yet implemented")
     }
 
     fun onSelectionChange(myStoreWidget: MyStoreWidget, selected: Boolean) {
