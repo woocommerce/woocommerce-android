@@ -172,11 +172,11 @@ class DashboardStatsViewModel @Inject constructor(
             .collect {
                 when (it) {
                     is LoadStatsResult.RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
-                    is LoadStatsResult.RevenueStatsError -> _revenueStatsState.value =
-                        RevenueStatsViewState.GenericError
+                    is LoadStatsResult.RevenueStatsError ->
+                        _revenueStatsState.value = RevenueStatsViewState.GenericError
 
-                    LoadStatsResult.PluginNotActive -> _revenueStatsState.value =
-                        RevenueStatsViewState.PluginNotActiveError
+                    LoadStatsResult.PluginNotActive ->
+                        _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
 
                     is LoadStatsResult.VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(
                         stats = it.stats, totalVisitorCount = it.totalVisitorCount
@@ -316,7 +316,6 @@ class DashboardStatsViewModel @Inject constructor(
             val totalVisitorCount: Int?
         ) : VisitorStatsViewState()
     }
-
 
     data class RevenueStatsUiModel(
         val intervalList: List<StatsIntervalUiModel> = emptyList(),

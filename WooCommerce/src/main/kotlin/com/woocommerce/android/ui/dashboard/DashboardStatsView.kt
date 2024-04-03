@@ -63,6 +63,7 @@ import java.util.Locale
 import kotlin.math.round
 
 @OptIn(FlowPreview::class)
+@Suppress("MagicNumber")
 class DashboardStatsView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -97,7 +98,7 @@ class DashboardStatsView @JvmOverloads constructor(
                 binding.chart.setNoDataText(null)
                 binding.chart.clear()
             } else {
-                // TODO: add a custom empty view
+                // TODO add a custom empty view
                 binding.chart.setNoDataText(context.getString(R.string.dashboard_state_no_data))
             }
             field = value

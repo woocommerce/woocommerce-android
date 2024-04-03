@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -139,8 +137,6 @@ class DashboardFragment :
 
     private var isEmptyViewVisible: Boolean = false
     private var wasPreviouslyStopped = false
-
-    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(myStoreViewModel.performanceObserver)
