@@ -372,13 +372,6 @@ class DashboardFragment :
         myStoreViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
             binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
         }
-//        myStoreViewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
-//            binding.jetpackBenefitsBanner.root.isVisible = stats is VisitorStatsViewState.Unavailable
-//            binding.myStoreStats.showVisitorStats(stats)
-//            if (stats is VisitorStatsViewState.Unavailable) {
-//                onVisitorStatsUnavailable(stats)
-//            }
-//        }
         myStoreViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
             when {
                 topPerformers.isLoading -> showTopPerformersLoading()
@@ -424,7 +417,12 @@ class DashboardFragment :
         }
     }
 
-    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: JetpackBenefitsBannerUiModel) {
+    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: JetpackBenefitsBannerUiModel?) {
+        if (jetpackBenefitsBanner == null) {
+            binding.jetpackBenefitsBanner.root.isVisible = false
+            return
+        }
+
         if (jetpackBenefitsBanner.show) {
             binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
                 jetpackBenefitsBanner.onDismiss()

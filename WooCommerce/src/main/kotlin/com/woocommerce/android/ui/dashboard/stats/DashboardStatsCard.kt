@@ -34,7 +34,7 @@ fun DashboardStatsCard(
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     onPluginUnavailableError: () -> Unit,
-    reportJetpackPluginStatus: (JetpackBenefitsBannerUiModel) -> Unit,
+    reportJetpackPluginStatus: (JetpackBenefitsBannerUiModel?) -> Unit,
     onStatsError: () -> Unit,
     openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
     viewModel: DashboardStatsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
@@ -54,9 +54,9 @@ fun DashboardStatsCard(
     }
 
     LaunchedEffect(visitorsStatsState) {
-        (visitorsStatsState as? DashboardStatsViewModel.VisitorStatsViewState.Unavailable)?.benefitsBanner?.let {
-            reportJetpackPluginStatus(it)
-        }
+        reportJetpackPluginStatus(
+            (visitorsStatsState as? DashboardStatsViewModel.VisitorStatsViewState.Unavailable)?.benefitsBanner
+        )
     }
 
     HandleEvents(
@@ -167,6 +167,8 @@ fun DashboardStatsCard(
 
             view.handleCustomRangeTab(customRange)
 
+            view.showLastUpdate(lastUpdateState)
+
             when (revenueStatsState) {
                 is DashboardStatsViewModel.RevenueStatsViewState.Content -> {
                     view.showErrorView(false)
@@ -188,7 +190,9 @@ fun DashboardStatsCard(
                 else -> Unit
             }
 
-            view.showLastUpdate(lastUpdateState)
+            visitorsStatsState?.let {
+                view.showVisitorStats(it)
+            }
         }
     )
 }
