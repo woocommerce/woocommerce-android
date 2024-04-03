@@ -404,7 +404,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
                 if (mode.indicateSimplePaymentsMigration) {
                     triggerEventWithDelay(
-                        ShowSimplePaymentsMigrationBottomSheet,
+                        OrderCreateEditNavigationTarget.SimplePaymentsMigrationBottomSheet,
                         delay = DELAY_BEFORE_SHOWING_SIMPLE_PAYMENTS_MIGRATION_BOTTOM_SHEET,
                     )
                 }
@@ -2013,8 +2013,6 @@ data class OnTotalsSectionHeightChanged(
 data class OnCustomAmountTypeSelected(
     val type: CustomAmountType
 ) : Event()
-
-data object ShowSimplePaymentsMigrationBottomSheet : Event()
 
 object OnSelectedProductsSyncRequested : Event()
 
