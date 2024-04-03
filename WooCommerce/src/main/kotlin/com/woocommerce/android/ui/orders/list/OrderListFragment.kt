@@ -58,6 +58,7 @@ import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.OrderNavigationLogger
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
@@ -108,6 +109,9 @@ class OrderListFragment :
 
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
+
+    @Inject
+    lateinit var orderNavigationLogger: OrderNavigationLogger
 
     private val viewModel: OrderListViewModel by viewModels()
     private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
@@ -181,6 +185,7 @@ class OrderListFragment :
                             findNavController().popBackStack()
                         }
                     }
+                    orderNavigationLogger.logBackStack(findNavController(), "After navigating back from OrderList")
                 }
             }
         )
