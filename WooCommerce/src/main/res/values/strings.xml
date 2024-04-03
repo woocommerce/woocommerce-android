@@ -403,6 +403,10 @@
     <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
 
+    <string name="my_store_widget_onboarding_title">Onboarding</string>
+    <string name="my_store_widget_stats_title">Statistics</string>
+    <string name="my_store_widget_top_products_title">Top products</string>
+    <string name="my_store_widget_blaze_title">Blaze campaigns</string>
     <!--
         Sign Up Flow
     -->
