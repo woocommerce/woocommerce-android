@@ -19,7 +19,10 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeastOne
@@ -31,6 +34,7 @@ import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.TimezoneProvider
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
@@ -44,6 +48,7 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.putIfNotNull
+import java.util.Date
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -52,7 +57,7 @@ class DashboardStatsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val getStats: GetStats,
-    customDateRangeDataStore: CustomDateRangeDataStore,
+    private val customDateRangeDataStore: CustomDateRangeDataStore,
     getSelectedDateRange: GetSelectedDateRange,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val networkStatus: NetworkStatus,
@@ -60,7 +65,8 @@ class DashboardStatsViewModel @Inject constructor(
     private val timezoneProvider: TimezoneProvider,
     private val observeLastUpdate: ObserveLastUpdate,
     private val wooCommerceStore: WooCommerceStore,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -98,6 +104,56 @@ class DashboardStatsViewModel @Inject constructor(
             }
         }
         trackLocalTimezoneDifferenceFromStore()
+    }
+
+    fun onTabSelected(selectionType: SelectionType) {
+        usageTracksEventEmitter.interacted()
+        appPrefsWrapper.setActiveStatsTab(selectionType.name)
+
+        if (selectionType == SelectionType.CUSTOM) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
+            )
+        }
+    }
+
+    fun onCustomRangeSelected(range: StatsTimeRange) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_EDITING to (customRange.value != null),
+            )
+        )
+
+        if (selectedDateRange.value?.selectionType != SelectionType.CUSTOM) {
+            onTabSelected(SelectionType.CUSTOM)
+        }
+        viewModelScope.launch {
+            customDateRangeDataStore.updateDateRange(range)
+        }
+    }
+
+    fun onAddCustomRangeClicked() {
+        triggerEvent(
+            OpenDatePicker(
+                fromDate = customRange.value?.start ?: Date(),
+                toDate = customRange.value?.end ?: Date()
+            )
+        )
+
+        val event = if (customRange.value == null) {
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
+        } else {
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED
+        }
+        analyticsTrackerWrapper.track(event)
+    }
+
+    fun onViewAnalyticsClicked() {
+        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
+        selectedDateRange.value?.let {
+            triggerEvent(OpenAnalytics(it))
+        }
     }
 
     override fun onCleared() {
@@ -275,4 +331,7 @@ class DashboardStatsViewModel @Inject constructor(
         val ordersCount: Long? = null,
         val sales: Double? = null
     )
+
+    data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
+    data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MultiLiveEvent.Event()
 }

@@ -18,14 +18,12 @@ import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChange
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -47,7 +45,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -64,7 +61,6 @@ class DashboardViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     private val observeLastUpdate: ObserveLastUpdate,
-    private val customDateRangeDataStore: CustomDateRangeDataStore,
     getSelectedDateRange: GetSelectedDateRange,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
@@ -94,7 +90,6 @@ class DashboardViewModel @Inject constructor(
 
     private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
-    val customRange = customDateRangeDataStore.dateRange.asLiveData()
     private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
@@ -159,28 +154,10 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun onTabSelected(selectionType: SelectionType) {
-        usageTracksEventEmitter.interacted()
-        appPrefsWrapper.setActiveStatsTab(selectionType.name)
-
-        if (selectionType == SelectionType.CUSTOM) {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
-            )
-        }
-    }
-
     fun onPullToRefresh() {
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         refreshTrigger.tryEmit(RefreshState(isForced = true))
-    }
-
-    fun onViewAnalyticsClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
-        selectedDateRange.value?.let {
-            triggerEvent(DashboardEvent.OpenAnalytics(it))
-        }
     }
 
     fun onShareStoreClicked() {
@@ -263,38 +240,6 @@ class DashboardViewModel @Inject constructor(
             0
         )
 
-    fun onCustomRangeSelected(range: StatsTimeRange) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
-            mapOf(
-                AnalyticsTracker.KEY_IS_EDITING to (customRange.value != null),
-            )
-        )
-
-        if (selectedDateRange.value?.selectionType != SelectionType.CUSTOM) {
-            onTabSelected(SelectionType.CUSTOM)
-        }
-        viewModelScope.launch {
-            customDateRangeDataStore.updateDateRange(range)
-        }
-    }
-
-    fun onAddCustomRangeClicked() {
-        triggerEvent(
-            DashboardEvent.OpenDatePicker(
-                fromDate = customRange.value?.start ?: Date(),
-                toDate = customRange.value?.end ?: Date()
-            )
-        )
-
-        val event = if (customRange.value == null) {
-            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
-        } else {
-            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED
-        }
-        analyticsTrackerWrapper.track(event)
-    }
-
     data class TopPerformersState(
         val isLoading: Boolean = false,
         val isError: Boolean = false,
@@ -315,15 +260,11 @@ class DashboardViewModel @Inject constructor(
             val productId: Long
         ) : DashboardEvent()
 
-        data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : DashboardEvent()
-
         data object ShowPrivacyBanner : DashboardEvent()
 
         data object ShowAIProductDescriptionDialog : DashboardEvent()
 
         data class ShareStore(val storeUrl: String) : DashboardEvent()
-
-        data class OpenDatePicker(val fromDate: Date, val toDate: Date) : DashboardEvent()
     }
 
     data class RefreshState(private val isForced: Boolean = false) {

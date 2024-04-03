@@ -38,7 +38,6 @@ import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
@@ -47,8 +46,6 @@ import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenAnalytics
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
@@ -82,7 +79,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -166,12 +162,12 @@ class DashboardFragment :
                     dateUtils = dateUtils,
                     currencyFormatter = currencyFormatter,
                     usageTracksEventEmitter = usageTracksEventEmitter,
-                    onViewAnalyticsClick = myStoreViewModel::onViewAnalyticsClicked,
-                    onAddCustomRangeClick = myStoreViewModel::onAddCustomRangeClicked,
-                    onTabSelected = myStoreViewModel::onTabSelected,
                     onPluginUnavailableError = { updateStatsAvailabilityError() },
                     reportJetpackPluginStatus = { onVisitorStatsUnavailable(it) },
                     onStatsError = { showErrorSnack() },
+                    openDatePicker = { start, end, callback ->
+                        showDateRangePicker(start, end, callback)
+                    }
                 )
             }
         }
@@ -409,10 +405,6 @@ class DashboardFragment :
                     )
                 )
 
-                is OpenAnalytics -> {
-                    mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
-                }
-
                 is ShowPrivacyBanner ->
                     findNavController().navigate(
                         PrivacyBannerFragmentDirections.actionGlobalPrivacyBannerFragment()
@@ -424,13 +416,6 @@ class DashboardFragment :
                     findNavController().navigateSafely(
                         DashboardFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
                     )
-
-                is OpenDatePicker -> showDateRangePicker(
-                    fromMillis = event.fromDate.time,
-                    toMillis = event.toDate.time
-                ) { start, end ->
-                    myStoreViewModel.onCustomRangeSelected(StatsTimeRange(Date(start), Date(end)))
-                }
 
                 else -> event.isHandled = false
             }

@@ -8,31 +8,35 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.isVisible
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.compose.rememberNavController
+import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardStatsView
 import com.woocommerce.android.ui.dashboard.JetpackBenefitsBannerUiModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Date
 
 @Composable
 fun DashboardStatsCard(
     dateUtils: DateUtils,
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
-    onViewAnalyticsClick: () -> Unit,
-    onAddCustomRangeClick: () -> Unit,
-    onTabSelected: (SelectionType) -> Unit,
     onPluginUnavailableError: () -> Unit,
     reportJetpackPluginStatus: (JetpackBenefitsBannerUiModel) -> Unit,
     onStatsError: () -> Unit,
+    openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
     viewModel: DashboardStatsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
     val customRange by viewModel.customRange.observeAsState()
@@ -55,6 +59,15 @@ fun DashboardStatsCard(
         }
     }
 
+    HandleEvents(
+        event = viewModel.event,
+        openDatePicker = { fromDate, toDate ->
+            openDatePicker(fromDate, toDate) { from, to ->
+                viewModel.onCustomRangeSelected(StatsTimeRange(Date(from), Date(to)))
+            }
+        }
+    )
+
     DashboardStatsCard(
         selectedDateRange = selectedDateRange,
         customRange = customRange,
@@ -64,10 +77,34 @@ fun DashboardStatsCard(
         dateUtils = dateUtils,
         currencyFormatter = currencyFormatter,
         usageTracksEventEmitter = usageTracksEventEmitter,
-        onViewAnalyticsClick = onViewAnalyticsClick,
-        onAddCustomRangeClick = onAddCustomRangeClick,
-        onTabSelected = onTabSelected
+        onViewAnalyticsClick = viewModel::onViewAnalyticsClicked,
+        onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
+        onTabSelected = viewModel::onTabSelected
     )
+}
+
+@Composable
+fun HandleEvents(
+    event: LiveData<Event>,
+    openDatePicker: (Long, Long) -> Unit,
+) {
+    val navController = rememberNavController()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(event) {
+        event.observe(lifecycleOwner) { event ->
+            when (event) {
+                is DashboardStatsViewModel.OpenDatePicker -> {
+                    openDatePicker(event.fromDate.time, event.toDate.time)
+                }
+                is DashboardStatsViewModel.OpenAnalytics -> {
+                    navController.navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToAnalytics(event.analyticsPeriod)
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -103,13 +140,13 @@ fun DashboardStatsCard(
 
                 tabLayout.addOnTabSelectedListener(
                     object : TabLayout.OnTabSelectedListener {
-                    override fun onTabSelected(tab: TabLayout.Tab) {
-                        onTabSelected(tab.tag as? SelectionType ?: SelectionType.TODAY)
-                    }
+                        override fun onTabSelected(tab: TabLayout.Tab) {
+                            onTabSelected(tab.tag as? SelectionType ?: SelectionType.TODAY)
+                        }
 
-                    override fun onTabUnselected(tab: TabLayout.Tab) = Unit
+                        override fun onTabUnselected(tab: TabLayout.Tab) = Unit
 
-                    override fun onTabReselected(tab: TabLayout.Tab) = Unit
+                        override fun onTabReselected(tab: TabLayout.Tab) = Unit
                     }
                 )
             }
