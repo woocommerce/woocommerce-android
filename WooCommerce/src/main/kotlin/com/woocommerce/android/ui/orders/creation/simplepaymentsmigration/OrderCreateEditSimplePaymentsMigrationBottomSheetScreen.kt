@@ -57,7 +57,7 @@ fun OrderCreateEditSimplePaymentsMigrationBottomSheetScreen(
 
             Text(
                 text = stringResource(id = R.string.order_creation_simple_payment_migration_title),
-                style = MaterialTheme.typography.h4,
+                style = MaterialTheme.typography.h5,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
             )
