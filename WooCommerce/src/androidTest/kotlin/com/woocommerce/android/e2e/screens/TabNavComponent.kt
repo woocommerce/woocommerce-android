@@ -7,9 +7,9 @@ import com.woocommerce.android.e2e.screens.mystore.MyStoreScreen
 import com.woocommerce.android.e2e.screens.orders.OrderListScreen
 import com.woocommerce.android.e2e.screens.products.ProductListScreen
 
-class TabNavComponent : Screen(R.id.dashboard) {
+class TabNavComponent : Screen(R.id.my_store) {
     fun gotoMyStoreScreen(): MyStoreScreen {
-        clickOn(R.id.dashboard)
+        clickOn(R.id.my_store)
         return MyStoreScreen()
     }
 
