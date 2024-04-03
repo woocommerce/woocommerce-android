@@ -43,6 +43,7 @@ import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
 import javax.inject.Inject
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 
 @HiltViewModel
 class LoginSiteCredentialsViewModel @Inject constructor(
@@ -252,18 +253,29 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onFailure = { exception ->
                 val authenticationError = exception as? CookieNonceAuthenticationException
 
-                this.errorDialogMessage.value = authenticationError?.errorMessage ?: UiStringRes(R.string.error_generic)
+                when (authenticationError?.errorType) {
+                    INVALID_CREDENTIALS -> triggerEvent(ShowApplicationPasswordTutorialScreen)
+                    else -> displayLoginFailureMessage(authenticationError, exception)
+                }
 
-                trackLoginFailure(
-                    step = Step.AUTHENTICATION,
-                    errorContext = exception.javaClass.simpleName,
-                    errorType = authenticationError?.errorType?.name,
-                    errorDescription = exception.message,
-                    statusCode = authenticationError?.networkStatusCode
-                )
             }
         )
         loadingMessage.value = 0
+    }
+
+    private fun displayLoginFailureMessage(
+        authenticationError: CookieNonceAuthenticationException?,
+        exception: Throwable
+    ) {
+        this.errorDialogMessage.value = authenticationError?.errorMessage ?: UiStringRes(R.string.error_generic)
+
+        trackLoginFailure(
+            step = Step.AUTHENTICATION,
+            errorContext = exception.javaClass.simpleName,
+            errorType = authenticationError?.errorType?.name,
+            errorDescription = exception.message,
+            statusCode = authenticationError?.networkStatusCode
+        )
     }
 
     private suspend fun fetchSite() {
@@ -418,4 +430,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val siteAddress: String,
         val username: String?
     ) : MultiLiveEvent.Event()
+
+    object ShowApplicationPasswordTutorialScreen : MultiLiveEvent.Event()
 }
