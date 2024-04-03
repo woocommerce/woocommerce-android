@@ -137,20 +137,23 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
     @Test
     fun `when the configuration is changed and the save button is pressed, then the updated configuration is saved`() =
         testBlocking {
-            val configuration = AnalyticsCards.entries.map { card ->
-                AnalyticCardConfiguration(card, card.name, true)
-            }
-
-            whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
+            whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(defaultConfiguration))
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
             setup()
 
-            val expectedConfiguration = configuration.map { it.copy(isVisible = false) }
+            val itemsToChange = listOf(AnalyticsCards.Revenue, AnalyticsCards.Orders, AnalyticsCards.Session)
+            val expectedConfiguration = defaultConfiguration.map {
+                if (it.card in itemsToChange) {
+                    it.copy(isVisible = false)
+                } else {
+                    it
+                }
+            }
 
             advanceTimeBy(501)
 
-            configuration.forEach { cardConfiguration ->
-                sut.onSelectionChange(cardConfiguration.card, false)
+            itemsToChange.forEach { card ->
+                sut.onSelectionChange(card, false)
             }
 
             sut.onSaveChanges()
