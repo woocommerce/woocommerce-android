@@ -36,7 +36,8 @@ object OrderCreateEditNavigator {
 
             is SelectItems -> {
                 val flow = when (target.mode) {
-                    is OrderCreateEditViewModel.Mode.Creation -> ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
+                    is OrderCreateEditViewModel.Mode.Creation ->
+                        ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
                     is OrderCreateEditViewModel.Mode.Edit -> ProductSelectorViewModel.ProductSelectorFlow.OrderEditing
                 }
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
