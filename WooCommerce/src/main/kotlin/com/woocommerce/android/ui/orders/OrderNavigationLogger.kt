@@ -1,34 +1,41 @@
 package com.woocommerce.android.ui.orders
 
+import android.annotation.SuppressLint
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph
 import com.automattic.android.tracks.crashlogging.CrashLogging
-import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class OrderNavigationLogger @Inject constructor(private val crashLogging: CrashLogging) {
 
-    fun logCurrentGraph(navController: NavController, actionDescription: String) {
-        val currentGraphId = navController.graph.id
-        val currentGraphName = navController.graph.label ?: "Unknown"
-        val message = "$actionDescription: Current graph ID=$currentGraphId, Name=$currentGraphName"
-        crashLogging.recordEvent(message)
-        WooLog.i(WooLog.T.ORDERS, message)
-    }
-
+    @SuppressLint("RestrictedApi")
     fun logBackStack(navController: NavController, actionDescription: String) {
-        val currentEntry = navController.currentBackStackEntry
-        val previousEntry = navController.previousBackStackEntry
-        val currentEntryDesc = currentEntry?.destination?.label?.toString() ?: currentEntry?.destination?.id.toString()
-        val previousEntryDesc =
-            previousEntry?.destination?.label?.toString() ?: previousEntry?.destination?.id.toString()
-        val logMessage = buildString {
-            append("$actionDescription: ")
-            append("Current Entry=$currentEntryDesc, ")
-            append("Previous Entry=$previousEntryDesc")
+        val backStackEntries: StateFlow<List<NavBackStackEntry>> = navController.currentBackStack
+        val backStackDescriptions = backStackEntries.value.joinToString(separator = ", ") { entry ->
+            val destination = entry.destination
+            val id = destination.id
+            val label = destination.label ?: "No label"
+            val className = destination.javaClass.simpleName
+            "ID=$id, Label=$label, Class=$className"
         }
+
+        val rootGraph = navController.graph as? NavGraph
+        val startDestination = rootGraph?.findNode(rootGraph.startDestinationId)
+        val startDestinationDetails = startDestination?.let { destination ->
+            val id = destination.id
+            val label = destination.label ?: "No label"
+            val className = destination.javaClass.simpleName
+            "ID=$id, Label=$label, Class=$className"
+        } ?: "No start destination"
+
+        val logMessage = "$actionDescription: NavGraph=${rootGraph?.displayName}, " +
+            "StartDestination={$startDestinationDetails}, " +
+            "BackStackEntries=[$backStackDescriptions]"
+
         crashLogging.recordEvent(logMessage)
-        WooLog.i(WooLog.T.ORDERS, logMessage)
     }
 }
