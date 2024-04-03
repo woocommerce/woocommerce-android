@@ -32,27 +32,23 @@ import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
+import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
@@ -63,9 +59,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
-import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -86,7 +80,7 @@ class DashboardViewModel @Inject constructor(
     private val timezoneProvider: TimezoneProvider,
     private val observeLastUpdate: ObserveLastUpdate,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
-    private val dateUtils: DateUtils,
+    getSelectedDateRange: GetSelectedDateRange,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -125,36 +119,8 @@ class DashboardViewModel @Inject constructor(
 
     private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
-    private val _selectedRangeType = savedState.getStateFlow(viewModelScope, getSelectedRangeTypeIfAny())
-
-    private val _customRange = customDateRangeDataStore.dateRange
-        .stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = null
-        )
-    val customRange = _customRange.asLiveData()
-    private val _selectedDateRange = combine(_selectedRangeType, _customRange) { selectionType, customRange ->
-        when (selectionType) {
-            SelectionType.CUSTOM -> {
-                selectionType.generateSelectionData(
-                    calendar = Calendar.getInstance(),
-                    locale = Locale.getDefault(),
-                    referenceStartDate = customRange?.start ?: Date(),
-                    referenceEndDate = customRange?.end ?: Date()
-                )
-            }
-
-            else -> {
-                selectionType.generateSelectionData(
-                    calendar = Calendar.getInstance(),
-                    locale = Locale.getDefault(),
-                    referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
-                    referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
-                )
-            }
-        }
-    }
+    val customRange = customDateRangeDataStore.dateRange.asLiveData()
+    private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
     val storeName = selectedSite.observe().map { site ->
@@ -223,7 +189,6 @@ class DashboardViewModel @Inject constructor(
 
     fun onTabSelected(selectionType: SelectionType) {
         usageTracksEventEmitter.interacted()
-        _selectedRangeType.update { selectionType }
         appPrefsWrapper.setActiveStatsTab(selectionType.name)
 
         if (selectionType == SelectionType.CUSTOM) {
@@ -445,22 +410,15 @@ class DashboardViewModel @Inject constructor(
             0
         )
 
-    private fun getSelectedRangeTypeIfAny(): SelectionType {
-        val previouslySelectedTab = appPrefsWrapper.getActiveStatsTab()
-        return runCatching {
-            SelectionType.valueOf(previouslySelectedTab)
-        }.getOrDefault(SelectionType.TODAY)
-    }
-
     fun onCustomRangeSelected(range: StatsTimeRange) {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
             mapOf(
-                AnalyticsTracker.KEY_IS_EDITING to (_customRange.value != null),
+                AnalyticsTracker.KEY_IS_EDITING to (customRange.value != null),
             )
         )
 
-        if (_selectedRangeType.value != SelectionType.CUSTOM) {
+        if (selectedDateRange.value?.selectionType != SelectionType.CUSTOM) {
             onTabSelected(SelectionType.CUSTOM)
         }
         viewModelScope.launch {
@@ -471,12 +429,12 @@ class DashboardViewModel @Inject constructor(
     fun onAddCustomRangeClicked() {
         triggerEvent(
             DashboardEvent.OpenDatePicker(
-                fromDate = _customRange.value?.start ?: Date(),
-                toDate = _customRange.value?.end ?: Date()
+                fromDate = customRange.value?.start ?: Date(),
+                toDate = customRange.value?.end ?: Date()
             )
         )
 
-        val event = if (_customRange.value == null) {
+        val event = if (customRange.value == null) {
             AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
         } else {
             AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED
