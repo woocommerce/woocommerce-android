@@ -53,6 +53,7 @@ class GetStatsTest : BaseUnitTest() {
         givenShouldUpdateAnalyticsReturns(true)
         givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
         givenFetchVisitorStats(Result.success(ANY_VISITOR_STATS))
+        givenFetchTotalVisitorStats(Result.success(ANY_TOTAL_VISITOR_COUNT))
     }
 
     @Test
@@ -139,18 +140,36 @@ class GetStatsTest : BaseUnitTest() {
     fun `Given visitor stats success, when get stats, then emits visitor stats`() =
         testBlocking {
             givenFetchVisitorStats(Result.success(ANY_VISITOR_STATS))
+            givenFetchTotalVisitorStats(Result.success(ANY_TOTAL_VISITOR_COUNT))
 
             val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.VisitorsStatsSuccess }
                 .first()
 
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorsStatsSuccess(ANY_VISITOR_STATS))
+            assertThat(result).isEqualTo(
+                GetStats.LoadStatsResult.VisitorsStatsSuccess(
+                    ANY_VISITOR_STATS,
+                    ANY_TOTAL_VISITOR_COUNT
+                )
+            )
         }
 
     @Test
     fun `Given visitor stats error, when get stats, then emits visitor stats`() =
         testBlocking {
             givenFetchVisitorStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
+
+            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
+                .filter { it is GetStats.LoadStatsResult.VisitorsStatsError }
+                .first()
+
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorsStatsError)
+        }
+
+    @Test
+    fun `Given total visitor count error, when get stats, then emits visitor stats error`() =
+        testBlocking {
+            givenFetchTotalVisitorStats(Result.failure(StatsException(GENERIC_ORDER_STATS_ERROR)))
 
             val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
                 .filter { it is GetStats.LoadStatsResult.VisitorsStatsError }
@@ -315,6 +334,11 @@ class GetStatsTest : BaseUnitTest() {
             .thenReturn(result)
     }
 
+    private suspend fun givenFetchTotalVisitorStats(result: Result<Int>) {
+        whenever(statsRepository.fetchTotalVisitorStats(any(), any(), any()))
+            .thenReturn(result)
+    }
+
     private fun givenShouldUpdateAnalyticsReturns(shouldUpdateAnalytics: Boolean) {
         whenever(
             analyticsUpdateDataStore.shouldUpdateAnalytics(
@@ -343,5 +367,6 @@ class GetStatsTest : BaseUnitTest() {
             "2020-11-01" to 3,
             "2020-12-01" to 4
         )
+        const val ANY_TOTAL_VISITOR_COUNT = 4
     }
 }

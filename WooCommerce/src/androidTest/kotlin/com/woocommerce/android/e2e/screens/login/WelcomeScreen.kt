@@ -8,7 +8,7 @@ import com.woocommerce.android.e2e.screens.TabNavComponent
 class WelcomeScreen : Screen {
     companion object {
         fun logoutIfNeeded(composeTestRule: ComposeContentTestRule): WelcomeScreen {
-            if (isElementDisplayed(R.id.dashboard)) {
+            if (isElementDisplayed(R.id.my_store)) {
                 TabNavComponent()
                     .gotoMoreMenuScreen()
                     .openSettings(composeTestRule)

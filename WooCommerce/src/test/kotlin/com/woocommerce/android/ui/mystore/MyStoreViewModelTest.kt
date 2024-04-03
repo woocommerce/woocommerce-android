@@ -270,13 +270,13 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
+            givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap(), 0))
             whenViewModelIsCreated()
 
             sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value).isEqualTo(
-                MyStoreViewModel.VisitorStatsViewState.Content(emptyMap())
+                MyStoreViewModel.VisitorStatsViewState.Content(emptyMap(), 0)
             )
         }
 
