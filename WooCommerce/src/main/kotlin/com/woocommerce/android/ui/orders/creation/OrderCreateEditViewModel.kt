@@ -217,7 +217,7 @@ class OrderCreateEditViewModel @Inject constructor(
     val mode: Mode = args.mode
 
     private val flow = when (mode) {
-        Mode.Creation -> VALUE_FLOW_CREATION
+        is Mode.Creation -> VALUE_FLOW_CREATION
         is Mode.Edit -> VALUE_FLOW_EDITING
     }
 
@@ -357,7 +357,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private val syncStrategy =
         when (mode) {
-            Mode.Creation -> autoSyncPriceModifier
+            is Mode.Creation -> autoSyncPriceModifier
             is Mode.Edit -> autoSyncOrder
         }
 
@@ -373,7 +373,7 @@ class OrderCreateEditViewModel @Inject constructor(
         monitorPluginAvailabilityChanges()
 
         when (mode) {
-            Mode.Creation -> {
+            is Mode.Creation -> {
                 _orderDraft.update {
                     it.copy(
                         currency = parameterRepository.getParameters(
@@ -1220,7 +1220,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onCreateOrderClicked(order: Order, isTablet: Boolean = false) {
         when (mode) {
-            Mode.Creation -> {
+            is Mode.Creation -> {
                 trackCreateOrderButtonClick(isTablet)
                 createOrder(order) {
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
@@ -1255,7 +1255,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun onTotalsSectionPrimaryButtonClicked() {
         when (mode) {
-            Mode.Creation -> {
+            is Mode.Creation -> {
                 launch {
                     tracker.track(
                         AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED,
@@ -1325,7 +1325,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onBackButtonClicked() {
         when (mode) {
-            Mode.Creation -> {
+            is Mode.Creation -> {
                 if (_orderDraft.value.isEmpty()) {
                     triggerEvent(Exit)
                 } else {
@@ -1964,7 +1964,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     sealed class Mode : Parcelable {
         @Parcelize
-        data object Creation : Mode()
+        data class Creation(val indicateSimplePaymentsMigration: Boolean = false) : Mode()
 
         @Parcelize
         data class Edit(val orderId: Long) : Mode()
