@@ -5,7 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 
-data class Widget(
+data class DashboardWidget(
     val type: Type,
     val isAdded: Boolean
 ) {
@@ -17,14 +17,14 @@ data class Widget(
     }
 }
 
-fun Widget.toDataModel(): DashboardWidgetDataModel =
+fun DashboardWidget.toDataModel(): DashboardWidgetDataModel =
     DashboardWidgetDataModel.newBuilder()
         .setType(type.name)
         .setIsAdded(isAdded)
         .build()
 
 fun DashboardWidgetDataModel.toModel() =
-    Widget(Widget.Type.valueOf(type), isAdded)
+    DashboardWidget(DashboardWidget.Type.valueOf(type), isAdded)
 
-fun DashboardDataModel.toWidgetModelList(): List<Widget> =
+fun DashboardDataModel.toWidgetModelList(): List<DashboardWidget> =
     widgetsList.map { it.toModel() }

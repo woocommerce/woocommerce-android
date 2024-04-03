@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.dashboard.data
 
-import com.woocommerce.android.model.Widget
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.model.toWidgetModelList
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
@@ -16,17 +16,17 @@ class DashboardRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers
 ) {
     private val defaultWidgets = listOf(
-        Widget(type = Widget.Type.ONBOARDING, isAdded = true),
-        Widget(type = Widget.Type.STATS, isAdded = true),
-        Widget(type = Widget.Type.POPULAR_PRODUCTS, isAdded = true),
-        Widget(type = Widget.Type.BLAZE, isAdded = true)
+        DashboardWidget(type = DashboardWidget.Type.ONBOARDING, isAdded = true),
+        DashboardWidget(type = DashboardWidget.Type.STATS, isAdded = true),
+        DashboardWidget(type = DashboardWidget.Type.POPULAR_PRODUCTS, isAdded = true),
+        DashboardWidget(type = DashboardWidget.Type.BLAZE, isAdded = true)
     )
 
     val widgets = dashboardDataStore.dashboard
         .map { it?.toWidgetModelList() ?: defaultWidgets }
         .flowOn(dispatchers.io)
 
-    suspend fun updateWidgets(widgets: List<Widget>) = withContext(dispatchers.io) {
+    suspend fun updateWidgets(widgets: List<DashboardWidget>) = withContext(dispatchers.io) {
         runCatching {
             dashboardDataStore.updateDashboard(
                 DashboardDataModel.newBuilder()
