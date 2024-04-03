@@ -1,0 +1,7 @@
+17.9:
+- [*] İncelemeler: Ayarlarda incelemelerde çift araç çubuğunun görünmesine neden olan bir hata düzeltildi [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Dahili] WooExpress Mağaza Oluşturma, uygulamadan kaldırıldı [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Ürünler: 2 bölme modundayken toplu güncelleme menü elemanının kullanılmamasına neden olan bir hata düzeltildi [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Ürünler: Ürünün fotoğrafının kaldırılması işleminin kaydedilmemesine neden olan bir hata düzeltildi [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] İncelemeler: İncelemelerin gösterilme hızı optimize edildi [https://github.com/woocommerce/woocommerce-android/pull/11083]
+

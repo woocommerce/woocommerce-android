@@ -223,6 +223,7 @@ class AnalyticsTracker private constructor(
         const val KEY_HORIZONTAL_SIZE_CLASS = "horizontal_size_class"
         const val KEY_SUCCESS = "success"
         const val KEY_TIME_TAKEN = "time_taken"
+        const val KEY_IS_EDITING = "is_editing"
 
         const val KEY_SORT_ORDER = "order"
         const val VALUE_DEVICE_TYPE_REGULAR = "regular"
@@ -330,7 +331,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_FEEDBACK_CANCELED = "canceled"
         const val VALUE_FEEDBACK_DISMISSED = "dismissed"
         const val VALUE_FEEDBACK_GIVEN = "gave_feedback"
-        const val VALUE_PRODUCTS_VARIATIONS_FEEDBACK = "products_variations"
         const val VALUE_SHIPPING_LABELS_M4_FEEDBACK = "shipping_labels_m4"
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
         const val VALUE_COUPONS_FEEDBACK = "coupons"
@@ -529,28 +529,8 @@ class AnalyticsTracker private constructor(
         // -- App links
         const val KEY_PATH = "path"
 
-        // -- Store creation
-        const val KEY_IAP_ELIGIBLE = "is_eligible"
-        const val VALUE_LOGIN_EMAIL_ERROR = "login_email_error"
-        const val VALUE_SWITCHING_STORE = "switching_store"
-        const val VALUE_STORE_PICKER = "store_picker"
-        const val VALUE_PROLOGUE = "prologue"
-        const val VALUE_LOGIN = "login"
         const val VALUE_OTHER = "other"
-        const val VALUE_WEB = "web"
-        const val VALUE_NATIVE = "native"
-        const val VALUE_STEP_STORE_NAME = "store_name"
-        const val VALUE_STEP_STORE_PROFILER_INDUSTRIES = "store_profiler_industries"
-        const val VALUE_STEP_STORE_PROFILER_COMMERCE_JOURNEY = "store_profiler_commerce_journey"
-        const val VALUE_STEP_STORE_PROFILER_ECOMMERCE_PLATFORMS = "store_profiler_ecommerce_platforms"
-        const val VALUE_STEP_STORE_PROFILER_COUNTRY = "store_profiler_country"
-        const val VALUE_STEP_DOMAIN_PICKER = "domain_picker"
-        const val VALUE_STEP_STORE_SUMMARY = "store_summary"
-        const val VALUE_STEP_PLAN_PURCHASE = "plan_purchase"
         const val VALUE_STEP_WEB_CHECKOUT = "web_checkout"
-        const val VALUE_STEP_STORE_INSTALLATION = "store_installation"
-        const val KEY_NEW_SITE_ID = "new_site_id"
-        const val KEY_INITIAL_DOMAIN = "initial_domain"
 
         // -- Products bulk update
         const val KEY_PROPERTY = "property"

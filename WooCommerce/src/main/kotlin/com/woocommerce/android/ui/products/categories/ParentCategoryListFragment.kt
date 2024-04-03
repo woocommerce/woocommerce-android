@@ -146,7 +146,11 @@ class ParentCategoryListFragment :
         viewModel.onLoadMoreParentCategoriesRequested()
     }
 
-    override fun onProductCategoryClick(productCategoryItemUiModel: ProductCategoryItemUiModel) {
-        viewModel.onParentCategorySelected(productCategoryItemUiModel.category.remoteCategoryId)
+    override fun onProductCategoryChecked(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+        viewModel.onCategorySelected(productCategoryItemUiModel.category.remoteCategoryId)
+    }
+
+    override fun onProductCategorySelected(productCategoryItemUiModel: ProductCategoryItemUiModel) {
+        viewModel.onCategorySelected(productCategoryItemUiModel.category.remoteCategoryId)
     }
 }

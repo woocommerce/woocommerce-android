@@ -56,5 +56,5 @@ interface MainNavigationRouter {
     fun showFeedbackSurvey()
     fun showSettingsScreen()
 
-    fun showAnalytics(targetPeriod: StatsTimeRangeSelection.SelectionType)
+    fun showAnalytics(targetPeriod: StatsTimeRangeSelection)
 }

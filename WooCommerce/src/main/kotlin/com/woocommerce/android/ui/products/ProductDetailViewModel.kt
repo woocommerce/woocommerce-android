@@ -75,7 +75,7 @@ import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.IsTablet
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -141,7 +141,7 @@ class ProductDetailViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
-    private val isTablet: IsTablet,
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -249,7 +249,7 @@ class ProductDetailViewModel @Inject constructor(
     /**
      * Returns the filtered list of attributes assigned to the product who are enabled for Variations
      */
-    val productDraftVariationAttributes
+    private val productDraftVariationAttributes
         get() = viewState.productDraft?.variationEnabledAttributes ?: emptyList()
 
     /**
@@ -420,6 +420,7 @@ class ProductDetailViewModel @Inject constructor(
                                 R.string.product_detail_product_not_selected
                             )
                         )
+
                     is ProductDetailFragment.Mode.AddNewProduct -> Unit
                 }
             }
@@ -1432,7 +1433,7 @@ class ProductDetailViewModel @Inject constructor(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
                         AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules,
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsScreenLargerThanCompactValue(isTablet()).deviceTypeToAnalyticsString,
+                            IsScreenLargerThanCompactValue(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString,
                     )
                     tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
                 }
@@ -1441,7 +1442,7 @@ class ProductDetailViewModel @Inject constructor(
                     AnalyticsEvent.PRODUCT_DETAIL_LOADED,
                     mapOf(
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsScreenLargerThanCompactValue(isTablet()).deviceTypeToAnalyticsString
+                            IsScreenLargerThanCompactValue(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString
                     )
                 )
             }
@@ -2104,10 +2105,32 @@ class ProductDetailViewModel @Inject constructor(
         triggerEvent(ProductNavigationTarget.AddProductCategory)
     }
 
+    fun onEditCategory(category: ProductCategory) {
+        triggerEvent(ProductNavigationTarget.EditCategory(category))
+    }
+
     fun onProductCategoryAdded(category: ProductCategory) {
         val selectedCategories = viewState.productDraft?.categories?.toMutableList() ?: mutableListOf()
         selectedCategories.add(category)
         updateProductDraft(categories = selectedCategories)
+        refreshProductCategories()
+    }
+
+    fun productCategoryEdited(updatedCategory: ProductCategory) {
+        updateProductDraft(
+            categories = viewState.productDraft?.categories
+                ?.map {
+                    if (it.remoteCategoryId == updatedCategory.remoteCategoryId) updatedCategory else it
+                }
+        )
+        refreshProductCategories()
+    }
+
+    fun productCategoryDeleted(deletedCategory: ProductCategory) {
+        updateProductDraft(
+            categories = viewState.productDraft?.categories
+                ?.filter { deletedCategory.remoteCategoryId != it.remoteCategoryId }
+        )
         refreshProductCategories()
     }
 
@@ -2225,7 +2248,7 @@ class ProductDetailViewModel @Inject constructor(
         // Mark the product categories as selected in the sorted list
         sortedList.map { productCategoryItemUiModel ->
             for (selectedCategory in selectedCategories) {
-                if (productCategoryItemUiModel.category.name == selectedCategory.name) {
+                if (productCategoryItemUiModel.category.remoteCategoryId == selectedCategory.remoteCategoryId) {
                     productCategoryItemUiModel.isSelected = true
                 }
             }

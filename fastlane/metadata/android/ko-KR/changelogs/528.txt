@@ -1,0 +1,7 @@
+17.9:
+- [*] 리뷰: 설정의 리뷰에 이중 도구 모음이 표시되는 버그를 수정함 [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [내부] 앱에서 WooExpress 스토어 생성을 제거함 [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] 상품: 2개 창 모드에서 대량 업데이트 메뉴 항목을 사용할 수 없는 버그를 수정함 [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] 상품: 상품의 사진 제거 시 저장되지 않는 버그를 수정함 [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] 리뷰 표시 속도를 최적화함 [https://github.com/woocommerce/woocommerce-android/pull/11083]
+

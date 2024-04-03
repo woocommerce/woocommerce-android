@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.themes
 
+import androidx.lifecycle.SavedStateHandle
 import coil.network.HttpException
 import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppUrls
@@ -20,7 +21,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -51,13 +51,10 @@ class ThemePickerViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: ThemePickerViewModel
 
-    suspend fun setup(
-        isFromStoreCreation: Boolean,
-        prepareMocks: suspend () -> Unit = {}
-    ) {
+    suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
         viewModel = ThemePickerViewModel(
-            savedStateHandle = ThemePickerFragmentArgs(isFromStoreCreation).toSavedStateHandle(),
+            savedStateHandle = SavedStateHandle(),
             themeRepository = themeRepository,
             resourceProvider = resourceProvider,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
@@ -66,37 +63,8 @@ class ThemePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when screen opened, then use correct value for isFromStoreCreation`() = testBlocking {
-        setup(isFromStoreCreation = true)
-
-        val storeCreationViewState = viewModel.viewState.getOrAwaitValue()
-
-        assertThat(storeCreationViewState.isFromStoreCreation).isTrue()
-
-        // ====================
-
-        setup(isFromStoreCreation = false)
-
-        val appSettingsViewState = viewModel.viewState.getOrAwaitValue()
-
-        assertThat(appSettingsViewState.isFromStoreCreation).isFalse()
-    }
-
-    @Test
-    fun `given navigating from store creation, when screen opened, then don't load current theme`() = testBlocking {
-        setup(isFromStoreCreation = true)
-
-        val viewState = viewModel.viewState.runAndCaptureValues {
-            advanceUntilIdle()
-        }.last()
-
-        assertThat(viewState.currentThemeState).isEqualTo(ThemePickerViewModel.CurrentThemeState.Hidden)
-        verify(themeRepository, never()).fetchCurrentTheme()
-    }
-
-    @Test
-    fun `given navigating from app settings, when screen is opened, then load current theme`() = testBlocking {
-        setup(isFromStoreCreation = false) {
+    fun `when screen is opened, then load current theme`() = testBlocking {
+        setup {
             whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.success(sampleTheme))
         }
 
@@ -110,8 +78,8 @@ class ThemePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given navigating from app settings, when current theme loading fails, then hide section`() = testBlocking {
-        setup(isFromStoreCreation = false) {
+    fun `when current theme loading fails, then hide section`() = testBlocking {
+        setup {
             whenever(themeRepository.fetchThemes()).thenReturn(Result.success(listOf(sampleTheme)))
             whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.failure(Exception()))
         }
@@ -127,29 +95,9 @@ class ThemePickerViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given navigating from store creation, when showing themes, then use correct values for last item`() =
+    fun `when showing themes, then use correct values for last item`() =
         testBlocking {
-            setup(isFromStoreCreation = true) {
-                whenever(themeRepository.fetchThemes())
-                    .thenReturn(Result.success(listOf(sampleTheme)))
-            }
-
-            val viewState = viewModel.viewState.runAndCaptureValues {
-                advanceUntilIdle()
-            }.last()
-            val lastItem = (viewState.carouselState as ThemePickerViewModel.CarouselState.Success).carouselItems.last()
-
-            assertThat(lastItem).isInstanceOf(CarouselItem.Message::class.java)
-            assertThat((lastItem as CarouselItem.Message).title)
-                .isEqualTo(resourceProvider.getString(R.string.theme_picker_carousel_info_item_title))
-            assertThat(lastItem.description)
-                .isEqualTo(resourceProvider.getString(R.string.theme_picker_carousel_info_item_description))
-        }
-
-    @Test
-    fun `given navigating from app settings, when showing themes, then use correct values for last item`() =
-        testBlocking {
-            setup(isFromStoreCreation = false) {
+            setup {
                 whenever(themeRepository.fetchThemes())
                     .thenReturn(Result.success(listOf(sampleTheme)))
             }
@@ -168,7 +116,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when loading themes succeeds, then show theme`() = testBlocking {
-        setup(isFromStoreCreation = true) {
+        setup {
             whenever(themeRepository.fetchThemes())
                 .thenReturn(Result.success(listOf(sampleTheme, sampleTheme2)))
         }
@@ -195,7 +143,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when loading themes fails, then show error`() = testBlocking {
-        setup(isFromStoreCreation = true) {
+        setup {
             whenever(themeRepository.fetchThemes())
                 .thenReturn(Result.failure(Exception()))
         }
@@ -209,7 +157,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when a theme screenshot is unavailable, then report a Sentry error`() = testBlocking {
-        setup(isFromStoreCreation = true)
+        setup()
 
         viewModel.onThemeScreenshotFailure(
             themeName = "tsubaki",
@@ -224,7 +172,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
     @Test
     fun `given current theme is loaded, when showing themes, then remove current theme from the list of items`() =
         testBlocking {
-            setup(isFromStoreCreation = false) {
+            setup {
                 whenever(themeRepository.fetchThemes())
                     .thenReturn(Result.success(listOf(sampleTheme, sampleTheme2)))
                 whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.success(currentTheme))
@@ -238,7 +186,7 @@ class ThemePickerViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when a new theme is installed, then update current theme state`() = testBlocking {
-        setup(isFromStoreCreation = false) {
+        setup {
             whenever(themeRepository.fetchThemes())
                 .thenReturn(Result.success(listOf(sampleTheme, sampleTheme2)))
             whenever(themeRepository.fetchCurrentTheme()).thenReturn(Result.success(currentTheme))

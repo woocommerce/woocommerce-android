@@ -23,9 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.FeedbackPrefs
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.DialogProductListBulkPriceUpdateBinding
 import com.woocommerce.android.databinding.FragmentProductListBinding
@@ -35,11 +33,8 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
 import com.woocommerce.android.extensions.showKeyboardWithDelay
 import com.woocommerce.android.extensions.takeIfNotEqualTo
-import com.woocommerce.android.model.FeatureFeedbackSettings
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
@@ -48,6 +43,7 @@ import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowDiscardProductChangesConfirmationDialog
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
 import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
@@ -115,11 +111,6 @@ class ProductListFragment :
 
     private var _binding: FragmentProductListBinding? = null
     private val binding get() = _binding!!
-
-    private val feedbackState: FeatureFeedbackSettings.FeedbackState
-        get() =
-            feedbackPrefs.getFeatureFeedbackSettings(FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS)?.feedbackState
-                ?: FeatureFeedbackSettings.FeedbackState.UNANSWERED
 
     override val twoPaneLayoutGuideline
         get() = binding.twoPaneLayoutGuideline
@@ -341,7 +332,7 @@ class ProductListFragment :
         }
 
         viewModel.productList.observe(viewLifecycleOwner) {
-            showProductList(it)
+            productAdapter.submitList(it)
         }
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
@@ -376,6 +367,7 @@ class ProductListFragment :
                         }
                     )
                 }
+
                 is OpenEmptyProduct -> {
                     tabletLayoutSetupHelper.openItemDetails(
                         tabletNavigateTo = {
@@ -393,6 +385,14 @@ class ProductListFragment :
                 is ShowProductUpdateStockStatusScreen -> {
                     showProductUpdateStockStatusScreen(event.productsIds)
                 }
+
+                is ShowDiscardProductChangesConfirmationDialog -> {
+                    showDiscardProductChangesConfirmationDialog(
+                        event.productName,
+                        event.productId
+                    )
+                }
+
                 else -> event.isHandled = false
             }
         }
@@ -402,11 +402,26 @@ class ProductListFragment :
                 is ProductsCommunicationViewModel.CommunicationEvent.ProductTrashed -> {
                     trashProduct(event.productId)
                 }
+
                 is ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated -> {
                     productListViewModel.reloadProductsFromDb()
                 }
+
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductSelected -> {
+                    productListViewModel.onOpenProduct(event.productId, null)
+                }
+
+                is ProductsCommunicationViewModel.CommunicationEvent.ProductChanges -> {
+                    productListViewModel.productHasChanges = event.hasChanges
+                }
+
+                else -> event.isHandled = false
             }
         }
+    }
+
+    fun displayListPaneOnly() {
+        tabletLayoutSetupHelper.displayListPaneOnly(this)
     }
 
     private fun showProductUpdateStockStatusScreen(productRemoteIdsToUpdate: List<Long>) {
@@ -414,6 +429,19 @@ class ProductListFragment :
             productRemoteIdsToUpdate.toLongArray()
         )
         findNavController().navigateSafely(action)
+    }
+
+    private fun showDiscardProductChangesConfirmationDialog(productName: String, productId: Long) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.product_list_unsaved_product_unselected_title, productName))
+            .setMessage(R.string.product_list_unsaved_product_unselected_message)
+            .setCancelable(false)
+            .setPositiveButton(R.string.dialog_ok) { _, _ ->
+                productListViewModel.productHasChanges = false
+                productListViewModel.onOpenProduct(productId, null)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
     }
 
     private fun handleUpdateDialogs(event: ShowUpdateDialog) {
@@ -553,7 +581,6 @@ class ProductListFragment :
 
     private fun showSkeleton(show: Boolean) {
         if (show) {
-            showProductWIPNoticeCard(false)
             skeletonView.show(binding.productsRecycler, R.layout.skeleton_product_list, delayed = true)
         } else {
             skeletonView.hide()
@@ -562,30 +589,6 @@ class ProductListFragment :
 
     private fun showLoadMoreProgress(show: Boolean) {
         binding.loadMoreProgress.isVisible = show
-    }
-
-    private fun showProductList(products: List<Product>) {
-        productAdapter.submitList(products)
-
-        // set to false to remove the new feature banner temporarily
-        showProductWIPNoticeCard(false)
-    }
-
-    private fun showProductWIPNoticeCard(show: Boolean) {
-        if (show && feedbackState != FeatureFeedbackSettings.FeedbackState.DISMISSED) {
-            val wipCardTitleId = R.string.product_wip_title_m5
-            val wipCardMessageId = R.string.product_wip_message_variations
-
-            binding.productsWipCard.visibility = View.VISIBLE
-            binding.productsWipCard.initView(
-                title = getString(wipCardTitleId),
-                message = getString(wipCardMessageId),
-                onGiveFeedbackClick = ::onGiveFeedbackClicked,
-                onDismissClick = ::onDismissProductWIPNoticeCardClicked
-            )
-        } else {
-            binding.productsWipCard.visibility = View.GONE
-        }
     }
 
     private fun showProductSortAndFiltersCard(show: Boolean) {
@@ -699,39 +702,6 @@ class ProductListFragment :
 
     override fun onSortOptionSelected() {
         productListViewModel.onSortButtonTapped()
-    }
-
-    private fun onGiveFeedbackClicked() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_GIVEN
-            )
-        )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.GIVEN)
-        NavGraphMainDirections
-            .actionGlobalFeedbackSurveyFragment(SurveyType.PRODUCT)
-            .apply { findNavController().navigateSafely(this) }
-    }
-
-    private fun onDismissProductWIPNoticeCardClicked() {
-        AnalyticsTracker.track(
-            AnalyticsEvent.FEATURE_FEEDBACK_BANNER,
-            mapOf(
-                AnalyticsTracker.KEY_FEEDBACK_CONTEXT to AnalyticsTracker.VALUE_PRODUCTS_VARIATIONS_FEEDBACK,
-                AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_DISMISSED
-            )
-        )
-        registerFeedbackSetting(FeatureFeedbackSettings.FeedbackState.DISMISSED)
-        showProductWIPNoticeCard(false)
-    }
-
-    private fun registerFeedbackSetting(state: FeatureFeedbackSettings.FeedbackState) {
-        FeatureFeedbackSettings(
-            FeatureFeedbackSettings.Feature.PRODUCT_VARIATIONS,
-            state
-        ).registerItself(feedbackPrefs)
     }
 
     override fun shouldExpandToolbar(): Boolean {

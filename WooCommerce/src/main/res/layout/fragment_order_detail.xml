@@ -29,8 +29,26 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/scrollView"
+        <View
+            android:id="@+id/app_bar_divider"
+            style="@style/Woo.Divider"
+            android:layout_gravity="bottom" />
+
+
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- The FrameLayout is needed to display the skeleton view dynamically -->
+            <FrameLayout
+                android:id="@+id/skeleton_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 

@@ -97,6 +97,14 @@ class ProductImagesFragment :
     }
 
     private fun onCreateMenu(toolbar: Toolbar) {
+        toolbar.setNavigationOnClickListener {
+            onExit()
+        }
+        updateMenuState(toolbar)
+    }
+
+    private fun updateMenuState(toolbar: Toolbar) {
+        toolbar.menu.clear()
         when (viewModel.viewStateData.liveData.value?.productImagesState) {
             is ProductImagesState.Dragging -> {
                 toolbar.inflateMenu(R.menu.menu_dragging)
@@ -169,7 +177,8 @@ class ProductImagesFragment :
                 binding.addImageButton.setText(titleRes)
             }
             new.productImagesState.takeIfNotEqualTo(old?.productImagesState) {
-                requireActivity().invalidateOptionsMenu()
+                updateMenuState(binding.toolbar)
+
                 when (new.productImagesState) {
                     ProductImagesState.Browsing -> {
                         binding.addImageButton.isEnabled = true

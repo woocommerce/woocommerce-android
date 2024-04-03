@@ -17,6 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView.OnItemReselectedListener
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.woocommerce.android.R
+import com.woocommerce.android.util.FeatureFlag
 import java.lang.ref.WeakReference
 
 class MainBottomNavigationView @JvmOverloads constructor(
@@ -44,6 +45,12 @@ class MainBottomNavigationView @JvmOverloads constructor(
     fun init(navController: NavController, listener: MainNavigationListener) {
         this.navController = navController
         this.listener = listener
+
+        if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
+            menu.removeItem(R.id.my_store)
+        } else {
+            menu.removeItem(R.id.dashboard)
+        }
 
         addTopDivider()
         createBadges()

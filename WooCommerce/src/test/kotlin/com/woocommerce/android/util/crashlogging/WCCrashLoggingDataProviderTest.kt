@@ -4,6 +4,7 @@ import com.automattic.android.tracks.crashlogging.CrashLoggingUser
 import com.automattic.android.tracks.crashlogging.EventLevel.FATAL
 import com.automattic.android.tracks.crashlogging.EventLevel.INFO
 import com.automattic.android.tracks.crashlogging.PerformanceMonitoringConfig
+import com.automattic.android.tracks.crashlogging.ReleaseName
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.BuildConfigWrapper
@@ -48,9 +49,7 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
     private val appPrefs: AppPrefs = mock()
     private val enqueueSendingEncryptedLogs: EnqueueSendingEncryptedLogs = mock()
     private val uuidGenerator: UuidGenerator = mock()
-    private val buildConfig: BuildConfigWrapper = mock {
-        on { versionName } doReturn "test version name"
-    }
+    private val buildConfig: BuildConfigWrapper = mock()
     private val specifyPerformanceMonitoringConfig: SpecifyPerformanceMonitoringConfig = mock {
         on { invoke() } doReturn PerformanceMonitoringConfig.Enabled(1.0)
     }
@@ -224,7 +223,7 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
 
         reinitialize()
 
-        assertThat(sut.releaseName).isEqualTo(buildConfig.versionName)
+        assertThat(sut.releaseName).isEqualTo(ReleaseName.SetByTracksLibrary)
     }
 
     @Test
@@ -233,7 +232,7 @@ class WCCrashLoggingDataProviderTest : BaseUnitTest() {
 
         reinitialize()
 
-        assertThat(sut.releaseName).isEqualTo(DEBUG_RELEASE_NAME)
+        assertThat(sut.releaseName).isEqualTo(ReleaseName.SetByApplication(DEBUG_RELEASE_NAME))
     }
 
     private fun softlyAssertUser(user: CrashLoggingUser?) {

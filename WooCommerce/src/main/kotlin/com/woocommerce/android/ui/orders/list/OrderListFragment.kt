@@ -613,6 +613,8 @@ class OrderListFragment :
                     }
 
                     EmptyViewType.ORDER_LIST -> {
+                        communicationViewModel.notifyOrdersEmpty()
+
                         emptyView.show(emptyViewType) {
                             ChromeCustomTabUtils.launchUrl(requireActivity(), AppUrls.URL_LEARN_MORE_ORDERS)
                         }
@@ -633,6 +635,11 @@ class OrderListFragment :
                         emptyView.show(emptyViewType) {
                             navigateToTryTestOrderScreen()
                         }
+                    }
+
+                    EmptyViewType.ORDER_LIST_LOADING -> {
+                        communicationViewModel.notifyOrdersLoading()
+                        emptyView.show(emptyViewType)
                     }
 
                     else -> {
@@ -767,7 +774,7 @@ class OrderListFragment :
         viewModel.trackOrderClickEvent(
             orderId,
             orderStatus,
-            requireContext().windowSizeClass != WindowSizeClass.Compact
+            requireContext().windowSizeClass
         )
 
         if (requireContext().windowSizeClass != WindowSizeClass.Compact) {

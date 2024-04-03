@@ -1,64 +1,153 @@
 <ar>
-17.7:
-أخبار رائعة لمستخدمي تطبيق WooCommerce! لقد أصلحنا خطأ كان يُبقي عمليات البحث عن المنتج مثلما هي بعد إجراء التغييرات، كما قمنا بتحسين تجربة مشاهدة المنتج على الأجهزة اللوحية من خلال تخطيط مكوَّن من جزأين. خصص تحليلاتك بكل سهولة ضمن مركز التحليلات. إضافة إلى ذلك، أصبحت الآن الطلبات التي تم تقديمها في التطبيق موسومة بشكل أوضح، ما يؤدي إلى تحسين التتبُّع.  انغمس في رحلة تسوق وبيع أكثر سلاسة وتخصيصًا. تحديث تطبيقك الآن!
+17.9:
+- [*] المراجعات: تم إصلاح خطأ عندما كان شريط الأدوات المزدوج مرئيًا في المراجعات ضمن الإعدادات [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [داخلي] تمت إزالة إنشاء متجر WooExpress من التطبيق [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] المنتجات: تم إصلاح خطأ عندما لا يكون عنصر قائمة التحديث المجمع في الوضع المكوّن من جزأين متاحًا [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] المنتجات: تم إصلاح خطأ عند عدم حفظ إزالة صورة المنتج [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] المراجعات: تم تحسين سرعة عرض المراجعات [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </ar>
 <de-DE>
-17.7:
-Aufregende News für Benutzer der WooCommerce-App! Wir haben einen Fehler behoben, um Produktsuchen nach Änderungen beizubehalten. Außerdem wurde das Anzeigeerlebnis für Produkte auf Tablets mit Zwei-Fenster-Layout optimiert. Passe deine Analysen im Analyse-Hub kinderleicht an. Außerdem sind Bestellungen über die App nun eindeutig verschlagwortet, um das Tracking zu verbessern. Profitiere von einem reibungsloseren, personalisierteren Shopping- und Verkaufserlebnis. Aktualisiere deine App jetzt!
+17.9:
+– [*] Bewertungen: Fehler behoben, wodurch eine doppelte Toolbar bei den Bewertungen in den Einstellungen zu sehen war [https://github.com/woocommerce/woocommerce-android/pull/11072]
+– [*] [Intern] Die Shop-Erstellung in WooExpress wurde aus der App entfernt [https://github.com/woocommerce/woocommerce-android/issues/11115]
+– [*] Produkte: Fehler behoben, wodurch im 2-Fenster-Modus der Menüeintrag „Massenupdate“ nicht verfügbar war [https://github.com/woocommerce/woocommerce-android/pull/11127]
+– [*] Produkte: 
+ Fehler behoben, wodurch das Entfernen des Produktbildes nicht gespeichert wurde [https://github.com/woocommerce/woocommerce-android/pull/11124]– [*] Bewertungen: Erhöhte Geschwindigkeit beim Anzeigen von Bewertungen [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </de-DE>
 <es-ES>
-17.7:
-Buenas noticias para los usuarios de WooCommerce. Hemos solucionado un error y los cambios ya no afectan a las búsquedas de productos, y la visualización en las tabletas se ha optimizado con una pantalla dividida. Personaliza fácilmente tus análisis en Analytics Hub. Los pedidos realizados en la aplicación cuentan ahora con etiquetas claras para mejorar el seguimiento. Disfruta de un ciclo de venta y compra más personalizado y aún más logrado. Actualiza ya tu aplicación.
+17.9:
+- [*] Reseñas: error solucionado cuando la barra de herramientas doble estaba visible en las reseñas en los ajustes [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Interno] Se ha eliminado la creación de la tienda WooExpress de la aplicación [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Productos: error solucionado cuando, en el modo de 2 paneles, el elemento del menú de actualización en lote no estaba disponible [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Productos: error solucionado cuando la imagen de un producto no se guardaba al eliminarse [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Reseñas: velocidad optimizada para mostrar las reseñas [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </es-ES>
 <fr-FR>
-17.7 :
-Bonnes nouvelles pour les utilisateurs de WooCommerce ! Nous avons corrigé un bug pour préserver les recherches de produits après des changements et optimisé l’aperçu des produits sur tablette avec deux volets. Personnalisez aisément vos statistiques dans l’espace dédié. Les commandes passées dans l’application sont clairement étiquetées, ce qui améliore le suivi. Plongez dans un parcours d’achat et de vente plus fluide et plus personnalisé. Mettez à jour votre application dès maintenant !
+17.9 :
+- [*] Avis : correction d’un bug affichant une double barre d’outils sur les avis dans les réglages [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Interne] Suppression de la création de boutique WooExpress dans l’application [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produits : correction d’un bug rendant indisponible l’élément de menu de mise à jour groupée en mode deux volets [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produits : correction d’un bug n’enregistrant pas la suppression de la photo d’un produit [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Avis : vitesse d’affichage des avis optimisée [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </fr-FR>
 <iw-IL>
-17.7:
-חדשות מרגשות למשתמשים באפליקציית WooCommerce! תיקנו באג כדי לוודא שחיפושי מוצרים לא נהרסים בעקבות שינויים ומיטבנו את חוויית התצוגה של המוצר בטבלאות עם פריסה של שני חלונות. ניתן להתאים אישית את הנתונים האנליטיים בקלות דרך 'מרכז הניתוח הסטטיסטי'. בנוסף, הזמנות שבוצעו דרך האפליקציה מתויגות כעת בבירור כדי לשפר את המעקב. אפשר לצאת עכשיו למסע קניות ומכירות חלק ואישי יותר. כדאי לעדכן את האפליקציה כעת!
+17.9:
+- [*] ביקורות: תיקנו באג שהציג סרגל כלים כפול בביקורות שבהגדרות [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [פנימי] הסרנו את האפשרות 'יצירת חנות WooCommerce' מהאפליקציה [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] מוצרים: תיקנו באג שמנע זמינות של פריטי תפריט בעדכון גורף בתצוגה של שני חלונות [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] מוצרים: תיקנו באג שמנע שמירה של הסרת תמונה במוצר [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] ביקורות: מיטבנו את המהירות של תצוגת הביקורות [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </iw-IL>
 <id>
-17.7:
-Kabar gembira bagi pengguna aplikasi WooCommerce! Kami telah memperbaiki bug yang dapat mengganggu pencarian produk setelah perubahan dilakukan, dan mengoptimalkan pengalaman penelusuran produk pada tablet dengan tata letak dua panel. Sesuaikan analitik dengan mudah di Hub Analitik. Selain itu, pesanan yang dibuat dalam aplikasi sekarang ditandai dengan jelas untuk meningkatkan pelacakan. Telusuri perjalanan berbelanja dan berjualan yang lebih lancar dan lebih personal. Perbarui aplikasi sekarang juga!
+17.9:
+- [*] Ulasan: Memperbaiki bug yang menampilkan bilah peralatan ganda pada ulasan dalam pengaturan [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internal] Menghapus fitur Pembuatan Toko WooExpress dari aplikasi [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produk: Memperbaiki bug yang menyebabkan item menu pembaruan massal tidak tersedia saat berada di mode 2 panel [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produk: Memperbaiki bug yang menyebabkan penghapusan gambar produk tidak tersimpan [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Ulasan: Mengoptimalkan kecepatan dalam menampilkan ulasan [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </id>
 <it-IT>
-17.7:
-Notizie straordinarie per gli utenti dell'app WooCommerce. Abbiamo corretto un bug per mantenere intatte le ricerche dei prodotti dopo le modifiche e ottimizzato l'esperienza visiva dei prodotti sui tablet con layout a due pannelli. Personalizza le tue analisi in modo semplice nell'Analytics Hub. Inoltre, gli ordini effettuati nell'app ora hanno dei tag chiari, che migliorano il tracciamento. Scopri un percorso di acquisto e vendita più fluido e personalizzato. Aggiorna ora la tua app.
+17.9:
+- [*] Recensioni: corretto un bug in cui la barra degli strumenti doppia era visibile nelle recensioni nelle impostazioni [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Interno] Rimossa la creazione del negozio WooExpress dall'app [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Prodotti: corretto un bug in cui nella modalità a 2 pannelli l'elemento del menu dell'aggiornamento in blocco non era disponibile [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Prodotti: corretto un bug in cui la rimozione dell'immagine di un prodotto non veniva salvata [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Recensioni: velocità nel mostrare le recensioni ottimizzata [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </it-IT>
 <ja-JP>
-17.7:
-WooCommerce アプリユーザーの皆さまに朗報です ! 変更後も商品検索を問題なく利用できるようにバグを修正し、2ペインレイアウトの採用によりタブレットでの商品閲覧環境を最適化しました。 Analytics Hub でアナリティクスを簡単にカスタマイズできます。 さらにアプリでの注文が明確にタグ付けされるようになり、追跡機能が強化されました。 よりスムーズでパーソナライズされたショップ管理機能をぜひご確認ください。 今すぐアプリをアップデートしましょう !
+17.9:
+- [*] レビュー: 設定のレビューでツールバーが二重に表示されていたバグを修正 [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [内部] アプリから WooExpress ストア作成機能を削除 [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] 製品: 2ペインモードで一括更新メニュー項目が利用できなかったバグを修正 [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] 製品: 商品画像の削除が保存されなかったバグを修正 [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] レビュー: レビューの表示速度を最適化 [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </ja-JP>
 <ko-KR>
-17.7:
-우커머스 앱 사용자에게 반가운 소식을 전해드립니다. 상품 검색이 변경 후에도 그대로 유지되도록 버그를 수정했으며, 창 2개 레이아웃으로 태블릿의 상품 보기 환경을 최적화했습니다. 분석 허브에서 쉽게 분석을 사용자 정의하세요. 또한 이제는 추적이 잘되도록 앱에서 진행한 주문에 명확하게 태그가 지정됩니다. 더 원활하고 더 개인화된 쇼핑 및 판매 여정을 떠나보세요. 지금 앱을 업데이트하세요!
+17.9:
+- [*] 리뷰: 설정의 리뷰에 이중 도구 모음이 표시되는 버그를 수정함 [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [내부] 앱에서 WooExpress 스토어 생성을 제거함 [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] 상품: 2개 창 모드에서 대량 업데이트 메뉴 항목을 사용할 수 없는 버그를 수정함 [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] 상품: 상품의 사진 제거 시 저장되지 않는 버그를 수정함 [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] 리뷰 표시 속도를 최적화함 [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </ko-KR>
+<nl-NL>
+17.9:
+- [*] Beoordelingen: Bug verholpen waarbij een dubbele werkbalk zichtbaar was bij de beoordelingen in de instellingen [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Intern] WooExpress-winkelcreatie uit de app verwijderd [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Producten: Bug verholpen waarbij het menu-item bulkupdate niet beschikbaar was in de weergave met twee kolommen [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Producten: Bug verholpen waarbij het verwijderen van een productfoto niet werd opgeslagen [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Beoordelingen: Snelheid geoptimaliseerd van de weergave van beoordelingen [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
+</nl-NL>
 <pt-BR>
-17.7:
-Ótimas notícias para usuários do app do WooCommerce! Corrigimos uma falha para manter as pesquisas por produtos intactas após as alterações, e otimizamos a experiência de visualização de produtos em tablets com layout de painel duplo. Personalize suas estatísticas de forma fácil na Central de análises. Além disso, pedidos feitos no app agora serão visivelmente marcados, melhorando o rastreamento. Mergulhe em uma jornada de compra e venda mais tranquila e personalizada. Atualize o app agora!
+17.9:
+- [*] Avaliações: corrigimos um bug que ocorria quando duas barras de ferramentas apareciam nas configurações das avaliações [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internal] Removemos do aplicativo a criação de lojas do WooExpress [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produtos: corrigimos um bug em que não era possível atualizar itens de menu em massa ao usar o modo de dois painéis [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produtos: corrigimos um bug em que a remoção da imagem de um produto não era salva [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Avaliações: otimizamos a velocidade de exibição das avaliações [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </pt-BR>
 <ru-RU>
-17.7:
-Отличная новость для пользователей приложения WooCommerce! Исправлена ошибка, из-за которой изменения при поиске товаров не учитывались, а также оптимизирован просмотр товаров на планшетах с функцией двухпанельной разметки. Настраивайте аналитику без лишних усилий в Аналитическом центре. Кроме того, сделанные в приложении заказы теперь отчётливо помечаются, что помогает отслеживать их. Ваши покупки и продажи стали ещё приятнее и эксклюзивнее! Осталось лишь обновить приложение!
+17.9:
+- [*] Отзывы: исправлена ошибка, из-за которой в настройках на отзывах отображалась двойная панель инструментов. [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Внутреннее] Из приложения удалена функция «Создание магазина WooExpress». [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Товары: исправлена ошибка, из-за которой был недоступен элемент меню «Пакетное обновление» в двухпанельном режиме. [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Товары: исправлена ошибка, из-за которой результат удаления изображения товара не сохранялся. [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Отзывы: оптимизирована скорость показа отзывов. [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </ru-RU>
 <sv-SE>
-17.7:
-Spännande nyheter för användare av WooCommerce-appen. Vi har åtgärdat en bugg för att hålla produktsökningar intakta efter ändringar, samt optimerat produktvisningsupplevelsen på surfplattor med en tvåpanelslayout. Anpassa enkelt dina analyser i analyshubben. Beställningar som görs i appen är nu dessutom tydligt etiketterade, vilket förbättrar spårningen. Ta del a en smidigare och mer personlig shopping- och säljupplevelse. Uppdatera din app nu.
+17.9:
+- [*] Recensioner: Vi har åtgärdat en bugg som gjorde att verktygsfältet visades dubbelt för recensioner i inställningarna [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internt] Vi har tagit bort WooExpress-butiksskapande från appen [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Produkter: Vi har åtgärdat en bugg som gjorde att menyvalet Massuppdatera inte var tillgängligt i tvåpanelsläge [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Produkter: Vi har åtgärdat en bugg som gjorde att borttagningar av produktbilder inte sparades [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Recensioner: Vi har optimerat inläsningshastigheten för recensioner [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </sv-SE>
 <tr-TR>
-17.7:
-WooCommerce uygulaması kullanıcıları için heyecan verici haberlerimiz var! Değişikliklerden sonra ürün aramalarını olduğu gibi tutmak için bir hatayı düzelttik ve iki panelli yerleşim kullanan tabletlerdeki ürün görüntüleme deneyimini optimize ettik. Analytics Hub ile analizlerinizi kolayca özelleştirin. Ayrıca uygulamada verilen siparişler artık açık şekilde etiketlenir, böylece takip süreci iyileştirilir. Daha sorunsuz, daha kişiselleştirilmiş bir alışveriş ve satış deneyimine geçin. Hemen uygulamanızı güncelleyin!
+17.9:
+- [*] İncelemeler: Ayarlarda incelemelerde çift araç çubuğunun görünmesine neden olan bir hata düzeltildi [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Dahili] WooExpress Mağaza Oluşturma, uygulamadan kaldırıldı [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Ürünler: 2 bölme modundayken toplu güncelleme menü elemanının kullanılmamasına neden olan bir hata düzeltildi [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Ürünler: Ürünün fotoğrafının kaldırılması işleminin kaydedilmemesine neden olan bir hata düzeltildi [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] İncelemeler: İncelemelerin gösterilme hızı optimize edildi [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </tr-TR>
 <zh-CN>
-17.7：
-令 WooCommerce 应用程序用户激动的新消息！ 我们修复了产品搜索在更改后保持不变的错误，并通过双窗格布局优化了在平板电脑上查看产品时的体验感。 您可以在“分析中心”中轻松定制分析功能。 此外，应用程序中的订单现有明确标记，更便于追踪。 深入体验更顺畅、更人性化的购物和销售之旅。 立即更新您的应用程序！
+17.9：
+- [*] 评论：修复了在设置中的评论部分可以看到两个工具栏的错误 [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [内部] 从应用程序中移除了 WooExpress 商店创建功能 [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] 产品：修复了双窗格模式下批量更新菜单项功能无法使用的错误 [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] 产品：修复了删除产品图片时无法保存的错误 [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] 评论：优化了评论的显示速度 [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </zh-CN>
 <zh-TW>
-17.7:
-有好消息要告訴 WooCommerce 應用程式使用者！ 我們已修正一項錯誤，確保商品搜尋結果在變更後不受影響；平板電腦的商品瀏覽體驗經過最佳化，採用雙窗格版面配置。 在 Analytics Hub 輕鬆自訂分析資料。 另外，應用程式內的訂單現在會加上清楚的標籤，提升追蹤效果。 歡迎探索更順暢、更個人化的購物和銷售體驗。 立即更新應用程式！
+17.9:
+- [*] 評論：已修正雙重工具列顯示於設定評論中的錯誤 [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [內部] 已從應用程式移除 WooExpress 商店建立 [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] 商品：已修正在雙窗格模式中，無法使用批次更新選單項目的錯誤 [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] 商品：已修正移除商品圖片後無法加以儲存的錯誤 [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] 評論：已將評論顯示的速度最佳化 [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </zh-TW>
 <en-US>
-17.7:
-Exciting news for WooCommerce app users! We've fixed a bug to keep product searches intact after changes, and optimized the product viewing experience on tablets with a two-pane layout. Customize your analytics with ease in the Analytics Hub. Plus, orders made in the app are now clearly tagged, improving tracking. Dive into a smoother, more personalized shopping and selling journey. Update your app now!
+17.9:
+- [*] Reviews: Fixed a bug when double toolbar was visible on the reviews in settings [https://github.com/woocommerce/woocommerce-android/pull/11072]
+- [*] [Internal] Removed WooExpress Store Creation from the app [https://github.com/woocommerce/woocommerce-android/issues/11115]
+- [*] Products: Fixed a bug when in 2 pane mode bulk update menu item was not available [https://github.com/woocommerce/woocommerce-android/pull/11127]
+- [*] Products: Fixed a bug when the removal of a product's picture was not saved [https://github.com/woocommerce/woocommerce-android/pull/11124]
+- [*] Reviews: Optimised speed of showing reviews [https://github.com/woocommerce/woocommerce-android/pull/11083]
+
 </en-US>

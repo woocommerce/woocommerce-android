@@ -6,7 +6,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 class StatsComponent : Screen(R.id.dashboardStats_root) {
     override fun recover() {
         super.recover()
-        clickOn(R.id.dashboard)
+        clickOn(R.id.my_store)
     }
 
     private fun waitForGraphToLoad() {

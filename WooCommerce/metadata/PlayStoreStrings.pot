@@ -11,16 +11,21 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_178"
+msgctxt "release_note_180"
 msgid ""
-"17.8:\n"
-"Discover our latest update to your WooCommerce mobile app! Now, seamlessly log in with your site credentials on Jetpack-connected sites, as an alternative to WP.com email login. Experience instant refreshing of product list. Plus, managing your inventory is easier than ever with our new bulk stock status update feature. For added convenience, you can now move orders directly to trash. Last but not least, we optimised the order creation flow for tablet devices! Enjoy 💜\n"
+"18.0:\n"
+"Discover a smoother shopping experience in our latest update! We've squashed some pesky bugs in the products section for a flawless selection and viewing, especially in 2-pane mode. Photos now shine brighter with our enhanced screens. Transitioning between panes? We've polished that too, ensuring seamless shifts. Plus, we're introducing a helpful confirmation dialog for unsaved changes. Most excitingly, dive into your store's performance with custom date ranges in the My Store tab. Update now for these improvements and more!\n"
 msgstr ""
 
-msgctxt "release_note_177"
+msgctxt "release_note_179"
 msgid ""
-"17.7:\n"
-"Exciting news for WooCommerce app users! We've fixed a bug to keep product searches intact after changes, and optimized the product viewing experience on tablets with a two-pane layout. Customize your analytics with ease in the Analytics Hub. Plus, orders made in the app are now clearly tagged, improving tracking. Dive into a smoother, more personalized shopping and selling journey. Update your app now!\n"
+"17.9:\n"
+"- [*] Reviews: Fixed a bug when double toolbar was visible on the reviews in settings [https://github.com/woocommerce/woocommerce-android/pull/11072]\n"
+"- [*] [Internal] Removed WooExpress Store Creation from the app [https://github.com/woocommerce/woocommerce-android/issues/11115]\n"
+"- [*] Products: Fixed a bug when in 2 pane mode bulk update menu item was not available [https://github.com/woocommerce/woocommerce-android/pull/11127]\n"
+"- [*] Products: Fixed a bug when the removal of a product's picture was not saved [https://github.com/woocommerce/woocommerce-android/pull/11124]\n"
+"- [*] Reviews: Optimised speed of showing reviews [https://github.com/woocommerce/woocommerce-android/pull/11083]\n"
+"\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

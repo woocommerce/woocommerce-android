@@ -161,7 +161,7 @@ class PaymentsFlowTracker @Inject constructor(
         }
     }
 
-    private suspend fun getReceiptSource(): Pair<String, String> =
+    private fun getReceiptSource(): Pair<String, String> =
         if (paymentReceiptHelper.isWCCanGenerateReceipts()) {
             AnalyticsTracker.KEY_SOURCE to "backend"
         } else {
@@ -424,42 +424,42 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    suspend fun trackPrintReceiptTapped() {
+    fun trackPrintReceiptTapped() {
         track(
             RECEIPT_PRINT_TAPPED,
             properties = mutableMapOf(getReceiptSource())
         )
     }
 
-    suspend fun trackEmailReceiptTapped() {
+    fun trackEmailReceiptTapped() {
         track(
             RECEIPT_EMAIL_TAPPED,
             properties = mutableMapOf(getReceiptSource())
         )
     }
 
-    suspend fun trackPrintReceiptCancelled() {
+    fun trackPrintReceiptCancelled() {
         track(
             RECEIPT_PRINT_CANCELED,
             properties = mutableMapOf(getReceiptSource())
         )
     }
 
-    suspend fun trackPrintReceiptFailed() {
+    fun trackPrintReceiptFailed() {
         track(
             RECEIPT_PRINT_FAILED,
             properties = mutableMapOf(getReceiptSource())
         )
     }
 
-    suspend fun trackPrintReceiptSucceeded() {
+    fun trackPrintReceiptSucceeded() {
         track(
             RECEIPT_PRINT_SUCCESS,
             properties = mutableMapOf(getReceiptSource())
         )
     }
 
-    suspend fun trackReceiptViewTapped(properties: Map<String, Any>) {
+    fun trackReceiptViewTapped(properties: Map<String, Any>) {
         track(
             RECEIPT_VIEW_TAPPED,
             properties = properties.toMutableMap().also {
@@ -470,7 +470,7 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    suspend fun trackReceiptUrlFetchingFails(errorDescription: String) {
+    fun trackReceiptUrlFetchingFails(errorDescription: String) {
         track(
             RECEIPT_URL_FETCHING_FAILS,
             properties = mutableMapOf(getReceiptSource()),
@@ -626,7 +626,7 @@ class PaymentsFlowTracker @Inject constructor(
         )
     }
 
-    suspend fun trackPaymentsReceiptSharingFailed(sharingResult: PaymentReceiptShare.ReceiptShareResult.Error) {
+    fun trackPaymentsReceiptSharingFailed(sharingResult: PaymentReceiptShare.ReceiptShareResult.Error) {
         when (sharingResult) {
             is PaymentReceiptShare.ReceiptShareResult.Error.FileCreation -> {
                 track(

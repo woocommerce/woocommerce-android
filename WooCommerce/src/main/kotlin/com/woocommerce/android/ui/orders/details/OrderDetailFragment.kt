@@ -73,6 +73,8 @@ import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersEmptyNotified
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoadingNotified
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
@@ -94,6 +96,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import javax.inject.Inject
@@ -213,6 +216,7 @@ class OrderDetailFragment :
         setupObservers(viewModel)
         setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
+        setupOrdersCommunicationObservers(communicationViewModel)
 
         binding.orderDetailOrderStatus.initView(mode = Mode.OrderEdit) {
             viewModel.onEditOrderStatusSelected()
@@ -326,6 +330,22 @@ class OrderDetailFragment :
         (activity as? MainNavigationRouter)?.showProductVariationDetail(remoteProductId, remoteVariationId)
     }
 
+    private fun setupOrdersCommunicationObservers(ordersCommunicationViewModel: OrdersCommunicationViewModel) {
+        ordersCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OrdersEmptyNotified -> {
+                    viewModel.showEmptyView()
+                }
+
+                is OrdersLoadingNotified -> {
+                    viewModel.showLoadingView()
+                }
+
+                else -> event.isHandled = false
+            }
+        }
+    }
+
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
@@ -372,6 +392,7 @@ class OrderDetailFragment :
             new.isAIThankYouNoteButtonShown.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
                 binding.orderDetailsAICard.isVisible = it
             }
+            new.isOrderDetailEmpty.takeIfNotEqualTo(old?.isOrderDetailEmpty) { showEmptyView(it) }
         }
 
         viewModel.orderNotes.observe(viewLifecycleOwner) {
@@ -790,6 +811,15 @@ class OrderDetailFragment :
         ).also {
             it.addCallback(dismissCallback)
             it.show()
+        }
+    }
+
+    private fun showEmptyView(show: Boolean) {
+        if (show) {
+            binding.orderDetailContainer.visibility = View.GONE
+            binding.emptyView.show(WCEmptyView.EmptyViewType.ORDER_DETAILS)
+        } else {
+            binding.emptyView.hide()
         }
     }
 
