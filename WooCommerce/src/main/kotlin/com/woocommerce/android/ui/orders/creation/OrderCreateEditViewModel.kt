@@ -206,6 +206,7 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         val EMPTY_BIG_DECIMAL = -Double.MAX_VALUE.toBigDecimal()
         const val MAX_PRODUCT_QUANTITY = 100_000
+        const val DELAY_BEFORE_SHOWING_SIMPLE_PAYMENTS_MIGRATION_BOTTOM_SHEET = 500L
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
     }
@@ -399,6 +400,13 @@ class OrderCreateEditViewModel @Inject constructor(
                     getAutoTaxRateSetting()?.let {
                         onTaxRateSelected(it)
                     }
+                }
+
+                if (mode.indicateSimplePaymentsMigration) {
+                    triggerEventWithDelay(
+                        ShowSimplePaymentsMigrationBottomSheet,
+                        delay = DELAY_BEFORE_SHOWING_SIMPLE_PAYMENTS_MIGRATION_BOTTOM_SHEET,
+                    )
                 }
             }
 
@@ -2005,6 +2013,8 @@ data class OnTotalsSectionHeightChanged(
 data class OnCustomAmountTypeSelected(
     val type: CustomAmountType
 ) : Event()
+
+data object ShowSimplePaymentsMigrationBottomSheet : Event()
 
 object OnSelectedProductsSyncRequested : Event()
 
