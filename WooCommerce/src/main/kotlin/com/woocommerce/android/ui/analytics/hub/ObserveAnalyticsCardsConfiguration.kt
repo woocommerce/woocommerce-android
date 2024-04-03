@@ -9,11 +9,19 @@ import javax.inject.Inject
 
 class ObserveAnalyticsCardsConfiguration @Inject constructor(
     private val settingsDataStore: AnalyticsSettingsDataStore,
-    resourcesRepository: AnalyticsSettingsResourcesRepository
+    private val resourcesRepository: AnalyticsSettingsResourcesRepository,
+    private val getAnalyticPluginsCardActive: GetAnalyticPluginsCardActive
 ) {
-    private val defaultConfiguration = resourcesRepository.getDefaultAnalyticsCardsConfiguration()
-    operator fun invoke(): Flow<List<AnalyticCardConfiguration>> =
-        settingsDataStore.observeCardsConfiguration().map { currentConfiguration ->
-            currentConfiguration ?: defaultConfiguration
+    suspend operator fun invoke(): Flow<List<AnalyticCardConfiguration>> {
+        val activePluginCards = getAnalyticPluginsCardActive()
+        return settingsDataStore.observeCardsConfiguration().map { currentConfiguration ->
+            currentConfiguration?.map { cardConfiguration ->
+                if (cardConfiguration.card.isPlugin && (cardConfiguration.card in activePluginCards).not()) {
+                    cardConfiguration.copy(isVisible = false)
+                } else {
+                    cardConfiguration
+                }
+            } ?: resourcesRepository.getDefaultAnalyticsCardsConfiguration()
         }
+    }
 }
