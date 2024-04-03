@@ -25,16 +25,10 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenDatePicker
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeastOne
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
 import com.woocommerce.android.ui.dashboard.domain.GetStats
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.HasOrders
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.PluginNotActive
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.RevenueStatsError
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.RevenueStatsSuccess
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.VisitorStatUnavailable
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.VisitorsStatsError
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
+import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
@@ -88,7 +82,7 @@ class DashboardViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val myStoreTransactionLauncher: DashboardTransactionLauncher,
+    private val dashboardTransactionLauncher: DashboardTransactionLauncher,
     private val timezoneProvider: TimezoneProvider,
     private val observeLastUpdate: ObserveLastUpdate,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
@@ -106,7 +100,7 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
+    val performanceObserver: LifecycleObserver = dashboardTransactionLauncher
 
     private var _revenueStatsState = MutableLiveData<RevenueStatsViewState>()
     val revenueStatsState: LiveData<RevenueStatsViewState> = _revenueStatsState
@@ -203,7 +197,7 @@ class DashboardViewModel @Inject constructor(
         if (selectedSite.getOrNull()?.isEligibleForAI == true &&
             !appPrefsWrapper.wasAIProductDescriptionPromoDialogShown
         ) {
-            triggerEvent(ShowAIProductDescriptionDialog)
+            triggerEvent(DashboardEvent.ShowAIProductDescriptionDialog)
             appPrefsWrapper.wasAIProductDescriptionPromoDialogShown = true
         }
 
@@ -262,22 +256,25 @@ class DashboardViewModel @Inject constructor(
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) {
             _revenueStatsState.value = RevenueStatsViewState.Content(null, selectedRange)
-            _visitorStatsState.value = VisitorStatsViewState.Content(emptyMap())
+            _visitorStatsState.value = VisitorStatsViewState.NotLoaded
             return
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
         getStats(forceRefresh, selectedRange)
             .collect {
                 when (it) {
-                    is RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
-                    is RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
-                    PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
-                    is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
-                    is VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
-                    is VisitorStatUnavailable -> onVisitorStatsUnavailable(it.connectionType)
-                    is HasOrders -> _hasOrders.value = if (it.hasOrder) OrderState.AtLeastOne else OrderState.Empty
+                    is LoadStatsResult.RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
+                    is LoadStatsResult.RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
+                    LoadStatsResult.PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
+                    is LoadStatsResult.VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(
+                        stats = it.stats, totalVisitorCount = it.totalVisitorCount
+                    )
+
+                    is LoadStatsResult.VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
+                    is LoadStatsResult.VisitorStatUnavailable -> onVisitorStatsUnavailable(it.connectionType)
+                    is LoadStatsResult.HasOrders -> _hasOrders.value = if (it.hasOrder) AtLeastOne else Empty
                 }
-                myStoreTransactionLauncher.onStoreStatisticsFetched()
+                dashboardTransactionLauncher.onStoreStatisticsFetched()
             }
         launch {
             observeLastUpdate(
@@ -297,7 +294,7 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun onRevenueStatsSuccess(
-        result: RevenueStatsSuccess,
+        result: LoadStatsResult.RevenueStatsSuccess,
         selectedRange: StatsTimeRangeSelection
     ) {
         _revenueStatsState.value = RevenueStatsViewState.Content(
@@ -473,7 +470,7 @@ class DashboardViewModel @Inject constructor(
 
     fun onAddCustomRangeClicked() {
         triggerEvent(
-            OpenDatePicker(
+            DashboardEvent.OpenDatePicker(
                 fromDate = _customRange.value?.start ?: Date(),
                 toDate = _customRange.value?.end ?: Date()
             )
@@ -499,12 +496,14 @@ class DashboardViewModel @Inject constructor(
 
     sealed class VisitorStatsViewState {
         data object Error : VisitorStatsViewState()
+        data object NotLoaded : VisitorStatsViewState()
         data class Unavailable(
             val benefitsBanner: JetpackBenefitsBannerUiModel
         ) : VisitorStatsViewState()
 
         data class Content(
-            val stats: Map<String, Int>
+            val stats: Map<String, Int>,
+            val totalVisitorCount: Int?
         ) : VisitorStatsViewState()
     }
 
