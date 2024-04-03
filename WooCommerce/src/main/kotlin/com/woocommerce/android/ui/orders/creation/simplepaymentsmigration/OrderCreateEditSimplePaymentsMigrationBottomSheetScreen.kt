@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
@@ -38,23 +39,25 @@ fun OrderCreateEditSimplePaymentsMigrationBottomSheetScreen(
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(dimensionResource(id = R.dimen.minor_100))
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
             BottomSheetHandle(Modifier.align(Alignment.CenterHorizontally))
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+
             Image(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_bell_64dp),
-                contentDescription =
-                stringResource(id = R.string.order_creation_simple_payment_migration_title),
+                contentDescription = stringResource(id = R.string.order_creation_simple_payment_migration_title),
             )
 
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
 
             Text(
                 text = stringResource(id = R.string.order_creation_simple_payment_migration_title),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.h4,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold,
             )
@@ -67,7 +70,7 @@ fun OrderCreateEditSimplePaymentsMigrationBottomSheetScreen(
                 textAlign = TextAlign.Center,
             )
 
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
 
             Text(
                 text = stringResource(id = R.string.order_creation_simple_payment_migration_message_two),
@@ -76,7 +79,7 @@ fun OrderCreateEditSimplePaymentsMigrationBottomSheetScreen(
                 color = colorResource(R.color.color_surface_variant),
             )
 
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
 
             Button(
                 onClick = onAddCustomAmountClicked,
