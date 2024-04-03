@@ -35,6 +35,7 @@ import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
 import com.woocommerce.android.databinding.OrderCreationAdditionalInfoCollectionSectionBinding
 import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.handleDialogResult
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
@@ -68,6 +69,7 @@ import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftC
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
+import com.woocommerce.android.ui.orders.creation.simplepaymentsmigration.OrderCreateEditSimplePaymentsMigrationBottomSheetFragment
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
 import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsView
@@ -149,7 +151,7 @@ class OrderCreateEditFormFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(FragmentOrderCreateEditFormBinding.bind(view)) {
             setupObserversWith(this)
-            setupHandleResults()
+            setupHandleResults(this)
             initView()
         }
         handleCouponEditResult()
@@ -1048,11 +1050,20 @@ class OrderCreateEditFormFragment :
         }
     }
 
-    private fun setupHandleResults() {
+    private fun setupHandleResults(fragmentOrderCreateEditFormBinding: FragmentOrderCreateEditFormBinding) {
         handleDialogResult<OrderStatusUpdateSource>(
             key = KEY_ORDER_STATUS_RESULT,
             entryId = R.id.orderCreationFragment
         ) { viewModel.onOrderStatusChanged(Order.Status.fromValue(it.newStatus)) }
+        handleDialogNotice(
+            key = OrderCreateEditSimplePaymentsMigrationBottomSheetFragment.KEY_ON_ADD_CUSTOM_AMOUNT_CLICKED_NOTICE,
+            entryId = R.id.orderCreationFragment
+        ) {
+            fragmentOrderCreateEditFormBinding.root.post {
+                navigateToCustomAmountsDialog()
+            }
+        }
+
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
             viewModel.onProductsSelected(it)
         }
