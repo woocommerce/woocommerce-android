@@ -257,7 +257,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 trackLoginFailure(
                     step = Step.AUTHENTICATION,
                     errorContext = exception.javaClass.simpleName,
-                    errorType = authenticationError?.errorType,
+                    errorType = authenticationError?.errorType?.name,
                     errorDescription = exception.message,
                     statusCode = authenticationError?.networkStatusCode
                 )

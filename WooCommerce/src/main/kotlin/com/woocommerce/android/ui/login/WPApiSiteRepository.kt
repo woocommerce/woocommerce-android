@@ -194,14 +194,14 @@ class WPApiSiteRepository @Inject constructor(
         }
         return CookieNonceAuthenticationException(
             errorMessage,
-            type.name,
+            type,
             networkStatusCode
         )
     }
 
     data class CookieNonceAuthenticationException(
         val errorMessage: UiString,
-        val errorType: String,
+        val errorType: Nonce.CookieNonceErrorType,
         val networkStatusCode: Int?
     ) : Exception((errorMessage as? UiStringText)?.text)
 }
