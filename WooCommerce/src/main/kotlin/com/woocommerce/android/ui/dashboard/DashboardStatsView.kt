@@ -37,13 +37,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_GRANULAR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_RANGE
 import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.convertedFrom
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsUiModel
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -62,7 +62,7 @@ import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import kotlin.math.round
 
-@FlowPreview
+@OptIn(FlowPreview::class)
 class DashboardStatsView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
@@ -76,7 +76,6 @@ class DashboardStatsView @JvmOverloads constructor(
     }
 
     private lateinit var statsTimeRangeSelection: StatsTimeRangeSelection
-    private lateinit var selectedSite: SelectedSite
     private lateinit var dateUtils: DateUtils
     private lateinit var currencyFormatter: CurrencyFormatter
     private lateinit var usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter
@@ -146,16 +145,13 @@ class DashboardStatsView @JvmOverloads constructor(
 
     private var isChartValueSelected = false
 
-    @Suppress("LongParameterList")
     fun initView(
-        selectedSite: SelectedSite,
         dateUtils: DateUtils,
         currencyFormatter: CurrencyFormatter,
         usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
         lifecycleScope: LifecycleCoroutineScope,
         onViewAnalyticsClick: () -> Unit
     ) {
-        this.selectedSite = selectedSite
         this.dateUtils = dateUtils
         this.currencyFormatter = currencyFormatter
         this.usageTracksEventEmitter = usageTracksEventEmitter

@@ -9,26 +9,18 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEligibleForAI
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.isSitePublic
-import com.woocommerce.android.extensions.offsetInHours
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeastOne
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
-import com.woocommerce.android.ui.dashboard.domain.GetStats
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
@@ -36,13 +28,11 @@ import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -53,14 +43,11 @@ import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.utils.putIfNotNull
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.util.Date
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -69,22 +56,19 @@ class DashboardViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore,
-    private val getStats: GetStats,
     private val getTopPerformers: GetTopPerformers,
     private val currencyFormatter: CurrencyFormatter,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val dashboardTransactionLauncher: DashboardTransactionLauncher,
-    private val timezoneProvider: TimezoneProvider,
+    dashboardTransactionLauncher: DashboardTransactionLauncher,
     private val observeLastUpdate: ObserveLastUpdate,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
     getSelectedDateRange: GetSelectedDateRange,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
         val SUPPORTED_RANGES_ON_MY_STORE_TAB = listOf(
             SelectionType.TODAY,
             SelectionType.WEEK_TO_DATE,
@@ -96,20 +80,11 @@ class DashboardViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = dashboardTransactionLauncher
 
-    private var _revenueStatsState = MutableLiveData<RevenueStatsViewState>()
-    val revenueStatsState: LiveData<RevenueStatsViewState> = _revenueStatsState
-
-    private var _visitorStatsState = MutableLiveData<VisitorStatsViewState>()
-    val visitorStatsState: LiveData<VisitorStatsViewState> = _visitorStatsState
-
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
 
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
-
-    private var _lastUpdateStats = MutableLiveData<Long?>()
-    val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
 
     private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
     val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
@@ -143,14 +118,11 @@ class DashboardViewModel @Inject constructor(
             ) { selectedRange, refreshEvent ->
                 Pair(selectedRange, refreshEvent.shouldRefresh)
             }.collectLatest { (selectedRange, isForceRefresh) ->
-                coroutineScope {
-                    launch { loadStoreStats(selectedRange, isForceRefresh) }
-                    launch { loadTopPerformersStats(selectedRange, isForceRefresh) }
-                }
+                loadTopPerformersStats(selectedRange, isForceRefresh)
             }
         }
+
         observeTopPerformerUpdates()
-        trackLocalTimezoneDifferenceFromStore()
 
         launch {
             shouldShowPrivacyBanner().let {
@@ -218,85 +190,6 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
-        if (!networkStatus.isConnected()) {
-            _revenueStatsState.value = RevenueStatsViewState.Content(null, selectedRange)
-            _visitorStatsState.value = VisitorStatsViewState.NotLoaded
-            return
-        }
-        _revenueStatsState.value = RevenueStatsViewState.Loading
-        getStats(forceRefresh, selectedRange)
-            .collect {
-                when (it) {
-                    is LoadStatsResult.RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
-                    is LoadStatsResult.RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
-                    LoadStatsResult.PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
-                    is LoadStatsResult.VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(
-                        stats = it.stats, totalVisitorCount = it.totalVisitorCount
-                    )
-
-                    is LoadStatsResult.VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
-                    is LoadStatsResult.VisitorStatUnavailable -> onVisitorStatsUnavailable(it.connectionType)
-                    is LoadStatsResult.HasOrders -> _hasOrders.value = if (it.hasOrder) AtLeastOne else Empty
-                }
-                dashboardTransactionLauncher.onStoreStatisticsFetched()
-            }
-        launch {
-            observeLastUpdate(
-                selectedRange,
-                listOf(
-                    AnalyticsUpdateDataStore.AnalyticData.REVENUE,
-                    AnalyticsUpdateDataStore.AnalyticData.VISITORS
-                )
-            ).collect { lastUpdateMillis -> _lastUpdateStats.value = lastUpdateMillis }
-        }
-        launch {
-            observeLastUpdate(
-                selectedRange,
-                AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
-            ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
-        }
-    }
-
-    private fun onRevenueStatsSuccess(
-        result: LoadStatsResult.RevenueStatsSuccess,
-        selectedRange: StatsTimeRangeSelection
-    ) {
-        _revenueStatsState.value = RevenueStatsViewState.Content(
-            result.stats?.toStoreStatsUiModel(),
-            selectedRange
-        )
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
-            buildMap {
-                put(AnalyticsTracker.KEY_RANGE, selectedRange.selectionType.identifier)
-                putIfNotNull(AnalyticsTracker.KEY_ID to result.stats?.rangeId)
-            }
-        )
-    }
-
-    private fun onVisitorStatsUnavailable(connectionType: SiteConnectionType) {
-        val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
-            System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
-        )
-        val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
-            connectionType == SiteConnectionType.ApplicationPasswords
-        val showBanner = supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
-        val benefitsBanner = JetpackBenefitsBannerUiModel(
-            show = showBanner,
-            onDismiss = {
-                _visitorStatsState.value =
-                    VisitorStatsViewState.Unavailable(JetpackBenefitsBannerUiModel(show = false))
-                appPrefsWrapper.recordJetpackBenefitsDismissal()
-                analyticsTrackerWrapper.track(
-                    stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
-                    properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
-                )
-            }
-        )
-        _visitorStatsState.value = VisitorStatsViewState.Unavailable(benefitsBanner)
-    }
-
     private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) return
 
@@ -312,6 +205,13 @@ class DashboardViewModel @Inject constructor(
             }
         )
         _topPerformersState.value = _topPerformersState.value?.copy(isLoading = false)
+
+        launch {
+            observeLastUpdate(
+                selectedRange,
+                AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+            ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -329,58 +229,11 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    private fun trackLocalTimezoneDifferenceFromStore() {
-        val selectedSite = selectedSite.getIfExists() ?: return
-        val siteTimezone = selectedSite.timezone.takeIf { it.isNotNullOrEmpty() } ?: return
-        val localTimeZoneOffset = timezoneProvider.deviceTimezone.offsetInHours.toString()
-
-        val shouldTriggerTimezoneTrack = appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
-            siteId = selectedSite.siteId,
-            localTimezone = localTimeZoneOffset,
-            storeTimezone = siteTimezone
-        ) && selectedSite.timezone != localTimeZoneOffset
-
-        if (shouldTriggerTimezoneTrack) {
-            analyticsTrackerWrapper.track(
-                stat = DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
-                properties = mapOf(
-                    AnalyticsTracker.KEY_STORE_TIMEZONE to siteTimezone,
-                    AnalyticsTracker.KEY_LOCAL_TIMEZONE to localTimeZoneOffset
-                )
-            )
-            appPrefsWrapper.setTimezoneTrackEventTriggeredFor(
-                siteId = selectedSite.siteId,
-                localTimezone = localTimeZoneOffset,
-                storeTimezone = siteTimezone
-            )
-        }
-    }
-
     private fun onTopPerformerSelected(productId: Long) {
         triggerEvent(DashboardEvent.OpenTopPerformer(productId))
         analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         usageTracksEventEmitter.interacted()
     }
-
-    private fun WCRevenueStatsModel.toStoreStatsUiModel(): RevenueStatsUiModel {
-        val totals = parseTotal()
-        return RevenueStatsUiModel(
-            intervalList = getIntervalList().toStatsIntervalUiModelList(),
-            totalOrdersCount = totals?.ordersCount,
-            totalSales = totals?.totalSales,
-            currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode,
-            rangeId = rangeId
-        )
-    }
-
-    private fun List<WCRevenueStatsModel.Interval>.toStatsIntervalUiModelList() =
-        map {
-            StatsIntervalUiModel(
-                it.interval,
-                it.subtotals?.ordersCount,
-                it.subtotals?.totalSales
-            )
-        }
 
     private fun List<TopPerformerProduct>.toTopPerformersUiList() = map { it.toTopPerformersUiModel() }
 
@@ -440,29 +293,6 @@ class DashboardViewModel @Inject constructor(
             AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED
         }
         analyticsTrackerWrapper.track(event)
-    }
-
-    sealed class RevenueStatsViewState {
-        data object Loading : RevenueStatsViewState()
-        data object GenericError : RevenueStatsViewState()
-        data object PluginNotActiveError : RevenueStatsViewState()
-        data class Content(
-            val revenueStats: RevenueStatsUiModel?,
-            val statsRangeSelection: StatsTimeRangeSelection
-        ) : RevenueStatsViewState()
-    }
-
-    sealed class VisitorStatsViewState {
-        data object Error : VisitorStatsViewState()
-        data object NotLoaded : VisitorStatsViewState()
-        data class Unavailable(
-            val benefitsBanner: JetpackBenefitsBannerUiModel
-        ) : VisitorStatsViewState()
-
-        data class Content(
-            val stats: Map<String, Int>,
-            val totalVisitorCount: Int?
-        ) : VisitorStatsViewState()
     }
 
     data class TopPerformersState(
