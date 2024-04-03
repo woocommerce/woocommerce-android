@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -27,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooTheme
 
@@ -84,12 +84,11 @@ fun OrderCreateEditSimplePaymentsMigrationBottomSheetScreen(
 
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
 
-            Button(
-                onClick = onAddCustomAmountClicked,
+            WCColoredButton(
                 modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = stringResource(id = R.string.order_creation_simple_payment_migration_button))
-            }
+                onClick = onAddCustomAmountClicked,
+                text = stringResource(id = R.string.order_creation_simple_payment_migration_button),
+            )
         }
     }
 }
