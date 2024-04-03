@@ -48,7 +48,7 @@
         </action>
         <action
             android:id="@+id/action_orderCreationFragment_to_orderCreationCustomerFragment"
-            app:destination="@id/orderCreationCustomerFragment"></action>
+            app:destination="@id/orderCreationCustomerFragment" />
         <action
             android:id="@+id/action_orderCreationFragment_to_customerListFragment"
             app:destination="@id/customerListFragment" />
@@ -134,10 +134,12 @@
         <argument
             android:name="sku"
             app:argType="string"
+            android:defaultValue="@null"
             app:nullable="true" />
         <argument
             android:name="barcodeFormat"
             app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
+            android:defaultValue="@null"
             app:nullable="true" />
         <argument
             android:name="couponEditResult"
@@ -159,7 +161,7 @@
             app:destination="@id/barcodeScanningFragment" />
         <action
             android:id="@+id/action_orderCreationFragment_to_couponSelectorFragment"
-            app:destination="@id/couponSelectorFragment"></action>
+            app:destination="@id/couponSelectorFragment" />
         <action
             android:id="@+id/action_order_creationFragment_to_taxRateSelectorFragment"
             app:destination="@id/taxRateSelectorFragment" />
