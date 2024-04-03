@@ -14,12 +14,13 @@ class OrderCreateEditSimplePaymentsMigrationBottomSheetFragment : WCBottomSheetD
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                }
+    ): View = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            WooThemeWithBackground {
+                OrderCreateEditSimplePaymentsMigrationBottomSheetScreen(
+                    onAddCustomAmountClicked = { dismiss() }
+                )
             }
         }
     }
