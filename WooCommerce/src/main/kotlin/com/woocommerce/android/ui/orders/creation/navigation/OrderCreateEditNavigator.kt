@@ -96,6 +96,11 @@ object OrderCreateEditNavigator {
                 )
             }
 
+            is OrderCreateEditNavigationTarget.SimplePaymentsMigrationBottomSheet -> {
+                OrderCreateEditFormFragmentDirections
+                    .actionOrderCreationFragmentToSimplePaymentsMigrationBottomSheetFragment()
+            }
+
             is OrderCreateEditNavigationTarget.EditDiscount -> {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationToOrderCreationProductDiscountFragment(
                     target.item,
