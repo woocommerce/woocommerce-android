@@ -38,12 +38,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
 import javax.inject.Inject
-import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 
 @HiltViewModel
 class LoginSiteCredentialsViewModel @Inject constructor(
@@ -257,7 +257,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     INVALID_CREDENTIALS -> triggerEvent(ShowApplicationPasswordTutorialScreen)
                     else -> displayLoginFailureMessage(authenticationError, exception)
                 }
-
             }
         )
         loadingMessage.value = 0
