@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFrag
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragmentArgs
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
+import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.login.error.LoginNoWPcomAccountFoundDialogFragment
 import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
@@ -847,6 +848,14 @@ class LoginActivity :
         shouldAddToBackStack = true,
         tag = LoginSiteCredentialsFragment.TAG
     )
+
+    override fun showApplicationPasswordTutorialScreen() {
+        changeFragment(
+            fragment = ApplicationPasswordTutorialFragment.newInstance(),
+            shouldAddToBackStack = true,
+            tag = ApplicationPasswordTutorialFragment.TAG
+        )
+    }
 
     override fun startJetpackInstall(siteAddress: String?) {
         siteAddress?.let {
