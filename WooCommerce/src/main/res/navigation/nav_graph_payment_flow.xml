@@ -3,6 +3,8 @@
     android:id="@+id/paymentFlow"
     app:startDestination="@id/selectPaymentMethodFragment">
 
+    <include app:graph="@navigation/nav_graph_order_creations" />
+
     <fragment
         android:id="@+id/selectPaymentMethodFragment"
         android:name="com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragment"
@@ -150,6 +152,13 @@
             app:exitAnim="@null"
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderHubFragment_to_orderCreationFragment"
+            app:destination="@id/nav_graph_order_creations">
+            <argument
+                android:name="mode"
+                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/cardReaderDetailFragment"

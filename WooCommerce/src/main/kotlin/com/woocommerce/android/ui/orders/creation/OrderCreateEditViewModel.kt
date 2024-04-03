@@ -1964,7 +1964,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     sealed class Mode : Parcelable {
         @Parcelize
-        object Creation : Mode()
+        data object Creation : Mode()
 
         @Parcelize
         data class Edit(val orderId: Long) : Mode()
