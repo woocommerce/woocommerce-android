@@ -91,7 +91,7 @@ fun HandleEvents(
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(event) {
+    LaunchedEffect(event, navController, lifecycleOwner) {
         event.observe(lifecycleOwner) { event ->
             when (event) {
                 is DashboardStatsViewModel.OpenDatePicker -> {
