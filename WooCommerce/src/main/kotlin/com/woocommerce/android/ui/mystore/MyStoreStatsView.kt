@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
+import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
@@ -60,7 +61,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import org.wordpress.android.util.DisplayUtils
 import java.util.Locale
 import kotlin.math.round
-import kotlin.time.Duration.Companion.days
 
 @FlowPreview
 class MyStoreStatsView @JvmOverloads constructor(
@@ -84,7 +84,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     private var revenueStatsModel: RevenueStatsUiModel? = null
     private var chartRevenueStats = mapOf<String, Double>()
     private var chartOrderStats = mapOf<String, Long>()
-    private var chartVisitorStats = mapOf<String, Int>()
+    private var visitorStatsState: VisitorStatsViewState = VisitorStatsViewState.NotLoaded
 
     private var skeletonView = SkeletonView()
 
@@ -145,8 +145,6 @@ class MyStoreStatsView @JvmOverloads constructor(
     private lateinit var chartUserInteractionsJob: Job
 
     private var isChartValueSelected = false
-
-    private var isJetpackVisitorStatsUnavailable = false
 
     @Suppress("LongParameterList")
     fun initView(
@@ -449,7 +447,7 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun updateVisitorsValue(date: String) {
-        if (isJetpackVisitorStatsUnavailable) return
+        val visitorStats = (visitorStatsState as? VisitorStatsViewState.Content)?.stats ?: return
         if (statsTimeRangeSelection.revenueStatsGranularity == StatsGranularity.HOURS) {
             // The visitor stats don't support hours granularity, so we need to hide them
             visitorsValue.isVisible = false
@@ -458,7 +456,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         } else {
             visitorsValue.isVisible = true
             binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
-            visitorsValue.text = chartVisitorStats[date]?.toString() ?: "0"
+            visitorsValue.text = visitorStats[date]?.toString() ?: "0"
         }
     }
 
@@ -536,20 +534,34 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.chart.isVisible = !show
     }
 
-    fun showVisitorStats(visitorStats: Map<String, Int>) {
-        isJetpackVisitorStatsUnavailable = false
-        chartVisitorStats = getFormattedVisitorStats(visitorStats)
-        showTotalVisitorStats()
+    fun showVisitorStats(statsViewState: VisitorStatsViewState) {
+        // Reset click listeners
+        binding.statsViewRow.emptyVisitorStatsIcon.setOnClickListener(null)
+        binding.statsViewRow.emptyVisitorStatsIndicator.setOnClickListener(null)
+
+        visitorStatsState = statsViewState.let {
+            if (it is VisitorStatsViewState.Content) {
+                it.copy(stats = getFormattedVisitorStats(it.stats))
+            } else {
+                it
+            }
+        }
+
+        when (visitorStatsState) {
+            is VisitorStatsViewState.Content -> showTotalVisitorStats()
+            is VisitorStatsViewState.Error -> showVisitorStatsError()
+            is VisitorStatsViewState.Unavailable -> showJetpackUnavailableVisitorStats()
+            is VisitorStatsViewState.NotLoaded -> hideVisitorStats()
+        }
     }
 
-    fun showVisitorStatsError() {
+    private fun showVisitorStatsError() {
         binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
         binding.statsViewRow.visitorsValueTextview.isVisible = false
     }
 
-    fun handleJetpackUnavailableVisitorStats() {
-        isJetpackVisitorStatsUnavailable = true
+    private fun showJetpackUnavailableVisitorStats() {
         binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = true
         binding.statsViewRow.visitorsValueTextview.isVisible = false
         binding.statsViewRow.emptyVisitorStatsIcon.apply {
@@ -559,24 +571,19 @@ class MyStoreStatsView @JvmOverloads constructor(
     }
 
     private fun showTotalVisitorStats() {
-        if (isJetpackVisitorStatsUnavailable) return
-        if (statsTimeRangeSelection.isTotalVisitorsUnavailable()) {
-            // When using custom ranges, the total visitors value is not accurate, so we hide it
-            hideVisitorStatsForCustomRange()
-            return
-        } else {
-            // Make sure the empty view is hidden
-            binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
-            val totalVisitors = chartVisitorStats.values.sum()
-            fadeInLabelValue(visitorsValue, totalVisitors.toString())
+        val visitorStatsState = visitorStatsState as? VisitorStatsViewState.Content ?: return
+        when (visitorStatsState.totalVisitorCount) {
+            null -> hideTotalVisitorCountForCustomRange()
+            else -> {
+                // Make sure the empty view is hidden
+                binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
+                fadeInLabelValue(visitorsValue, visitorStatsState.totalVisitorCount.toString())
+            }
         }
     }
 
-    private fun hideVisitorStatsForCustomRange() {
+    private fun hideTotalVisitorCountForCustomRange() {
         fun showDialog() {
-            // Make sure the dialog is shown only when appropriate
-            if (!statsTimeRangeSelection.isTotalVisitorsUnavailable() || isChartValueSelected) return
-
             val dialog = MaterialAlertDialogBuilder(context)
                 .setTitle(R.string.my_store_custom_range_visitors_stats_unavailable_title)
                 .setMessage(R.string.my_store_custom_range_visitors_stats_unavailable_message)
@@ -603,6 +610,14 @@ class MyStoreStatsView @JvmOverloads constructor(
         binding.statsViewRow.emptyVisitorStatsIndicator.setOnClickListener {
             showDialog()
         }
+    }
+
+    private fun hideVisitorStats() {
+        binding.statsViewRow.visitorsValueTextview.isVisible = false
+        binding.statsViewRow.emptyVisitorStatsIndicator.isVisible = true
+        binding.statsViewRow.emptyVisitorStatsIcon.isVisible = true
+        binding.statsViewRow.conversionValueTextView.isVisible = false
+        binding.statsViewRow.emptyConversionRateIndicator.isVisible = true
     }
 
     fun showLastUpdate(lastUpdateMillis: Long?) {
@@ -811,9 +826,6 @@ class MyStoreStatsView @JvmOverloads constructor(
             )
         }
     }
-
-    private fun StatsTimeRangeSelection.isTotalVisitorsUnavailable() = selectionType == SelectionType.CUSTOM &&
-        currentRange.end.time - currentRange.start.time > 2.days.inWholeMilliseconds
 
     private inner class StartEndDateAxisFormatter : ValueFormatter() {
         override fun getAxisLabel(value: Float, axis: AxisBase): String {

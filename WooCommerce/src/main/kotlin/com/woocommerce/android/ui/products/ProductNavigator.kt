@@ -282,7 +282,7 @@ class ProductNavigator @Inject constructor() {
                     navOptions =
                     if (target.source == STORE_ONBOARDING) {
                         NavOptions.Builder()
-                            .setPopUpTo(id.dashboard, false)
+                            .setPopUpTo(id.my_store, false)
                             .build()
                     } else {
                         null
