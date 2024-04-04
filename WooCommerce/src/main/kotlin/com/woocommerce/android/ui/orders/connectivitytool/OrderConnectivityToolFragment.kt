@@ -48,7 +48,7 @@ class OrderConnectivityToolFragment : BaseFragment() {
     private fun openSupportRequestScreen() {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
-            origin = HelpOrigin.ORDERS_LIST,
+            origin = HelpOrigin.CONNECTIVITY_TOOL,
             extraTags = ArrayList()
         ).let { activity?.startActivity(it) }
     }

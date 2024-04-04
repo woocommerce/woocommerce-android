@@ -234,7 +234,7 @@ class OrderCreateEditFormFragment :
             twoPaneModeToolbar.setNavigationIcon(R.drawable.ic_back_24dp)
         } else {
             val navigationIcon = when (viewModel.mode) {
-                Creation -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_24dp)
+                is Creation -> ContextCompat.getDrawable(requireContext(), R.drawable.ic_back_24dp)
                 is Edit -> null
             }
             mainToolbar.navigationIcon = navigationIcon
@@ -245,7 +245,7 @@ class OrderCreateEditFormFragment :
         mainToolbar.inflateMenu(R.menu.menu_order_creation)
         createOrderMenuItem = mainToolbar.menu.findItem(R.id.menu_create).apply {
             when (viewModel.mode) {
-                Creation -> title = resources.getString(R.string.create)
+                is Creation -> title = resources.getString(R.string.create)
                 is Edit -> isVisible = false
             }
             isEnabled = viewModel.viewStateData.liveData.value?.isCreateOrderButtonEnabled ?: false
@@ -262,7 +262,7 @@ class OrderCreateEditFormFragment :
     }
 
     private fun getTitle(): CharSequence = when (viewModel.mode) {
-        Creation -> getString(R.string.order_creation_fragment_title)
+        is Creation -> getString(R.string.order_creation_fragment_title)
         is Edit -> {
             val orderId = (viewModel.mode as Edit).orderId.toString()
             getString(R.string.orderdetail_orderstatus_ordernum, orderId)
@@ -285,7 +285,7 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.initOrderStatusView() {
         when (viewModel.mode) {
-            Creation -> {
+            is Creation -> {
                 orderStatusView.visibility = View.GONE
             }
 

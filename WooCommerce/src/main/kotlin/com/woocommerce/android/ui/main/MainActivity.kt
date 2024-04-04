@@ -444,7 +444,7 @@ class MainActivity :
     override fun isAtNavigationRoot(): Boolean {
         return if (::navController.isInitialized) {
             val currentDestinationId = navController.currentDestination?.id
-            currentDestinationId == R.id.dashboard ||
+            currentDestinationId == DashboardDestination.id ||
                 currentDestinationId == R.id.orders ||
                 currentDestinationId == R.id.products ||
                 currentDestinationId == R.id.moreMenu ||
@@ -1036,7 +1036,7 @@ class MainActivity :
         binding.bottomNav.currentPosition = ORDERS
         binding.bottomNav.active(ORDERS.position)
         val action = OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.Mode.Creation(),
             null,
             null,
         )
@@ -1129,12 +1129,10 @@ class MainActivity :
         giftCardCode: String?,
         giftCardAmount: BigDecimal?
     ) {
-        NavGraphMainDirections.actionGlobalToOrdercreationfragment(
+        NavGraphMainDirections.actionGlobalToOrderCreationFragment(
             mode = mode,
-            barcodeFormat = null,
             giftCardCode = giftCardCode,
             giftCardAmount = giftCardAmount,
-            sku = null,
         ).apply {
             navController.navigateSafely(this)
         }

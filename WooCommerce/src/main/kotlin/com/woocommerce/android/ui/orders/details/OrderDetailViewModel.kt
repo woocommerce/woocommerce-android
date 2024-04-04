@@ -200,9 +200,7 @@ class OrderDetailViewModel @Inject constructor(
                 } ?: fetchOrder(showSkeleton = true)
             }
         } else {
-            viewState = viewState.copy(
-                isOrderDetailSkeletonShown = true
-            )
+            viewState = viewState.copy(isOrderDetailSkeletonShown = true)
         }
     }
 
@@ -896,6 +894,21 @@ class OrderDetailViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun showEmptyView() {
+        viewState = viewState.copy(
+            isOrderDetailEmpty = true,
+            isRefreshing = false,
+            isOrderDetailSkeletonShown = false
+        )
+    }
+
+    fun showLoadingView() {
+        viewState = viewState.copy(
+            isOrderDetailEmpty = false,
+            isOrderDetailSkeletonShown = true
+        )
     }
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
