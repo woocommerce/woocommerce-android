@@ -151,6 +151,9 @@
         <action
             android:id="@+id/action_dashboard_to_blazeCampaignListFragment"
             app:destination="@id/blazeCampaignListFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_editWidgetsFragment"
+            app:destination="@id/dashboardWidgetEditorFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -855,4 +858,8 @@
         android:id="@+id/orderConnectivityToolFragment"
         android:name="com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolFragment"
         android:label="OrderConnectivityToolFragment" />
+    <fragment
+        android:id="@+id/dashboardWidgetEditorFragment"
+        android:name="com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorFragment"
+        android:label="DashboardWidgetEditorFragment" />
 </navigation>

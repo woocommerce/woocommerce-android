@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsVie
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState.CardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.settings.SaveAnalyticsCardsConfiguration
+import com.woocommerce.android.ui.analytics.hub.settings.toConfigurationUI
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,11 +36,10 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: AnalyticsHubSettingsViewModel
 
-    private val defaultConfiguration = listOf(
-        AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
-        AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
-        AnalyticCardConfiguration(AnalyticsCards.Session, "Visitors", false)
-    )
+    private val revenueAnalyticsCard = AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true)
+    private val ordersAnalyticsCard = AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true)
+    private val sessionAnalyticsCard = AnalyticCardConfiguration(AnalyticsCards.Session, "Visitors", false)
+    private val defaultConfiguration = listOf(revenueAnalyticsCard, ordersAnalyticsCard, sessionAnalyticsCard)
 
     @Before
     fun setup() {
@@ -84,7 +84,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
         advanceTimeBy(501)
 
-        sut.onSelectionChange(AnalyticsCards.Session, true)
+        sut.onSelectionChange(sessionAnalyticsCard.toConfigurationUI(), true)
         sut.onBackPressed()
 
         // The exit event is NOT triggered
@@ -117,7 +117,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
         advanceTimeBy(501)
 
-        sut.onSelectionChange(AnalyticsCards.Session, true)
+        sut.onSelectionChange(sessionAnalyticsCard.toConfigurationUI(), true)
 
         // The save button is disabled when the configuration doesn't have any change
         assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
@@ -133,9 +133,9 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
             advanceTimeBy(501)
 
-            sut.onSelectionChange(AnalyticsCards.Revenue, false)
-            sut.onSelectionChange(AnalyticsCards.Orders, false)
-            sut.onSelectionChange(AnalyticsCards.Session, false)
+            sut.onSelectionChange(revenueAnalyticsCard.toConfigurationUI(), false)
+            sut.onSelectionChange(ordersAnalyticsCard.toConfigurationUI(), false)
+            sut.onSelectionChange(sessionAnalyticsCard.toConfigurationUI(), false)
 
             sut.onSaveChanges()
 
@@ -143,80 +143,83 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when the received configuration only have one selected card, then the selected card is disabled`() = testBlocking {
-        val configuration = listOf(
-            AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
-            AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", false),
-            AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
-        )
-        val expected = listOf(
-            AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = false),
-            AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", false, isEnabled = true),
-            AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
-        )
-        whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
+    fun `when the received configuration only have one selected card, then the selected card is disabled`() =
+        testBlocking {
+            val configuration = listOf(
+                AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
+                AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", false),
+                AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
+            )
+            val expected = listOf(
+                AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = false),
+                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", false, isEnabled = true),
+                AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
+            )
+            whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
 
-        var viewState: AnalyticsHubSettingsViewState? = null
-        sut.viewStateData.observeForever { _, new -> viewState = new }
+            var viewState: AnalyticsHubSettingsViewState? = null
+            sut.viewStateData.observeForever { _, new -> viewState = new }
 
-        advanceTimeBy(501)
+            advanceTimeBy(501)
 
-        // The save button is disabled when the configuration doesn't have any change
-        assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
-        assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
-    }
-
-    @Test
-    fun `when configuration only have 1 selected card and other card is selected, then all cards are enabled`() = testBlocking {
-        val configuration = listOf(
-            AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
-            AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", false),
-            AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
-        )
-        val expected = listOf(
-            AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = true),
-            AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true, isEnabled = true),
-            AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
-        )
-        whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
-
-        var viewState: AnalyticsHubSettingsViewState? = null
-        sut.viewStateData.observeForever { _, new -> viewState = new }
-
-        advanceTimeBy(501)
-
-        sut.onSelectionChange(AnalyticsCards.Orders, true)
-
-        // The save button is disabled when the configuration doesn't have any change
-        assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
-        assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
-    }
+            // The save button is disabled when the configuration doesn't have any change
+            assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
+            assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
+        }
 
     @Test
-    fun `when configuration have 2 selected card and one of those cards is deselected, then the selected card is disabled`() = testBlocking {
-        val configuration = listOf(
-            AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
-            AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
-            AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
-        )
-        val expected = listOf(
-            AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = false),
-            AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", false, isEnabled = true),
-            AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
-        )
-        whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
+    fun `when configuration only have 1 selected card and other card is selected, then all cards are enabled`() =
+        testBlocking {
+            val configuration = listOf(
+                AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
+                AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", false),
+                AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
+            )
+            val expected = listOf(
+                AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = true),
+                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true, isEnabled = true),
+                AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
+            )
+            whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
 
-        var viewState: AnalyticsHubSettingsViewState? = null
-        sut.viewStateData.observeForever { _, new -> viewState = new }
+            var viewState: AnalyticsHubSettingsViewState? = null
+            sut.viewStateData.observeForever { _, new -> viewState = new }
 
-        advanceTimeBy(501)
+            advanceTimeBy(501)
 
-        sut.onSelectionChange(AnalyticsCards.Orders, false)
+            sut.onSelectionChange(ordersAnalyticsCard.toConfigurationUI(), true)
 
-        // The save button is disabled when the configuration doesn't have any change
-        assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
-        assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
-    }
+            // The save button is disabled when the configuration doesn't have any change
+            assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
+            assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
+        }
+
+    @Test
+    fun `when configuration have 2 selected card and one of those cards is deselected, then the selected card is disabled`() =
+        testBlocking {
+            val configuration = listOf(
+                AnalyticCardConfiguration(AnalyticsCards.Revenue, "Revenue", true),
+                AnalyticCardConfiguration(AnalyticsCards.Orders, "Orders", true),
+                AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
+            )
+            val expected = listOf(
+                AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = false),
+                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", false, isEnabled = true),
+                AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
+            )
+            whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
+
+            var viewState: AnalyticsHubSettingsViewState? = null
+            sut.viewStateData.observeForever { _, new -> viewState = new }
+
+            advanceTimeBy(501)
+
+            sut.onSelectionChange(ordersAnalyticsCard.toConfigurationUI(), false)
+
+            // The save button is disabled when the configuration doesn't have any change
+            assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
+            assertThat((viewState as CardsConfiguration).cardsConfiguration).isEqualTo(expected)
+        }
 
     @Test
     fun `when an order change event is triggered, then the card's order is the expected`() = testBlocking {
