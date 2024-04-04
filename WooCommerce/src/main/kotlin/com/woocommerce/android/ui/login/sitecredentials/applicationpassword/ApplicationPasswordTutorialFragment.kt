@@ -46,7 +46,7 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
                 is ExitWithResult<*> -> {
                     setFragmentResult(
                         requestKey = WEB_NAVIGATION_RESULT,
-                        result = bundleOf(URL_KEY to url)
+                        result = bundleOf(URL_KEY to it.data)
                     )
                 }
             }

@@ -33,7 +33,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialViewModel) {
     ApplicationPasswordTutorialScreen(
         onContinueClicked = viewModel::onContinueClicked,
-        onContactSupportClicked = viewModel::onContactSupportClicked
+        onContactSupportClicked = viewModel::onContactSupportClicked,
+        onPageLoaded = viewModel::onWebPageLoaded
     )
 }
 
@@ -41,7 +42,8 @@ fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialView
 fun ApplicationPasswordTutorialScreen(
     modifier: Modifier = Modifier,
     onContinueClicked: () -> Unit,
-    onContactSupportClicked: () -> Unit
+    onContactSupportClicked: () -> Unit,
+    onPageLoaded: (String) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -130,7 +132,8 @@ fun ApplicationPasswordTutorialScreenPreview() {
     WooThemeWithBackground {
         ApplicationPasswordTutorialScreen(
             onContinueClicked = { },
-            onContactSupportClicked = { }
+            onContactSupportClicked = { },
+            onPageLoaded = { }
         )
     }
 }
