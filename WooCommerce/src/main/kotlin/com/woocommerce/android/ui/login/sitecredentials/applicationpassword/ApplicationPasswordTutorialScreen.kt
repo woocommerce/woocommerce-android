@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -34,8 +36,10 @@ import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialViewModel) {
+    val viewState = viewModel.viewState.observeAsState()
     ApplicationPasswordTutorialScreen(
-        shouldDisplayWebView = false,
+        shouldDisplayWebView = viewState.value?.shouldDisplayWebView ?: false,
+        errorMessageRes = viewState.value?.errorMessage,
         webViewUrl = "",
         webViewUserAgent = viewModel.userAgent,
         onContinueClicked = viewModel::onContinueClicked,
@@ -50,6 +54,7 @@ fun ApplicationPasswordTutorialScreen(
     shouldDisplayWebView: Boolean,
     webViewUrl: String,
     webViewUserAgent: UserAgent?,
+    @StringRes errorMessageRes: Int?,
     onPageLoaded: (String) -> Unit,
     onContinueClicked: () -> Unit,
     onContactSupportClicked: () -> Unit
@@ -71,7 +76,13 @@ fun ApplicationPasswordTutorialScreen(
                 modifier = modifier
             )
         } else {
-            TutorialContentScreen(modifier, paddingValues, onContinueClicked, onContactSupportClicked)
+            TutorialContentScreen(
+                modifier = modifier,
+                paddingValues = paddingValues,
+                errorMessageRes = errorMessageRes,
+                onContinueClicked = onContinueClicked,
+                onContactSupportClicked = onContactSupportClicked
+            )
         }
     }
 }
@@ -80,6 +91,7 @@ fun ApplicationPasswordTutorialScreen(
 private fun TutorialContentScreen(
     modifier: Modifier,
     paddingValues: PaddingValues,
+    @StringRes errorMessageRes: Int?,
     onContinueClicked: () -> Unit,
     onContactSupportClicked: () -> Unit
 ) {
@@ -100,7 +112,7 @@ private fun TutorialContentScreen(
                     style = MaterialTheme.typography.h4,
                     fontWeight = FontWeight.Bold
                 )
-                Text(stringResource(id = R.string.login_app_password_subtitle))
+                Text(stringResource(id = errorMessageRes ?: R.string.login_app_password_subtitle))
             }
 
             Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
@@ -161,6 +173,7 @@ fun ApplicationPasswordTutorialScreenPreview() {
     WooThemeWithBackground {
         ApplicationPasswordTutorialScreen(
             shouldDisplayWebView = false,
+            errorMessageRes = R.string.login_app_password_subtitle,
             webViewUrl = "",
             webViewUserAgent = null,
             onContinueClicked = { },

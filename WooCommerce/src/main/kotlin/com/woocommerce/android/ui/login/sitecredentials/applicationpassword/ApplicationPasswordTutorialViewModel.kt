@@ -2,11 +2,15 @@ package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.update
 import org.wordpress.android.fluxc.network.UserAgent
 
 @HiltViewModel
@@ -14,8 +18,14 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     val userAgent: UserAgent,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    private val _viewState = savedState.getStateFlow(
+        scope = viewModelScope,
+        initialValue = ViewState()
+    )
+    val viewState = _viewState.asLiveData()
+
     fun onContinueClicked() {
-        triggerEvent(OnContinue)
+        _viewState.update { it.copy(shouldDisplayWebView = true) }
     }
 
     fun onContactSupportClicked() {
@@ -26,11 +36,11 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
         triggerEvent(ExitWithResult(url))
     }
 
-    object OnContinue : MultiLiveEvent.Event()
     object OnContactSupport : MultiLiveEvent.Event()
 
     data class ViewState(
-        val authorizationUrl: String?,
+        val shouldDisplayWebView: Boolean = false,
+        val authorizationUrl: String? = null,
         @StringRes val errorMessage: Int? = null,
     )
 }
