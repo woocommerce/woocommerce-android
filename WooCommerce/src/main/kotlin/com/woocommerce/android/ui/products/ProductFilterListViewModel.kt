@@ -9,6 +9,9 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.PluginUrls.Companion.BUNDLES_URL
+import com.woocommerce.android.model.PluginUrls.Companion.COMPOSITE_URL
+import com.woocommerce.android.model.PluginUrls.Companion.SUBSCRIPTIONS_URL
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.sortCategories
@@ -57,9 +60,6 @@ class ProductFilterListViewModel @Inject constructor(
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
         private const val KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME = "key_product_filter_selected_category_name"
-        const val SUBSCRIPTIONS_URL = "https://woo.com/products/woocommerce-subscriptions/"
-        const val BUNDLES_URL = "https://woo.com/products/product-bundles/"
-        const val COMPOSITE_URL = "https://woo.com/products/composite-products/"
     }
 
     private val arguments: ProductFilterListFragmentArgs by savedState.navArgs()
