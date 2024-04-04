@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
 import org.wordpress.android.fluxc.network.UserAgent
-import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
@@ -253,28 +252,20 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onFailure = { exception ->
                 val authenticationError = exception as? CookieNonceAuthenticationException
 
-                when (authenticationError?.errorType) {
-                    INVALID_CREDENTIALS -> triggerEvent(ShowApplicationPasswordTutorialScreen)
-                    else -> displayLoginFailureMessage(authenticationError, exception)
-                }
+                authenticationError?.errorMessage
+                    ?.let { errorDialogMessage.value = it }
+                    ?: triggerEvent(ShowApplicationPasswordTutorialScreen)
+
+                trackLoginFailure(
+                    step = Step.AUTHENTICATION,
+                    errorContext = exception.javaClass.simpleName,
+                    errorType = authenticationError?.errorType?.name,
+                    errorDescription = exception.message,
+                    statusCode = authenticationError?.networkStatusCode
+                )
             }
         )
         loadingMessage.value = 0
-    }
-
-    private fun displayLoginFailureMessage(
-        authenticationError: CookieNonceAuthenticationException?,
-        exception: Throwable
-    ) {
-        this.errorDialogMessage.value = authenticationError?.errorMessage ?: UiStringRes(R.string.error_generic)
-
-        trackLoginFailure(
-            step = Step.AUTHENTICATION,
-            errorContext = exception.javaClass.simpleName,
-            errorType = authenticationError?.errorType?.name,
-            errorDescription = exception.message,
-            statusCode = authenticationError?.networkStatusCode
-        )
     }
 
     private suspend fun fetchSite() {
