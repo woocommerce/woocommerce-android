@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.login.error.ApplicationPasswordsDisabledDialogFragment
 import com.woocommerce.android.ui.login.error.notwoo.LoginNotWooDialogFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
