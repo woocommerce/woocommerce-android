@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard.domain
+package com.woocommerce.android.ui.dashboard.stats
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
@@ -12,6 +12,13 @@ import com.woocommerce.android.ui.analytics.ranges.visitorSummaryStatsGranularit
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.dashboard.data.asRevenueRangeId
+import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.HasOrders
+import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.PluginNotActive
+import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.RevenueStatsError
+import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.RevenueStatsSuccess
+import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.VisitorStatUnavailable
+import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.VisitorsStatsError
+import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.flow.Flow
@@ -50,13 +57,13 @@ class GetStats @Inject constructor(
             revenueStats(selectedRange, shouldRefreshRevenue),
             visitorStats(selectedRange, shouldRefreshVisitors)
         ).onEach { result ->
-            if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
+            if (result is RevenueStatsSuccess && shouldRefreshRevenue) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
                     rangeSelection = selectedRange,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.REVENUE
                 )
             }
-            if (result is LoadStatsResult.VisitorsStatsSuccess && shouldRefreshVisitors) {
+            if (result is VisitorsStatsSuccess && shouldRefreshVisitors) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
                     rangeSelection = selectedRange,
                     analyticData = AnalyticsUpdateDataStore.AnalyticData.VISITORS
@@ -65,13 +72,13 @@ class GetStats @Inject constructor(
         }.flowOn(coroutineDispatchers.computation)
     }
 
-    private suspend fun hasOrders(): Flow<LoadStatsResult.HasOrders> =
+    private suspend fun hasOrders(): Flow<HasOrders> =
         statsRepository.checkIfStoreHasNoOrders()
             .transform {
                 if (it.getOrNull() == true) {
-                    emit(LoadStatsResult.HasOrders(false))
+                    emit(HasOrders(false))
                 } else {
-                    emit(LoadStatsResult.HasOrders(true))
+                    emit(HasOrders(true))
                 }
             }
 
@@ -87,7 +94,7 @@ class GetStats @Inject constructor(
             statsRepository.getRevenueStatsById(revenueRangeId)
                 .takeIf { it.isSuccess && it.getOrNull() != null }
                 ?.let {
-                    emit(LoadStatsResult.RevenueStatsSuccess(it.getOrNull()))
+                    emit(RevenueStatsSuccess(it.getOrNull()))
                     return@flow
                 }
         }
@@ -101,14 +108,14 @@ class GetStats @Inject constructor(
             result.fold(
                 onSuccess = { stats ->
                     appPrefsWrapper.setV4StatsSupported(true)
-                    LoadStatsResult.RevenueStatsSuccess(stats)
+                    RevenueStatsSuccess(stats)
                 },
                 onFailure = {
                     if (isPluginNotActiveError(it)) {
                         appPrefsWrapper.setV4StatsSupported(false)
-                        LoadStatsResult.PluginNotActive
+                        PluginNotActive
                     } else {
-                        LoadStatsResult.RevenueStatsError
+                        RevenueStatsError
                     }
                 }
             )
@@ -127,14 +134,14 @@ class GetStats @Inject constructor(
                 individualVisitorStats(rangeSelection, forceRefresh)
             ) { total, individual ->
                 if (total.isFailure || individual.isFailure) {
-                    LoadStatsResult.VisitorsStatsError
+                    VisitorsStatsError
                 } else {
-                    LoadStatsResult.VisitorsStatsSuccess(individual.getOrThrow(), total.getOrThrow())
+                    VisitorsStatsSuccess(individual.getOrThrow(), total.getOrThrow())
                 }
             }
 
             else -> selectedSite.connectionType?.let {
-                flowOf(LoadStatsResult.VisitorStatUnavailable(it))
+                flowOf(VisitorStatUnavailable(it))
             } ?: emptyFlow()
         }
     }

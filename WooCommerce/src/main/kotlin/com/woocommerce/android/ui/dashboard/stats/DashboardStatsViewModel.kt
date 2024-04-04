@@ -29,9 +29,8 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeas
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshState
 import com.woocommerce.android.ui.dashboard.JetpackBenefitsBannerUiModel
-import com.woocommerce.android.ui.dashboard.domain.GetStats
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
+import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
