@@ -9,9 +9,9 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.PluginUrls.Companion.BUNDLES_URL
-import com.woocommerce.android.model.PluginUrls.Companion.COMPOSITE_URL
-import com.woocommerce.android.model.PluginUrls.Companion.SUBSCRIPTIONS_URL
+import com.woocommerce.android.model.PluginUrls.BUNDLES_URL
+import com.woocommerce.android.model.PluginUrls.COMPOSITE_URL
+import com.woocommerce.android.model.PluginUrls.SUBSCRIPTIONS_URL
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.sortCategories
