@@ -69,7 +69,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.CustomAmountCard
 import com.woocommerce.android.ui.orders.Header
-import com.woocommerce.android.ui.orders.OrderNavigationLogger
 import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
@@ -139,9 +138,6 @@ class OrderDetailFragment :
 
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
-
-    @Inject
-    lateinit var orderNavigationLogger: OrderNavigationLogger
 
     private var _binding: FragmentOrderDetailBinding? = null
     private val binding get() = _binding!!
@@ -300,14 +296,11 @@ class OrderDetailFragment :
         } else {
             binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
             binding.toolbar.setNavigationOnClickListener {
-                orderNavigationLogger.logBackStack(findNavController(), "Before navigating back from OrderDetail")
-
                 if (!findNavController().popBackStack(R.id.orders, false)) {
                     // in case the back stack is empty, indicating that the OrderDetailsFragment is shown in details pane
                     // of the OrderListFragment, we need to propagate back press to the parent fragment manually.
                     requireActivity().onBackPressedDispatcher.onBackPressed()
                 }
-                orderNavigationLogger.logBackStack(findNavController(), "After navigating back from OrderDetail")
             }
         }
         val menuEditOrder = menu.findItem(R.id.menu_edit_order)
