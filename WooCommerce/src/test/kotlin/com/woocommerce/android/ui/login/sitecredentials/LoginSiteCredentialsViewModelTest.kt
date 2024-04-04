@@ -13,7 +13,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
-import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.util.observeForTesting
@@ -243,8 +242,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onContinueClick()
         }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
 
-        assertThat(state.errorDialogMessage).isNull()
-        assertThat(latestEventReceived).isEqualTo(ShowApplicationPasswordTutorialScreen)
+        assertThat(state.errorDialogMessage).isEqualTo(expectedError.errorMessage)
         verify(analyticsTracker).track(
             stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
             properties = argThat {
