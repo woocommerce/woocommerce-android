@@ -4,13 +4,13 @@ import android.annotation.SuppressLint
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
-import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class OrderNavigationLogger @Inject constructor(private val crashLogging: CrashLogging) {
+class OrderNavigationLogger @Inject constructor() {
 
     @SuppressLint("RestrictedApi")
     fun logBackStack(navController: NavController, actionDescription: String) {
@@ -37,9 +37,9 @@ class OrderNavigationLogger @Inject constructor(private val crashLogging: CrashL
                 "StartDestination={$startDestinationDetails}, " +
                 "BackStackEntries=[$backStackDescriptions]"
 
-            crashLogging.recordEvent(logMessage)
+            WooLog.d(WooLog.T.ORDERS, logMessage)
         } catch (exception: Exception) {
-            crashLogging.recordException(exception)
+            WooLog.e(WooLog.T.ORDERS, exception)
         }
     }
 }
