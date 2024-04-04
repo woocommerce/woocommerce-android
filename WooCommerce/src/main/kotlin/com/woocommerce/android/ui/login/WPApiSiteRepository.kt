@@ -176,7 +176,7 @@ class WPApiSiteRepository @Inject constructor(
                 message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
 
             type == Nonce.CookieNonceErrorType.INVALID_CREDENTIALS ->
-                UiStringRes(string.username_or_password_incorrect)
+                UiStringRes(string.login_invalid_credentials_message)
 
             type == Nonce.CookieNonceErrorType.INVALID_RESPONSE ->
                 UiStringRes(string.login_site_credentials_invalid_response)
