@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -12,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
+import kotlinx.parcelize.Parcelize
 
 @HiltViewModel
 class ApplicationPasswordTutorialViewModel @Inject constructor(
@@ -38,9 +40,10 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
 
     object OnContactSupport : MultiLiveEvent.Event()
 
+    @Parcelize
     data class ViewState(
         val shouldDisplayWebView: Boolean = false,
         val authorizationUrl: String? = null,
         @StringRes val errorMessage: Int? = null,
-    )
+    ) : Parcelable
 }
