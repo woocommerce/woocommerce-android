@@ -20,6 +20,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -254,9 +255,15 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onFailure = { exception ->
                 val authenticationError = exception as? CookieNonceAuthenticationException
 
-                when (authenticationError?.errorType) {
-                    GENERIC_ERROR, INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
-                    else -> triggerEvent(ShowApplicationPasswordTutorialScreen)
+                if (FeatureFlag.APP_PASSWORD_TUTORIAL.isEnabled()) {
+                    when (authenticationError?.errorType) {
+                        GENERIC_ERROR,
+                        INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
+                        else -> triggerEvent(ShowApplicationPasswordTutorialScreen)
+                    }
+                } else {
+                    this.errorDialogMessage.value = authenticationError?.errorMessage
+                        ?: UiStringRes(R.string.error_generic)
                 }
 
                 trackLoginFailure(

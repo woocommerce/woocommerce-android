@@ -16,6 +16,7 @@ enum class FeatureFlag {
     CUSTOM_RANGE_ANALYTICS,
     CONNECTIVITY_TOOL,
     NEW_SHIPPING_SUPPORT,
+    APP_PASSWORD_TUTORIAL,
     DYNAMIC_DASHBOARD;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -28,7 +29,8 @@ enum class FeatureFlag {
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE,
+            APP_PASSWORD_TUTORIAL -> PackageUtils.isDebugBuild()
 
             DYNAMIC_DASHBOARD -> PackageUtils.isDebugBuild() && !PackageUtils.isTesting()
 
