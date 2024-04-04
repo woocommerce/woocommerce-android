@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.model.BundleItem
+import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
@@ -303,12 +305,74 @@ class AnalyticsRepository @Inject constructor(
 
     private fun getCurrencyCode() = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode
 
+    suspend fun fetchProductBundlesStats(rangeSelection: StatsTimeRangeSelection) = coroutineScope {
+        val currentPeriod = rangeSelection.currentRange
+        val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
+        val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
+
+        val previousPeriod = rangeSelection.previousRange
+        val previousStartDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
+        val previousEndDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
+
+        val currentBundleStatsCall = async {
+            statsRepository.fetchProductBundlesStats(
+                startDate = currentStartDate,
+                endDate = currentEndDate
+            )
+        }
+
+        val previousBundleStatsCall = async {
+            statsRepository.fetchProductBundlesStats(
+                startDate = previousStartDate,
+                endDate = previousEndDate
+            )
+        }
+
+        val bundlesReportCall = async {
+            statsRepository.fetchBundleReport(
+                startDate = currentStartDate,
+                endDate = currentEndDate,
+                quantity = TOP_BUNDLES_LIST_SIZE
+            )
+        }
+
+        val currentBundleStats = currentBundleStatsCall.await().model
+        val previousBundleStats = previousBundleStatsCall.await().model
+        val bundlesReport = bundlesReportCall.await().model
+
+        if (currentBundleStats == null || previousBundleStats == null || bundlesReport == null) {
+            BundlesResult.BundlesError
+        } else {
+            val delta = calculateDeltaPercentage(
+                previousVal = previousBundleStats.netRevenue,
+                currentVal = currentBundleStats.netRevenue,
+            )
+            val bundles = bundlesReport.map { item ->
+                BundleItem(
+                    netSales = item.netRevenue,
+                    name = item.name,
+                    image = item.image,
+                    quantity = item.itemsSold,
+                    currencyCode = getCurrencyCode()
+                )
+            }
+            BundlesResult.BundlesData(
+                BundleStat(
+                    bundlesSold = currentBundleStats.itemsSold,
+                    bundlesSoldDelta = delta,
+                    bundles = bundles
+                )
+            )
+        }
+    }
+
     companion object {
         const val ZERO_VALUE = 0.0
         const val MINUS_ONE = -1
         const val ONE_H_PERCENT = 100
 
         const val TOP_PRODUCTS_LIST_SIZE = 5
+        const val TOP_BUNDLES_LIST_SIZE = 5
     }
 
     sealed class RevenueResult {
@@ -329,6 +393,11 @@ class AnalyticsRepository @Inject constructor(
     sealed class VisitorsResult {
         object VisitorsError : VisitorsResult()
         data class VisitorsData(val visitorsCount: Int) : VisitorsResult()
+    }
+
+    sealed class BundlesResult {
+        object BundlesError : BundlesResult()
+        data class BundlesData(val bundleStat: BundleStat) : BundlesResult()
     }
 
     sealed class FetchStrategy {
