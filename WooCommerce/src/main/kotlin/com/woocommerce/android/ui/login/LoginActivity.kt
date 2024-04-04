@@ -849,14 +849,6 @@ class LoginActivity :
         tag = LoginSiteCredentialsFragment.TAG
     )
 
-    override fun showApplicationPasswordTutorialScreen() {
-        changeFragment(
-            fragment = ApplicationPasswordTutorialFragment.newInstance(),
-            shouldAddToBackStack = true,
-            tag = ApplicationPasswordTutorialFragment.TAG
-        )
-    }
-
     override fun startJetpackInstall(siteAddress: String?) {
         siteAddress?.let {
             val url = "$JETPACK_CONNECT_URL?url=$it&mobile_redirect=$JETPACK_CONNECTED_REDIRECT_URL&from=mobile"

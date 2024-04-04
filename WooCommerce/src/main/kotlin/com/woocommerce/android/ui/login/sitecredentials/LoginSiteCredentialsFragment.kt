@@ -9,12 +9,14 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.login.error.ApplicationPasswordsDisabledDialogFragment
 import com.woocommerce.android.ui.login.error.notwoo.LoginNotWooDialogFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
+import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowHelpScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
@@ -79,6 +81,7 @@ class LoginSiteCredentialsFragment : Fragment() {
                         .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
                 is ShowHelpScreen -> loginListener.helpUsernamePassword(it.siteAddress, it.username, false)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
+                is ShowApplicationPasswordTutorialScreen -> showApplicationPasswordScreen()
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
@@ -99,5 +102,16 @@ class LoginSiteCredentialsFragment : Fragment() {
         ) { _, _ ->
             viewModel.retryApplicationPasswordsCheck()
         }
+    }
+
+    private fun showApplicationPasswordScreen() {
+        parentFragmentManager.beginTransaction()
+            .replace(
+                R.id.fragment_container,
+                ApplicationPasswordTutorialFragment.newInstance(),
+                ApplicationPasswordTutorialFragment.TAG
+            )
+            .addToBackStack(ApplicationPasswordTutorialFragment.TAG)
+            .commit()
     }
 }
