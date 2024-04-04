@@ -175,6 +175,9 @@ class WPApiSiteRepository @Inject constructor(
             type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ->
                 message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
 
+            type == Nonce.CookieNonceErrorType.INVALID_CREDENTIALS ->
+                UiStringRes(string.username_or_password_incorrect)
+
             type == Nonce.CookieNonceErrorType.INVALID_RESPONSE ->
                 UiStringRes(string.login_site_credentials_invalid_response)
 
@@ -190,7 +193,7 @@ class WPApiSiteRepository @Inject constructor(
                     listOf(UiStringText(networkStatusCode.toString()))
                 )
 
-            else -> UiStringRes(string.error_generic)
+            else -> null
         }
         return CookieNonceAuthenticationException(
             errorMessage,
@@ -200,7 +203,7 @@ class WPApiSiteRepository @Inject constructor(
     }
 
     data class CookieNonceAuthenticationException(
-        val errorMessage: UiString,
+        val errorMessage: UiString?,
         val errorType: Nonce.CookieNonceErrorType,
         val networkStatusCode: Int?
     ) : Exception((errorMessage as? UiStringText)?.text)
