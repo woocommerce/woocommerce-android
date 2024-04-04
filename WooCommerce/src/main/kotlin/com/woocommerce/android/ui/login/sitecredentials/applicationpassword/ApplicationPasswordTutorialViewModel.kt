@@ -11,9 +11,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.UserAgent
 import javax.inject.Inject
-import kotlinx.parcelize.Parcelize
 
 @HiltViewModel
 class ApplicationPasswordTutorialViewModel @Inject constructor(

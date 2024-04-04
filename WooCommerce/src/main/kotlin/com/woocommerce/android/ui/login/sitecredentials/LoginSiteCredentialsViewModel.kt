@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
@@ -289,7 +288,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private suspend fun fetchSiteForTutorial(
         username: String,
         password: String,
-        detectedErrorMessage: UiStringRes?= null
+        detectedErrorMessage: UiStringRes? = null
     ) {
         loadingMessage.value = R.string.login_site_credentials_fetching_site
         wpApiSiteRepository.fetchSite(
