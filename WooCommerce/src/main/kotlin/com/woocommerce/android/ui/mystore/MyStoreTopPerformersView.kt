@@ -20,6 +20,7 @@ import com.woocommerce.android.databinding.MyStoreTopPerformersBinding
 import com.woocommerce.android.databinding.TopPerformersListItemBinding
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.toDashBoardTrackingGranularityString
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.SkeletonView
 import java.util.Locale
@@ -58,7 +59,7 @@ class MyStoreTopPerformersView @JvmOverloads constructor(
     fun onDateGranularityChanged(selectionType: SelectionType) {
         AnalyticsTracker.track(
             AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_DATE,
-            mapOf(AnalyticsTracker.KEY_RANGE to selectionType.identifier)
+            mapOf(AnalyticsTracker.KEY_RANGE to selectionType.toDashBoardTrackingGranularityString())
         )
         binding.topPerformersRecycler.adapter = TopPerformersAdapter()
         showEmptyView(false)
