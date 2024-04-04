@@ -720,7 +720,7 @@ class OrderListFragment :
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-                OrderCreateEditViewModel.Mode.Creation,
+                OrderCreateEditViewModel.Mode.Creation(),
                 code,
                 barcodeFormat,
             )

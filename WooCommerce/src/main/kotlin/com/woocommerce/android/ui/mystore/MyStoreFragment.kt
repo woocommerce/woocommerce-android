@@ -70,7 +70,7 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.ui.products.ProductDetailFragment
+import com.woocommerce.android.ui.products.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -418,14 +418,10 @@ class MyStoreFragment :
             }
         }
         myStoreViewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
-            when (stats) {
-                is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
-                VisitorStatsViewState.Error -> {
-                    binding.jetpackBenefitsBanner.root.isVisible = false
-                    binding.myStoreStats.showVisitorStatsError()
-                }
-
-                is VisitorStatsViewState.Unavailable -> onVisitorStatsUnavailable(stats)
+            binding.jetpackBenefitsBanner.root.isVisible = stats is VisitorStatsViewState.Unavailable
+            binding.myStoreStats.showVisitorStats(stats)
+            if (stats is VisitorStatsViewState.Unavailable) {
+                onVisitorStatsUnavailable(stats)
             }
         }
         myStoreViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
@@ -441,11 +437,25 @@ class MyStoreFragment :
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
+        myStoreViewModel.lastUpdateStats.observe(viewLifecycleOwner) { lastUpdateMillis ->
+            binding.myStoreStats.showLastUpdate(lastUpdateMillis)
+        }
+        myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
+            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
+        }
+        myStoreViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
+            ((activity) as MainActivity).setSubtitle(storeName)
+        }
+
+        observeMyStoreEvents()
+    }
+
+    private fun observeMyStoreEvents() {
         myStoreViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
                     NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
+                        mode = ShowProduct(event.productId),
                         isTrashEnabled = false
                     )
                 )
@@ -476,20 +486,9 @@ class MyStoreFragment :
                 else -> event.isHandled = false
             }
         }
-        myStoreViewModel.lastUpdateStats.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreStats.showLastUpdate(lastUpdateMillis)
-        }
-        myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
-        }
-        myStoreViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
-            ((activity) as MainActivity).setSubtitle(storeName)
-        }
     }
 
     private fun onVisitorStatsUnavailable(state: VisitorStatsViewState.Unavailable) {
-        handleUnavailableVisitorStats()
-
         val jetpackBenefitsBanner = state.benefitsBanner
         if (jetpackBenefitsBanner.show) {
             binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
@@ -606,15 +605,6 @@ class MyStoreFragment :
         binding.myStoreTopPerformers.showSkeleton(false)
         binding.myStoreTopPerformers.showErrorView(true)
         showErrorSnack()
-    }
-
-    private fun showVisitorStats(visitorStats: Map<String, Int>) {
-        binding.jetpackBenefitsBanner.root.isVisible = false
-        binding.myStoreStats.showVisitorStats(visitorStats)
-    }
-
-    private fun handleUnavailableVisitorStats() {
-        binding.myStoreStats.handleJetpackUnavailableVisitorStats()
     }
 
     private fun showErrorSnack() {
