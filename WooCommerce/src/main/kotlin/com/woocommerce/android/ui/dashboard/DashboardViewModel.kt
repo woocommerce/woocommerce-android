@@ -20,6 +20,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
@@ -168,6 +169,11 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
+    fun onEditWidgetsClicked() {
+        // TODO ADD TRACKING HERE
+        triggerEvent(OpenEditWidgets)
+    }
+
     private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) =
         coroutineScope {
             if (!networkStatus.isConnected()) return@coroutineScope
@@ -267,6 +273,8 @@ class DashboardViewModel @Inject constructor(
         data object ShowAIProductDescriptionDialog : DashboardEvent()
 
         data class ShareStore(val storeUrl: String) : DashboardEvent()
+
+        data object OpenEditWidgets : DashboardEvent()
     }
 
     data class RefreshState(private val isForced: Boolean = false) {

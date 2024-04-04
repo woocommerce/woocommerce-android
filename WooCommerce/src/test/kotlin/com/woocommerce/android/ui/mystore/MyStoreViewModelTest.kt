@@ -13,6 +13,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.toDashBoardTrackingGranularityString
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.Content
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.GenericError
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.PluginNotActiveError
@@ -216,7 +217,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
-                mapOf(AnalyticsTracker.KEY_RANGE to ANY_SELECTION_TYPE.identifier)
+                mapOf(AnalyticsTracker.KEY_RANGE to ANY_SELECTION_TYPE.toDashBoardTrackingGranularityString())
             )
         }
 
@@ -371,7 +372,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
-                mapOf(AnalyticsTracker.KEY_RANGE to ANY_SELECTION_TYPE.identifier)
+                mapOf(AnalyticsTracker.KEY_RANGE to ANY_SELECTION_TYPE.toDashBoardTrackingGranularityString())
             )
         }
 

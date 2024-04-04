@@ -402,6 +402,11 @@
     <string name="my_store_custom_range_granularity_year">Yearly</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
+    <string name="my_store_edit_screen_widgets">Edit sections of my store</string>
+    <string name="my_store_edit_screen_widget_stats">Store Stats</string>
+    <string name="my_store_edit_screen_widget_top_performers">Top Performer Products</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze Campaigns</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Store Onboarding</string>
 
     <string name="my_store_widget_onboarding_title">Onboarding</string>
     <string name="my_store_widget_stats_title">Statistics</string>
@@ -680,6 +685,10 @@
     <string name="order_creation_recalculate_button">Recalculate</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
     <string name="order_creation_payment_shipping_tax_label">Shipping Tax</string>
+    <string name="order_creation_simple_payment_migration_title">Collect Payment \nhas moved</string>
+    <string name="order_creation_simple_payment_migration_message_one">We’ve combined payment collection with\norder creation, making it more accessible\nand more powerful.</string>
+    <string name="order_creation_simple_payment_migration_message_two">To set a payment amount, add\na custom amount to your new order.</string>
+    <string name="order_creation_simple_payment_migration_button">Add a Custom Amount</string>
     <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
     <string name="customer_picker_guest">Guest</string>
 

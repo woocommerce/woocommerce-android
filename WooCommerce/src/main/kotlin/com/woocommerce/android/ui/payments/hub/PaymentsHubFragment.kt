@@ -123,7 +123,7 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                 is PaymentsHubViewModel.PaymentsHubEvents.NavigateToOrderCreationScreen -> {
                     findNavController().navigate(
                         PaymentsHubFragmentDirections.actionCardReaderHubFragmentToOrderCreationFragment(
-                            mode = OrderCreateEditViewModel.Mode.Creation,
+                            mode = OrderCreateEditViewModel.Mode.Creation(indicateSimplePaymentsMigration = true),
                         )
                     )
                 }

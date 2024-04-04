@@ -132,7 +132,7 @@ class OrderCreateEditTotalsHelperTest {
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
             localOrder,
-            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.Mode.Creation(),
             OrderCreateEditViewModel.ViewState(
                 taxBasedOnSettingLabel = taxBasedOnSettingLabel
             ),
@@ -210,7 +210,7 @@ class OrderCreateEditTotalsHelperTest {
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
             localOrder,
-            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.Mode.Creation(),
             OrderCreateEditViewModel.ViewState(),
             {},
             {},
@@ -244,7 +244,7 @@ class OrderCreateEditTotalsHelperTest {
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
             localOrder,
-            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.Mode.Creation(),
             OrderCreateEditViewModel.ViewState(),
             {},
             {},
@@ -280,7 +280,7 @@ class OrderCreateEditTotalsHelperTest {
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
             localOrder,
-            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.Mode.Creation(),
             OrderCreateEditViewModel.ViewState(),
             {},
             {},

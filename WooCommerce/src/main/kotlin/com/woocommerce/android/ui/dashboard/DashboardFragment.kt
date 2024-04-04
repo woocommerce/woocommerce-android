@@ -44,11 +44,11 @@ import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
@@ -90,7 +90,7 @@ class DashboardFragment :
         private const val JITM_FRAGMENT_TAG = "jitm_fragment"
     }
 
-    private val myStoreViewModel: DashboardViewModel by viewModels()
+    private val dashboardViewModel: DashboardViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
     private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
 
@@ -139,7 +139,7 @@ class DashboardFragment :
     private var wasPreviouslyStopped = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        lifecycle.addObserver(myStoreViewModel.performanceObserver)
+        lifecycle.addObserver(dashboardViewModel.performanceObserver)
         lifecycle.addObserver(storeOnboardingViewModel)
         super.onCreate(savedInstanceState)
     }
@@ -170,7 +170,7 @@ class DashboardFragment :
 
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
-            myStoreViewModel.onPullToRefresh()
+            dashboardViewModel.onPullToRefresh()
             storeOnboardingViewModel.onPullToRefresh()
 //            binding.myStoreStats.clearStatsHeaderValues()
 //            binding.myStoreStats.clearChartData()
@@ -367,25 +367,25 @@ class DashboardFragment :
 
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
     private fun setupStateObservers() {
-        myStoreViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
+        dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
-        myStoreViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
+        dashboardViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
             binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
         }
-        myStoreViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
+        dashboardViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
             when {
                 topPerformers.isLoading -> showTopPerformersLoading()
                 topPerformers.isError -> showTopPerformersError()
                 else -> showTopPerformers(topPerformers.topPerformers)
             }
         }
-        myStoreViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
+        dashboardViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
             when (newValue) {
-                OrderState.Empty -> showEmptyView(true)
-                OrderState.AtLeastOne -> showEmptyView(false)
+                DashboardViewModel.OrderState.Empty -> showEmptyView(true)
+                DashboardViewModel.OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
-        myStoreViewModel.event.observe(viewLifecycleOwner) { event ->
+        dashboardViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
                     NavGraphMainDirections.actionGlobalProductDetailFragment(
@@ -406,13 +406,19 @@ class DashboardFragment :
                         DashboardFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
                     )
 
+                is OpenEditWidgets -> {
+                    findNavController().navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToEditWidgetsFragment()
+                    )
+                }
+
                 else -> event.isHandled = false
             }
         }
-        myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
+        dashboardViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
             binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
         }
-        myStoreViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
+        dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
             ((activity) as MainActivity).setSubtitle(storeName)
         }
     }
@@ -545,7 +551,7 @@ class DashboardFragment :
 
     override fun getFragmentTitle() = getString(R.string.my_store)
 
-    override fun getFragmentSubtitle(): String = myStoreViewModel.storeName.value ?: ""
+    override fun getFragmentSubtitle(): String = dashboardViewModel.storeName.value ?: ""
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
@@ -612,7 +618,7 @@ class DashboardFragment :
         if (show) {
             dashboardVisibility = View.GONE
             binding.emptyView.show(EmptyViewType.DASHBOARD) {
-                myStoreViewModel.onShareStoreClicked()
+                dashboardViewModel.onShareStoreClicked()
             }
         } else {
             binding.emptyView.hide()
@@ -626,13 +632,18 @@ class DashboardFragment :
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.menu_my_store_fragment, menu)
+        menuInflater.inflate(R.menu.menu_dashboard_fragment, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
+            R.id.menu_edit_screen_widgets -> {
+                dashboardViewModel.onEditWidgetsClicked()
+                true
+            }
+
             R.id.menu_share_store -> {
-                myStoreViewModel.onShareStoreClicked()
+                dashboardViewModel.onShareStoreClicked()
                 true
             }
 
@@ -642,6 +653,6 @@ class DashboardFragment :
 
     override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.menu_share_store).isVisible =
-            myStoreViewModel.appbarState.value?.showShareStoreButton ?: false
+            dashboardViewModel.appbarState.value?.showShareStoreButton ?: false
     }
 }
