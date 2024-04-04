@@ -4,7 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.isVisible
@@ -97,19 +98,23 @@ fun DashboardStatsCard(
     onTabSelected: (SelectionType) -> Unit,
 ) {
     val lifecycleScope = LocalLifecycleOwner.current.lifecycleScope
-    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val statsView = remember(context) {
+        DashboardStatsView(context).apply {
+            initView(
+                dateUtils = dateUtils,
+                currencyFormatter = currencyFormatter,
+                usageTracksEventEmitter = usageTracksEventEmitter,
+                lifecycleScope = lifecycleScope,
+                onViewAnalyticsClick = onViewAnalyticsClick
+            )
+        }
+    }
 
     AndroidView(
-        factory = { context ->
-            DashboardStatsView(context).apply {
-                initView(
-                    dateUtils = dateUtils,
-                    currencyFormatter = currencyFormatter,
-                    usageTracksEventEmitter = usageTracksEventEmitter,
-                    lifecycleScope = lifecycleScope,
-                    onViewAnalyticsClick = onViewAnalyticsClick
-                )
-
+        factory = {
+            statsView.apply {
                 customRangeButton.setOnClickListener { onAddCustomRangeClick() }
                 customRangeLabel.setOnClickListener { onAddCustomRangeClick() }
 
@@ -125,51 +130,65 @@ fun DashboardStatsCard(
                     }
                 )
             }
-        },
-        update = { view ->
-            selectedDateRange?.let { view.loadDashboardStats(it) }
-            if (view.tabLayout.getTabAt(view.tabLayout.selectedTabPosition)?.tag != selectedDateRange?.selectionType) {
-                val index = (0..view.tabLayout.tabCount)
-                    .firstOrNull { view.tabLayout.getTabAt(it)?.tag == selectedDateRange?.selectionType }
-                index?.let {
-                    coroutineScope.launch {
-                        // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
-                        delay(300)
-                        view.tabLayout.getTabAt(index)?.select()
-                    }
-                }
-            }
-
-            view.handleCustomRangeTab(customRange)
-
-            view.showLastUpdate(lastUpdateState)
-
-            when (revenueStatsState) {
-                is DashboardStatsViewModel.RevenueStatsViewState.Content -> {
-                    view.showErrorView(false)
-                    view.showSkeleton(false)
-                    view.tabLayout.isVisible = AppPrefs.isV4StatsSupported()
-                    view.updateView(revenueStatsState.revenueStats)
-                }
-
-                DashboardStatsViewModel.RevenueStatsViewState.GenericError -> {
-                    view.showErrorView(true)
-                    view.showSkeleton(false)
-                }
-
-                DashboardStatsViewModel.RevenueStatsViewState.Loading -> {
-                    view.showErrorView(false)
-                    view.showSkeleton(true)
-                }
-
-                else -> Unit
-            }
-
-            visitorsStatsState?.let {
-                view.showVisitorStats(it)
-            }
         }
     )
+
+    // Update the view using side effects
+    // This is better than using [AndroidView]'s update because it allows for granular updates, while the former
+    // is applying all properties on each composition (even the unchanged ones) which creates issues with the legacy
+    // view.
+
+    LaunchedEffect(customRange) {
+        statsView.handleCustomRangeTab(customRange)
+    }
+
+    LaunchedEffect(selectedDateRange) {
+        selectedDateRange?.let { statsView.loadDashboardStats(it) }
+        if (statsView.tabLayout.getTabAt(statsView.tabLayout.selectedTabPosition)?.tag != selectedDateRange?.selectionType) {
+            val index = (0..statsView.tabLayout.tabCount)
+                .firstOrNull { statsView.tabLayout.getTabAt(it)?.tag == selectedDateRange?.selectionType }
+            index?.let {
+                launch {
+                    // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
+                    delay(300)
+                    statsView.tabLayout.getTabAt(index)?.select()
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(lastUpdateState) {
+        statsView.showLastUpdate(lastUpdateState)
+    }
+
+    LaunchedEffect(revenueStatsState) {
+        when (revenueStatsState) {
+            is DashboardStatsViewModel.RevenueStatsViewState.Content -> {
+                statsView.showErrorView(false)
+                statsView.showSkeleton(false)
+                statsView.tabLayout.isVisible = AppPrefs.isV4StatsSupported()
+                statsView.updateView(revenueStatsState.revenueStats)
+            }
+
+            DashboardStatsViewModel.RevenueStatsViewState.GenericError -> {
+                statsView.showErrorView(true)
+                statsView.showSkeleton(false)
+            }
+
+            DashboardStatsViewModel.RevenueStatsViewState.Loading -> {
+                statsView.showErrorView(false)
+                statsView.showSkeleton(true)
+            }
+
+            else -> Unit
+        }
+    }
+
+    LaunchedEffect(visitorsStatsState) {
+        visitorsStatsState?.let {
+            statsView.showVisitorStats(it)
+        }
+    }
 }
 
 @Composable
@@ -186,6 +205,7 @@ private fun HandleEvents(
                 is DashboardStatsViewModel.OpenDatePicker -> {
                     openDatePicker(event.fromDate.time, event.toDate.time)
                 }
+
                 is DashboardStatsViewModel.OpenAnalytics -> {
                     navController.navigateSafely(
                         DashboardFragmentDirections.actionDashboardToAnalytics(event.analyticsPeriod)
