@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard
+package com.woocommerce.android.ui.dashboard.stats
 
 import android.content.Context
 import android.os.Handler
@@ -41,6 +41,8 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
+import com.woocommerce.android.ui.dashboard.BarChartGestureListener
+import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsUiModel
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.VisitorStatsViewState

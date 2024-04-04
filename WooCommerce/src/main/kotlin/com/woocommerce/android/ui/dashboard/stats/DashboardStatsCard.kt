@@ -19,7 +19,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
-import com.woocommerce.android.ui.dashboard.DashboardStatsView
 import com.woocommerce.android.ui.dashboard.JetpackBenefitsBannerUiModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
