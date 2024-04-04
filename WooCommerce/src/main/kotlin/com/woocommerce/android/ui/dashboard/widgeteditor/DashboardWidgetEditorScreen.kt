@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore.widgeteditor
+package com.woocommerce.android.ui.dashboard.widgeteditor
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
@@ -21,7 +21,7 @@ import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.DragAndDropSelectableItemsList
 
 @Composable
-fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
+fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
     BackHandler(onBack = viewModel::onBackPressed)
     viewModel.viewState.observeAsState().value?.let { state ->
         Scaffold(topBar = {

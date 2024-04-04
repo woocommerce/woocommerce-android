@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenDatePicker
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.domain.GetStats
 import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.HasOrders
@@ -318,7 +319,7 @@ class DashboardViewModel @Inject constructor(
             System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
         )
         val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
-            connectionType == SiteConnectionType.ApplicationPasswords
+                connectionType == SiteConnectionType.ApplicationPasswords
         val showBanner = supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
         val benefitsBanner = JetpackBenefitsBannerUiModel(
             show = showBanner,
@@ -487,6 +488,11 @@ class DashboardViewModel @Inject constructor(
         analyticsTrackerWrapper.track(event)
     }
 
+    fun onEditWidgetsClicked() {
+        // TODO ADD TRACKING HERE
+        triggerEvent(OpenEditWidgets)
+    }
+
     sealed class RevenueStatsViewState {
         data object Loading : RevenueStatsViewState()
         data object GenericError : RevenueStatsViewState()
@@ -537,6 +543,8 @@ class DashboardViewModel @Inject constructor(
         data class ShareStore(val storeUrl: String) : DashboardEvent()
 
         data class OpenDatePicker(val fromDate: Date, val toDate: Date) : DashboardEvent()
+
+        data object OpenEditWidgets : DashboardEvent()
     }
 
     data class RefreshState(private val isForced: Boolean = false) {

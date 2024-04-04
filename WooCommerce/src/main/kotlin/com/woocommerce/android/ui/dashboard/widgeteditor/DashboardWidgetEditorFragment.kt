@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore.widgeteditor
+package com.woocommerce.android.ui.dashboard.widgeteditor
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,15 +13,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MyStoreWidgetEditorFragment : BaseFragment() {
+class DashboardWidgetEditorFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    val viewModel: MyStoreWidgetEditorViewModel by viewModels()
+    val viewModel: DashboardWidgetEditorViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            MyStoreWidgetEditorScreen(viewModel)
+            DashboardWidgetEditorScreen(viewModel)
         }
     }
 

@@ -58,7 +58,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenAnalytics
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
-import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenEditWidgets
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenTopPerformer
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShareStore
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
@@ -484,12 +483,6 @@ class MyStoreFragment :
                     myStoreViewModel.onCustomRangeSelected(StatsTimeRange(Date(start), Date(end)))
                 }
 
-                is OpenEditWidgets -> {
-                    findNavController().navigateSafely(
-                        MyStoreFragmentDirections.actionMyStoreToEditWidgetsFragment()
-                    )
-                }
-
                 else -> event.isHandled = false
             }
         }
@@ -734,11 +727,6 @@ class MyStoreFragment :
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
-            R.id.menu_edit_screen_widgets -> {
-                myStoreViewModel.onEditWidgetsClicked()
-                true
-            }
-
             R.id.menu_share_store -> {
                 myStoreViewModel.onShareStoreClicked()
                 true

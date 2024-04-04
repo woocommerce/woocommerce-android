@@ -84,9 +84,6 @@
         <action
             android:id="@+id/action_myStore_to_blazeCampaignListFragment"
             app:destination="@id/blazeCampaignListFragment" />
-        <action
-            android:id="@+id/action_myStore_to_editWidgetsFragment"
-            app:destination="@id/myStoreWidgetEditorFragment" />
     </fragment>
     <fragment
         android:id="@+id/dashboard"
@@ -154,6 +151,9 @@
         <action
             android:id="@+id/action_dashboard_to_blazeCampaignListFragment"
             app:destination="@id/blazeCampaignListFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_editWidgetsFragment"
+            app:destination="@id/myStoreWidgetEditorFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -860,6 +860,6 @@
         android:label="OrderConnectivityToolFragment" />
     <fragment
         android:id="@+id/myStoreWidgetEditorFragment"
-        android:name="com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorFragment"
+        android:name="com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorFragment"
         android:label="MyStoreWidgetEditorFragment" />
 </navigation>

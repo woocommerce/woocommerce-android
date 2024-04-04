@@ -1,14 +1,14 @@
-package com.woocommerce.android.ui.mystore.widgeteditor
+package com.woocommerce.android.ui.dashboard.widgeteditor
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.BlazeCampaigns
-import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.StoreOnboarding
-import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.StoreStats
-import com.woocommerce.android.ui.mystore.widgeteditor.MyStoreWidgetEditorViewModel.WidgetType.TopProducts
+import com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorViewModel.WidgetType.BlazeCampaigns
+import com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorViewModel.WidgetType.StoreOnboarding
+import com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorViewModel.WidgetType.StoreStats
+import com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorViewModel.WidgetType.TopProducts
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -20,7 +20,7 @@ import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
-class MyStoreWidgetEditorViewModel @Inject constructor(
+class DashboardWidgetEditorViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -34,22 +34,22 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
     )
 
     private fun getWidgetsCurrentSelection() = listOf(
-        MyStoreWidget(
+        DashboardWidget(
             title = resourceProvider.getString(R.string.my_store_edit_screen_widget_stats),
             isSelected = true,
             StoreStats
         ),
-        MyStoreWidget(
+        DashboardWidget(
             title = resourceProvider.getString(R.string.my_store_edit_screen_widget_top_performers),
             isSelected = true,
             TopProducts
         ),
-        MyStoreWidget(
+        DashboardWidget(
             title = resourceProvider.getString(R.string.my_store_edit_screen_widget_blaze_campaigns),
             isSelected = true,
             BlazeCampaigns
         ),
-        MyStoreWidget(
+        DashboardWidget(
             title = resourceProvider.getString(R.string.my_store_edit_screen_widget_onboarding_list),
             isSelected = false,
             StoreOnboarding
@@ -72,9 +72,9 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
         TODO("Saving selected widgets is not yet implemented")
     }
 
-    fun onSelectionChange(myStoreWidget: MyStoreWidget, selected: Boolean) {
+    fun onSelectionChange(dashboardWidget: DashboardWidget, selected: Boolean) {
         editedWidgets = editedWidgets
-            .map { if (it == myStoreWidget) it.copy(isSelected = selected) else it }
+            .map { if (it == dashboardWidget) it.copy(isSelected = selected) else it }
         updateWidgetStateWith(editedWidgets)
     }
 
@@ -83,7 +83,7 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
         updateWidgetStateWith(editedWidgets)
     }
 
-    private fun updateWidgetStateWith(editedWidgets: List<MyStoreWidget>) {
+    private fun updateWidgetStateWith(editedWidgets: List<DashboardWidget>) {
         widgetEditorState.update {
             it.copy(
                 widgetList = editedWidgets,
@@ -100,18 +100,18 @@ class MyStoreWidgetEditorViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
-    private fun hasChanges(editedWidgets: List<MyStoreWidget>) = editedWidgets != existingWidgetConfiguration
+    private fun hasChanges(editedWidgets: List<DashboardWidget>) = editedWidgets != existingWidgetConfiguration
 
     @Parcelize
     data class WidgetEditorState(
-        val widgetList: List<MyStoreWidget>,
+        val widgetList: List<DashboardWidget>,
         val showDiscardDialog: Boolean = false,
         val isSaveButtonEnabled: Boolean = false,
         val isLoading: Boolean = false
     ) : Parcelable
 
     @Parcelize
-    data class MyStoreWidget(
+    data class DashboardWidget(
         val title: String,
         val isSelected: Boolean,
         val type: WidgetType,
