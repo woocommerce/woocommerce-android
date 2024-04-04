@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
+import com.woocommerce.android.model.PluginUrls
 import com.woocommerce.android.ui.analytics.hub.GetAnalyticPluginsCardActive
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticCardConfigurationUI
@@ -174,9 +175,24 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
                 AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
             )
             val expected = listOf(
-                AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = false),
-                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", false, isEnabled = true),
-                AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Revenue,
+                    "Revenue",
+                    true,
+                    isEnabled = false
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Orders,
+                    "Orders",
+                    false,
+                    isEnabled = true
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Session,
+                    "Stats",
+                    false,
+                    isEnabled = true
+                )
             )
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
             whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
@@ -201,9 +217,24 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
                 AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
             )
             val expected = listOf(
-                AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = true),
-                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true, isEnabled = true),
-                AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Revenue,
+                    "Revenue",
+                    true,
+                    isEnabled = true
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Orders,
+                    "Orders",
+                    true,
+                    isEnabled = true
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Session,
+                    "Stats",
+                    false,
+                    isEnabled = true
+                )
             )
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
             whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
@@ -215,7 +246,12 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
             advanceTimeBy(501)
 
             sut.onSelectionChange(
-                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", false, isEnabled = true),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Orders,
+                    "Orders",
+                    false,
+                    isEnabled = true
+                ),
                 true
             )
 
@@ -233,9 +269,24 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
                 AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
             )
             val expected = listOf(
-                AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = false),
-                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", false, isEnabled = true),
-                AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Revenue,
+                    "Revenue",
+                    true,
+                    isEnabled = false
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Orders,
+                    "Orders",
+                    false,
+                    isEnabled = true
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Session,
+                    "Stats",
+                    false,
+                    isEnabled = true
+                )
             )
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
             whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
@@ -247,7 +298,12 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
             advanceTimeBy(501)
 
             sut.onSelectionChange(
-                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true, isEnabled = true),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Orders,
+                    "Orders",
+                    true,
+                    isEnabled = true
+                ),
                 false
             )
 
@@ -264,9 +320,9 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
             AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
         )
         val expected = listOf(
-            AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true),
-            AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false),
-            AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
+            AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Orders, "Orders", true),
+            AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Session, "Stats", false),
+            AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
         )
         whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
         whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
@@ -313,7 +369,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when a plugin is not active, then the plugin card is disabled`() = testBlocking {
+    fun `when a plugin is not active, then the plugin card is explore option`() = testBlocking {
         whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(defaultConfiguration))
         whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(emptySet())
         setup()
@@ -323,11 +379,10 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
         assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
         assertThat((viewState as CardsConfiguration).cardsConfiguration).contains(
-            AnalyticCardConfigurationUI(
+            AnalyticCardConfigurationUI.ExploreCardConfigurationUI(
                 card = AnalyticsCards.Bundles,
                 title = AnalyticsCards.Bundles.name,
-                isVisible = true,
-                isEnabled = false
+                url = PluginUrls.BUNDLES_URL
             )
         )
     }
