@@ -6,6 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
+import com.woocommerce.android.model.PluginUrls
 import com.woocommerce.android.ui.analytics.hub.GetAnalyticPluginsCardActive
 import com.woocommerce.android.ui.analytics.hub.ObserveAnalyticsCardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticCardConfigurationUI
@@ -13,6 +14,7 @@ import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsVie
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState.CardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.settings.SaveAnalyticsCardsConfiguration
+import com.woocommerce.android.ui.analytics.hub.settings.toConfigurationUI
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,6 +46,8 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
     )
 
     private val defaultPluginCardsActive = setOf(AnalyticsCards.Bundles)
+
+    private val defaultConfigurationUI = defaultConfiguration.map { it.toConfigurationUI(defaultPluginCardsActive) }
 
     fun setup() {
         sut = AnalyticsHubSettingsViewModel(
@@ -90,7 +94,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
         advanceTimeBy(501)
 
-        sut.onSelectionChange(AnalyticsCards.Session, true)
+        sut.onSelectionChange(defaultConfigurationUI.last(), true)
         sut.onBackPressed()
 
         // The exit event is NOT triggered
@@ -127,7 +131,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
         advanceTimeBy(501)
 
-        sut.onSelectionChange(AnalyticsCards.Session, true)
+        sut.onSelectionChange(defaultConfigurationUI.last(), true)
 
         // The save button is disabled when the configuration doesn't have any change
         assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
@@ -141,9 +145,10 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
             setup()
 
-            val itemsToChange = listOf(AnalyticsCards.Revenue, AnalyticsCards.Orders, AnalyticsCards.Session)
+            val itemsToChange = defaultConfigurationUI.take(3)
+            val itemsToChangeCards = itemsToChange.map { it.card }.toSet()
             val expectedConfiguration = defaultConfiguration.map {
-                if (it.card in itemsToChange) {
+                if (it.card in itemsToChangeCards) {
                     it.copy(isVisible = false)
                 } else {
                     it
@@ -170,9 +175,24 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
                 AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
             )
             val expected = listOf(
-                AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = false),
-                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", false, isEnabled = true),
-                AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Revenue,
+                    "Revenue",
+                    true,
+                    isEnabled = false
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Orders,
+                    "Orders",
+                    false,
+                    isEnabled = true
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Session,
+                    "Stats",
+                    false,
+                    isEnabled = true
+                )
             )
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
             whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
@@ -197,9 +217,24 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
                 AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
             )
             val expected = listOf(
-                AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = true),
-                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true, isEnabled = true),
-                AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Revenue,
+                    "Revenue",
+                    true,
+                    isEnabled = true
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Orders,
+                    "Orders",
+                    true,
+                    isEnabled = true
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Session,
+                    "Stats",
+                    false,
+                    isEnabled = true
+                )
             )
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
             whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
@@ -210,7 +245,15 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
             advanceTimeBy(501)
 
-            sut.onSelectionChange(AnalyticsCards.Orders, true)
+            sut.onSelectionChange(
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Orders,
+                    "Orders",
+                    false,
+                    isEnabled = true
+                ),
+                true
+            )
 
             // The save button is disabled when the configuration doesn't have any change
             assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
@@ -226,9 +269,24 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
                 AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
             )
             val expected = listOf(
-                AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true, isEnabled = false),
-                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", false, isEnabled = true),
-                AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false, isEnabled = true)
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Revenue,
+                    "Revenue",
+                    true,
+                    isEnabled = false
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Orders,
+                    "Orders",
+                    false,
+                    isEnabled = true
+                ),
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Session,
+                    "Stats",
+                    false,
+                    isEnabled = true
+                )
             )
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
             whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
@@ -239,7 +297,15 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
             advanceTimeBy(501)
 
-            sut.onSelectionChange(AnalyticsCards.Orders, false)
+            sut.onSelectionChange(
+                AnalyticCardConfigurationUI.SelectableCardConfigurationUI(
+                    AnalyticsCards.Orders,
+                    "Orders",
+                    true,
+                    isEnabled = true
+                ),
+                false
+            )
 
             // The save button is disabled when the configuration doesn't have any change
             assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
@@ -254,9 +320,9 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
             AnalyticCardConfiguration(AnalyticsCards.Session, "Stats", false)
         )
         val expected = listOf(
-            AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true),
-            AnalyticCardConfigurationUI(AnalyticsCards.Session, "Stats", false),
-            AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
+            AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Orders, "Orders", true),
+            AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Session, "Stats", false),
+            AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
         )
         whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
         whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(configuration))
@@ -303,7 +369,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when a plugin is not active, then the plugin card is disabled`() = testBlocking {
+    fun `when a plugin is not active, then the plugin card is explore option`() = testBlocking {
         whenever(observeAnalyticsCardsConfiguration.invoke()).thenReturn(flowOf(defaultConfiguration))
         whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(emptySet())
         setup()
@@ -313,11 +379,10 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
         assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
         assertThat((viewState as CardsConfiguration).cardsConfiguration).contains(
-            AnalyticCardConfigurationUI(
+            AnalyticCardConfigurationUI.ExploreCardConfigurationUI(
                 card = AnalyticsCards.Bundles,
                 title = AnalyticsCards.Bundles.name,
-                isVisible = true,
-                isEnabled = false
+                url = PluginUrls.BUNDLES_URL
             )
         )
     }
