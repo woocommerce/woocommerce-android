@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
@@ -13,11 +15,16 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.OnContactSupport
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.OnContinue
+import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ApplicationPasswordTutorialFragment : BaseFragment() {
     val viewModel: ApplicationPasswordTutorialViewModel by viewModels()
+
+    private val url: String by lazy { requireArguments().getString(URL_KEY, "") }
+    private val errorMessage: String by lazy { requireArguments().getString(ERROR_MESSAGE_KEY, "") }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
@@ -36,6 +43,12 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
             when (it) {
                 is OnContinue -> {}
                 is OnContactSupport -> openSupportRequestScreen()
+                is ExitWithResult<*> -> {
+                    setFragmentResult(
+                        requestKey = WEB_NAVIGATION_RESULT,
+                        result = bundleOf(URL_KEY to url)
+                    )
+                }
             }
         }
     }
@@ -50,6 +63,15 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
 
     companion object {
         const val TAG = "ApplicationPasswordTutorialFragment"
-        fun newInstance() = ApplicationPasswordTutorialFragment()
+        const val WEB_NAVIGATION_RESULT = "web_navigation_result"
+        private const val URL_KEY = "url"
+        private const val ERROR_MESSAGE_KEY = "error_message"
+        fun newInstance(url: String, errorMessage: String) =
+            ApplicationPasswordTutorialFragment().apply {
+                arguments = bundleOf(
+                    URL_KEY to url,
+                    ERROR_MESSAGE_KEY to errorMessage
+                )
+            }
     }
 }
