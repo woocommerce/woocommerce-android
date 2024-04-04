@@ -40,7 +40,7 @@ fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialView
     ApplicationPasswordTutorialScreen(
         shouldDisplayWebView = viewState.value?.shouldDisplayWebView ?: false,
         errorMessageRes = viewState.value?.errorMessage,
-        webViewUrl = "",
+        webViewUrl = viewState.value?.authorizationUrl.orEmpty(),
         webViewUserAgent = viewModel.userAgent,
         onContinueClicked = viewModel::onContinueClicked,
         onContactSupportClicked = viewModel::onContactSupportClicked,
