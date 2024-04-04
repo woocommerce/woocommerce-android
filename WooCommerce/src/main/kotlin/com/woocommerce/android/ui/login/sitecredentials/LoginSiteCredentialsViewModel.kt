@@ -257,9 +257,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 val authenticationError = exception as? CookieNonceAuthenticationException
 
                 when (authenticationError?.errorType) {
-                    GENERIC_ERROR, INVALID_CREDENTIALS -> errorDialogMessage.update {
-                        authenticationError.errorMessage ?: UiStringRes(R.string.error_generic)
-                    }
+                    GENERIC_ERROR, INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
                     else -> triggerEvent(ShowApplicationPasswordTutorialScreen)
                 }
 

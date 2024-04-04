@@ -29,6 +29,8 @@ import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.login.util.SiteUtils
 import java.net.CookieManager
 import javax.inject.Inject
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 
 class WPApiSiteRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -172,19 +174,14 @@ class WPApiSiteRepository @Inject constructor(
             }
         }
         val errorMessage = when {
-            type == Nonce.CookieNonceErrorType.INVALID_CREDENTIALS ->
-                UiStringRes(string.username_or_password_incorrect)
+            type == INVALID_CREDENTIALS -> UiStringRes(string.username_or_password_incorrect)
 
-            type == Nonce.CookieNonceErrorType.GENERIC_ERROR ->
-                UiStringRes(string.error_generic)
-
-            networkStatusCode != null ->
-                UiStringRes(
+            networkStatusCode != null -> UiStringRes(
                     string.login_site_credentials_http_error,
                     listOf(UiStringText(networkStatusCode.toString()))
                 )
 
-            else -> null
+            else -> UiStringRes(string.error_generic)
         }
         return CookieNonceAuthenticationException(
             errorMessage,
@@ -194,7 +191,7 @@ class WPApiSiteRepository @Inject constructor(
     }
 
     data class CookieNonceAuthenticationException(
-        val errorMessage: UiString?,
+        val errorMessage: UiString,
         val errorType: Nonce.CookieNonceErrorType,
         val networkStatusCode: Int?
     ) : Exception((errorMessage as? UiStringText)?.text)
