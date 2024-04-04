@@ -319,7 +319,7 @@ class DashboardViewModel @Inject constructor(
             System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
         )
         val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
-                connectionType == SiteConnectionType.ApplicationPasswords
+            connectionType == SiteConnectionType.ApplicationPasswords
         val showBanner = supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
         val benefitsBanner = JetpackBenefitsBannerUiModel(
             show = showBanner,
