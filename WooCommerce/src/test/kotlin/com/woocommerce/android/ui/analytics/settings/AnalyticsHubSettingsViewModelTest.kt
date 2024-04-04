@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsVie
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState
 import com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingsViewState.CardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.settings.SaveAnalyticsCardsConfiguration
+import com.woocommerce.android.ui.analytics.hub.settings.toConfigurationUI
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -44,6 +45,8 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
     )
 
     private val defaultPluginCardsActive = setOf(AnalyticsCards.Bundles)
+
+    private val defaultConfigurationUI = defaultConfiguration.map { it.toConfigurationUI(defaultPluginCardsActive) }
 
     fun setup() {
         sut = AnalyticsHubSettingsViewModel(
@@ -90,7 +93,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
         advanceTimeBy(501)
 
-        sut.onSelectionChange(AnalyticsCards.Session, true)
+        sut.onSelectionChange(defaultConfigurationUI.last(), true)
         sut.onBackPressed()
 
         // The exit event is NOT triggered
@@ -127,7 +130,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
         advanceTimeBy(501)
 
-        sut.onSelectionChange(AnalyticsCards.Session, true)
+        sut.onSelectionChange(defaultConfigurationUI.last(), true)
 
         // The save button is disabled when the configuration doesn't have any change
         assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
@@ -141,9 +144,10 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
             setup()
 
-            val itemsToChange = listOf(AnalyticsCards.Revenue, AnalyticsCards.Orders, AnalyticsCards.Session)
+            val itemsToChange = defaultConfigurationUI.take(3)
+            val itemsToChangeCards = itemsToChange.map { it.card }.toSet()
             val expectedConfiguration = defaultConfiguration.map {
-                if (it.card in itemsToChange) {
+                if (it.card in itemsToChangeCards) {
                     it.copy(isVisible = false)
                 } else {
                     it
@@ -210,7 +214,10 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
             advanceTimeBy(501)
 
-            sut.onSelectionChange(AnalyticsCards.Orders, true)
+            sut.onSelectionChange(
+                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", false, isEnabled = true),
+                true
+            )
 
             // The save button is disabled when the configuration doesn't have any change
             assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
@@ -239,7 +246,10 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
 
             advanceTimeBy(501)
 
-            sut.onSelectionChange(AnalyticsCards.Orders, false)
+            sut.onSelectionChange(
+                AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true, isEnabled = true),
+                false
+            )
 
             // The save button is disabled when the configuration doesn't have any change
             assertThat(viewState).isInstanceOf(CardsConfiguration::class.java)
