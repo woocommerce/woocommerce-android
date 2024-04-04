@@ -5,16 +5,20 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
+import com.woocommerce.android.ui.analytics.ranges.visitorSummaryStatsGranularity
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
@@ -27,6 +31,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.days
 
 class GetStats @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -43,7 +48,7 @@ class GetStats @Inject constructor(
         return merge(
             hasOrders(),
             revenueStats(selectedRange, shouldRefreshRevenue),
-            visitorStats(selectedRange, shouldRefreshRevenue)
+            visitorStats(selectedRange, shouldRefreshVisitors)
         ).onEach { result ->
             if (result is LoadStatsResult.RevenueStatsSuccess && shouldRefreshRevenue) {
                 analyticsUpdateDataStore.storeLastAnalyticsUpdate(
@@ -70,10 +75,10 @@ class GetStats @Inject constructor(
                 }
             }
 
-    private suspend fun revenueStats(
+    private fun revenueStats(
         rangeSelection: StatsTimeRangeSelection,
         forceRefresh: Boolean
-    ): Flow<LoadStatsResult> {
+    ): Flow<LoadStatsResult> = flow {
         val revenueRangeId = rangeSelection.selectionType.identifier.asRevenueRangeId(
             startDate = rangeSelection.currentRange.start,
             endDate = rangeSelection.currentRange.end
@@ -81,7 +86,10 @@ class GetStats @Inject constructor(
         if (forceRefresh.not()) {
             statsRepository.getRevenueStatsById(revenueRangeId)
                 .takeIf { it.isSuccess && it.getOrNull() != null }
-                ?.let { return flowOf(LoadStatsResult.RevenueStatsSuccess(it.getOrNull())) }
+                ?.let {
+                    emit(LoadStatsResult.RevenueStatsSuccess(it.getOrNull()))
+                    return@flow
+                }
         }
 
         val revenueStatsResult = statsRepository.fetchRevenueStats(
@@ -105,34 +113,71 @@ class GetStats @Inject constructor(
                 }
             )
         }
-        return flowOf(revenueStatsResult)
+        emit(revenueStatsResult)
     }
 
-    private suspend fun visitorStats(
+    private fun visitorStats(
         rangeSelection: StatsTimeRangeSelection,
         forceRefresh: Boolean
     ): Flow<LoadStatsResult> {
         // Visitor stats are only available for Jetpack connected sites
         return when (selectedSite.connectionType) {
-            SiteConnectionType.Jetpack -> {
-                val result = statsRepository.fetchVisitorStats(
-                    range = rangeSelection.currentRange,
-                    granularity = rangeSelection.visitorStatsGranularity,
-                    forced = forceRefresh
-                )
-                    .let { result ->
-                        result.fold(
-                            onSuccess = { stats -> LoadStatsResult.VisitorsStatsSuccess(stats) },
-                            onFailure = { LoadStatsResult.VisitorsStatsError }
-                        )
-                    }
-                flowOf(result)
+            SiteConnectionType.Jetpack -> combine(
+                totalVisitorStats(rangeSelection, forceRefresh),
+                individualVisitorStats(rangeSelection, forceRefresh)
+            ) { total, individual ->
+                if (total.isFailure || individual.isFailure) {
+                    LoadStatsResult.VisitorsStatsError
+                } else {
+                    LoadStatsResult.VisitorsStatsSuccess(individual.getOrThrow(), total.getOrThrow())
+                }
             }
 
             else -> selectedSite.connectionType?.let {
                 flowOf(LoadStatsResult.VisitorStatUnavailable(it))
             } ?: emptyFlow()
         }
+    }
+
+    private fun individualVisitorStats(
+        rangeSelection: StatsTimeRangeSelection,
+        forceRefresh: Boolean
+    ): Flow<Result<Map<String, Int>>> = flow {
+        emit(
+            statsRepository.fetchVisitorStats(
+                range = rangeSelection.currentRange,
+                granularity = rangeSelection.visitorStatsGranularity,
+                forced = forceRefresh
+            )
+        )
+    }
+
+    private fun totalVisitorStats(
+        rangeSelection: StatsTimeRangeSelection,
+        forceRefresh: Boolean
+    ): Flow<Result<Int?>> = flow {
+        if (rangeSelection.selectionType == SelectionType.CUSTOM &&
+            rangeSelection.currentRange.end.time - rangeSelection.currentRange.start.time > 1.days.inWholeMilliseconds
+        ) {
+            // Total visitor stats are not available for custom ranges
+            emit(Result.success(null))
+            return@flow
+        }
+
+        if (!forceRefresh) {
+            statsRepository.getTotalVisitorStats(
+                date = rangeSelection.currentRange.end,
+                granularity = rangeSelection.visitorSummaryStatsGranularity
+            )?.let { emit(Result.success(it)) }
+        }
+
+        emit(
+            statsRepository.fetchTotalVisitorStats(
+                date = rangeSelection.currentRange.end,
+                granularity = rangeSelection.visitorSummaryStatsGranularity,
+                forced = forceRefresh
+            )
+        )
     }
 
     private fun isPluginNotActiveError(error: Throwable): Boolean =
@@ -158,7 +203,8 @@ class GetStats @Inject constructor(
         ) : LoadStatsResult()
 
         data class VisitorsStatsSuccess(
-            val stats: Map<String, Int>
+            val stats: Map<String, Int>,
+            val totalVisitorCount: Int?
         ) : LoadStatsResult()
 
         data class HasOrders(
