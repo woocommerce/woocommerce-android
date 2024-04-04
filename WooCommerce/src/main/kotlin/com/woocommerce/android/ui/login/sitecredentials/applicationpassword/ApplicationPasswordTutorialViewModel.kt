@@ -9,9 +9,9 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.update
 import org.wordpress.android.fluxc.network.UserAgent
+import javax.inject.Inject
 
 @HiltViewModel
 class ApplicationPasswordTutorialViewModel @Inject constructor(
