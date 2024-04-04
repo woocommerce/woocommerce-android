@@ -16,7 +16,7 @@ class OrderNavigationLogger @Inject constructor() {
     fun logBackStack(navController: NavController, actionDescription: String) {
         try {
             val backStackEntries: StateFlow<List<NavBackStackEntry>> = navController.currentBackStack
-            val backStackDescriptions = backStackEntries.value.joinToString(separator = ", ") { entry ->
+            val backStackDescriptions = backStackEntries.value.joinToString(separator = "; ") { entry ->
                 val destination = entry.destination
                 val id = destination.id
                 val label = destination.label ?: "No label"
