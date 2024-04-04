@@ -14,28 +14,32 @@ class OrderNavigationLogger @Inject constructor(private val crashLogging: CrashL
 
     @SuppressLint("RestrictedApi")
     fun logBackStack(navController: NavController, actionDescription: String) {
-        val backStackEntries: StateFlow<List<NavBackStackEntry>> = navController.currentBackStack
-        val backStackDescriptions = backStackEntries.value.joinToString(separator = ", ") { entry ->
-            val destination = entry.destination
-            val id = destination.id
-            val label = destination.label ?: "No label"
-            val className = destination.javaClass.simpleName
-            "ID=$id, Label=$label, Class=$className"
+        try {
+            val backStackEntries: StateFlow<List<NavBackStackEntry>> = navController.currentBackStack
+            val backStackDescriptions = backStackEntries.value.joinToString(separator = ", ") { entry ->
+                val destination = entry.destination
+                val id = destination.id
+                val label = destination.label ?: "No label"
+                val className = destination.javaClass.simpleName
+                "ID=$id, Label=$label, Class=$className"
+            }
+
+            val rootGraph = navController.graph as? NavGraph
+            val startDestination = rootGraph?.findNode(rootGraph.startDestinationId)
+            val startDestinationDetails = startDestination?.let { destination ->
+                val id = destination.id
+                val label = destination.label ?: "No label"
+                val className = destination.javaClass.simpleName
+                "ID=$id, Label=$label, Class=$className"
+            } ?: "No start destination"
+
+            val logMessage = "$actionDescription: NavGraph=${rootGraph?.displayName}, " +
+                "StartDestination={$startDestinationDetails}, " +
+                "BackStackEntries=[$backStackDescriptions]"
+
+            crashLogging.recordEvent(logMessage)
+        } catch (exception: Exception) {
+            crashLogging.recordException(exception)
         }
-
-        val rootGraph = navController.graph as? NavGraph
-        val startDestination = rootGraph?.findNode(rootGraph.startDestinationId)
-        val startDestinationDetails = startDestination?.let { destination ->
-            val id = destination.id
-            val label = destination.label ?: "No label"
-            val className = destination.javaClass.simpleName
-            "ID=$id, Label=$label, Class=$className"
-        } ?: "No start destination"
-
-        val logMessage = "$actionDescription: NavGraph=${rootGraph?.displayName}, " +
-            "StartDestination={$startDestinationDetails}, " +
-            "BackStackEntries=[$backStackDescriptions]"
-
-        crashLogging.recordEvent(logMessage)
     }
 }
