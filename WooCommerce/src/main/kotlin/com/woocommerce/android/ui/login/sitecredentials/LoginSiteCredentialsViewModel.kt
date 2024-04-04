@@ -261,7 +261,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     when (authenticationError?.errorType) {
                         GENERIC_ERROR,
                         INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
-                        else -> attemptImprovedErrorTroubleshooting(authenticationError)
+                        else -> {
+                            fetchSiteForTutorial(
+                                username = state.username,
+                                password = state.password,
+                                detectedErrorMessage = authenticationError?.errorMessage as? UiStringRes
+                            )
+                        }
                     }
                 } else {
                     this.errorDialogMessage.value = authenticationError?.errorMessage
@@ -280,18 +286,29 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         loadingMessage.value = 0
     }
 
-    private suspend fun attemptImprovedErrorTroubleshooting(authenticationError: CookieNonceAuthenticationException?) {
-        wpApiSiteRepository.getSiteByLocalId(fetchedSiteId.value)
-            ?.let { site -> generateAuthorizationUrl(site) }
-            ?.let { authorizationUrl ->
-                val errorStringRes = authenticationError?.errorMessage as? UiStringRes
-                triggerEvent(
-                    ShowApplicationPasswordTutorialScreen(
-                        url = authorizationUrl,
-                        errorMessageRes = errorStringRes?.stringRes ?: 0
-                    )
-                )
-            } ?: errorDialogMessage.update { authenticationError?.errorMessage }
+    private suspend fun fetchSiteForTutorial(
+        username: String,
+        password: String,
+        detectedErrorMessage: UiStringRes?= null
+    ) {
+        loadingMessage.value = R.string.login_site_credentials_fetching_site
+        wpApiSiteRepository.fetchSite(
+            url = siteAddress,
+            username = username,
+            password = password
+        ).fold(
+            onSuccess = { site ->
+                loadingMessage.value = 0
+                triggerEvent(ShowApplicationPasswordTutorialScreen(
+                    url = generateAuthorizationUrl(site).orEmpty(),
+                    errorMessageRes = detectedErrorMessage?.stringRes ?: R.string.error_generic
+                ))
+            },
+            onFailure = {
+                loadingMessage.value = 0
+                handleSiteFetchingError(it)
+            }
+        )
     }
 
     private suspend fun fetchSite() {
@@ -321,21 +338,23 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
                 }
             },
-            onFailure = { exception ->
-                val siteError = (exception as? OnChangedException)?.error as? SiteError
-
-                this.errorDialogMessage.value = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
-
-                val error = (exception as? OnChangedException)?.error ?: exception
-                trackLoginFailure(
-                    step = Step.AUTHENTICATION,
-                    errorContext = error.javaClass.simpleName,
-                    errorType = siteError?.type?.name,
-                    errorDescription = exception.message
-                )
-            }
+            onFailure = { handleSiteFetchingError(it) }
         )
         loadingMessage.value = 0
+    }
+
+    private fun handleSiteFetchingError(exception: Throwable) {
+        val siteError = (exception as? OnChangedException)?.error as? SiteError
+
+        this.errorDialogMessage.value = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
+
+        val error = (exception as? OnChangedException)?.error ?: exception
+        trackLoginFailure(
+            step = Step.AUTHENTICATION,
+            errorContext = error.javaClass.simpleName,
+            errorType = siteError?.type?.name,
+            errorDescription = exception.message
+        )
     }
 
     private suspend fun fetchUserInfo() {
