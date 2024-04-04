@@ -31,6 +31,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -167,29 +168,30 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
-        if (!networkStatus.isConnected()) return
+    private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) =
+        coroutineScope {
+            if (!networkStatus.isConnected()) return@coroutineScope
 
-        _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
-        val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
-        result.fold(
-            onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
-            onSuccess = {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
-                    mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.selectionType.identifier)
-                )
+            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
+            val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
+            result.fold(
+                onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
+                onSuccess = {
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
+                        mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.selectionType.identifier)
+                    )
+                }
+            )
+            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = false)
+
+            launch {
+                observeLastUpdate(
+                    selectedRange,
+                    AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+                ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
             }
-        )
-        _topPerformersState.value = _topPerformersState.value?.copy(isLoading = false)
-
-        launch {
-            observeLastUpdate(
-                selectedRange,
-                AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
-            ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
         }
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeTopPerformerUpdates() {
