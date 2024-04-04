@@ -67,7 +67,7 @@ import kotlin.math.round
 class DashboardStatsView @JvmOverloads constructor(
     ctx: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = com.google.android.material.R.attr.materialCardViewStyle
 ) : MaterialCardView(ctx, attrs, defStyleAttr), OnChartValueSelectedListener, BarChartGestureListener {
     private val binding = MyStoreStatsBinding.inflate(LayoutInflater.from(ctx), this)
 
