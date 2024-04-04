@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsView
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowHelpScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -103,6 +104,14 @@ class LoginSiteCredentialsFragment : Fragment() {
             viewLifecycleOwner
         ) { _, _ ->
             viewModel.retryApplicationPasswordsCheck()
+        }
+
+        childFragmentManager.setFragmentResultListener(
+            ApplicationPasswordTutorialFragment.WEB_NAVIGATION_RESULT,
+            viewLifecycleOwner
+        ) { _, result ->
+            result.getString(ApplicationPasswordTutorialFragment.URL_KEY)
+                ?.let { viewModel.onWebAuthorizationUrlLoaded(it) }
         }
     }
 

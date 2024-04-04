@@ -63,9 +63,9 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
 
     companion object {
         const val TAG = "ApplicationPasswordTutorialFragment"
+        const val URL_KEY = "url"
+        const val ERROR_MESSAGE_KEY = "error_message"
         const val WEB_NAVIGATION_RESULT = "web_navigation_result"
-        private const val URL_KEY = "url"
-        private const val ERROR_MESSAGE_KEY = "error_message"
         fun newInstance(url: String, errorMessage: String) =
             ApplicationPasswordTutorialFragment().apply {
                 arguments = bundleOf(
