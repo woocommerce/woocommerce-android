@@ -83,30 +83,6 @@ fun DashboardStatsCard(
 }
 
 @Composable
-fun HandleEvents(
-    event: LiveData<Event>,
-    openDatePicker: (Long, Long) -> Unit,
-) {
-    val navController = rememberNavController()
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    LaunchedEffect(event, navController, lifecycleOwner) {
-        event.observe(lifecycleOwner) { event ->
-            when (event) {
-                is DashboardStatsViewModel.OpenDatePicker -> {
-                    openDatePicker(event.fromDate.time, event.toDate.time)
-                }
-                is DashboardStatsViewModel.OpenAnalytics -> {
-                    navController.navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToAnalytics(event.analyticsPeriod)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun DashboardStatsCard(
     selectedDateRange: StatsTimeRangeSelection?,
     customRange: StatsTimeRange?,
@@ -194,4 +170,28 @@ fun DashboardStatsCard(
             }
         }
     )
+}
+
+@Composable
+private fun HandleEvents(
+    event: LiveData<Event>,
+    openDatePicker: (Long, Long) -> Unit,
+) {
+    val navController = rememberNavController()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(event, navController, lifecycleOwner) {
+        event.observe(lifecycleOwner) { event ->
+            when (event) {
+                is DashboardStatsViewModel.OpenDatePicker -> {
+                    openDatePicker(event.fromDate.time, event.toDate.time)
+                }
+                is DashboardStatsViewModel.OpenAnalytics -> {
+                    navController.navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToAnalytics(event.analyticsPeriod)
+                    )
+                }
+            }
+        }
+    }
 }
