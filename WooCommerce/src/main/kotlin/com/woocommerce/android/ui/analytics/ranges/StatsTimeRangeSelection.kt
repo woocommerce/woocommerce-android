@@ -188,5 +188,5 @@ fun SelectionType.toDashBoardTrackingGranularityString(): String {
         YEAR_TO_DATE -> StatsGranularity.YEARS.name
         CUSTOM -> this.identifier
         else -> error("My Store tracking granularity unsupported range")
-    }
+    }.lowercase()
 }
