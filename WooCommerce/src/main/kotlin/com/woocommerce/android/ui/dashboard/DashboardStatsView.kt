@@ -41,6 +41,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.myStoreTrackingGranularityString
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.util.CurrencyFormatter
@@ -213,7 +214,7 @@ class DashboardStatsView @JvmOverloads constructor(
         // Track range change
         AnalyticsTracker.track(
             AnalyticsEvent.DASHBOARD_MAIN_STATS_DATE,
-            mapOf(KEY_RANGE to selectedTimeRange.selectionType.toString().lowercase())
+            mapOf(KEY_RANGE to selectedTimeRange.myStoreTrackingGranularityString)
         )
         isRequestingStats = true
         applyCustomRange(statsTimeRangeSelection)
@@ -806,7 +807,7 @@ class DashboardStatsView @JvmOverloads constructor(
                 AnalyticsEvent.STATS_UNEXPECTED_FORMAT,
                 mapOf(
                     KEY_DATE to dateString,
-                    KEY_GRANULARITY to statsTimeRangeSelection.selectionType.identifier,
+                    KEY_GRANULARITY to statsTimeRangeSelection.myStoreTrackingGranularityString,
                     KEY_RANGE to revenueStatsModel?.rangeId
                 )
             )

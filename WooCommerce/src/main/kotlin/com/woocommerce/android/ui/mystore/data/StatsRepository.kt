@@ -165,6 +165,41 @@ class StatsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchTotalVisitorStats(
+        date: Date,
+        granularity: StatsGranularity,
+        forced: Boolean
+    ): Result<Int> {
+        val result = wcStatsStore.fetchVisitorStatsSummary(
+            site = selectedSite.get(),
+            granularity = granularity,
+            date = date.formatToYYYYmmDD(),
+            forced = forced
+        )
+        return when {
+            !result.isError -> Result.success(result.model!!.visitors)
+            else -> {
+                val errorMessage = result.error?.message ?: "Unknown error"
+                WooLog.e(
+                    DASHBOARD,
+                    "$TAG - Error fetching total visitor stats: $errorMessage"
+                )
+                Result.failure(Exception(errorMessage))
+            }
+        }
+    }
+
+    suspend fun getTotalVisitorStats(
+        date: Date,
+        granularity: StatsGranularity
+    ): Int? {
+        return wcStatsStore.getVisitorStatsSummary(
+            site = selectedSite.get(),
+            granularity = granularity,
+            date = date.formatToYYYYmmDD()
+        )?.visitors
+    }
+
     fun observeTopPerformers(
         range: StatsTimeRange,
     ): Flow<List<TopPerformerProductEntity>> {

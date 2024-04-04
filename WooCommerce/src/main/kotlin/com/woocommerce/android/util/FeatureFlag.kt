@@ -9,6 +9,7 @@ enum class FeatureFlag {
     DB_DOWNGRADE,
     MORE_MENU_INBOX,
     WC_SHIPPING_BANNER,
+    MIGRATION_SIMPLE_PAYMENTS,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     BLAZE_I3,
@@ -23,6 +24,7 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
+            MIGRATION_SIMPLE_PAYMENTS,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,

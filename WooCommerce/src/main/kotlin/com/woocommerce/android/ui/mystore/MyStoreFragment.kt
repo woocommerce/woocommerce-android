@@ -418,14 +418,10 @@ class MyStoreFragment :
             }
         }
         myStoreViewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
-            when (stats) {
-                is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
-                VisitorStatsViewState.Error -> {
-                    binding.jetpackBenefitsBanner.root.isVisible = false
-                    binding.myStoreStats.showVisitorStatsError()
-                }
-
-                is VisitorStatsViewState.Unavailable -> onVisitorStatsUnavailable(stats)
+            binding.jetpackBenefitsBanner.root.isVisible = stats is VisitorStatsViewState.Unavailable
+            binding.myStoreStats.showVisitorStats(stats)
+            if (stats is VisitorStatsViewState.Unavailable) {
+                onVisitorStatsUnavailable(stats)
             }
         }
         myStoreViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
@@ -488,8 +484,6 @@ class MyStoreFragment :
     }
 
     private fun onVisitorStatsUnavailable(state: VisitorStatsViewState.Unavailable) {
-        handleUnavailableVisitorStats()
-
         val jetpackBenefitsBanner = state.benefitsBanner
         if (jetpackBenefitsBanner.show) {
             binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
@@ -606,15 +600,6 @@ class MyStoreFragment :
         binding.myStoreTopPerformers.showSkeleton(false)
         binding.myStoreTopPerformers.showErrorView(true)
         showErrorSnack()
-    }
-
-    private fun showVisitorStats(visitorStats: Map<String, Int>) {
-        binding.jetpackBenefitsBanner.root.isVisible = false
-        binding.myStoreStats.showVisitorStats(visitorStats)
-    }
-
-    private fun handleUnavailableVisitorStats() {
-        binding.myStoreStats.handleJetpackUnavailableVisitorStats()
     }
 
     private fun showErrorSnack() {

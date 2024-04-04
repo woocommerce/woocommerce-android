@@ -36,7 +36,8 @@ object OrderCreateEditNavigator {
 
             is SelectItems -> {
                 val flow = when (target.mode) {
-                    OrderCreateEditViewModel.Mode.Creation -> ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
+                    is OrderCreateEditViewModel.Mode.Creation ->
+                        ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
                     is OrderCreateEditViewModel.Mode.Edit -> ProductSelectorViewModel.ProductSelectorFlow.OrderEditing
                 }
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
@@ -93,6 +94,11 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToAutoTaxRateDetailsFragment(
                     target.state
                 )
+            }
+
+            is OrderCreateEditNavigationTarget.SimplePaymentsMigrationBottomSheet -> {
+                OrderCreateEditFormFragmentDirections
+                    .actionOrderCreationFragmentToSimplePaymentsMigrationBottomSheetFragment()
             }
 
             is OrderCreateEditNavigationTarget.EditDiscount -> {

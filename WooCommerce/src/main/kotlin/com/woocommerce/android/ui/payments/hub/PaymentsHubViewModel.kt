@@ -79,6 +79,7 @@ class PaymentsHubViewModel @Inject constructor(
     private val tapToPayUnavailableHandler: PaymentsHubTapToPayUnavailableHandler,
     private val cardReaderDataAction: ClearCardReaderDataAction,
     private val cardReaderManager: CardReaderManager,
+    private val simplePaymentsMigrationEnabled: PaymentsHubSimplePaymentsMigrationEnabled,
 ) : ScopedViewModel(savedState) {
     private val arguments: PaymentsHubFragmentArgs by savedState.navArgs()
     private val storeCountryCode = wooStore.getStoreCountryCode(selectedSite.get())
@@ -344,7 +345,11 @@ class PaymentsHubViewModel @Inject constructor(
 
     private fun onCollectPaymentClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED)
-        triggerEvent(PaymentsHubEvents.NavigateToPaymentCollectionScreen)
+        if (simplePaymentsMigrationEnabled()) {
+            triggerEvent(PaymentsHubEvents.NavigateToOrderCreationScreen)
+        } else {
+            triggerEvent(PaymentsHubEvents.NavigateToPaymentCollectionScreen)
+        }
     }
 
     private fun onManageCardReaderClicked() {
@@ -565,9 +570,10 @@ class PaymentsHubViewModel @Inject constructor(
             @StringRes val titleRes: Int
         ) : PaymentsHubEvents()
 
-        object NavigateToPaymentCollectionScreen : PaymentsHubEvents()
-        object NavigateToTapTooPaySummaryScreen : PaymentsHubEvents()
-        object NavigateToTapTooPaySurveyScreen : PaymentsHubEvents()
+        data object NavigateToPaymentCollectionScreen : PaymentsHubEvents()
+        data object NavigateToOrderCreationScreen : PaymentsHubEvents()
+        data object NavigateToTapTooPaySummaryScreen : PaymentsHubEvents()
+        data object NavigateToTapTooPaySurveyScreen : PaymentsHubEvents()
         data class NavigateToCardReaderManualsScreen(
             val countryConfig: CardReaderConfigForSupportedCountry
         ) : PaymentsHubEvents()
