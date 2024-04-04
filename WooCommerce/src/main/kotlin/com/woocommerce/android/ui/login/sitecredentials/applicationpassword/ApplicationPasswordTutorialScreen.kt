@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,11 +28,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialViewModel) {
     ApplicationPasswordTutorialScreen(
+        shouldDisplayWebView = false,
+        webViewUrl = "",
+        webViewUserAgent = viewModel.userAgent,
         onContinueClicked = viewModel::onContinueClicked,
         onContactSupportClicked = viewModel::onContactSupportClicked,
         onPageLoaded = viewModel::onWebPageLoaded
@@ -41,9 +47,12 @@ fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialView
 @Composable
 fun ApplicationPasswordTutorialScreen(
     modifier: Modifier = Modifier,
+    shouldDisplayWebView: Boolean,
+    webViewUrl: String,
+    webViewUserAgent: UserAgent?,
+    onPageLoaded: (String) -> Unit,
     onContinueClicked: () -> Unit,
-    onContactSupportClicked: () -> Unit,
-    onPageLoaded: (String) -> Unit
+    onContactSupportClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -54,73 +63,93 @@ fun ApplicationPasswordTutorialScreen(
             )
         }
     ) { paddingValues ->
+        if (shouldDisplayWebView && webViewUserAgent != null) {
+            WCWebView(
+                url = webViewUrl,
+                userAgent = webViewUserAgent,
+                onPageFinished = onPageLoaded,
+                modifier = modifier
+            )
+        } else {
+            TutorialContentScreen(modifier, paddingValues, onContinueClicked, onContactSupportClicked)
+        }
+    }
+}
+
+@Composable
+private fun TutorialContentScreen(
+    modifier: Modifier,
+    paddingValues: PaddingValues,
+    onContinueClicked: () -> Unit,
+    onContactSupportClicked: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
         Column(
-            modifier = modifier.fillMaxSize()
-                .padding(paddingValues)
+            modifier = modifier.verticalScroll(rememberScrollState())
         ) {
             Column(
-                modifier = modifier.verticalScroll(rememberScrollState())
+                modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
             ) {
-                Column(
-                    modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.login_app_password_title),
-                        style = MaterialTheme.typography.h4,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(stringResource(id = R.string.login_app_password_subtitle))
-                }
-
-                Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
-
-                Column(
-                    modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                    verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
-                ) {
-                    Text(stringResource(id = R.string.login_app_password_instructions_title))
-                    Text(stringResource(id = R.string.login_app_password_instructions_step_1))
-                    Text(stringResource(id = R.string.login_app_password_instructions_step_2))
-
-                    Image(
-                        painter = painterResource(id = R.drawable.app_password_tutorial_hint),
-                        contentDescription = null,
-                        modifier = modifier.align(alignment = Alignment.CenterHorizontally)
-                    )
-
-                    Text(stringResource(id = R.string.login_app_password_instructions_step_3))
-                }
-
-                Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
-
                 Text(
-                    text = stringResource(id = R.string.login_app_password_instructions_footer),
-                    modifier = modifier.padding(dimensionResource(id = R.dimen.major_100))
+                    text = stringResource(id = R.string.login_app_password_title),
+                    style = MaterialTheme.typography.h4,
+                    fontWeight = FontWeight.Bold
                 )
+                Text(stringResource(id = R.string.login_app_password_subtitle))
             }
 
-            Spacer(modifier.weight(1f))
-            Divider()
+            Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
 
             Column(
-                modifier = modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                    .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
             ) {
-                Button(
-                    onClick = onContinueClicked,
-                    modifier = modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(id = R.string.login_app_password_continue_button))
-                }
+                Text(stringResource(id = R.string.login_app_password_instructions_title))
+                Text(stringResource(id = R.string.login_app_password_instructions_step_1))
+                Text(stringResource(id = R.string.login_app_password_instructions_step_2))
 
-                OutlinedButton(
-                    onClick = onContactSupportClicked,
-                    modifier = modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(id = R.string.login_app_password_support_button))
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.app_password_tutorial_hint),
+                    contentDescription = null,
+                    modifier = modifier.align(alignment = Alignment.CenterHorizontally)
+                )
+
+                Text(stringResource(id = R.string.login_app_password_instructions_step_3))
+            }
+
+            Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
+
+            Text(
+                text = stringResource(id = R.string.login_app_password_instructions_footer),
+                modifier = modifier.padding(dimensionResource(id = R.dimen.major_100))
+            )
+        }
+
+        Spacer(modifier.weight(1f))
+        Divider()
+
+        Column(
+            modifier = modifier
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+        ) {
+            Button(
+                onClick = onContinueClicked,
+                modifier = modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(id = R.string.login_app_password_continue_button))
+            }
+
+            OutlinedButton(
+                onClick = onContactSupportClicked,
+                modifier = modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(id = R.string.login_app_password_support_button))
             }
         }
     }
@@ -131,6 +160,9 @@ fun ApplicationPasswordTutorialScreen(
 fun ApplicationPasswordTutorialScreenPreview() {
     WooThemeWithBackground {
         ApplicationPasswordTutorialScreen(
+            shouldDisplayWebView = false,
+            webViewUrl = "",
+            webViewUserAgent = null,
             onContinueClicked = { },
             onContactSupportClicked = { },
             onPageLoaded = { }
