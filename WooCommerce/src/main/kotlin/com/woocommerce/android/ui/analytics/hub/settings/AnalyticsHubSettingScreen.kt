@@ -29,7 +29,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.DragAndDropItem
-import com.woocommerce.android.ui.compose.component.DragAndDropSelectableItemsList
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -62,11 +61,12 @@ fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
         }) { padding ->
             when (state) {
                 is AnalyticsHubSettingsViewState.CardsConfiguration -> {
-                    DragAndDropSelectableItemsList(
+                    HubSettingsCardItemsList(
                         items = state.cardsConfiguration,
                         selectedItems = state.cardsConfiguration.filter { it.isVisible },
                         onSelectionChange = viewModel::onSelectionChange,
                         onOrderChange = viewModel::onOrderChange,
+                        onExplorePlugin = viewModel::onExploreUrl,
                         itemFormatter = { title },
                         itemKey = { _, card -> card.card },
                         modifier = Modifier.padding(padding)
@@ -105,15 +105,17 @@ fun LoadWidgetsConfiguration(modifier: Modifier = Modifier) {
 @Preview(name = "Screen", device = Devices.PIXEL_4)
 fun AnalyticsHubSettingScreenPreview() {
     val items = listOf(
-        AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
-        AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true),
-        AnalyticCardConfigurationUI(AnalyticsCards.Session, "Session", false)
+        AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
+        AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Orders, "Orders", true),
+        AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Session, "Session", false),
+        AnalyticCardConfigurationUI.ExploreCardConfigurationUI(AnalyticsCards.Bundles, "Bundles", "")
     )
-    DragAndDropSelectableItemsList(
+    HubSettingsCardItemsList(
         items = items,
         selectedItems = items.filter { it.isVisible },
         onSelectionChange = { _, _ -> },
         onOrderChange = { _, _ -> },
+        onExplorePlugin = {},
         itemFormatter = { title },
         itemKey = { _, card -> card.card }
     )
@@ -124,7 +126,7 @@ fun AnalyticsHubSettingScreenPreview() {
 fun AnalyticCardItemPreview() {
     WooThemeWithBackground {
         DragAndDropItem(
-            item = AnalyticCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
+            item = AnalyticCardConfigurationUI.SelectableCardConfigurationUI(AnalyticsCards.Revenue, "Revenue", true),
             title = "Revenue",
             isSelected = true,
             onSelectionChange = { _, _ -> }
