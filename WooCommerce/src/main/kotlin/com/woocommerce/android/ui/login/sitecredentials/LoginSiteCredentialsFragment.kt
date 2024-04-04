@@ -84,7 +84,7 @@ class LoginSiteCredentialsFragment : Fragment() {
                 is ShowHelpScreen -> loginListener.helpUsernamePassword(it.siteAddress, it.username, false)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 is ShowApplicationPasswordTutorialScreen ->
-                    passwordTutorialListener?.onApplicationPasswordHelpRequired()
+                    passwordTutorialListener?.onApplicationPasswordHelpRequired(it.url, it.errorMessageRes)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
@@ -116,6 +116,6 @@ class LoginSiteCredentialsFragment : Fragment() {
     }
 
     interface Listener {
-        fun onApplicationPasswordHelpRequired()
+        fun onApplicationPasswordHelpRequired(url: String, errorMessageRes: Int)
     }
 }

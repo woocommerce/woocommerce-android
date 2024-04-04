@@ -46,6 +46,8 @@ import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
 import javax.inject.Inject
+import kotlinx.coroutines.flow.update
+import org.wordpress.android.fluxc.model.SiteModel
 
 @HiltViewModel
 class LoginSiteCredentialsViewModel @Inject constructor(
@@ -228,18 +230,18 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             errorDialogMessage,
             fetchedSiteId.map { if (it == -1) null else wpApiSiteRepository.getSiteByLocalId(it) }
         ) { loadingMessage, errorDialogMessage, site ->
-            val authorizationUrl = site?.applicationPasswordsAuthorizeUrl?.let { url ->
-                "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL"
-            }
-
             ViewState.WebAuthorizationViewState(
-                authorizationUrl = authorizationUrl,
+                authorizationUrl = generateAuthorizationUrl(site),
                 userAgent = userAgent,
                 loadingMessage = loadingMessage,
                 errorDialogMessage = errorDialogMessage
             )
         }
     }
+
+    private fun generateAuthorizationUrl(site: SiteModel?) =
+        site?.applicationPasswordsAuthorizeUrl
+            ?.let { url -> "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL" }
 
     private suspend fun login() {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value as ViewState.NativeLoginViewState)
@@ -259,7 +261,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     when (authenticationError?.errorType) {
                         GENERIC_ERROR,
                         INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
-                        else -> triggerEvent(ShowApplicationPasswordTutorialScreen)
+                        else -> attemptImprovedErrorTroubleshooting(authenticationError)
                     }
                 } else {
                     this.errorDialogMessage.value = authenticationError?.errorMessage
@@ -276,6 +278,20 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             }
         )
         loadingMessage.value = 0
+    }
+
+    private suspend fun attemptImprovedErrorTroubleshooting(authenticationError: CookieNonceAuthenticationException?) {
+        wpApiSiteRepository.getSiteByLocalId(fetchedSiteId.value)
+            ?.let { site -> generateAuthorizationUrl(site) }
+            ?.let { authorizationUrl ->
+                val errorStringRes = authenticationError?.errorMessage as? UiStringRes
+                triggerEvent(
+                    ShowApplicationPasswordTutorialScreen(
+                        url = authorizationUrl,
+                        errorMessageRes = errorStringRes?.stringRes ?: 0
+                    )
+                )
+            } ?: errorDialogMessage.update { authenticationError?.errorMessage }
     }
 
     private suspend fun fetchSite() {
@@ -431,5 +447,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val username: String?
     ) : MultiLiveEvent.Event()
 
-    object ShowApplicationPasswordTutorialScreen : MultiLiveEvent.Event()
+    data class ShowApplicationPasswordTutorialScreen(
+        val url: String,
+        val errorMessageRes: Int
+    ) : MultiLiveEvent.Event()
 }

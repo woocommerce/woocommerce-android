@@ -24,7 +24,11 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
     val viewModel: ApplicationPasswordTutorialViewModel by viewModels()
 
     private val url: String by lazy { requireArguments().getString(URL_KEY, "") }
-    private val errorMessage: String by lazy { requireArguments().getString(ERROR_MESSAGE_KEY, "") }
+    private val errorMessageRes: Int? by lazy {
+        requireArguments()
+            .getInt(ERROR_MESSAGE_KEY, 0)
+            .takeIf { it != 0 }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return ComposeView(requireContext()).apply {
@@ -66,11 +70,11 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
         const val URL_KEY = "url"
         const val ERROR_MESSAGE_KEY = "error_message"
         const val WEB_NAVIGATION_RESULT = "web_navigation_result"
-        fun newInstance(url: String, errorMessage: String) =
+        fun newInstance(url: String, errorMessageRes: Int) =
             ApplicationPasswordTutorialFragment().apply {
                 arguments = bundleOf(
                     URL_KEY to url,
-                    ERROR_MESSAGE_KEY to errorMessage
+                    ERROR_MESSAGE_KEY to errorMessageRes
                 )
             }
     }
