@@ -48,7 +48,7 @@ import com.woocommerce.android.ui.compose.rememberDragDropState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun <T> DragAndDropItemsList(
+fun <T> DragAndDropSelectableItemsList(
     items: List<T>,
     selectedItems: List<T>,
     onSelectionChange: (T, Boolean) -> Unit,

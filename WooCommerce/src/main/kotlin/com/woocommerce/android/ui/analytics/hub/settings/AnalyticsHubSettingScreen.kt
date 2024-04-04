@@ -29,7 +29,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
 import com.woocommerce.android.ui.compose.component.DragAndDropItem
-import com.woocommerce.android.ui.compose.component.DragAndDropItemsList
+import com.woocommerce.android.ui.compose.component.DragAndDropSelectableItemsList
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -62,7 +62,7 @@ fun AnalyticsHubSettingScreen(viewModel: AnalyticsHubSettingsViewModel) {
         }) { padding ->
             when (state) {
                 is AnalyticsHubSettingsViewState.CardsConfiguration -> {
-                    DragAndDropItemsList(
+                    DragAndDropSelectableItemsList(
                         items = state.cardsConfiguration,
                         selectedItems = state.cardsConfiguration.filter { it.isVisible },
                         onSelectionChange = viewModel::onSelectionChange,
@@ -109,7 +109,7 @@ fun AnalyticsHubSettingScreenPreview() {
         AnalyticCardConfigurationUI(AnalyticsCards.Orders, "Orders", true),
         AnalyticCardConfigurationUI(AnalyticsCards.Session, "Session", false)
     )
-    DragAndDropItemsList(
+    DragAndDropSelectableItemsList(
         items = items,
         selectedItems = items.filter { it.isVisible },
         onSelectionChange = { _, _ -> },

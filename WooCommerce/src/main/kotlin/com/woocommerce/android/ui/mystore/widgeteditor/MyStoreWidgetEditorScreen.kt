@@ -18,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.hub.settings.LoadWidgetsConfiguration
 import com.woocommerce.android.ui.compose.component.DiscardChangesDialog
-import com.woocommerce.android.ui.compose.component.DragAndDropItemsList
+import com.woocommerce.android.ui.compose.component.DragAndDropSelectableItemsList
 
 @Composable
 fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
@@ -51,7 +51,7 @@ fun MyStoreWidgetEditorScreen(viewModel: MyStoreWidgetEditorViewModel) {
             when {
                 state.isLoading -> LoadWidgetsConfiguration()
                 else -> {
-                    DragAndDropItemsList(
+                    DragAndDropSelectableItemsList(
                         items = state.widgetList,
                         selectedItems = state.widgetList.filter { it.isSelected },
                         onSelectionChange = viewModel::onSelectionChange,
