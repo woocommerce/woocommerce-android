@@ -299,10 +299,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         ).fold(
             onSuccess = { site ->
                 loadingMessage.value = 0
-                triggerEvent(ShowApplicationPasswordTutorialScreen(
+                ShowApplicationPasswordTutorialScreen(
                     url = generateAuthorizationUrl(site).orEmpty(),
                     errorMessageRes = detectedErrorMessage?.stringRes ?: R.string.error_generic
-                ))
+                ).let { triggerEvent(it) }
             },
             onFailure = {
                 loadingMessage.value = 0

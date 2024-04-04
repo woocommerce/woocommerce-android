@@ -106,7 +106,7 @@ class LoginSiteCredentialsFragment : Fragment() {
             viewModel.retryApplicationPasswordsCheck()
         }
 
-        childFragmentManager.setFragmentResultListener(
+        parentFragmentManager.setFragmentResultListener(
             ApplicationPasswordTutorialFragment.WEB_NAVIGATION_RESULT,
             viewLifecycleOwner
         ) { _, result ->
