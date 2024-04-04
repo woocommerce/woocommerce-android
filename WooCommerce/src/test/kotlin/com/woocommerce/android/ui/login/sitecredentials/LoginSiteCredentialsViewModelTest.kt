@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsView
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -228,13 +227,11 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             errorType = Nonce.CookieNonceErrorType.NOT_AUTHENTICATED,
             networkStatusCode = null
         )
-        var latestEventReceived: MultiLiveEvent.Event? = null
         setup {
             whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword)).thenReturn(
                 Result.failure(expectedError)
             )
         }
-        viewModel.event.observeForever { latestEventReceived = it }
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged(testUsername)
