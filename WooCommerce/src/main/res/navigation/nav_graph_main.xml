@@ -153,7 +153,7 @@
             app:destination="@id/blazeCampaignListFragment" />
         <action
             android:id="@+id/action_dashboard_to_editWidgetsFragment"
-            app:destination="@id/myStoreWidgetEditorFragment" />
+            app:destination="@id/dashboardWidgetEditorFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -859,7 +859,7 @@
         android:name="com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolFragment"
         android:label="OrderConnectivityToolFragment" />
     <fragment
-        android:id="@+id/myStoreWidgetEditorFragment"
+        android:id="@+id/dashboardWidgetEditorFragment"
         android:name="com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorFragment"
-        android:label="MyStoreWidgetEditorFragment" />
+        android:label="DashboardWidgetEditorFragment" />
 </navigation>
