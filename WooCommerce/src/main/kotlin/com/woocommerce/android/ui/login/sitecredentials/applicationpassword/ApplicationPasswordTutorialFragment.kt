@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,9 +50,18 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
                         requestKey = WEB_NAVIGATION_RESULT,
                         result = bundleOf(URL_KEY to it.data)
                     )
+                    parentFragmentManager.popBackStack()
                 }
             }
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        viewModel.onWebViewDataAvailable(
+            authorizationUrl = url,
+            errorMessage = errorMessageRes
+        )
     }
 
     private fun openSupportRequestScreen() {
