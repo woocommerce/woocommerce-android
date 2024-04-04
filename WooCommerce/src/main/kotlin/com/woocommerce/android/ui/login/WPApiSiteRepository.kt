@@ -21,7 +21,6 @@ import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
-import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCredentials
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -173,12 +172,26 @@ class WPApiSiteRepository @Inject constructor(
             }
         }
         val errorMessage = when {
-            type == INVALID_CREDENTIALS -> UiStringRes(string.username_or_password_incorrect)
+            type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ->
+                message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
 
-            networkStatusCode != null -> UiStringRes(
-                string.login_site_credentials_http_error,
-                listOf(UiStringText(networkStatusCode.toString()))
-            )
+            type == Nonce.CookieNonceErrorType.INVALID_CREDENTIALS ->
+                UiStringRes(string.username_or_password_incorrect)
+
+            type == Nonce.CookieNonceErrorType.INVALID_RESPONSE ->
+                UiStringRes(string.login_site_credentials_invalid_response)
+
+            type == Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL ->
+                UiStringRes(string.login_site_credentials_custom_login_url)
+
+            type == Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL ->
+                UiStringRes(string.login_site_credentials_custom_admin_url)
+
+            networkStatusCode != null ->
+                UiStringRes(
+                    string.login_site_credentials_http_error,
+                    listOf(UiStringText(networkStatusCode.toString()))
+                )
 
             else -> UiStringRes(string.error_generic)
         }
