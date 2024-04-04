@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.applicationpassword
+package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

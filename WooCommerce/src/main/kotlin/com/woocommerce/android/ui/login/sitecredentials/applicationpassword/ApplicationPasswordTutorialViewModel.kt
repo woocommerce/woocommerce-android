@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.applicationpassword
+package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.MultiLiveEvent
