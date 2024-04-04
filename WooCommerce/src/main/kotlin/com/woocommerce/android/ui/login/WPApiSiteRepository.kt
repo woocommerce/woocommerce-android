@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCredentials
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -29,8 +30,6 @@ import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.login.util.SiteUtils
 import java.net.CookieManager
 import javax.inject.Inject
-import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.GENERIC_ERROR
-import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 
 class WPApiSiteRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -177,9 +176,9 @@ class WPApiSiteRepository @Inject constructor(
             type == INVALID_CREDENTIALS -> UiStringRes(string.username_or_password_incorrect)
 
             networkStatusCode != null -> UiStringRes(
-                    string.login_site_credentials_http_error,
-                    listOf(UiStringText(networkStatusCode.toString()))
-                )
+                string.login_site_credentials_http_error,
+                listOf(UiStringText(networkStatusCode.toString()))
+            )
 
             else -> UiStringRes(string.error_generic)
         }

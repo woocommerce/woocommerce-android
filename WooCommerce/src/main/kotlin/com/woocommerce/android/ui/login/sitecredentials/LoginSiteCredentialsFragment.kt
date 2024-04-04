@@ -82,8 +82,8 @@ class LoginSiteCredentialsFragment : Fragment() {
                         .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
                 is ShowHelpScreen -> loginListener.helpUsernamePassword(it.siteAddress, it.username, false)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
-                is ShowApplicationPasswordTutorialScreen -> passwordTutorialListener
-                    ?.onApplicationPasswordHelpRequired()
+                is ShowApplicationPasswordTutorialScreen ->
+                    passwordTutorialListener?.onApplicationPasswordHelpRequired()
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
