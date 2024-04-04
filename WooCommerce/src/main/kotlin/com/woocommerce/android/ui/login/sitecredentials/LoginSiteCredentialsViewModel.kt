@@ -43,6 +43,10 @@ import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
 import java.net.URI
 import javax.inject.Inject
+import kotlinx.coroutines.flow.update
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 
 @HiltViewModel
 class LoginSiteCredentialsViewModel @Inject constructor(
@@ -252,9 +256,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onFailure = { exception ->
                 val authenticationError = exception as? CookieNonceAuthenticationException
 
-                authenticationError?.errorMessage
-                    ?.let { errorDialogMessage.value = it }
-                    ?: triggerEvent(ShowApplicationPasswordTutorialScreen)
+                when (authenticationError?.errorType) {
+                    GENERIC_ERROR, INVALID_CREDENTIALS -> errorDialogMessage.update {
+                        authenticationError.errorMessage ?: UiStringRes(R.string.error_generic)
+                    }
+                    else -> triggerEvent(ShowApplicationPasswordTutorialScreen)
+                }
 
                 trackLoginFailure(
                     step = Step.AUTHENTICATION,

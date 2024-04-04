@@ -172,20 +172,11 @@ class WPApiSiteRepository @Inject constructor(
             }
         }
         val errorMessage = when {
-            type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ->
-                message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
-
             type == Nonce.CookieNonceErrorType.INVALID_CREDENTIALS ->
                 UiStringRes(string.username_or_password_incorrect)
 
-            type == Nonce.CookieNonceErrorType.INVALID_RESPONSE ->
-                UiStringRes(string.login_site_credentials_invalid_response)
-
-            type == Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL ->
-                UiStringRes(string.login_site_credentials_custom_login_url)
-
-            type == Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL ->
-                UiStringRes(string.login_site_credentials_custom_admin_url)
+            type == Nonce.CookieNonceErrorType.GENERIC_ERROR ->
+                UiStringRes(string.error_generic)
 
             networkStatusCode != null ->
                 UiStringRes(
