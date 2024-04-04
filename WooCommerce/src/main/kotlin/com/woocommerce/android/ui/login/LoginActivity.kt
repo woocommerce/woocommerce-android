@@ -104,6 +104,7 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
+    LoginSiteCredentialsFragment.Listener,
     QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
@@ -848,6 +849,14 @@ class LoginActivity :
         shouldAddToBackStack = true,
         tag = LoginSiteCredentialsFragment.TAG
     )
+
+    override fun onApplicationPasswordHelpRequired() {
+        changeFragment(
+            fragment = ApplicationPasswordTutorialFragment.newInstance(),
+            shouldAddToBackStack = true,
+            tag = ApplicationPasswordTutorialFragment.TAG
+        )
+    }
 
     override fun startJetpackInstall(siteAddress: String?) {
         siteAddress?.let {
