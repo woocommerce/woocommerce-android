@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.myStoreTrackingGranularityString
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.domain.GetStats
@@ -307,7 +308,7 @@ class DashboardViewModel @Inject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
             buildMap {
-                put(AnalyticsTracker.KEY_RANGE, selectedRange.selectionType.identifier)
+                put(AnalyticsTracker.KEY_RANGE, selectedRange.myStoreTrackingGranularityString)
                 putIfNotNull(AnalyticsTracker.KEY_ID to result.stats?.rangeId)
             }
         )
@@ -345,7 +346,7 @@ class DashboardViewModel @Inject constructor(
             onSuccess = {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
-                    mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.selectionType.identifier)
+                    mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.myStoreTrackingGranularityString)
                 )
             }
         )

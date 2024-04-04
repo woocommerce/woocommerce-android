@@ -54,3 +54,6 @@ val StatsTimeRangeSelection.visitorSummaryStatsGranularity: StatsGranularity
             }
         }
     }
+
+val StatsTimeRangeSelection.myStoreTrackingGranularityString: String
+    get() = selectionType.toDashBoardTrackingGranularityString()
