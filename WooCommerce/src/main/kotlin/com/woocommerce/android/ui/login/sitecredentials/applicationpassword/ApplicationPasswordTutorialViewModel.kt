@@ -35,7 +35,21 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     }
 
     fun onWebPageLoaded(url: String) {
-        triggerEvent(ExitWithResult(url))
+        if (url.startsWith(REDIRECTION_URL)) {
+            triggerEvent(ExitWithResult(url))
+        }
+    }
+
+    fun onWebViewDataAvailable(
+        authorizationUrl: String?,
+        errorMessage: Int?
+    ) {
+        _viewState.update {
+            it.copy(
+                authorizationUrl = authorizationUrl,
+                errorMessage = errorMessage
+            )
+        }
     }
 
     object OnContactSupport : MultiLiveEvent.Event()
@@ -46,4 +60,8 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
         val authorizationUrl: String? = null,
         @StringRes val errorMessage: Int? = null,
     ) : Parcelable
+
+    companion object {
+        private const val REDIRECTION_URL = "woocommerce://login"
+    }
 }
