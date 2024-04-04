@@ -13,6 +13,7 @@ import javax.inject.Singleton
 class OrderNavigationLogger @Inject constructor() {
 
     @SuppressLint("RestrictedApi")
+    @Suppress("TooGenericExceptionCaught")
     fun logBackStack(navController: NavController, actionDescription: String) {
         try {
             val backStackEntries: StateFlow<List<NavBackStackEntry>> = navController.currentBackStack
