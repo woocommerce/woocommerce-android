@@ -1,7 +1,0 @@
-17.9：
-- [*] 评论：修复了在设置中的评论部分可以看到两个工具栏的错误 [https://github.com/woocommerce/woocommerce-android/pull/11072]
-- [*] [内部] 从应用程序中移除了 WooExpress 商店创建功能 [https://github.com/woocommerce/woocommerce-android/issues/11115]
-- [*] 产品：修复了双窗格模式下批量更新菜单项功能无法使用的错误 [https://github.com/woocommerce/woocommerce-android/pull/11127]
-- [*] 产品：修复了删除产品图片时无法保存的错误 [https://github.com/woocommerce/woocommerce-android/pull/11124]
-- [*] 评论：优化了评论的显示速度 [https://github.com/woocommerce/woocommerce-android/pull/11083]
-

@@ -1,7 +1,0 @@
-17.9:
-- [*] 評論：已修正雙重工具列顯示於設定評論中的錯誤 [https://github.com/woocommerce/woocommerce-android/pull/11072]
-- [*] [內部] 已從應用程式移除 WooExpress 商店建立 [https://github.com/woocommerce/woocommerce-android/issues/11115]
-- [*] 商品：已修正在雙窗格模式中，無法使用批次更新選單項目的錯誤 [https://github.com/woocommerce/woocommerce-android/pull/11127]
-- [*] 商品：已修正移除商品圖片後無法加以儲存的錯誤 [https://github.com/woocommerce/woocommerce-android/pull/11124]
-- [*] 評論：已將評論顯示的速度最佳化 [https://github.com/woocommerce/woocommerce-android/pull/11083]
-
