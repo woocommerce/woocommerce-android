@@ -5,6 +5,7 @@ import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.ui.analytics.hub.settings.SaveAnalyticsCardsConfiguration
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsSettingsDataStore
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsSettingsResourcesRepository
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -31,7 +32,7 @@ class ObserveAnalyticsCardsConfiguration @Inject constructor(
                 saveAnalyticsCardsConfiguration(configuration)
             }
 
-            configuration
+            if (FeatureFlag.EAH_I3.isEnabled()) configuration else configuration.filter { it.card.isPlugin.not() }
         }
     }
 
