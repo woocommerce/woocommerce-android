@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -135,7 +137,10 @@ private fun TutorialContentScreen(
                 Image(
                     painter = painterResource(id = R.drawable.app_password_tutorial_hint),
                     contentDescription = null,
-                    modifier = modifier.align(alignment = Alignment.CenterHorizontally)
+                    contentScale = ContentScale.FillWidth,
+                    modifier = modifier
+                        .align(alignment = Alignment.CenterHorizontally)
+                        .fillMaxSize()
                 )
 
                 Text(stringResource(id = R.string.login_app_password_instructions_step_3))
