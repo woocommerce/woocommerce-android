@@ -28,7 +28,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     fun onContinueClicked() {
-        _viewState.update { it.copy(shouldDisplayWebView = true) }
+        _viewState.update { it.copy(authorizationStarted = true) }
     }
 
     fun onContactSupportClicked() {
@@ -59,7 +59,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
 
     @Parcelize
     data class ViewState(
-        val shouldDisplayWebView: Boolean = false,
+        val authorizationStarted: Boolean = false,
         val authorizationUrl: String? = null,
         @StringRes val errorMessage: Int? = null,
     ) : Parcelable

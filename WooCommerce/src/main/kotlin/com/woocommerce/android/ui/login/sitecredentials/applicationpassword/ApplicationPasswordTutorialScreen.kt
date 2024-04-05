@@ -38,7 +38,7 @@ import org.wordpress.android.fluxc.network.UserAgent
 fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialViewModel) {
     val viewState = viewModel.viewState.observeAsState()
     ApplicationPasswordTutorialScreen(
-        shouldDisplayWebView = viewState.value?.shouldDisplayWebView ?: false,
+        authorizationStarted = viewState.value?.authorizationStarted ?: false,
         errorMessageRes = viewState.value?.errorMessage,
         webViewUrl = viewState.value?.authorizationUrl.orEmpty(),
         webViewUserAgent = viewModel.userAgent,
@@ -52,7 +52,7 @@ fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialView
 @Composable
 fun ApplicationPasswordTutorialScreen(
     modifier: Modifier = Modifier,
-    shouldDisplayWebView: Boolean,
+    authorizationStarted: Boolean,
     webViewUrl: String,
     webViewUserAgent: UserAgent?,
     @StringRes errorMessageRes: Int?,
@@ -70,7 +70,7 @@ fun ApplicationPasswordTutorialScreen(
             )
         }
     ) { paddingValues ->
-        if (shouldDisplayWebView && webViewUserAgent != null) {
+        if (authorizationStarted && webViewUserAgent != null) {
             WCWebView(
                 url = webViewUrl,
                 userAgent = webViewUserAgent,
@@ -174,7 +174,7 @@ private fun TutorialContentScreen(
 fun ApplicationPasswordTutorialScreenPreview() {
     WooThemeWithBackground {
         ApplicationPasswordTutorialScreen(
-            shouldDisplayWebView = false,
+            authorizationStarted = false,
             errorMessageRes = R.string.login_app_password_subtitle,
             webViewUrl = "",
             webViewUserAgent = null,
