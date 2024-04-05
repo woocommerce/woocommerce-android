@@ -4028,4 +4028,7 @@
     <string name="login_app_password_instructions_footer">If you run into any issues, please contact our support team.</string>
     <string name="login_app_password_continue_button">Continue</string>
     <string name="login_app_password_support_button">Contact Support</string>
+    <string name="login_app_password_exit_dialog_message">It seems that you have not approved the app connection yet. Are you sure you want to exit?</string>
+    <string name="login_app_password_exit_dialog_confirmation">Exit Anyway</string>
+    <string name="login_app_password_exit_dialog_cancel">Cancel</string>
 </resources>

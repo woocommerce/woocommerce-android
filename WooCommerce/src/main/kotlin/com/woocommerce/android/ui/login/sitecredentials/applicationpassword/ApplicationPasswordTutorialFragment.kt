@@ -64,9 +64,9 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
     private fun showConfirmationDialog() {
         WooDialog.showDialog(
             activity = requireActivity(),
-            messageId = R.string.coupon_details_delete_confirmation,
-            positiveButtonId = R.string.apply,
-            negativeButtonId = R.string.cancel,
+            messageId = R.string.login_app_password_exit_dialog_message,
+            positiveButtonId = R.string.login_app_password_exit_dialog_confirmation,
+            negativeButtonId = R.string.login_app_password_exit_dialog_cancel,
             posBtnAction = { _, _ -> parentFragmentManager.popBackStack() }
         )
     }
