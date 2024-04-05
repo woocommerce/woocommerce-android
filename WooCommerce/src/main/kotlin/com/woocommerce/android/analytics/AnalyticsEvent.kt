@@ -994,7 +994,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Blaze
     BLAZE_ENTRY_POINT_DISPLAYED,
     BLAZE_ENTRY_POINT_TAPPED,
-    BLAZE_BANNER_DISMISSED,
     BLAZE_FLOW_STARTED,
     BLAZE_FLOW_CANCELED,
     BLAZE_FLOW_COMPLETED,
