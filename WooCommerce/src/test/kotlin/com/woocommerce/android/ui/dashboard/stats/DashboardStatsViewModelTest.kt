@@ -5,7 +5,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
@@ -260,13 +259,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         testBlocking {
             setup {
                 whenever(getStats.invoke(any(), any()))
-                    .thenReturn(
-                        flowOf(
-                            GetStats.LoadStatsResult.VisitorStatUnavailable(
-                                connectionType = SiteConnectionType.JetpackConnectionPackage
-                            )
-                        )
-                    )
+                    .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorStatUnavailable))
             }
 
             Assertions.assertThat(viewModel.visitorStatsState.value)
