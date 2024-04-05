@@ -13,8 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.offsetInHours
-import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -24,6 +22,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
+import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeastOne
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
@@ -35,25 +34,25 @@ import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.util.Date
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-@HiltViewModel
-class DashboardStatsViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = DashboardStatsViewModel.Factory::class)
+class DashboardStatsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
+    @Assisted private val parentViewModel: DashboardViewModel,
     private val selectedSite: SelectedSite,
     private val getStats: GetStats,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
@@ -70,8 +69,6 @@ class DashboardStatsViewModel @Inject constructor(
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
     }
-
-    private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
     private var _hasOrders = MutableLiveData<OrderState>()
 
@@ -90,12 +87,10 @@ class DashboardStatsViewModel @Inject constructor(
     val customRange = customDateRangeDataStore.dateRange.asLiveData()
 
     init {
-        ConnectionChangeReceiver.getEventBus().register(this)
-
         viewModelScope.launch {
             combine(
                 _selectedDateRange,
-                refreshTrigger.onStart { emit(RefreshState()) }
+                parentViewModel.refreshTrigger.onStart { emit(RefreshState()) }
             ) { selectedRange, refreshEvent ->
                 Pair(selectedRange, refreshEvent.shouldRefresh)
             }.collectLatest { (selectedRange, isForceRefresh) ->
@@ -153,11 +148,6 @@ class DashboardStatsViewModel @Inject constructor(
         selectedDateRange.value?.let {
             triggerEvent(OpenAnalytics(it))
         }
-    }
-
-    override fun onCleared() {
-        ConnectionChangeReceiver.getEventBus().unregister(this)
-        super.onCleared()
     }
 
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) = coroutineScope {
@@ -285,14 +275,6 @@ class DashboardStatsViewModel @Inject constructor(
             )
         }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: ConnectionChangeEvent) {
-        if (event.isConnected) {
-            refreshTrigger.tryEmit(RefreshState())
-        }
-    }
-
     sealed class RevenueStatsViewState {
         data object Loading : RevenueStatsViewState()
         data object GenericError : RevenueStatsViewState()
@@ -332,4 +314,9 @@ class DashboardStatsViewModel @Inject constructor(
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
     data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MultiLiveEvent.Event()
+
+    @AssistedFactory
+    interface Factory {
+        fun create(parentViewModel: DashboardViewModel): DashboardStatsViewModel
+    }
 }

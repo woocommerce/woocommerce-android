@@ -34,6 +34,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -90,7 +91,8 @@ class DashboardViewModel @Inject constructor(
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
 
-    private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
+    private val _refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
+    val refreshTrigger = _refreshTrigger.asSharedFlow()
 
     private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
@@ -111,7 +113,7 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 _selectedDateRange,
-                refreshTrigger.onStart { emit(RefreshState()) }
+                _refreshTrigger.onStart { emit(RefreshState()) }
             ) { selectedRange, refreshEvent ->
                 Pair(selectedRange, refreshEvent.shouldRefresh)
             }.collectLatest { (selectedRange, isForceRefresh) ->
@@ -152,14 +154,14 @@ class DashboardViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
-            refreshTrigger.tryEmit(RefreshState())
+            _refreshTrigger.tryEmit(RefreshState())
         }
     }
 
     fun onPullToRefresh() {
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
-        refreshTrigger.tryEmit(RefreshState(isForced = true))
+        _refreshTrigger.tryEmit(RefreshState(isForced = true))
     }
 
     fun onShareStoreClicked() {

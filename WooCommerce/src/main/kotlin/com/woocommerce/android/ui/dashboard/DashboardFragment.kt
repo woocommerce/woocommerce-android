@@ -163,7 +163,8 @@ class DashboardFragment :
                     onStatsError = { showErrorSnack() },
                     openDatePicker = { start, end, callback ->
                         showDateRangePicker(start, end, callback)
-                    }
+                    },
+                    parentViewModel = dashboardViewModel
                 )
             }
         }
