@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -65,7 +67,6 @@ fun ApplicationPasswordTutorialScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = stringResource(id = R.string.log_in),
                 onNavigationButtonClick = onNavigationButtonClicked,
                 navigationIcon = when {
                     authorizationStarted -> Icons.Filled.Close
@@ -105,6 +106,7 @@ private fun TutorialContentScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(paddingValues)
+            .background(MaterialTheme.colors.surface)
     ) {
         Column(
             modifier = modifier.verticalScroll(rememberScrollState())
@@ -134,7 +136,10 @@ private fun TutorialContentScreen(
                 Image(
                     painter = painterResource(id = R.drawable.app_password_tutorial_hint),
                     contentDescription = null,
-                    modifier = modifier.align(alignment = Alignment.CenterHorizontally)
+                    contentScale = ContentScale.FillWidth,
+                    modifier = modifier
+                        .align(alignment = Alignment.CenterHorizontally)
+                        .fillMaxSize()
                 )
 
                 Text(stringResource(id = R.string.login_app_password_instructions_step_3))

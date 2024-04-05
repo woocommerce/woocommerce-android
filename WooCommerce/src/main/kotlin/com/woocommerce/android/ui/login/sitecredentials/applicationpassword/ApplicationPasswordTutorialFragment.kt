@@ -17,7 +17,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.OnContactSupport
-import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.ShowConfirmationDialog
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.ShowExitConfirmationDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,7 +49,7 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
             when (it) {
                 is OnContactSupport -> openSupportRequestScreen()
                 is ExitWithResult<*> -> exitWithResult(it.data as String)
-                is ShowConfirmationDialog -> showConfirmationDialog()
+                is ShowExitConfirmationDialog -> showConfirmationDialog()
             }
         }
     }

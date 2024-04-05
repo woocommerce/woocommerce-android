@@ -40,7 +40,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
         }
     }
 
-    fun onNavigationButtonClicked() { triggerEvent(ShowConfirmationDialog) }
+    fun onNavigationButtonClicked() { triggerEvent(ShowExitConfirmationDialog) }
 
     fun onWebViewDataAvailable(
         authorizationUrl: String?,
@@ -55,7 +55,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     }
 
     object OnContactSupport : Event()
-    object ShowConfirmationDialog : Event()
+    object ShowExitConfirmationDialog : Event()
 
     @Parcelize
     data class ViewState(
