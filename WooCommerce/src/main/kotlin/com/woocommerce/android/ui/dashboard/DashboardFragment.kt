@@ -246,11 +246,6 @@ class DashboardFragment :
         }
         myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreationUsingWebView -> openBlazeWebView(
-                    url = event.url,
-                    source = event.source
-                )
-
                 is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
 
                 is MyStoreBlazeViewModel.ShowAllCampaigns -> {
@@ -279,15 +274,6 @@ class DashboardFragment :
                 productId = productId
             )
         }
-    }
-
-    private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
-                urlToLoad = url,
-                source = source
-            )
-        )
     }
 
     @Suppress("LongMethod")
