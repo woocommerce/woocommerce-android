@@ -10,11 +10,15 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.OnContactSupport
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.ShowConfirmationDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,8 +56,19 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
                     )
                     parentFragmentManager.popBackStack()
                 }
+                is ShowConfirmationDialog -> showConfirmationDialog()
             }
         }
+    }
+
+    private fun showConfirmationDialog() {
+        WooDialog.showDialog(
+            activity = requireActivity(),
+            messageId = R.string.coupon_details_delete_confirmation,
+            positiveButtonId = R.string.apply,
+            negativeButtonId = R.string.cancel,
+            posBtnAction = { _, _ -> parentFragmentManager.popBackStack() }
+        )
     }
 
     override fun onAttach(context: Context) {
