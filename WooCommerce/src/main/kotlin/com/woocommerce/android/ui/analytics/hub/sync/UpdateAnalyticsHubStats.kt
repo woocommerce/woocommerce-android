@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.model.AnalyticsCards
+import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -37,6 +38,9 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val visitorsCountState = MutableStateFlow(VisitorsState.Available(0) as VisitorsState)
     val sessionState by lazy { combineSessionDataChanges() }
 
+    private val _bundlesState = MutableStateFlow(BundlesState.Available(BundleStat.EMPTY) as BundlesState)
+    val bundlesState: Flow<BundlesState> = _bundlesState
+
     private val fullStatsRequestState by lazy { combineFullUpdateState() }
 
     suspend operator fun invoke(
@@ -51,6 +55,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Orders -> _ordersState.update { OrdersState.Loading }
                 AnalyticsCards.Products -> _productsState.update { ProductsState.Loading }
                 AnalyticsCards.Session -> visitorsCountState.update { VisitorsState.Loading }
+                AnalyticsCards.Bundles -> _bundlesState.update { BundlesState.Loading }
             }
         }
 
@@ -73,6 +78,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Orders -> scope.fetchOrdersDataAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Products -> scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Session -> scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy)
+                AnalyticsCards.Bundles -> scope.fetchBundlesDataAsync(rangeSelection)
             }
         }
 
@@ -108,6 +114,11 @@ class UpdateAnalyticsHubStats @Inject constructor(
                     rangeSelection,
                     AnalyticsUpdateDataStore.AnalyticData.VISITORS
                 )
+
+                AnalyticsCards.Bundles -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.BUNDLES
+                )
             }
         }
     }
@@ -131,8 +142,14 @@ class UpdateAnalyticsHubStats @Inject constructor(
     }
 
     private fun combineFullUpdateState() =
-        combine(_revenueState, _productsState, _ordersState, sessionState) { revenue, products, orders, session ->
-            revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle
+        combine(
+            _revenueState,
+            _productsState,
+            _ordersState,
+            sessionState,
+            _bundlesState
+        ) { revenue, products, orders, session, bundles ->
+            revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle && bundles.isIdle
         }.map { if (it) Finished else Loading }
 
     private fun combineSessionDataChanges() =
@@ -184,5 +201,14 @@ class UpdateAnalyticsHubStats @Inject constructor(
             .run { this as? AnalyticsRepository.ProductsResult.ProductsData }
             ?.let { _productsState.value = ProductsState.Available(it.productsStat) }
             ?: _productsState.update { ProductsState.Error }
+    }
+
+    private fun CoroutineScope.fetchBundlesDataAsync(
+        rangeSelection: StatsTimeRangeSelection
+    ) = async {
+        analyticsRepository.fetchProductBundlesStats(rangeSelection)
+            .run { this as? AnalyticsRepository.BundlesResult.BundlesData }
+            ?.let { _bundlesState.value = BundlesState.Available(it.bundleStat) }
+            ?: _bundlesState.update { BundlesState.Error }
     }
 }

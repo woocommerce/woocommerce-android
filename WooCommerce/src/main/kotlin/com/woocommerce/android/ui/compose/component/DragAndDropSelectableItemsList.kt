@@ -113,24 +113,32 @@ fun <T> DragAndDropItem(
     modifier: Modifier = Modifier,
     showDividers: ShowDividers = ShowDividers.Bottom,
     elevation: Dp = 1.dp,
-    dragHandle: (@Composable () -> Unit)? = null
+    isEnabled: Boolean = true,
+    dragHandle: (@Composable () -> Unit)? = null,
 ) {
     Card(
         modifier = modifier,
         elevation = elevation,
         shape = RoundedCornerShape(0.dp)
     ) {
+        val itemModifier = if (isEnabled) {
+            Modifier
+                .clickable { onSelectionChange(item, !isSelected) }
+                .padding(16.dp)
+        } else {
+            Modifier
+                .padding(16.dp)
+        }
         Column {
             if (showDividers == All) Divider()
             Row(
-                modifier = Modifier
-                    .clickable { onSelectionChange(item, !isSelected) }
-                    .padding(16.dp),
+                modifier = itemModifier,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SelectionCheck(
                     isSelected = isSelected,
-                    onSelectionChange = { onSelectionChange(item, !isSelected) }
+                    onSelectionChange = { onSelectionChange(item, !isSelected) },
+                    isEnabled = isEnabled
                 )
                 Text(
                     text = title,
