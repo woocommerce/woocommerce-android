@@ -136,7 +136,7 @@ class GetStats @Inject constructor(
             }
 
             else -> selectedSite.connectionType?.let {
-                flowOf(VisitorStatUnavailable(it))
+                flowOf(VisitorStatUnavailable)
             } ?: emptyFlow()
         }
     }
@@ -216,9 +216,7 @@ class GetStats @Inject constructor(
         object RevenueStatsError : LoadStatsResult()
         object VisitorsStatsError : LoadStatsResult()
         object PluginNotActive : LoadStatsResult()
-        data class VisitorStatUnavailable(
-            val connectionType: SiteConnectionType
-        ) : LoadStatsResult()
+        data object VisitorStatUnavailable : LoadStatsResult()
     }
 }
 
