@@ -19,6 +19,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -66,7 +67,10 @@ fun ApplicationPasswordTutorialScreen(
             Toolbar(
                 title = stringResource(id = R.string.log_in),
                 onNavigationButtonClick = onNavigationButtonClicked,
-                navigationIcon = Icons.Filled.ArrowBack
+                navigationIcon = when {
+                    authorizationStarted -> Icons.Filled.Close
+                    else -> Icons.Filled.ArrowBack
+                }
             )
         }
     ) { paddingValues ->
