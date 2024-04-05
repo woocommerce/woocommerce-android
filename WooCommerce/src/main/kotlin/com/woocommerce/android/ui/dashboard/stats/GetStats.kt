@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.Visit
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.VisitorsStatsError
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
@@ -33,10 +32,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 
@@ -227,11 +222,3 @@ class GetStats @Inject constructor(
     }
 }
 
-fun StatsGranularity.asRangeSelection(dateUtils: DateUtils, locale: Locale? = null) =
-    StatsTimeRangeSelection.SelectionType.from(this)
-        .generateSelectionData(
-            calendar = Calendar.getInstance(),
-            locale = locale ?: Locale.getDefault(),
-            referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
-            referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
-        )
