@@ -144,9 +144,10 @@ fun DashboardStatsCard(
 
     LaunchedEffect(selectedDateRange) {
         selectedDateRange?.let { statsView.loadDashboardStats(it) }
-        if (statsView.tabLayout.getTabAt(statsView.tabLayout.selectedTabPosition)?.tag != selectedDateRange?.selectionType) {
+        val selectionType = selectedDateRange?.selectionType
+        if (statsView.tabLayout.getTabAt(statsView.tabLayout.selectedTabPosition)?.tag != selectionType) {
             val index = (0..statsView.tabLayout.tabCount)
-                .firstOrNull { statsView.tabLayout.getTabAt(it)?.tag == selectedDateRange?.selectionType }
+                .firstOrNull { statsView.tabLayout.getTabAt(it)?.tag == selectionType }
             index?.let {
                 launch {
                     // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
