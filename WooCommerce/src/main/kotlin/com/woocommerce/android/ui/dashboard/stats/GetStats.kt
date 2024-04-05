@@ -219,4 +219,3 @@ class GetStats @Inject constructor(
         data object VisitorStatUnavailable : LoadStatsResult()
     }
 }
-
