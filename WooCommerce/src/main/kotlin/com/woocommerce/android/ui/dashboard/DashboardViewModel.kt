@@ -33,6 +33,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -92,7 +93,7 @@ class DashboardViewModel @Inject constructor(
     val appbarState: LiveData<AppbarState> = _appbarState
 
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
-    val refreshTrigger = _refreshTrigger.asSharedFlow()
+    val refreshTrigger: Flow<RefreshEvent> = _refreshTrigger.asSharedFlow()
 
     private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
