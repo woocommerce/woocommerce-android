@@ -10,11 +10,14 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
+import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.OnContactSupport
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialViewModel.ShowConfirmationDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,13 +48,8 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) {
             when (it) {
                 is OnContactSupport -> openSupportRequestScreen()
-                is ExitWithResult<*> -> {
-                    setFragmentResult(
-                        requestKey = WEB_NAVIGATION_RESULT,
-                        result = bundleOf(URL_KEY to it.data)
-                    )
-                    parentFragmentManager.popBackStack()
-                }
+                is ExitWithResult<*> -> exitWithResult(it.data as String)
+                is ShowConfirmationDialog -> showConfirmationDialog()
             }
         }
     }
@@ -62,6 +60,24 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
             authorizationUrl = url,
             errorMessage = errorMessageRes
         )
+    }
+
+    private fun showConfirmationDialog() {
+        WooDialog.showDialog(
+            activity = requireActivity(),
+            messageId = R.string.login_app_password_exit_dialog_message,
+            positiveButtonId = R.string.login_app_password_exit_dialog_confirmation,
+            negativeButtonId = R.string.login_app_password_exit_dialog_cancel,
+            posBtnAction = { _, _ -> exitWithResult() }
+        )
+    }
+
+    private fun exitWithResult(url: String? = null) {
+        setFragmentResult(
+            requestKey = WEB_NAVIGATION_RESULT,
+            result = bundleOf(URL_KEY to url)
+        )
+        parentFragmentManager.popBackStack()
     }
 
     private fun openSupportRequestScreen() {

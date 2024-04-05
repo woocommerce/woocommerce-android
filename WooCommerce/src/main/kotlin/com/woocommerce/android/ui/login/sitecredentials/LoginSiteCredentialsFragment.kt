@@ -112,6 +112,7 @@ class LoginSiteCredentialsFragment : Fragment() {
         ) { _, result ->
             result.getString(ApplicationPasswordTutorialFragment.URL_KEY)
                 ?.let { viewModel.onWebAuthorizationUrlLoaded(it) }
+                ?: viewModel.onPasswordTutorialAborted()
         }
     }
 

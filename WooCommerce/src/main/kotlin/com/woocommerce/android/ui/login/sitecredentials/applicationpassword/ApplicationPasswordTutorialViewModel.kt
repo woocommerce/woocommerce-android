@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -27,7 +27,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     fun onContinueClicked() {
-        _viewState.update { it.copy(shouldDisplayWebView = true) }
+        _viewState.update { it.copy(authorizationStarted = true) }
     }
 
     fun onContactSupportClicked() {
@@ -39,6 +39,8 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
             triggerEvent(ExitWithResult(url))
         }
     }
+
+    fun onNavigationButtonClicked() { triggerEvent(ShowConfirmationDialog) }
 
     fun onWebViewDataAvailable(
         authorizationUrl: String?,
@@ -52,11 +54,12 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
         }
     }
 
-    object OnContactSupport : MultiLiveEvent.Event()
+    object OnContactSupport : Event()
+    object ShowConfirmationDialog : Event()
 
     @Parcelize
     data class ViewState(
-        val shouldDisplayWebView: Boolean = false,
+        val authorizationStarted: Boolean = false,
         val authorizationUrl: String? = null,
         @StringRes val errorMessage: Int? = null,
     ) : Parcelable

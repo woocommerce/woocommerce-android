@@ -19,6 +19,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -38,37 +39,42 @@ import org.wordpress.android.fluxc.network.UserAgent
 fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialViewModel) {
     val viewState = viewModel.viewState.observeAsState()
     ApplicationPasswordTutorialScreen(
-        shouldDisplayWebView = viewState.value?.shouldDisplayWebView ?: false,
+        authorizationStarted = viewState.value?.authorizationStarted ?: false,
         errorMessageRes = viewState.value?.errorMessage,
         webViewUrl = viewState.value?.authorizationUrl.orEmpty(),
         webViewUserAgent = viewModel.userAgent,
         onContinueClicked = viewModel::onContinueClicked,
         onContactSupportClicked = viewModel::onContactSupportClicked,
-        onPageLoaded = viewModel::onWebPageLoaded
+        onPageLoaded = viewModel::onWebPageLoaded,
+        onNavigationButtonClicked = viewModel::onNavigationButtonClicked
     )
 }
 
 @Composable
 fun ApplicationPasswordTutorialScreen(
     modifier: Modifier = Modifier,
-    shouldDisplayWebView: Boolean,
+    authorizationStarted: Boolean,
     webViewUrl: String,
     webViewUserAgent: UserAgent?,
     @StringRes errorMessageRes: Int?,
     onPageLoaded: (String) -> Unit,
     onContinueClicked: () -> Unit,
-    onContactSupportClicked: () -> Unit
+    onContactSupportClicked: () -> Unit,
+    onNavigationButtonClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.log_in),
-                onNavigationButtonClick = { /*TODO*/ },
-                navigationIcon = Icons.Filled.ArrowBack
+                onNavigationButtonClick = onNavigationButtonClicked,
+                navigationIcon = when {
+                    authorizationStarted -> Icons.Filled.Close
+                    else -> Icons.Filled.ArrowBack
+                }
             )
         }
     ) { paddingValues ->
-        if (shouldDisplayWebView && webViewUserAgent != null) {
+        if (authorizationStarted && webViewUserAgent != null) {
             WCWebView(
                 url = webViewUrl,
                 userAgent = webViewUserAgent,
@@ -172,13 +178,14 @@ private fun TutorialContentScreen(
 fun ApplicationPasswordTutorialScreenPreview() {
     WooThemeWithBackground {
         ApplicationPasswordTutorialScreen(
-            shouldDisplayWebView = false,
+            authorizationStarted = false,
             errorMessageRes = R.string.login_app_password_subtitle,
             webViewUrl = "",
             webViewUserAgent = null,
             onContinueClicked = { },
             onContactSupportClicked = { },
-            onPageLoaded = { }
+            onPageLoaded = { },
+            onNavigationButtonClicked = { }
         )
     }
 }
