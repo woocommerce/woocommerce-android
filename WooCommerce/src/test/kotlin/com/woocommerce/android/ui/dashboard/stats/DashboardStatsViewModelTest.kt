@@ -74,7 +74,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         on { refreshTrigger } doReturn emptyFlow()
     }
 
-    private lateinit var sut: DashboardStatsViewModel
+    private lateinit var viewModel: DashboardStatsViewModel
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
@@ -84,7 +84,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             dateUtils = dateUtils
         )
 
-        sut = DashboardStatsViewModel(
+        viewModel = DashboardStatsViewModel(
             savedStateHandle = SavedStateHandle(),
             parentViewModel = parentViewModel,
             selectedSite = selectedSite,
@@ -129,7 +129,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 whenever(networkStatus.isConnected()).thenReturn(false)
             }
 
-            sut.onTabSelected(ANY_SELECTION_TYPE)
+            viewModel.onTabSelected(ANY_SELECTION_TYPE)
 
             verify(getStats, never()).invoke(any(), any())
         }
@@ -143,7 +143,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                 .thenReturn(ANY_SELECTION_TYPE.name)
         }
 
-        sut.onTabSelected(ANY_SELECTION_TYPE)
+        viewModel.onTabSelected(ANY_SELECTION_TYPE)
         prefsChangesFlow.tryEmit(Unit)
 
         verify(getStats, times(2)).invoke(
@@ -185,12 +185,12 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                     .thenReturn(ANY_SELECTION_TYPE.name)
             }
 
-            sut.onTabSelected(ANY_SELECTION_TYPE)
+            viewModel.onTabSelected(ANY_SELECTION_TYPE)
             prefsChangesFlow.tryEmit(Unit)
 
-            Assertions.assertThat(sut.revenueStatsState.value)
+            Assertions.assertThat(viewModel.revenueStatsState.value)
                 .isInstanceOf(DashboardStatsViewModel.RevenueStatsViewState.Content::class.java)
-            val content = sut.revenueStatsState.value as DashboardStatsViewModel.RevenueStatsViewState.Content
+            val content = viewModel.revenueStatsState.value as DashboardStatsViewModel.RevenueStatsViewState.Content
             Assertions.assertThat(content.statsRangeSelection.selectionType).isEqualTo(ANY_SELECTION_TYPE)
         }
 
@@ -199,7 +199,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         testBlocking {
             setup()
 
-            sut.onTabSelected(ANY_SELECTION_TYPE)
+            viewModel.onTabSelected(ANY_SELECTION_TYPE)
 
             verify(appPrefsWrapper).setActiveStatsTab(ANY_SELECTION_TYPE.name)
         }
@@ -212,7 +212,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                     .thenReturn(flowOf(GetStats.LoadStatsResult.RevenueStatsError))
             }
 
-            Assertions.assertThat(sut.revenueStatsState.value)
+            Assertions.assertThat(viewModel.revenueStatsState.value)
                 .isEqualTo(DashboardStatsViewModel.RevenueStatsViewState.GenericError)
         }
 
@@ -224,7 +224,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                     .thenReturn(flowOf(GetStats.LoadStatsResult.PluginNotActive))
             }
 
-            Assertions.assertThat(sut.revenueStatsState.value).isEqualTo(
+            Assertions.assertThat(viewModel.revenueStatsState.value).isEqualTo(
                 DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError
             )
         }
@@ -237,7 +237,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                     .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap(), 0)))
             }
 
-            Assertions.assertThat(sut.visitorStatsState.value).isEqualTo(
+            Assertions.assertThat(viewModel.visitorStatsState.value).isEqualTo(
                 DashboardStatsViewModel.VisitorStatsViewState.Content(emptyMap(), 0)
             )
         }
@@ -250,7 +250,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                     .thenReturn(flowOf(GetStats.LoadStatsResult.VisitorsStatsError))
             }
 
-            Assertions.assertThat(sut.visitorStatsState.value).isEqualTo(
+            Assertions.assertThat(viewModel.visitorStatsState.value).isEqualTo(
                 DashboardStatsViewModel.VisitorStatsViewState.Error
             )
         }
@@ -269,7 +269,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
                     )
             }
 
-            Assertions.assertThat(sut.visitorStatsState.value)
+            Assertions.assertThat(viewModel.visitorStatsState.value)
                 .isInstanceOf(DashboardStatsViewModel.VisitorStatsViewState.Unavailable::class.java)
         }
 }
