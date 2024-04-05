@@ -20,6 +20,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -38,6 +39,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
@@ -252,12 +255,21 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onFailure = { exception ->
                 val authenticationError = exception as? CookieNonceAuthenticationException
 
-                this.errorDialogMessage.value = authenticationError?.errorMessage ?: UiStringRes(R.string.error_generic)
+                if (FeatureFlag.APP_PASSWORD_TUTORIAL.isEnabled()) {
+                    when (authenticationError?.errorType) {
+                        GENERIC_ERROR,
+                        INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
+                        else -> triggerEvent(ShowApplicationPasswordTutorialScreen)
+                    }
+                } else {
+                    this.errorDialogMessage.value = authenticationError?.errorMessage
+                        ?: UiStringRes(R.string.error_generic)
+                }
 
                 trackLoginFailure(
                     step = Step.AUTHENTICATION,
                     errorContext = exception.javaClass.simpleName,
-                    errorType = authenticationError?.errorType,
+                    errorType = authenticationError?.errorType?.name,
                     errorDescription = exception.message,
                     statusCode = authenticationError?.networkStatusCode
                 )
@@ -418,4 +430,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val siteAddress: String,
         val username: String?
     ) : MultiLiveEvent.Event()
+
+    object ShowApplicationPasswordTutorialScreen : MultiLiveEvent.Event()
 }

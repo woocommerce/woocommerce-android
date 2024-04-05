@@ -756,27 +756,6 @@
         android:id="@+id/aboutYourStoreFragment"
         android:name="com.woocommerce.android.ui.onboarding.aboutyourstore.AboutYourStoreFragment"
         android:label="AboutYourStoreFragment" />
-    <fragment
-        android:id="@+id/blazeCampaignCreationFragment"
-        android:name="com.woocommerce.android.ui.blaze.BlazeCampaignCreationFragment"
-        android:label="BlazeWebViewFragment">
-        <argument
-            android:name="urlToLoad"
-            app:argType="string" />
-        <argument
-            android:name="source"
-            app:argType="com.woocommerce.android.ui.blaze.BlazeUrlsHelper$BlazeFlowSource"
-            app:nullable="false" />
-        <action
-            android:id="@+id/action_blazeCampaignCreationFragment_to_blazeCampaignListFragment"
-            app:destination="@id/blazeCampaignListFragment"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/blazeCampaignCreationFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
-    <action
-        android:id="@+id/action_global_blazeCampaignCreationFragment"
-        app:destination="@id/blazeCampaignCreationFragment" />
     <action
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />
