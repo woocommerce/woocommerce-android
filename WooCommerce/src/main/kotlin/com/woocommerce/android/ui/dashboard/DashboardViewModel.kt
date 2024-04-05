@@ -9,72 +9,44 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEligibleForAI
-import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.isSitePublic
-import com.woocommerce.android.extensions.offsetInHours
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.myStoreTrackingGranularityString
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
-import com.woocommerce.android.ui.dashboard.domain.GetStats
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.HasOrders
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.PluginNotActive
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.RevenueStatsError
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.RevenueStatsSuccess
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.VisitorStatUnavailable
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.VisitorsStatsError
-import com.woocommerce.android.ui.dashboard.domain.GetStats.LoadStatsResult.VisitorsStatsSuccess
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.utils.putIfNotNull
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -83,22 +55,18 @@ class DashboardViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val wooCommerceStore: WooCommerceStore,
-    private val getStats: GetStats,
     private val getTopPerformers: GetTopPerformers,
     private val currencyFormatter: CurrencyFormatter,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val myStoreTransactionLauncher: DashboardTransactionLauncher,
-    private val timezoneProvider: TimezoneProvider,
+    dashboardTransactionLauncher: DashboardTransactionLauncher,
     private val observeLastUpdate: ObserveLastUpdate,
-    private val customDateRangeDataStore: CustomDateRangeDataStore,
-    private val dateUtils: DateUtils,
+    getSelectedDateRange: GetSelectedDateRange,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
     companion object {
-        private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
         val SUPPORTED_RANGES_ON_MY_STORE_TAB = listOf(
             SelectionType.TODAY,
             SelectionType.WEEK_TO_DATE,
@@ -108,22 +76,13 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    val performanceObserver: LifecycleObserver = myStoreTransactionLauncher
-
-    private var _revenueStatsState = MutableLiveData<RevenueStatsViewState>()
-    val revenueStatsState: LiveData<RevenueStatsViewState> = _revenueStatsState
-
-    private var _visitorStatsState = MutableLiveData<VisitorStatsViewState>()
-    val visitorStatsState: LiveData<VisitorStatsViewState> = _visitorStatsState
+    val performanceObserver: LifecycleObserver = dashboardTransactionLauncher
 
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
 
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
-
-    private var _lastUpdateStats = MutableLiveData<Long?>()
-    val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
 
     private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
     val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
@@ -133,36 +92,7 @@ class DashboardViewModel @Inject constructor(
 
     private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
 
-    private val _selectedRangeType = savedState.getStateFlow(viewModelScope, getSelectedRangeTypeIfAny())
-
-    private val _customRange = customDateRangeDataStore.dateRange
-        .stateIn(
-            viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = null
-        )
-    val customRange = _customRange.asLiveData()
-    private val _selectedDateRange = combine(_selectedRangeType, _customRange) { selectionType, customRange ->
-        when (selectionType) {
-            SelectionType.CUSTOM -> {
-                selectionType.generateSelectionData(
-                    calendar = Calendar.getInstance(),
-                    locale = Locale.getDefault(),
-                    referenceStartDate = customRange?.start ?: Date(),
-                    referenceEndDate = customRange?.end ?: Date()
-                )
-            }
-
-            else -> {
-                selectionType.generateSelectionData(
-                    calendar = Calendar.getInstance(),
-                    locale = Locale.getDefault(),
-                    referenceStartDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
-                    referenceEndDate = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
-                )
-            }
-        }
-    }
+    private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
     val storeName = selectedSite.observe().map { site ->
@@ -185,14 +115,11 @@ class DashboardViewModel @Inject constructor(
             ) { selectedRange, refreshEvent ->
                 Pair(selectedRange, refreshEvent.shouldRefresh)
             }.collectLatest { (selectedRange, isForceRefresh) ->
-                coroutineScope {
-                    launch { loadStoreStats(selectedRange, isForceRefresh) }
-                    launch { loadTopPerformersStats(selectedRange, isForceRefresh) }
-                }
+                loadTopPerformersStats(selectedRange, isForceRefresh)
             }
         }
+
         observeTopPerformerUpdates()
-        trackLocalTimezoneDifferenceFromStore()
 
         launch {
             shouldShowPrivacyBanner().let {
@@ -205,7 +132,7 @@ class DashboardViewModel @Inject constructor(
         if (selectedSite.getOrNull()?.isEligibleForAI == true &&
             !appPrefsWrapper.wasAIProductDescriptionPromoDialogShown
         ) {
-            triggerEvent(ShowAIProductDescriptionDialog)
+            triggerEvent(DashboardEvent.ShowAIProductDescriptionDialog)
             appPrefsWrapper.wasAIProductDescriptionPromoDialogShown = true
         }
 
@@ -229,29 +156,10 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun onTabSelected(selectionType: SelectionType) {
-        usageTracksEventEmitter.interacted()
-        _selectedRangeType.update { selectionType }
-        appPrefsWrapper.setActiveStatsTab(selectionType.name)
-
-        if (selectionType == SelectionType.CUSTOM) {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
-            )
-        }
-    }
-
     fun onPullToRefresh() {
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
         refreshTrigger.tryEmit(RefreshState(isForced = true))
-    }
-
-    fun onViewAnalyticsClicked() {
-        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
-        selectedDateRange.value?.let {
-            triggerEvent(DashboardEvent.OpenAnalytics(it))
-        }
     }
 
     fun onShareStoreClicked() {
@@ -261,98 +169,35 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
-        if (!networkStatus.isConnected()) {
-            _revenueStatsState.value = RevenueStatsViewState.Content(null, selectedRange)
-            _visitorStatsState.value = VisitorStatsViewState.Content(emptyMap())
-            return
-        }
-        _revenueStatsState.value = RevenueStatsViewState.Loading
-        getStats(forceRefresh, selectedRange)
-            .collect {
-                when (it) {
-                    is RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
-                    is RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
-                    PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
-                    is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
-                    is VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
-                    is VisitorStatUnavailable -> onVisitorStatsUnavailable(it.connectionType)
-                    is HasOrders -> _hasOrders.value = if (it.hasOrder) OrderState.AtLeastOne else OrderState.Empty
+    fun onEditWidgetsClicked() {
+        // TODO ADD TRACKING HERE
+        triggerEvent(OpenEditWidgets)
+    }
+
+    private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) =
+        coroutineScope {
+            if (!networkStatus.isConnected()) return@coroutineScope
+
+            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
+            val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
+            result.fold(
+                onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
+                onSuccess = {
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
+                        mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.selectionType.identifier)
+                    )
                 }
-                myStoreTransactionLauncher.onStoreStatisticsFetched()
+            )
+            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = false)
+
+            launch {
+                observeLastUpdate(
+                    selectedRange,
+                    AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+                ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
             }
-        launch {
-            observeLastUpdate(
-                selectedRange,
-                listOf(
-                    AnalyticsUpdateDataStore.AnalyticData.REVENUE,
-                    AnalyticsUpdateDataStore.AnalyticData.VISITORS
-                )
-            ).collect { lastUpdateMillis -> _lastUpdateStats.value = lastUpdateMillis }
         }
-        launch {
-            observeLastUpdate(
-                selectedRange,
-                AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
-            ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
-        }
-    }
-
-    private fun onRevenueStatsSuccess(
-        result: RevenueStatsSuccess,
-        selectedRange: StatsTimeRangeSelection
-    ) {
-        _revenueStatsState.value = RevenueStatsViewState.Content(
-            result.stats?.toStoreStatsUiModel(),
-            selectedRange
-        )
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
-            buildMap {
-                put(AnalyticsTracker.KEY_RANGE, selectedRange.myStoreTrackingGranularityString)
-                putIfNotNull(AnalyticsTracker.KEY_ID to result.stats?.rangeId)
-            }
-        )
-    }
-
-    private fun onVisitorStatsUnavailable(connectionType: SiteConnectionType) {
-        val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
-            System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
-        )
-        val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
-            connectionType == SiteConnectionType.ApplicationPasswords
-        val showBanner = supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
-        val benefitsBanner = JetpackBenefitsBannerUiModel(
-            show = showBanner,
-            onDismiss = {
-                _visitorStatsState.value =
-                    VisitorStatsViewState.Unavailable(JetpackBenefitsBannerUiModel(show = false))
-                appPrefsWrapper.recordJetpackBenefitsDismissal()
-                analyticsTrackerWrapper.track(
-                    stat = AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER,
-                    properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
-                )
-            }
-        )
-        _visitorStatsState.value = VisitorStatsViewState.Unavailable(benefitsBanner)
-    }
-
-    private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
-        if (!networkStatus.isConnected()) return
-
-        _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
-        val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
-        result.fold(
-            onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
-            onSuccess = {
-                analyticsTrackerWrapper.track(
-                    AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
-                    mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.myStoreTrackingGranularityString)
-                )
-            }
-        )
-        _topPerformersState.value = _topPerformersState.value?.copy(isLoading = false)
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeTopPerformerUpdates() {
@@ -369,58 +214,11 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    private fun trackLocalTimezoneDifferenceFromStore() {
-        val selectedSite = selectedSite.getIfExists() ?: return
-        val siteTimezone = selectedSite.timezone.takeIf { it.isNotNullOrEmpty() } ?: return
-        val localTimeZoneOffset = timezoneProvider.deviceTimezone.offsetInHours.toString()
-
-        val shouldTriggerTimezoneTrack = appPrefsWrapper.isTimezoneTrackEventNeverTriggeredFor(
-            siteId = selectedSite.siteId,
-            localTimezone = localTimeZoneOffset,
-            storeTimezone = siteTimezone
-        ) && selectedSite.timezone != localTimeZoneOffset
-
-        if (shouldTriggerTimezoneTrack) {
-            analyticsTrackerWrapper.track(
-                stat = DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE,
-                properties = mapOf(
-                    AnalyticsTracker.KEY_STORE_TIMEZONE to siteTimezone,
-                    AnalyticsTracker.KEY_LOCAL_TIMEZONE to localTimeZoneOffset
-                )
-            )
-            appPrefsWrapper.setTimezoneTrackEventTriggeredFor(
-                siteId = selectedSite.siteId,
-                localTimezone = localTimeZoneOffset,
-                storeTimezone = siteTimezone
-            )
-        }
-    }
-
     private fun onTopPerformerSelected(productId: Long) {
         triggerEvent(DashboardEvent.OpenTopPerformer(productId))
         analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         usageTracksEventEmitter.interacted()
     }
-
-    private fun WCRevenueStatsModel.toStoreStatsUiModel(): RevenueStatsUiModel {
-        val totals = parseTotal()
-        return RevenueStatsUiModel(
-            intervalList = getIntervalList().toStatsIntervalUiModelList(),
-            totalOrdersCount = totals?.ordersCount,
-            totalSales = totals?.totalSales,
-            currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode,
-            rangeId = rangeId
-        )
-    }
-
-    private fun List<WCRevenueStatsModel.Interval>.toStatsIntervalUiModelList() =
-        map {
-            StatsIntervalUiModel(
-                it.interval,
-                it.subtotals?.ordersCount,
-                it.subtotals?.totalSales
-            )
-        }
 
     private fun List<TopPerformerProduct>.toTopPerformersUiList() = map { it.toTopPerformersUiModel() }
 
@@ -450,71 +248,6 @@ class DashboardViewModel @Inject constructor(
             0
         )
 
-    private fun getSelectedRangeTypeIfAny(): SelectionType {
-        val previouslySelectedTab = appPrefsWrapper.getActiveStatsTab()
-        return runCatching {
-            SelectionType.valueOf(previouslySelectedTab)
-        }.getOrDefault(SelectionType.TODAY)
-    }
-
-    fun onCustomRangeSelected(range: StatsTimeRange) {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
-            mapOf(
-                AnalyticsTracker.KEY_IS_EDITING to (_customRange.value != null),
-            )
-        )
-
-        if (_selectedRangeType.value != SelectionType.CUSTOM) {
-            onTabSelected(SelectionType.CUSTOM)
-        }
-        viewModelScope.launch {
-            customDateRangeDataStore.updateDateRange(range)
-        }
-    }
-
-    fun onAddCustomRangeClicked() {
-        triggerEvent(
-            OpenDatePicker(
-                fromDate = _customRange.value?.start ?: Date(),
-                toDate = _customRange.value?.end ?: Date()
-            )
-        )
-
-        val event = if (_customRange.value == null) {
-            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
-        } else {
-            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED
-        }
-        analyticsTrackerWrapper.track(event)
-    }
-
-    fun onEditWidgetsClicked() {
-        // TODO ADD TRACKING HERE
-        triggerEvent(OpenEditWidgets)
-    }
-
-    sealed class RevenueStatsViewState {
-        data object Loading : RevenueStatsViewState()
-        data object GenericError : RevenueStatsViewState()
-        data object PluginNotActiveError : RevenueStatsViewState()
-        data class Content(
-            val revenueStats: RevenueStatsUiModel?,
-            val statsRangeSelection: StatsTimeRangeSelection
-        ) : RevenueStatsViewState()
-    }
-
-    sealed class VisitorStatsViewState {
-        data object Error : VisitorStatsViewState()
-        data class Unavailable(
-            val benefitsBanner: JetpackBenefitsBannerUiModel
-        ) : VisitorStatsViewState()
-
-        data class Content(
-            val stats: Map<String, Int>
-        ) : VisitorStatsViewState()
-    }
-
     data class TopPerformersState(
         val isLoading: Boolean = false,
         val isError: Boolean = false,
@@ -535,15 +268,11 @@ class DashboardViewModel @Inject constructor(
             val productId: Long
         ) : DashboardEvent()
 
-        data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : DashboardEvent()
-
         data object ShowPrivacyBanner : DashboardEvent()
 
         data object ShowAIProductDescriptionDialog : DashboardEvent()
 
         data class ShareStore(val storeUrl: String) : DashboardEvent()
-
-        data class OpenDatePicker(val fromDate: Date, val toDate: Date) : DashboardEvent()
 
         data object OpenEditWidgets : DashboardEvent()
     }

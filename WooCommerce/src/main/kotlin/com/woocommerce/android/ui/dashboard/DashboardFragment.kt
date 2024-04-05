@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -19,10 +17,8 @@ import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.transition.MaterialElevationScale
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.NavGraphMainDirections
@@ -40,8 +36,6 @@ import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
@@ -50,16 +44,12 @@ import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
 import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenAnalytics
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.RevenueStatsViewState
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -82,18 +72,15 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-@OptIn(FlowPreview::class)
 class DashboardFragment :
     TopLevelFragment(R.layout.fragment_dashboard),
     MenuProvider {
@@ -151,21 +138,6 @@ class DashboardFragment :
     private var isEmptyViewVisible: Boolean = false
     private var wasPreviouslyStopped = false
 
-    private val tabLayout: TabLayout
-        get() = binding.myStoreStats.tabLayout
-
-    private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab) {
-            dashboardViewModel.onTabSelected(tab.tag as? SelectionType ?: SelectionType.TODAY)
-        }
-
-        override fun onTabUnselected(tab: TabLayout.Tab) = Unit
-
-        override fun onTabReselected(tab: TabLayout.Tab) = Unit
-    }
-
-    private val handler = Handler(Looper.getMainLooper())
-
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(dashboardViewModel.performanceObserver)
         lifecycle.addObserver(storeOnboardingViewModel)
@@ -178,22 +150,32 @@ class DashboardFragment :
 
         _binding = FragmentDashboardBinding.bind(view)
 
+        binding.myStoreStats.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                DashboardStatsCard(
+                    dateUtils = dateUtils,
+                    currencyFormatter = currencyFormatter,
+                    usageTracksEventEmitter = usageTracksEventEmitter,
+                    onPluginUnavailableError = { updateStatsAvailabilityError() },
+                    reportJetpackPluginStatus = { onVisitorStatsUnavailable(it) },
+                    onStatsError = { showErrorSnack() },
+                    openDatePicker = { start, end, callback ->
+                        showDateRangePicker(start, end, callback)
+                    }
+                )
+            }
+        }
+
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
             dashboardViewModel.onPullToRefresh()
             storeOnboardingViewModel.onPullToRefresh()
-            binding.myStoreStats.clearStatsHeaderValues()
-            binding.myStoreStats.clearChartData()
+//            binding.myStoreStats.clearStatsHeaderValues()
+//            binding.myStoreStats.clearChartData()
             refreshJitm()
         }
-
-        binding.myStoreStats.initView(
-            selectedSite,
-            dateUtils,
-            currencyFormatter,
-            usageTracksEventEmitter,
-            viewLifecycleOwner.lifecycleScope
-        ) { dashboardViewModel.onViewAnalyticsClicked() }
 
         binding.myStoreTopPerformers.initView(selectedSite, dateUtils)
 
@@ -205,15 +187,6 @@ class DashboardFragment :
         )
 
         prepareJetpackBenefitsBanner()
-
-        tabLayout.addOnTabSelectedListener(tabSelectedListener)
-
-        binding.myStoreStats.customRangeButton.setOnClickListener {
-            dashboardViewModel.onAddCustomRangeClicked()
-        }
-        binding.myStoreStats.customRangeLabel.setOnClickListener {
-            dashboardViewModel.onAddCustomRangeClicked()
-        }
 
         binding.statsScrollView.scrollStartEvents()
             .onEach { usageTracksEventEmitter.interacted() }
@@ -396,39 +369,8 @@ class DashboardFragment :
     private fun setupStateObservers() {
         dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
-        dashboardViewModel.customRange.observe(viewLifecycleOwner) { customRange ->
-            binding.myStoreStats.handleCustomRangeTab(customRange)
-        }
         dashboardViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
-            binding.myStoreStats.loadDashboardStats(statsTimeRangeSelection)
             binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
-            if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != statsTimeRangeSelection.selectionType) {
-                val index = (0..tabLayout.tabCount)
-                    .firstOrNull { tabLayout.getTabAt(it)?.tag == statsTimeRangeSelection.selectionType }
-                index?.let {
-                    // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
-                    handler.postDelayed({ tabLayout.getTabAt(index)?.select() }, 300)
-                }
-            }
-        }
-        dashboardViewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
-            when (revenueStats) {
-                is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats)
-                RevenueStatsViewState.GenericError -> showStatsError()
-                RevenueStatsViewState.Loading -> showChartSkeleton(true)
-                RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
-            }
-        }
-        dashboardViewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
-            when (stats) {
-                is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
-                VisitorStatsViewState.Error -> {
-                    binding.jetpackBenefitsBanner.root.isVisible = false
-                    binding.myStoreStats.showVisitorStatsError()
-                }
-
-                is VisitorStatsViewState.Unavailable -> onVisitorStatsUnavailable(stats)
-            }
         }
         dashboardViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
             when {
@@ -439,8 +381,8 @@ class DashboardFragment :
         }
         dashboardViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
             when (newValue) {
-                OrderState.Empty -> showEmptyView(true)
-                OrderState.AtLeastOne -> showEmptyView(false)
+                DashboardViewModel.OrderState.Empty -> showEmptyView(true)
+                DashboardViewModel.OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
         dashboardViewModel.event.observe(viewLifecycleOwner) { event ->
@@ -451,10 +393,6 @@ class DashboardFragment :
                         isTrashEnabled = false
                     )
                 )
-
-                is OpenAnalytics -> {
-                    mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
-                }
 
                 is ShowPrivacyBanner ->
                     findNavController().navigate(
@@ -468,13 +406,6 @@ class DashboardFragment :
                         DashboardFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
                     )
 
-                is OpenDatePicker -> showDateRangePicker(
-                    fromMillis = event.fromDate.time,
-                    toMillis = event.toDate.time
-                ) { start, end ->
-                    dashboardViewModel.onCustomRangeSelected(StatsTimeRange(Date(start), Date(end)))
-                }
-
                 is OpenEditWidgets -> {
                     findNavController().navigateSafely(
                         DashboardFragmentDirections.actionDashboardToEditWidgetsFragment()
@@ -484,9 +415,6 @@ class DashboardFragment :
                 else -> event.isHandled = false
             }
         }
-        dashboardViewModel.lastUpdateStats.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreStats.showLastUpdate(lastUpdateMillis)
-        }
         dashboardViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
             binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
         }
@@ -495,10 +423,12 @@ class DashboardFragment :
         }
     }
 
-    private fun onVisitorStatsUnavailable(state: VisitorStatsViewState.Unavailable) {
-        handleUnavailableVisitorStats()
+    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: JetpackBenefitsBannerUiModel?) {
+        if (jetpackBenefitsBanner == null) {
+            binding.jetpackBenefitsBanner.root.isVisible = false
+            return
+        }
 
-        val jetpackBenefitsBanner = state.benefitsBanner
         if (jetpackBenefitsBanner.show) {
             binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
                 jetpackBenefitsBanner.onDismiss()
@@ -567,8 +497,6 @@ class DashboardFragment :
     }
 
     override fun onDestroyView() {
-        handler.removeCallbacksAndMessages(null)
-        tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         super.onDestroyView()
         _binding = null
     }
@@ -578,30 +506,9 @@ class DashboardFragment :
         super.onDestroy()
     }
 
-    private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
-        binding.myStoreStats.showErrorView(false)
-        showChartSkeleton(false)
-
-        tabLayout.isVisible = AppPrefs.isV4StatsSupported()
-
-        binding.myStoreStats.updateView(revenueStatsModel)
-
-        // update the stats today widget if we're viewing today's stats
-        if (dashboardViewModel.selectedDateRange.value?.selectionType == SelectionType.TODAY) {
-            (activity as? MainActivity)?.updateStatsWidgets()
-        }
-    }
-
-    private fun showStatsError() {
-        showChartSkeleton(false)
-        binding.myStoreStats.showErrorView(true)
-        showErrorSnack()
-    }
-
     private fun updateStatsAvailabilityError() {
         binding.myStoreRefreshLayout.visibility = View.GONE
         WooAnimUtils.fadeIn(binding.statsErrorScrollView)
-        showChartSkeleton(false)
     }
 
     private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>) {
@@ -614,15 +521,6 @@ class DashboardFragment :
         binding.myStoreTopPerformers.showSkeleton(false)
         binding.myStoreTopPerformers.showErrorView(true)
         showErrorSnack()
-    }
-
-    private fun showVisitorStats(visitorStats: Map<String, Int>) {
-        binding.jetpackBenefitsBanner.root.isVisible = false
-        binding.myStoreStats.showVisitorStats(visitorStats)
-    }
-
-    private fun handleUnavailableVisitorStats() {
-        binding.myStoreStats.handleJetpackUnavailableVisitorStats()
     }
 
     private fun showErrorSnack() {
@@ -657,11 +555,6 @@ class DashboardFragment :
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
-    }
-
-    private fun showChartSkeleton(show: Boolean) {
-        binding.myStoreStats.showErrorView(false)
-        binding.myStoreStats.showSkeleton(show)
     }
 
     /**
@@ -731,7 +624,6 @@ class DashboardFragment :
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
         }
-        tabLayout.isVisible = !show && AppPrefs.isV4StatsSupported()
         binding.myStoreStats.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show
