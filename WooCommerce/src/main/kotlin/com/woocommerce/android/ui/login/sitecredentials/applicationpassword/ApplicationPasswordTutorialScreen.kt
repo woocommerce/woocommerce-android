@@ -44,7 +44,8 @@ fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialView
         webViewUserAgent = viewModel.userAgent,
         onContinueClicked = viewModel::onContinueClicked,
         onContactSupportClicked = viewModel::onContactSupportClicked,
-        onPageLoaded = viewModel::onWebPageLoaded
+        onPageLoaded = viewModel::onWebPageLoaded,
+        onNavigationButtonClicked = viewModel::onNavigationButtonClicked
     )
 }
 
@@ -57,13 +58,14 @@ fun ApplicationPasswordTutorialScreen(
     @StringRes errorMessageRes: Int?,
     onPageLoaded: (String) -> Unit,
     onContinueClicked: () -> Unit,
-    onContactSupportClicked: () -> Unit
+    onContactSupportClicked: () -> Unit,
+    onNavigationButtonClicked: () -> Unit
 ) {
     Scaffold(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.log_in),
-                onNavigationButtonClick = { /*TODO*/ },
+                onNavigationButtonClick = onNavigationButtonClicked,
                 navigationIcon = Icons.Filled.ArrowBack
             )
         }
@@ -178,7 +180,8 @@ fun ApplicationPasswordTutorialScreenPreview() {
             webViewUserAgent = null,
             onContinueClicked = { },
             onContactSupportClicked = { },
-            onPageLoaded = { }
+            onPageLoaded = { },
+            onNavigationButtonClicked = { }
         )
     }
 }
