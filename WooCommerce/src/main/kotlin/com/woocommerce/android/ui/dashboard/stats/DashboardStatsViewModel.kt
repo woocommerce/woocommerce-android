@@ -38,6 +38,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
@@ -50,6 +51,7 @@ import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = DashboardStatsViewModel.Factory::class)
 @Suppress("LongParameterList")
 class DashboardStatsViewModel @AssistedInject constructor(

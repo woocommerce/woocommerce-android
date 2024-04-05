@@ -49,6 +49,7 @@ import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     savedState: SavedStateHandle,
