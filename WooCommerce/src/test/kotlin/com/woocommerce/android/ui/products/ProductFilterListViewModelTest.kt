@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.PluginUrls
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -149,7 +150,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         // Size equals 2 Subscription & Variable Subscriptions
         assertThat(exploreOptions.size).isEqualTo(2)
         exploreOptions.forEach { option ->
-            assertThat(option.url).isEqualTo(ProductFilterListViewModel.SUBSCRIPTIONS_URL)
+            assertThat(option.url).isEqualTo(PluginUrls.SUBSCRIPTIONS_URL)
         }
     }
 
@@ -177,7 +178,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         // Only one explore option for bundles
         assertThat(exploreOptions.size).isEqualTo(1)
         exploreOptions.forEach { option ->
-            assertThat(option.url).isEqualTo(ProductFilterListViewModel.BUNDLES_URL)
+            assertThat(option.url).isEqualTo(PluginUrls.BUNDLES_URL)
         }
     }
 
@@ -205,7 +206,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         // Only one explore option for composite
         assertThat(exploreOptions.size).isEqualTo(1)
         exploreOptions.forEach { option ->
-            assertThat(option.url).isEqualTo(ProductFilterListViewModel.COMPOSITE_URL)
+            assertThat(option.url).isEqualTo(PluginUrls.COMPOSITE_URL)
         }
     }
 
@@ -239,7 +240,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         val exploreOption = ProductFilterListViewModel.FilterListOptionItemUiModel.ExploreOptionItemUiModel(
             filterOptionItemName = ProductType.COMPOSITE.value,
             filterOptionItemValue = ProductType.COMPOSITE.value,
-            url = ProductFilterListViewModel.COMPOSITE_URL
+            url = PluginUrls.COMPOSITE_URL
         )
 
         productFilterListViewModel.loadFilters()

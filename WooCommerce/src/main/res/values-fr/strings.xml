@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 11:54:03+0000
+Translation-Revision-Date: 2024-04-02 13:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="product_list_unsaved_product_unselected_message">Voulez-vous vraiment annuler les modifications apportées à ce produit ?</string>
+    <string name="product_list_unsaved_product_unselected_title">Vous êtes sur le point d\'annuler les modifications apportées à %s</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">La fonctionnalité de statistiques ne prend pas en charge l’affichage des visites et des données de conversion pour les plages de dates arbitraires.\n\nCependant, vous pouvez appuyer sur une valeur sur le graphique pour voir les visites et les conversions pour cette plage spécifique.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Les visites et les données de conversion ne sont pas disponibles</string>
     <string name="more_menu_button_subscriptions_description">Gérer votre abonnement</string>
     <string name="more_menu_button_subscriptions">Abonnements</string>
     <string name="upgrades_title">Abonnements</string>
@@ -627,13 +631,6 @@ Language: fr
     <string name="free_trial_survey_option2">J’évalue et je compare votre service avec d’autres sur le marché.</string>
     <string name="free_trial_survey_option1">Je suis encore en train de découvrir et d’évaluer les fonctionnalités et les avantages de l’application.</string>
     <string name="free_trial_survey_title">Aidez-nous à comprendre vos décisions d’abonnement. Votre avis nous intéresse.</string>
-    <string name="local_notification_still_exploring_description">Pas de précipitation, prenez votre temps ! Si vous avez des questions ou si vous avez besoin d’aide, nous sommes toujours à votre disposition. Bonne découverte !</string>
-    <string name="local_notification_still_exploring_title">🧭 Toujours en train de découvrir WooCommerce ?</string>
-    <string name="free_trial_survey_screen_title">Aidez-nous à comprendre votre décision d’abonnement</string>
-    <string name="local_notification_survey_after_24_hours_description">Nous sommes intéressés par votre processus de prise de décision. Pouvez-vous nous expliquer votre situation actuelle ?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Aidez-nous à comprendre votre décision d’abonnement</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Découvrez des fonctionnalités avancées et des recommandations personnalisées pour votre boutique ! Appuyez sur le plan qui vous convient le mieux pour le choisir.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Faites tourner votre activité !</string>
     <string name="order_creation_customer_search_empty_email">Pas d’adresse e-mail</string>
     <string name="order_creation_customer_search_empty_name">Pas de nom</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Rechercher un client existant ou</string>
@@ -719,12 +716,6 @@ Language: fr
     <string name="order_creation_barcode_scanning_process_death">Le système a fermé l’application Woo alors qu’elle était en cours d’exécution en arrière-plan. Vous pouvez essayer de la rouvrir.</string>
     <string name="order_list_barcode_scanning_process_death">Le système a fermé l’application Woo alors qu’elle était en cours d’exécution en arrière-plan. Vous pouvez essayer de la rouvrir.</string>
     <string name="card_reader_payment_card_removed_too_early">La carte a été retirée trop tôt</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, nous avons suspendu votre boutique, mais vous pouvez la conserver en choisissant le plan qui vous convient le mieux.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Poursuivez vos activités avec notre abonnement !</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Votre période d’essai gratuit de Woo Express se termine demain (%1$s). Le moment est venu de prendre votre avenir en main. Choisissez un plan et préparez-vous à prospérer.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Votre essai gratuit sera bientôt terminé !</string>
-    <string name="local_notification_store_creation_complete_description">Bonjour %1$s ! Bienvenue dans votre essai gratuit de 14 jours du service Woo Express : tout ce dont vous avez besoin pour lancer et développer une activité en ligne prospère, en un seul endroit. Envie de découvrir ?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Votre boutique est prête !</string>
     <string name="product_type_variation">Variante de produit</string>
     <string name="settings_policies_cookie_policy_description">Notre politique relative aux cookies explique comment nous, ainsi que d’autres entités, utilisons les cookies et comment vous pouvez les gérer.</string>
     <string name="settings_policies_cookie_policy">Politique relative aux cookies</string>
@@ -1016,10 +1007,6 @@ Language: fr
     <string name="store_onboarding_task_add_product_description">Commencez à vendre en ajoutant des produits ou services à votre boutique.</string>
     <string name="store_onboarding_task_add_product_title">Ajouter votre premier produit </string>
     <string name="store_onboarding_title">Configuration de la boutique</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Si vous avez déjà un abonnement eCommerce actif, veuillez contacter l’assistance si vous rencontrez des problèmes avec votre abonnement actuel non associé à votre nouveau site.</string>
-    <string name="store_creation_iap_eligibility_network_error">Une erreur réseau est survenue. Veuillez vérifier votre connexion et réessayer.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">La création d’une boutique est actuellement indisponible. Veuillez réessayer ultérieurement.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Vous ne pouvez acheter qu’une seule fois le plan eCommerce via l’application mobile. Pour créer d’autres sites consultez notre site Web.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Un problème est survenu lors de la configuration de l’application. Pour plus d’informations, veuillez contacter l’assistance</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Votre appareil n’est pas pris en charge. Pour plus d’informations, veuillez contacter l’assistance</string>
     <string name="card_reader_payment_failed_nfc_disabled">L’application n’a pas pu activer le lecteur de cartes, car la carte à puce NFC est désactivée</string>
@@ -1068,10 +1055,6 @@ Language: fr
     <string name="login_application_passwords_unavailable">Il semblerait que la fonctionnalité Mots de passe d\'applications s\'affiche sur votre site %1$s.\n Veuillez l’activer pour utiliser l’application WooCommerce.</string>
     <string name="login_open_installation_page">Ouvrir la page d\'installation</string>
     <string name="not_a_valid_qr_code">Le code QR scanné n\'est pas un code WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Pour le moment, il n’est pas possible de créer une boutique depuis l’application mobile dans votre pays.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Création de boutique indisponible</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Veuillez rester connecté∙e.</string>
-    <string name="store_creation_iap_eligibility_loading_title">Nous nous préparons à la création de votre boutique</string>
     <string name="review_reply_failure">Une erreur s\'est produite lors de l\'envoi de la réponse</string>
     <string name="review_reply_success">Réponse envoyée !</string>
     <string name="wc_reply">Répondre</string>

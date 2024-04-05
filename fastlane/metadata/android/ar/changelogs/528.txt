@@ -1,7 +1,0 @@
-17.9:
-- [*] المراجعات: تم إصلاح خطأ عندما كان شريط الأدوات المزدوج مرئيًا في المراجعات ضمن الإعدادات [https://github.com/woocommerce/woocommerce-android/pull/11072]
-- [*] [داخلي] تمت إزالة إنشاء متجر WooExpress من التطبيق [https://github.com/woocommerce/woocommerce-android/issues/11115]
-- [*] المنتجات: تم إصلاح خطأ عندما لا يكون عنصر قائمة التحديث المجمع في الوضع المكوّن من جزأين متاحًا [https://github.com/woocommerce/woocommerce-android/pull/11127]
-- [*] المنتجات: تم إصلاح خطأ عند عدم حفظ إزالة صورة المنتج [https://github.com/woocommerce/woocommerce-android/pull/11124]
-- [*] المراجعات: تم تحسين سرعة عرض المراجعات [https://github.com/woocommerce/woocommerce-android/pull/11083]
-

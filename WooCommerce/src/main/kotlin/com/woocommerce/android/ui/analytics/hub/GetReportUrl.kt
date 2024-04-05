@@ -20,6 +20,7 @@ class GetReportUrl @Inject constructor(
                 ReportCard.Revenue -> "path=%2Fanalytics%2Frevenue"
                 ReportCard.Orders -> "path=%2Fanalytics%2Forders"
                 ReportCard.Products -> "path=%2Fanalytics%2Fproducts"
+                ReportCard.Bundles -> "path=%2Fanalytics%2Fbundles"
             }
             val period = getPeriod(selection)
             val compare = "compare=previous_period"

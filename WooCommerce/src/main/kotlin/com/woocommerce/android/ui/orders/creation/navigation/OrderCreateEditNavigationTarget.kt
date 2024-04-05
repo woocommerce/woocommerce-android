@@ -77,4 +77,6 @@ sealed class OrderCreateEditNavigationTarget : Event() {
         val giftCard: String
     ) : OrderCreateEditNavigationTarget()
     object AddGiftCard : OrderCreateEditNavigationTarget()
+
+    data object SimplePaymentsMigrationBottomSheet : OrderCreateEditNavigationTarget()
 }

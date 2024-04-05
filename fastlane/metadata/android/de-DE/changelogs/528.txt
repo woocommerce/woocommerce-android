@@ -1,7 +1,0 @@
-17.9:
-– [*] Bewertungen: Fehler behoben, wodurch eine doppelte Toolbar bei den Bewertungen in den Einstellungen zu sehen war [https://github.com/woocommerce/woocommerce-android/pull/11072]
-– [*] [Intern] Die Shop-Erstellung in WooExpress wurde aus der App entfernt [https://github.com/woocommerce/woocommerce-android/issues/11115]
-– [*] Produkte: Fehler behoben, wodurch im 2-Fenster-Modus der Menüeintrag „Massenupdate“ nicht verfügbar war [https://github.com/woocommerce/woocommerce-android/pull/11127]
-– [*] Produkte: 
- Fehler behoben, wodurch das Entfernen des Produktbildes nicht gespeichert wurde [https://github.com/woocommerce/woocommerce-android/pull/11124]– [*] Bewertungen: Erhöhte Geschwindigkeit beim Anzeigen von Bewertungen [https://github.com/woocommerce/woocommerce-android/pull/11083]
-

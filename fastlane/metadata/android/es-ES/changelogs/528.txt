@@ -1,7 +1,0 @@
-17.9:
-- [*] Reseñas: error solucionado cuando la barra de herramientas doble estaba visible en las reseñas en los ajustes [https://github.com/woocommerce/woocommerce-android/pull/11072]
-- [*] [Interno] Se ha eliminado la creación de la tienda WooExpress de la aplicación [https://github.com/woocommerce/woocommerce-android/issues/11115]
-- [*] Productos: error solucionado cuando, en el modo de 2 paneles, el elemento del menú de actualización en lote no estaba disponible [https://github.com/woocommerce/woocommerce-android/pull/11127]
-- [*] Productos: error solucionado cuando la imagen de un producto no se guardaba al eliminarse [https://github.com/woocommerce/woocommerce-android/pull/11124]
-- [*] Reseñas: velocidad optimizada para mostrar las reseñas [https://github.com/woocommerce/woocommerce-android/pull/11083]
-

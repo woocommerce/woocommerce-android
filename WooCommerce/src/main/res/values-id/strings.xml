@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 09:54:04+0000
+Translation-Revision-Date: 2024-04-02 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="product_list_unsaved_product_unselected_message">Anda yakin ingin mengabaikan perubahan yang Anda buat pada produk ini?</string>
+    <string name="product_list_unsaved_product_unselected_title">Anda akan mengabaikan perubahan pada %s</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">Fitur statistik tidak mendukung tampilan data pengunjung dan konversi untuk rentang tanggal acak.\n\nNamun, Anda dapat memilih nilai pada grafik untuk melihat pengunjung dan konversi pada rentang khusus tersebut.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Data pengunjung dan konversi tidak tersedia</string>
     <string name="more_menu_button_subscriptions_description">Kelola langganan Anda</string>
     <string name="more_menu_button_subscriptions">Langganan</string>
     <string name="upgrades_title">Langganan</string>
@@ -627,13 +631,6 @@ Language: id
     <string name="free_trial_survey_option2">Saya sedang mengevaluasi dan membandingkan layanan Anda dengan penyedia layanan lainnya di pasar.</string>
     <string name="free_trial_survey_option1">Saya masih menjelajahi dan menilai berbagai fitur dan manfaat aplikasi.</string>
     <string name="free_trial_survey_title">Bantu kami memahami keputusan berlangganan Anda. Feedback dari Anda sangat berharga.</string>
-    <string name="local_notification_still_exploring_description">Tak perlu terburu-buru, santai saja! Jika Anda memiliki pertanyaan atau membutuhkan bantuan, kami siap membantu. Selamat menjelajah!</string>
-    <string name="local_notification_still_exploring_title">🧭 Masih Menjelajahi WooCommerce?</string>
-    <string name="free_trial_survey_screen_title">Bantu Kami Memahami Keputusan Berlangganan Anda</string>
-    <string name="local_notification_survey_after_24_hours_description">Kami tertarik dengan perjalanan pengambilan keputusan Anda. Bisa ceritakan status Anda saat ini?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Bantu Kami Memahami Keputusan Berlangganan Anda</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Temukan fitur tingkat lanjut dan rekomendasi personal untuk toko Anda! Ketuk untuk memilih paket yang paling sesuai.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Terus jalankan bisnis Anda!</string>
     <string name="order_creation_customer_search_empty_email">Tidak ada alamat email</string>
     <string name="order_creation_customer_search_empty_name">Tidak ada nama</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Cari pelanggan yang sudah ada atau</string>
@@ -719,12 +716,6 @@ Language: id
     <string name="order_creation_barcode_scanning_process_death">Sistem menghentikan aplikasi Woo sewaktu berjalan di latar belakang. Anda dapat mencoba untuk kembali menggunakannya.</string>
     <string name="order_list_barcode_scanning_process_death">Sistem menghentikan aplikasi Woo sewaktu berjalan di latar belakang. Anda dapat mencoba untuk kembali menggunakannya.</string>
     <string name="card_reader_payment_card_removed_too_early">Kartu dihapus terlalu dini</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, kami menjeda operasi toko Anda. Anda dapat melanjutkannya dengan memilih paket yang paling sesuai untuk Anda.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Terus jalankan bisnis Anda dengan paket kami!</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Periode percobaan Woo Express gratis Anda berakhir besok (%1$s). Sekarang saatnya menggapai impian Anda – pilih paket dan bersiaplah untuk bertumbuh.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Periode percobaan gratis Anda hampir habis!</string>
-    <string name="local_notification_store_creation_complete_description">Halo %1$s! Selamat datang di periode percobaan gratis 14 hari Woo Express – tempat yang memiliki segalanya yang Anda butuhkan untuk memulai dan menumbuhkan bisnis online yang sukses. Siap menjelajahi?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Toko Anda sudah siap!</string>
     <string name="product_type_variation">Produk variasi</string>
     <string name="settings_policies_cookie_policy_description">Kebijakan cookie kami menjelaskan bagaimana kami dan pihak lain menggunakan cookie serta bagaimana Anda dapat mengelolanya.</string>
     <string name="settings_policies_cookie_policy">Kebijakan Cookie</string>
@@ -1016,10 +1007,6 @@ Language: id
     <string name="store_onboarding_task_add_product_description">Mulai berjualan dengan menambahkan produk atau layanan ke toko Anda.</string>
     <string name="store_onboarding_task_add_product_title">Tambahkan produk pertama Anda </string>
     <string name="store_onboarding_title">Penyiapan toko</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Anda telah memiliki langganan aktif eCommerce. Hubungi dukungan jika Anda mengalami masalah dengan langganan saat ini yang tidak terhubung dengan situs baru Anda.</string>
-    <string name="store_creation_iap_eligibility_network_error">Terjadi error jaringan. Periksa koneksi Anda dan coba lagi.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Fitur pembuatan toko saat ini tidak tersedia. Coba lagi nanti.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Anda hanya dapat membeli paket eCommerce dari aplikasi seluler sebanyak satu kali. Untuk membuat situs-situs tambahan, kunjungi situs kami.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Terjadi masalah dengan pengaturan aplikasinya. Hubungi dukungan untuk informasi selengkapnya</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Perangkat Anda tidak didukung. Hubungi dukungan untuk informasi selengkapnya</string>
     <string name="card_reader_payment_failed_nfc_disabled">Aplikasi tidak dapat mengaktifkan pembaca kartu karena cip NFC dinonaktifkan</string>
@@ -1068,10 +1055,6 @@ Language: id
     <string name="login_application_passwords_unavailable">Sepertinya fitur Kata Sandi Aplikasi dinonaktifkan di situs Anda %1$s.\n Aktifkan Kata Sandi untuk menggunakan aplikasi WooCommerce.</string>
     <string name="login_open_installation_page">Buka halaman instalasi</string>
     <string name="not_a_valid_qr_code">Kode QR yang dipindai bukan kode WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Fitur pembuatan toko dengan aplikasi seluler saat ini tidak tersedia untuk negara Anda.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Pembuatan Toko Tidak Tersedia</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Harap tetap tersambung.</string>
-    <string name="store_creation_iap_eligibility_loading_title">Kami sedang mempersiapkan pembuatan toko Anda</string>
     <string name="review_reply_failure">Terjadi kendala saat mengirimkan balasan</string>
     <string name="review_reply_success">Balasan dikirim!</string>
     <string name="wc_reply">Balas</string>
