@@ -17,7 +17,8 @@ enum class FeatureFlag {
     CONNECTIVITY_TOOL,
     NEW_SHIPPING_SUPPORT,
     DYNAMIC_DASHBOARD,
-    EAH_I3;
+    EAH_I3,
+    APP_PASSWORD_TUTORIAL;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -30,7 +31,8 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            EAH_I3 -> PackageUtils.isDebugBuild()
+            EAH_I3,
+            APP_PASSWORD_TUTORIAL -> PackageUtils.isDebugBuild()
 
             DYNAMIC_DASHBOARD -> false
 

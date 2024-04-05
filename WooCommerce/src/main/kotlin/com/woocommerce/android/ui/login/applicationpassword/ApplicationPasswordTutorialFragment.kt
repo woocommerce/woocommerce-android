@@ -47,4 +47,9 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
             extraTags = ArrayList()
         ).let { activity?.startActivity(it) }
     }
+
+    companion object {
+        const val TAG = "ApplicationPasswordTutorialFragment"
+        fun newInstance() = ApplicationPasswordTutorialFragment()
+    }
 }

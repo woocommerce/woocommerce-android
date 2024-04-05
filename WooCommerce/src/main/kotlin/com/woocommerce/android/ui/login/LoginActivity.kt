@@ -45,6 +45,7 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFrag
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragmentArgs
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
+import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.login.error.LoginNoWPcomAccountFoundDialogFragment
 import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
@@ -103,6 +104,7 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
+    LoginSiteCredentialsFragment.Listener,
     QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
@@ -847,6 +849,14 @@ class LoginActivity :
         shouldAddToBackStack = true,
         tag = LoginSiteCredentialsFragment.TAG
     )
+
+    override fun onApplicationPasswordHelpRequired() {
+        changeFragment(
+            fragment = ApplicationPasswordTutorialFragment.newInstance(),
+            shouldAddToBackStack = true,
+            tag = ApplicationPasswordTutorialFragment.TAG
+        )
+    }
 
     override fun startJetpackInstall(siteAddress: String?) {
         siteAddress?.let {
