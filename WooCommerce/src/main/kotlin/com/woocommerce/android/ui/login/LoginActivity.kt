@@ -45,7 +45,6 @@ import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFrag
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorFragmentArgs
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchErrorType
 import com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel.AccountMismatchPrimaryButton
-import com.woocommerce.android.ui.login.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.login.error.LoginNoWPcomAccountFoundDialogFragment
 import com.woocommerce.android.ui.login.error.LoginNotWPDialogFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginEmailFragment
@@ -54,6 +53,7 @@ import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.ui.login.qrcode.ValidateScannedValue
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -850,9 +850,9 @@ class LoginActivity :
         tag = LoginSiteCredentialsFragment.TAG
     )
 
-    override fun onApplicationPasswordHelpRequired() {
+    override fun onApplicationPasswordHelpRequired(url: String, errorMessageRes: Int) {
         changeFragment(
-            fragment = ApplicationPasswordTutorialFragment.newInstance(),
+            fragment = ApplicationPasswordTutorialFragment.newInstance(url, errorMessageRes),
             shouldAddToBackStack = true,
             tag = ApplicationPasswordTutorialFragment.TAG
         )

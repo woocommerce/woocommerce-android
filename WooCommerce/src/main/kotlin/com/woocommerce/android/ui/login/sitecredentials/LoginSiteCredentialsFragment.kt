@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsView
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowHelpScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -83,7 +84,7 @@ class LoginSiteCredentialsFragment : Fragment() {
                 is ShowHelpScreen -> loginListener.helpUsernamePassword(it.siteAddress, it.username, false)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 is ShowApplicationPasswordTutorialScreen ->
-                    passwordTutorialListener?.onApplicationPasswordHelpRequired()
+                    passwordTutorialListener?.onApplicationPasswordHelpRequired(it.url, it.errorMessageRes)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
@@ -104,9 +105,17 @@ class LoginSiteCredentialsFragment : Fragment() {
         ) { _, _ ->
             viewModel.retryApplicationPasswordsCheck()
         }
+
+        parentFragmentManager.setFragmentResultListener(
+            ApplicationPasswordTutorialFragment.WEB_NAVIGATION_RESULT,
+            viewLifecycleOwner
+        ) { _, result ->
+            result.getString(ApplicationPasswordTutorialFragment.URL_KEY)
+                ?.let { viewModel.onWebAuthorizationUrlLoaded(it) }
+        }
     }
 
     interface Listener {
-        fun onApplicationPasswordHelpRequired()
+        fun onApplicationPasswordHelpRequired(url: String, errorMessageRes: Int)
     }
 }

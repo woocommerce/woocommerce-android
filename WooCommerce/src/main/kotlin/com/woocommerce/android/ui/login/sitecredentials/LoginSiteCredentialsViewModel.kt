@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.GENERIC_ERROR
@@ -228,18 +229,18 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             errorDialogMessage,
             fetchedSiteId.map { if (it == -1) null else wpApiSiteRepository.getSiteByLocalId(it) }
         ) { loadingMessage, errorDialogMessage, site ->
-            val authorizationUrl = site?.applicationPasswordsAuthorizeUrl?.let { url ->
-                "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL"
-            }
-
             ViewState.WebAuthorizationViewState(
-                authorizationUrl = authorizationUrl,
+                authorizationUrl = generateAuthorizationUrl(site),
                 userAgent = userAgent,
                 loadingMessage = loadingMessage,
                 errorDialogMessage = errorDialogMessage
             )
         }
     }
+
+    private fun generateAuthorizationUrl(site: SiteModel?) =
+        site?.applicationPasswordsAuthorizeUrl
+            ?.let { url -> "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL" }
 
     private suspend fun login() {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value as ViewState.NativeLoginViewState)
@@ -259,7 +260,13 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     when (authenticationError?.errorType) {
                         GENERIC_ERROR,
                         INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
-                        else -> triggerEvent(ShowApplicationPasswordTutorialScreen)
+                        else -> {
+                            fetchSiteForTutorial(
+                                username = state.username,
+                                password = state.password,
+                                detectedErrorMessage = authenticationError?.errorMessage as? UiStringRes
+                            )
+                        }
                     }
                 } else {
                     this.errorDialogMessage.value = authenticationError?.errorMessage
@@ -276,6 +283,36 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             }
         )
         loadingMessage.value = 0
+    }
+
+    private suspend fun fetchSiteForTutorial(
+        username: String,
+        password: String,
+        detectedErrorMessage: UiStringRes? = null
+    ) {
+        loadingMessage.value = R.string.login_site_credentials_fetching_site
+        wpApiSiteRepository.fetchSite(
+            url = siteAddress,
+            username = username,
+            password = password
+        ).fold(
+            onSuccess = { site ->
+                if (site.hasWooCommerce) {
+                    fetchedSiteId.value = site.id
+                    loadingMessage.value = 0
+                    ShowApplicationPasswordTutorialScreen(
+                        url = generateAuthorizationUrl(site).orEmpty(),
+                        errorMessageRes = detectedErrorMessage?.stringRes ?: R.string.error_generic
+                    ).let { triggerEvent(it) }
+                } else {
+                    triggerEvent(ShowNonWooErrorScreen(siteAddress))
+                }
+            },
+            onFailure = {
+                loadingMessage.value = 0
+                handleSiteFetchingError(it)
+            }
+        )
     }
 
     private suspend fun fetchSite() {
@@ -305,21 +342,23 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
                 }
             },
-            onFailure = { exception ->
-                val siteError = (exception as? OnChangedException)?.error as? SiteError
-
-                this.errorDialogMessage.value = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
-
-                val error = (exception as? OnChangedException)?.error ?: exception
-                trackLoginFailure(
-                    step = Step.AUTHENTICATION,
-                    errorContext = error.javaClass.simpleName,
-                    errorType = siteError?.type?.name,
-                    errorDescription = exception.message
-                )
-            }
+            onFailure = { handleSiteFetchingError(it) }
         )
         loadingMessage.value = 0
+    }
+
+    private fun handleSiteFetchingError(exception: Throwable) {
+        val siteError = (exception as? OnChangedException)?.error as? SiteError
+
+        this.errorDialogMessage.value = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
+
+        val error = (exception as? OnChangedException)?.error ?: exception
+        trackLoginFailure(
+            step = Step.AUTHENTICATION,
+            errorContext = error.javaClass.simpleName,
+            errorType = siteError?.type?.name,
+            errorDescription = exception.message
+        )
     }
 
     private suspend fun fetchUserInfo() {
@@ -431,5 +470,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val username: String?
     ) : MultiLiveEvent.Event()
 
-    object ShowApplicationPasswordTutorialScreen : MultiLiveEvent.Event()
+    data class ShowApplicationPasswordTutorialScreen(
+        val url: String,
+        val errorMessageRes: Int
+    ) : MultiLiveEvent.Event()
 }

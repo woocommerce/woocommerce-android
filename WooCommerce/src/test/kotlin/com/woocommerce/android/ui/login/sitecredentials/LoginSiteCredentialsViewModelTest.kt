@@ -13,13 +13,11 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
-import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -226,16 +224,14 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `given incorrect credentials, when submitting, then show error`() = testBlocking {
         val expectedError = CookieNonceAuthenticationException(
             errorMessage = UiStringText("Username or password incorrect"),
-            errorType = Nonce.CookieNonceErrorType.NOT_AUTHENTICATED,
+            errorType = Nonce.CookieNonceErrorType.INVALID_CREDENTIALS,
             networkStatusCode = null
         )
-        var latestEventReceived: MultiLiveEvent.Event? = null
         setup {
             whenever(wpApiSiteRepository.login(siteAddress, testUsername, testPassword)).thenReturn(
                 Result.failure(expectedError)
             )
         }
-        viewModel.event.observeForever { latestEventReceived = it }
 
         val state = viewModel.viewState.runAndCaptureValues {
             viewModel.onUsernameChanged(testUsername)
@@ -243,8 +239,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onContinueClick()
         }.last() as LoginSiteCredentialsViewModel.ViewState.NativeLoginViewState
 
-        assertThat(state.errorDialogMessage).isNull()
-        assertThat(latestEventReceived).isEqualTo(ShowApplicationPasswordTutorialScreen)
+        assertThat(state.errorDialogMessage).isEqualTo(expectedError.errorMessage)
         verify(analyticsTracker).track(
             stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
             properties = argThat {
