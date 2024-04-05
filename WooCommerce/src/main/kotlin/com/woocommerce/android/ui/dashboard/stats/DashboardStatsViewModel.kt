@@ -51,6 +51,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 @HiltViewModel(assistedFactory = DashboardStatsViewModel.Factory::class)
+@Suppress("LongParameterList")
 class DashboardStatsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     @Assisted private val parentViewModel: DashboardViewModel,
