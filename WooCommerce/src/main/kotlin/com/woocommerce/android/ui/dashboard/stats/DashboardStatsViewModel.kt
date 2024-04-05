@@ -156,7 +156,10 @@ class DashboardStatsViewModel @AssistedInject constructor(
             _visitorStatsState.value = VisitorStatsViewState.NotLoaded
             return@coroutineScope
         }
-        _revenueStatsState.value = RevenueStatsViewState.Loading
+        _revenueStatsState.value = RevenueStatsViewState.Loading(isForced = forceRefresh)
+        if (forceRefresh) {
+            _visitorStatsState.value = VisitorStatsViewState.NotLoaded
+        }
         getStats(forceRefresh, selectedRange)
             .collect {
                 when (it) {
@@ -276,7 +279,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
         }
 
     sealed class RevenueStatsViewState {
-        data object Loading : RevenueStatsViewState()
+        data class Loading(val isForced: Boolean) : RevenueStatsViewState()
         data object GenericError : RevenueStatsViewState()
         data object PluginNotActiveError : RevenueStatsViewState()
         data class Content(

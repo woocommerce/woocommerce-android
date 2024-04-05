@@ -173,8 +173,6 @@ class DashboardFragment :
             binding.myStoreRefreshLayout.isRefreshing = false
             dashboardViewModel.onPullToRefresh()
             storeOnboardingViewModel.onPullToRefresh()
-//            binding.myStoreStats.clearStatsHeaderValues()
-//            binding.myStoreStats.clearChartData()
             refreshJitm()
         }
 

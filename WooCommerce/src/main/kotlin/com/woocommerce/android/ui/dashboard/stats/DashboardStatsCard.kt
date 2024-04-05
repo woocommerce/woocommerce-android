@@ -183,9 +183,13 @@ fun DashboardStatsCard(
                 statsView.showSkeleton(false)
             }
 
-            DashboardStatsViewModel.RevenueStatsViewState.Loading -> {
+            is DashboardStatsViewModel.RevenueStatsViewState.Loading -> {
                 statsView.showErrorView(false)
                 statsView.showSkeleton(true)
+                if (revenueStatsState.isForced) {
+                    statsView.clearStatsHeaderValues()
+                    statsView.clearChartData()
+                }
             }
 
             else -> Unit
