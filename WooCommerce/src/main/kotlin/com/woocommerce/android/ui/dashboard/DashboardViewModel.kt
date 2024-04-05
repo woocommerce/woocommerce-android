@@ -36,7 +36,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -91,7 +90,7 @@ class DashboardViewModel @Inject constructor(
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
 
-    private val _refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
+    private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     val refreshTrigger = _refreshTrigger.asSharedFlow()
 
     private val _selectedDateRange = getSelectedDateRange()
@@ -111,11 +110,10 @@ class DashboardViewModel @Inject constructor(
         _topPerformersState.value = TopPerformersState(isLoading = true)
 
         viewModelScope.launch {
-            combine(
-                _selectedDateRange,
-                _refreshTrigger.onStart { emit(RefreshState()) }
-            ) { selectedRange, refreshEvent ->
-                Pair(selectedRange, refreshEvent.shouldRefresh)
+            _selectedDateRange.flatMapLatest { selectedRange ->
+                refreshTrigger.onStart { emit(RefreshEvent()) }.map {
+                    Pair(selectedRange, it.isForced)
+                }
             }.collectLatest { (selectedRange, isForceRefresh) ->
                 loadTopPerformersStats(selectedRange, isForceRefresh)
             }
@@ -154,14 +152,14 @@ class DashboardViewModel @Inject constructor(
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEventMainThread(event: ConnectionChangeEvent) {
         if (event.isConnected) {
-            _refreshTrigger.tryEmit(RefreshState())
+            _refreshTrigger.tryEmit(RefreshEvent())
         }
     }
 
     fun onPullToRefresh() {
         usageTracksEventEmitter.interacted()
         analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_PULLED_TO_REFRESH)
-        _refreshTrigger.tryEmit(RefreshState(isForced = true))
+        _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
     fun onShareStoreClicked() {
@@ -279,19 +277,5 @@ class DashboardViewModel @Inject constructor(
         data object OpenEditWidgets : DashboardEvent()
     }
 
-    data class RefreshState(private val isForced: Boolean = false) {
-        /**
-         * [shouldRefresh] will be true only the first time the refresh event is consulted and when
-         * isForced is initialized on true. Once the event is handled the property will change its value to false
-         */
-        var shouldRefresh: Boolean = isForced
-            private set
-            get(): Boolean {
-                val result = field
-                if (field) {
-                    field = false
-                }
-                return result
-            }
-    }
+    data class RefreshEvent(val isForced: Boolean = false)
 }

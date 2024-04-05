@@ -26,7 +26,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeastOne
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshState
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.JetpackBenefitsBannerUiModel
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
@@ -40,7 +40,8 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -88,11 +89,10 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            combine(
-                _selectedDateRange,
-                parentViewModel.refreshTrigger.onStart { emit(RefreshState()) }
-            ) { selectedRange, refreshEvent ->
-                Pair(selectedRange, refreshEvent.shouldRefresh)
+            _selectedDateRange.flatMapLatest { selectedRange ->
+                parentViewModel.refreshTrigger.onStart { emit(RefreshEvent()) }.map {
+                    Pair(selectedRange, it.isForced)
+                }
             }.collectLatest { (selectedRange, isForceRefresh) ->
                 loadStoreStats(selectedRange, isForceRefresh)
             }
