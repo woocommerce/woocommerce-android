@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 17:54:06+0000
+Translation-Revision-Date: 2024-04-03 16:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="product_list_unsaved_product_unselected_message">Вы уверены, что хотите отменить изменения этого товара?</string>
+    <string name="product_list_unsaved_product_unselected_title">Вы собираетесь отменить изменения %s</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">Функция статистики не поддерживает отображения данных о посетителях и переходах за произвольные периоды времени.\n\nТем не менее можно щёлкнуть по значению на графике, чтобы увидеть сведения о посетителях и переходах за данный период.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Данные о посетителях и переходах недоступны</string>
     <string name="more_menu_button_subscriptions_description">Управление подпиской</string>
     <string name="more_menu_button_subscriptions">Подписки</string>
     <string name="upgrades_title">Подписки</string>
@@ -627,13 +631,6 @@ Language: ru
     <string name="free_trial_survey_option2">Я рассматриваю вашу услугу и сравниваю её с аналогичными предложениями на рынке.</string>
     <string name="free_trial_survey_option1">Я всё ещё изучаю и оцениваю функции и преимущества приложения.</string>
     <string name="free_trial_survey_title">Помогите нам понять ваши решения в отношении подписки. Ваша обратная связь очень важна.</string>
-    <string name="local_notification_still_exploring_description">Не торопитесь! Если у вас возникли вопросы или вам нужна помощь, мы всегда к вашим услугам. Успешного изучения!</string>
-    <string name="local_notification_still_exploring_title">🧭 Всё ещё изучаете WooCommerce?</string>
-    <string name="free_trial_survey_screen_title">Помогите нам понять ваши решения в отношении подписки</string>
-    <string name="local_notification_survey_after_24_hours_description">Нам интересно, как вы принимаете решения в отношении покупки. Расскажите нам, на каком этапе вы сейчас находитесь.</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Помогите нам понять ваши решения в отношении подписки</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Получите расширенные возможности и индивидуальные рекомендации для своего магазина! Нажмите и выберите тарифный план, который вам подойдёт.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Поддержите свой бизнес!</string>
     <string name="order_creation_customer_search_empty_email">Отсутствует адрес электронной почты</string>
     <string name="order_creation_customer_search_empty_name">Отсутствует ФИО</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Поиск существующего клиента или</string>
@@ -719,12 +716,6 @@ Language: ru
     <string name="order_creation_barcode_scanning_process_death">Система закрыла приложение Woo, когда оно работало в фоновом режиме. Вы можете попробовать зайти в него ещё раз.</string>
     <string name="order_list_barcode_scanning_process_death">Система закрыла приложение Woo, когда оно работало в фоновом режиме. Вы можете попробовать зайти в него ещё раз.</string>
     <string name="card_reader_payment_card_removed_too_early">Карта извлечена слишком быстро</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, мы приостановили работу вашего магазина, но вы можете её возобновить, подобрав оптимальный тарифный план.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Развивайте бизнес с нашим планом!</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Пробный период использования Woo Express завершается завтра (%1$s). Пришло время стать хозяином своего будущего — выберите тарифный план и приготовьтесь к росту.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Срок действия вашей бесплатной пробной версии истекает!</string>
-    <string name="local_notification_store_creation_complete_description">Здравствуйте, %1$s! Начался 14-дневный пробный период использования Woo Express — здесь есть всё, что нужно для создания и развития успешного интернет-бизнеса. Готовы узнать больше?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Ваш магазин готов!</string>
     <string name="product_type_variation">Товар с вариациями</string>
     <string name="settings_policies_cookie_policy_description">В нашей политике конфиденциальности описано, как мы и другие поставщики используем файлы cookie и как вы можете ими управлять.</string>
     <string name="settings_policies_cookie_policy">Политика использования файлов cookie</string>
@@ -1016,10 +1007,6 @@ Language: ru
     <string name="store_onboarding_task_add_product_description">Начните продажи, добавив товары или услуги в магазин.</string>
     <string name="store_onboarding_task_add_product_title">Добавьте свой первый товар </string>
     <string name="store_onboarding_title">Настройки магазина</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">У вас уже есть активная подписка eCommerce. Обратитесь в службу поддержки, если возникли проблемы с текущей подпиской, не связанные с вашим новым сайтом.</string>
-    <string name="store_creation_iap_eligibility_network_error">Произошла ошибка. Проверьте подключение и повторите попытку.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Сейчас невозможно создать магазин. Попробуйте позже.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Вы можете приобрести тарифный план eCommerce из мобильного приложения только один раз. Чтобы создать больше сайтов, посетите наш веб-сайт.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Что-то пошло не так во время настройки приложения. За подробной информацией обращайтесь в службу поддержки</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Ваше устройство не поддерживается. За подробной информацией обращайтесь в службу поддержки</string>
     <string name="card_reader_payment_failed_nfc_disabled">Приложение не может использовать устройство чтения карт, поскольку отключён модуль NFC</string>
@@ -1068,10 +1055,6 @@ Language: ru
     <string name="login_application_passwords_unavailable">Кажется, на вашем сайте %1$s отключена функция паролей приложения.\n Включите её, чтобы использовать приложение WooCommerce.</string>
     <string name="login_open_installation_page">Открыть страницу установки</string>
     <string name="not_a_valid_qr_code">Просканированный QR-код не является кодом WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Создать магазин из мобильного приложения сейчас невозможно в вашей стране.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Создание магазина недоступно</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Не прерывайте подключение.</string>
-    <string name="store_creation_iap_eligibility_loading_title">Мы готовимся к созданию вашего магазина</string>
     <string name="review_reply_failure">При отправке ответа произошла ошибка</string>
     <string name="review_reply_success">Ответ отправлен!</string>
     <string name="wc_reply">Ответить</string>

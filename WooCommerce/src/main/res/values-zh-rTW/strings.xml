@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 13:54:03+0000
+Translation-Revision-Date: 2024-04-02 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="product_list_unsaved_product_unselected_message">你確定要捨棄這些針對本商品做出的變更？</string>
+    <string name="product_list_unsaved_product_unselected_title">你即將捨棄對「%s」的變更</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">統計功能無法顯示任意日期範圍的訪客和轉換資料。\n\n不過你仍可點選圖表上的數值，查看該特定範圍的訪客和轉換資料。</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">無法使用訪客和轉換資料</string>
     <string name="more_menu_button_subscriptions_description">管理你的訂閱</string>
     <string name="more_menu_button_subscriptions">訂閱</string>
     <string name="upgrades_title">訂閱</string>
@@ -627,13 +631,6 @@ Language: zh_TW
     <string name="free_trial_survey_option2">我正在評估你們的服務，並與市面上其他服務比較。</string>
     <string name="free_trial_survey_option1">我還在探索及評估此應用程式的功能與優點。</string>
     <string name="free_trial_survey_title">請說明哪些因素影響你的訂閱決策。 我們很重視你的意見。</string>
-    <string name="local_notification_still_exploring_description">慢慢來，不趕時間！ 如有任何疑問或需要協助，我們會隨時為你服務。 祝你探索愉快！</string>
-    <string name="local_notification_still_exploring_title">🧭 還在探索 WooCommerce 嗎？</string>
-    <string name="free_trial_survey_screen_title">請說明哪些因素影響你的訂閱決策。</string>
-    <string name="local_notification_survey_after_24_hours_description">我們想瞭解你的決策過程。 可以把你目前的狀態告訴我們嗎？</string>
-    <string name="local_notification_survey_after_24_hours_title">💡 請說明哪些因素影響你的訂閱決策</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">探索適合你商店的進階功能和個人化建議！ 點選最適合你的方案。</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 讓業務蒸蒸日上！</string>
     <string name="order_creation_customer_search_empty_email">沒有電子郵件地址</string>
     <string name="order_creation_customer_search_empty_name">沒有名稱</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">搜尋現有顧客，或</string>
@@ -719,12 +716,6 @@ Language: zh_TW
     <string name="order_creation_barcode_scanning_process_death">系統已終止在背景執行的 Woo 應用程式。 你可以嘗試再次使用。</string>
     <string name="order_list_barcode_scanning_process_death">系統已終止在背景執行的 Woo 應用程式。 你可以嘗試再次使用。</string>
     <string name="card_reader_payment_card_removed_too_early">太早移除這張卡片了</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s，你的商店已暫停運作，不過你可選擇最符合需求的方案，以繼續營運。</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 使用我們的方案維持業務運作！</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">你的 Woo Express 免費試用將於明天 (%1$s) 結束。 掌握未來就趁現在：快挑選一個方案，準備迎接業務成長。</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 免費試用的機會就快消失！</string>
-    <string name="local_notification_store_creation_complete_description">%1$s，你好！ 歡迎免費試用 14 天 Woo Express。建立及發展成功的網路事業，你所需的一切盡在這裡。 準備好開始探索了嗎？</string>
-    <string name="local_notification_store_creation_complete_title">🎉 你的商店已準備就緒！</string>
     <string name="product_type_variation">商品款式</string>
     <string name="settings_policies_cookie_policy_description">我們的 Cookie 政策說明我們和其他人使用 Cookie 的方式，以及你能使用的管理選項。</string>
     <string name="settings_policies_cookie_policy">Cookie 政策</string>
@@ -1016,10 +1007,6 @@ Language: zh_TW
     <string name="store_onboarding_task_add_product_description">為你的商店新增產品或服務，立即開始銷售。</string>
     <string name="store_onboarding_task_add_product_title">新增第一個產品 </string>
     <string name="store_onboarding_title">商店設定</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">你的電子商務方案訂閱已啟用；如果你遇到目前訂閱未連結至新網站的問題，請聯絡支援團隊。</string>
-    <string name="store_creation_iap_eligibility_network_error">網路發生錯誤。 請檢查你的連線並再試一次。</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">目前無法建立商店。 請稍後再試一次。</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">你僅限從行動應用程式購買電子商務版方案一次。 若要建立其他網站，請造訪我們的網站。</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">應用程式設定發生問題。 如需詳細資訊，請聯絡支援團隊</string>
     <string name="card_reader_payment_failed_device_is_not_supported">你的裝置不受支援。 如需詳細資訊，請聯絡支援團隊</string>
     <string name="card_reader_payment_failed_nfc_disabled">NFC 晶片已停用，導致應用程式無法啟用讀卡機</string>
@@ -1068,10 +1055,6 @@ Language: zh_TW
     <string name="login_application_passwords_unavailable">你的網站 %1$s 似乎已停用應用程式密碼功能。\n 若要使用 WooCommerce 應用程式，請啟用此功能。</string>
     <string name="login_open_installation_page">開啟安裝頁面</string>
     <string name="not_a_valid_qr_code">掃進來的 QR code 不是 WooCommerce 代碼</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">你所在國家/地區目前無法透過行動應用程式建立商店。</string>
-    <string name="store_creation_iap_eligibility_check_error_title">不提供商店開設功能</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">請保持連線狀態。</string>
-    <string name="store_creation_iap_eligibility_loading_title">已準備好開設你的商店</string>
     <string name="review_reply_failure">傳送回覆時發生錯誤</string>
     <string name="review_reply_success">回覆已傳送！</string>
     <string name="wc_reply">回覆</string>

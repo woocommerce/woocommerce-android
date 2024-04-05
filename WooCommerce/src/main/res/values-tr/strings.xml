@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 13:54:03+0000
+Translation-Revision-Date: 2024-04-02 13:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_list_unsaved_product_unselected_message">Bu üründe yaptığınız değişikliklerden vazgeçmek istediğinizden emin misiniz?</string>
+    <string name="product_list_unsaved_product_unselected_title">%s ürününde yapılan değişikliklerden vazgeçmek üzeresiniz.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">İstatistikler özelliği, ziyaretçiler ve dönüşüm verilerinin isteğe bağlı tarih aralıkları için görüntülenmesini desteklemiyor.\n\nAncak bu belirli aralık için ziyaretçileri ve dönüşümleri görmek için grafikte bir değere tıklayabilirsiniz.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Ziyaretçiler ve dönüşüm verileri kullanılamıyor</string>
     <string name="more_menu_button_subscriptions_description">Aboneliğinizi yönetin</string>
     <string name="more_menu_button_subscriptions">Abonelikler</string>
     <string name="upgrades_title">Abonelikler</string>
@@ -627,13 +631,6 @@ Language: tr
     <string name="free_trial_survey_option2">Hizmetinizi değerlendiriyor ve piyasadaki diğer hizmetlerle karşılaştırıyorum.</string>
     <string name="free_trial_survey_option1">Uygulamanın özelliklerini ve faydalarını araştırmaya ve değerlendirmeye devam ediyorum.</string>
     <string name="free_trial_survey_title">Abonelik kararlarınızı anlamamıza yardımcı olun. Geri bildiriminiz bizim için önemli.</string>
-    <string name="local_notification_still_exploring_description">Acele etmeyin, zamanınızı kullanın! Herhangi bir sorunuz varsa veya yardıma ihtiyacınız varsa, size her zaman yardımcı olmaya hazırız. Keyifli keşifler!</string>
-    <string name="local_notification_still_exploring_title">🧭 WooCommerce\'i Keşfetmeye Devam Mı Ediyorsunuz?</string>
-    <string name="free_trial_survey_screen_title">Abonelik Kararınızı Anlamamıza Yardımcı Olun</string>
-    <string name="local_notification_survey_after_24_hours_description">Karar alma yolculuğunuzu öğrenmeyi amaçlıyoruz. Şu anki durumunuz hakkında bize bilgi verebilir misiniz?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Abonelik Kararınızı Anlamamıza Yardımcı Olun</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Mağazanız için gelişmiş özellikleri ve kişiselleştirilmiş önerileri keşfedin! Size en uygun paketi seçmek için dokunun.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 İşinizi ilerletin!</string>
     <string name="order_creation_customer_search_empty_email">E-posta adresi yok</string>
     <string name="order_creation_customer_search_empty_name">Ad yok</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Mevcut müşteri ara veya</string>
@@ -719,12 +716,6 @@ Language: tr
     <string name="order_creation_barcode_scanning_process_death">Sistem, arka planda çalışan Woo uygulamasını sonlandırdı. Tekrar kullanmayı deneyebilirsiniz.</string>
     <string name="order_list_barcode_scanning_process_death">Sistem, arka planda çalışan Woo uygulamasını sonlandırdı. Tekrar kullanmayı deneyebilirsiniz.</string>
     <string name="card_reader_payment_card_removed_too_early">Kart çok erken kaldırıldı</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, mağazanızı duraklattık, ancak size en uygun paketi seçerek devam edebilirsiniz.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Paketimizle işletmenizin yoluna devam etmesini sağlayın!</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Woo Express ücretsiz deneme sürümünüz yarın (%1$s) sona eriyor. Şimdi kendi geleceğinizi belirleme zamanı; bir paket seçin ve büyümeye hazır olun.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Ücretsiz deneme sürümünüz için zamanınız azalıyor!</string>
-    <string name="local_notification_store_creation_complete_description">Merhaba %1$s! 14 günlük Woo Express ücretsiz deneme sürümüne hoş geldiniz. Başarılı bir çevrimiçi işletme başlatmak ve büyütmek için ihtiyacınız olan her şey tek bir yerde. Keşfetmeye hazır mısınız?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Mağazanız hazır!</string>
     <string name="product_type_variation">Varyasyon ürün</string>
     <string name="settings_policies_cookie_policy_description">Tanımlama bilgisi politikamız, bizim ve başkalarının tanımlama bilgilerini nasıl kullandığını ve bu bilgileri nasıl yönetebileceğinizi açıklar.</string>
     <string name="settings_policies_cookie_policy">Tanımlama Bilgisi Politikası</string>
@@ -1016,10 +1007,6 @@ Language: tr
     <string name="store_onboarding_task_add_product_description">Mağazanıza ürün veya hizmet ekleyerek satış yapmaya başlayın.</string>
     <string name="store_onboarding_task_add_product_title">İlk ürününüzü ekleyin </string>
     <string name="store_onboarding_title">Mağaza kurulumu</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Etkin bir e-Ticaret aboneliğiniz zaten var, mevcut aboneliğinizle ilgili olarak yeni sitenize bağlı olmayan sorunlar yaşıyorsanız lütfen destekle iletişime geçin.</string>
-    <string name="store_creation_iap_eligibility_network_error">Bir ağ sorunu meydana geldi. Lütfen bağlantınızı kontrol edip tekrar deneyin.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Mağaza oluşturma şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">E-Ticaret paketini mobil uygulamadan yalnızca bir kez satın alabilirsiniz. Ek site oluşturmak için web sitemizi ziyaret edin.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Uygulama kurulumuyla ilgili bir şeyler yanlış gitti. Daha fazla ayrıntı için lütfen destek hizmetleriyle iletişime geçin</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Cihazınız desteklenmiyor. Daha fazla ayrıntı için lütfen destek hizmetleriyle iletişime geçin</string>
     <string name="card_reader_payment_failed_nfc_disabled">NFC çipi devre dışı olduğu için uygulama kart okuyucuyu etkinleştiremedi</string>
@@ -1068,10 +1055,6 @@ Language: tr
     <string name="login_application_passwords_unavailable">Görünüşe göre Uygulama Şifreleri özelliği %1$s sitenizde devre dışı bırakılmış.\n WooCommerce uygulamasını kullanmak için lütfen Uygulama Şifresini etkinleştirin.</string>
     <string name="login_open_installation_page">Kurulum sayfasını açın</string>
     <string name="not_a_valid_qr_code">Taranan Qr kodu bir WooCommerce kodu değil.</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Mobil uygulamadan mağaza oluşturma şu anda ülkenizde kullanılamıyor.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Mağaza Oluşturma Mevcut Değil</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Lütfen bağlantınızı koparmayın</string>
-    <string name="store_creation_iap_eligibility_loading_title">Mağazanızı oluşturmaya hazırlanıyoruz</string>
     <string name="review_reply_failure">Yanıtı gönderirken bir hata oluştu</string>
     <string name="review_reply_success">Yanıt gönderildi!</string>
     <string name="wc_reply">Yanıtla</string>
