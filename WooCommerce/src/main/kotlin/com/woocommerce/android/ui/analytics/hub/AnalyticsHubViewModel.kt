@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
+import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.OrdersStat
@@ -26,6 +27,7 @@ import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDa
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
+import com.woocommerce.android.ui.analytics.hub.sync.BundlesState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -60,9 +62,9 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ProductsViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(
@@ -127,6 +129,9 @@ class AnalyticsHubViewModel @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var ordersObservationJob: Job? = null
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var bundlesObservationJob: Job? = null
+
     init {
         observeConfigurationChanges()
         observeRangeSelectionChanges()
@@ -169,11 +174,15 @@ class AnalyticsHubViewModel @Inject constructor(
 
                             AnalyticsCards.Products -> {
                                 observeProductsChanges()
-                                LoadingProductsViewState(cardConfiguration.card)
+                                LoadingListViewState(cardConfiguration.card)
                             }
 
                             AnalyticsCards.Session -> {
                                 observeSessionChanges()
+                                LoadingViewState(cardConfiguration.card)
+                            }
+                            AnalyticsCards.Bundles -> {
+                                observeBundlesChanges()
                                 LoadingViewState(cardConfiguration.card)
                             }
                         }
@@ -328,11 +337,11 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is ProductsState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_products_no_data)
-                    updateCardStatus(AnalyticsCards.Products, ProductsNoDataState(AnalyticsCards.Products, message))
+                    updateCardStatus(AnalyticsCards.Products, ListNoDataState(AnalyticsCards.Products, message))
                 }
 
                 is ProductsState.Loading -> {
-                    updateCardStatus(AnalyticsCards.Products, LoadingProductsViewState(AnalyticsCards.Products))
+                    updateCardStatus(AnalyticsCards.Products, LoadingListViewState(AnalyticsCards.Products))
                 }
             }
         }
@@ -362,6 +371,29 @@ class AnalyticsHubViewModel @Inject constructor(
             .drop(1)
             .filter { state -> state is RevenueState.Available }
             .onEach { transactionLauncher.onRevenueFetched() }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observeBundlesChanges() {
+        bundlesObservationJob = updateStats.bundlesState.onEach { state ->
+            when (state) {
+                is BundlesState.Available -> {
+                    updateCardStatus(AnalyticsCards.Bundles, buildBundlesDataState(state.bundles))
+                }
+
+                is BundlesState.Error -> {
+                    val message = resourceProvider.getString(R.string.analytics_products_no_data)
+                    updateCardStatus(AnalyticsCards.Bundles, ListNoDataState(AnalyticsCards.Bundles, message))
+                }
+
+                is BundlesState.Loading -> {
+                    updateCardStatus(AnalyticsCards.Bundles, LoadingListViewState(AnalyticsCards.Bundles))
+                }
+            }
+        }
+            .drop(1)
+            .filter { state -> state is BundlesState.Available }
+            .onEach { transactionLauncher.onProductsFetched() }
             .launchIn(viewModelScope)
     }
 
@@ -474,11 +506,11 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         )
 
-    private fun buildProductsDataState(productsStat: ProductsStat): ProductsViewState.DataViewState {
+    private fun buildProductsDataState(productsStat: ProductsStat): ListViewState.DataViewState {
         val itemsSold = productsStat.itemsSold
         val delta = productsStat.itemsSoldDelta
         val products = productsStat.products
-        return ProductsViewState.DataViewState(
+        return ListViewState.DataViewState(
             card = AnalyticsCards.Products,
             title = resourceProvider.getString(R.string.analytics_products_card_title),
             subTitle = resourceProvider.getString(R.string.analytics_products_list_items_sold),
@@ -503,6 +535,39 @@ class AnalyticsHubViewModel @Inject constructor(
             reportUrl = getReportUrl(
                 selection = ranges,
                 card = ReportCard.Products
+            )
+        )
+    }
+
+    private fun buildBundlesDataState(bundleStat: BundleStat): ListViewState.DataViewState {
+        val bundlesSold = bundleStat.bundlesSold
+        val delta = bundleStat.bundlesSoldDelta
+        val bundles = bundleStat.bundles
+        return ListViewState.DataViewState(
+            card = AnalyticsCards.Bundles,
+            title = resourceProvider.getString(R.string.analytics_bundles_card_title),
+            subTitle = resourceProvider.getString(R.string.analytics_bundles_list_items_sold),
+            subTitleValue = bundlesSold.toString(),
+            delta = if (delta is DeltaPercentage.Value) delta.value else null,
+            listLeftHeader = resourceProvider.getString(R.string.analytics_bundles_list_header_title),
+            listRightHeader = resourceProvider.getString(R.string.analytics_bundles_list_header_subtitle),
+            items = bundles
+                .sortedByDescending { it.quantity }
+                .mapIndexed { index, product ->
+                    AnalyticsHubListCardItemViewState(
+                        product.image,
+                        product.name,
+                        product.quantity.toString(),
+                        resourceProvider.getString(
+                            R.string.analytics_products_list_item_description,
+                            formatValue(product.netSales.toString(), product.currencyCode)
+                        ),
+                        index != bundles.size - 1
+                    )
+                },
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.Bundles
             )
         )
     }
@@ -561,6 +626,7 @@ class AnalyticsHubViewModel @Inject constructor(
         ordersObservationJob?.cancel()
         productObservationJob?.cancel()
         sessionObservationJob?.cancel()
+        bundlesObservationJob?.cancel()
     }
 
     fun onOpenSettings() {
@@ -569,13 +635,14 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 }
 
-enum class ReportCard { Revenue, Orders, Products }
+enum class ReportCard { Revenue, Orders, Products, Bundles }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
     return when (this) {
         AnalyticsCards.Revenue -> ReportCard.Revenue
         AnalyticsCards.Orders -> ReportCard.Orders
         AnalyticsCards.Products -> ReportCard.Products
+        AnalyticsCards.Bundles -> ReportCard.Bundles
         else -> null
     }
 }

@@ -34,8 +34,14 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCBundleStats
+import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.text.SimpleDateFormat
@@ -856,6 +862,105 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 any(),
                 any()
             )
+        }
+
+    @Test
+    fun `given fetch bundle stats fails, then result is error`() =
+        runTest {
+            // Given
+            val error = WooError(
+                type = WooErrorType.INVALID_RESPONSE,
+                original = BaseRequest.GenericErrorType.INVALID_RESPONSE,
+                message = "something fails"
+            )
+
+            val report = listOf(
+                WCProductBundleItemReport(
+                    name = "item 1",
+                    image = null,
+                    itemsSold = 35,
+                    netRevenue = 1000.00
+                ),
+                WCProductBundleItemReport(
+                    name = "item 2",
+                    image = null,
+                    itemsSold = 15,
+                    netRevenue = 300.00
+                )
+            )
+
+            val bundleStatsResponse = WooResult<WCBundleStats>(error)
+            val bundleReportResponse = WooResult(report)
+
+            whenever(statsRepository.fetchProductBundlesStats(any(), any(), any())).thenReturn(bundleStatsResponse)
+            whenever(statsRepository.fetchBundleReport(any(), any(), any())).thenReturn(bundleReportResponse)
+            // When
+            val result = sut.fetchProductBundlesStats(testSelectionData)
+
+            // Then
+            assertThat(result).isInstanceOf(AnalyticsRepository.BundlesResult.BundlesError::class.java)
+        }
+
+    @Test
+    fun `given fetch bundle report fails, then result is error`() =
+        runTest {
+            // Given
+            val error = WooError(
+                type = WooErrorType.INVALID_RESPONSE,
+                original = BaseRequest.GenericErrorType.INVALID_RESPONSE,
+                message = "something fails"
+            )
+
+            val stats = WCBundleStats(
+                itemsSold = 50,
+                netRevenue = 1300.00
+            )
+
+            val bundleStatsResponse = WooResult(stats)
+            val bundleReportResponse = WooResult<List<WCProductBundleItemReport>>(error)
+
+            whenever(statsRepository.fetchProductBundlesStats(any(), any(), any())).thenReturn(bundleStatsResponse)
+            whenever(statsRepository.fetchBundleReport(any(), any(), any())).thenReturn(bundleReportResponse)
+            // When
+            val result = sut.fetchProductBundlesStats(testSelectionData)
+
+            // Then
+            assertThat(result).isInstanceOf(AnalyticsRepository.BundlesResult.BundlesError::class.java)
+        }
+
+    @Test
+    fun `given fetch bundle report succeed, then result is bundle data`() =
+        runTest {
+            // Given
+            val stats = WCBundleStats(
+                itemsSold = 50,
+                netRevenue = 1300.00
+            )
+            val report = listOf(
+                WCProductBundleItemReport(
+                    name = "item 1",
+                    image = null,
+                    itemsSold = 35,
+                    netRevenue = 1000.00
+                ),
+                WCProductBundleItemReport(
+                    name = "item 2",
+                    image = null,
+                    itemsSold = 15,
+                    netRevenue = 300.00
+                )
+            )
+
+            val bundleStatsResponse = WooResult(stats)
+            val bundleReportResponse = WooResult(report)
+
+            whenever(statsRepository.fetchProductBundlesStats(any(), any(), any())).thenReturn(bundleStatsResponse)
+            whenever(statsRepository.fetchBundleReport(any(), any(), any())).thenReturn(bundleReportResponse)
+            // When
+            val result = sut.fetchProductBundlesStats(testSelectionData)
+
+            // Then
+            assertThat(result).isInstanceOf(AnalyticsRepository.BundlesResult.BundlesData::class.java)
         }
 
     private fun givenARevenue(totalSales: Double?, netValue: Double?, itemsSold: Int?): WCRevenueStatsModel {

@@ -72,7 +72,7 @@ import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.IsTablet
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -137,7 +137,7 @@ class ProductDetailViewModel @Inject constructor(
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
-    private val isTablet: IsTablet,
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_PARAMETERS = "key_product_parameters"
@@ -1417,7 +1417,7 @@ class ProductDetailViewModel @Inject constructor(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
                         AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules,
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsScreenLargerThanCompactValue(isTablet()).deviceTypeToAnalyticsString,
+                            IsScreenLargerThanCompactValue(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString,
                     )
                     tracker.track(AnalyticsEvent.PRODUCT_DETAIL_LOADED, properties)
                 }
@@ -1426,7 +1426,7 @@ class ProductDetailViewModel @Inject constructor(
                     AnalyticsEvent.PRODUCT_DETAIL_LOADED,
                     mapOf(
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
-                            IsScreenLargerThanCompactValue(isTablet()).deviceTypeToAnalyticsString
+                            IsScreenLargerThanCompactValue(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString
                     )
                 )
             }

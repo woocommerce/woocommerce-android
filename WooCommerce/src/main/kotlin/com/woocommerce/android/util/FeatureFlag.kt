@@ -9,12 +9,15 @@ enum class FeatureFlag {
     DB_DOWNGRADE,
     MORE_MENU_INBOX,
     WC_SHIPPING_BANNER,
-    IAP_FOR_STORE_CREATION,
+    MIGRATION_SIMPLE_PAYMENTS,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     BLAZE_I3,
     CUSTOM_RANGE_ANALYTICS,
-    CONNECTIVITY_TOOL;
+    CONNECTIVITY_TOOL,
+    NEW_SHIPPING_SUPPORT,
+    DYNAMIC_DASHBOARD,
+    EAH_I3;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -22,16 +25,19 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
+            MIGRATION_SIMPLE_PAYMENTS,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            CUSTOM_RANGE_ANALYTICS -> PackageUtils.isDebugBuild()
+            EAH_I3 -> PackageUtils.isDebugBuild()
+
+            DYNAMIC_DASHBOARD -> false
 
             CONNECTIVITY_TOOL,
-            BLAZE_I3 -> true
-
-            IAP_FOR_STORE_CREATION -> false
+            BLAZE_I3,
+            CUSTOM_RANGE_ANALYTICS,
+            NEW_SHIPPING_SUPPORT -> true
         }
     }
 }

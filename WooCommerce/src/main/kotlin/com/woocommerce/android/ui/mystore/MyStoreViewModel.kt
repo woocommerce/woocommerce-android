@@ -25,6 +25,8 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.myStoreTrackingGranularityString
+import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
@@ -231,6 +233,12 @@ class MyStoreViewModel @Inject constructor(
         usageTracksEventEmitter.interacted()
         _selectedRangeType.update { selectionType }
         appPrefsWrapper.setActiveStatsTab(selectionType.name)
+
+        if (selectionType == SelectionType.CUSTOM) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
+            )
+        }
     }
 
     fun onPullToRefresh() {
@@ -256,7 +264,7 @@ class MyStoreViewModel @Inject constructor(
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) {
         if (!networkStatus.isConnected()) {
             _revenueStatsState.value = RevenueStatsViewState.Content(null, selectedRange)
-            _visitorStatsState.value = VisitorStatsViewState.Content(emptyMap())
+            _visitorStatsState.value = VisitorStatsViewState.NotLoaded
             return
         }
         _revenueStatsState.value = RevenueStatsViewState.Loading
@@ -266,7 +274,10 @@ class MyStoreViewModel @Inject constructor(
                     is RevenueStatsSuccess -> onRevenueStatsSuccess(it, selectedRange)
                     is RevenueStatsError -> _revenueStatsState.value = RevenueStatsViewState.GenericError
                     PluginNotActive -> _revenueStatsState.value = RevenueStatsViewState.PluginNotActiveError
-                    is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(it.stats)
+                    is VisitorsStatsSuccess -> _visitorStatsState.value = VisitorStatsViewState.Content(
+                        stats = it.stats, totalVisitorCount = it.totalVisitorCount
+                    )
+
                     is VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
                     is VisitorStatUnavailable -> onVisitorStatsUnavailable(it.connectionType)
                     is HasOrders -> _hasOrders.value = if (it.hasOrder) OrderState.AtLeastOne else OrderState.Empty
@@ -298,10 +309,11 @@ class MyStoreViewModel @Inject constructor(
             result.stats?.toStoreStatsUiModel(),
             selectedRange
         )
+        selectedRange.revenueStatsGranularity
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
             buildMap {
-                put(AnalyticsTracker.KEY_RANGE, selectedRange.selectionType.identifier)
+                put(AnalyticsTracker.KEY_RANGE, selectedRange.myStoreTrackingGranularityString)
                 putIfNotNull(AnalyticsTracker.KEY_ID to result.stats?.rangeId)
             }
         )
@@ -339,7 +351,7 @@ class MyStoreViewModel @Inject constructor(
             onSuccess = {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
-                    mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.selectionType.identifier)
+                    mapOf(AnalyticsTracker.KEY_RANGE to selectedRange.myStoreTrackingGranularityString)
                 )
             }
         )
@@ -450,6 +462,13 @@ class MyStoreViewModel @Inject constructor(
     }
 
     fun onCustomRangeSelected(range: StatsTimeRange) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_EDITING to (_customRange.value != null),
+            )
+        )
+
         if (_selectedRangeType.value != SelectionType.CUSTOM) {
             onTabSelected(SelectionType.CUSTOM)
         }
@@ -465,6 +484,13 @@ class MyStoreViewModel @Inject constructor(
                 toDate = _customRange.value?.end ?: Date()
             )
         )
+
+        val event = if (_customRange.value == null) {
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
+        } else {
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED
+        }
+        analyticsTrackerWrapper.track(event)
     }
 
     sealed class RevenueStatsViewState {
@@ -479,12 +505,14 @@ class MyStoreViewModel @Inject constructor(
 
     sealed class VisitorStatsViewState {
         data object Error : VisitorStatsViewState()
+        data object NotLoaded : VisitorStatsViewState()
         data class Unavailable(
             val benefitsBanner: JetpackBenefitsBannerUiModel
         ) : VisitorStatsViewState()
 
         data class Content(
-            val stats: Map<String, Int>
+            val stats: Map<String, Int>,
+            val totalVisitorCount: Int?
         ) : VisitorStatsViewState()
     }
 

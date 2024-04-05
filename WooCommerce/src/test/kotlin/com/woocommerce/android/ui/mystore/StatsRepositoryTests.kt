@@ -14,7 +14,13 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.WCStatsAction
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCBundleStats
+import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -55,45 +61,46 @@ class StatsRepositoryTests : BaseUnitTest() {
     }
 
     @Test
-    fun `when visitors and revenue requests succeed then a success response is returned containing both value`() = testBlocking {
-        val granularity = WCStatsStore.StatsGranularity.DAYS
-        val startDate = "2024-01-25 00:00:00"
-        val endDate = "2024-01-25 23:59:59"
-        val visitorStatsResponse = WCStatsStore.OnWCStatsChanged(
-            rowsAffected = 2,
-            granularity = granularity,
-            quantity = "5",
-            date = startDate
-        )
+    fun `when visitors and revenue requests succeed then a success response is returned containing both value`() =
+        testBlocking {
+            val granularity = WCStatsStore.StatsGranularity.DAYS
+            val startDate = "2024-01-25 00:00:00"
+            val endDate = "2024-01-25 23:59:59"
+            val visitorStatsResponse = WCStatsStore.OnWCStatsChanged(
+                rowsAffected = 2,
+                granularity = granularity,
+                quantity = "5",
+                date = startDate
+            )
 
-        val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(
-            rowsAffected = 2,
-            granularity = granularity,
-            startDate = startDate,
-            endDate = endDate
-        )
+            val revenueStatsResponse = WCStatsStore.OnWCRevenueStatsChanged(
+                rowsAffected = 2,
+                granularity = granularity,
+                startDate = startDate,
+                endDate = endDate
+            )
 
-        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
-        whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(null)
-        whenever(wcStatsStore.fetchNewVisitorStats(any())).thenReturn(visitorStatsResponse)
-        whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
-        whenever(wcStatsStore.getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate)))
-            .thenReturn(WCRevenueStatsModel())
+            whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+            whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(null)
+            whenever(wcStatsStore.fetchNewVisitorStats(any())).thenReturn(visitorStatsResponse)
+            whenever(wcStatsStore.fetchRevenueStats(any())).thenReturn(revenueStatsResponse)
+            whenever(wcStatsStore.getRawRevenueStats(eq(defaultSiteModel), eq(granularity), eq(startDate), eq(endDate)))
+                .thenReturn(WCRevenueStatsModel())
 
-        val result = sut.fetchStats(
-            range = defaultRange,
-            revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
-            visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
-            forced = true,
-            includeVisitorStats = true
-        )
+            val result = sut.fetchStats(
+                range = defaultRange,
+                revenueStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
+                visitorStatsGranularity = WCStatsStore.StatsGranularity.DAYS,
+                forced = true,
+                includeVisitorStats = true
+            )
 
-        val model = result.getOrNull()
-        assertThat(result.isFailure).isEqualTo(false)
-        assertThat(model).isNotNull
-        assertThat(model!!.revenue).isNotNull
-        assertThat(model.visitors).isNotNull
-    }
+            val model = result.getOrNull()
+            assertThat(result.isFailure).isEqualTo(false)
+            assertThat(model).isNotNull
+            assertThat(model!!.revenue).isNotNull
+            assertThat(model.visitors).isNotNull
+        }
 
     @Test
     fun `when visitors requests fails then a success response is returned with visitors null`() = testBlocking {
@@ -162,5 +169,90 @@ class StatsRepositoryTests : BaseUnitTest() {
         )
 
         assertThat(result.isFailure).isEqualTo(true)
+    }
+
+    @Test
+    fun `when bundle requests fails then an error is returned`() = testBlocking {
+        val startDate = "2024-03-25 00:00:00"
+        val endDate = "2024-04-1 00:00:00"
+        val error = WooError(
+            type = WooErrorType.INVALID_RESPONSE,
+            original = BaseRequest.GenericErrorType.INVALID_RESPONSE,
+            message = "something fails"
+        )
+
+        val bundleStatsResponse = WooResult<WCBundleStats>(error)
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcStatsStore.fetchProductBundlesStats(any(), any(), any(), any())).thenReturn(bundleStatsResponse)
+
+        val result = sut.fetchProductBundlesStats(
+            startDate = startDate,
+            endDate = endDate
+        )
+
+        assertThat(result.isError).isEqualTo(true)
+        assertThat(result.model).isNull()
+        assertThat(result.error).isEqualTo(error)
+    }
+
+    @Test
+    fun `when bundle requests succeed then a valid response is returned`() = testBlocking {
+        val startDate = "2024-03-25 00:00:00"
+        val endDate = "2024-04-1 00:00:00"
+        val stats = WCBundleStats(
+            itemsSold = 50,
+            netRevenue = 1300.00
+        )
+
+        val bundleStatsResponse = WooResult(stats)
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcStatsStore.fetchProductBundlesStats(any(), any(), any(), any())).thenReturn(bundleStatsResponse)
+
+        val result = sut.fetchProductBundlesStats(
+            startDate = startDate,
+            endDate = endDate
+        )
+
+        assertThat(result.isError).isEqualTo(false)
+        assertThat(result.model).isNotNull
+        assertThat(result.error).isNull()
+        assertThat(result.model).isEqualTo(stats)
+    }
+
+    @Test
+    fun `when bundle report requests fails then an error is returned`() = testBlocking {
+        val startDate = "2024-03-25 00:00:00"
+        val endDate = "2024-04-1 00:00:00"
+        val report = listOf(
+            WCProductBundleItemReport(
+                name = "item 1",
+                image = null,
+                itemsSold = 35,
+                netRevenue = 1000.00
+            ),
+            WCProductBundleItemReport(
+                name = "item 2",
+                image = null,
+                itemsSold = 15,
+                netRevenue = 300.00
+            )
+        )
+
+        val bundleStatsResponse = WooResult(report)
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcStatsStore.fetchProductBundlesReport(any(), any(), any(), any())).thenReturn(bundleStatsResponse)
+
+        val result = sut.fetchBundleReport(
+            startDate = startDate,
+            endDate = endDate
+        )
+
+        assertThat(result.isError).isEqualTo(false)
+        assertThat(result.model).isNotNull
+        assertThat(result.error).isNull()
+        assertThat(result.model).isEqualTo(report)
     }
 }
