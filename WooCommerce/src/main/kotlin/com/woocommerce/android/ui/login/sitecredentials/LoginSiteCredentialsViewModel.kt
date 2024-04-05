@@ -297,11 +297,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             password = password
         ).fold(
             onSuccess = { site ->
-                loadingMessage.value = 0
-                ShowApplicationPasswordTutorialScreen(
-                    url = generateAuthorizationUrl(site).orEmpty(),
-                    errorMessageRes = detectedErrorMessage?.stringRes ?: R.string.error_generic
-                ).let { triggerEvent(it) }
+                if (site.hasWooCommerce) {
+                    fetchedSiteId.value = site.id
+                    loadingMessage.value = 0
+                    ShowApplicationPasswordTutorialScreen(
+                        url = generateAuthorizationUrl(site).orEmpty(),
+                        errorMessageRes = detectedErrorMessage?.stringRes ?: R.string.error_generic
+                    ).let { triggerEvent(it) }
+                } else {
+                    triggerEvent(ShowNonWooErrorScreen(siteAddress))
+                }
             },
             onFailure = {
                 loadingMessage.value = 0
