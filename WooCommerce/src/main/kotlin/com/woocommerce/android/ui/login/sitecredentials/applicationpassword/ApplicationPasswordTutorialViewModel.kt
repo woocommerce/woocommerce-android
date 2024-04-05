@@ -5,9 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -42,7 +40,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
         }
     }
 
-    fun onNavigationButtonClicked() { triggerEvent(ShowConfirmationDialog) }
+    fun onNavigationButtonClicked() { triggerEvent(ShowExitConfirmationDialog) }
 
     fun onWebViewDataAvailable(
         authorizationUrl: String?,
@@ -57,7 +55,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     }
 
     object OnContactSupport : Event()
-    object ShowConfirmationDialog : Event()
+    object ShowExitConfirmationDialog : Event()
 
     @Parcelize
     data class ViewState(

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -65,7 +66,6 @@ fun ApplicationPasswordTutorialScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = stringResource(id = R.string.log_in),
                 onNavigationButtonClick = onNavigationButtonClicked,
                 navigationIcon = when {
                     authorizationStarted -> Icons.Filled.Close
@@ -105,6 +105,7 @@ private fun TutorialContentScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(paddingValues)
+            .background(MaterialTheme.colors.surface)
     ) {
         Column(
             modifier = modifier.verticalScroll(rememberScrollState())
