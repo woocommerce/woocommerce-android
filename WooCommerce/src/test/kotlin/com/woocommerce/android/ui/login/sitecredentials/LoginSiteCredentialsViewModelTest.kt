@@ -224,7 +224,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `given incorrect credentials, when submitting, then show error`() = testBlocking {
         val expectedError = CookieNonceAuthenticationException(
             errorMessage = UiStringText("Username or password incorrect"),
-            errorType = Nonce.CookieNonceErrorType.NOT_AUTHENTICATED,
+            errorType = Nonce.CookieNonceErrorType.INVALID_CREDENTIALS,
             networkStatusCode = null
         )
         setup {
