@@ -170,7 +170,9 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     )
 
                     is LoadStatsResult.VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
-                    is LoadStatsResult.VisitorStatUnavailable -> _visitorStatsState.value = VisitorStatsViewState.Unavailable
+                    is LoadStatsResult.VisitorStatUnavailable ->
+                        _visitorStatsState.value = VisitorStatsViewState.Unavailable
+
                     is LoadStatsResult.HasOrders -> _hasOrders.value = if (it.hasOrder) AtLeastOne else Empty
                 }
                 dashboardTransactionLauncher.onStoreStatisticsFetched()

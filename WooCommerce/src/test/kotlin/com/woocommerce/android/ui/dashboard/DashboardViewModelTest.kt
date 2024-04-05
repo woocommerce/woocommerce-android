@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard;
+package com.woocommerce.android.ui.dashboard
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
@@ -51,7 +51,9 @@ class DashboardViewModelTest : BaseUnitTest() {
         prepareMocks()
 
         val getSelectedDateRange = GetSelectedDateRange(
-            customDateRangeDataStore = customDateRangeDataStore, appPrefs = appPrefsWrapper, dateUtils = dateUtils
+            customDateRangeDataStore = customDateRangeDataStore,
+            appPrefs = appPrefsWrapper,
+            dateUtils = dateUtils
         )
 
         viewModel = DashboardViewModel(
@@ -75,10 +77,14 @@ class DashboardViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack site, when screen starts, then hide the Jetpack Benefits banner`() = testBlocking {
         setup {
-            whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply {
-                origin = SiteModel.ORIGIN_WPCOM_REST
-                setIsJetpackConnected(true)
-            }))
+            whenever(selectedSite.observe()).thenReturn(
+                flowOf(
+                    SiteModel().apply {
+                        origin = SiteModel.ORIGIN_WPCOM_REST
+                        setIsJetpackConnected(true)
+                    }
+                )
+            )
         }
 
         val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -89,11 +95,15 @@ class DashboardViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site, when screen starts, then show the Jetpack Benefits banner`() = testBlocking {
         setup {
-            whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply {
-                origin = SiteModel.ORIGIN_WPCOM_REST
-                setIsJetpackCPConnected(true)
-                setIsJetpackConnected(false)
-            }))
+            whenever(selectedSite.observe()).thenReturn(
+                flowOf(
+                    SiteModel().apply {
+                        origin = SiteModel.ORIGIN_WPCOM_REST
+                        setIsJetpackCPConnected(true)
+                        setIsJetpackConnected(false)
+                    }
+                )
+            )
         }
 
         val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -106,9 +116,13 @@ class DashboardViewModelTest : BaseUnitTest() {
     fun `given an Application Passwords site, when screen starts, then show the Jetpack Benefits banner`() =
         testBlocking {
             setup {
-                whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply {
-                    origin = SiteModel.ORIGIN_WPAPI
-                }))
+                whenever(selectedSite.observe()).thenReturn(
+                    flowOf(
+                        SiteModel().apply {
+                            origin = SiteModel.ORIGIN_WPAPI
+                        }
+                    )
+                )
             }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -120,11 +134,15 @@ class DashboardViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site, when jetpack benefits dismissed, then update prefs`() = testBlocking {
         setup {
-            whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply {
-                origin = SiteModel.ORIGIN_WPCOM_REST
-                setIsJetpackCPConnected(true)
-                setIsJetpackConnected(false)
-            }))
+            whenever(selectedSite.observe()).thenReturn(
+                flowOf(
+                    SiteModel().apply {
+                        origin = SiteModel.ORIGIN_WPCOM_REST
+                        setIsJetpackCPConnected(true)
+                        setIsJetpackConnected(false)
+                    }
+                )
+            )
         }
 
         val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -136,11 +154,15 @@ class DashboardViewModelTest : BaseUnitTest() {
     @Test
     fun `given a Jetpack CP site, when jetpack benefits dismissed recently, then hide banner`() = testBlocking {
         setup {
-            whenever(selectedSite.observe()).thenReturn(flowOf(SiteModel().apply {
-                origin = SiteModel.ORIGIN_WPCOM_REST
-                setIsJetpackCPConnected(true)
-                setIsJetpackConnected(false)
-            }))
+            whenever(selectedSite.observe()).thenReturn(
+                flowOf(
+                    SiteModel().apply {
+                        origin = SiteModel.ORIGIN_WPCOM_REST
+                        setIsJetpackCPConnected(true)
+                        setIsJetpackConnected(false)
+                    }
+                )
+            )
             whenever(appPrefsWrapper.getJetpackBenefitsDismissalDate()).thenReturn(System.currentTimeMillis() - 1000)
         }
 
