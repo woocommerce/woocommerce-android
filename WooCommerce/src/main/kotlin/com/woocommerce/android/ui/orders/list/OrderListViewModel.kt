@@ -891,4 +891,13 @@ class OrderListViewModel @Inject constructor(
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
     }
+
+    @Parcelize
+    sealed class Mode : Parcelable {
+        @Parcelize
+        data class StartOrderCreation(val indicateSimplePaymentsMigration: Boolean = false) : Mode()
+
+        @Parcelize
+        data object Standard : Mode()
+    }
 }

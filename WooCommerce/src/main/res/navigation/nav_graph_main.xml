@@ -161,6 +161,10 @@
             android:name="orderId"
             android:defaultValue="-1L"
             app:argType="long" />
+        <argument
+            android:name="mode"
+            android:defaultValue="Standard"
+            app:argType="com.woocommerce.android.ui.orders.list.OrderListViewModel$Mode" />
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders">

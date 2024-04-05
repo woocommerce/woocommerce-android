@@ -153,11 +153,11 @@
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_cardReaderHubFragment_to_orderCreationFragment"
-            app:destination="@id/nav_graph_order_creations">
+            android:id="@+id/action_cardReaderHubFragment_to_orderListFragment"
+            app:destination="@+id/orders">
             <argument
                 android:name="mode"
-                app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
+                app:argType="com.woocommerce.android.ui.orders.list.OrderListViewModel$Mode"/>
         </action>
     </fragment>
     <fragment
