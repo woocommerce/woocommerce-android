@@ -159,7 +159,6 @@ class DashboardFragment :
                     currencyFormatter = currencyFormatter,
                     usageTracksEventEmitter = usageTracksEventEmitter,
                     onPluginUnavailableError = { updateStatsAvailabilityError() },
-                    reportJetpackPluginStatus = { onVisitorStatsUnavailable(it) },
                     onStatsError = { showErrorSnack() },
                     openDatePicker = { start, end, callback ->
                         showDateRangePicker(start, end, callback)
@@ -420,9 +419,12 @@ class DashboardFragment :
         dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
             ((activity) as MainActivity).setSubtitle(storeName)
         }
+        dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
+            onVisitorStatsUnavailable(jetpackBenefitsBanner)
+        }
     }
 
-    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: JetpackBenefitsBannerUiModel?) {
+    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: DashboardViewModel.JetpackBenefitsBannerUiModel?) {
         if (jetpackBenefitsBanner == null) {
             binding.jetpackBenefitsBanner.root.isVisible = false
             return

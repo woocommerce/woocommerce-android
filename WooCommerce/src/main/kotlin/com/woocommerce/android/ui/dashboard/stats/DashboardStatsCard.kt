@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.JetpackBenefitsBannerUiModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -36,7 +35,6 @@ fun DashboardStatsCard(
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     onPluginUnavailableError: () -> Unit,
-    reportJetpackPluginStatus: (JetpackBenefitsBannerUiModel?) -> Unit,
     onStatsError: () -> Unit,
     openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
     parentViewModel: DashboardViewModel,
@@ -58,12 +56,6 @@ fun DashboardStatsCard(
             is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError -> onPluginUnavailableError()
             else -> Unit
         }
-    }
-
-    LaunchedEffect(visitorsStatsState) {
-        reportJetpackPluginStatus(
-            (visitorsStatsState as? DashboardStatsViewModel.VisitorStatsViewState.Unavailable)?.benefitsBanner
-        )
     }
 
     HandleEvents(
