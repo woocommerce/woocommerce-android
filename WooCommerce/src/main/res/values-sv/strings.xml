@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 11:54:03+0000
+Translation-Revision-Date: 2024-04-02 13:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="product_list_unsaved_product_unselected_message">Är du säker på att du vill kassera ändringarna som du har gjort för den här produkten?</string>
+    <string name="product_list_unsaved_product_unselected_title">Du är på väg att kassera ändringarna för %s</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">Statistikfunktionen stöder inte visning av besökar- och konverteringsdata för godtyckliga datumintervall.\n\nDu kan dock trycka på ett värde i diagrammet för att se besökare och konverteringar för specifika intervall.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Besökar- och konverteringsdata är inte tillgängliga</string>
     <string name="more_menu_button_subscriptions_description">Hantera din prenumeration</string>
     <string name="more_menu_button_subscriptions">Prenumerationer</string>
     <string name="upgrades_title">Prenumerationer</string>
@@ -558,8 +562,8 @@ Language: sv_SE
     <string name="store_onboarding_task_name_store_title">Namnge din butik</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Aktivera NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Leveranspaket för små kvantiteter (märkningar krävs)</string>
-    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
     <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY-markpaket – Aerosoler, spraydesinfektionsmedel, sprayfärg, hårspray, propan, butan, rengöringsprodukter, osv. - Parfymer, nagellack, nagellackborttagningsmedel, lösningsmedel, handsprit, tvättsprit, etanolbaserade produkter, osv. - Andra ytmaterial i begränsad mängd (kosmetika, rengöringsprodukter, färger, osv.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000-konsumentvarupaket – Luftkvalificerade ID8000-konsumentvaror (icke brandfarliga aerosoler, brandfarliga brännbara vätskor, giftiga ämnen, diverse farliga material)</string>
     <string name="shipping_label_hazmat_option_ground_only">Farliga material endast för markleverans (för föremål som inte är listade, men som är begränsade till endast yta)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Undantagna kvantitetsförsörjningspaket (t.ex. små volymer av brandfarliga vätskor och frätande, giftiga eller miljöfarliga material – märkning krävs) </string>
@@ -623,17 +627,10 @@ Language: sv_SE
     <string name="empty_order_test_order_message">Kör en testbeställning för att kontrollera att din WooCommerce-process levererar en sömlös kundupplevelse</string>
     <string name="free_trial_survey_free_text">Annat skäl (vänligen specificera)</string>
     <string name="free_trial_survey_option4">Jag är en del av ett team och vi måste fatta beslutet kollektivt.</string>
-    <string name="local_notification_still_exploring_title">🧭 Utforskar du fortfarande WooCommerce?</string>
     <string name="free_trial_survey_option2">Jag utvärderar och jämför din tjänst med andra på marknaden.</string>
     <string name="free_trial_survey_option1">Jag utforskar och utvärderar fortfarande funktionerna och fördelarna med appen.</string>
     <string name="free_trial_survey_title">Hjälp oss att förstå dina prenumerationsbeslut. Din feedback är viktig.</string>
     <string name="free_trial_survey_option3">Jag anser att priset på tjänsten är en viktig faktor i mitt beslut.</string>
-    <string name="local_notification_still_exploring_description">Det är ingen brådska, ta den tid du behöver! Vi finns alltid här om du har några frågor eller behöver hjälp. Trevligt utforskande!</string>
-    <string name="free_trial_survey_screen_title">Hjälp oss att förstå ditt prenumerationsbeslut.</string>
-    <string name="local_notification_survey_after_24_hours_description">Vi är intresserade av din beslutsresa. Kan du vänligen berätta för oss om din nuvarande status?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Hjälp oss att förstå ditt prenumerationsbeslut.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Upptäck avancerade funktioner och personliga rekommendationer för din butik. Tryck för att välja ett paket som passar dig.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Håll igång din verksamhet!</string>
     <string name="order_creation_customer_search_empty_email">Ingen e-postadress</string>
     <string name="order_creation_customer_search_empty_name">Inget namn</string>
     <string name="last_update_with_frequency">Senast uppdaterat %s (Uppdateras var 30:e minut)</string>
@@ -719,12 +716,6 @@ Language: sv_SE
     <string name="order_creation_barcode_scanning_process_death">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan prova att använda den igen.</string>
     <string name="order_list_barcode_scanning_process_death">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan prova att använda den igen.</string>
     <string name="card_reader_payment_card_removed_too_early">Kortet togs bort för tidigt</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Håll igång ditt företag med vårt paket!</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, vi har pausat din butik, men du kan fortsätta genom att välja ett paket som passar dig bäst.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Din kostnadsfria Woo Express-provperiod löper ut imorgon (%1$s). Det är dags att ta kontroll över din framtid – välj ett paket och gör dig redo att börja växa.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Tiden med din kostnadsfria provperiod håller på att löpa ut.</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Din butik är redo!</string>
-    <string name="local_notification_store_creation_complete_description">Hej %1$s. Välkommen till din kostnadsfria Woo Express-provperiod på 14 dagar – allt du behöver för att starta en framgångsrik onlineverksamhet, på en och samma plats. Är du redo att utforska?</string>
     <string name="settings_policies_privacy_policy">Integritetspolicy</string>
     <string name="privacy_banner_save">Spara</string>
     <string name="privacy_banner_settings">Inställningar</string>
@@ -1015,11 +1006,7 @@ Language: sv_SE
     <string name="store_onboarding_task_change_domain_description">Få en anpassad URL för din butik.</string>
     <string name="store_onboarding_task_add_product_description">Börja sälja genom att lägga till produkter eller tjänster i din butik.</string>
     <string name="store_onboarding_task_add_product_title">Lägg till din första produkt </string>
-    <string name="store_creation_iap_eligibility_network_error">Ett nätverksfel uppstod. Kontrollera din anslutning och försök igen.</string>
     <string name="store_onboarding_title">Konfigurera din butik</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Du har redan en aktiv eCommerce-prenumeration. Kontakta supporten om du stöter på problem med att din nuvarande prenumeration inte är kopplad till din nya webbplats.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Butiksskapande är inte tillgängligt för tillfället. Försök igen senare.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Du kan bara köpa eCommerce-paketet från mobilappen en gång. Besök vår webbplats om du vill skapa ytterligare webbplatser.</string>
     <string name="domains_select_domain">Välj domän</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Din enhet stöds inte. Kontakta support för mer detaljer</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Något gick fel med appkonfigurationen. Kontakta supporten för mer information</string>
@@ -1068,12 +1055,8 @@ Language: sv_SE
     <string name="login_application_passwords_unavailable">Det verkar som att funktionen Applikationslösenord är inaktiverad på din webbplats %1$s.\n Aktivera den om du vill använda WooCommerce-appen.</string>
     <string name="login_open_installation_page">Öppna installationssida</string>
     <string name="not_a_valid_qr_code">Skannad QR-kod är inte en WooCommerce-kod</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Skapande av butik är inte tillgängligt</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Att skapa butik från mobilappen är för närvarande inte tillgängligt för ditt land.</string>
     <string name="review_reply_success">Svar skickat!</string>
     <string name="review_reply_failure">Det uppstod ett fel när svaret skulle skickas</string>
-    <string name="store_creation_iap_eligibility_loading_title">Vi gör oss redo för att skapa din butik</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Förbli ansluten.</string>
     <string name="wc_reply">Svara</string>
     <string name="product_selection_menu_update_price">Uppdatera pris</string>
     <string name="product_selection_menu_update_status">Uppdatera status</string>

@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 17:54:07+0000
+Translation-Revision-Date: 2024-04-02 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="product_list_unsaved_product_unselected_message">Bist du sicher, dass du die an diesem Produkt vorgenommenen Änderungen verwerfen möchtest?</string>
+    <string name="product_list_unsaved_product_unselected_title">Du bist im Begriff, Änderungen an %s zu verwerfen</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">Die Statistiken-Funktion unterstützt nicht die Anzeige von Besucher- und Konversionsdaten für beliebige Zeiträume.\n\nDu kannst jedoch auf einen Wert im Diagramm tippen, um Besucher- und Konversionsdaten für diesen spezifischen Zeitraum anzuzeigen.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Besucher- und Konversionsdaten nicht verfügbar</string>
     <string name="more_menu_button_subscriptions_description">Abonnement verwalten</string>
     <string name="more_menu_button_subscriptions">Abonnements</string>
     <string name="upgrades_title">Abonnements</string>
@@ -627,13 +631,6 @@ Language: de
     <string name="free_trial_survey_option2">Ich bewerte den Dienst gerade und vergleiche ihn mit anderen auf dem Markt.</string>
     <string name="free_trial_survey_option1">Ich erkunde die App noch und sehe mir ihre Funktionen und Vorzüge an.</string>
     <string name="free_trial_survey_title">Hilf uns, deine Abonnemententscheidungen nachzuvollziehen. Dein Feedback ist uns wichtig.</string>
-    <string name="local_notification_still_exploring_description">Es eilt nicht. Nimm dir ruhig Zeit. Wenn du Fragen hast oder Unterstützung benötigst, helfen wir dir stets gerne weiter. Viel Spaß beim Erkunden!</string>
-    <string name="local_notification_still_exploring_title">🧭 Erkundest du WooCommerce noch?</string>
-    <string name="free_trial_survey_screen_title">Hilf uns, deine Abonnemententscheidung nachzuvollziehen</string>
-    <string name="local_notification_survey_after_24_hours_description">Wir würden gerne wissen, wie du deine Entscheidung triffst. Würdest du uns mitteilen, wie der aktuelle Stand bei deiner Entscheidungsfindung ist?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Hilf uns, deine Abonnemententscheidung nachzuvollziehen</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Entdecke erweiterte Funktionen und personalisierte Empfehlungen für deinen Shop! Tippe, um einen passenden Tarif für dich auszuwählen.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Halte dein Geschäft am Laufen!</string>
     <string name="order_creation_customer_search_empty_email">Keine E-Mail-Adresse</string>
     <string name="order_creation_customer_search_empty_name">Kein Name</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Suche nach bestehendem Kunden oder</string>
@@ -719,12 +716,6 @@ Language: de
     <string name="order_creation_barcode_scanning_process_death">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
     <string name="order_list_barcode_scanning_process_death">Das System hat die Woo-App beendet, die im Hintergrund ausgeführt wurde. Du kannst erneut versuchen, sie zu verwenden.</string>
     <string name="card_reader_payment_card_removed_too_early">Die Karte wurde zu früh entfernt</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, wir haben deinen Shop deaktiviert, aber du kannst ihn wieder aktivieren, indem du einen für dich passenden Tarif auswählst.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Halte dein Geschäft mit unserem Tarif am Laufen!</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Dein Gratis-Test von Woo Express läuft morgen (%1$s) ab. Jetzt ist es an der Zeit, deine Zukunft selbst zu gestalten – wähle einen Tarif und bereite dich darauf vor, zu wachsen.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Dein Gratis-Test läuft bald ab!</string>
-    <string name="local_notification_store_creation_complete_description">Hi %1$s! Willkommen zu deinem 14-tägigen Gratis-Test von Woo Express – alles, was du brauchst, um ein erfolgreiches Online-Geschäft zu starten und auszubauen, an einem zentralen Ort. Bereit, mehr zu entdecken?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Dein Shop ist einsatzbereit!</string>
     <string name="product_type_variation">Variantenprodukt</string>
     <string name="settings_policies_cookie_policy_description">In unserer Cookie-Richtlinie erklären wir, wie wir und andere Cookies verwenden und wie du sie verwalten kannst.</string>
     <string name="settings_policies_cookie_policy">Cookie-Richtlinie</string>
@@ -1016,10 +1007,6 @@ Language: de
     <string name="store_onboarding_task_add_product_description">Füge Produkte oder Dienstleistungen zu deinem Shop hinzu und beginne mit dem Verkauf.</string>
     <string name="store_onboarding_task_add_product_title">Füge dein erstes Produkt hinzu </string>
     <string name="store_onboarding_title">Shop Konfiguration</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Du hast bereits ein aktives E-Commerce-Abonnement. Bitte kontaktiere den Support, wenn du Probleme mit deinem aktuellen Abonnement hast und es nicht mit deiner neuen Website verknüpft ist.</string>
-    <string name="store_creation_iap_eligibility_network_error">Es ist ein Netzwerkfehler aufgetreten. Bitte überprüfe deine Verbindung und versuche es erneut.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Die Shop-Erstellung ist derzeit nicht verfügbar. Bitte versuche es später erneut.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Du kannst den E-Commerce-Tarif nur einmal über die Mobil-App kaufen. Besuche unsere Website, um weitere Websites zu erstellen.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Bei der App-Einrichtung ist etwas schiefgelaufen. Bitte wende dich an den Support, um weitere Informationen zu erhalten</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Dein Gerät wird nicht unterstützt. Bitte wende dich an den Support, um weitere Informationen zu erhalten</string>
     <string name="card_reader_payment_failed_nfc_disabled">Die App konnte den Kartenleser nicht aktivieren, da der NFC-Chip deaktiviert ist</string>
@@ -1068,10 +1055,6 @@ Language: de
     <string name="login_application_passwords_unavailable">Anscheinend ist die Funktion „Anwendungs-Passwörter“ auf deiner Website %1$s deaktiviert.\n Bitte aktiviere sie, um die WooCommerce-App verwenden zu können.</string>
     <string name="login_open_installation_page">Installationsseite öffnen</string>
     <string name="not_a_valid_qr_code">Der gescannte QR-Code ist kein WooCommerce-Code.</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Die Shop-Erstellung über die Mobil-App ist in deinem Land derzeit nicht verfügbar.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Shop-Erstellung nicht verfügbar</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Bitte bleib verbunden.</string>
-    <string name="store_creation_iap_eligibility_loading_title">Wir machen uns für die Erstellung deines Shops bereit.</string>
     <string name="review_reply_failure">Beim Senden der Antwort ist ein Fehler aufgetreten.</string>
     <string name="review_reply_success">Antwort gesendet!</string>
     <string name="wc_reply">Antworten</string>

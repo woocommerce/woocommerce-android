@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 17:54:07+0000
+Translation-Revision-Date: 2024-04-02 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="product_list_unsaved_product_unselected_message">Weet je zeker dat je de wijzigingen die je aan dit product hebt aangebracht, wil annuleren?</string>
+    <string name="product_list_unsaved_product_unselected_title">Je staat op het punt wijzigingen te annuleren aan %s</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">De functie statistieken ondersteunt de weergave van bezoekers- en conversiegegevens niet voor willekeurige datumbereiken.\n\nJe kan wel op een waarde in de grafiek tikken om de bezoekers en conversies van dat specifieke bereik te bekijken.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Bezoekers- en conversiegegevens niet beschikbaar</string>
     <string name="more_menu_button_subscriptions_description">Beheer je abonnement</string>
     <string name="more_menu_button_subscriptions">Abonnementen</string>
     <string name="upgrades_title">Abonnementen</string>
@@ -627,13 +631,6 @@ Language: nl
     <string name="free_trial_survey_option2">Ik beoordeel jullie service door deze te vergelijken met vergelijkbare producten op de markt.</string>
     <string name="free_trial_survey_option1">Ik ben nog bezig met alle functies en voordelen van de app te ontdekken en te beoordelen.</string>
     <string name="free_trial_survey_title">Help ons begrijpen wat jouw beslissingen omtrent abonnementen beïnvloed. Jouw feedback is belangrijk.</string>
-    <string name="local_notification_still_exploring_description">Geen haast, neem je tijd! Als je nog vragen hebt of anderszins hulp nodig hebt, staan we altijd voor je klaar. Veel plezier op deze ontdekkingstocht!</string>
-    <string name="local_notification_still_exploring_title">🧭 Nog bezig met WooCommerce ontdekken?</string>
-    <string name="free_trial_survey_screen_title">💡Help ons begrijpen wat jouw beslissingen omtrent abonnementen beïnvloed</string>
-    <string name="local_notification_survey_after_24_hours_description">We willen graag weten hoe jij tot een beslissing komt. Kan je ons vertellen over je huidige status?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Help ons begrijpen wat jouw beslissingen omtrent abonnementen beïnvloed</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Ontdek geavanceerde functies en gepersonaliseerde aanbevelingen voor jouw winkel! Tik op het abonnement dat het beste bij je past.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Blijf aan de slag!</string>
     <string name="order_creation_customer_search_empty_email">Geen e-mailadres</string>
     <string name="order_creation_customer_search_empty_name">Geen naam</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Een bestaande klant zoeken op</string>
@@ -719,12 +716,6 @@ Language: nl
     <string name="order_creation_barcode_scanning_process_death">Het systeem heeft de Woo-app afgesloten terwijl deze op de achtergrond bezig was. Je kan proberen deze opnieuw te gebruiken.</string>
     <string name="order_list_barcode_scanning_process_death">Het systeem heeft de Woo-app afgesloten terwijl deze op de achtergrond bezig was. Je kan proberen deze opnieuw te gebruiken.</string>
     <string name="card_reader_payment_card_removed_too_early">De kaart is te vroeg verwijderd</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we hebben je winkel even stilgezet, maar je kan doorgaan door het abonnement te kiezen dat het beste bij je past.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Houd je bedrijf draaiende met ons abonnement!</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Je gratis proefabonnement op Woo Express loopt morgen af (%1$s). Dit is hét moment om in je toekomst te investeren: kies een abonnement en bereid je voor om door te groeien.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Je gratis proefperiode is bijna ten einde!</string>
-    <string name="local_notification_store_creation_complete_description">Hallo %1$s! Welkom bij je 14-daagse proefabonnement van Woo Express. Op deze centrale plek vind je alles wat je nodig hebt om een succesvolle online onderneming te starten en uit te laten groeien. Klaar om op ontdekkingsreis te gaan?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Je winkel is klaar!</string>
     <string name="product_type_variation">Variabel product</string>
     <string name="settings_policies_cookie_policy_description">In ons cookiebeleid vind je hoe wij en anderen cookies gebruiken en hoe jij ze kan beheren.</string>
     <string name="settings_policies_cookie_policy">Cookiebeleid</string>
@@ -1016,10 +1007,6 @@ Language: nl
     <string name="store_onboarding_task_add_product_description">Begin met verkopen door producten of diensten aan je winkel toe te voegen.</string>
     <string name="store_onboarding_task_add_product_title">Je eerste product toevoegen </string>
     <string name="store_onboarding_title">Winkel instellen</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Je hebt al een actieve eCommerce-abonnement. Neem contact op met de ondersteuning als je huidige abonnement niet is gekoppeld aan je nieuwe site.</string>
-    <string name="store_creation_iap_eligibility_network_error">Er is een netwerkfout opgetreden. Controleer je verbinding en probeer het nogmaals.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Het aanmaken van winkels is momenteel niet beschikbaar. Probeer het later opnieuw.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Je kan het eCommerce-abonnement maar één keer vanuit de mobiele app aanschaffen. Ga naar onze websites als je nog meer sites wil aanmaken.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Er is iets fout gegaan met het instellen van de app. Neem contact op met de ondersteuning voor meer informatie</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Je apparaat wordt niet ondersteund. Neem contact op met de ondersteuning voor meer informatie</string>
     <string name="card_reader_payment_failed_nfc_disabled">De app kon de kaartlezer niet inschakelen omdat de NFC-chip is uitgeschakeld</string>
@@ -1068,10 +1055,6 @@ Language: nl
     <string name="login_application_passwords_unavailable">Het lijkt erop dat de functie Applicatiewachtwoorden is uitgeschakeld op je site %1$s.\n Schakel dit in om de WooCommerce-app te kunnen gebruiken.</string>
     <string name="login_open_installation_page">Installatiepagina openen</string>
     <string name="not_a_valid_qr_code">De ingescande QR-code is geen WooCommerce code</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Het aanmaken van winkels via de mobiele app is momenteel niet beschikbaar in je land.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Winkel aanmaken niet beschikbaar</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Verbreek de verbinding niet</string>
-    <string name="store_creation_iap_eligibility_loading_title">We zijn klaar om je winkel aan te maken</string>
     <string name="review_reply_failure">Er is een fout opgetreden bij het versturen van de reactie.</string>
     <string name="review_reply_success">Antwoord verstuurd!</string>
     <string name="wc_reply">Antwoord</string>
