@@ -139,6 +139,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         triggerEvent(ShowResetPasswordScreen(siteAddress))
     }
 
+    fun onPasswordTutorialAborted() {
+        fetchedSiteId.value = -1
+    }
+
     fun onBackClick() {
         if (state.value == State.WebAuthorization) {
             fetchedSiteId.value = -1
