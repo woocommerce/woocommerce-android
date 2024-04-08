@@ -1059,9 +1059,7 @@ class OrderCreateEditFormFragment :
             key = OrderCreateEditSimplePaymentsMigrationBottomSheetFragment.KEY_ON_ADD_CUSTOM_AMOUNT_CLICKED_NOTICE,
             entryId = R.id.orderCreationFragment
         ) {
-            fragmentOrderCreateEditFormBinding.root.post {
-                navigateToCustomAmountsDialog()
-            }
+            navigateToCustomAmountDialogWhenViewIsCreated(fragmentOrderCreateEditFormBinding)
         }
 
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
@@ -1176,6 +1174,17 @@ class OrderCreateEditFormFragment :
             }, delay)
         } else {
             orderUpdateFailureSnackBar?.dismiss()
+        }
+    }
+
+    /**
+     * This is workaround, as in this point navigation component
+     * still didn't finish previous navigation, we have to make sure
+     * that to delay navigation to the dialog. As marker that we can navigate is the view is created
+     */
+    private fun navigateToCustomAmountDialogWhenViewIsCreated(fragmentOrderCreateEditFormBinding: FragmentOrderCreateEditFormBinding) {
+        fragmentOrderCreateEditFormBinding.root.post {
+            navigateToCustomAmountsDialog()
         }
     }
 
