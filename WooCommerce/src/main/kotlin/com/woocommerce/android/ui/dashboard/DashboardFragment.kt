@@ -163,7 +163,8 @@ class DashboardFragment :
                     onStatsError = { showErrorSnack() },
                     openDatePicker = { start, end, callback ->
                         showDateRangePicker(start, end, callback)
-                    }
+                    },
+                    parentViewModel = dashboardViewModel
                 )
             }
         }
@@ -172,8 +173,6 @@ class DashboardFragment :
             binding.myStoreRefreshLayout.isRefreshing = false
             dashboardViewModel.onPullToRefresh()
             storeOnboardingViewModel.onPullToRefresh()
-//            binding.myStoreStats.clearStatsHeaderValues()
-//            binding.myStoreStats.clearChartData()
             refreshJitm()
         }
 
