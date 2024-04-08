@@ -213,6 +213,10 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     PAYMENTS_FLOW_COMPLETED,
     PAYMENTS_FLOW_COLLECT,
     PAYMENTS_FLOW_FAILED,
+    PAYMENTS_FLOW_CANCELED,
+
+    SIMPLE_PAYMENTS_FLOW_NOTE_ADDED,
+    SIMPLE_PAYMENTS_FLOW_TAXES_TOGGLED,
 
     // -- Upsell Banner
     FEATURE_CARD_SHOWN,
@@ -227,10 +231,6 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     JITM_DISMISS_TAPPED,
     JITM_DISMISS_SUCCESS,
     JITM_DISMISS_FAILURE,
-
-    PAYMENTS_FLOW_CANCELED,
-    SIMPLE_PAYMENTS_FLOW_NOTE_ADDED,
-    SIMPLE_PAYMENTS_FLOW_TAXES_TOGGLED,
 
     // -- Order Detail
     ORDER_OPEN,
