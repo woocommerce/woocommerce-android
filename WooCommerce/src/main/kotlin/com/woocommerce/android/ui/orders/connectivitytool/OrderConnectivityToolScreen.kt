@@ -86,11 +86,11 @@ fun OrderConnectivityToolScreen(
                 .fillMaxWidth(),
         ) {
             Text(
-                text = stringResource(id = R.string.login_app_password_title),
+                text = stringResource(id = R.string.orderlist_connectivity_tool_title),
                 style = MaterialTheme.typography.h4,
                 fontWeight = FontWeight.Bold
             )
-            Text(stringResource(id = R.string.login_app_password_subtitle))
+            Text(stringResource(id = R.string.orderlist_connectivity_tool_subtitle))
         }
 
         ConnectivityCheckCard(internetConnectionCheckData)
@@ -237,21 +237,21 @@ fun ConnectivitySummary(
                 .padding(dimensionResource(id = R.dimen.major_100))
         ) {
             Text(
-                text = "No connection issues",
+                text = stringResource(id = R.string.orderlist_connectivity_tool_summary_title),
                 fontWeight = FontWeight.Bold,
                 modifier = modifier
                     .fillMaxHeight()
             )
 
             Text(
-                text = "if your data still isn't loading, contact our support team for assistance",
+                text = stringResource(id = R.string.orderlist_connectivity_tool_summary_suggestion),
                 style = MaterialTheme.typography.body2
             )
 
             WCTextButton(
                 allCaps = false,
                 onClick = { /* TODO */ },
-                text = "Return to the previous screen",
+                text = stringResource(id = R.string.orderlist_connectivity_tool_return_action),
                 icon = Icons.Default.ArrowBack,
                 contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.minor_100))
             )
