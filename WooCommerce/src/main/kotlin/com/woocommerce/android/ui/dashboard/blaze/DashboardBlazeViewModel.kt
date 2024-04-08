@@ -29,6 +29,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -77,6 +78,7 @@ class DashboardBlazeViewModel @Inject constructor(
     private val isBlazeDismissed = prefsWrapper.observePrefs()
         .onStart { emit(Unit) }
         .map { prefsWrapper.isMyStoreBlazeViewDismissed }
+        .distinctUntilChanged()
 
     val blazeViewState = combine(
         blazeCampaignState,
