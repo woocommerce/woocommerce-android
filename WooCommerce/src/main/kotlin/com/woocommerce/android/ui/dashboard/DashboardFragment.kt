@@ -171,9 +171,10 @@ class DashboardFragment :
             setContent {
                 WooThemeWithBackground {
                     DashboardBlazeCard(
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
                         updateContainerVisibility = { isVisible ->
                             binding.blazeCampaignView.isVisible = isVisible
-                        },
+                        }
                     )
                 }
             }
@@ -205,42 +206,8 @@ class DashboardFragment :
 
         setupStateObservers()
         setupOnboardingView()
-        setUpBlazeCampaignView()
 
         initJitm(savedInstanceState)
-    }
-
-    private fun setUpBlazeCampaignView() {
-//        dashboardBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
-//            when (event) {
-//                is DashboardBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
-//
-//                is DashboardBlazeViewModel.ShowAllCampaigns -> {
-//                    findNavController().navigateSafely(
-//                        DashboardFragmentDirections.actionDashboardToBlazeCampaignListFragment()
-//                    )
-//                }
-//
-//                is DashboardBlazeViewModel.ShowCampaignDetails -> {
-//                    findNavController().navigateSafely(
-//                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-//                            urlToLoad = event.url,
-//                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
-//                            title = getString(R.string.blaze_campaign_details_title)
-//                        )
-//                    )
-//                }
-//            }
-//        }
-    }
-
-    private fun openBlazeCreationFlow(productId: Long?) {
-        lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(
-                source = BlazeFlowSource.MY_STORE_SECTION,
-                productId = productId
-            )
-        }
     }
 
     @Suppress("LongMethod")
