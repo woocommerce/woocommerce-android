@@ -106,6 +106,17 @@ class OrderConnectivityToolViewModel @Inject constructor(
         triggerEvent(OpenSupportRequest)
     }
 
+    private fun handleRetryConnectionClick(step: ConnectivityCheckStep) {
+        when (step) {
+            InternetCheck -> internetCheckFlow.update { InternetConnectivityCheckData() }
+            WordPressCheck -> wordpressCheckFlow.update { WordPressConnectivityCheckData() }
+            StoreCheck -> storeCheckFlow.update { StoreConnectivityCheckData() }
+            StoreOrdersCheck -> ordersCheckFlow.update { StoreOrdersConnectivityCheckData() }
+            Finished -> { /* No-op */ }
+        }
+        stateMachine.update { step }
+    }
+
     private fun handleReadMoreClick(failureType: FailureType) {
         analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_READ_MORE_TAPPED)
         when (failureType) {
@@ -139,9 +150,11 @@ class OrderConnectivityToolViewModel @Inject constructor(
             status.startNextCheck()
             storeCheckFlow.update {
                 if (status is Failure) {
-                    it.copy(connectivityCheckStatus = status, readMoreAction = {
-                        handleReadMoreClick(status.error ?: FailureType.GENERIC)
-                    })
+                    it.copy(
+                        connectivityCheckStatus = status,
+                        readMoreAction = { handleReadMoreClick(status.error ?: FailureType.GENERIC) },
+                        retryConnectionAction = { handleRetryConnectionClick(StoreCheck) }
+                    )
                 } else {
                     it.copy(connectivityCheckStatus = status)
                 }
@@ -156,9 +169,11 @@ class OrderConnectivityToolViewModel @Inject constructor(
             status.startNextCheck()
             ordersCheckFlow.update {
                 if (status is Failure) {
-                    it.copy(connectivityCheckStatus = status, readMoreAction = {
-                        handleReadMoreClick(status.error ?: FailureType.GENERIC)
-                    })
+                    it.copy(
+                        connectivityCheckStatus = status,
+                        readMoreAction = { handleReadMoreClick(status.error ?: FailureType.GENERIC) },
+                        retryConnectionAction = { handleRetryConnectionClick(StoreOrdersCheck) }
+                    )
                 } else {
                     it.copy(connectivityCheckStatus = status)
                 }

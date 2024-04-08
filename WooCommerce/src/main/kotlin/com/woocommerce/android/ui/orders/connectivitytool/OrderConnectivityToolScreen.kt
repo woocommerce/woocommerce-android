@@ -181,7 +181,7 @@ fun ConnectivityCheckCard(
                     )
 
                     OutlinedButton(
-                        onClick = { /*TODO*/ },
+                        onClick = onRetryConnectionClicked,
                         modifier = modifier.fillMaxWidth()
                     ) {
                         Text(stringResource(id = R.string.orderlist_connectivity_tool_retry_action))
