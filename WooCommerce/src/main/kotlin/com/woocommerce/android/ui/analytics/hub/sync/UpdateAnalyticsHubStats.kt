@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.BundleStat
+import com.woocommerce.android.model.DeltaPercentage
+import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -13,6 +15,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -41,6 +44,9 @@ class UpdateAnalyticsHubStats @Inject constructor(
     private val _bundlesState = MutableStateFlow(BundlesState.Available(BundleStat.EMPTY) as BundlesState)
     val bundlesState: Flow<BundlesState> = _bundlesState
 
+    private val _giftCardsState = MutableStateFlow(GiftCardsState.Available(GiftCardsStat.EMPTY) as GiftCardsState)
+    val giftCardsState: Flow<GiftCardsState> = _giftCardsState
+
     private val fullStatsRequestState by lazy { combineFullUpdateState() }
 
     suspend operator fun invoke(
@@ -56,6 +62,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Products -> _productsState.update { ProductsState.Loading }
                 AnalyticsCards.Session -> visitorsCountState.update { VisitorsState.Loading }
                 AnalyticsCards.Bundles -> _bundlesState.update { BundlesState.Loading }
+                AnalyticsCards.GiftCards -> _giftCardsState.update { GiftCardsState.Loading }
             }
         }
 
@@ -79,6 +86,7 @@ class UpdateAnalyticsHubStats @Inject constructor(
                 AnalyticsCards.Products -> scope.fetchProductsDataAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Session -> scope.fetchVisitorsCountAsync(rangeSelection, fetchStrategy)
                 AnalyticsCards.Bundles -> scope.fetchBundlesDataAsync(rangeSelection)
+                AnalyticsCards.GiftCards -> scope.fetchGiftCardDataAsync(rangeSelection)
             }
         }
 
@@ -119,6 +127,11 @@ class UpdateAnalyticsHubStats @Inject constructor(
                     rangeSelection,
                     AnalyticsUpdateDataStore.AnalyticData.BUNDLES
                 )
+
+                AnalyticsCards.GiftCards -> analyticsUpdateDataStore.storeLastAnalyticsUpdate(
+                    rangeSelection,
+                    AnalyticsUpdateDataStore.AnalyticData.GIFT_CARDS
+                )
             }
         }
     }
@@ -141,15 +154,23 @@ class UpdateAnalyticsHubStats @Inject constructor(
             ?: action(FetchStrategy.ForceNew)
     }
 
+    @Suppress("MagicNumber")
     private fun combineFullUpdateState() =
         combine(
             _revenueState,
             _productsState,
             _ordersState,
             sessionState,
-            _bundlesState
-        ) { revenue, products, orders, session, bundles ->
-            revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle && bundles.isIdle
+            _bundlesState,
+            _giftCardsState
+        ) { flows ->
+            val revenue = flows[0] as RevenueState
+            val products = flows[1] as ProductsState
+            val orders = flows[2] as OrdersState
+            val session = flows[3] as SessionState
+            val bundles = flows[4] as BundlesState
+            val giftCard = flows[5] as GiftCardsState
+            revenue.isIdle && products.isIdle && orders.isIdle && session.isIdle && bundles.isIdle && giftCard.isIdle
         }.map { if (it) Finished else Loading }
 
     private fun combineSessionDataChanges() =
@@ -210,5 +231,40 @@ class UpdateAnalyticsHubStats @Inject constructor(
             .run { this as? AnalyticsRepository.BundlesResult.BundlesData }
             ?.let { _bundlesState.value = BundlesState.Available(it.bundleStat) }
             ?: _bundlesState.update { BundlesState.Error }
+    }
+
+    @Suppress("MagicNumber")
+    private fun CoroutineScope.fetchGiftCardDataAsync(
+        rangeSelection: StatsTimeRangeSelection
+    ) = async {
+        delay(4000)
+        rangeSelection.currentRange
+        _giftCardsState.update {
+            GiftCardsState.Available(
+                GiftCardsStat(
+                    usedValue = 45,
+                    usedDelta = DeltaPercentage.Value(34),
+                    netValue = 345.45,
+                    netDelta = DeltaPercentage.Value(57),
+                    currencyCode = null,
+                    usedByInterval = listOf(5, 0, 0, 4, 4, 2, 10, 5, 3, 3, 3, 1, 5),
+                    netRevenueByInterval = listOf(
+                        80.45,
+                        0.0,
+                        0.0,
+                        20.0,
+                        60.0,
+                        10.0,
+                        30.0,
+                        10.0,
+                        10.0,
+                        10.0,
+                        10.0,
+                        5.0,
+                        100.0
+                    )
+                )
+            )
+        }
     }
 }
