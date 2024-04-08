@@ -892,12 +892,7 @@ class OrderListViewModel @Inject constructor(
         val isFilteringActive = filterCount > 0
     }
 
-    @Parcelize
-    sealed class Mode : Parcelable {
-        @Parcelize
-        data class StartOrderCreation(val indicateSimplePaymentsMigration: Boolean = false) : Mode()
-
-        @Parcelize
-        data object Standard : Mode()
+    enum class Mode {
+        STANDARD, START_ORDER_CREATION_WITH_SIMPLE_PAYMENTS_MIGRATION
     }
 }
