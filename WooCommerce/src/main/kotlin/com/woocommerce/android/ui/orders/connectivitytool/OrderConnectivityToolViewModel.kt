@@ -236,7 +236,13 @@ class OrderConnectivityToolViewModel @Inject constructor(
         val wordPressCheckData: WordPressConnectivityCheckData,
         val storeCheckData: StoreConnectivityCheckData,
         val ordersCheckData: StoreOrdersConnectivityCheckData
-    )
+    ) {
+        val shouldDisplaySummary: Boolean
+            get() = internetCheckData.connectivityCheckStatus is Success &&
+                wordPressCheckData.connectivityCheckStatus is Success &&
+                storeCheckData.connectivityCheckStatus is Success &&
+                ordersCheckData.connectivityCheckStatus is Success
+    }
 
     enum class ConnectivityCheckStep {
         InternetCheck,

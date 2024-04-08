@@ -55,7 +55,8 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
     val viewState by viewModel.viewState.observeAsState()
 
     OrderConnectivityToolScreen(
-        isConnectionCheckFinished = isCheckFinished ?: false,
+        shouldEnableContactSupportButton = isCheckFinished ?: false,
+        shouldDisplaySummarySection = viewState?.shouldDisplaySummary ?: false,
         internetConnectionCheckData = viewState?.internetCheckData,
         wordpressConnectionCheckData = viewState?.wordPressCheckData,
         storeConnectionCheckData = viewState?.storeCheckData,
@@ -66,7 +67,8 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
 
 @Composable
 fun OrderConnectivityToolScreen(
-    isConnectionCheckFinished: Boolean,
+    shouldEnableContactSupportButton: Boolean,
+    shouldDisplaySummarySection: Boolean,
     internetConnectionCheckData: InternetConnectivityCheckData?,
     wordpressConnectionCheckData: WordPressConnectivityCheckData?,
     storeConnectionCheckData: StoreConnectivityCheckData?,
@@ -99,16 +101,16 @@ fun OrderConnectivityToolScreen(
         ConnectivityCheckCard(storeOrdersCheckData)
 
         ConnectivitySummary(
-            isConnectionCheckFinished = isConnectionCheckFinished,
+            shouldDisplaySummarySection = shouldDisplaySummarySection,
             modifier = modifier
         )
 
         Spacer(modifier = modifier.weight(1f))
         WCOutlinedButton(
-            enabled = isConnectionCheckFinished,
+            enabled = shouldEnableContactSupportButton,
             onClick = { onContactSupportClicked() },
             modifier = modifier
-                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .padding(dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth()
         ) {
             Text(stringResource(id = R.string.orderlist_connectivity_tool_contact_support_action))
@@ -151,7 +153,7 @@ fun ConnectivityCheckCard(
     shouldDisplayReadMoreButton: Boolean = false
 ) {
     Column(
-        modifier = modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_75)))
+        modifier = modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_100)))
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -228,10 +230,10 @@ fun ConnectivityCheckCard(
 
 @Composable
 fun ConnectivitySummary(
-    isConnectionCheckFinished: Boolean,
+    shouldDisplaySummarySection: Boolean,
     modifier: Modifier = Modifier
 ) {
-    if (isConnectionCheckFinished) {
+    if (shouldDisplaySummarySection) {
         Column(
             modifier = modifier
                 .padding(dimensionResource(id = R.dimen.major_100))
@@ -278,7 +280,8 @@ fun ResultIcon(
 fun OrderConnectivityToolScreenPreview() {
     WooThemeWithBackground {
         OrderConnectivityToolScreen(
-            isConnectionCheckFinished = true,
+            shouldEnableContactSupportButton = true,
+            shouldDisplaySummarySection = true,
             internetConnectionCheckData = InternetConnectivityCheckData(
                 connectivityCheckStatus = NotStarted
             ),
