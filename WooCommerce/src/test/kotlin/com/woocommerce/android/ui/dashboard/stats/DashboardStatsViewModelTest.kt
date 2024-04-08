@@ -5,7 +5,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
@@ -66,7 +65,6 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private val timezoneProvider: TimezoneProvider = mock()
     private val observeLastUpdate: ObserveLastUpdate = mock {
         onBlocking { invoke(any(), ArgumentMatchers.anyList()) } doReturn flowOf(DEFAULT_LAST_UPDATE)
-        onBlocking { invoke(any(), any<AnalyticData>()) } doReturn flowOf(DEFAULT_LAST_UPDATE)
     }
     private val dateUtils: DateUtils = mock()
     private val parentViewModel: DashboardViewModel = mock {
