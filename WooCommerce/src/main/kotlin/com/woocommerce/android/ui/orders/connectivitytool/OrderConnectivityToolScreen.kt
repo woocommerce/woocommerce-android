@@ -177,6 +177,14 @@ fun ConnectivityCheckCard(
                         text = stringResource(id = checkStatus.error?.message ?: suggestion),
                         color = colorResource(id = R.color.woo_red_50)
                     )
+
+                    OutlinedButton(
+                        onClick = { /*TODO*/ },
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(id = R.string.orderlist_connectivity_tool_retry_action))
+                    }
+
                     if (shouldDisplayReadMoreButton) {
                         OutlinedButton(
                             onClick = onReadMoreClicked,
