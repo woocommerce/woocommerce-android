@@ -54,25 +54,33 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     private val internetCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = InternetConnectivityCheckData()
+        initialValue = InternetConnectivityCheckData(
+            retryConnectionAction = { handleRetryConnectionClick(InternetCheck) }
+        )
     )
     val internetCheckData = internetCheckFlow.asLiveData()
 
     private val wordpressCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = WordPressConnectivityCheckData()
+        initialValue = WordPressConnectivityCheckData(
+            retryConnectionAction = { handleRetryConnectionClick(WordPressCheck) }
+        )
     )
     val wordpressCheckData = wordpressCheckFlow.asLiveData()
 
     private val storeCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = StoreConnectivityCheckData()
+        initialValue = StoreConnectivityCheckData(
+            retryConnectionAction = { handleRetryConnectionClick(StoreCheck) }
+        )
     )
     val storeCheckData = storeCheckFlow.asLiveData()
 
     private val ordersCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = StoreOrdersConnectivityCheckData()
+        initialValue = StoreOrdersConnectivityCheckData(
+            retryConnectionAction = { handleRetryConnectionClick(StoreOrdersCheck) }
+        )
     )
     val storeOrdersCheckData = ordersCheckFlow.asLiveData()
 
@@ -152,8 +160,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
                 if (status is Failure) {
                     it.copy(
                         connectivityCheckStatus = status,
-                        readMoreAction = { handleReadMoreClick(status.error ?: FailureType.GENERIC) },
-                        retryConnectionAction = { handleRetryConnectionClick(StoreCheck) }
+                        readMoreAction = { handleReadMoreClick(status.error ?: FailureType.GENERIC) }
                     )
                 } else {
                     it.copy(connectivityCheckStatus = status)
@@ -171,8 +178,7 @@ class OrderConnectivityToolViewModel @Inject constructor(
                 if (status is Failure) {
                     it.copy(
                         connectivityCheckStatus = status,
-                        readMoreAction = { handleReadMoreClick(status.error ?: FailureType.GENERIC) },
-                        retryConnectionAction = { handleRetryConnectionClick(StoreOrdersCheck) }
+                        readMoreAction = { handleReadMoreClick(status.error ?: FailureType.GENERIC) }
                     )
                 } else {
                     it.copy(connectivityCheckStatus = status)

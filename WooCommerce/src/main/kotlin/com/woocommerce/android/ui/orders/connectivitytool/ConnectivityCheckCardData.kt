@@ -27,7 +27,8 @@ sealed class ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_internet_check_title,
         suggestion = R.string.orderlist_connectivity_tool_internet_check_suggestion,
         icon = R.drawable.ic_wifi,
-        connectivityCheckStatus = connectivityCheckStatus
+        connectivityCheckStatus = connectivityCheckStatus,
+        retryConnectionAction = retryConnectionAction
     )
 
     @Parcelize
@@ -38,7 +39,8 @@ sealed class ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_wordpress_check_title,
         suggestion = R.string.orderlist_connectivity_tool_wordpress_check_suggestion,
         icon = R.drawable.ic_storage,
-        connectivityCheckStatus = connectivityCheckStatus
+        connectivityCheckStatus = connectivityCheckStatus,
+        retryConnectionAction = retryConnectionAction
     )
 
     @Parcelize
@@ -51,6 +53,7 @@ sealed class ConnectivityCheckCardData(
         suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
         icon = R.drawable.ic_more_menu_store,
         connectivityCheckStatus = connectivityCheckStatus,
+        retryConnectionAction = retryConnectionAction,
         readMoreAction = readMoreAction
     )
 
@@ -64,6 +67,7 @@ sealed class ConnectivityCheckCardData(
         suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
         icon = R.drawable.ic_clipboard,
         connectivityCheckStatus = connectivityCheckStatus,
+        retryConnectionAction = retryConnectionAction,
         readMoreAction = readMoreAction
     )
 }
