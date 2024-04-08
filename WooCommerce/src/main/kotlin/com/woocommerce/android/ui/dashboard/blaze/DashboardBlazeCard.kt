@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.blaze
+package com.woocommerce.android.ui.dashboard.blaze
 
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,15 +33,21 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
+import com.woocommerce.android.R.dimen
+import com.woocommerce.android.R.string
+import com.woocommerce.android.ui.blaze.BlazeCampaignStat
+import com.woocommerce.android.ui.blaze.BlazeCampaignUi
+import com.woocommerce.android.ui.blaze.BlazeProductUi
+import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignItem
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
 
 @Composable
-fun MyStoreBlazeView(
-    state: MyStoreBlazeCampaignState,
+fun DashboardBlazeView(
+    state: DashboardBlazeCampaignState,
     onDismissBlazeView: () -> Unit,
 ) {
     Card(
@@ -61,13 +67,13 @@ fun MyStoreBlazeView(
                 ) {
                     BlazeCampaignHeader()
                     when (state) {
-                        is MyStoreBlazeCampaignState.Campaign -> BlazeCampaignItem(
+                        is DashboardBlazeCampaignState.Campaign -> BlazeCampaignItem(
                             campaign = state.campaign,
                             onCampaignClicked = state.onCampaignClicked,
                             modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                         )
 
-                        is MyStoreBlazeCampaignState.NoCampaign -> {
+                        is DashboardBlazeCampaignState.NoCampaign -> {
                             Text(
                                 modifier = Modifier.padding(
                                     top = dimensionResource(id = R.dimen.major_100),
@@ -79,7 +85,7 @@ fun MyStoreBlazeView(
                             BlazeProductItem(
                                 product = state.product,
                                 onProductSelected = state.onProductClicked,
-                                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                                modifier = Modifier.padding(top = dimensionResource(id = dimen.major_100))
                             )
                         }
 
@@ -87,14 +93,14 @@ fun MyStoreBlazeView(
                     }
                 }
                 when (state) {
-                    is MyStoreBlazeCampaignState.Campaign -> ShowAllOrCreateCampaignFooter(
+                    is DashboardBlazeCampaignState.Campaign -> ShowAllOrCreateCampaignFooter(
                         onShowAllClicked = state.onViewAllCampaignsClicked,
                         onCreateCampaignClicked = state.onCreateCampaignClicked
                     )
 
-                    is MyStoreBlazeCampaignState.NoCampaign -> CreateCampaignFooter(
+                    is DashboardBlazeCampaignState.NoCampaign -> CreateCampaignFooter(
                         onCreateCampaignClicked = state.onCreateCampaignClicked,
-                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                        modifier = Modifier.padding(top = dimensionResource(id = dimen.major_100))
                     )
 
                     else -> error("Invalid state")
@@ -216,22 +222,22 @@ fun MyStoreBlazeViewCampaignPreview() {
         name = "Product name",
         imgUrl = "",
     )
-    MyStoreBlazeView(
-        state = MyStoreBlazeCampaignState.Campaign(
+    DashboardBlazeView(
+        state = DashboardBlazeCampaignState.Campaign(
             campaign = BlazeCampaignUi(
                 product = product,
-                status = CampaignStatusUi.Active,
+                status = Active,
                 stats = listOf(
                     BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_impressions,
+                        name = string.blaze_campaign_status_impressions,
                         value = 100.toString()
                     ),
                     BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_clicks,
+                        name = string.blaze_campaign_status_clicks,
                         value = 10.toString()
                     ),
                     BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_budget,
+                        name = string.blaze_campaign_status_budget,
                         value = 1000.toString()
                     ),
                 ),
@@ -252,8 +258,8 @@ fun MyStoreBlazeViewCampaignPreview() {
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 fun MyStoreBlazeViewNoCampaignPreview() {
-    MyStoreBlazeView(
-        state = MyStoreBlazeCampaignState.NoCampaign(
+    DashboardBlazeView(
+        state = DashboardBlazeCampaignState.NoCampaign(
             product = BlazeProductUi(
                 name = "Product name",
                 imgUrl = "",

@@ -39,9 +39,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.MyStoreBlazeView
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
@@ -49,6 +46,9 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeView
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
@@ -92,7 +92,7 @@ class DashboardFragment :
 
     private val dashboardViewModel: DashboardViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
+    private val dashboardBlazeViewModel: DashboardBlazeViewModel by viewModels()
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -200,16 +200,16 @@ class DashboardFragment :
     }
 
     private fun setUpBlazeCampaignView() {
-        myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) {
+        dashboardBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
+            if (blazeCampaignState is DashboardBlazeCampaignState.Hidden) {
                 binding.blazeCampaignView.hide()
             } else {
                 binding.blazeCampaignView.apply {
                     setContent {
                         WooThemeWithBackground {
-                            MyStoreBlazeView(
+                            DashboardBlazeView(
                                 state = blazeCampaignState,
-                                onDismissBlazeView = myStoreBlazeViewModel::onBlazeViewDismissed,
+                                onDismissBlazeView = dashboardBlazeViewModel::onBlazeViewDismissed,
                             )
                         }
                     }
@@ -217,17 +217,17 @@ class DashboardFragment :
                 }
             }
         }
-        myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
+        dashboardBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
+                is DashboardBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
 
-                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
+                is DashboardBlazeViewModel.ShowAllCampaigns -> {
                     findNavController().navigateSafely(
                         DashboardFragmentDirections.actionDashboardToBlazeCampaignListFragment()
                     )
                 }
 
-                is MyStoreBlazeViewModel.ShowCampaignDetails -> {
+                is DashboardBlazeViewModel.ShowCampaignDetails -> {
                     findNavController().navigateSafely(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                             urlToLoad = event.url,
