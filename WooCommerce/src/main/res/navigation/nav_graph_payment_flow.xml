@@ -154,7 +154,9 @@
             app:popExitAnim="@anim/activity_fade_out" />
         <action
             android:id="@+id/action_cardReaderHubFragment_to_orderListFragment"
-            app:destination="@+id/orders">
+            app:destination="@+id/orders"
+            app:popUpTo="@+id/moreMenu"
+            app:popUpToInclusive="true">
             <argument
                 android:name="mode"
                 app:argType="com.woocommerce.android.ui.orders.list.OrderListViewModel$Mode"/>
