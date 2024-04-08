@@ -41,8 +41,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
-import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
@@ -58,7 +56,6 @@ import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import kotlinx.coroutines.launch
 
 @Composable
@@ -90,7 +87,7 @@ fun DashboardBlazeCard(
 
 @Composable
 private fun HandleEvents(
-    event: LiveData<Event>,
+    event: LiveData<MultiLiveEvent.Event>,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 ) {
     val navController = rememberNavController()
@@ -174,7 +171,7 @@ fun DashboardBlazeView(
                             BlazeProductItem(
                                 product = state.product,
                                 onProductSelected = state.onProductClicked,
-                                modifier = Modifier.padding(top = dimensionResource(id = dimen.major_100))
+                                modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                             )
                         }
 
@@ -189,7 +186,7 @@ fun DashboardBlazeView(
 
                     is DashboardBlazeCampaignState.NoCampaign -> CreateCampaignFooter(
                         onCreateCampaignClicked = state.onCreateCampaignClicked,
-                        modifier = Modifier.padding(top = dimensionResource(id = dimen.major_100))
+                        modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                     )
 
                     else -> error("Invalid state")
@@ -318,15 +315,15 @@ fun MyStoreBlazeViewCampaignPreview() {
                 status = Active,
                 stats = listOf(
                     BlazeCampaignStat(
-                        name = string.blaze_campaign_status_impressions,
+                        name = R.string.blaze_campaign_status_impressions,
                         value = 100.toString()
                     ),
                     BlazeCampaignStat(
-                        name = string.blaze_campaign_status_clicks,
+                        name = R.string.blaze_campaign_status_clicks,
                         value = 10.toString()
                     ),
                     BlazeCampaignStat(
-                        name = string.blaze_campaign_status_budget,
+                        name = R.string.blaze_campaign_status_budget,
                         value = 1000.toString()
                     ),
                 ),
