@@ -5,25 +5,20 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowOutward
@@ -33,12 +28,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -86,7 +81,6 @@ fun OrderConnectivityToolScreen(
             .background(colorResource(id = R.color.color_surface))
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
-            .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         ConnectivityCheckCard(internetConnectionCheckData)
         ConnectivityCheckCard(wordpressConnectionCheckData)
@@ -96,7 +90,9 @@ fun OrderConnectivityToolScreen(
         WCOutlinedButton(
             enabled = isContactSupportButtonEnabled,
             onClick = { onContactSupportClicked() },
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .fillMaxWidth()
         ) {
             Text(stringResource(id = R.string.orderlist_connectivity_tool_contact_support_action))
         }
@@ -110,16 +106,19 @@ fun ConnectivityCheckCard(
     cardData
         ?.takeUnless { it.connectivityCheckStatus is NotStarted }
         ?.let {
-        ConnectivityCheckCard(
-            checkTitle = it.title,
-            iconDrawable = it.icon,
-            suggestion = it.suggestion,
-            checkStatus = it.connectivityCheckStatus,
-            onReadMoreClicked = it.readMoreAction ?: {},
-            onRetryConnectionClicked = it.retryConnectionAction ?: {},
-            shouldDisplayReadMoreButton = it.readMoreAction != null
-        )
-    }
+            ConnectivityCheckCard(
+                checkTitle = it.title,
+                iconDrawable = it.icon,
+                suggestion = it.suggestion,
+                checkStatus = it.connectivityCheckStatus,
+                onReadMoreClicked = it.readMoreAction ?: {},
+                onRetryConnectionClicked = it.retryConnectionAction ?: {},
+                shouldDisplayReadMoreButton = it.readMoreAction != null
+            )
+            Divider(modifier = Modifier
+                .padding(start = dimensionResource(id = R.dimen.major_100))
+            )
+        }
 }
 
 @Composable
@@ -139,24 +138,26 @@ fun ConnectivityCheckCard(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = modifier.size(dimensionResource(id = R.dimen.major_250))
-            ) {
-                Image(
-                    painter = painterResource(id = iconDrawable),
-                    contentDescription = stringResource(id = checkTitle),
-                    modifier = modifier
-                        .size(dimensionResource(id = R.dimen.major_125))
-                        .align(Alignment.CenterStart)
-                )
-            }
+            Image(
+                colorFilter = ColorFilter.tint(colorResource(id = R.color.woo_black)),
+                painter = painterResource(id = iconDrawable),
+                contentDescription = stringResource(id = checkTitle),
+                modifier = modifier
+                    .size(dimensionResource(id = R.dimen.major_100))
+            )
 
-            Text(text = stringResource(id = checkTitle))
+            Text(
+                text = stringResource(id = checkTitle),
+                fontWeight = FontWeight.Bold,
+                modifier = modifier
+                    .padding(start = dimensionResource(id = R.dimen.minor_100))
+                    .fillMaxHeight()
+            )
 
             Spacer(modifier = modifier.weight(1f))
             when (checkStatus) {
                 is InProgress -> CircularProgressIndicator(
-                    modifier = modifier.size(dimensionResource(id = R.dimen.major_200))
+                    modifier = modifier.size(dimensionResource(id = R.dimen.major_150))
                 )
                 is Success -> ResultIcon(
                     icon = R.drawable.ic_rounded_chcekbox_checked,
@@ -204,8 +205,6 @@ fun ConnectivityCheckCard(
                 }
             }
         }
-
-        Divider()
     }
 }
 
