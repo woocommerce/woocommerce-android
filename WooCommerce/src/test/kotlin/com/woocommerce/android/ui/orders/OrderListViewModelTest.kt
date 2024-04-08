@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
@@ -30,6 +29,7 @@ import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptor
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
 import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
+import com.woocommerce.android.ui.orders.list.OrderListFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -98,7 +98,6 @@ class OrderListViewModelTest : BaseUnitTest() {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
         on { getString(any(), any()) } doAnswer { it.arguments[0].toString() + it.arguments[1].toString() }
     }
-    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
     private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
@@ -142,8 +141,8 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel = createViewModel()
     }
 
-    private fun createViewModel() = OrderListViewModel(
-        savedState = savedStateHandle,
+    private fun createViewModel(mode: OrderListViewModel.Mode = OrderListViewModel.Mode.STANDARD) = OrderListViewModel(
+        savedState = OrderListFragmentArgs(mode = mode).toSavedStateHandle(),
         dispatchers = coroutinesTestRule.testDispatchers,
         orderListRepository = orderListRepository,
         orderDetailRepository = orderDetailRepository,
@@ -655,6 +654,32 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertThat(shouldDisplayTroubleshootingBanner).isTrue
     }
 
+    @Test
+    fun `given start order creation mode, when view model created, then OpenOrderCreationWithSimplePaymentsMigration emitted`() =
+        testBlocking {
+            // GIVEN
+            val mode = OrderListViewModel.Mode.START_ORDER_CREATION_WITH_SIMPLE_PAYMENTS_MIGRATION
+
+            // WHEN
+            viewModel = createViewModel(mode = mode)
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(OrderListEvent.OpenOrderCreationWithSimplePaymentsMigration)
+        }
+
+    @Test
+    fun `given standard mode, when view model created, then OpenOrderCreationWithSimplePaymentsMigration is not emitted`() =
+        testBlocking {
+            // GIVEN
+            val mode = OrderListViewModel.Mode.STANDARD
+
+            // WHEN
+            viewModel = createViewModel(mode = mode)
+
+            // THEN
+            assertThat(viewModel.event.value).isNull()
+        }
+
     // region barcode scanner
 
     @Test
@@ -919,7 +944,6 @@ class OrderListViewModelTest : BaseUnitTest() {
 
         assertThat(event).isInstanceOf(ShowErrorSnack::class.java)
     }
-
     //endregion
 
     private companion object {
