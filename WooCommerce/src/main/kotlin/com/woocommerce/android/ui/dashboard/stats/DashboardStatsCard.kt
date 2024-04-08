@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard.stats
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -10,6 +11,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
@@ -23,7 +25,7 @@ import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitte
 import com.woocommerce.android.ui.dashboard.JetpackBenefitsBannerUiModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -194,14 +196,14 @@ fun DashboardStatsCard(
 
 @Composable
 private fun HandleEvents(
-    event: LiveData<Event>,
+    event: LiveData<MultiLiveEvent.Event>,
     openDatePicker: (Long, Long) -> Unit,
 ) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(event, navController, lifecycleOwner) {
-        event.observe(lifecycleOwner) { event ->
+    DisposableEffect(event, navController, lifecycleOwner) {
+        val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
                 is DashboardStatsViewModel.OpenDatePicker -> {
                     openDatePicker(event.fromDate.time, event.toDate.time)
@@ -213,6 +215,12 @@ private fun HandleEvents(
                     )
                 }
             }
+        }
+
+        event.observe(lifecycleOwner, observer)
+
+        onDispose {
+            event.removeObserver(observer)
         }
     }
 }
