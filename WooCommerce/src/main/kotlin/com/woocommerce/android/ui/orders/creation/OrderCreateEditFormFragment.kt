@@ -1059,7 +1059,7 @@ class OrderCreateEditFormFragment :
             key = OrderCreateEditSimplePaymentsMigrationBottomSheetFragment.KEY_ON_ADD_CUSTOM_AMOUNT_CLICKED_NOTICE,
             entryId = R.id.orderCreationFragment
         ) {
-            navigateToCustomAmountDialogWhenViewIsCreated(fragmentOrderCreateEditFormBinding)
+            navigateToCustomAmountDialogWhenViewIsCreated(fragmentOrderCreateEditFormBinding.root)
         }
 
         handleResult<Collection<SelectedItem>>(ProductSelectorFragment.PRODUCT_SELECTOR_RESULT) {
@@ -1182,10 +1182,8 @@ class OrderCreateEditFormFragment :
      * still didn't finish previous navigation, we have to make sure
      * that to delay navigation to the dialog. As marker that we can navigate is the view is created
      */
-    private fun navigateToCustomAmountDialogWhenViewIsCreated(fragmentOrderCreateEditFormBinding: FragmentOrderCreateEditFormBinding) {
-        fragmentOrderCreateEditFormBinding.root.post {
-            navigateToCustomAmountsDialog()
-        }
+    private fun navigateToCustomAmountDialogWhenViewIsCreated(root: View) {
+        root.post { navigateToCustomAmountsDialog() }
     }
 
     private fun hideProgressDialog() {
