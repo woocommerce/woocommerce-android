@@ -9,13 +9,15 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 typealias OnReadMoreClicked = () -> Unit
+typealias OnRetryConnection = () -> Unit
 
 sealed class ConnectivityCheckCardData(
     @StringRes val title: Int,
     @StringRes val suggestion: Int,
     @DrawableRes val icon: Int,
     open val connectivityCheckStatus: ConnectivityCheckStatus,
-    @IgnoredOnParcel open val readMoreAction: OnReadMoreClicked? = null
+    @IgnoredOnParcel open val readMoreAction: OnReadMoreClicked? = null,
+    @IgnoredOnParcel open val retryConnectionAction: OnRetryConnection? = null
 ) {
     @Parcelize
     data class InternetConnectivityCheckData(

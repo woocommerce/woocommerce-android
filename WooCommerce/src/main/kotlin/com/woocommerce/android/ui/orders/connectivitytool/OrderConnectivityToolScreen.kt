@@ -106,6 +106,7 @@ fun ConnectivityCheckCard(
             suggestion = it.suggestion,
             checkStatus = it.connectivityCheckStatus,
             onReadMoreClicked = it.readMoreAction ?: {},
+            onRetryConnectionClicked = it.retryConnectionAction ?: {},
             shouldDisplayReadMoreButton = it.readMoreAction != null
         )
     }
@@ -119,6 +120,7 @@ fun ConnectivityCheckCard(
     @StringRes suggestion: Int,
     checkStatus: ConnectivityCheckStatus,
     onReadMoreClicked: () -> Unit,
+    onRetryConnectionClicked: () -> Unit,
     shouldDisplayReadMoreButton: Boolean = false
 ) {
     Card(
