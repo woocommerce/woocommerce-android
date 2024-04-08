@@ -116,10 +116,10 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     private fun handleRetryConnectionClick(step: ConnectivityCheckStep) {
         when (step) {
-            InternetCheck -> internetCheckFlow.update { InternetConnectivityCheckData() }
-            WordPressCheck -> wordpressCheckFlow.update { WordPressConnectivityCheckData() }
-            StoreCheck -> storeCheckFlow.update { StoreConnectivityCheckData() }
-            StoreOrdersCheck -> ordersCheckFlow.update { StoreOrdersConnectivityCheckData() }
+            InternetCheck -> internetCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
+            WordPressCheck -> wordpressCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
+            StoreCheck -> storeCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
+            StoreOrdersCheck -> ordersCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
             Finished -> { /* No-op */ }
         }
         stateMachine.update { step }
