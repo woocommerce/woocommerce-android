@@ -5,7 +5,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -136,8 +135,9 @@ fun ConnectivityCheckCard(
                 onRetryConnectionClicked = it.retryConnectionAction ?: {},
                 shouldDisplayReadMoreButton = it.readMoreAction != null
             )
-            Divider(modifier = Modifier
-                .padding(start = dimensionResource(id = R.dimen.major_100))
+            Divider(
+                modifier = Modifier
+                    .padding(start = dimensionResource(id = R.dimen.major_100))
             )
         }
 }
