@@ -21,6 +21,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,6 +46,27 @@ import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
+
+@Composable
+fun DashboardBlazeCard(
+    // This is a temporary solution until we introduce a dynamic container where we will communicate the event
+    // to the parent ViewModel directly
+    updateContainerVisibility: (Boolean) -> Unit,
+    viewModel: DashboardBlazeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
+    viewModel.blazeViewState.observeAsState().value?.let { state ->
+        LaunchedEffect(state) {
+            updateContainerVisibility(state != DashboardBlazeCampaignState.Hidden)
+        }
+
+        if (state != DashboardBlazeCampaignState.Hidden) {
+            DashboardBlazeView(
+                state = state,
+                onDismissBlazeView = viewModel::onBlazeViewDismissed
+            )
+        }
+    }
+}
 
 @Composable
 fun DashboardBlazeView(

@@ -46,9 +46,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
-import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeView
-import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel
-import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
@@ -92,7 +90,6 @@ class DashboardFragment :
 
     private val dashboardViewModel: DashboardViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val dashboardBlazeViewModel: DashboardBlazeViewModel by viewModels()
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -168,6 +165,20 @@ class DashboardFragment :
             }
         }
 
+        binding.blazeCampaignView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                WooThemeWithBackground {
+                    DashboardBlazeCard(
+                        updateContainerVisibility = { isVisible ->
+                            binding.blazeCampaignView.isVisible = isVisible
+                        },
+                    )
+                }
+            }
+        }
+
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
             dashboardViewModel.onPullToRefresh()
@@ -200,44 +211,27 @@ class DashboardFragment :
     }
 
     private fun setUpBlazeCampaignView() {
-        dashboardBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is DashboardBlazeCampaignState.Hidden) {
-                binding.blazeCampaignView.hide()
-            } else {
-                binding.blazeCampaignView.apply {
-                    setContent {
-                        WooThemeWithBackground {
-                            DashboardBlazeView(
-                                state = blazeCampaignState,
-                                onDismissBlazeView = dashboardBlazeViewModel::onBlazeViewDismissed,
-                            )
-                        }
-                    }
-                    show()
-                }
-            }
-        }
-        dashboardBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is DashboardBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
-
-                is DashboardBlazeViewModel.ShowAllCampaigns -> {
-                    findNavController().navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToBlazeCampaignListFragment()
-                    )
-                }
-
-                is DashboardBlazeViewModel.ShowCampaignDetails -> {
-                    findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
-                            title = getString(R.string.blaze_campaign_details_title)
-                        )
-                    )
-                }
-            }
-        }
+//        dashboardBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
+//            when (event) {
+//                is DashboardBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
+//
+//                is DashboardBlazeViewModel.ShowAllCampaigns -> {
+//                    findNavController().navigateSafely(
+//                        DashboardFragmentDirections.actionDashboardToBlazeCampaignListFragment()
+//                    )
+//                }
+//
+//                is DashboardBlazeViewModel.ShowCampaignDetails -> {
+//                    findNavController().navigateSafely(
+//                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
+//                            urlToLoad = event.url,
+//                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
+//                            title = getString(R.string.blaze_campaign_details_title)
+//                        )
+//                    )
+//                }
+//            }
+//        }
     }
 
     private fun openBlazeCreationFlow(productId: Long?) {
