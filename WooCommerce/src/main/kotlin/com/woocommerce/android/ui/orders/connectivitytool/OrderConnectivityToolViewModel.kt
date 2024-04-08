@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnecti
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +38,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @HiltViewModel
 class OrderConnectivityToolViewModel @Inject constructor(
@@ -58,7 +61,6 @@ class OrderConnectivityToolViewModel @Inject constructor(
             retryConnectionAction = { handleRetryConnectionClick(InternetCheck) }
         )
     )
-    val internetCheckData = internetCheckFlow.asLiveData()
 
     private val wordpressCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
@@ -66,7 +68,6 @@ class OrderConnectivityToolViewModel @Inject constructor(
             retryConnectionAction = { handleRetryConnectionClick(WordPressCheck) }
         )
     )
-    val wordpressCheckData = wordpressCheckFlow.asLiveData()
 
     private val storeCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
@@ -74,7 +75,6 @@ class OrderConnectivityToolViewModel @Inject constructor(
             retryConnectionAction = { handleRetryConnectionClick(StoreCheck) }
         )
     )
-    val storeCheckData = storeCheckFlow.asLiveData()
 
     private val ordersCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
@@ -82,7 +82,15 @@ class OrderConnectivityToolViewModel @Inject constructor(
             retryConnectionAction = { handleRetryConnectionClick(StoreOrdersCheck) }
         )
     )
-    val storeOrdersCheckData = ordersCheckFlow.asLiveData()
+
+    val viewState = combine(
+        internetCheckFlow,
+        wordpressCheckFlow,
+        storeCheckFlow,
+        ordersCheckFlow
+    ) { internet, wordpress, store, orders ->
+        ViewState(internet, wordpress, store, orders)
+    }.distinctUntilChanged().asLiveData()
 
     val isCheckFinished = stateMachine.map { it == Finished }.asLiveData()
 
@@ -112,6 +120,10 @@ class OrderConnectivityToolViewModel @Inject constructor(
     fun onContactSupportClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED)
         triggerEvent(OpenSupportRequest)
+    }
+
+    fun onReturnClicked() {
+        triggerEvent(Exit)
     }
 
     private fun handleRetryConnectionClick(step: ConnectivityCheckStep) {
@@ -218,6 +230,13 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     object OpenSupportRequest : MultiLiveEvent.Event()
     data class OpenWebView(val url: String) : MultiLiveEvent.Event()
+
+    data class ViewState(
+        val internetCheckData: InternetConnectivityCheckData,
+        val wordPressCheckData: WordPressConnectivityCheckData,
+        val storeCheckData: StoreConnectivityCheckData,
+        val ordersCheckData: StoreOrdersConnectivityCheckData
+    )
 
     enum class ConnectivityCheckStep {
         InternetCheck,

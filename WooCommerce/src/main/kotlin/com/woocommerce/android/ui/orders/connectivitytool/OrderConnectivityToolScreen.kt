@@ -52,17 +52,14 @@ import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatu
 @Composable
 fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
     val isCheckFinished by viewModel.isCheckFinished.observeAsState()
-    val internetConnectionCheckData by viewModel.internetCheckData.observeAsState()
-    val wordpressConnectionCheckData by viewModel.wordpressCheckData.observeAsState()
-    val storeConnectionCheckData by viewModel.storeCheckData.observeAsState()
-    val storeOrdersCheckData by viewModel.storeOrdersCheckData.observeAsState()
+    val viewState by viewModel.viewState.observeAsState()
 
     OrderConnectivityToolScreen(
         isConnectionCheckFinished = isCheckFinished ?: false,
-        internetConnectionCheckData = internetConnectionCheckData,
-        wordpressConnectionCheckData = wordpressConnectionCheckData,
-        storeConnectionCheckData = storeConnectionCheckData,
-        storeOrdersCheckData = storeOrdersCheckData,
+        internetConnectionCheckData = viewState?.internetCheckData,
+        wordpressConnectionCheckData = viewState?.wordPressCheckData,
+        storeConnectionCheckData = viewState?.storeCheckData,
+        storeOrdersCheckData = viewState?.ordersCheckData,
         onContactSupportClicked = viewModel::onContactSupportClicked
     )
 }
