@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -61,7 +62,8 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
         wordpressConnectionCheckData = viewState?.wordPressCheckData,
         storeConnectionCheckData = viewState?.storeCheckData,
         storeOrdersCheckData = viewState?.ordersCheckData,
-        onContactSupportClicked = viewModel::onContactSupportClicked
+        onContactSupportClicked = viewModel::onContactSupportClicked,
+        onReturnClick = viewModel::onReturnClicked
     )
 }
 
@@ -74,6 +76,7 @@ fun OrderConnectivityToolScreen(
     storeConnectionCheckData: StoreConnectivityCheckData?,
     storeOrdersCheckData: StoreOrdersConnectivityCheckData?,
     onContactSupportClicked: () -> Unit,
+    onReturnClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -83,6 +86,7 @@ fun OrderConnectivityToolScreen(
             .fillMaxSize()
     ) {
         Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
             modifier = modifier
                 .padding(dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(),
@@ -102,6 +106,7 @@ fun OrderConnectivityToolScreen(
 
         ConnectivitySummary(
             shouldDisplaySummarySection = shouldDisplaySummarySection,
+            onReturnClick = onReturnClick,
             modifier = modifier
         )
 
@@ -210,7 +215,10 @@ fun ConnectivityCheckCard(
                     onClick = onRetryConnectionClicked,
                     modifier = modifier.align(Alignment.Start),
                     text = stringResource(id = R.string.orderlist_connectivity_tool_retry_action),
-                    contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.minor_100))
+                    contentPadding = PaddingValues(
+                        vertical = dimensionResource(id = R.dimen.minor_100),
+                        horizontal = dimensionResource(id = R.dimen.minor_00)
+                    )
                 )
 
                 if (shouldDisplayReadMoreButton) {
@@ -220,7 +228,10 @@ fun ConnectivityCheckCard(
                         icon = Icons.Default.ArrowOutward,
                         modifier = modifier.align(Alignment.Start),
                         text = stringResource(id = R.string.orderlist_connectivity_tool_read_more_action),
-                        contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.minor_100))
+                        contentPadding = PaddingValues(
+                            vertical = dimensionResource(id = R.dimen.minor_100),
+                            horizontal = dimensionResource(id = R.dimen.minor_00)
+                        )
                     )
                 }
             }
@@ -231,10 +242,12 @@ fun ConnectivityCheckCard(
 @Composable
 fun ConnectivitySummary(
     shouldDisplaySummarySection: Boolean,
+    onReturnClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (shouldDisplaySummarySection) {
         Column(
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
             modifier = modifier
                 .padding(dimensionResource(id = R.dimen.major_100))
         ) {
@@ -252,10 +265,13 @@ fun ConnectivitySummary(
 
             WCTextButton(
                 allCaps = false,
-                onClick = { /* TODO */ },
+                onClick = onReturnClick,
                 text = stringResource(id = R.string.orderlist_connectivity_tool_return_action),
                 icon = Icons.Default.ArrowBack,
-                contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.minor_100))
+                contentPadding = PaddingValues(
+                    vertical = dimensionResource(id = R.dimen.minor_100),
+                    horizontal = dimensionResource(id = R.dimen.minor_00)
+                )
             )
 
             Divider()
@@ -295,7 +311,8 @@ fun OrderConnectivityToolScreenPreview() {
             storeOrdersCheckData = StoreOrdersConnectivityCheckData(
                 connectivityCheckStatus = InProgress
             ),
-            onContactSupportClicked = {}
+            onContactSupportClicked = {},
+            onReturnClick = {}
         )
     }
 }
