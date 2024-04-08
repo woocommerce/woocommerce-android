@@ -99,7 +99,9 @@ fun OrderConnectivityToolScreen(
 fun ConnectivityCheckCard(
     cardData: ConnectivityCheckCardData?
 ) {
-    cardData?.let {
+    cardData
+        ?.takeUnless { it.connectivityCheckStatus is NotStarted }
+        ?.let {
         ConnectivityCheckCard(
             checkTitle = it.title,
             iconDrawable = it.icon,
