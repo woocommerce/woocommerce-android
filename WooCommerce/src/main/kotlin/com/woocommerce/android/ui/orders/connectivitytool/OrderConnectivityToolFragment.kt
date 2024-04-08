@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.R
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
@@ -42,8 +41,6 @@ class OrderConnectivityToolFragment : BaseFragment() {
         }
         viewModel.startConnectionChecks()
     }
-
-    override fun getFragmentTitle() = getString(R.string.orderlist_connectivity_tool_title)
 
     private fun openSupportRequestScreen() {
         SupportRequestFormActivity.createIntent(
