@@ -21,8 +21,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowOutward
+import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -36,6 +41,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.InternetConnectivityCheckData
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckCardData.StoreConnectivityCheckData
@@ -76,6 +83,7 @@ fun OrderConnectivityToolScreen(
 ) {
     Column(
         modifier = modifier
+            .background(colorResource(id = R.color.color_surface))
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .padding(dimensionResource(id = R.dimen.major_100))
@@ -85,7 +93,7 @@ fun OrderConnectivityToolScreen(
         ConnectivityCheckCard(storeConnectionCheckData)
         ConnectivityCheckCard(storeOrdersCheckData)
         Spacer(modifier = modifier.weight(1f))
-        Button(
+        WCOutlinedButton(
             enabled = isContactSupportButtonEnabled,
             onClick = { onContactSupportClicked() },
             modifier = modifier.fillMaxWidth()
@@ -125,81 +133,79 @@ fun ConnectivityCheckCard(
     onRetryConnectionClicked: () -> Unit,
     shouldDisplayReadMoreButton: Boolean = false
 ) {
-    Card(
-        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
+    Column(
         modifier = modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_75)))
     ) {
-        Column(
-            modifier = modifier.padding(PaddingValues(dimensionResource(id = R.dimen.major_75)))
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = modifier.size(dimensionResource(id = R.dimen.major_250))
             ) {
-                Box(
+                Image(
+                    painter = painterResource(id = iconDrawable),
+                    contentDescription = stringResource(id = checkTitle),
                     modifier = modifier
-                        .size(dimensionResource(id = R.dimen.major_250))
-                        .clip(CircleShape)
-                        .background(colorResource(id = R.color.more_menu_button_icon_background))
-                ) {
-                    Image(
-                        painter = painterResource(id = iconDrawable),
-                        contentDescription = stringResource(id = checkTitle),
-                        modifier = modifier
-                            .size(dimensionResource(id = R.dimen.major_125))
-                            .align(Alignment.Center)
-                    )
-                }
-                Text(
-                    text = stringResource(id = checkTitle),
-                    modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100))
+                        .size(dimensionResource(id = R.dimen.major_125))
+                        .align(Alignment.CenterStart)
                 )
-                Spacer(modifier = modifier.weight(1f))
-                when (checkStatus) {
-                    is InProgress -> CircularProgressIndicator(
-                        modifier = modifier.size(dimensionResource(id = R.dimen.major_200))
-                    )
-                    is Success -> ResultIcon(
-                        icon = R.drawable.ic_rounded_chcekbox_checked,
-                        color = R.color.woo_green_50
-                    )
-                    is Failure -> ResultIcon(
-                        icon = R.drawable.ic_rounded_chcekbox_partially_checked,
-                        color = R.color.woo_red_50
-                    )
-                    is NotStarted -> { /* Do nothing */ }
-                }
             }
 
-            if (checkStatus is Failure) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier
-                        .padding(top = dimensionResource(id = R.dimen.major_100))
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(id = checkStatus.error?.message ?: suggestion),
-                        color = colorResource(id = R.color.woo_red_50)
+            Text(text = stringResource(id = checkTitle))
+
+            Spacer(modifier = modifier.weight(1f))
+            when (checkStatus) {
+                is InProgress -> CircularProgressIndicator(
+                    modifier = modifier.size(dimensionResource(id = R.dimen.major_200))
+                )
+                is Success -> ResultIcon(
+                    icon = R.drawable.ic_rounded_chcekbox_checked,
+                    color = R.color.woo_green_50
+                )
+                is Failure -> ResultIcon(
+                    icon = R.drawable.ic_rounded_chcekbox_partially_checked,
+                    color = R.color.woo_red_50
+                )
+                is NotStarted -> { /* Do nothing */ }
+            }
+        }
+
+        if (checkStatus is Failure) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier
+                    .padding(top = dimensionResource(id = R.dimen.major_100))
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(id = checkStatus.error?.message ?: suggestion),
+                    style = MaterialTheme.typography.body2,
+                    modifier = modifier.align(Alignment.Start)
+                )
+
+                WCTextButton(
+                    allCaps = false,
+                    icon = Icons.Default.Repeat,
+                    onClick = onRetryConnectionClicked,
+                    modifier = modifier.align(Alignment.Start),
+                    text = stringResource(id = R.string.orderlist_connectivity_tool_retry_action),
+                    contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.minor_100))
+                )
+
+                if (shouldDisplayReadMoreButton) {
+                    WCTextButton(
+                        allCaps = false,
+                        onClick = onReadMoreClicked,
+                        icon = Icons.Default.ArrowOutward,
+                        modifier = modifier.align(Alignment.Start),
+                        text = stringResource(id = R.string.orderlist_connectivity_tool_read_more_action),
+                        contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.minor_100))
                     )
-
-                    OutlinedButton(
-                        onClick = onRetryConnectionClicked,
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Text(stringResource(id = R.string.orderlist_connectivity_tool_retry_action))
-                    }
-
-                    if (shouldDisplayReadMoreButton) {
-                        OutlinedButton(
-                            onClick = onReadMoreClicked,
-                            modifier = modifier.fillMaxWidth()
-                        ) {
-                            Text(stringResource(id = R.string.orderlist_connectivity_tool_read_more_action))
-                        }
-                    }
                 }
             }
         }
+
+        Divider()
     }
 }
 
