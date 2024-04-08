@@ -7,7 +7,7 @@ import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun DashboardTopPerformersCard(
-    viewModel: DashBoardTopPerformersViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: DashboardTopPerformersViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
 ) {
 
     val dateRange by viewModel.selectedDateRange.observeAsState()

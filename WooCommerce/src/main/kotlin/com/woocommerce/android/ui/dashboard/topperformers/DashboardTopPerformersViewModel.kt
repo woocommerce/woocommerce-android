@@ -15,23 +15,25 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
+import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshState
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
@@ -41,9 +43,11 @@ import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
-@HiltViewModel
-class DashBoardTopPerformersViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = DashboardStatsViewModel.Factory::class)
+@Suppress("LongParameterList")
+class DashboardTopPerformersViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    @Assisted private val parentViewModel: DashboardViewModel,
     private val selectedSite: SelectedSite,
     private val networkStatus: NetworkStatus,
     private val observeLastUpdate: ObserveLastUpdate,
@@ -56,8 +60,6 @@ class DashBoardTopPerformersViewModel @Inject constructor(
     getSelectedDateRange: GetSelectedDateRange,
 ) : ScopedViewModel(savedState) {
 
-    private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
-
     private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
@@ -69,16 +71,17 @@ class DashBoardTopPerformersViewModel @Inject constructor(
 
     init {
         _topPerformersState.value = TopPerformersState(isLoading = true)
+
         viewModelScope.launch {
-            combine(
-                _selectedDateRange,
-                refreshTrigger.onStart { emit(RefreshState()) }
-            ) { selectedRange, refreshEvent ->
-                Pair(selectedRange, refreshEvent.shouldRefresh)
+            _selectedDateRange.flatMapLatest { selectedRange ->
+                parentViewModel.refreshTrigger.onStart { emit(RefreshEvent()) }.map {
+                    Pair(selectedRange, it.isForced)
+                }
             }.collectLatest { (selectedRange, isForceRefresh) ->
                 loadTopPerformersStats(selectedRange, isForceRefresh)
             }
         }
+        observeTopPerformerUpdates()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
