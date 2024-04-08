@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowOutward
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
@@ -57,7 +59,7 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
     val storeOrdersCheckData by viewModel.storeOrdersCheckData.observeAsState()
 
     OrderConnectivityToolScreen(
-        isContactSupportButtonEnabled = isCheckFinished ?: false,
+        isConnectionCheckFinished = isCheckFinished ?: false,
         internetConnectionCheckData = internetConnectionCheckData,
         wordpressConnectionCheckData = wordpressConnectionCheckData,
         storeConnectionCheckData = storeConnectionCheckData,
@@ -68,7 +70,7 @@ fun OrderConnectivityToolScreen(viewModel: OrderConnectivityToolViewModel) {
 
 @Composable
 fun OrderConnectivityToolScreen(
-    isContactSupportButtonEnabled: Boolean,
+    isConnectionCheckFinished: Boolean,
     internetConnectionCheckData: InternetConnectivityCheckData?,
     wordpressConnectionCheckData: WordPressConnectivityCheckData?,
     storeConnectionCheckData: StoreConnectivityCheckData?,
@@ -82,13 +84,32 @@ fun OrderConnectivityToolScreen(
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
     ) {
+        Column(
+            modifier = modifier
+                .padding(dimensionResource(id = R.dimen.major_100))
+                .fillMaxWidth(),
+        ) {
+            Text(
+                text = stringResource(id = R.string.login_app_password_title),
+                style = MaterialTheme.typography.h4,
+                fontWeight = FontWeight.Bold
+            )
+            Text(stringResource(id = R.string.login_app_password_subtitle))
+        }
+
         ConnectivityCheckCard(internetConnectionCheckData)
         ConnectivityCheckCard(wordpressConnectionCheckData)
         ConnectivityCheckCard(storeConnectionCheckData)
         ConnectivityCheckCard(storeOrdersCheckData)
+
+        ConnectivitySummary(
+            isConnectionCheckFinished = isConnectionCheckFinished,
+            modifier = modifier
+        )
+
         Spacer(modifier = modifier.weight(1f))
         WCOutlinedButton(
-            enabled = isContactSupportButtonEnabled,
+            enabled = isConnectionCheckFinished,
             onClick = { onContactSupportClicked() },
             modifier = modifier
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
@@ -209,6 +230,41 @@ fun ConnectivityCheckCard(
 }
 
 @Composable
+fun ConnectivitySummary(
+    isConnectionCheckFinished: Boolean,
+    modifier: Modifier = Modifier
+) {
+    if (isConnectionCheckFinished) {
+        Column(
+            modifier = modifier
+                .padding(dimensionResource(id = R.dimen.major_100))
+        ) {
+            Text(
+                text = "No connection issues",
+                fontWeight = FontWeight.Bold,
+                modifier = modifier
+                    .fillMaxHeight()
+            )
+
+            Text(
+                text = "if your data still isn't loading, contact our support team for assistance",
+                style = MaterialTheme.typography.body2
+            )
+
+            WCTextButton(
+                allCaps = false,
+                onClick = { /* TODO */ },
+                text = "Return to the previous screen",
+                icon = Icons.Default.ArrowBack,
+                contentPadding = PaddingValues(top = dimensionResource(id = R.dimen.minor_100))
+            )
+
+            Divider()
+        }
+    }
+}
+
+@Composable
 fun ResultIcon(
     @DrawableRes icon: Int,
     @ColorRes color: Int
@@ -225,7 +281,7 @@ fun ResultIcon(
 fun OrderConnectivityToolScreenPreview() {
     WooThemeWithBackground {
         OrderConnectivityToolScreen(
-            isContactSupportButtonEnabled = true,
+            isConnectionCheckFinished = true,
             internetConnectionCheckData = InternetConnectivityCheckData(
                 connectivityCheckStatus = NotStarted
             ),
