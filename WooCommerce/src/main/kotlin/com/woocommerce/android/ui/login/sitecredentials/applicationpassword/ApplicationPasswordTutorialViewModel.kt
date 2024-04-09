@@ -30,12 +30,12 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     fun onContinueClicked() {
-        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_CONTINUE_TAPPED)
+        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_EXPLANATION_CONTINUE_BUTTON_TAPPED)
         _viewState.update { it.copy(authorizationStarted = true) }
     }
 
     fun onContactSupportClicked() {
-        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_CONTACT_SUPPORT_TAPPED)
+        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_EXPLANATION_CONTACT_SUPPORT_TAPPED)
         triggerEvent(OnContactSupport)
     }
 
