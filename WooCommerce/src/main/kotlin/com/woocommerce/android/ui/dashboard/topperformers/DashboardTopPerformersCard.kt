@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -16,9 +17,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -51,6 +54,7 @@ private fun TopPerformersCard(
 ) {
     Card(
         modifier = Modifier
+            .padding(top = 16.dp, bottom = 16.dp)
             .fillMaxWidth()
             .wrapContentHeight(),
         shape = RoundedCornerShape(0.dp)
@@ -61,16 +65,19 @@ private fun TopPerformersCard(
             Text(
                 text = stringResource(id = R.string.dashboard_top_performers_title),
                 style = MaterialTheme.typography.subtitle1,
+                fontWeight = FontWeight.Bold,
             )
-            Row {
+            Row(modifier = Modifier.padding(top = 16.dp)) {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = stringResource(id = R.string.product),
                     style = MaterialTheme.typography.body2,
+                    color = colorResource(id = R.color.color_on_surface_medium_selector)
                 )
                 Text(
                     text = stringResource(id = R.string.dashboard_top_performers_items_sold),
                     style = MaterialTheme.typography.body2,
+                    color = colorResource(id = R.color.color_on_surface_medium_selector)
                 )
             }
             when {
@@ -89,6 +96,8 @@ private fun TopPerformersCard(
                         .align(Alignment.CenterHorizontally),
                     text = lastUpdateState,
                     style = MaterialTheme.typography.body2,
+                    color = colorResource(id = R.color.color_on_surface_medium_selector),
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -100,9 +109,17 @@ private fun TopPerformerProductList(
     topPerformers: List<TopPerformerProductUiModel>,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        topPerformers.forEach {
-            TopPerformerProductItem(topPerformer = it, onItemClicked = it.onClick)
+    Column(
+        modifier = modifier.padding(
+            top = 16.dp,
+            bottom = 16.dp
+        )
+    ) {
+        topPerformers.forEachIndexed { index, product ->
+            TopPerformerProductItem(topPerformer = product, onItemClicked = product.onClick)
+            if (index < topPerformers.size - 1) {
+                Divider()
+            }
         }
     }
 }
@@ -122,6 +139,7 @@ private fun TopPerformerProductItem(
 ) {
     Row(
         modifier = modifier
+            .padding(top = 8.dp, bottom = 16.dp)
             .fillMaxWidth()
             .clickable { onItemClicked(topPerformer.productId) },
         verticalAlignment = Alignment.CenterVertically
@@ -138,7 +156,6 @@ private fun TopPerformerProductItem(
             Text(
                 text = topPerformer.name,
                 style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -155,10 +172,11 @@ private fun TopPerformerProductItem(
 }
 
 @Composable
-private fun TopPerformersEmptyView() {
+private fun TopPerformersEmptyView(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp, bottom = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
