@@ -185,7 +185,8 @@ class OrderListViewModel @Inject constructor(
         get() {
             val simplePaymentsAndOrderFeedbackDismissed =
                 simplePaymentsAndOrderCreationFeedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED
-            return !simplePaymentsAndOrderFeedbackDismissed
+            val isTroubleshootingBannerVisible = viewState.shouldDisplayTroubleshootingBanner
+            return !simplePaymentsAndOrderFeedbackDismissed && !isTroubleshootingBannerVisible
         }
 
     init {
@@ -254,6 +255,13 @@ class OrderListViewModel @Inject constructor(
         activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    fun changeTroubleshootingBannerVisibility(show: Boolean) {
+        viewState = viewState.copy(
+            shouldDisplayTroubleshootingBanner = show,
+            isSimplePaymentsAndOrderCreationFeedbackVisible = !show
+        )
     }
 
     /**
@@ -449,9 +457,7 @@ class OrderListViewModel @Inject constructor(
                                 triggerEvent(RetryLoadingOrders)
                             }
 
-                            else -> viewState = viewState.copy(
-                                shouldDisplayTroubleshootingBanner = true
-                            )
+                            else -> changeTroubleshootingBannerVisibility(show = true)
                         }
                         noTimeoutHappened = false
                     }
