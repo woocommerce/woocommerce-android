@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard
+package com.woocommerce.android.ui.dashboard.topperformers
 
 import android.content.Context
 import android.util.AttributeSet
@@ -21,6 +21,7 @@ import com.woocommerce.android.databinding.TopPerformersListItemBinding
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.toDashBoardTrackingGranularityString
+import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.widgets.SkeletonView
 import java.util.Locale
