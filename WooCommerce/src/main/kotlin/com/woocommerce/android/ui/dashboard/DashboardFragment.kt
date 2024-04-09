@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -50,6 +51,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Sh
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
+import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersCard
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -176,8 +178,6 @@ class DashboardFragment :
             refreshJitm()
         }
 
-        binding.myStoreTopPerformers.initView(selectedSite, dateUtils)
-
         val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
         binding.myStoreStatsAvailabilityMessage.setClickableText(
             content = getString(R.string.my_store_stats_availability_description, contactUsText),
@@ -192,10 +192,20 @@ class DashboardFragment :
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
+        setTopPerformersView()
         setupOnboardingView()
         setUpBlazeCampaignView()
 
         initJitm(savedInstanceState)
+    }
+
+    private fun setTopPerformersView() {
+        binding.myStoreTopPerformers.apply {
+            setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                DashboardTopPerformersCard(parentViewModel = dashboardViewModel)
+            }
+        }
     }
 
     private fun setUpBlazeCampaignView() {
@@ -354,16 +364,6 @@ class DashboardFragment :
     private fun setupStateObservers() {
         dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
-        dashboardViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
-            binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
-        }
-        dashboardViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
-            when {
-                topPerformers.isLoading -> showTopPerformersLoading()
-                topPerformers.isError -> showTopPerformersError()
-                else -> showTopPerformers(topPerformers.topPerformers)
-            }
-        }
         dashboardViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
             when (newValue) {
                 DashboardViewModel.OrderState.Empty -> showEmptyView(true)
@@ -400,9 +400,6 @@ class DashboardFragment :
                 else -> event.isHandled = false
             }
         }
-        dashboardViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
-        }
         dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
             ((activity) as MainActivity).setSubtitle(storeName)
         }
@@ -426,11 +423,6 @@ class DashboardFragment :
             )
         }
         binding.jetpackBenefitsBanner.root.isVisible = jetpackBenefitsBanner.show
-    }
-
-    private fun showTopPerformersLoading() {
-        binding.myStoreTopPerformers.showErrorView(false)
-        binding.myStoreTopPerformers.showSkeleton(true)
     }
 
     @Suppress("ForbiddenComment")
@@ -494,18 +486,6 @@ class DashboardFragment :
     private fun updateStatsAvailabilityError() {
         binding.myStoreRefreshLayout.visibility = View.GONE
         WooAnimUtils.fadeIn(binding.statsErrorScrollView)
-    }
-
-    private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>) {
-        binding.myStoreTopPerformers.showSkeleton(false)
-        binding.myStoreTopPerformers.showErrorView(false)
-        binding.myStoreTopPerformers.updateView(topPerformers)
-    }
-
-    private fun showTopPerformersError() {
-        binding.myStoreTopPerformers.showSkeleton(false)
-        binding.myStoreTopPerformers.showErrorView(true)
-        showErrorSnack()
     }
 
     private fun showErrorSnack() {

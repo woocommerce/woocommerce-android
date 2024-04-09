@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -26,17 +24,23 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.viewModelWithFactory
+import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
+import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.Factory
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersState
 
 @Composable
 fun DashboardTopPerformersCard(
-    viewModel: DashboardTopPerformersViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    parentViewModel: DashboardViewModel,
+    viewModel: DashboardTopPerformersViewModel = viewModelWithFactory<DashboardTopPerformersViewModel, Factory>(
+        creationCallback = {
+            it.create(parentViewModel)
+        }
+    )
 ) {
-
     val topPerformersState by viewModel.topPerformersState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateTopPerformers.observeAsState()
-
     TopPerformersCard(topPerformersState, lastUpdateState)
 }
 
@@ -71,18 +75,19 @@ private fun TopPerformersCard(
             }
             when {
                 topPerformersState?.isError == true -> TopPerformersErrorView()
+                topPerformersState?.isLoading == true -> TopPerformersLoading()
                 topPerformersState?.topPerformers.isNullOrEmpty() -> TopPerformersEmptyView()
-
                 else -> TopPerformerProductList(
                     topPerformers = topPerformersState?.topPerformers!!,
                 )
             }
+
             if (!lastUpdateState.isNullOrEmpty()) {
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.CenterHorizontally),
-                    text = lastUpdateState!!,
+                    text = lastUpdateState,
                     style = MaterialTheme.typography.body2,
                 )
             }
@@ -95,13 +100,17 @@ private fun TopPerformerProductList(
     topPerformers: List<TopPerformerProductUiModel>,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
-        items(topPerformers) { topPerformer ->
-            TopPerformerProductItem(
-                topPerformer = topPerformer,
-                onItemClicked = topPerformer.onClick,
-            )
+    Column(modifier = modifier) {
+        topPerformers.forEach {
+            TopPerformerProductItem(topPerformer = it, onItemClicked = it.onClick)
         }
+    }
+}
+
+@Composable
+private fun TopPerformersLoading() {
+    Column {
+        Text("Text")
     }
 }
 

@@ -33,7 +33,7 @@ enum class FeatureFlag {
             EAH_I3,
             APP_PASSWORD_TUTORIAL -> PackageUtils.isDebugBuild()
 
-            DYNAMIC_DASHBOARD -> false
+            DYNAMIC_DASHBOARD -> true
 
             CONNECTIVITY_TOOL,
             CUSTOM_RANGE_ANALYTICS,

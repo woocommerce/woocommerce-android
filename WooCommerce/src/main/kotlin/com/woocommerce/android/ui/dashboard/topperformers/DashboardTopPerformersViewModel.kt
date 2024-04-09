@@ -46,6 +46,7 @@ import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.util.Locale
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = DashboardTopPerformersViewModel.Factory::class)
 @Suppress("LongParameterList")
 class DashboardTopPerformersViewModel @AssistedInject constructor(
@@ -65,7 +66,6 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedState) {
 
     private val _selectedDateRange = getSelectedDateRange()
-    val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
@@ -86,9 +86,11 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
         viewModelScope.launch {
             _selectedDateRange.flatMapLatest { selectedRange ->
-                parentViewModel.refreshTrigger.onStart { emit(RefreshEvent()) }.map {
-                    Pair(selectedRange, it.isForced)
-                }
+                parentViewModel.refreshTrigger
+                    .onStart { emit(RefreshEvent()) }
+                    .map {
+                        Pair(selectedRange, it.isForced)
+                    }
             }.collectLatest { (selectedRange, isForceRefresh) ->
                 loadTopPerformersStats(selectedRange, isForceRefresh)
             }
