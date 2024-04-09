@@ -4,6 +4,7 @@ import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
+import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
@@ -366,6 +367,61 @@ class AnalyticsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchGiftCardsStats(rangeSelection: StatsTimeRangeSelection) = coroutineScope {
+        val currentPeriod = rangeSelection.currentRange
+        val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
+        val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
+
+        val previousPeriod = rangeSelection.previousRange
+        val previousStartDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
+        val previousEndDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
+
+        val currentGiftCardsStatsCall = async {
+            statsRepository.fetchGiftCardStats(
+                startDate = currentStartDate,
+                endDate = currentEndDate
+            )
+        }
+
+        val previousGiftCardsStatsCall = async {
+            statsRepository.fetchGiftCardStats(
+                startDate = previousStartDate,
+                endDate = previousEndDate
+            )
+        }
+
+        val currentGiftCardsStats = currentGiftCardsStatsCall.await().model
+        val previousGiftCardsStats = previousGiftCardsStatsCall.await().model
+
+        if (currentGiftCardsStats == null || previousGiftCardsStats == null) {
+            GiftCardResult.GiftCardError
+        } else {
+            val deltaNetValue = calculateDeltaPercentage(
+                previousVal = previousGiftCardsStats.netValue,
+                currentVal = currentGiftCardsStats.netValue,
+            )
+            val deltaUsed = calculateDeltaPercentage(
+                previousVal = previousGiftCardsStats.usedValue.toDouble(),
+                currentVal = currentGiftCardsStats.usedValue.toDouble(),
+            )
+
+            val usedByInterval = currentGiftCardsStats.intervals.map { interval -> interval.usedValue }
+            val usedByRevenue = currentGiftCardsStats.intervals.map { interval -> interval.netValue }
+
+            GiftCardResult.GiftCardData(
+                GiftCardsStat(
+                    usedValue = currentGiftCardsStats.usedValue,
+                    usedDelta = deltaUsed,
+                    netValue = currentGiftCardsStats.netValue,
+                    netDelta = deltaNetValue,
+                    currencyCode = getCurrencyCode(),
+                    usedByInterval = usedByInterval,
+                    netRevenueByInterval = usedByRevenue
+                )
+            )
+        }
+    }
+
     companion object {
         const val ZERO_VALUE = 0.0
         const val MINUS_ONE = -1
@@ -398,6 +454,11 @@ class AnalyticsRepository @Inject constructor(
     sealed class BundlesResult {
         object BundlesError : BundlesResult()
         data class BundlesData(val bundleStat: BundleStat) : BundlesResult()
+    }
+
+    sealed class GiftCardResult {
+        object GiftCardError : GiftCardResult()
+        data class GiftCardData(val giftCardStat: GiftCardsStat) : GiftCardResult()
     }
 
     sealed class FetchStrategy {
