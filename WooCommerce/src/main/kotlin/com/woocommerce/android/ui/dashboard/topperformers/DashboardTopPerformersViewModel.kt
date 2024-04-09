@@ -22,13 +22,14 @@ import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
-import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
@@ -44,11 +45,10 @@ import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
 import java.util.Locale
-import javax.inject.Inject
 
-@HiltViewModel(assistedFactory = DashboardStatsViewModel.Factory::class)
+@HiltViewModel(assistedFactory = DashboardTopPerformersViewModel.Factory::class)
 @Suppress("LongParameterList")
-class DashboardTopPerformersViewModel @Inject constructor(
+class DashboardTopPerformersViewModel @AssistedInject constructor(
     savedState: SavedStateHandle,
     @Assisted private val parentViewModel: DashboardViewModel,
     private val selectedSite: SelectedSite,
@@ -175,4 +175,9 @@ class DashboardTopPerformersViewModel @Inject constructor(
         val isError: Boolean = false,
         val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
     )
+
+    @AssistedFactory
+    interface Factory {
+        fun create(parentViewModel: DashboardViewModel): DashboardTopPerformersViewModel
+    }
 }
