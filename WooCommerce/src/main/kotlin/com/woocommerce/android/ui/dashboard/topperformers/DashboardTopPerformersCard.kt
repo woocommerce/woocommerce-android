@@ -67,7 +67,7 @@ private fun TopPerformersCard(
                 style = MaterialTheme.typography.subtitle1,
                 fontWeight = FontWeight.Bold,
             )
-            Row(modifier = Modifier.padding(top = 16.dp)) {
+            Row(modifier = Modifier.padding(top = 8.dp)) {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = stringResource(id = R.string.product),
@@ -139,7 +139,7 @@ private fun TopPerformerProductItem(
 ) {
     Row(
         modifier = modifier
-            .padding(top = 8.dp, bottom = 16.dp)
+            .padding(top = 16.dp, bottom = 16.dp)
             .fillMaxWidth()
             .clickable { onItemClicked(topPerformer.productId) },
         verticalAlignment = Alignment.CenterVertically
@@ -162,6 +162,7 @@ private fun TopPerformerProductItem(
             Text(
                 text = topPerformer.netSales,
                 style = MaterialTheme.typography.body2,
+                color = colorResource(id = R.color.color_on_surface_medium_selector)
             )
         }
         Text(
