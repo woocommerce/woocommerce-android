@@ -11,6 +11,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
@@ -73,6 +75,10 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
     }
 
     private fun exitWithResult(url: String? = null) {
+        if (url == null) {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_EXPLANATION_DISMISSED)
+        }
+
         setFragmentResult(
             requestKey = WEB_NAVIGATION_RESULT,
             result = bundleOf(URL_KEY to url)
