@@ -270,6 +270,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                                 password = state.password,
                                 detectedErrorMessage = authenticationError?.errorMessage as? UiStringRes
                             )
+                            analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
                         }
                     }
                 } else {

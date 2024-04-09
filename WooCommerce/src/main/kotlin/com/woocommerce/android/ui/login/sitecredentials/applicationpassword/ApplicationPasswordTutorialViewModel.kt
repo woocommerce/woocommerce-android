@@ -5,6 +5,8 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -17,6 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ApplicationPasswordTutorialViewModel @Inject constructor(
+    private val analyticsTracker: AnalyticsTrackerWrapper,
     val userAgent: UserAgent,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -27,10 +30,12 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     fun onContinueClicked() {
+        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_EXPLANATION_CONTINUE_BUTTON_TAPPED)
         _viewState.update { it.copy(authorizationStarted = true) }
     }
 
     fun onContactSupportClicked() {
+        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_EXPLANATION_CONTACT_SUPPORT_TAPPED)
         triggerEvent(OnContactSupport)
     }
 
@@ -40,7 +45,15 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
         }
     }
 
-    fun onNavigationButtonClicked() { triggerEvent(ShowExitConfirmationDialog) }
+    fun onNavigationButtonClicked() {
+        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_LOGIN_EXIT_CONFIRMATION)
+        triggerEvent(ShowExitConfirmationDialog)
+    }
+
+    fun onExitConfirmed() {
+        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_LOGIN_DISMISSED)
+        triggerEvent(ExitWithResult(null))
+    }
 
     fun onWebViewDataAvailable(
         authorizationUrl: String?,
