@@ -40,7 +40,13 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
         }
     }
 
-    fun onNavigationButtonClicked() { triggerEvent(ShowExitConfirmationDialog) }
+    fun onNavigationButtonClicked() {
+        triggerEvent(ShowExitConfirmationDialog)
+    }
+
+    fun onExitConfirmed() {
+        triggerEvent(ExitWithResult(null))
+    }
 
     fun onWebViewDataAvailable(
         authorizationUrl: String?,

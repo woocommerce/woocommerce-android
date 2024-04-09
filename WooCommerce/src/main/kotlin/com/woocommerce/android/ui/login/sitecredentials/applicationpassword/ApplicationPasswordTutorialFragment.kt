@@ -68,7 +68,7 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
             messageId = R.string.login_app_password_exit_dialog_message,
             positiveButtonId = R.string.login_app_password_exit_dialog_confirmation,
             negativeButtonId = R.string.login_app_password_exit_dialog_cancel,
-            posBtnAction = { _, _ -> exitWithResult() }
+            posBtnAction = { _, _ -> viewModel.onExitConfirmed() }
         )
     }
 
