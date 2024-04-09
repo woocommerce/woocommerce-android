@@ -25,12 +25,14 @@ import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -41,6 +43,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = DashboardStatsViewModel.Factory::class)
@@ -57,6 +60,7 @@ class DashboardTopPerformersViewModel @Inject constructor(
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val wooCommerceStore: WooCommerceStore,
+    private val dateUtils: DateUtils,
     getSelectedDateRange: GetSelectedDateRange,
 ) : ScopedViewModel(savedState) {
 
@@ -66,8 +70,16 @@ class DashboardTopPerformersViewModel @Inject constructor(
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
 
-    private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
-    val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
+    private var _lastUpdateTopPerformers = MutableStateFlow<Long?>(null)
+    val lastUpdateTopPerformers: LiveData<String?> = _lastUpdateTopPerformers
+        .map { lastUpdateMillis ->
+            if (lastUpdateMillis == null) return@map null
+            String.format(
+                Locale.getDefault(),
+                resourceProvider.getString(R.string.last_update),
+                dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
+            )
+        }.asLiveData()
 
     init {
         _topPerformersState.value = TopPerformersState(isLoading = true)
