@@ -10,8 +10,10 @@ class GetAnalyticPluginsCardActive @Inject constructor(
     private val wooCommerceStore: WooCommerceStore
 ) {
     private val analyticPlugins = listOf(
-        WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES
+        WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES,
+        WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
     )
+
     suspend operator fun invoke(): Set<AnalyticsCards> {
         val selectedSite = selectedSite.getOrNull() ?: return emptySet()
         return wooCommerceStore.getSitePlugins(selectedSite, analyticPlugins)
@@ -20,6 +22,7 @@ class GetAnalyticPluginsCardActive @Inject constructor(
             }.mapNotNull { pluginModel ->
                 when (pluginModel.name) {
                     WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName -> AnalyticsCards.Bundles
+                    WooCommerceStore.WooPlugin.WOO_GIFT_CARDS.pluginName -> AnalyticsCards.GiftCards
                     else -> null
                 }
             }.toSet()

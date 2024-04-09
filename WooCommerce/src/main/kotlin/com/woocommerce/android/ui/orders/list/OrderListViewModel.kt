@@ -61,6 +61,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -114,6 +115,8 @@ class OrderListViewModel @Inject constructor(
     private val showTestNotification: ShowTestNotification,
     private val dateUtils: DateUtils
 ) : ScopedViewModel(savedState), LifecycleOwner {
+    private val navArgs: OrderListFragmentArgs by savedState.navArgs()
+
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
@@ -182,7 +185,8 @@ class OrderListViewModel @Inject constructor(
         get() {
             val simplePaymentsAndOrderFeedbackDismissed =
                 simplePaymentsAndOrderCreationFeedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED
-            return !simplePaymentsAndOrderFeedbackDismissed
+            val isTroubleshootingBannerVisible = viewState.shouldDisplayTroubleshootingBanner
+            return !simplePaymentsAndOrderFeedbackDismissed && !isTroubleshootingBannerVisible
         }
 
     init {
@@ -217,6 +221,15 @@ class OrderListViewModel @Inject constructor(
                 orderListTransactionLauncher.onListFetched()
                 checkChaChingSoundSettings()
             }
+
+        when (navArgs.mode) {
+            Mode.START_ORDER_CREATION_WITH_SIMPLE_PAYMENTS_MIGRATION -> {
+                triggerEvent(OrderListEvent.OpenOrderCreationWithSimplePaymentsMigration)
+            }
+            Mode.STANDARD -> {
+                // stay on the screen
+            }
+        }
     }
 
     fun loadOrders() {
@@ -242,6 +255,13 @@ class OrderListViewModel @Inject constructor(
         activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    fun changeTroubleshootingBannerVisibility(show: Boolean) {
+        viewState = viewState.copy(
+            shouldDisplayTroubleshootingBanner = show,
+            isSimplePaymentsAndOrderCreationFeedbackVisible = !show
+        )
     }
 
     /**
@@ -437,9 +457,7 @@ class OrderListViewModel @Inject constructor(
                                 triggerEvent(RetryLoadingOrders)
                             }
 
-                            else -> viewState = viewState.copy(
-                                shouldDisplayTroubleshootingBanner = true
-                            )
+                            else -> changeTroubleshootingBannerVisibility(show = true)
                         }
                         noTimeoutHappened = false
                     }
@@ -876,6 +894,8 @@ class OrderListViewModel @Inject constructor(
         data class VMKilledWhenScanningInProgress(@StringRes val message: Int) : Event()
 
         data object RetryLoadingOrders : OrderListEvent()
+
+        data object OpenOrderCreationWithSimplePaymentsMigration : OrderListEvent()
     }
 
     @Parcelize
@@ -890,5 +910,9 @@ class OrderListViewModel @Inject constructor(
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
+    }
+
+    enum class Mode {
+        STANDARD, START_ORDER_CREATION_WITH_SIMPLE_PAYMENTS_MIGRATION
     }
 }
