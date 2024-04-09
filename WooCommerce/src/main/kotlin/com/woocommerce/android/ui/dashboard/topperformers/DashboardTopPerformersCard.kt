@@ -25,7 +25,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
+import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersState
 
 @Composable
 fun DashboardTopPerformersCard(
@@ -35,6 +37,14 @@ fun DashboardTopPerformersCard(
     val topPerformersState by viewModel.topPerformersState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateTopPerformers.observeAsState()
 
+    TopPerformersCard(topPerformersState, lastUpdateState)
+}
+
+@Composable
+private fun TopPerformersCard(
+    topPerformersState: TopPerformersState?,
+    lastUpdateState: String?
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -171,4 +181,41 @@ private fun TopPerformersErrorView() {
             style = MaterialTheme.typography.body2,
         )
     }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun TopPerformersCardPreview() {
+    TopPerformersCard(
+        topPerformersState = TopPerformersState(
+            topPerformers = listOf(
+                TopPerformerProductUiModel(
+                    productId = 1,
+                    name = "Product 1",
+                    timesOrdered = "10 times",
+                    netSales = "$100",
+                    imageUrl = "",
+                    onClick = {}
+                ),
+                TopPerformerProductUiModel(
+                    productId = 2,
+                    name = "Product 2",
+                    timesOrdered = "20 times",
+                    netSales = "$200",
+                    imageUrl = "",
+                    onClick = {}
+                ),
+                TopPerformerProductUiModel(
+                    productId = 3,
+                    name = "Product 3",
+                    timesOrdered = "30 times",
+                    netSales = "$300",
+                    imageUrl = "",
+                    onClick = {}
+                ),
+            ),
+            isError = false
+        ),
+        lastUpdateState = "Last update: 8:52 AM"
+    )
 }
