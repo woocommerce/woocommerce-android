@@ -30,7 +30,6 @@ class DashboardWidgetEditorViewModel @Inject constructor(
             isLoading = state.widgetList.isEmpty(),
             isSaveButtonEnabled = state.widgetList.map { DashboardWidget(it.type, it.isSelected) } != widgets,
         )
-
     }.asLiveData()
 
     private var editedWidgets: List<DashboardWidgetUi>
@@ -68,12 +67,14 @@ class DashboardWidgetEditorViewModel @Inject constructor(
 
     fun onSaveClicked() {
         viewModelScope.launch {
-            dashboardRepository.updateWidgets(editedWidgets.map { widget ->
-                DashboardWidget(
-                    type = widget.type,
-                    isAdded = widget.isSelected
-                )
-            })
+            dashboardRepository.updateWidgets(
+                editedWidgets.map { widget ->
+                    DashboardWidget(
+                        type = widget.type,
+                        isAdded = widget.isSelected
+                    )
+                }
+            )
         }
         triggerEvent(Exit)
     }
