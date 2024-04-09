@@ -145,7 +145,6 @@ private fun TopPerformersLoading(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth()) {
         SkeletonView(
             modifier = Modifier
-                .padding(bottom = 8.dp)
                 .height(18.dp)
                 .width(200.dp)
         )
