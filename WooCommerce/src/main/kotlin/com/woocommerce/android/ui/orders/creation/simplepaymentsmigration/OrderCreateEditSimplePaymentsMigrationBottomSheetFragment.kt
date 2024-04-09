@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
@@ -25,10 +27,16 @@ class OrderCreateEditSimplePaymentsMigrationBottomSheetFragment : WCBottomSheetD
             WooTheme {
                 OrderCreateEditSimplePaymentsMigrationBottomSheetScreen(
                     onAddCustomAmountClicked = {
+                        AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_MIGRATION_SHEET_ADD_CUSTOM_AMOUNT)
                         navigateBackWithNotice(key = KEY_ON_ADD_CUSTOM_AMOUNT_CLICKED_NOTICE)
                     }
                 )
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AnalyticsTracker.track(AnalyticsEvent.SIMPLE_PAYMENTS_MIGRATION_SHEET_SHOWN)
     }
 }
