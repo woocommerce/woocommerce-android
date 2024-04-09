@@ -116,7 +116,7 @@ ext {
     hiltJetpackVersion = '1.1.0'
     wordPressUtilsVersion = '3.5.0'
     mediapickerVersion = '0.3.0'
-    wordPressLoginVersion = '1.13.0'
+    wordPressLoginVersion = '1.15.0'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '4.0.2'
     workManagerVersion = '2.7.1'
@@ -127,6 +127,7 @@ ext {
     androidxCameraVersion = '1.2.3'
     guavaVersion = '33.1.0-android'
     protobufVersion = '3.25.3'
+    gravatarVersion = '0.2.0'
 
     // Apache
     commonsText = '1.10.0'
