@@ -748,7 +748,7 @@ Language: zh_CN
     <string name="settings_tracking_analytics_description">允许我们收集与用户跟我们的移动应用程序互动情况相关的信息，从而优化性能。</string>
     <string name="card_reader_payment_vm_killed_when_tpp_in_foreground">当 Woo 应用程序在后台运行时，系统会将其终止。 您可以尝试再次使用它。</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">未找到 SKU 为 %s 的产品。 无法添加到订单</string>
-    <string name="settings_web_options_description">为 woo.com 用户提供更多隐私选项。 点击此处了解更多详情。</string>
+    <string name="settings_web_options_description">为 woocommerce.com 用户提供更多隐私选项。 点击此处了解更多详情。</string>
     <string name="order_list_barcode_scanning_scanning_failed">扫描失败。 请稍后再试</string>
     <string name="scan_barcode">扫描条形码</string>
     <string name="shipping_notice_banner_instructions_content">现在，当运输到遵守欧盟 (EU) 海关规定的国家/地区时，您需要清楚地描述每一件商品。 例如，假设您发送衣服，您的描述中需要指出是哪种类型的衣服（例如，男士衬衫、女孩背心、男孩夹克）才可被接受。 否则货物可能会在海关滞留或被扣留。</string>

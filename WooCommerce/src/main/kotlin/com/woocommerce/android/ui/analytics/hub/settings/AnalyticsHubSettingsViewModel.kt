@@ -32,7 +32,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
 
     companion object {
         const val LOADING_DELAY_MS = 500L
-        const val MARKETPLACE = "https://woo.com/products/"
+        const val MARKETPLACE = "https://woocommerce.com/products/"
     }
 
     val viewStateData: LiveDataDelegate<AnalyticsHubSettingsViewState> =

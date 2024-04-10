@@ -736,7 +736,7 @@ Language: ru
     <string name="settings_privacy_header">Конфиденциальность</string>
     <string name="settings_usage_tracking_description">Узнайте больше о данных, которые мы собираем в вашем магазине, и о том, как вы можете управлять передачей этих данных.</string>
     <string name="settings_usage_tracking">Отслеживание использования</string>
-    <string name="settings_web_options_description">Для пользователей woo.com доступны дополнительные опции конфиденциальности. Подробности см. здесь.</string>
+    <string name="settings_web_options_description">Для пользователей woocommerce.com доступны дополнительные опции конфиденциальности. Подробности см. здесь.</string>
     <string name="settings_web_options">Интернет-опции</string>
     <string name="settings_more_privacy_options_header">Дополнительные параметры конфиденциальности</string>
     <string name="settings_tracking_analytics_error_update">При обновлении настроек конфиденциальности произошла ошибка</string>

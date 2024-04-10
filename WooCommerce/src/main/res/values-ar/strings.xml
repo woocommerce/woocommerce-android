@@ -736,7 +736,7 @@ Language: ar
     <string name="settings_privacy_header">الخصوصية</string>
     <string name="settings_usage_tracking_description">تعرّف على المزيد حول البيانات التي نجمعها حول متجرك وخياراتك للتحكم في مشاركة البيانات هذه.</string>
     <string name="settings_usage_tracking">تعقب الاستخدام</string>
-    <string name="settings_web_options_description">يتوافر مزيد من خيارات الخصوصية لمستخدمي woo.com. تحقق هنا للتعرف على المزيد.</string>
+    <string name="settings_web_options_description">يتوافر مزيد من خيارات الخصوصية لمستخدمي woocommerce.com. تحقق هنا للتعرف على المزيد.</string>
     <string name="settings_web_options">خيارات الويب</string>
     <string name="settings_more_privacy_options_header">مزيد من خيارات الخصوصية</string>
     <string name="settings_tracking_analytics_error_update">كان هناك خطأ في أثناء تحديث إعدادات الخصوصية لديك</string>
