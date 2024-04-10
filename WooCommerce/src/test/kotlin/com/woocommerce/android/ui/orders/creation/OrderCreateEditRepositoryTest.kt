@@ -9,6 +9,7 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -49,6 +50,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     private lateinit var orderUpdateStore: OrderUpdateStore
     private lateinit var selectedSite: SelectedSite
     private lateinit var wooCommerceStore: WooCommerceStore
+    private val getWooVersion: GetWooCorePluginCachedVersion = mock()
 
     private val defaultSiteModel = SiteModel()
 
@@ -77,7 +79,8 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
             dispatchers = coroutinesTestRule.testDispatchers,
             wooCommerceStore = wooCommerceStore,
             analyticsTrackerWrapper = trackerWrapper,
-            listItemMapper = mock()
+            listItemMapper = mock(),
+            getWooVersion = getWooVersion,
         )
     }
 
@@ -125,8 +128,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     @Test
     fun `when AUTO_DRAFT is not supported then status is changed to PENDING`() = testBlocking {
         // Given a site using a version that doesn't support AUTO_DRAFT
-        whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
-            .thenReturn(SitePluginModel().apply { version = "6.2.0" })
+        whenever(getWooVersion()).thenReturn("6.2.0")
         whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
@@ -156,8 +158,7 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     @Test
     fun `when AUTO_DRAFT is supported then status is keep as AUTO_DRAFT`() = testBlocking {
         // Given a site using a version that support AUTO_DRAFT
-        whenever(wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
-            .thenReturn(SitePluginModel().apply { version = OrderCreateEditRepository.AUTO_DRAFT_SUPPORTED_VERSION })
+        whenever(getWooVersion()).thenReturn(OrderCreateEditRepository.AUTO_DRAFT_SUPPORTED_VERSION)
         whenever(orderUpdateStore.createOrder(any(), any(), anyOrNull()))
             .thenReturn(WooResult(OrderTestUtils.generateOrder()))
 
