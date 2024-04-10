@@ -115,11 +115,6 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                         )
                     )
                 }
-                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToPaymentCollectionScreen -> {
-                    findNavController().navigate(
-                        PaymentsHubFragmentDirections.actionCardReaderHubFragmentToSimplePayments()
-                    )
-                }
                 is PaymentsHubViewModel.PaymentsHubEvents.NavigateToOrderCreationScreen -> {
                     findNavController().navigate(
                         PaymentsHubFragmentDirections.actionCardReaderHubFragmentToOrderListFragment(
