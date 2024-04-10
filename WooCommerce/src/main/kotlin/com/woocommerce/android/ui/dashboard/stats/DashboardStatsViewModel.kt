@@ -8,14 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
-import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.offsetInHours
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
@@ -27,7 +25,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeastOne
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
-import com.woocommerce.android.ui.dashboard.JetpackBenefitsBannerUiModel
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
@@ -49,7 +46,6 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = DashboardStatsViewModel.Factory::class)
@@ -70,10 +66,6 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
 ) : ScopedViewModel(savedStateHandle) {
-    companion object {
-        private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-    }
-
     private var _hasOrders = MutableLiveData<OrderState>()
 
     private val _selectedDateRange = getSelectedDateRange()
@@ -178,7 +170,9 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     )
 
                     is LoadStatsResult.VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
-                    is LoadStatsResult.VisitorStatUnavailable -> onVisitorStatsUnavailable(it.connectionType)
+                    is LoadStatsResult.VisitorStatUnavailable ->
+                        _visitorStatsState.value = VisitorStatsViewState.Unavailable
+
                     is LoadStatsResult.HasOrders -> _hasOrders.value = if (it.hasOrder) AtLeastOne else Empty
                 }
                 dashboardTransactionLauncher.onStoreStatisticsFetched()
@@ -210,28 +204,6 @@ class DashboardStatsViewModel @AssistedInject constructor(
                 putIfNotNull(AnalyticsTracker.KEY_ID to result.stats?.rangeId)
             }
         )
-    }
-
-    private fun onVisitorStatsUnavailable(connectionType: SiteConnectionType) {
-        val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
-            System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
-        )
-        val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
-            connectionType == SiteConnectionType.ApplicationPasswords
-        val showBanner =
-            supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
-        val benefitsBanner = JetpackBenefitsBannerUiModel(
-            show = showBanner,
-            onDismiss = {
-                _visitorStatsState.value = VisitorStatsViewState.Unavailable(JetpackBenefitsBannerUiModel(show = false))
-                appPrefsWrapper.recordJetpackBenefitsDismissal()
-                analyticsTrackerWrapper.track(
-                    stat = FEATURE_JETPACK_BENEFITS_BANNER,
-                    properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
-                )
-            }
-        )
-        _visitorStatsState.value = VisitorStatsViewState.Unavailable(benefitsBanner)
     }
 
     private fun trackLocalTimezoneDifferenceFromStore() {
@@ -294,9 +266,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     sealed class VisitorStatsViewState {
         data object Error : VisitorStatsViewState()
         data object NotLoaded : VisitorStatsViewState()
-        data class Unavailable(
-            val benefitsBanner: JetpackBenefitsBannerUiModel
-        ) : VisitorStatsViewState()
+        data object Unavailable : VisitorStatsViewState()
 
         data class Content(
             val stats: Map<String, Int>,
