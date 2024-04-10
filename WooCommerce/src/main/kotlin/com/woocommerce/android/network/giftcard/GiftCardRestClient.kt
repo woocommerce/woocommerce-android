@@ -59,7 +59,7 @@ class GiftCardRestClient @Inject constructor(private val wooNetwork: WooNetwork)
     )
 
     data class GiftCardsStatsInterval(
-        val subtotal: GiftCardsStatsSubtotal? = null
+        val subtotals: GiftCardsStatsSubtotal? = null
     )
 
     data class GiftCardsStatsSubtotal(
@@ -81,8 +81,8 @@ class GiftCardRestClient @Inject constructor(private val wooNetwork: WooNetwork)
 fun GiftCardRestClient.GiftCardsStatsApiResponse.toWCModel(): WCGiftCardStats {
     val intervals = this.intervals?.map { interval ->
         WCGiftCardStatsInterval(
-            usedValue = interval.subtotal?.count ?: 0,
-            netValue = interval.subtotal?.netAmount ?: 0.0,
+            usedValue = interval.subtotals?.count ?: 0,
+            netValue = interval.subtotals?.netAmount ?: 0.0,
         )
     } ?: emptyList()
     return WCGiftCardStats(
