@@ -736,7 +736,7 @@ Language: ko_KR
     <string name="settings_privacy_header">개인정보</string>
     <string name="settings_usage_tracking_description">이 데이터 공유를 제어하기 위해 당사에서 수집하는 회원님의 스토어와 옵션에 대한 데이터에 대해 자세히 알아보세요.</string>
     <string name="settings_usage_tracking">사용량 추적</string>
-    <string name="settings_web_options_description">Woo.com 사용자는 추가 개인정보 옵션을 사용할 수 있습니다. 여기에서 자세히 알아보세요.</string>
+    <string name="settings_web_options_description">woocommerce.com 사용자는 추가 개인정보 옵션을 사용할 수 있습니다. 여기에서 자세히 알아보세요.</string>
     <string name="settings_web_options">웹 옵션</string>
     <string name="settings_more_privacy_options_header">추가 개인정보 옵션</string>
     <string name="settings_tracking_analytics_error_update">프라이버시 설정 업데이트 중 오류가 발생했습니다.</string>

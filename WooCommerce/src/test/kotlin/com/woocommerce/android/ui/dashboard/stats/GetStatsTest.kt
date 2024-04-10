@@ -187,11 +187,7 @@ class GetStatsTest : BaseUnitTest() {
                 .filter { it is GetStats.LoadStatsResult.VisitorStatUnavailable }
                 .first()
 
-            assertThat(result).isEqualTo(
-                GetStats.LoadStatsResult.VisitorStatUnavailable(
-                    connectionType = SiteConnectionType.JetpackConnectionPackage
-                )
-            )
+            assertThat(result).isEqualTo(GetStats.LoadStatsResult.VisitorStatUnavailable)
         }
 
     @Test

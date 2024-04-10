@@ -748,7 +748,7 @@ Language: pt_BR
     <string name="settings_tracking_analytics_error_update">Ocorreu um erro ao atualizar suas configurações de privacidade</string>
     <string name="settings_tracking_analytics_error_fetch">Ocorreu um erro ao obter suas configurações de privacidade</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Produto com SKU %s não encontrado. Não foi possível adicionar ao pedido</string>
-    <string name="settings_web_options_description">Mais opções de privacidade disponíveis para usuários do woo.com. Clique aqui para saber mais.</string>
+    <string name="settings_web_options_description">Mais opções de privacidade disponíveis para usuários do woocommerce.com. Clique aqui para saber mais.</string>
     <string name="order_list_barcode_scanning_scanning_failed">Falha ao escanear. Tente novamente mais tarde</string>
     <string name="scan_barcode">Escanear código de barras do produto</string>
     <string name="shipping_notice_banner_instructions_content">O envio para países que seguem as regras alfandegárias da União Europeia (UE) agora exige que você descreva de forma detalhada cada item. Por exemplo, se você está enviando roupas, deve indicar que tipo de roupa (camisas masculinas, colete feminino, jaqueta masculina) para que a descrição seja aceitável. Caso contrário, os envios podem sofrer atrasos ou ficar interditados na alfândega.</string>
