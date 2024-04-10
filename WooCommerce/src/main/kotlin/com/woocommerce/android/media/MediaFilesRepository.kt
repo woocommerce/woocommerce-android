@@ -87,21 +87,23 @@ class MediaFilesRepository @Inject constructor(
         }
     }
 
-    fun getBitmapFromUri(uri: String): Bitmap? {
-        try {
-            return if (Patterns.WEB_URL.matcher(uri).matches()) {
-                BitmapFactory.decodeStream(URL(uri).openConnection().getInputStream())
-            } else {
-                val parcelFileDescriptor = context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")
-                val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-                val bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-                parcelFileDescriptor.close()
-                return bitmap
+    suspend fun getBitmapFromUri(uri: String): Bitmap? {
+        return withContext(dispatchers.io) {
+            try {
+                return@withContext if (Patterns.WEB_URL.matcher(uri).matches()) {
+                    BitmapFactory.decodeStream(URL(uri).openConnection().getInputStream())
+                } else {
+                    val parcelFileDescriptor = context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")
+                    val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+                    val bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                    parcelFileDescriptor.close()
+                    return@withContext bitmap
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
+            return@withContext null
         }
-        return null
     }
 
     @OptIn(DelicateCoroutinesApi::class)

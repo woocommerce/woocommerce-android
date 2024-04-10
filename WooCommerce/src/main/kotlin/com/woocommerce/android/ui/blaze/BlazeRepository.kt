@@ -327,7 +327,7 @@ class BlazeRepository @Inject constructor(
         }
     }
 
-    fun isValidAdImage(uri: String): Boolean {
+    suspend fun isValidAdImage(uri: String): Boolean {
         val bitmap = mediaFilesRepository.getBitmapFromUri(uri)
         return when {
             bitmap == null -> {

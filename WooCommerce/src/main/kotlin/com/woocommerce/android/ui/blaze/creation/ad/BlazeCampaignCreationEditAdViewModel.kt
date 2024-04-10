@@ -115,24 +115,28 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onLocalImageSelected(uri: String) {
-        if (blazeRepository.isValidAdImage(uri)) {
-            _viewState.update {
-                it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
-            }
-        } else showInvalidIMageDialog()
+        launch {
+            if (blazeRepository.isValidAdImage(uri)) {
+                _viewState.update {
+                    it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
+                }
+            } else showInvalidIMageDialog()
+        }
     }
 
     fun onWPMediaSelected(image: Product.Image) {
-        if (blazeRepository.isValidAdImage(image.source)) {
-            _viewState.update {
-                it.copy(
-                    adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
-                        mediaId = image.id,
-                        uri = image.source
+        launch {
+            if (blazeRepository.isValidAdImage(image.source)) {
+                _viewState.update {
+                    it.copy(
+                        adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
+                            mediaId = image.id,
+                            uri = image.source
+                        )
                     )
-                )
-            }
-        } else showInvalidIMageDialog()
+                }
+            } else showInvalidIMageDialog()
+        }
     }
 
     private fun showInvalidIMageDialog() {
