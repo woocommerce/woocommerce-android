@@ -252,30 +252,36 @@ fun ConnectivitySummary(
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
             modifier = modifier
-                .padding(dimensionResource(id = R.dimen.major_100))
+                .padding(vertical = dimensionResource(id = R.dimen.major_100))
+                .padding(start = dimensionResource(id = R.dimen.major_100))
         ) {
-            Text(
-                text = stringResource(id = R.string.orderlist_connectivity_tool_summary_title),
-                fontWeight = FontWeight.Bold,
+            Column(
                 modifier = modifier
-                    .fillMaxHeight()
-            )
-
-            Text(
-                text = stringResource(id = R.string.orderlist_connectivity_tool_summary_suggestion),
-                style = MaterialTheme.typography.body2
-            )
-
-            WCTextButton(
-                allCaps = false,
-                onClick = onReturnClick,
-                text = stringResource(id = R.string.orderlist_connectivity_tool_return_action),
-                icon = Icons.Default.ArrowBack,
-                contentPadding = PaddingValues(
-                    vertical = dimensionResource(id = R.dimen.minor_100),
-                    horizontal = dimensionResource(id = R.dimen.minor_00)
+                    .padding(end = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Text(
+                    text = stringResource(id = R.string.orderlist_connectivity_tool_summary_title),
+                    fontWeight = FontWeight.Bold,
+                    modifier = modifier
+                        .fillMaxHeight()
                 )
-            )
+
+                Text(
+                    text = stringResource(id = R.string.orderlist_connectivity_tool_summary_suggestion),
+                    style = MaterialTheme.typography.body2
+                )
+
+                WCTextButton(
+                    allCaps = false,
+                    onClick = onReturnClick,
+                    text = stringResource(id = R.string.orderlist_connectivity_tool_return_action),
+                    icon = Icons.Default.ArrowBack,
+                    contentPadding = PaddingValues(
+                        vertical = dimensionResource(id = R.dimen.minor_100),
+                        horizontal = dimensionResource(id = R.dimen.minor_00)
+                    )
+                )
+            }
 
             Divider()
         }
