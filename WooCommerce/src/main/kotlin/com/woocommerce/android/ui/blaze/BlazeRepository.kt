@@ -152,7 +152,7 @@ class BlazeRepository @Inject constructor(
             tagLine = "",
             description = "",
             campaignImage = product.images.firstOrNull().let {
-                if (it != null) {
+                if (it != null && isValidAdImage(it.source)) {
                     BlazeCampaignImage.RemoteImage(it.id, it.source)
                 } else {
                     BlazeCampaignImage.None
