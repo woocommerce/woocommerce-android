@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Patterns
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
@@ -40,6 +41,7 @@ import org.wordpress.android.util.MediaUtils
 import java.io.File
 import java.io.FileDescriptor
 import java.io.IOException
+import java.net.URL
 import javax.inject.Inject
 
 class MediaFilesRepository @Inject constructor(
@@ -87,11 +89,15 @@ class MediaFilesRepository @Inject constructor(
 
     fun getBitmapFromUri(uri: String): Bitmap? {
         try {
-            val parcelFileDescriptor = context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")
-            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-            val bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-            parcelFileDescriptor.close()
-            return bitmap
+            return if (Patterns.WEB_URL.matcher(uri).matches()) {
+                BitmapFactory.decodeStream(URL(uri).openConnection().getInputStream())
+            } else {
+                val parcelFileDescriptor = context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")
+                val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+                val bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                parcelFileDescriptor.close()
+                return bitmap
+            }
         } catch (e: IOException) {
             e.printStackTrace()
         }
