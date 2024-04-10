@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.mystore
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.data.StatsRepository
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -37,6 +38,7 @@ class StatsRepositoryTests : BaseUnitTest() {
     private val wcOrderStore: WCOrderStore = mock()
     private val wcLeaderboardsStore: WCLeaderboardsStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val getWooVersion: GetWooCorePluginCachedVersion = mock()
 
     private lateinit var sut: StatsRepository
 
@@ -56,6 +58,7 @@ class StatsRepositoryTests : BaseUnitTest() {
             wcOrderStore = wcOrderStore,
             wcLeaderboardsStore = wcLeaderboardsStore,
             wooCommerceStore = wooCommerceStore,
+            getWooVersion = getWooVersion,
             dispatchers = coroutinesTestRule.testDispatchers
         )
     }
