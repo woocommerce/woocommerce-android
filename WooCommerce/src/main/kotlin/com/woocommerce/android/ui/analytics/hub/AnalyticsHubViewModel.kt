@@ -616,7 +616,7 @@ class AnalyticsHubViewModel @Inject constructor(
             ),
             reportUrl = getReportUrl(
                 selection = ranges,
-                card = ReportCard.Revenue
+                card = ReportCard.GiftCard
             )
         )
 
@@ -675,6 +675,7 @@ class AnalyticsHubViewModel @Inject constructor(
         productObservationJob?.cancel()
         sessionObservationJob?.cancel()
         bundlesObservationJob?.cancel()
+        giftCardsObservationJob?.cancel()
     }
 
     fun onOpenSettings() {
@@ -683,7 +684,7 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 }
 
-enum class ReportCard { Revenue, Orders, Products, Bundles }
+enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
     return when (this) {
@@ -691,6 +692,7 @@ fun AnalyticsCards.toReportCard(): ReportCard? {
         AnalyticsCards.Orders -> ReportCard.Orders
         AnalyticsCards.Products -> ReportCard.Products
         AnalyticsCards.Bundles -> ReportCard.Bundles
+        AnalyticsCards.GiftCards -> ReportCard.GiftCard
         else -> null
     }
 }

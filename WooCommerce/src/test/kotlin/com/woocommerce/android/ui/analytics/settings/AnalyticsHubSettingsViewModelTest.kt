@@ -45,7 +45,7 @@ class AnalyticsHubSettingsViewModelTest : BaseUnitTest() {
         AnalyticCardConfiguration(AnalyticsCards.Session, "Visitors", false)
     )
 
-    private val defaultPluginCardsActive = setOf(AnalyticsCards.Bundles)
+    private val defaultPluginCardsActive = setOf(AnalyticsCards.Bundles, AnalyticsCards.Session)
 
     private val defaultConfigurationUI = defaultConfiguration.map { it.toConfigurationUI(defaultPluginCardsActive) }
 
