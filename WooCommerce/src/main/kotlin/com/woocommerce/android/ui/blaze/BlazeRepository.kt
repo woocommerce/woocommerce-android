@@ -329,7 +329,6 @@ class BlazeRepository @Inject constructor(
 
     fun isValidAdImage(uri: String): Boolean {
         val bitmap = mediaFilesRepository.getBitmapFromUri(uri)
-        WooLog.w(WooLog.T.BLAZE, "MediaFilesRepository width: ${bitmap?.width}, height: ${bitmap?.height}")
         return when {
             bitmap == null -> {
                 WooLog.w(WooLog.T.BLAZE, "isValidAdImage: Failed to convert uri: $uri to bitmap")
