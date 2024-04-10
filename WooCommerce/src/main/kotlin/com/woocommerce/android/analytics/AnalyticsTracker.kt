@@ -94,6 +94,8 @@ class AnalyticsTracker private constructor(
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
         selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
 
+        getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
+
         val propertiesJson = JSONObject(finalProperties)
         tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
 
@@ -300,6 +302,7 @@ class AnalyticsTracker private constructor(
 
         const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
         const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
+        const val KEY_CACHED_WOO_VERSION = "cached_woo_core_version"
 
         const val KEY_PERIOD = "period"
         const val KEY_REPORT = "report"
