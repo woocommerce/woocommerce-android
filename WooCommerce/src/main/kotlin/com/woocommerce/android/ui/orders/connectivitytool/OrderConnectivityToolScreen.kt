@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.connectivitytool
 
 import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -24,6 +25,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowOutward
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +34,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -185,12 +189,14 @@ fun ConnectivityCheckCard(
                     modifier = modifier.size(dimensionResource(id = R.dimen.major_150))
                 )
                 is Success -> ResultIcon(
-                    icon = R.drawable.ic_rounded_chcekbox_checked,
-                    color = R.color.woo_green_50
+                    icon = Icons.Default.CheckCircle,
+                    color = R.color.woo_green_50,
+                    size = R.dimen.major_150
                 )
                 is Failure -> ResultIcon(
-                    icon = R.drawable.ic_rounded_chcekbox_partially_checked,
-                    color = R.color.woo_red_50
+                    icon = Icons.Default.Error,
+                    color = R.color.woo_red_50,
+                    size = R.dimen.major_175
                 )
                 is NotStarted -> { /* Do nothing */ }
             }
@@ -281,11 +287,12 @@ fun ConnectivitySummary(
 
 @Composable
 fun ResultIcon(
-    @DrawableRes icon: Int,
-    @ColorRes color: Int
+    icon: ImageVector,
+    @ColorRes color: Int,
+    @DimenRes size: Int
 ) {
     Image(
-        painter = painterResource(id = icon),
+        imageVector = icon,
         colorFilter = ColorFilter.tint(colorResource(id = color)),
         contentDescription = null
     )
