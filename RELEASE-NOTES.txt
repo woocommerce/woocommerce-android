@@ -1,7 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 18.2
 -----
-
+- [**] Payments: We sunsetting simple payments in favour of order creation flow with custom amount set [https://github.com/woocommerce/woocommerce-android/pull/11274]
 
 18.1
 -----
