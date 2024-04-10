@@ -57,13 +57,3 @@ val StatsTimeRangeSelection.visitorSummaryStatsGranularity: StatsGranularity
 
 val StatsTimeRangeSelection.myStoreTrackingGranularityString: String
     get() = selectionType.toDashBoardTrackingGranularityString()
-
-fun StatsGranularity.toIntervalString(): String{
-    return when(this){
-        StatsGranularity.HOURS -> "hour"
-        StatsGranularity.DAYS -> "day"
-        StatsGranularity.WEEKS -> "week"
-        StatsGranularity.MONTHS -> "month"
-        StatsGranularity.YEARS -> "year"
-    }
-}

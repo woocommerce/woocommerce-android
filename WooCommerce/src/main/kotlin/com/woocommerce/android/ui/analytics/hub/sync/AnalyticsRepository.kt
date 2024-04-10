@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
-import com.woocommerce.android.ui.analytics.ranges.toIntervalString
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
@@ -481,5 +480,15 @@ class AnalyticsRepository @Inject constructor(
         private val selectionType: SelectionType
     ) {
         val id: String = selectionType.identifier.asRevenueRangeId(timeRange.start, timeRange.end)
+    }
+}
+
+fun StatsGranularity.toIntervalString(): String {
+    return when (this) {
+        StatsGranularity.HOURS -> "hour"
+        StatsGranularity.DAYS -> "day"
+        StatsGranularity.WEEKS -> "week"
+        StatsGranularity.MONTHS -> "month"
+        StatsGranularity.YEARS -> "year"
     }
 }
