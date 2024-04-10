@@ -247,7 +247,7 @@ private fun formatSettingsData(data: JSONObject): String {
         sb.append(parseFormatTaxonomy(it, "Product Visibility") + "\n")
     }
 
-    sb.append("Connected to Woo.com: ${checkIfTrue(data.optBoolean("woocommerce_com_connected", false))}\n")
+    sb.append("Connected to WooCommerce.com: ${checkIfTrue(data.optBoolean("woocommerce_com_connected", false))}\n")
 
     return sb.toString()
 }
