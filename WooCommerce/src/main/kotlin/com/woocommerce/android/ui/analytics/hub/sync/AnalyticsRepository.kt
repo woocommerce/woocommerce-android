@@ -368,6 +368,7 @@ class AnalyticsRepository @Inject constructor(
     }
 
     suspend fun fetchGiftCardsStats(rangeSelection: StatsTimeRangeSelection) = coroutineScope {
+        val interval = rangeSelection.revenueStatsGranularity.toIntervalString()
         val currentPeriod = rangeSelection.currentRange
         val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
@@ -379,14 +380,16 @@ class AnalyticsRepository @Inject constructor(
         val currentGiftCardsStatsCall = async {
             statsRepository.fetchGiftCardStats(
                 startDate = currentStartDate,
-                endDate = currentEndDate
+                endDate = currentEndDate,
+                interval = interval
             )
         }
 
         val previousGiftCardsStatsCall = async {
             statsRepository.fetchGiftCardStats(
                 startDate = previousStartDate,
-                endDate = previousEndDate
+                endDate = previousEndDate,
+                interval = interval
             )
         }
 
@@ -405,8 +408,8 @@ class AnalyticsRepository @Inject constructor(
                 currentVal = currentGiftCardsStats.usedValue.toDouble(),
             )
 
-            val usedByInterval = currentGiftCardsStats.intervals.map { interval -> interval.usedValue }
-            val usedByRevenue = currentGiftCardsStats.intervals.map { interval -> interval.netValue }
+            val usedByInterval = currentGiftCardsStats.intervals.map { it.usedValue }
+            val usedByRevenue = currentGiftCardsStats.intervals.map { it.netValue }
 
             GiftCardResult.GiftCardData(
                 GiftCardsStat(
@@ -477,5 +480,15 @@ class AnalyticsRepository @Inject constructor(
         private val selectionType: SelectionType
     ) {
         val id: String = selectionType.identifier.asRevenueRangeId(timeRange.start, timeRange.end)
+    }
+}
+
+fun StatsGranularity.toIntervalString(): String {
+    return when (this) {
+        StatsGranularity.HOURS -> "hour"
+        StatsGranularity.DAYS -> "day"
+        StatsGranularity.WEEKS -> "week"
+        StatsGranularity.MONTHS -> "month"
+        StatsGranularity.YEARS -> "year"
     }
 }
