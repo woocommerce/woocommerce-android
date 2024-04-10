@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
+import com.woocommerce.android.ui.analytics.ranges.toIntervalString
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
@@ -368,6 +369,7 @@ class AnalyticsRepository @Inject constructor(
     }
 
     suspend fun fetchGiftCardsStats(rangeSelection: StatsTimeRangeSelection) = coroutineScope {
+        val interval = rangeSelection.revenueStatsGranularity.toIntervalString()
         val currentPeriod = rangeSelection.currentRange
         val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
         val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
@@ -379,14 +381,16 @@ class AnalyticsRepository @Inject constructor(
         val currentGiftCardsStatsCall = async {
             statsRepository.fetchGiftCardStats(
                 startDate = currentStartDate,
-                endDate = currentEndDate
+                endDate = currentEndDate,
+                interval = interval
             )
         }
 
         val previousGiftCardsStatsCall = async {
             statsRepository.fetchGiftCardStats(
                 startDate = previousStartDate,
-                endDate = previousEndDate
+                endDate = previousEndDate,
+                interval = interval
             )
         }
 
@@ -405,8 +409,8 @@ class AnalyticsRepository @Inject constructor(
                 currentVal = currentGiftCardsStats.usedValue.toDouble(),
             )
 
-            val usedByInterval = currentGiftCardsStats.intervals.map { interval -> interval.usedValue }
-            val usedByRevenue = currentGiftCardsStats.intervals.map { interval -> interval.netValue }
+            val usedByInterval = currentGiftCardsStats.intervals.map { it.usedValue }
+            val usedByRevenue = currentGiftCardsStats.intervals.map { it.netValue }
 
             GiftCardResult.GiftCardData(
                 GiftCardsStat(
