@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.connectivitytool
 
 import androidx.annotation.ColorRes
-import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -190,13 +189,11 @@ fun ConnectivityCheckCard(
                 )
                 is Success -> ResultIcon(
                     icon = Icons.Default.CheckCircle,
-                    color = R.color.woo_green_50,
-                    size = R.dimen.major_150
+                    color = R.color.woo_green_50
                 )
                 is Failure -> ResultIcon(
                     icon = Icons.Default.Error,
-                    color = R.color.woo_red_50,
-                    size = R.dimen.major_175
+                    color = R.color.woo_red_50
                 )
                 is NotStarted -> { /* Do nothing */ }
             }
@@ -288,8 +285,7 @@ fun ConnectivitySummary(
 @Composable
 fun ResultIcon(
     icon: ImageVector,
-    @ColorRes color: Int,
-    @DimenRes size: Int
+    @ColorRes color: Int
 ) {
     Image(
         imageVector = icon,
