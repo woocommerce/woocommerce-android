@@ -9,6 +9,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -20,6 +21,7 @@ class AnalyticsTracker private constructor(
     private val context: Context,
     private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs,
+    private val getWooVersion: GetWooCorePluginCachedVersion,
 ) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
@@ -655,8 +657,13 @@ class AnalyticsTracker private constructor(
                 }
             }
 
-        fun init(context: Context, selectedSite: SelectedSite, appPrefs: AppPrefs) {
-            instance = AnalyticsTracker(context.applicationContext, selectedSite, appPrefs)
+        fun init(
+            context: Context,
+            selectedSite: SelectedSite,
+            appPrefs: AppPrefs,
+            getWooVersion: GetWooCorePluginCachedVersion,
+        ) {
+            instance = AnalyticsTracker(context.applicationContext, selectedSite, appPrefs, getWooVersion)
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
