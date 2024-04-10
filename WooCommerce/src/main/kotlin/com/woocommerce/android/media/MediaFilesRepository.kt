@@ -1,6 +1,8 @@
 package com.woocommerce.android.media
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
@@ -36,6 +38,8 @@ import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.util.MediaUtils
 import java.io.File
+import java.io.FileDescriptor
+import java.io.IOException
 import javax.inject.Inject
 
 class MediaFilesRepository @Inject constructor(
@@ -79,6 +83,19 @@ class MediaFilesRepository @Inject constructor(
             }
             return@withContext mediaModel
         }
+    }
+
+    fun getBitmapFromUri(uri: String): Bitmap? {
+        try {
+            val parcelFileDescriptor = context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")
+            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+            val bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+            parcelFileDescriptor.close()
+            return bitmap
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
     }
 
     @OptIn(DelicateCoroutinesApi::class)

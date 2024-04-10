@@ -45,6 +45,7 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50f // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
         const val DEFAULT_CAMPAIGN_BUDGET_MODE = "total" // "total" or "daily" for campaigns that run without end date
+        const val BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS = 500 // Must be at least 500 x 500 pixels
     }
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
@@ -323,6 +324,21 @@ class BlazeRepository @Inject constructor(
 
         return result.onFailure {
             WooLog.w(WooLog.T.BLAZE, "Failed to prepare campaign image: ${it.message}")
+        }
+    }
+
+    fun isValidAdImage(uri: String): Boolean {
+        val bitmap = mediaFilesRepository.getBitmapFromUri(uri)
+        WooLog.w(WooLog.T.BLAZE, "MediaFilesRepository width: ${bitmap?.width}, height: ${bitmap?.height}")
+        return when {
+            bitmap == null -> {
+                WooLog.w(WooLog.T.BLAZE, "isValidAdImage: Failed to convert uri: $uri to bitmap")
+                false
+            }
+
+            bitmap.width < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> false
+            bitmap.height < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> false
+            else -> true
         }
     }
 

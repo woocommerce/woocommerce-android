@@ -27,6 +27,7 @@ import javax.inject.Inject
 class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val blazeRepository: BlazeRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val TAGLINE_MAX_LENGTH = 32
@@ -113,19 +114,23 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onLocalImageSelected(uri: String) {
-        _viewState.update {
-            it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
+        if (blazeRepository.isValidAdImage(uri)) {
+            _viewState.update {
+                it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
+            }
         }
     }
 
     fun onWPMediaSelected(image: Product.Image) {
-        _viewState.update {
-            it.copy(
-                adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
-                    mediaId = image.id,
-                    uri = image.source
+        if (blazeRepository.isValidAdImage(image.source)) {
+            _viewState.update {
+                it.copy(
+                    adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
+                        mediaId = image.id,
+                        uri = image.source
+                    )
                 )
-            )
+            }
         }
     }
 
