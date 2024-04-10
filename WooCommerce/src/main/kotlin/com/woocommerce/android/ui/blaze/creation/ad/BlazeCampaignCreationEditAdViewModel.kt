@@ -120,7 +120,9 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
                 _viewState.update {
                     it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
                 }
-            } else showInvalidIMageDialog()
+            } else {
+                showInvalidIMageDialog()
+            }
         }
     }
 
@@ -135,7 +137,9 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
                         )
                     )
                 }
-            } else showInvalidIMageDialog()
+            } else {
+                showInvalidIMageDialog()
+            }
         }
     }
 
