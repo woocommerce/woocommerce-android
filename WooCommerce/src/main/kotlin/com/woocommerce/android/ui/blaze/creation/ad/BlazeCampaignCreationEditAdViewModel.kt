@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_AI_SUGGESTION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_SAVE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -118,7 +119,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
             _viewState.update {
                 it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
             }
-        }
+        } else showInvalidIMageDialog()
     }
 
     fun onWPMediaSelected(image: Product.Image) {
@@ -131,7 +132,20 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
                     )
                 )
             }
-        }
+        } else showInvalidIMageDialog()
+    }
+
+    private fun showInvalidIMageDialog() {
+        triggerEvent(
+            Event.ShowDialog(
+                titleId = R.string.blaze_campaign_edit_ad_invalid_image_title,
+                messageId = R.string.blaze_campaign_edit_ad_invalid_image_description,
+                positiveButtonId = R.string.dialog_ok,
+                positiveBtnAction = { dialog, _ ->
+                    dialog.dismiss()
+                },
+            )
+        )
     }
 
     private fun updateSuggestion(suggestion: AiSuggestionForAd) {
