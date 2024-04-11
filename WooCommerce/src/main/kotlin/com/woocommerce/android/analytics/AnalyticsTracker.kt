@@ -9,6 +9,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -20,6 +21,7 @@ class AnalyticsTracker private constructor(
     private val context: Context,
     private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs,
+    private val getWooVersion: GetWooCorePluginCachedVersion,
 ) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
@@ -91,6 +93,8 @@ class AnalyticsTracker private constructor(
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
         selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
+
+        getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
 
         val propertiesJson = JSONObject(finalProperties)
         tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
@@ -204,16 +208,11 @@ class AnalyticsTracker private constructor(
         const val KEY_CUSTOM_FIELDS_SIZE = "custom_fields_size"
         const val KEY_WAITING_TIME = "waiting_time"
         const val KEY_IS_NON_ATOMIC = "is_non_atomic"
-        const val KEY_INDUSTRY_SLUG = "industry_slug"
-        const val KEY_USER_COMMERCE_JOURNEY = "user_commerce_journey"
-        const val KEY_ECOMMERCE_PLATFORMS = "ecommerce_platforms"
-        const val KEY_COUNTRY_CODE = "country_code"
         const val KEY_CAUSE = "cause"
         const val KEY_SCENARIO = "scenario"
         const val KEY_REASON = "reason"
         const val KEY_TAP = "tap"
         const val KEY_FAILURE = "failure"
-        const val KEY_IS_FREE_TRIAL = "is_free_trial"
         const val KEY_SCANNING_SOURCE = "source"
         const val KEY_SCANNING_BARCODE_FORMAT = "barcode_format"
         const val KEY_PRODUCT_ADDED_VIA = "added_via"
@@ -259,7 +258,6 @@ class AnalyticsTracker private constructor(
         const val VALUE_SEARCH_SKU = "sku"
         const val VALUE_SUBMIT = "submit"
         const val VALUE_DISMISS = "dismiss"
-        const val VALUE_SUPPORT = "support"
         const val VALUE_WP_COM = "wp_com"
         const val VALUE_NO_WP_COM = "no_wp_com"
         const val VALUE_PREVIOUS_PERIOD = "previous_period"
@@ -304,6 +302,7 @@ class AnalyticsTracker private constructor(
 
         const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
         const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
+        const val KEY_CACHED_WOO_VERSION = "cached_woo_core_version"
 
         const val KEY_PERIOD = "period"
         const val KEY_REPORT = "report"
@@ -312,7 +311,6 @@ class AnalyticsTracker private constructor(
         enum class OrderNoteType(val value: String) {
             CUSTOMER("customer"),
             PRIVATE("private"),
-            SYSTEM("system")
         }
 
         const val KEY_FEEDBACK_ACTION = "action"
@@ -402,7 +400,6 @@ class AnalyticsTracker private constructor(
         enum class ConnectedProductsListAction(val value: String) {
             ADD_TAPPED("add_tapped"),
             ADDED("added"),
-            DONE_TAPPED("done_tapped"),
             DELETE_TAPPED("delete_tapped")
         }
 
@@ -489,7 +486,6 @@ class AnalyticsTracker private constructor(
 
         // -- Jetpack Installation
         const val VALUE_JETPACK_INSTALLATION_SOURCE_WEB = "web"
-        const val VALUE_JETPACK_INSTALLATION_SOURCE_NATIVE = "native"
 
         // -- Jetpack Setup
         const val KEY_JETPACK_SETUP_IS_ALREADY_CONNECTED = "is_already_connected"
@@ -543,7 +539,6 @@ class AnalyticsTracker private constructor(
         const val IPP_LEARN_MORE_SOURCE = "source"
 
         // -- Domain change
-        const val VALUE_SETTINGS = "settings"
         const val VALUE_STEP_DASHBOARD = "dashboard"
         const val VALUE_STEP_PICKER = "picker"
         const val VALUE_STEP_CONTACT_INFO = "contact_info"
@@ -551,12 +546,8 @@ class AnalyticsTracker private constructor(
         const val KEY_USE_DOMAIN_CREDIT = "use_domain_credit"
 
         // -- Free Trial
-        const val KEY_FREE_TRIAL_SOURCE = "source"
-        const val KEY_SURVEY_OPTION = "survey_option"
-        const val KEY_SURVEY_FREE_TEXT = "free_text"
         const val VALUE_BANNER = "banner"
         const val VALUE_UPGRADES_SCREEN = "upgrades_screen"
-        const val VALUE_NOTIFICATION = "notification"
 
         // -- Store Onboarding
         const val ONBOARDING_TASK_KEY = "task"
@@ -579,7 +570,6 @@ class AnalyticsTracker private constructor(
         const val KEY_IS_RETRY = "is_retry"
         const val KEY_WITH_MESSAGE = "with_message"
         const val VALUE_PRODUCT_SHARING = "product_sharing"
-        const val VALUE_PRODUCT_SHARING_MESSAGE = "product_sharing_message"
 
         // -- AI product description
         const val VALUE_AZTEC_EDITOR = "aztec_editor"
@@ -595,7 +585,6 @@ class AnalyticsTracker private constructor(
 
         // -- Blaze
         const val KEY_BLAZE_SOURCE = "source"
-        const val KEY_BLAZE_STEP = "step"
         const val KEY_BLAZE_DURATION = "duration"
         const val KEY_BLAZE_TOTAL_BUDGET = "total_budget"
         const val KEY_BLAZE_IS_AI_CONTENT = "is_ai_suggested_ad_content"
@@ -634,7 +623,6 @@ class AnalyticsTracker private constructor(
 
         // Theme picker
         const val KEY_THEME_PICKER_SOURCE = "source"
-        const val VALUE_THEME_PICKER_SOURCE_STORE_CREATION = "store_creation"
         const val VALUE_THEME_PICKER_SOURCE_SETTINGS = "settings"
         const val KEY_THEME_PICKER_THEME = "theme"
         const val KEY_THEME_PICKER_LAYOUT_PREVIEW = "layout"
@@ -655,8 +643,13 @@ class AnalyticsTracker private constructor(
                 }
             }
 
-        fun init(context: Context, selectedSite: SelectedSite, appPrefs: AppPrefs) {
-            instance = AnalyticsTracker(context.applicationContext, selectedSite, appPrefs)
+        fun init(
+            context: Context,
+            selectedSite: SelectedSite,
+            appPrefs: AppPrefs,
+            getWooVersion: GetWooCorePluginCachedVersion,
+        ) {
+            instance = AnalyticsTracker(context.applicationContext, selectedSite, appPrefs, getWooVersion)
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
