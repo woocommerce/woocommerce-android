@@ -46,13 +46,18 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     }
 
     fun onNavigationButtonClicked() {
-        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_LOGIN_EXIT_CONFIRMATION)
-        triggerEvent(ShowExitConfirmationDialog)
+        if (_viewState.value.authorizationStarted) {
+            analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_LOGIN_EXIT_CONFIRMATION)
+            triggerEvent(ShowExitConfirmationDialog)
+        } else {
+            analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_LOGIN_DISMISSED)
+            triggerEvent(ExitWithResult(""))
+        }
     }
 
     fun onExitConfirmed() {
         analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_LOGIN_DISMISSED)
-        triggerEvent(ExitWithResult(null))
+        triggerEvent(ExitWithResult(""))
     }
 
     fun onWebViewDataAvailable(
