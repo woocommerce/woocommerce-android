@@ -1,3 +1,1 @@
-- [**] Payments: We are sunsetting simple payments in favour of the order creation flow with custom amount set [https://github.com/woocommerce/woocommerce-android/pull/11274]
-- [**] Stats: The Analytics Hub now includes analytics for Product Bundles and Gift Cards, when those extensions are active. [https://github.com/woocommerce/woocommerce-android/pull/11290]
-
+In our latest update, we're enhancing your WooCommerce experience! We're transitioning from simple payments to a more customizable order creation flow, enabling you to set the desired amount with ease. Plus, our improved Analytics Hub now provides insights into Product Bundles and Gift Cards, offering a more comprehensive view of your business stats, given those extensions are active. Enjoy the upgrade!
