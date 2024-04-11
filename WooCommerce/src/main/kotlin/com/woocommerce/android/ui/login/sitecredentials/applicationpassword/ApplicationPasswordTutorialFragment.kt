@@ -74,8 +74,8 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
         )
     }
 
-    private fun exitWithResult(url: String? = null) {
-        if (url == null) {
+    private fun exitWithResult(url: String = "") {
+        if (url.isEmpty()) {
             AnalyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_EXPLANATION_DISMISSED)
         }
 
