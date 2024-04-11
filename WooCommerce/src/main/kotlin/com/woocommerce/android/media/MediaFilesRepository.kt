@@ -100,7 +100,6 @@ class MediaFilesRepository @Inject constructor(
                     parcelFileDescriptor.close()
                 }
                 return@withContext ImageDimensions(options.outWidth, options.outHeight)
-
             } catch (e: IOException) {
                 e.printStackTrace()
             }
