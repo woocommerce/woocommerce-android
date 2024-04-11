@@ -83,24 +83,7 @@ class AnalyticsTracker private constructor(
                 TracksClient.NosaraUserType.ANON
             }
 
-            val finalProperties = properties.toMutableMap()
-
-            val selectedSiteModel = selectedSite.getOrNull()
-            if (!stat.siteless) {
-                selectedSiteModel?.let {
-                    if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
-                    finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
-                    finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
-                    finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
-                    appPrefs.getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
-                }
-            }
-            finalProperties[IS_DEBUG] = BuildConfig.DEBUG
-            selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
-
-            getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
-
-            val propertiesJson = JSONObject(finalProperties)
+            val propertiesJson = JSONObject(properties.buildFinalProperties(stat.siteless))
             tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
 
             if (propertiesJson.length() > 0) {
@@ -109,6 +92,26 @@ class AnalyticsTracker private constructor(
                 WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
             }
         }
+    }
+
+    private fun Map<String, *>.buildFinalProperties(siteLess: Boolean): MutableMap<String, Any?> {
+        val finalProperties = this.toMutableMap()
+
+        val selectedSiteModel = selectedSite.getOrNull()
+        if (!siteLess) {
+            selectedSiteModel?.let {
+                if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
+                finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
+                finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
+                finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
+                appPrefs.getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
+            }
+        }
+        finalProperties[IS_DEBUG] = BuildConfig.DEBUG
+        selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
+        getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
+
+        return finalProperties
     }
 
     private fun flush() {
