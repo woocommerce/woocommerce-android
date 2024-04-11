@@ -3823,6 +3823,8 @@
     <string name="blaze_campaign_edit_ad_change_description_title">Description</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Invalid image</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Please select and image with a minimum dimension of 500x500 pixels</string>
 
     <!--
     Blaze campaign payment

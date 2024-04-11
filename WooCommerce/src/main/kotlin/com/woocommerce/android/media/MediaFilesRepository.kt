@@ -1,7 +1,10 @@
 package com.woocommerce.android.media
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.graphics.BitmapFactory.Options
 import android.net.Uri
+import android.util.Patterns
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
@@ -36,6 +39,9 @@ import org.wordpress.android.fluxc.store.MediaStore.OnMediaUploaded
 import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.util.MediaUtils
 import java.io.File
+import java.io.FileDescriptor
+import java.io.IOException
+import java.net.URL
 import javax.inject.Inject
 
 class MediaFilesRepository @Inject constructor(
@@ -78,6 +84,26 @@ class MediaFilesRepository @Inject constructor(
                 WooLog.w(T.MEDIA, "MediaFilesRepository > null media")
             }
             return@withContext mediaModel
+        }
+    }
+
+    suspend fun getImageDimensions(uri: String): ImageDimensions {
+        return withContext(dispatchers.io) {
+            try {
+                val options = Options().apply { inJustDecodeBounds = true }
+                if (Patterns.WEB_URL.matcher(uri).matches()) {
+                    BitmapFactory.decodeStream(URL(uri).openConnection().getInputStream(), null, options)
+                } else {
+                    val parcelFileDescriptor = context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")
+                    val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+                    BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options)
+                    parcelFileDescriptor.close()
+                }
+                return@withContext ImageDimensions(options.outWidth, options.outHeight)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            return@withContext ImageDimensions(width = 0, height = 0)
         }
     }
 
@@ -222,4 +248,6 @@ class MediaFilesRepository @Inject constructor(
         data class UploadSuccess(val media: MediaModel) : UploadResult()
         data class UploadFailure(val error: MediaUploadException) : UploadResult()
     }
+
+    data class ImageDimensions(val width: Int, val height: Int)
 }
