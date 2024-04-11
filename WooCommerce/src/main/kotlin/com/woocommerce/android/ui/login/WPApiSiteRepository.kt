@@ -20,7 +20,13 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_RESPONSE
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.NOT_AUTHENTICATED
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordCredentials
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -29,7 +35,6 @@ import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.login.util.SiteUtils
 import java.net.CookieManager
 import javax.inject.Inject
-import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error
 
 class WPApiSiteRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -158,52 +163,40 @@ class WPApiSiteRepository @Inject constructor(
         dispatcher.dispatchAndAwait<SiteModel, OnSiteChanged>(SiteActionBuilder.newUpdateSiteAction(site))
     }
 
-    private fun Error.mapToException():
-        CookieNonceAuthenticationException {
-        val networkStatusCode = networkError?.volleyError?.networkResponse?.statusCode ?: run {
-            if (type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ||
-                type == Nonce.CookieNonceErrorType.INVALID_RESPONSE
-            ) {
-                // If we don't have a network status code, and the error is either NOT_AUTHENTICATED or
-                // INVALID_RESPONSE, we can assume the response was 200
-                @Suppress("MagicNumber")
-                200
-            } else {
-                null
-            }
+    private fun Error.mapToException(): CookieNonceAuthenticationException {
+        val networkStatusCode = extractNetworkStatusCode()
+
+        val errorMessage = if (networkStatusCode != null) {
+            UiStringRes(
+                string.login_site_credentials_http_error,
+                listOf(UiStringText(networkStatusCode.toString()))
+            )
+        } else {
+            this.asUiString()
         }
 
         return CookieNonceAuthenticationException(
-            asUiString(networkStatusCode),
+            errorMessage,
             type,
             networkStatusCode
         )
     }
 
-    private fun Error.asUiString(
-        networkStatusCode: Int?
-    ) = when {
-        type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ->
-            message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
+    /**
+     * If we don't have a network status code, and the error is either NOT_AUTHENTICATED or
+     * INVALID_RESPONSE, we can assume the response was 200
+     */
+    private fun Error.extractNetworkStatusCode() =
+        networkError?.volleyError?.networkResponse?.statusCode
+            ?: takeIf { type == NOT_AUTHENTICATED || type == INVALID_RESPONSE }
+                ?.let { HTTP_SUCCESS }
 
-        type == Nonce.CookieNonceErrorType.INVALID_CREDENTIALS ->
-            UiStringRes(string.login_invalid_credentials_message)
-
-        type == Nonce.CookieNonceErrorType.INVALID_RESPONSE ->
-            UiStringRes(string.login_site_credentials_invalid_response)
-
-        type == Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL ->
-            UiStringRes(string.login_site_credentials_custom_login_url)
-
-        type == Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL ->
-            UiStringRes(string.login_site_credentials_custom_admin_url)
-
-        networkStatusCode != null ->
-            UiStringRes(
-                string.login_site_credentials_http_error,
-                listOf(UiStringText(networkStatusCode.toString()))
-            )
-
+    private fun Error.asUiString() = when (type) {
+        NOT_AUTHENTICATED -> message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
+        INVALID_CREDENTIALS -> UiStringRes(string.login_invalid_credentials_message)
+        INVALID_RESPONSE -> UiStringRes(string.login_site_credentials_invalid_response)
+        CUSTOM_LOGIN_URL -> UiStringRes(string.login_site_credentials_custom_login_url)
+        CUSTOM_ADMIN_URL -> UiStringRes(string.login_site_credentials_custom_admin_url)
         else -> message?.let { UiStringText(it) } ?: UiStringRes(string.error_generic)
     }
 
@@ -212,4 +205,8 @@ class WPApiSiteRepository @Inject constructor(
         val errorType: Nonce.CookieNonceErrorType,
         val networkStatusCode: Int?
     ) : Exception((errorMessage as? UiStringText)?.text)
+
+    companion object {
+        const val HTTP_SUCCESS = 200
+    }
 }
