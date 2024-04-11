@@ -10,14 +10,12 @@ enum class FeatureFlag {
     MORE_MENU_INBOX,
     WC_SHIPPING_BANNER,
     OTHER_PAYMENT_METHODS,
-    MIGRATION_SIMPLE_PAYMENTS,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     CUSTOM_RANGE_ANALYTICS,
     CONNECTIVITY_TOOL,
     NEW_SHIPPING_SUPPORT,
     DYNAMIC_DASHBOARD,
-    EAH_I3,
     APP_PASSWORD_TUTORIAL;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -27,12 +25,10 @@ enum class FeatureFlag {
             }
 
             OTHER_PAYMENT_METHODS,
-            MIGRATION_SIMPLE_PAYMENTS,
             MORE_MENU_INBOX,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE,
-            EAH_I3 -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
 
             DYNAMIC_DASHBOARD -> false
 

@@ -216,6 +216,8 @@ fun AnalyticCardConfiguration.toConfigurationUI(activePluginCards: Set<Analytics
     } else {
         val url = when (this.card) {
             AnalyticsCards.Bundles -> PluginUrls.BUNDLES_URL
+            AnalyticsCards.GiftCards -> PluginUrls.GIFT_CARDS_URL
+            AnalyticsCards.Session -> PluginUrls.JETPACK_URL
             else -> MARKETPLACE
         }
         AnalyticCardConfigurationUI.ExploreCardConfigurationUI(
