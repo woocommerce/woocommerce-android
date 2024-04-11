@@ -13,6 +13,8 @@ import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.Locale
 import java.util.UUID
@@ -22,6 +24,7 @@ class AnalyticsTracker private constructor(
     private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs,
     private val getWooVersion: GetWooCorePluginCachedVersion,
+    private val appCoroutineScope: CoroutineScope,
 ) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
@@ -65,44 +68,46 @@ class AnalyticsTracker private constructor(
     }
 
     private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
-        if (tracksClient == null) {
-            return
-        }
-
-        val eventName = stat.name.lowercase(Locale.getDefault())
-
-        val user = username ?: getAnonID() ?: generateNewAnonID()
-
-        val userType = if (username != null) {
-            TracksClient.NosaraUserType.WPCOM
-        } else {
-            TracksClient.NosaraUserType.ANON
-        }
-
-        val finalProperties = properties.toMutableMap()
-
-        val selectedSiteModel = selectedSite.getOrNull()
-        if (!stat.siteless) {
-            selectedSiteModel?.let {
-                if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
-                finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
-                finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
-                finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
-                appPrefs.getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
+        appCoroutineScope.launch {
+            if (tracksClient == null) {
+                return@launch
             }
-        }
-        finalProperties[IS_DEBUG] = BuildConfig.DEBUG
-        selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
 
-        getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
+            val eventName = stat.name.lowercase(Locale.getDefault())
 
-        val propertiesJson = JSONObject(finalProperties)
-        tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+            val user = username ?: getAnonID() ?: generateNewAnonID()
 
-        if (propertiesJson.length() > 0) {
-            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
-        } else {
-            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
+            val userType = if (username != null) {
+                TracksClient.NosaraUserType.WPCOM
+            } else {
+                TracksClient.NosaraUserType.ANON
+            }
+
+            val finalProperties = properties.toMutableMap()
+
+            val selectedSiteModel = selectedSite.getOrNull()
+            if (!stat.siteless) {
+                selectedSiteModel?.let {
+                    if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
+                    finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
+                    finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
+                    finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
+                    appPrefs.getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
+                }
+            }
+            finalProperties[IS_DEBUG] = BuildConfig.DEBUG
+            selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
+
+            getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
+
+            val propertiesJson = JSONObject(finalProperties)
+            tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+
+            if (propertiesJson.length() > 0) {
+                WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
+            } else {
+                WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
+            }
         }
     }
 
@@ -648,8 +653,15 @@ class AnalyticsTracker private constructor(
             selectedSite: SelectedSite,
             appPrefs: AppPrefs,
             getWooVersion: GetWooCorePluginCachedVersion,
+            appCoroutineScope: CoroutineScope,
         ) {
-            instance = AnalyticsTracker(context.applicationContext, selectedSite, appPrefs, getWooVersion)
+            instance = AnalyticsTracker(
+                context.applicationContext,
+                selectedSite,
+                appPrefs,
+                getWooVersion,
+                appCoroutineScope
+            )
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
