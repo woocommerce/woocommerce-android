@@ -158,6 +158,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * This is currently a unreachable event due to the current usage of the application passwords feature
+     * available in the [ShowApplicationPasswordTutorialScreen] event, but it's kept here for future reference
+     * in case we need to start the Authorization from here back again.
+     */
     fun onStartWebAuthorizationClick() {
         state.value = State.WebAuthorization
         analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_WEB_VIEW_SHOWN)
