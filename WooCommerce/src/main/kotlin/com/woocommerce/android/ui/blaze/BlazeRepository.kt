@@ -328,15 +328,14 @@ class BlazeRepository @Inject constructor(
     }
 
     suspend fun isValidAdImage(uri: String): Boolean {
-        val bitmap = mediaFilesRepository.getBitmapFromUri(uri)
+        val (width, height) = mediaFilesRepository.getImageDimensions(uri)
         return when {
-            bitmap == null -> {
-                WooLog.w(WooLog.T.BLAZE, "isValidAdImage: Failed to convert uri: $uri to bitmap")
+            width == 0 || height == 0 -> {
+                WooLog.w(WooLog.T.BLAZE, "isValidAdImage uri: Failed to get image dimens from uri: $uri")
                 false
             }
 
-            bitmap.width < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> false
-            bitmap.height < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> false
+            width < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS || height < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> false
             else -> true
         }
     }

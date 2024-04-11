@@ -1,8 +1,8 @@
 package com.woocommerce.android.media
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.BitmapFactory.Options
 import android.net.Uri
 import android.util.Patterns
 import com.woocommerce.android.OnChangedException
@@ -87,22 +87,24 @@ class MediaFilesRepository @Inject constructor(
         }
     }
 
-    suspend fun getBitmapFromUri(uri: String): Bitmap? {
+    suspend fun getImageDimensions(uri: String): ImageDimensions {
         return withContext(dispatchers.io) {
             try {
-                return@withContext if (Patterns.WEB_URL.matcher(uri).matches()) {
-                    BitmapFactory.decodeStream(URL(uri).openConnection().getInputStream())
+                val options = Options().apply { inJustDecodeBounds = true }
+                if (Patterns.WEB_URL.matcher(uri).matches()) {
+                    BitmapFactory.decodeStream(URL(uri).openConnection().getInputStream(), null, options)
                 } else {
                     val parcelFileDescriptor = context.contentResolver.openFileDescriptor(Uri.parse(uri), "r")
                     val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-                    val bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+                    BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options)
                     parcelFileDescriptor.close()
-                    return@withContext bitmap
                 }
+                return@withContext ImageDimensions(options.outWidth, options.outHeight)
+
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-            return@withContext null
+            return@withContext ImageDimensions(width = 0, height = 0)
         }
     }
 
@@ -247,4 +249,6 @@ class MediaFilesRepository @Inject constructor(
         data class UploadSuccess(val media: MediaModel) : UploadResult()
         data class UploadFailure(val error: MediaUploadException) : UploadResult()
     }
+
+    data class ImageDimensions(val width: Int, val height: Int)
 }
