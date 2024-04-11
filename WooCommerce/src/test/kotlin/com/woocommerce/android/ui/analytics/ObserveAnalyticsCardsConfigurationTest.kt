@@ -46,7 +46,7 @@ class ObserveAnalyticsCardsConfigurationTest : BaseUnitTest() {
 
     @Test
     fun `when there is NO saved configuration, the default configuration is retrieved`() = testBlocking {
-        val defaultPluginCardsActive = setOf(AnalyticsCards.Bundles)
+        val defaultPluginCardsActive = setOf(AnalyticsCards.Bundles, AnalyticsCards.Session)
         whenever(resourcesRepository.getDefaultAnalyticsCardsConfiguration()).thenReturn(defaultConfiguration)
         whenever(settingsDataStore.observeCardsConfiguration()).thenReturn(flowOf(null))
         whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
@@ -58,7 +58,7 @@ class ObserveAnalyticsCardsConfigurationTest : BaseUnitTest() {
 
     @Test
     fun `when there is a configuration saved, the saved configuration is retrieved`() = testBlocking {
-        val defaultPluginCardsActive = setOf(AnalyticsCards.Bundles)
+        val defaultPluginCardsActive = setOf(AnalyticsCards.Bundles, AnalyticsCards.Session)
 
         whenever(settingsDataStore.observeCardsConfiguration()).thenReturn(flowOf(savedConfiguration))
         whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(defaultPluginCardsActive)
@@ -84,7 +84,7 @@ class ObserveAnalyticsCardsConfigurationTest : BaseUnitTest() {
     @Test
     fun `when the configuration contains plugin card as visible and the plugin is active, then show the card`() =
         testBlocking {
-            val pluginCardsActive = setOf(AnalyticsCards.Bundles)
+            val pluginCardsActive = setOf(AnalyticsCards.Bundles, AnalyticsCards.Session)
             whenever(settingsDataStore.observeCardsConfiguration()).thenReturn(flowOf(defaultConfiguration))
             whenever(getAnalyticPluginsCardActive.invoke()).thenReturn(pluginCardsActive)
 
@@ -96,7 +96,7 @@ class ObserveAnalyticsCardsConfigurationTest : BaseUnitTest() {
     @Test
     fun `when the saved configuration has an outdated cards number, then merge the outdated configuration with the default one`() =
         testBlocking {
-            val pluginCardsActive = setOf(AnalyticsCards.Bundles)
+            val pluginCardsActive = setOf(AnalyticsCards.Bundles, AnalyticsCards.Session)
             val configuration = defaultConfiguration.map { it.copy(isVisible = false) }.dropLast(2)
             whenever(resourcesRepository.getDefaultAnalyticsCardsConfiguration()).thenReturn(defaultConfiguration)
             whenever(settingsDataStore.observeCardsConfiguration()).thenReturn(flowOf(configuration))

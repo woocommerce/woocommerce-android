@@ -68,7 +68,6 @@
                 <data android:scheme="https"/>
 
                 <data android:host="woocommerce.com"/>
-                <data android:host="woo.com"/>
 
                 <data android:path="/mobile/orders/details"/>
                 <data android:path="/mobile/payments"/>

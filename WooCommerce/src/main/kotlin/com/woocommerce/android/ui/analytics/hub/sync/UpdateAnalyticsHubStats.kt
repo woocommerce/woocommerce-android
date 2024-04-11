@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.analytics.hub.sync
 
 import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.BundleStat
-import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
@@ -15,7 +14,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -233,38 +231,12 @@ class UpdateAnalyticsHubStats @Inject constructor(
             ?: _bundlesState.update { BundlesState.Error }
     }
 
-    @Suppress("MagicNumber")
     private fun CoroutineScope.fetchGiftCardDataAsync(
         rangeSelection: StatsTimeRangeSelection
     ) = async {
-        delay(4000)
-        rangeSelection.currentRange
-        _giftCardsState.update {
-            GiftCardsState.Available(
-                GiftCardsStat(
-                    usedValue = 45,
-                    usedDelta = DeltaPercentage.Value(34),
-                    netValue = 345.45,
-                    netDelta = DeltaPercentage.Value(57),
-                    currencyCode = null,
-                    usedByInterval = listOf(5, 0, 0, 4, 4, 2, 10, 5, 3, 3, 3, 1, 5),
-                    netRevenueByInterval = listOf(
-                        80.45,
-                        0.0,
-                        0.0,
-                        20.0,
-                        60.0,
-                        10.0,
-                        30.0,
-                        10.0,
-                        10.0,
-                        10.0,
-                        10.0,
-                        5.0,
-                        100.0
-                    )
-                )
-            )
-        }
+        analyticsRepository.fetchGiftCardsStats(rangeSelection)
+            .run { this as? AnalyticsRepository.GiftCardResult.GiftCardData }
+            ?.let { _giftCardsState.value = GiftCardsState.Available(it.giftCardStat) }
+            ?: _giftCardsState.update { GiftCardsState.Error }
     }
 }

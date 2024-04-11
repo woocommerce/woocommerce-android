@@ -256,6 +256,6 @@ class OrderConnectivityToolViewModel @Inject constructor(
         const val jetpackTroubleshootingUrl =
             "https://jetpack.com/support/reconnecting-reinstalling-jetpack/"
         const val genericTroubleshootingUrl =
-            "https://woo.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
+            "https://woocommerce.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
     }
 }

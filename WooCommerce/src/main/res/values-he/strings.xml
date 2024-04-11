@@ -736,7 +736,7 @@ Language: he_IL
     <string name="settings_privacy_header">פרטיות</string>
     <string name="settings_usage_tracking_description">למידע נוסף על הנתונים שאנחנו אוספים לגביך ומאחסנים ועל האפשרויות שיש לך לשלוט בשיתוף הנתונים האלו.</string>
     <string name="settings_usage_tracking">מעקב אחר השימוש</string>
-    <string name="settings_web_options_description">אפשרויות פרטיות נוספות עבור משתמשי woo.com. לרשותך כאן מידע נוסף.</string>
+    <string name="settings_web_options_description">אפשרויות פרטיות נוספות עבור משתמשי woocommerce.com. לרשותך כאן מידע נוסף.</string>
     <string name="settings_web_options">אפשרויות באינטרנט</string>
     <string name="settings_more_privacy_options_header">אפשרויות פרטיות נוספות</string>
     <string name="settings_tracking_analytics_error_update">אירעה שגיאה בעדכון הגדרות הפרטיות שלך</string>

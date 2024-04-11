@@ -32,7 +32,7 @@ class AnalyticsHubSettingsViewModel @Inject constructor(
 
     companion object {
         const val LOADING_DELAY_MS = 500L
-        const val MARKETPLACE = "https://woo.com/products/"
+        const val MARKETPLACE = "https://woocommerce.com/products/"
     }
 
     val viewStateData: LiveDataDelegate<AnalyticsHubSettingsViewState> =
@@ -216,6 +216,8 @@ fun AnalyticCardConfiguration.toConfigurationUI(activePluginCards: Set<Analytics
     } else {
         val url = when (this.card) {
             AnalyticsCards.Bundles -> PluginUrls.BUNDLES_URL
+            AnalyticsCards.GiftCards -> PluginUrls.GIFT_CARDS_URL
+            AnalyticsCards.Session -> PluginUrls.JETPACK_URL
             else -> MARKETPLACE
         }
         AnalyticCardConfigurationUI.ExploreCardConfigurationUI(

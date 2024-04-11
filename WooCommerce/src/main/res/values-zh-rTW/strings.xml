@@ -736,7 +736,7 @@ Language: zh_TW
     <string name="settings_privacy_header">隱私權</string>
     <string name="settings_usage_tracking_description">深入瞭解我們針對你的商店收集了哪些資料，以及您可使用的資料分享控制選項。</string>
     <string name="settings_usage_tracking">使用情況追蹤</string>
-    <string name="settings_web_options_description">woo.com 為使用者提供更多隱私權選項。 如要瞭解詳情，請查看此處。</string>
+    <string name="settings_web_options_description">woocommerce.com 為使用者提供更多隱私權選項。 如要瞭解詳情，請查看此處。</string>
     <string name="settings_web_options">網頁選項</string>
     <string name="settings_more_privacy_options_header">其他隱私權選項</string>
     <string name="settings_tracking_analytics_error_update">更新你的隱私權設定時發生錯誤</string>

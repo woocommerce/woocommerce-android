@@ -24,6 +24,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowOutward
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +33,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -185,11 +188,11 @@ fun ConnectivityCheckCard(
                     modifier = modifier.size(dimensionResource(id = R.dimen.major_150))
                 )
                 is Success -> ResultIcon(
-                    icon = R.drawable.ic_rounded_chcekbox_checked,
+                    icon = Icons.Default.CheckCircle,
                     color = R.color.woo_green_50
                 )
                 is Failure -> ResultIcon(
-                    icon = R.drawable.ic_rounded_chcekbox_partially_checked,
+                    icon = Icons.Default.Error,
                     color = R.color.woo_red_50
                 )
                 is NotStarted -> { /* Do nothing */ }
@@ -249,30 +252,36 @@ fun ConnectivitySummary(
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
             modifier = modifier
-                .padding(dimensionResource(id = R.dimen.major_100))
+                .padding(vertical = dimensionResource(id = R.dimen.major_100))
+                .padding(start = dimensionResource(id = R.dimen.major_100))
         ) {
-            Text(
-                text = stringResource(id = R.string.orderlist_connectivity_tool_summary_title),
-                fontWeight = FontWeight.Bold,
+            Column(
                 modifier = modifier
-                    .fillMaxHeight()
-            )
-
-            Text(
-                text = stringResource(id = R.string.orderlist_connectivity_tool_summary_suggestion),
-                style = MaterialTheme.typography.body2
-            )
-
-            WCTextButton(
-                allCaps = false,
-                onClick = onReturnClick,
-                text = stringResource(id = R.string.orderlist_connectivity_tool_return_action),
-                icon = Icons.Default.ArrowBack,
-                contentPadding = PaddingValues(
-                    vertical = dimensionResource(id = R.dimen.minor_100),
-                    horizontal = dimensionResource(id = R.dimen.minor_00)
+                    .padding(end = dimensionResource(id = R.dimen.major_100))
+            ) {
+                Text(
+                    text = stringResource(id = R.string.orderlist_connectivity_tool_summary_title),
+                    fontWeight = FontWeight.Bold,
+                    modifier = modifier
+                        .fillMaxHeight()
                 )
-            )
+
+                Text(
+                    text = stringResource(id = R.string.orderlist_connectivity_tool_summary_suggestion),
+                    style = MaterialTheme.typography.body2
+                )
+
+                WCTextButton(
+                    allCaps = false,
+                    onClick = onReturnClick,
+                    text = stringResource(id = R.string.orderlist_connectivity_tool_return_action),
+                    icon = Icons.Default.ArrowBack,
+                    contentPadding = PaddingValues(
+                        vertical = dimensionResource(id = R.dimen.minor_100),
+                        horizontal = dimensionResource(id = R.dimen.minor_00)
+                    )
+                )
+            }
 
             Divider()
         }
@@ -281,11 +290,11 @@ fun ConnectivitySummary(
 
 @Composable
 fun ResultIcon(
-    @DrawableRes icon: Int,
+    icon: ImageVector,
     @ColorRes color: Int
 ) {
     Image(
-        painter = painterResource(id = icon),
+        imageVector = icon,
         colorFilter = ColorFilter.tint(colorResource(id = color)),
         contentDescription = null
     )
