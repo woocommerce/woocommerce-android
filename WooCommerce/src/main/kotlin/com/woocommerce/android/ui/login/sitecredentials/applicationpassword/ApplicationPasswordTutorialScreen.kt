@@ -1,8 +1,11 @@
-package com.woocommerce.android.ui.login.applicationpassword
+package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,34 +16,97 @@ import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCWebView
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import org.wordpress.android.fluxc.network.UserAgent
 
 @Composable
 fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialViewModel) {
+    val viewState = viewModel.viewState.observeAsState()
     ApplicationPasswordTutorialScreen(
+        authorizationStarted = viewState.value?.authorizationStarted ?: false,
+        errorMessageRes = viewState.value?.errorMessage,
+        webViewUrl = viewState.value?.authorizationUrl.orEmpty(),
+        webViewUserAgent = viewModel.userAgent,
         onContinueClicked = viewModel::onContinueClicked,
-        onContactSupportClicked = viewModel::onContactSupportClicked
+        onContactSupportClicked = viewModel::onContactSupportClicked,
+        onPageLoaded = viewModel::onWebPageLoaded,
+        onNavigationButtonClicked = viewModel::onNavigationButtonClicked
     )
 }
 
 @Composable
 fun ApplicationPasswordTutorialScreen(
     modifier: Modifier = Modifier,
+    authorizationStarted: Boolean,
+    webViewUrl: String,
+    webViewUserAgent: UserAgent?,
+    @StringRes errorMessageRes: Int?,
+    onPageLoaded: (String) -> Unit,
+    onContinueClicked: () -> Unit,
+    onContactSupportClicked: () -> Unit,
+    onNavigationButtonClicked: () -> Unit
+) {
+    Scaffold(
+        topBar = {
+            Toolbar(
+                onNavigationButtonClick = onNavigationButtonClicked,
+                navigationIcon = when {
+                    authorizationStarted -> Icons.Filled.Close
+                    else -> Icons.Filled.ArrowBack
+                }
+            )
+        }
+    ) { paddingValues ->
+        if (authorizationStarted && webViewUserAgent != null) {
+            WCWebView(
+                url = webViewUrl,
+                userAgent = webViewUserAgent,
+                onPageFinished = onPageLoaded,
+                modifier = modifier
+            )
+        } else {
+            TutorialContentScreen(
+                modifier = modifier,
+                paddingValues = paddingValues,
+                errorMessageRes = errorMessageRes,
+                onContinueClicked = onContinueClicked,
+                onContactSupportClicked = onContactSupportClicked
+            )
+        }
+    }
+}
+
+@Composable
+private fun TutorialContentScreen(
+    modifier: Modifier,
+    paddingValues: PaddingValues,
+    @StringRes errorMessageRes: Int?,
     onContinueClicked: () -> Unit,
     onContactSupportClicked: () -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .background(MaterialTheme.colors.surface)
     ) {
         Column(
             modifier = modifier.verticalScroll(rememberScrollState())
@@ -54,7 +120,7 @@ fun ApplicationPasswordTutorialScreen(
                     style = MaterialTheme.typography.h4,
                     fontWeight = FontWeight.Bold
                 )
-                Text(stringResource(id = R.string.login_app_password_subtitle))
+                Text(stringResource(id = errorMessageRes ?: R.string.login_app_password_subtitle))
             }
 
             Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
@@ -70,7 +136,10 @@ fun ApplicationPasswordTutorialScreen(
                 Image(
                     painter = painterResource(id = R.drawable.app_password_tutorial_hint),
                     contentDescription = null,
-                    modifier = modifier.align(alignment = Alignment.CenterHorizontally)
+                    contentScale = ContentScale.FillWidth,
+                    modifier = modifier
+                        .align(alignment = Alignment.CenterHorizontally)
+                        .fillMaxSize()
                 )
 
                 Text(stringResource(id = R.string.login_app_password_instructions_step_3))
@@ -114,8 +183,14 @@ fun ApplicationPasswordTutorialScreen(
 fun ApplicationPasswordTutorialScreenPreview() {
     WooThemeWithBackground {
         ApplicationPasswordTutorialScreen(
+            authorizationStarted = false,
+            errorMessageRes = R.string.login_app_password_subtitle,
+            webViewUrl = "",
+            webViewUserAgent = null,
             onContinueClicked = { },
-            onContactSupportClicked = { }
+            onContactSupportClicked = { },
+            onPageLoaded = { },
+            onNavigationButtonClicked = { }
         )
     }
 }

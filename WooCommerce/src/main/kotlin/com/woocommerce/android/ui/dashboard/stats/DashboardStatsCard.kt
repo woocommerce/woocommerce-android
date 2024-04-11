@@ -18,9 +18,10 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.rememberNavController
+import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
-import com.woocommerce.android.ui.dashboard.JetpackBenefitsBannerUiModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -34,10 +35,14 @@ fun DashboardStatsCard(
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     onPluginUnavailableError: () -> Unit,
-    reportJetpackPluginStatus: (JetpackBenefitsBannerUiModel?) -> Unit,
     onStatsError: () -> Unit,
     openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
-    viewModel: DashboardStatsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    parentViewModel: DashboardViewModel,
+    viewModel: DashboardStatsViewModel = viewModelWithFactory<DashboardStatsViewModel, DashboardStatsViewModel.Factory>(
+        creationCallback = {
+            it.create(parentViewModel)
+        }
+    )
 ) {
     val customRange by viewModel.customRange.observeAsState()
     val selectedDateRange by viewModel.selectedDateRange.observeAsState()
@@ -51,12 +56,6 @@ fun DashboardStatsCard(
             is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError -> onPluginUnavailableError()
             else -> Unit
         }
-    }
-
-    LaunchedEffect(visitorsStatsState) {
-        reportJetpackPluginStatus(
-            (visitorsStatsState as? DashboardStatsViewModel.VisitorStatsViewState.Unavailable)?.benefitsBanner
-        )
     }
 
     HandleEvents(
@@ -176,9 +175,13 @@ fun DashboardStatsCard(
                 statsView.showSkeleton(false)
             }
 
-            DashboardStatsViewModel.RevenueStatsViewState.Loading -> {
+            is DashboardStatsViewModel.RevenueStatsViewState.Loading -> {
                 statsView.showErrorView(false)
                 statsView.showSkeleton(true)
+                if (revenueStatsState.isForced) {
+                    statsView.clearStatsHeaderValues()
+                    statsView.clearChartData()
+                }
             }
 
             else -> Unit

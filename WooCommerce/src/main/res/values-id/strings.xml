@@ -736,7 +736,7 @@ Language: id
     <string name="settings_privacy_header">Privasi</string>
     <string name="settings_usage_tracking_description">Pelajari selengkapnya tentang data yang kami kumpulkan seputar toko Anda dan pilihan Anda dalam mengelola pembagian data.</string>
     <string name="settings_usage_tracking">Pelacakan Penggunaan</string>
-    <string name="settings_web_options_description">Tersedia pilihan privasi lainnya untuk pengguna woo.com. Lihat di sini untuk membaca selengkapnya.</string>
+    <string name="settings_web_options_description">Tersedia pilihan privasi lainnya untuk pengguna woocommerce.com. Lihat di sini untuk membaca selengkapnya.</string>
     <string name="settings_web_options">Pilihan Web</string>
     <string name="settings_more_privacy_options_header">Pilihan privasi lainnya</string>
     <string name="settings_tracking_analytics_error_update">Terjadi error saat memperbarui pengaturan privasi Anda</string>

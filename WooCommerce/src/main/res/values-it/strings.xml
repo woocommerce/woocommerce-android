@@ -736,7 +736,7 @@ Language: it
     <string name="settings_privacy_header">Privacy</string>
     <string name="settings_usage_tracking_description">Scopri di più sui dati che raccogliamo sul tuo negozio e sulle tue opzioni per il controllo di questa condivisione dei dati.</string>
     <string name="settings_usage_tracking">Tracciabilità dell\'utilizzo</string>
-    <string name="settings_web_options_description">Per gli utenti di woo.com sono disponibili ulteriori opzioni per la privacy. Controlla qui per saperne di più.</string>
+    <string name="settings_web_options_description">Per gli utenti di woocommerce.com sono disponibili ulteriori opzioni per la privacy. Controlla qui per saperne di più.</string>
     <string name="settings_web_options">Opinioni del web</string>
     <string name="settings_more_privacy_options_header">Ulteriori opzioni per la privacy</string>
     <string name="settings_tracking_analytics_error_update">Si è verificato un errore durante l\'aggiornamento delle impostazioni sulla privacy</string>

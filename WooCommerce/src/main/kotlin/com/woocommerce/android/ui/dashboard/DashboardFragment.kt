@@ -159,11 +159,11 @@ class DashboardFragment :
                     currencyFormatter = currencyFormatter,
                     usageTracksEventEmitter = usageTracksEventEmitter,
                     onPluginUnavailableError = { updateStatsAvailabilityError() },
-                    reportJetpackPluginStatus = { onVisitorStatsUnavailable(it) },
                     onStatsError = { showErrorSnack() },
                     openDatePicker = { start, end, callback ->
                         showDateRangePicker(start, end, callback)
-                    }
+                    },
+                    parentViewModel = dashboardViewModel
                 )
             }
         }
@@ -172,8 +172,6 @@ class DashboardFragment :
             binding.myStoreRefreshLayout.isRefreshing = false
             dashboardViewModel.onPullToRefresh()
             storeOnboardingViewModel.onPullToRefresh()
-//            binding.myStoreStats.clearStatsHeaderValues()
-//            binding.myStoreStats.clearChartData()
             refreshJitm()
         }
 
@@ -219,11 +217,6 @@ class DashboardFragment :
         }
         myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreationUsingWebView -> openBlazeWebView(
-                    url = event.url,
-                    source = event.source
-                )
-
                 is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
 
                 is MyStoreBlazeViewModel.ShowAllCampaigns -> {
@@ -252,15 +245,6 @@ class DashboardFragment :
                 productId = productId
             )
         }
-    }
-
-    private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
-                urlToLoad = url,
-                source = source
-            )
-        )
     }
 
     @Suppress("LongMethod")
@@ -421,9 +405,12 @@ class DashboardFragment :
         dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
             ((activity) as MainActivity).setSubtitle(storeName)
         }
+        dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
+            onVisitorStatsUnavailable(jetpackBenefitsBanner)
+        }
     }
 
-    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: JetpackBenefitsBannerUiModel?) {
+    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: DashboardViewModel.JetpackBenefitsBannerUiModel?) {
         if (jetpackBenefitsBanner == null) {
             binding.jetpackBenefitsBanner.root.isVisible = false
             return

@@ -20,6 +20,7 @@ import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -36,8 +37,11 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.module.ApplicationPasswordsClientId
 import org.wordpress.android.fluxc.network.UserAgent
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.util.UrlUtils
@@ -135,6 +139,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         triggerEvent(ShowResetPasswordScreen(siteAddress))
     }
 
+    fun onPasswordTutorialAborted() {
+        fetchedSiteId.value = -1
+    }
+
     fun onBackClick() {
         if (state.value == State.WebAuthorization) {
             fetchedSiteId.value = -1
@@ -225,18 +233,18 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             errorDialogMessage,
             fetchedSiteId.map { if (it == -1) null else wpApiSiteRepository.getSiteByLocalId(it) }
         ) { loadingMessage, errorDialogMessage, site ->
-            val authorizationUrl = site?.applicationPasswordsAuthorizeUrl?.let { url ->
-                "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL"
-            }
-
             ViewState.WebAuthorizationViewState(
-                authorizationUrl = authorizationUrl,
+                authorizationUrl = generateAuthorizationUrl(site),
                 userAgent = userAgent,
                 loadingMessage = loadingMessage,
                 errorDialogMessage = errorDialogMessage
             )
         }
     }
+
+    private fun generateAuthorizationUrl(site: SiteModel?) =
+        site?.applicationPasswordsAuthorizeUrl
+            ?.let { url -> "$url?app_name=$applicationPasswordsClientId&success_url=$REDIRECTION_URL" }
 
     private suspend fun login() {
         val state = requireNotNull(this@LoginSiteCredentialsViewModel.viewState.value as ViewState.NativeLoginViewState)
@@ -252,18 +260,64 @@ class LoginSiteCredentialsViewModel @Inject constructor(
             onFailure = { exception ->
                 val authenticationError = exception as? CookieNonceAuthenticationException
 
-                this.errorDialogMessage.value = authenticationError?.errorMessage ?: UiStringRes(R.string.error_generic)
+                if (FeatureFlag.APP_PASSWORD_TUTORIAL.isEnabled()) {
+                    when (authenticationError?.errorType) {
+                        GENERIC_ERROR,
+                        INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
+                        else -> {
+                            fetchSiteForTutorial(
+                                username = state.username,
+                                password = state.password,
+                                detectedErrorMessage = authenticationError?.errorMessage as? UiStringRes
+                            )
+                            analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
+                        }
+                    }
+                } else {
+                    this.errorDialogMessage.value = authenticationError?.errorMessage
+                        ?: UiStringRes(R.string.error_generic)
+                }
 
                 trackLoginFailure(
                     step = Step.AUTHENTICATION,
                     errorContext = exception.javaClass.simpleName,
-                    errorType = authenticationError?.errorType,
+                    errorType = authenticationError?.errorType?.name,
                     errorDescription = exception.message,
                     statusCode = authenticationError?.networkStatusCode
                 )
             }
         )
         loadingMessage.value = 0
+    }
+
+    private suspend fun fetchSiteForTutorial(
+        username: String,
+        password: String,
+        detectedErrorMessage: UiStringRes? = null
+    ) {
+        loadingMessage.value = R.string.login_site_credentials_fetching_site
+        wpApiSiteRepository.fetchSite(
+            url = siteAddress,
+            username = username,
+            password = password
+        ).fold(
+            onSuccess = { site ->
+                if (site.hasWooCommerce) {
+                    fetchedSiteId.value = site.id
+                    loadingMessage.value = 0
+                    ShowApplicationPasswordTutorialScreen(
+                        url = generateAuthorizationUrl(site).orEmpty(),
+                        errorMessageRes = detectedErrorMessage?.stringRes ?: R.string.error_generic
+                    ).let { triggerEvent(it) }
+                } else {
+                    triggerEvent(ShowNonWooErrorScreen(siteAddress))
+                }
+            },
+            onFailure = {
+                loadingMessage.value = 0
+                handleSiteFetchingError(it)
+            }
+        )
     }
 
     private suspend fun fetchSite() {
@@ -293,21 +347,23 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
                 }
             },
-            onFailure = { exception ->
-                val siteError = (exception as? OnChangedException)?.error as? SiteError
-
-                this.errorDialogMessage.value = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
-
-                val error = (exception as? OnChangedException)?.error ?: exception
-                trackLoginFailure(
-                    step = Step.AUTHENTICATION,
-                    errorContext = error.javaClass.simpleName,
-                    errorType = siteError?.type?.name,
-                    errorDescription = exception.message
-                )
-            }
+            onFailure = { handleSiteFetchingError(it) }
         )
         loadingMessage.value = 0
+    }
+
+    private fun handleSiteFetchingError(exception: Throwable) {
+        val siteError = (exception as? OnChangedException)?.error as? SiteError
+
+        this.errorDialogMessage.value = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
+
+        val error = (exception as? OnChangedException)?.error ?: exception
+        trackLoginFailure(
+            step = Step.AUTHENTICATION,
+            errorContext = error.javaClass.simpleName,
+            errorType = siteError?.type?.name,
+            errorDescription = exception.message
+        )
     }
 
     private suspend fun fetchUserInfo() {
@@ -417,5 +473,10 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     data class ShowHelpScreen(
         val siteAddress: String,
         val username: String?
+    ) : MultiLiveEvent.Event()
+
+    data class ShowApplicationPasswordTutorialScreen(
+        val url: String,
+        val errorMessageRes: Int
     ) : MultiLiveEvent.Event()
 }
