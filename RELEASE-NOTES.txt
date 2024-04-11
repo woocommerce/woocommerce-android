@@ -2,6 +2,7 @@
 18.2
 -----
 - [**] Payments: We are sunsetting simple payments in favour of the order creation flow with custom amount set [https://github.com/woocommerce/woocommerce-android/pull/11274]
+- [**] Stats: The Analytics Hub now includes analytics for Product Bundles and Gift Cards, when those extensions are active. [https://github.com/woocommerce/woocommerce-android/pull/11290]
 
 18.1
 -----

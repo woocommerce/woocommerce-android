@@ -99,11 +99,12 @@ If you happen to find a security vulnerability, we would appreciate you letting 
 
 ## 🦮 Need Help?
 
-You can find the WooCommerce usage docs here: [woo.com/documentation/woocommerce/](https://woo.com/documentation/woocommerce/)
+You can find the WooCommerce usage docs
+here: [woocommerce.com/documentation/woocommerce/](https://woocommerce.com/documentation/woocommerce/)
 
 General usage and development questions:
 
-* [WooCommerce Slack Community](https://woo.com/community-slack/)
+* [WooCommerce Slack Community](https://woocommerce.com/community-slack/)
 * [WordPress.org Forums](https://wordpress.org/support/plugin/woocommerce)
 * [The WooCommerce Help and Share Facebook group](https://www.facebook.com/groups/woohelp/)
 
@@ -124,6 +125,6 @@ In order to offer a great experience to our users, we use some proprietary libra
 
 <p align="center">
     <br/><br/>
-    Made with 💜 by <a href="https://woo.com/">WooCommerce</a>.<br/>
-    <a href="https://woo.com/careers/">We're hiring</a>! Come work with us!
+    Made with 💜 by <a href="https://woocommerce.com/">WooCommerce</a>.<br/>
+    <a href="https://woocommerce.com/careers/">We're hiring</a>! Come work with us!
 </p>

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.mystore
 
+import com.woocommerce.android.network.giftcard.GiftCardRestClient
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.mystore.data.StatsRepository
@@ -15,11 +16,13 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.action.WCStatsAction
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundleStats
+import org.wordpress.android.fluxc.model.WCGiftCardStats
 import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
 import org.wordpress.android.fluxc.store.WCOrderStore
@@ -37,6 +40,7 @@ class StatsRepositoryTests : BaseUnitTest() {
     private val wcOrderStore: WCOrderStore = mock()
     private val wcLeaderboardsStore: WCLeaderboardsStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val giftCardRestClient: GiftCardRestClient = mock()
 
     private lateinit var sut: StatsRepository
 
@@ -56,6 +60,7 @@ class StatsRepositoryTests : BaseUnitTest() {
             wcOrderStore = wcOrderStore,
             wcLeaderboardsStore = wcLeaderboardsStore,
             wooCommerceStore = wooCommerceStore,
+            giftCardRestClient = giftCardRestClient,
             dispatchers = coroutinesTestRule.testDispatchers
         )
     }
@@ -225,6 +230,31 @@ class StatsRepositoryTests : BaseUnitTest() {
     fun `when bundle report requests fails then an error is returned`() = testBlocking {
         val startDate = "2024-03-25 00:00:00"
         val endDate = "2024-04-1 00:00:00"
+        val error = WooError(
+            type = WooErrorType.INVALID_RESPONSE,
+            original = BaseRequest.GenericErrorType.INVALID_RESPONSE,
+            message = "something fails"
+        )
+
+        val bundleReportResponse = WooResult<List<WCProductBundleItemReport>>(error)
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(wcStatsStore.fetchProductBundlesReport(any(), any(), any(), any())).thenReturn(bundleReportResponse)
+
+        val result = sut.fetchBundleReport(
+            startDate = startDate,
+            endDate = endDate
+        )
+
+        assertThat(result.isError).isEqualTo(true)
+        assertThat(result.model).isNull()
+        assertThat(result.error).isEqualTo(error)
+    }
+
+    @Test
+    fun `when bundle report requests succeed then a valid response is returned`() = testBlocking {
+        val startDate = "2024-03-25 00:00:00"
+        val endDate = "2024-04-1 00:00:00"
         val report = listOf(
             WCProductBundleItemReport(
                 name = "item 1",
@@ -240,10 +270,10 @@ class StatsRepositoryTests : BaseUnitTest() {
             )
         )
 
-        val bundleStatsResponse = WooResult(report)
+        val bundleReportResponse = WooResult(report)
 
         whenever(selectedSite.get()).thenReturn(defaultSiteModel)
-        whenever(wcStatsStore.fetchProductBundlesReport(any(), any(), any(), any())).thenReturn(bundleStatsResponse)
+        whenever(wcStatsStore.fetchProductBundlesReport(any(), any(), any(), any())).thenReturn(bundleReportResponse)
 
         val result = sut.fetchBundleReport(
             startDate = startDate,
@@ -254,5 +284,65 @@ class StatsRepositoryTests : BaseUnitTest() {
         assertThat(result.model).isNotNull
         assertThat(result.error).isNull()
         assertThat(result.model).isEqualTo(report)
+    }
+
+    @Test
+    fun `when gift cards requests fails then an error is returned`() = testBlocking {
+        val startDate = "2024-03-25 00:00:00"
+        val endDate = "2024-04-1 00:00:00"
+        val error = WooError(
+            type = WooErrorType.INVALID_RESPONSE,
+            original = BaseRequest.GenericErrorType.INVALID_RESPONSE,
+            message = "something fails"
+        )
+
+        val giftCardStatsResponse = WooPayload<GiftCardRestClient.GiftCardsStatsApiResponse>(error)
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(giftCardRestClient.fetchGiftCardStats(any(), any(), any(), any())).thenReturn(giftCardStatsResponse)
+
+        val result = sut.fetchGiftCardStats(
+            startDate = startDate,
+            endDate = endDate
+        )
+
+        assertThat(result.isError).isEqualTo(true)
+        assertThat(result.model).isNull()
+        assertThat(result.error).isEqualTo(error)
+    }
+
+    @Test
+    fun `when gift cards requests succeed then a valid response is returned`() = testBlocking {
+        val startDate = "2024-03-25 00:00:00"
+        val endDate = "2024-04-1 00:00:00"
+        val giftCardsUsed = 26L
+        val giftCardsNetAmount = 345.87
+        val stats = GiftCardRestClient.GiftCardsStatsApiResponse(
+            totals = GiftCardRestClient.GiftCardsStatsTotals(
+                count = giftCardsUsed,
+                netAmount = giftCardsNetAmount
+            ),
+            intervals = emptyList()
+        )
+        val expectedResult = WCGiftCardStats(
+            usedValue = giftCardsUsed,
+            netValue = giftCardsNetAmount,
+            intervals = emptyList()
+        )
+
+        val giftCardsStatsResponse = WooPayload(stats)
+
+        whenever(selectedSite.get()).thenReturn(defaultSiteModel)
+        whenever(giftCardRestClient.fetchGiftCardStats(any(), any(), any(), any())).thenReturn(giftCardsStatsResponse)
+
+        val result = sut.fetchGiftCardStats(
+            startDate = startDate,
+            endDate = endDate
+        )
+
+        assertThat(result.isError).isEqualTo(false)
+        assertThat(result.model).isNotNull
+        assertThat(result.error).isNull()
+        assertThat(result.model).isEqualTo(expectedResult)
     }
 }
