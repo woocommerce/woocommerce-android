@@ -5,7 +5,7 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-class MarginTopItemDecoration(
+class MarginBottomItemDecoration(
     marginTopResId: Int,
     context: Context
 ) : RecyclerView.ItemDecoration() {
@@ -19,6 +19,6 @@ class MarginTopItemDecoration(
         state: RecyclerView.State
     ) {
         super.getItemOffsets(outRect, view, parent, state)
-        outRect.top = margin
+        outRect.bottom = margin
     }
 }
