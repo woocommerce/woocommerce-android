@@ -8,8 +8,11 @@ class GetWooCorePluginCachedVersion @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val selectedSite: SelectedSite,
 ) {
-    operator fun invoke(): String? = wooCommerceStore.getSitePlugin(
-        selectedSite.get(),
-        WooCommerceStore.WooPlugin.WOO_CORE
-    )?.version
+    operator fun invoke(): String? =
+        selectedSite.getOrNull()?.let { selectedSite ->
+            wooCommerceStore.getSitePlugin(
+                selectedSite,
+                WooCommerceStore.WooPlugin.WOO_CORE
+            )?.version
+        }
 }
