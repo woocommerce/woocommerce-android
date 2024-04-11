@@ -165,15 +165,16 @@ class WPApiSiteRepository @Inject constructor(
 
     private fun Error.mapToException(): CookieNonceAuthenticationException {
         val networkStatusCode = extractNetworkStatusCode()
-
-        val errorMessage = if (networkStatusCode != null) {
+        val networkErrorMessage by lazy {
             UiStringRes(
-                string.login_site_credentials_http_error,
-                listOf(UiStringText(networkStatusCode.toString()))
+                stringRes = string.login_site_credentials_http_error,
+                params = listOf(UiStringText(networkStatusCode.toString()))
             )
-        } else {
-            this.asUiString()
         }
+
+        val errorMessage = this.mapToUiString()
+            ?: networkStatusCode?.let { networkErrorMessage }
+            ?: UiStringRes(string.error_generic)
 
         return CookieNonceAuthenticationException(
             errorMessage,
@@ -188,16 +189,17 @@ class WPApiSiteRepository @Inject constructor(
      */
     private fun Error.extractNetworkStatusCode() =
         networkError?.volleyError?.networkResponse?.statusCode
-            ?: takeIf { type == NOT_AUTHENTICATED || type == INVALID_RESPONSE }
-                ?.let { HTTP_SUCCESS }
+            ?: takeIf {
+                type == NOT_AUTHENTICATED || type == INVALID_RESPONSE
+            }?.let { HTTP_SUCCESS }
 
-    private fun Error.asUiString() = when (type) {
+    private fun Error.mapToUiString() = when (type) {
         NOT_AUTHENTICATED -> message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
         INVALID_CREDENTIALS -> UiStringRes(string.login_invalid_credentials_message)
         INVALID_RESPONSE -> UiStringRes(string.login_site_credentials_invalid_response)
         CUSTOM_LOGIN_URL -> UiStringRes(string.login_site_credentials_custom_login_url)
         CUSTOM_ADMIN_URL -> UiStringRes(string.login_site_credentials_custom_admin_url)
-        else -> message?.let { UiStringText(it) } ?: UiStringRes(string.error_generic)
+        else -> message?.let { UiStringText(it) }
     }
 
     data class CookieNonceAuthenticationException(
