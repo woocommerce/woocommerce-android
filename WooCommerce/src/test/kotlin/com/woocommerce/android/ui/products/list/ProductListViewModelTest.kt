@@ -1,17 +1,9 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.list
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PROPERTY
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED_PRODUCTS_COUNT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.Product
@@ -19,12 +11,11 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -42,7 +33,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -63,7 +54,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Before
     fun setup() {
         doReturn(true).whenever(networkStatus).isConnected()
-        doReturn(ProductSorting.DATE_ASC).whenever(productRepository).productSortingChoice
+        doReturn(WCProductStore.ProductSorting.DATE_ASC).whenever(productRepository).productSortingChoice
     }
 
     private fun createViewModel() {
@@ -101,15 +92,15 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
         verify(productRepository, times(1)).getProductList(productFilterOptions = emptyMap())
         verify(productRepository, times(0)).fetchProductList(productFilterOptions = emptyMap())
 
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
     }
 
     @Test
@@ -286,13 +277,13 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
         viewModel.trashProduct(any())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
     }
 
     @Test
@@ -303,27 +294,27 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
         viewModel.trashProduct(any())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_trash_error))
+        assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.product_trash_error))
     }
 
     @Test
     fun `Test Filters button tap`() {
         createViewModel()
 
-        val events = mutableListOf<Event>()
+        val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever {
             events.add(it)
         }
 
         viewModel.onFiltersButtonTapped()
 
-        assertThat(events.count { it is ShowProductFilterScreen }).isEqualTo(1)
+        assertThat(events.count { it is ProductListViewModel.ProductListEvent.ShowProductFilterScreen }).isEqualTo(1)
     }
 
     @Test
@@ -337,14 +328,14 @@ class ProductListViewModelTest : BaseUnitTest() {
         val categoryName = "Hoodie"
         viewModel.onFiltersChanged(stockStatus, status, type, category, categoryName)
 
-        val events = mutableListOf<Event>()
+        val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever {
             events.add(it)
         }
 
         viewModel.onFiltersButtonTapped()
 
-        val event = events.first() as ShowProductFilterScreen
+        val event = events.first() as ProductListViewModel.ProductListEvent.ShowProductFilterScreen
         assertThat(event.productStatusFilter).isEqualTo(status)
         assertThat(event.productTypeFilter).isEqualTo(type)
         assertThat(event.stockStatusFilter).isEqualTo(stockStatus)
@@ -356,14 +347,15 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun `Test Sorting button tap`() {
         createViewModel()
 
-        val events = mutableListOf<Event>()
+        val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever {
             events.add(it)
         }
 
         viewModel.onSortButtonTapped()
 
-        assertThat(events.count { it is ShowProductSortingBottomSheet }).isEqualTo(1)
+        assertThat(events.count { it is ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet })
+            .isEqualTo(1)
     }
 
     @Test
@@ -385,8 +377,11 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         // then
         verify(analyticsTracker).track(
-            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
-            mapOf(KEY_PROPERTY to VALUE_PRICE, KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size)
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_PRICE,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size
+            )
         )
     }
 
@@ -401,8 +396,11 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         // then
         verify(analyticsTracker).track(
-            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
-            mapOf(KEY_PROPERTY to VALUE_STATUS, KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size)
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            mapOf(
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size
+            )
         )
     }
 
@@ -417,8 +415,11 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         // then
         verify(analyticsTracker).track(
-            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
-            mapOf(KEY_PROPERTY to VALUE_PRICE, KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size)
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            mapOf(
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_PRICE,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size
+            )
         )
     }
 
@@ -433,8 +434,11 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         // then
         verify(analyticsTracker).track(
-            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
-            mapOf(KEY_PROPERTY to VALUE_STATUS, KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size)
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            mapOf(
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProducts.size
+            )
         )
     }
 
@@ -452,8 +456,8 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         // then
         verify(analyticsTracker).track(
-            PRODUCT_LIST_BULK_UPDATE_SUCCESS,
-            mapOf(KEY_PROPERTY to VALUE_PRICE)
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+            mapOf(AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_PRICE)
         )
     }
 
@@ -471,8 +475,8 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         // then
         verify(analyticsTracker).track(
-            PRODUCT_LIST_BULK_UPDATE_FAILURE,
-            mapOf(KEY_PROPERTY to VALUE_PRICE)
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE,
+            mapOf(AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_PRICE)
         )
     }
 
@@ -490,8 +494,8 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         // then
         verify(analyticsTracker).track(
-            PRODUCT_LIST_BULK_UPDATE_SUCCESS,
-            mapOf(KEY_PROPERTY to VALUE_STATUS)
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+            mapOf(AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS)
         )
     }
 
@@ -509,8 +513,8 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         // then
         verify(analyticsTracker).track(
-            PRODUCT_LIST_BULK_UPDATE_FAILURE,
-            mapOf(KEY_PROPERTY to VALUE_STATUS)
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE,
+            mapOf(AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS)
         )
     }
 
@@ -523,7 +527,7 @@ class ProductListViewModelTest : BaseUnitTest() {
         viewModel.onSelectAllProductsClicked()
 
         // then
-        verify(analyticsTracker).track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
+        verify(analyticsTracker).track(AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
     }
 
     @Test
@@ -535,15 +539,16 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
         viewModel.onUpdatePriceConfirmed(productIds, price)
         // We delayed the message waiting the resume animation to complete
         advanceUntilIdle()
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_bulk_update_price_updated))
+        assertThat(snackbar)
+            .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.product_bulk_update_price_updated))
     }
 
     @Test
@@ -555,15 +560,15 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
         viewModel.onUpdatePriceConfirmed(productIds, price)
         // We delayed the message waiting the resume animation to complete
         advanceUntilIdle()
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
+        assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
     }
 
     @Test
@@ -575,15 +580,16 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
         viewModel.onUpdateStatusConfirmed(productIds, status)
         // We delayed the message waiting the resume animation to complete
         advanceUntilIdle()
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_bulk_update_status_updated))
+        assertThat(snackbar)
+            .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.product_bulk_update_status_updated))
     }
 
     @Test
@@ -595,15 +601,15 @@ class ProductListViewModelTest : BaseUnitTest() {
 
         createViewModel()
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
         viewModel.onUpdateStatusConfirmed(productIds, status)
         // We delayed the message waiting the resume animation to complete
         advanceUntilIdle()
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.error_generic))
+        assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
     }
 
     @Test

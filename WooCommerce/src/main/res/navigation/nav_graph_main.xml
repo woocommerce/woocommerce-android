@@ -225,7 +225,7 @@
         tools:layout="@layout/fragment_barcode_scanning" />
     <fragment
         android:id="@+id/products"
-        android:name="com.woocommerce.android.ui.products.ProductListFragment"
+        android:name="com.woocommerce.android.ui.products.list.ProductListFragment"
         android:label="fragment_product_list"
         tools:layout="@layout/fragment_product_list">
         <action

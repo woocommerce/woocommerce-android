@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
+import com.woocommerce.android.ui.products.list.ProductListFragment
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject

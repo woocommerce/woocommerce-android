@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.list
 
 import android.os.Bundle
 import android.view.Menu
@@ -38,25 +38,36 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenEmptyProduct
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.OpenProduct
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowDiscardProductChangesConfirmationDialog
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
+import com.woocommerce.android.ui.products.AddProductNavigator
+import com.woocommerce.android.ui.products.DefaultProductListItemLookup
+import com.woocommerce.android.ui.products.MutableMultipleSelectionPredicate
+import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.ProductDetailFragment
+import com.woocommerce.android.ui.products.ProductDetailFragmentArgs
+import com.woocommerce.android.ui.products.ProductFilterResult
+import com.woocommerce.android.ui.products.ProductSelectionItemKeyProvider
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
-import com.woocommerce.android.ui.products.UpdateProductStockStatusFragment.Companion.UPDATE_STOCK_STATUS_EXIT_STATE_KEY
+import com.woocommerce.android.ui.products.ProductSortingFragment
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductsCommunicationViewModel
+import com.woocommerce.android.ui.products.UpdateProductStockStatusFragment
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusExitState
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.OpenEmptyProduct
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.OpenProduct
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.SelectProducts
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowDiscardProductChangesConfirmationDialog
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductUpdateStockStatusScreen
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.TabletLayoutSetupHelper
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.SkeletonView
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -282,14 +293,16 @@ class ProductListFragment :
                     when {
                         new.isSearchActive == true -> {
                             binding.emptyView.show(
-                                EmptyViewType.SEARCH_RESULTS,
+                                WCEmptyView.EmptyViewType.SEARCH_RESULTS,
                                 searchQueryOrFilter = viewModel.getSearchQuery()
                             )
                         }
 
-                        new.filterCount?.compareTo(0) == 1 -> binding.emptyView.show(EmptyViewType.FILTER_RESULTS)
+                        new.filterCount?.compareTo(0) == 1 -> binding.emptyView.show(
+                            WCEmptyView.EmptyViewType.FILTER_RESULTS
+                        )
                         else -> {
-                            binding.emptyView.show(EmptyViewType.PRODUCT_LIST) {
+                            binding.emptyView.show(WCEmptyView.EmptyViewType.PRODUCT_LIST) {
                                 showAddProductBottomSheet()
                             }
                         }
@@ -334,7 +347,7 @@ class ProductListFragment :
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ScrollToTop -> scrollToTop()
                 is ShowAddProductBottomSheet -> showAddProductBottomSheet()
                 is ShowProductFilterScreen -> showProductFilterScreen(
@@ -526,7 +539,10 @@ class ProductListFragment :
             )
         }
 
-        handleDialogResult<UpdateStockStatusExitState>(UPDATE_STOCK_STATUS_EXIT_STATE_KEY, R.id.products) { result ->
+        handleDialogResult<UpdateStockStatusExitState>(
+            UpdateProductStockStatusFragment.UPDATE_STOCK_STATUS_EXIT_STATE_KEY,
+            R.id.products
+        ) { result ->
             when (result) {
                 UpdateStockStatusExitState.Success -> {
                     productListViewModel.onRefreshRequested()

@@ -1,22 +1,21 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.list
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOADED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.ProductStockStatusInfo
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusResult
 import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineScope
@@ -25,17 +24,10 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.DELETED_PRODUCT
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
+import org.wordpress.android.fluxc.action.WCProductAction
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductsSearched
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
 import javax.inject.Inject
 
 class ProductListRepository @Inject constructor(
@@ -62,13 +54,14 @@ class ProductListRepository @Inject constructor(
     var lastSearchQuery: String? = null
         private set
 
-    var lastIsSkuSearch = SkuSearchOptions.Disabled
+    var lastIsSkuSearch = WCProductStore.SkuSearchOptions.Disabled
         private set
 
-    var productSortingChoice: ProductSorting
+    var productSortingChoice: WCProductStore.ProductSorting
         get() {
-            return ProductSorting.valueOf(
-                appPrefsWrapper.getProductSortingChoice(selectedSite.getSelectedSiteId()) ?: TITLE_ASC.name
+            return WCProductStore.ProductSorting.valueOf(
+                appPrefsWrapper.getProductSortingChoice(selectedSite.getSelectedSiteId())
+                    ?: WCProductStore.ProductSorting.TITLE_ASC.name
             )
         }
         set(value) {
@@ -89,14 +82,14 @@ class ProductListRepository @Inject constructor(
      */
     suspend fun fetchProductList(
         loadMore: Boolean = false,
-        productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
         excludedProductIds: List<Long>? = null,
-        sortType: ProductSorting? = null
+        sortType: WCProductStore.ProductSorting? = null
     ): List<Product> {
         loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = null
-            lastIsSkuSearch = SkuSearchOptions.Disabled
+            lastIsSkuSearch = WCProductStore.SkuSearchOptions.Disabled
             val payload = WCProductStore.FetchProductsPayload(
                 site = selectedSite.get(),
                 pageSize = PRODUCT_PAGE_SIZE,
@@ -118,10 +111,10 @@ class ProductListRepository @Inject constructor(
      */
     suspend fun searchProductList(
         searchQuery: String,
-        skuSearchOptions: SkuSearchOptions,
+        skuSearchOptions: WCProductStore.SkuSearchOptions,
         loadMore: Boolean = false,
         excludedProductIds: List<Long>? = null,
-        productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
     ): List<Product>? {
         // cancel any existing load
         loadContinuation.cancel()
@@ -144,8 +137,8 @@ class ProductListRepository @Inject constructor(
         }
 
         return when (result) {
-            is Cancellation -> null
-            is Success -> result.value
+            is ContinuationWrapper.ContinuationResult.Cancellation -> null
+            is ContinuationWrapper.ContinuationResult.Success -> result.value
         }
     }
 
@@ -163,8 +156,8 @@ class ProductListRepository @Inject constructor(
         }
 
         return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
+            is ContinuationWrapper.ContinuationResult.Cancellation -> false
+            is ContinuationWrapper.ContinuationResult.Success -> result.value
         }
     }
 
@@ -172,9 +165,9 @@ class ProductListRepository @Inject constructor(
      * Returns all products for the current site that are in the database
      */
     fun getProductList(
-        productFilterOptions: Map<ProductFilterOption, String> = emptyMap(),
+        productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
         excludedProductIds: List<Long>? = null,
-        sortType: ProductSorting? = null
+        sortType: WCProductStore.ProductSorting? = null
     ): List<Product> {
         val excludedIds = excludedProductIds?.takeIf { it.isNotEmpty() }
         return if (selectedSite.exists()) {
@@ -198,12 +191,12 @@ class ProductListRepository @Inject constructor(
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_PRODUCTS) {
+    fun onProductChanged(event: WCProductStore.OnProductChanged) {
+        if (event.causeOfChange == WCProductAction.FETCH_PRODUCTS) {
             if (event.isError) {
                 loadContinuation.continueWith(false)
                 AnalyticsTracker.track(
-                    PRODUCT_LIST_LOAD_ERROR,
+                    AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR,
                     this.javaClass.simpleName,
                     event.error.type.toString(),
                     event.error.message
@@ -212,13 +205,13 @@ class ProductListRepository @Inject constructor(
                 canLoadMoreProducts = event.canLoadMore
                 scope.launch {
                     AnalyticsTracker.track(
-                        PRODUCT_LIST_LOADED,
-                        mapOf(KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS to isEligibleForSubscriptions())
+                        AnalyticsEvent.PRODUCT_LIST_LOADED,
+                        mapOf(AnalyticsTracker.KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS to isEligibleForSubscriptions())
                     )
                     loadContinuation.continueWith(true)
                 }
             }
-        } else if (event.causeOfChange == DELETED_PRODUCT) {
+        } else if (event.causeOfChange == WCProductAction.DELETED_PRODUCT) {
             if (event.isError) {
                 trashContinuation.continueWith(false)
             } else {
@@ -229,7 +222,7 @@ class ProductListRepository @Inject constructor(
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductsSearched(event: OnProductsSearched) {
+    fun onProductsSearched(event: WCProductStore.OnProductsSearched) {
         if (event.isError) {
             searchContinuation.continueWith(emptyList())
         } else {
@@ -284,10 +277,12 @@ class ProductListRepository @Inject constructor(
                 RequestResult.SUCCESS
             }
         }
-    suspend fun fetchStockStatuses(productIds: List<Long>): List<ProductStockStatusInfo> =
+    suspend fun fetchStockStatuses(
+        productIds: List<Long>
+    ): List<UpdateProductStockStatusViewModel.ProductStockStatusInfo> =
         withContext(dispatchers.io) {
             productStore.getProductsByRemoteIds(selectedSite.get(), productIds).map { wcProductModel ->
-                ProductStockStatusInfo(
+                UpdateProductStockStatusViewModel.ProductStockStatusInfo(
                     productId = wcProductModel.remoteProductId,
                     stockStatus = ProductStockStatus.fromString(wcProductModel.stockStatus),
                     manageStock = wcProductModel.manageStock,

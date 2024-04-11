@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.list
 
 import android.os.Parcelable
 import android.view.View
@@ -10,17 +10,7 @@ import androidx.lifecycle.map
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PROPERTY
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SELECTED_PRODUCTS_COUNT
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRICE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STATUS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STOCK_STATUS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
@@ -30,17 +20,17 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ScrollToTop
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.SelectProducts
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
-import com.woocommerce.android.ui.products.ProductListViewModel.ProductListEvent.ShowUpdateDialog
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ScrollToTop
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.SelectProducts
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowAddProductBottomSheet
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductFilterScreen
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowProductSortingBottomSheet
+import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ShowUpdateDialog
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
@@ -55,12 +45,7 @@ import kotlinx.parcelize.Parcelize
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.DATE_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_ASC
-import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting.TITLE_DESC
-import org.wordpress.android.fluxc.store.WCProductStore.SkuSearchOptions
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -91,8 +76,8 @@ class ProductListViewModel @Inject constructor(
     val viewStateLiveData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateLiveData
 
-    private val productFilterOptions: MutableMap<ProductFilterOption, String> by lazy {
-        val params = savedState.get<MutableMap<ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS)
+    private val productFilterOptions: MutableMap<WCProductStore.ProductFilterOption, String> by lazy {
+        val params = savedState.get<MutableMap<WCProductStore.ProductFilterOption, String>>(KEY_PRODUCT_FILTER_OPTIONS)
             ?: mutableMapOf()
         savedState[KEY_PRODUCT_FILTER_OPTIONS] = params
         params
@@ -167,10 +152,10 @@ class ProductListViewModel @Inject constructor(
     ) {
         if (areFiltersChanged(stockStatus, productStatus, productType, productCategory)) {
             productFilterOptions.clear()
-            stockStatus?.let { productFilterOptions[ProductFilterOption.STOCK_STATUS] = it }
-            productStatus?.let { productFilterOptions[ProductFilterOption.STATUS] = it }
-            productType?.let { productFilterOptions[ProductFilterOption.TYPE] = it }
-            productCategory?.let { productFilterOptions[ProductFilterOption.CATEGORY] = it }
+            stockStatus?.let { productFilterOptions[WCProductStore.ProductFilterOption.STOCK_STATUS] = it }
+            productStatus?.let { productFilterOptions[WCProductStore.ProductFilterOption.STATUS] = it }
+            productType?.let { productFilterOptions[WCProductStore.ProductFilterOption.TYPE] = it }
+            productCategory?.let { productFilterOptions[WCProductStore.ProductFilterOption.CATEGORY] = it }
             productCategoryName?.let {
                 selectedCategoryName = it
                 savedState[KEY_PRODUCT_FILTER_SELECTED_CATEGORY_NAME] = it
@@ -187,20 +172,20 @@ class ProductListViewModel @Inject constructor(
         productType: String?,
         productCategory: String?
     ): Boolean {
-        return stockStatus != productFilterOptions[ProductFilterOption.STOCK_STATUS] ||
-            productStatus != productFilterOptions[ProductFilterOption.STATUS] ||
-            productType != productFilterOptions[ProductFilterOption.TYPE] ||
-            productCategory != productFilterOptions[ProductFilterOption.CATEGORY]
+        return stockStatus != productFilterOptions[WCProductStore.ProductFilterOption.STOCK_STATUS] ||
+            productStatus != productFilterOptions[WCProductStore.ProductFilterOption.STATUS] ||
+            productType != productFilterOptions[WCProductStore.ProductFilterOption.TYPE] ||
+            productCategory != productFilterOptions[WCProductStore.ProductFilterOption.CATEGORY]
     }
 
     fun onFiltersButtonTapped() {
         AnalyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_VIEW_FILTER_OPTIONS_TAPPED)
         triggerEvent(
             ShowProductFilterScreen(
-                productFilterOptions[ProductFilterOption.STOCK_STATUS],
-                productFilterOptions[ProductFilterOption.TYPE],
-                productFilterOptions[ProductFilterOption.STATUS],
-                productFilterOptions[ProductFilterOption.CATEGORY],
+                productFilterOptions[WCProductStore.ProductFilterOption.STOCK_STATUS],
+                productFilterOptions[WCProductStore.ProductFilterOption.TYPE],
+                productFilterOptions[WCProductStore.ProductFilterOption.STATUS],
+                productFilterOptions[WCProductStore.ProductFilterOption.CATEGORY],
                 selectedCategoryName
             )
         )
@@ -340,9 +325,9 @@ class ProductListViewModel @Inject constructor(
                     fetchProductList(
                         viewState.query,
                         skuSearchOptions = if (viewState.isSkuSearch) {
-                            SkuSearchOptions.PartialMatch
+                            WCProductStore.SkuSearchOptions.PartialMatch
                         } else {
-                            SkuSearchOptions.Disabled
+                            WCProductStore.SkuSearchOptions.Disabled
                         },
                         loadMore = loadMore
                     )
@@ -501,7 +486,7 @@ class ProductListViewModel @Inject constructor(
         if (isWindowClassLargeThanCompact()) productId == selectedProductIdOnBigScreen else false
 
     fun onSelectAllProductsClicked() {
-        analyticsTracker.track(PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
+        analyticsTracker.track(AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SELECT_ALL_TAPPED)
         productList.value?.map { it.remoteId }?.let { allLoadedProductsIds ->
             triggerEvent(SelectProducts(allLoadedProductsIds))
         }
@@ -534,7 +519,7 @@ class ProductListViewModel @Inject constructor(
     @Suppress("NestedBlockDepth")
     private suspend fun fetchProductList(
         searchQuery: String? = null,
-        skuSearchOptions: SkuSearchOptions = SkuSearchOptions.Disabled,
+        skuSearchOptions: WCProductStore.SkuSearchOptions = WCProductStore.SkuSearchOptions.Disabled,
         loadMore: Boolean = false,
         scrollToTop: Boolean = false
     ) {
@@ -577,10 +562,10 @@ class ProductListViewModel @Inject constructor(
 
     private fun getSortingTitle(): Int {
         return when (productRepository.productSortingChoice) {
-            DATE_ASC -> R.string.product_list_sorting_oldest_to_newest_short
-            DATE_DESC -> R.string.product_list_sorting_newest_to_oldest_short
-            TITLE_DESC -> R.string.product_list_sorting_z_to_a_short
-            TITLE_ASC -> R.string.product_list_sorting_a_to_z_short
+            WCProductStore.ProductSorting.DATE_ASC -> R.string.product_list_sorting_oldest_to_newest_short
+            WCProductStore.ProductSorting.DATE_DESC -> R.string.product_list_sorting_newest_to_oldest_short
+            WCProductStore.ProductSorting.TITLE_DESC -> R.string.product_list_sorting_z_to_a_short
+            WCProductStore.ProductSorting.TITLE_ASC -> R.string.product_list_sorting_a_to_z_short
         }
     }
 
@@ -591,7 +576,7 @@ class ProductListViewModel @Inject constructor(
         return if (networkStatus.isConnected()) {
             true
         } else {
-            triggerEvent(ShowSnackbar(R.string.offline_error))
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
             false
         }
     }
@@ -602,7 +587,7 @@ class ProductListViewModel @Inject constructor(
         if (checkConnection()) {
             launch {
                 if (!productRepository.trashProduct(remoteProductId)) {
-                    triggerEvent(ShowSnackbar(R.string.product_trash_error))
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.product_trash_error))
                 }
             }
         }
@@ -620,24 +605,24 @@ class ProductListViewModel @Inject constructor(
         newStatus: ProductStatus,
     ) {
         analyticsTracker.track(
-            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
             mapOf(
-                KEY_PROPERTY to VALUE_STATUS,
-                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
             )
         )
         bulkUpdateProducts(
             update = { productRepository.bulkUpdateProductsStatus(selectedProductsRemoteIds, newStatus) },
             onSuccess = {
                 analyticsTracker.track(
-                    PRODUCT_LIST_BULK_UPDATE_SUCCESS,
-                    mapOf(KEY_PROPERTY to VALUE_STATUS)
+                    AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+                    mapOf(AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS)
                 )
             },
             onFailure = {
                 analyticsTracker.track(
-                    PRODUCT_LIST_BULK_UPDATE_FAILURE,
-                    mapOf(KEY_PROPERTY to VALUE_STATUS)
+                    AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE,
+                    mapOf(AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS)
                 )
             },
             successMessage = R.string.product_bulk_update_status_updated
@@ -649,24 +634,24 @@ class ProductListViewModel @Inject constructor(
         newPrice: String,
     ) {
         analyticsTracker.track(
-            PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_CONFIRMED,
             mapOf(
-                KEY_PROPERTY to VALUE_PRICE,
-                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_PRICE,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
             )
         )
         bulkUpdateProducts(
             update = { productRepository.bulkUpdateProductsPrice(selectedProductsRemoteIds, newPrice) },
             onSuccess = {
                 analyticsTracker.track(
-                    PRODUCT_LIST_BULK_UPDATE_SUCCESS,
-                    mapOf(KEY_PROPERTY to VALUE_PRICE)
+                    AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_SUCCESS,
+                    mapOf(AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_PRICE)
                 )
             },
             onFailure = {
                 analyticsTracker.track(
-                    PRODUCT_LIST_BULK_UPDATE_FAILURE,
-                    mapOf(KEY_PROPERTY to VALUE_PRICE)
+                    AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_FAILURE,
+                    mapOf(AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_PRICE)
                 )
             },
             successMessage = R.string.product_bulk_update_price_updated
@@ -687,7 +672,7 @@ class ProductListViewModel @Inject constructor(
                     refreshProducts()
                     exitSelectionMode()
                     triggerEventWithDelay(
-                        event = ShowSnackbar(successMessage),
+                        event = MultiLiveEvent.Event.ShowSnackbar(successMessage),
                         delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
                     )
                 }
@@ -695,7 +680,7 @@ class ProductListViewModel @Inject constructor(
                     exitSelectionMode()
                     onFailure()
                     triggerEventWithDelay(
-                        event = ShowSnackbar(R.string.error_generic),
+                        event = MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic),
                         delay = EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
                     )
                 }
@@ -706,10 +691,10 @@ class ProductListViewModel @Inject constructor(
 
     fun onBulkUpdatePriceClicked(selectedProductsRemoteIds: List<Long>) {
         analyticsTracker.track(
-            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED,
             mapOf(
-                KEY_PROPERTY to VALUE_PRICE,
-                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_PRICE,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
             )
         )
         triggerEvent(ShowUpdateDialog.Price(selectedProductsRemoteIds))
@@ -717,10 +702,10 @@ class ProductListViewModel @Inject constructor(
 
     fun onBulkUpdateStatusClicked(selectedProductsRemoteIds: List<Long>) {
         analyticsTracker.track(
-            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED,
             mapOf(
-                KEY_PROPERTY to VALUE_STATUS,
-                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STATUS,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
             )
         )
         triggerEvent(ShowUpdateDialog.Status(selectedProductsRemoteIds))
@@ -728,10 +713,10 @@ class ProductListViewModel @Inject constructor(
 
     fun onBulkUpdateStockStatusClicked(selectedProductsRemoteIds: List<Long>) {
         analyticsTracker.track(
-            PRODUCT_LIST_BULK_UPDATE_REQUESTED,
+            AnalyticsEvent.PRODUCT_LIST_BULK_UPDATE_REQUESTED,
             mapOf(
-                KEY_PROPERTY to VALUE_STOCK_STATUS,
-                KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
+                AnalyticsTracker.KEY_PROPERTY to AnalyticsTracker.VALUE_STOCK_STATUS,
+                AnalyticsTracker.KEY_SELECTED_PRODUCTS_COUNT to selectedProductsRemoteIds.size
             )
         )
         triggerEvent(ProductListEvent.ShowProductUpdateStockStatusScreen(selectedProductsRemoteIds))
@@ -772,7 +757,7 @@ class ProductListViewModel @Inject constructor(
         val isFilteringActive = filterCount != null && filterCount > 0
     }
 
-    sealed class ProductListEvent : Event() {
+    sealed class ProductListEvent : MultiLiveEvent.Event() {
         data object ScrollToTop : ProductListEvent()
         data object ShowAddProductBottomSheet : ProductListEvent()
         data object ShowProductSortingBottomSheet : ProductListEvent()

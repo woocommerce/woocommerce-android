@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.list
 
 import android.app.Activity
 import android.view.MenuItem
@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductListBinding
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.products.WCProductSearchTabView
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import org.wordpress.android.util.ActivityUtils
 import javax.inject.Inject

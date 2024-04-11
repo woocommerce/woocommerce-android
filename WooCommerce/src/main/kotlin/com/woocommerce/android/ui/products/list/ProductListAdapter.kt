@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.list
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +7,9 @@ import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.ListAdapter
 import com.woocommerce.android.databinding.ProductListItemBinding
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.ProductItemDiffCallback
+import com.woocommerce.android.ui.products.ProductItemViewHolder
 import com.woocommerce.android.util.CurrencyFormatter
 
 typealias OnProductClickListener = (remoteProductId: Long, sharedView: View?) -> Unit
