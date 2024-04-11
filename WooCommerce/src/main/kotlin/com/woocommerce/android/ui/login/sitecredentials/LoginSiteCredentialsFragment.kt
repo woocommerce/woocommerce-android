@@ -111,6 +111,7 @@ class LoginSiteCredentialsFragment : Fragment() {
             viewLifecycleOwner
         ) { _, result ->
             result.getString(ApplicationPasswordTutorialFragment.URL_KEY)
+                ?.takeIf { it.isNotEmpty() }
                 ?.let { viewModel.onWebAuthorizationUrlLoaded(it) }
                 ?: viewModel.onPasswordTutorialAborted()
         }
