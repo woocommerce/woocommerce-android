@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.store.SiteStore.OnSiteChanged
 import org.wordpress.android.login.util.SiteUtils
 import java.net.CookieManager
 import javax.inject.Inject
+import org.wordpress.android.fluxc.network.rest.wpapi.CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error
 
 class WPApiSiteRepository @Inject constructor(
     private val dispatcher: Dispatcher,
@@ -65,7 +66,7 @@ class WPApiSiteRepository @Inject constructor(
                 Result.success(Unit)
             }
 
-            is CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error -> {
+            is Error -> {
                 WooLog.w(
                     tag = WooLog.T.LOGIN,
                     message = "Authentication failed, " +
@@ -157,7 +158,7 @@ class WPApiSiteRepository @Inject constructor(
         dispatcher.dispatchAndAwait<SiteModel, OnSiteChanged>(SiteActionBuilder.newUpdateSiteAction(site))
     }
 
-    private fun CookieNonceAuthenticator.CookieNonceAuthenticationResult.Error.mapToException():
+    private fun Error.mapToException():
         CookieNonceAuthenticationException {
         val networkStatusCode = networkError?.volleyError?.networkResponse?.statusCode ?: run {
             if (type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ||
@@ -171,35 +172,39 @@ class WPApiSiteRepository @Inject constructor(
                 null
             }
         }
-        val errorMessage = when {
-            type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ->
-                message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
 
-            type == Nonce.CookieNonceErrorType.INVALID_CREDENTIALS ->
-                UiStringRes(string.login_invalid_credentials_message)
-
-            type == Nonce.CookieNonceErrorType.INVALID_RESPONSE ->
-                UiStringRes(string.login_site_credentials_invalid_response)
-
-            type == Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL ->
-                UiStringRes(string.login_site_credentials_custom_login_url)
-
-            type == Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL ->
-                UiStringRes(string.login_site_credentials_custom_admin_url)
-
-            networkStatusCode != null ->
-                UiStringRes(
-                    string.login_site_credentials_http_error,
-                    listOf(UiStringText(networkStatusCode.toString()))
-                )
-
-            else -> message?.let { UiStringText(it) } ?: UiStringRes(string.error_generic)
-        }
         return CookieNonceAuthenticationException(
-            errorMessage,
+            asUiString(networkStatusCode),
             type,
             networkStatusCode
         )
+    }
+
+    private fun Error.asUiString(
+        networkStatusCode: Int?
+    ) = when {
+        type == Nonce.CookieNonceErrorType.NOT_AUTHENTICATED ->
+            message?.let { UiStringText(it) } ?: UiStringRes(string.username_or_password_incorrect)
+
+        type == Nonce.CookieNonceErrorType.INVALID_CREDENTIALS ->
+            UiStringRes(string.login_invalid_credentials_message)
+
+        type == Nonce.CookieNonceErrorType.INVALID_RESPONSE ->
+            UiStringRes(string.login_site_credentials_invalid_response)
+
+        type == Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL ->
+            UiStringRes(string.login_site_credentials_custom_login_url)
+
+        type == Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL ->
+            UiStringRes(string.login_site_credentials_custom_admin_url)
+
+        networkStatusCode != null ->
+            UiStringRes(
+                string.login_site_credentials_http_error,
+                listOf(UiStringText(networkStatusCode.toString()))
+            )
+
+        else -> message?.let { UiStringText(it) } ?: UiStringRes(string.error_generic)
     }
 
     data class CookieNonceAuthenticationException(
