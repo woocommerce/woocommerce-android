@@ -6,11 +6,11 @@
     app:startDestination="@+id/productDetailFragment">
     <fragment
         android:id="@+id/productDetailFragment"
-        android:name="com.woocommerce.android.ui.products.ProductDetailFragment"
+        android:name="com.woocommerce.android.ui.products.details.ProductDetailFragment"
         tools:layout="@layout/fragment_product_detail">
         <argument
             android:name="mode"
-            app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
+            app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"
@@ -452,7 +452,7 @@
     </fragment>
     <dialog
         android:id="@+id/productDetailBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ProductDetailBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.details.ProductDetailBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
             android:name="productType"

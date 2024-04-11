@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
@@ -13,17 +13,12 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
-import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
-import com.woocommerce.android.ui.products.ProductDetailViewModel.HideImageUploadErrorSnackbar
-import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
-import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
-import com.woocommerce.android.ui.products.models.ProductProperty.Editable
-import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
-import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
+import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -33,16 +28,14 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -57,7 +50,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
+import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -137,9 +130,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: ProductDetailViewModel
 
-    private val productWithParameters = ProductDetailViewState(
+    private val productWithParameters = ProductDetailViewModel.ProductDetailViewState(
         productDraft = product,
-        auxiliaryState = ProductDetailViewState.AuxiliaryState.None,
+        auxiliaryState = ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None,
         uploadingImageUris = emptyList(),
         showBottomSheetButton = true
     )
@@ -148,14 +141,14 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         ProductPropertyCard(
             type = ProductPropertyCard.Type.PRIMARY,
             properties = listOf(
-                Editable(R.string.product_detail_title_hint, product.name),
-                ComplexProperty(R.string.product_description, product.description)
+                ProductProperty.Editable(R.string.product_detail_title_hint, product.name),
+                ProductProperty.ComplexProperty(R.string.product_description, product.description)
             )
         ),
         ProductPropertyCard(
             type = ProductPropertyCard.Type.SECONDARY,
             properties = listOf(
-                PropertyGroup(
+                ProductProperty.PropertyGroup(
                     R.string.product_price,
                     mapOf(
                         Pair(
@@ -175,13 +168,13 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     ),
                     R.drawable.ic_gridicons_money
                 ),
-                RatingBar(
+                ProductProperty.RatingBar(
                     R.string.product_reviews,
                     resources.getString(R.string.product_ratings_count, product.ratingCount),
                     product.averageRating,
                     R.drawable.ic_reviews
                 ),
-                PropertyGroup(
+                ProductProperty.PropertyGroup(
                     R.string.product_inventory,
                     mapOf(
                         Pair(
@@ -192,7 +185,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     R.drawable.ic_gridicons_list_checkmark,
                     true
                 ),
-                PropertyGroup(
+                ProductProperty.PropertyGroup(
                     R.string.product_shipping,
                     mapOf(
                         Pair(
@@ -209,29 +202,29 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                     R.drawable.ic_gridicons_shipping,
                     true
                 ),
-                ComplexProperty(
+                ProductProperty.ComplexProperty(
                     R.string.product_categories,
                     productWithTagsAndCategories.categories.joinToString(transform = { it.name }),
                     R.drawable.ic_gridicons_folder,
                     maxLines = 5
                 ),
-                ComplexProperty(
+                ProductProperty.ComplexProperty(
                     R.string.product_tags,
                     productWithTagsAndCategories.tags.joinToString(transform = { it.name }),
                     R.drawable.ic_gridicons_tag,
                     maxLines = 5
                 ),
-                ComplexProperty(
+                ProductProperty.ComplexProperty(
                     R.string.product_short_description,
                     product.shortDescription,
                     R.drawable.ic_gridicons_align_left
                 ),
-                ComplexProperty(
+                ProductProperty.ComplexProperty(
                     R.string.product_downloadable_files,
                     resources.getString(R.string.product_downloadable_files_value_single),
                     R.drawable.ic_gridicons_cloud
                 ),
-                ComplexProperty(
+                ProductProperty.ComplexProperty(
                     R.string.product_type,
                     resources.getString(R.string.product_detail_product_type_hint),
                     R.drawable.ic_gridicons_product,
@@ -302,7 +295,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        assertThat(cards).isEqualTo(expectedCards)
+        Assertions.assertThat(cards).isEqualTo(expectedCards)
     }
 
     @Test
@@ -310,12 +303,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
 
-        var productData: ProductDetailViewState? = null
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start()
 
-        assertThat(productData).isEqualTo(productWithParameters)
+        Assertions.assertThat(productData).isEqualTo(productWithParameters)
     }
 
     @Test
@@ -327,9 +320,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
 
-        assertThat(viewModel.getProduct().productDraft).isNull()
-        assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
-            ProductDetailViewState.AuxiliaryState.Error(
+        Assertions.assertThat(viewModel.getProduct().productDraft).isNull()
+        Assertions.assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
+            ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error(
                 R.string.product_detail_fetch_product_error
             )
         )
@@ -348,9 +341,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
             verify(productRepository, times(1)).fetchProductOrLoadFromCache(PRODUCT_REMOTE_ID)
 
-            assertThat(viewModel.getProduct().productDraft).isNull()
-            assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
-                ProductDetailViewState.AuxiliaryState.Error(
+            Assertions.assertThat(viewModel.getProduct().productDraft).isNull()
+            Assertions.assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
+                ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error(
                     R.string.product_detail_fetch_product_invalid_id_error
                 )
             )
@@ -361,9 +354,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(offlineProduct).whenever(productRepository).getProductAsync(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
         viewModel.start()
@@ -371,7 +364,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         verify(productRepository, times(1)).getProductAsync(PRODUCT_REMOTE_ID)
         verify(productRepository, times(0)).fetchProductOrLoadFromCache(any())
 
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
+        Assertions.assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
     }
 
     @Test
@@ -379,17 +372,19 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(null).whenever(productRepository).getProductAsync(any())
         doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
 
-        val auxiliaryStates = ArrayList<ProductDetailViewState.AuxiliaryState>()
+        val auxiliaryStates = ArrayList<ProductDetailViewModel.ProductDetailViewState.AuxiliaryState>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
             new.auxiliaryState.takeIfNotEqualTo(old?.auxiliaryState) { auxiliaryStates.add(it) }
         }
 
         viewModel.start()
 
-        assertThat(auxiliaryStates).containsExactly(
-            ProductDetailViewState.AuxiliaryState.Error(R.string.product_detail_fetch_product_error),
-            ProductDetailViewState.AuxiliaryState.Loading,
-            ProductDetailViewState.AuxiliaryState.None,
+        Assertions.assertThat(auxiliaryStates).containsExactly(
+            ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error(
+                R.string.product_detail_fetch_product_error
+            ),
+            ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Loading,
+            ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None,
         )
     }
 
@@ -398,17 +393,17 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
 
-        var productData: ProductDetailViewState? = null
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start()
 
-        assertThat(productData).isEqualTo(productWithParameters)
+        Assertions.assertThat(productData).isEqualTo(productWithParameters)
 
         val updatedDescription = "Updated product description"
         viewModel.updateProductDraft(updatedDescription)
 
-        assertThat(productData?.productDraft?.description).isEqualTo(updatedDescription)
+        Assertions.assertThat(productData?.productDraft?.description).isEqualTo(updatedDescription)
     }
 
     @Test
@@ -416,12 +411,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
 
-        var productData: ProductDetailViewState? = null
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start()
 
-        assertThat(productData).isEqualTo(productWithParameters)
+        Assertions.assertThat(productData).isEqualTo(productWithParameters)
 
         val updatedRegularPrice = null
         val updatedSalePrice = null
@@ -439,12 +434,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
 
-        var productData: ProductDetailViewState? = null
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start()
 
-        assertThat(productData).isEqualTo(productWithParameters)
+        Assertions.assertThat(productData).isEqualTo(productWithParameters)
 
         val updatedRegularPrice = BigDecimal.ZERO
         val updatedSalePrice = BigDecimal.ZERO
@@ -453,8 +448,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             salePrice = updatedSalePrice
         )
 
-        assertThat(productData?.productDraft?.regularPrice).isEqualTo(updatedRegularPrice)
-        assertThat(productData?.productDraft?.salePrice).isEqualTo(updatedSalePrice)
+        Assertions.assertThat(productData?.productDraft?.regularPrice).isEqualTo(updatedRegularPrice)
+        Assertions.assertThat(productData?.productDraft?.salePrice).isEqualTo(updatedSalePrice)
     }
 
     @Test
@@ -468,12 +463,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        assertThat(hasChanges).isFalse()
+        Assertions.assertThat(hasChanges).isFalse()
 
         val updatedDescription = "Updated product description"
         viewModel.updateProductDraft(updatedDescription)
 
-        assertThat(hasChanges).isTrue()
+        Assertions.assertThat(hasChanges).isTrue()
     }
 
     @Test
@@ -492,7 +487,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.onSaveButtonClicked()
 
-        assertThat(isProgressDialogShown).containsExactly(true, false)
+        Assertions.assertThat(isProgressDialogShown).containsExactly(true, false)
     }
 
     @Test
@@ -500,12 +495,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(false).whenever(networkStatus).isConnected()
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
-        var productData: ProductDetailViewState? = null
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start()
@@ -513,8 +508,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.onSaveButtonClicked()
 
         verify(productRepository, times(0)).updateProduct(any())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
-        assertThat(productData?.isProgressDialogShown).isFalse()
+        Assertions.assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+        Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
     }
 
     @Test
@@ -522,12 +517,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(false).whenever(productRepository).updateProduct(any())
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
-        var productData: ProductDetailViewState? = null
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         viewModel.start()
@@ -535,8 +530,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.onSaveButtonClicked()
 
         verify(productRepository, times(1)).updateProduct(any())
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.product_detail_update_product_error))
-        assertThat(productData?.isProgressDialogShown).isFalse()
+        Assertions.assertThat(snackbar)
+            .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.product_detail_update_product_error))
+        Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
     }
 
     @Test
@@ -546,12 +542,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         var successSnackbarShown = false
         viewModel.event.observeForever {
-            if (it is ShowSnackbar && it.message == R.string.product_detail_save_product_success) {
+            if (it is MultiLiveEvent.Event.ShowSnackbar && it.message == R.string.product_detail_save_product_success) {
                 successSnackbarShown = true
             }
         }
 
-        var productData: ProductDetailViewState? = null
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
         var hasChanges: Boolean? = null
@@ -564,10 +560,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         verify(productRepository, times(1)).updateProduct(any())
         verify(productRepository, times(2)).getProductAsync(PRODUCT_REMOTE_ID)
 
-        assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse
-        assertThat(hasChanges).isFalse()
-        assertThat(productData?.productDraft).isEqualTo(product)
+        Assertions.assertThat(successSnackbarShown).isTrue()
+        Assertions.assertThat(productData?.isProgressDialogShown).isFalse
+        Assertions.assertThat(hasChanges).isFalse()
+        Assertions.assertThat(productData?.productDraft).isEqualTo(product)
     }
 
     @Test
@@ -577,17 +573,17 @@ class ProductDetailViewModelTest : BaseUnitTest() {
                 product,
                 productCategories
             ).toList()
-            assertThat(sortedByNameAndParent[0].category).isEqualTo(productCategories[0])
-            assertThat(sortedByNameAndParent[1].category).isEqualTo(productCategories[7])
-            assertThat(sortedByNameAndParent[2].category).isEqualTo(productCategories[10])
-            assertThat(sortedByNameAndParent[3].category).isEqualTo(productCategories[1])
-            assertThat(sortedByNameAndParent[4].category).isEqualTo(productCategories[6])
-            assertThat(sortedByNameAndParent[5].category).isEqualTo(productCategories[8])
-            assertThat(sortedByNameAndParent[6].category).isEqualTo(productCategories[9])
-            assertThat(sortedByNameAndParent[7].category).isEqualTo(productCategories[2])
-            assertThat(sortedByNameAndParent[8].category).isEqualTo(productCategories[3])
-            assertThat(sortedByNameAndParent[9].category).isEqualTo(productCategories[5])
-            assertThat(sortedByNameAndParent[10].category).isEqualTo(productCategories[4])
+            Assertions.assertThat(sortedByNameAndParent[0].category).isEqualTo(productCategories[0])
+            Assertions.assertThat(sortedByNameAndParent[1].category).isEqualTo(productCategories[7])
+            Assertions.assertThat(sortedByNameAndParent[2].category).isEqualTo(productCategories[10])
+            Assertions.assertThat(sortedByNameAndParent[3].category).isEqualTo(productCategories[1])
+            Assertions.assertThat(sortedByNameAndParent[4].category).isEqualTo(productCategories[6])
+            Assertions.assertThat(sortedByNameAndParent[5].category).isEqualTo(productCategories[8])
+            Assertions.assertThat(sortedByNameAndParent[6].category).isEqualTo(productCategories[9])
+            Assertions.assertThat(sortedByNameAndParent[7].category).isEqualTo(productCategories[2])
+            Assertions.assertThat(sortedByNameAndParent[8].category).isEqualTo(productCategories[3])
+            Assertions.assertThat(sortedByNameAndParent[9].category).isEqualTo(productCategories[5])
+            Assertions.assertThat(sortedByNameAndParent[10].category).isEqualTo(productCategories[4])
         }
     }
 
@@ -598,28 +594,28 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         var trashDialogShown = false
         viewModel.event.observeForever {
-            if (it is ShowDialog && it.messageId == R.string.product_confirm_trash) {
+            if (it is MultiLiveEvent.Event.ShowDialog && it.messageId == R.string.product_confirm_trash) {
                 trashDialogShown = true
             }
         }
 
-        assertThat(trashDialogShown).isTrue()
+        Assertions.assertThat(trashDialogShown).isTrue()
     }
 
     @Test
     fun `Do not enable trashing a product when in add product flow`() {
         viewModel.start()
         doReturn(true).whenever(viewModel).isProductUnderCreation
-        assertThat(viewModel.isTrashEnabled).isFalse()
+        Assertions.assertThat(viewModel.isTrashEnabled).isFalse()
     }
 
     @Test
     fun `Display offline message and don't show trash confirmation dialog when not connected`() {
         doReturn(false).whenever(networkStatus).isConnected()
 
-        var snackbar: ShowSnackbar? = null
+        var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
-            if (it is ShowSnackbar) snackbar = it
+            if (it is MultiLiveEvent.Event.ShowSnackbar) snackbar = it
         }
 
         var isTrashDialogShown = false
@@ -632,8 +628,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
         viewModel.onTrashButtonClicked()
 
-        assertThat(snackbar).isEqualTo(ShowSnackbar(R.string.offline_error))
-        assertThat(isTrashDialogShown).isFalse()
+        Assertions.assertThat(snackbar).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+        Assertions.assertThat(isTrashDialogShown).isFalse()
     }
 
     @Test
@@ -644,7 +640,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
         viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = true)
 
-        assertThat(productsDraft?.saleEndDateGmt).isEqualTo(SALE_END_DATE)
+        Assertions.assertThat(productsDraft?.saleEndDateGmt).isEqualTo(SALE_END_DATE)
     }
 
     @Test
@@ -655,7 +651,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
         viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = false)
 
-        assertThat(productsDraft?.saleEndDateGmt).isEqualTo(product.saleEndDateGmt)
+        Assertions.assertThat(productsDraft?.saleEndDateGmt).isEqualTo(product.saleEndDateGmt)
     }
 
     @Test
@@ -668,7 +664,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             viewModel.start()
             viewModel.updateProductDraft(saleEndDate = SALE_END_DATE, isSaleScheduled = null)
 
-            assertThat(productsDraft?.saleEndDateGmt).isEqualTo(SALE_END_DATE)
+            Assertions.assertThat(productsDraft?.saleEndDateGmt).isEqualTo(SALE_END_DATE)
         }
 
     @Test
@@ -683,7 +679,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
         viewModel.updateProductDraft(saleEndDate = null)
 
-        assertThat(productsDraft?.saleEndDateGmt).isNull()
+        Assertions.assertThat(productsDraft?.saleEndDateGmt).isNull()
     }
 
     @Test
@@ -708,8 +704,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         val draftAttribute = viewModel.productDraftAttributes[0]
         val draftTerms = draftAttribute.terms
-        assertThat(draftTerms[0]).isEqualTo(secondTerm)
-        assertThat(draftTerms[1]).isEqualTo(firstTerm)
+        Assertions.assertThat(draftTerms[0]).isEqualTo(secondTerm)
+        Assertions.assertThat(draftTerms[1]).isEqualTo(firstTerm)
     }
 
     /**
@@ -741,7 +737,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             // Given
             doReturn(product).whenever(productRepository).getProductAsync(any())
 
-            var productData: ProductDetailViewState? = null
+            var productData: ProductDetailViewModel.ProductDetailViewState? = null
             viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
 
             viewModel.start()
@@ -749,7 +745,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             clearInvocations(productRepository)
 
             // Precondition
-            assertThat(productData?.productDraft?.numVariations).isZero()
+            Assertions.assertThat(productData?.productDraft?.numVariations).isZero()
 
             doReturn(mock<ProductVariation>()).whenever(variationRepository).createEmptyVariation(any())
             doReturn(product.copy(numVariations = 1_914)).whenever(productRepository)
@@ -764,12 +760,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             verify(productRepository, times(1)).fetchProductOrLoadFromCache(eq(product.remoteId))
 
             // The VM state should have been updated with the _fetched_ product's numVariations
-            assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
+            Assertions.assertThat(productData?.productDraft?.numVariations).isEqualTo(1_914)
         }
 
     @Test
     fun `when there image upload errors, then show a snackbar`() = testBlocking {
-        val errorEvents = MutableSharedFlow<List<ProductImageUploadData>>()
+        val errorEvents = MutableSharedFlow<List<MediaFileUploadHandler.ProductImageUploadData>>()
         doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
         doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
         doReturn(product).whenever(productRepository).getProductAsync(any())
@@ -778,26 +774,26 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
         val errors = listOf(
-            ProductImageUploadData(
+            MediaFileUploadHandler.ProductImageUploadData(
                 PRODUCT_REMOTE_ID,
                 "uri",
-                UploadStatus.Failed(
-                    mediaErrorType = MediaErrorType.GENERIC_ERROR,
+                MediaFileUploadHandler.UploadStatus.Failed(
+                    mediaErrorType = MediaStore.MediaErrorType.GENERIC_ERROR,
                     mediaErrorMessage = "error"
                 )
             )
         )
         errorEvents.emit(errors)
 
-        assertThat(viewModel.event.value).matches {
-            it is ShowActionSnackbar &&
+        Assertions.assertThat(viewModel.event.value).matches {
+            it is MultiLiveEvent.Event.ShowActionSnackbar &&
                 it.message == errorMessage
         }
     }
 
     @Test
     fun `when image uploads gets cleared, then auto-dismiss the snackbar`() = testBlocking {
-        val errorEvents = MutableSharedFlow<List<ProductImageUploadData>>()
+        val errorEvents = MutableSharedFlow<List<MediaFileUploadHandler.ProductImageUploadData>>()
         doReturn(errorEvents).whenever(mediaFileUploadHandler).observeCurrentUploadErrors(PRODUCT_REMOTE_ID)
         doReturn(product).whenever(productRepository).fetchProductOrLoadFromCache(any())
         doReturn(product).whenever(productRepository).getProductAsync(any())
@@ -805,31 +801,31 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.start()
         errorEvents.emit(emptyList())
 
-        assertThat(viewModel.event.value).isEqualTo(HideImageUploadErrorSnackbar)
+        Assertions.assertThat(viewModel.event.value).isEqualTo(ProductDetailViewModel.HideImageUploadErrorSnackbar)
     }
 
     @Test
     fun `Publish option not shown when product is published except addProduct flow`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-        var menuButtonsState: MenuButtonsState? = null
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
-        assertThat(menuButtonsState?.publishOption).isFalse
+        Assertions.assertThat(menuButtonsState?.publishOption).isFalse
     }
 
     @Test
     fun `Publish option not shown when product is published privately except addProduct flow`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
-        var menuButtonsState: MenuButtonsState? = null
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PRIVATE)
-        assertThat(menuButtonsState?.publishOption).isFalse
+        Assertions.assertThat(menuButtonsState?.publishOption).isFalse
     }
 
     @Test
@@ -837,12 +833,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-        var menuButtonsState: MenuButtonsState? = null
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
-        assertThat(menuButtonsState?.publishOption).isTrue
+        Assertions.assertThat(menuButtonsState?.publishOption).isTrue
     }
 
     @Test
@@ -850,12 +846,12 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-        var menuButtonsState: MenuButtonsState? = null
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PENDING)
-        assertThat(menuButtonsState?.publishOption).isTrue()
+        Assertions.assertThat(menuButtonsState?.publishOption).isTrue()
     }
 
     @Test
@@ -864,21 +860,21 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             doReturn(product).whenever(productRepository).getProductAsync(any())
             viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-            var menuButtonsState: MenuButtonsState? = null
+            var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
             viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
             viewModel.start()
             // Trigger changes
             viewModel.updateProductDraft(title = product.name + "2")
 
-            assertThat(menuButtonsState?.saveOption).isTrue()
+            Assertions.assertThat(menuButtonsState?.saveOption).isTrue()
         }
 
     @Test
     fun `when restoring saved state, then re-fetch stored product to correctly calculate hasChanges`() = testBlocking {
         // Make sure draft product has different data than draft product
         doReturn(product.copy(name = product.name + "test")).whenever(productRepository).getProductAsync(any())
-        savedState.set(ProductDetailViewState::class.java.name, productWithParameters)
+        savedState.set(ProductDetailViewModel.ProductDetailViewState::class.java.name, productWithParameters)
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
         var hasChanges: Boolean? = null
@@ -886,7 +882,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.start()
 
-        assertThat(hasChanges).isTrue
+        Assertions.assertThat(hasChanges).isTrue
     }
 
     @Test
@@ -901,7 +897,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.updateProductDraft(sku = "E9999999")
 
-        assertThat(viewModel.getProduct().productDraft?.regularPrice).isEqualTo(BigDecimal(99))
+        Assertions.assertThat(viewModel.getProduct().productDraft?.regularPrice).isEqualTo(BigDecimal(99))
     }
 
     @Test
@@ -916,7 +912,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.updateProductDraft(sku = "E9999999")
 
-        assertThat(viewModel.getProduct().productDraft?.salePrice).isEqualTo(BigDecimal(99))
+        Assertions.assertThat(viewModel.getProduct().productDraft?.salePrice).isEqualTo(BigDecimal(99))
     }
 
     @Test
@@ -931,7 +927,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.updateProductDraft(regularPrice = BigDecimal(0))
 
-        assertThat(viewModel.getProduct().productDraft?.regularPrice).isEqualTo(BigDecimal(0))
+        Assertions.assertThat(viewModel.getProduct().productDraft?.regularPrice).isEqualTo(BigDecimal(0))
     }
 
     @Test
@@ -946,7 +942,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.updateProductDraft(salePrice = BigDecimal(0))
 
-        assertThat(viewModel.getProduct().productDraft?.salePrice).isEqualTo(BigDecimal(0))
+        Assertions.assertThat(viewModel.getProduct().productDraft?.salePrice).isEqualTo(BigDecimal(0))
     }
 
     @Test
@@ -961,7 +957,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.updateProductDraft(regularPrice = null)
 
-        assertThat(viewModel.getProduct().productDraft?.regularPrice).isNull()
+        Assertions.assertThat(viewModel.getProduct().productDraft?.regularPrice).isNull()
     }
 
     @Test
@@ -976,7 +972,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         viewModel.updateProductDraft(salePrice = null)
 
-        assertThat(viewModel.getProduct().productDraft?.salePrice).isNull()
+        Assertions.assertThat(viewModel.getProduct().productDraft?.salePrice).isNull()
     }
 
     @Test
@@ -1002,7 +998,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         setup()
 
-        assertThat(productsDraft?.images?.map { it.source }).isEqualTo(uris.toList())
+        Assertions.assertThat(productsDraft?.images?.map { it.source }).isEqualTo(uris.toList())
     }
 
     @Test
@@ -1015,8 +1011,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         setup()
 
         // THEN
-        assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
-            ProductDetailViewState.AuxiliaryState.Error(R.string.product_detail_product_not_selected)
+        Assertions.assertThat(viewModel.getProduct().auxiliaryState).isEqualTo(
+            ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error(
+                R.string.product_detail_product_not_selected
+            )
         )
     }
 
@@ -1061,7 +1059,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         viewModel.onPublishButtonClicked()
 
         // THEN
-        assertThat(viewModel.event.value).isEqualTo(ProductDetailViewModel.ProductUpdated)
+        Assertions.assertThat(viewModel.event.value).isEqualTo(ProductDetailViewModel.ProductUpdated)
     }
 
     private val productsDraft

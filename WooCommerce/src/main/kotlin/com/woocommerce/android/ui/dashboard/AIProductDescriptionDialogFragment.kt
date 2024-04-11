@@ -14,7 +14,7 @@ import com.woocommerce.android.R.style
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.AIProductDescriptionDialogViewModel.TryAIProductDescriptionGeneration
-import com.woocommerce.android.ui.products.ProductDetailFragment
+import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.DisplayUtils

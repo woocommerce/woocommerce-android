@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.details
 
 import com.google.gson.Gson
 import com.woocommerce.android.AppConstants

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
@@ -11,6 +11,8 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -211,8 +213,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
         // then
         events.last()
             .let { lastEvent ->
-                Assertions
-                    .assertThat(lastEvent)
+                Assertions.assertThat(lastEvent)
                     .isEqualTo(ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded)
             }
 
@@ -248,8 +249,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
         // then
         events.last()
             .let { lastEvent ->
-                Assertions
-                    .assertThat(lastEvent)
+                Assertions.assertThat(lastEvent)
                     .isEqualTo(VariationListViewModel.ShowGenerateVariationsError.NetworkError)
             }
 

@@ -7,7 +7,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductQuantityRulesBinding
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductQuantityRules
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductQuantityRules
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent

@@ -1,17 +1,18 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.details
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
+import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.models.ProductProperty
-import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
+import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.fail
-import org.junit.Assert.assertFalse
+import org.assertj.core.api.Assertions
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -71,16 +72,16 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
             )
 
         val cards = sut.buildPropertyCards(productStub, "")
-        assertThat(cards).isNotEmpty
+        Assertions.assertThat(cards).isNotEmpty
 
-        cards.find { it.type == SECONDARY }
+        cards.find { it.type == ProductPropertyCard.Type.SECONDARY }
             ?.properties?.mapNotNull { it as? ProductProperty.PropertyGroup }
             ?.find { propertyGroup ->
                 propertyGroup.properties.toList()
                     .find { it.first == "Color" } != null
             }?.properties?.toList()?.let {
-                assertThat(it.first()).isEqualTo(Pair("Color", "3"))
-            } ?: fail("Expected a Product card with a single Attribute named Color with value 3 selected")
+                Assertions.assertThat(it.first()).isEqualTo(Pair("Color", "3"))
+            } ?: Assertions.fail("Expected a Product card with a single Attribute named Color with value 3 selected")
     }
 
     @Test
@@ -98,9 +99,9 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
 
         var foundAttributesCard = false
         val cards = sut.buildPropertyCards(productStub, "")
-        assertThat(cards).isNotEmpty
+        Assertions.assertThat(cards).isNotEmpty
 
-        cards.find { it.type == SECONDARY }
+        cards.find { it.type == ProductPropertyCard.Type.SECONDARY }
             ?.properties?.mapNotNull { it as? ProductProperty.PropertyGroup }
             ?.find { propertyGroup ->
                 propertyGroup.properties.toList()
@@ -109,6 +110,6 @@ class ProductDetailCardBuilderTest : BaseUnitTest() {
                 foundAttributesCard = true
             }
 
-        assertFalse("Expected no Product card with Attributes configured", foundAttributesCard)
+        Assert.assertFalse("Expected no Product card with Attributes configured", foundAttributesCard)
     }
 }

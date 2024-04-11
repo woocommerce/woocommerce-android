@@ -1,10 +1,11 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.details
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.SubscriptionProductVariation
+import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigationTarget.AddProductDownloadableFile
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewLinkedProducts
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductCategories

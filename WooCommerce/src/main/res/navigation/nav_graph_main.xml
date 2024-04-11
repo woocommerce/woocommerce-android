@@ -455,7 +455,7 @@
         app:destination="@id/nav_graph_products">
         <argument
             android:name="mode"
-            app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
+            app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"

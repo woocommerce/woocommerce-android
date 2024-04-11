@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.details
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
@@ -11,13 +11,12 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.products.ProductDetailViewModel.MenuButtonsState
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
-import com.woocommerce.android.ui.products.models.ProductProperty.ComplexProperty
-import com.woocommerce.android.ui.products.models.ProductProperty.Editable
-import com.woocommerce.android.ui.products.models.ProductProperty.PropertyGroup
+import com.woocommerce.android.ui.products.models.ProductProperty
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.tags.ProductTagsRepository
@@ -26,7 +25,7 @@ import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCa
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.ProductUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,7 +34,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onSubscription
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -122,8 +121,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         ProductPropertyCard(
             type = ProductPropertyCard.Type.PRIMARY,
             properties = listOf(
-                Editable(R.string.product_detail_title_hint, ""),
-                ComplexProperty(
+                ProductProperty.Editable(R.string.product_detail_title_hint, ""),
+                ProductProperty.ComplexProperty(
                     R.string.product_description,
                     resources.getString(R.string.product_description_empty),
                     showTitle = false
@@ -133,13 +132,13 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         ProductPropertyCard(
             type = ProductPropertyCard.Type.SECONDARY,
             properties = listOf(
-                PropertyGroup(
+                ProductProperty.PropertyGroup(
                     R.string.product_price,
                     defaultPricingGroup,
                     R.drawable.ic_gridicons_money,
                     showTitle = false
                 ),
-                PropertyGroup(
+                ProductProperty.PropertyGroup(
                     R.string.product_inventory,
                     mapOf(
                         Pair(
@@ -150,7 +149,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                     R.drawable.ic_gridicons_list_checkmark,
                     true
                 ),
-                ComplexProperty(
+                ProductProperty.ComplexProperty(
                     R.string.product_type,
                     resources.getString(R.string.product_detail_product_type_hint),
                     R.drawable.ic_gridicons_product,
@@ -216,7 +215,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             cards = it.map { card -> productUtils.stripCallbacks(card) }
         }
 
-        assertThat(cards).isEqualTo(addNewProductExpectedCards)
+        Assertions.assertThat(cards).isEqualTo(addNewProductExpectedCards)
     }
 
     @Test
@@ -234,7 +233,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         var hasChanges: Boolean? = null
         viewModel.hasChanges.observeForever { hasChanges = it }
 
-        var productData: ProductDetailViewState? = null
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
 
         // when
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -246,10 +245,10 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         // then
         verify(productRepository, times(1)).getProductAsync(1L)
 
-        assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse()
-        assertThat(hasChanges).isFalse()
-        assertThat(productData?.productDraft).isEqualTo(product)
+        Assertions.assertThat(successSnackbarShown).isTrue()
+        Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
+        Assertions.assertThat(hasChanges).isFalse()
+        Assertions.assertThat(productData?.productDraft).isEqualTo(product)
     }
 
     @Test
@@ -264,7 +263,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             }
         }
 
-        var productData: ProductDetailViewState? = null
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
 
         // when
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -274,8 +273,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onPublishButtonClicked()
 
         // then
-        assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse()
+        Assertions.assertThat(successSnackbarShown).isTrue()
+        Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
     }
 
     @Test
@@ -290,7 +289,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             }
         }
 
-        var productData: ProductDetailViewState? = null
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
 
         // when
         viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -300,8 +299,8 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
         viewModel.onPublishButtonClicked()
 
         // then
-        assertThat(successSnackbarShown).isTrue()
-        assertThat(productData?.isProgressDialogShown).isFalse()
+        Assertions.assertThat(successSnackbarShown).isTrue()
+        Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
     }
 
     @Test
@@ -320,7 +319,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             var hasChanges: Boolean? = null
             viewModel.hasChanges.observeForever { hasChanges = it }
 
-            var productData: ProductDetailViewState? = null
+            var productData: ProductDetailViewModel.ProductDetailViewState? = null
 
             // when
             viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
@@ -332,10 +331,10 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             // then
             verify(productRepository, times(1)).getProductAsync(1L)
 
-            assertThat(successSnackbarShown).isTrue()
-            assertThat(productData?.isProgressDialogShown).isFalse()
-            assertThat(hasChanges).isFalse()
-            assertThat(productData?.productDraft).isEqualTo(product)
+            Assertions.assertThat(successSnackbarShown).isTrue()
+            Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
+            Assertions.assertThat(hasChanges).isFalse()
+            Assertions.assertThat(productData?.productDraft).isEqualTo(product)
 
             // when
             doReturn(true).whenever(productRepository).updateProduct(any())
@@ -350,10 +349,10 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             }
 
             // then
-            assertThat(successSnackbarShown).isTrue()
-            assertThat(productData?.isProgressDialogShown).isFalse()
-            assertThat(hasChanges).isFalse()
-            assertThat(productData?.productDraft).isEqualTo(product)
+            Assertions.assertThat(successSnackbarShown).isTrue()
+            Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
+            Assertions.assertThat(hasChanges).isFalse()
+            Assertions.assertThat(productData?.productDraft).isEqualTo(product)
         }
 
     @Test
@@ -369,13 +368,13 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         var saveAsDraftShown = false
         viewModel.event.observeForever {
-            if (it is ShowDialog && it.neutralBtnAction != null) {
+            if (it is MultiLiveEvent.Event.ShowDialog && it.neutralBtnAction != null) {
                 saveAsDraftShown = true
             }
         }
 
         viewModel.onBackButtonClickedProductDetail()
-        assertThat(saveAsDraftShown).isTrue()
+        Assertions.assertThat(saveAsDraftShown).isTrue()
     }
 
     @Test
@@ -387,13 +386,13 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
 
         var saveAsDraftShown = false
         viewModel.event.observeForever {
-            if (it is ShowDialog && it.neutralBtnAction != null) {
+            if (it is MultiLiveEvent.Event.ShowDialog && it.neutralBtnAction != null) {
                 saveAsDraftShown = true
             }
         }
 
         viewModel.onBackButtonClickedProductDetail()
-        assertThat(saveAsDraftShown).isFalse()
+        Assertions.assertThat(saveAsDraftShown).isFalse()
     }
 
     @Test
@@ -427,7 +426,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             viewModel.onProductTitleChanged("Product 2")
             viewModel.onBackButtonClickedProductDetail()
 
-            assertThat(isObservingEvents).isFalse()
+            Assertions.assertThat(isObservingEvents).isFalse()
         }
 
     @Test
@@ -445,9 +444,9 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product")
             viewModel.onBackButtonClickedProductDetail()
-            (viewModel.event.value as ShowDialog).negativeBtnAction!!.onClick(null, 0)
+            (viewModel.event.value as MultiLiveEvent.Event.ShowDialog).negativeBtnAction!!.onClick(null, 0)
 
-            assertThat(isObservingEvents).isTrue()
+            Assertions.assertThat(isObservingEvents).isTrue()
         }
 
     @Test
@@ -461,7 +460,7 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
             // Make some changes to trigger discard changes dialog
             viewModel.onProductTitleChanged("Product")
             viewModel.onBackButtonClickedProductDetail()
-            (viewModel.event.value as ShowDialog).neutralBtnAction!!.onClick(null, 0)
+            (viewModel.event.value as MultiLiveEvent.Event.ShowDialog).neutralBtnAction!!.onClick(null, 0)
 
             verify(mediaFileUploadHandler).assignUploadsToCreatedProduct(PRODUCT_REMOTE_ID)
         }
@@ -470,37 +469,37 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
     fun `Publish option shown when product is published and from addProduct flow and is under product creation`() {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-        var menuButtonsState: MenuButtonsState? = null
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.PUBLISH)
-        assertThat(menuButtonsState?.publishOption).isTrue
+        Assertions.assertThat(menuButtonsState?.publishOption).isTrue
     }
 
     @Test
     fun `Save option not shown when product has changes but in add product flow`() {
         viewModel.productDetailViewStateData.observeForever { _, _ -> }
 
-        var menuButtonsState: MenuButtonsState? = null
+        var menuButtonsState: ProductDetailViewModel.MenuButtonsState? = null
         viewModel.menuButtonsState.observeForever { menuButtonsState = it }
 
         viewModel.start()
         viewModel.updateProductDraft(title = "name")
 
-        assertThat(menuButtonsState?.saveOption).isFalse()
+        Assertions.assertThat(menuButtonsState?.saveOption).isFalse()
     }
 
     @Test
     fun `given product status is draft, when save is clicked, then save product with correct status`() = testBlocking {
         whenever(productRepository.addProduct(any())).thenAnswer { it.arguments.first() as Product }
-        var viewState: ProductDetailViewState? = null
+        var viewState: ProductDetailViewModel.ProductDetailViewState? = null
         viewModel.productDetailViewStateData.observeForever { _, new -> viewState = new }
 
         viewModel.start()
         viewModel.updateProductDraft(productStatus = ProductStatus.DRAFT)
         viewModel.onSaveButtonClicked()
 
-        assertThat(viewState?.productDraft?.status).isEqualTo(ProductStatus.DRAFT)
+        Assertions.assertThat(viewState?.productDraft?.status).isEqualTo(ProductStatus.DRAFT)
     }
 }

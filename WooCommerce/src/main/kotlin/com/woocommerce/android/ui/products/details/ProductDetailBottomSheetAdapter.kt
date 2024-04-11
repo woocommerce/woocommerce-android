@@ -1,12 +1,12 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.details
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductDetailBottomSheetListItemBinding
-import com.woocommerce.android.ui.products.ProductDetailBottomSheetAdapter.ProductDetailBottomSheetViewHolder
-import com.woocommerce.android.ui.products.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
+import com.woocommerce.android.ui.products.details.ProductDetailBottomSheetAdapter.ProductDetailBottomSheetViewHolder
+import com.woocommerce.android.ui.products.details.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 
 class ProductDetailBottomSheetAdapter(
     private val onItemClicked: (bottomSheetUiItem: ProductDetailBottomSheetUiItem) -> Unit
