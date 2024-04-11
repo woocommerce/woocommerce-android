@@ -6,9 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -109,7 +109,9 @@ private fun TutorialContentScreen(
             .background(MaterialTheme.colors.surface)
     ) {
         Column(
-            modifier = modifier.verticalScroll(rememberScrollState())
+            modifier = modifier
+                .verticalScroll(rememberScrollState())
+                .weight(6f, true)
         ) {
             Column(
                 modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
@@ -153,14 +155,13 @@ private fun TutorialContentScreen(
             )
         }
 
-        Spacer(modifier.weight(1f))
-        Divider()
-
         Column(
             modifier = modifier
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                .heightIn(min = dimensionResource(id = R.dimen.major_300))
         ) {
+            Divider()
             Button(
                 onClick = onContinueClicked,
                 modifier = modifier.fillMaxWidth()
