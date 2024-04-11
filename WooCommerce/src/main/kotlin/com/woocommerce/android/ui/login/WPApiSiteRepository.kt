@@ -193,7 +193,7 @@ class WPApiSiteRepository @Inject constructor(
                     listOf(UiStringText(networkStatusCode.toString()))
                 )
 
-            else -> UiStringRes(string.error_generic)
+            else -> message?.let { UiStringText(it) } ?: UiStringRes(string.error_generic)
         }
         return CookieNonceAuthenticationException(
             errorMessage,

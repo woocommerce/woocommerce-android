@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -62,7 +61,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
 
     fun onWebViewDataAvailable(
         authorizationUrl: String?,
-        errorMessage: Int?
+        errorMessage: String?
     ) {
         _viewState.update {
             it.copy(
@@ -79,7 +78,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     data class ViewState(
         val authorizationStarted: Boolean = false,
         val authorizationUrl: String? = null,
-        @StringRes val errorMessage: Int? = null,
+        val errorMessage: String? = null,
     ) : Parcelable
 
     companion object {
