@@ -1,1 +1,3 @@
-Introducing refined features in our WooCommerce mobile app! We've enhanced the accuracy of visitor stats to offer you more precise insights. Enjoy a better understanding of your customer interactions, further helping you optimize your strategies. Update now for a superior user experience.
+- [**] Payments: We are sunsetting simple payments in favour of the order creation flow with custom amount set [https://github.com/woocommerce/woocommerce-android/pull/11274]
+- [**] Stats: The Analytics Hub now includes analytics for Product Bundles and Gift Cards, when those extensions are active. [https://github.com/woocommerce/woocommerce-android/pull/11290]
+
