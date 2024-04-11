@@ -73,3 +73,4 @@ gradle.ext {
 
 apply from: './config/gradle/include_builds.gradle'
 apply from: './config/gradle/gradle_build_cache.gradle'
+include ':WooCommerce-Wear'
