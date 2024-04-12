@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.typesbottomsheet
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,10 +11,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.DialogProductDetailBottomSheetListBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.dialog.WooDialog
-import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.ui.products.ProductNavigationTarget
+import com.woocommerce.android.ui.products.ProductNavigator
+import com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCBottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -25,7 +25,8 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
         const val KEY_PRODUCT_TYPE_RESULT = "key_product_type_result"
     }
 
-    @Inject internal lateinit var navigator: ProductNavigator
+    @Inject
+    internal lateinit var navigator: ProductNavigator
     val viewModel: ProductTypesBottomSheetViewModel by viewModels()
 
     private val navArgs: ProductTypesBottomSheetFragmentArgs by navArgs()
@@ -58,11 +59,11 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is Exit -> {
+                is MultiLiveEvent.Event.Exit -> {
                     dismiss()
                 }
 
-                is ShowDialog -> WooDialog.showDialog(
+                is MultiLiveEvent.Event.ShowDialog -> WooDialog.showDialog(
                     requireActivity(),
                     event.positiveBtnAction,
                     event.negativeBtnAction,
@@ -74,7 +75,7 @@ class ProductTypesBottomSheetFragment : WCBottomSheetDialogFragment() {
                     event.neutralButtonId
                 )
 
-                is ExitWithResult<*> -> {
+                is MultiLiveEvent.Event.ExitWithResult<*> -> {
                     (event.data as? ProductTypesBottomSheetUiItem)?.let {
                         navigateWithSelectedResult(productTypesBottomSheetUiItem = it)
                     }

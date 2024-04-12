@@ -1,6 +1,6 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.typesbottomsheet
 
-import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,7 +13,6 @@ import org.mockito.kotlin.whenever
 @ExperimentalCoroutinesApi
 class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ProductTypesBottomSheetViewModel
-    private val appPrefs: AppPrefs = mock()
     private val bottomSheetBuilder: ProductTypeBottomSheetBuilder = mock()
     private val isEligibleForSubscriptions: IsEligibleForSubscriptions = mock()
 
@@ -27,7 +26,8 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
     fun `given is Add Product flow, when loading product types, then product types not filtered`() = testBlocking {
         viewModel = ProductTypesBottomSheetViewModel(
             ProductTypesBottomSheetFragmentArgs(isAddProduct = true).toSavedStateHandle(),
-            appPrefs, bottomSheetBuilder, isEligibleForSubscriptions
+            bottomSheetBuilder,
+            isEligibleForSubscriptions,
         )
 
         assertThat(viewModel.productTypesBottomSheetList.value).isEqualTo(uiItems)
@@ -41,7 +41,8 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
                 currentProductType = "simple",
                 isCurrentProductVirtual = false
             ).toSavedStateHandle(),
-            appPrefs, bottomSheetBuilder, isEligibleForSubscriptions
+            bottomSheetBuilder,
+            isEligibleForSubscriptions
         )
 
         assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 1)
@@ -55,7 +56,8 @@ class ProductTypesBottomSheetViewModelTest : BaseUnitTest() {
                 currentProductType = "simple",
                 isCurrentProductVirtual = true
             ).toSavedStateHandle(),
-            appPrefs, bottomSheetBuilder, isEligibleForSubscriptions
+            bottomSheetBuilder,
+            isEligibleForSubscriptions
         )
 
         assertThat(viewModel.productTypesBottomSheetList.value!!.size).isEqualTo(uiItems.size - 1)

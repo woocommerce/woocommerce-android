@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.typesbottomsheet
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
@@ -11,22 +11,21 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductAdd
+import com.woocommerce.android.ui.products.ProductNavigationTarget
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import java.util.Locale.ROOT
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductTypesBottomSheetViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val prefs: AppPrefs,
     private val productTypeBottomSheetBuilder: ProductTypeBottomSheetBuilder,
     private val isEligibleForSubscriptions: IsEligibleForSubscriptions
 ) : ScopedViewModel(savedState) {
@@ -60,21 +59,21 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
 
     fun onProductTypeSelected(productTypeUiItem: ProductTypesBottomSheetUiItem) {
         if (navArgs.isAddProduct) {
-            val properties = mapOf("product_type" to productTypeUiItem.type.value.lowercase(ROOT))
+            val properties = mapOf("product_type" to productTypeUiItem.type.value.lowercase(Locale.ROOT))
             AnalyticsTracker.track(AnalyticsEvent.ADD_PRODUCT_PRODUCT_TYPE_SELECTED, properties)
 
             saveUserSelection(productTypeUiItem)
-            triggerEvent(ViewProductAdd(navArgs.source))
-            triggerEvent(ExitWithResult(productTypeUiItem))
+            triggerEvent(ProductNavigationTarget.ViewProductAdd(navArgs.source))
+            triggerEvent(MultiLiveEvent.Event.ExitWithResult(productTypeUiItem))
         } else {
             triggerEvent(
-                ShowDialog(
+                MultiLiveEvent.Event.ShowDialog(
                     titleId = R.string.product_type_confirm_dialog_title,
                     messageId = R.string.product_type_confirm_dialog_message,
                     positiveButtonId = R.string.product_type_confirm_button,
                     negativeButtonId = R.string.cancel,
                     positiveBtnAction = { _, _ ->
-                        triggerEvent(ExitWithResult(productTypeUiItem))
+                        triggerEvent(MultiLiveEvent.Event.ExitWithResult(productTypeUiItem))
                     }
                 )
             )
@@ -82,8 +81,8 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
     }
 
     private fun saveUserSelection(productTypeUiItem: ProductTypesBottomSheetUiItem) {
-        prefs.setSelectedProductType(productTypeUiItem.type)
-        prefs.setSelectedProductIsVirtual(productTypeUiItem.isVirtual)
+        AppPrefs.setSelectedProductType(productTypeUiItem.type)
+        AppPrefs.setSelectedProductIsVirtual(productTypeUiItem.isVirtual)
     }
 
     @Parcelize
