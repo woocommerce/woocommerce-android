@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -42,7 +41,7 @@ fun ApplicationPasswordTutorialScreen(viewModel: ApplicationPasswordTutorialView
     val viewState = viewModel.viewState.observeAsState()
     ApplicationPasswordTutorialScreen(
         authorizationStarted = viewState.value?.authorizationStarted ?: false,
-        errorMessageRes = viewState.value?.errorMessage,
+        errorMessage = viewState.value?.errorMessage,
         webViewUrl = viewState.value?.authorizationUrl.orEmpty(),
         webViewUserAgent = viewModel.userAgent,
         onContinueClicked = viewModel::onContinueClicked,
@@ -58,7 +57,7 @@ fun ApplicationPasswordTutorialScreen(
     authorizationStarted: Boolean,
     webViewUrl: String,
     webViewUserAgent: UserAgent?,
-    @StringRes errorMessageRes: Int?,
+    errorMessage: String?,
     onPageLoaded: (String) -> Unit,
     onContinueClicked: () -> Unit,
     onContactSupportClicked: () -> Unit,
@@ -86,7 +85,7 @@ fun ApplicationPasswordTutorialScreen(
             TutorialContentScreen(
                 modifier = modifier,
                 paddingValues = paddingValues,
-                errorMessageRes = errorMessageRes,
+                errorMessage = errorMessage,
                 onContinueClicked = onContinueClicked,
                 onContactSupportClicked = onContactSupportClicked
             )
@@ -98,7 +97,7 @@ fun ApplicationPasswordTutorialScreen(
 private fun TutorialContentScreen(
     modifier: Modifier,
     paddingValues: PaddingValues,
-    @StringRes errorMessageRes: Int?,
+    errorMessage: String?,
     onContinueClicked: () -> Unit,
     onContactSupportClicked: () -> Unit
 ) {
@@ -109,7 +108,9 @@ private fun TutorialContentScreen(
             .background(MaterialTheme.colors.surface)
     ) {
         Column(
-            modifier = modifier.verticalScroll(rememberScrollState())
+            modifier = modifier
+                .verticalScroll(rememberScrollState())
+                .weight(6f, true)
         ) {
             Column(
                 modifier = modifier.padding(dimensionResource(id = R.dimen.major_100)),
@@ -120,7 +121,7 @@ private fun TutorialContentScreen(
                     style = MaterialTheme.typography.h4,
                     fontWeight = FontWeight.Bold
                 )
-                Text(stringResource(id = errorMessageRes ?: R.string.login_app_password_subtitle))
+                Text(errorMessage ?: stringResource(id = R.string.login_app_password_subtitle))
             }
 
             Divider(modifier = modifier.padding(start = dimensionResource(id = R.dimen.major_100)))
@@ -153,14 +154,13 @@ private fun TutorialContentScreen(
             )
         }
 
-        Spacer(modifier.weight(1f))
-        Divider()
-
         Column(
             modifier = modifier
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 .padding(vertical = dimensionResource(id = R.dimen.minor_100))
+                .heightIn(min = dimensionResource(id = R.dimen.major_300))
         ) {
+            Divider()
             Button(
                 onClick = onContinueClicked,
                 modifier = modifier.fillMaxWidth()
@@ -184,7 +184,7 @@ fun ApplicationPasswordTutorialScreenPreview() {
     WooThemeWithBackground {
         ApplicationPasswordTutorialScreen(
             authorizationStarted = false,
-            errorMessageRes = R.string.login_app_password_subtitle,
+            errorMessage = stringResource(id = R.string.login_app_password_subtitle),
             webViewUrl = "",
             webViewUserAgent = null,
             onContinueClicked = { },
