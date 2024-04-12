@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.grouped
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.model.Product
@@ -6,15 +6,12 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
+import org.wordpress.android.fluxc.action.WCProductAction
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.store.WCProductStore
-import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
-import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import javax.inject.Inject
 
 class GroupedProductListRepository @Inject constructor(
@@ -26,7 +23,7 @@ class GroupedProductListRepository @Inject constructor(
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
     }
 
-    private var loadContinuation = ContinuationWrapper<Boolean>(T.PRODUCTS)
+    private var loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var offset = 0
 
     var canLoadMoreProducts = true
@@ -50,7 +47,7 @@ class GroupedProductListRepository @Inject constructor(
     ): List<Product> {
         loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
-            val payload = FetchProductsPayload(
+            val payload = WCProductStore.FetchProductsPayload(
                 selectedSite.get(),
                 PRODUCT_PAGE_SIZE,
                 offset,
@@ -73,15 +70,15 @@ class GroupedProductListRepository @Inject constructor(
             )
             wcProducts.map { it.toAppModel() }
         } else {
-            WooLog.w(T.PRODUCTS, "No site selected - unable to load products")
+            WooLog.w(WooLog.T.PRODUCTS, "No site selected - unable to load products")
             emptyList()
         }
     }
 
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onProductChanged(event: OnProductChanged) {
-        if (event.causeOfChange == FETCH_PRODUCTS) {
+    fun onProductChanged(event: WCProductStore.OnProductChanged) {
+        if (event.causeOfChange == WCProductAction.FETCH_PRODUCTS) {
             if (event.isError) {
                 // TODO: add tracking event
                 loadContinuation.continueWith(false)

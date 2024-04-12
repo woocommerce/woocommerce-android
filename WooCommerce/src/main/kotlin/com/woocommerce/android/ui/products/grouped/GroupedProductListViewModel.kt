@@ -1,21 +1,17 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.grouped
 
 import android.os.Parcelable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.ConnectedProductsListAction
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONNECTED_PRODUCTS_LIST_ACTION
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_CONNECTED_PRODUCTS_LIST_CONTEXT
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductSelectionList
+import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -71,7 +67,7 @@ class GroupedProductListViewModel @Inject constructor(
         productListViewState = productListViewState.copy(
             selectedProductIds = this.selectedProductIds + uniqueSelectedProductIds
         )
-        track(ConnectedProductsListAction.ADDED)
+        track(AnalyticsTracker.Companion.ConnectedProductsListAction.ADDED)
         updateProductList()
     }
 
@@ -79,7 +75,7 @@ class GroupedProductListViewModel @Inject constructor(
         productListViewState = productListViewState.copy(
             selectedProductIds = selectedProductIds - product.remoteId
         )
-        track(ConnectedProductsListAction.DELETE_TAPPED)
+        track(AnalyticsTracker.Companion.ConnectedProductsListAction.DELETE_TAPPED)
         updateProductList()
     }
 
@@ -96,9 +92,9 @@ class GroupedProductListViewModel @Inject constructor(
     }
 
     fun onAddProductButtonClicked() {
-        track(ConnectedProductsListAction.ADD_TAPPED)
+        track(AnalyticsTracker.Companion.ConnectedProductsListAction.ADD_TAPPED)
         triggerEvent(
-            ViewProductSelectionList(
+            ProductNavigationTarget.ViewProductSelectionList(
                 navArgs.remoteProductId,
                 navArgs.groupedProductListType,
                 excludedProductIds = selectedProductIds
@@ -108,7 +104,7 @@ class GroupedProductListViewModel @Inject constructor(
 
     fun onBackButtonClicked(): Boolean {
         if (hasChanges) {
-            triggerEvent(ExitWithResult(selectedProductIds))
+            triggerEvent(MultiLiveEvent.Event.ExitWithResult(selectedProductIds))
             return false
         }
         return true
@@ -143,7 +139,7 @@ class GroupedProductListViewModel @Inject constructor(
             )
         } else {
             // Network is not connected
-            triggerEvent(ShowSnackbar(string.offline_error))
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
         }
 
         productListViewState = productListViewState.copy(
@@ -153,12 +149,12 @@ class GroupedProductListViewModel @Inject constructor(
         )
     }
 
-    private fun track(action: ConnectedProductsListAction) {
+    private fun track(action: AnalyticsTracker.Companion.ConnectedProductsListAction) {
         AnalyticsTracker.track(
             AnalyticsEvent.CONNECTED_PRODUCTS_LIST,
             mapOf(
-                KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductListType.statContext.value,
-                KEY_CONNECTED_PRODUCTS_LIST_ACTION to action.value
+                AnalyticsTracker.KEY_CONNECTED_PRODUCTS_LIST_CONTEXT to groupedProductListType.statContext.value,
+                AnalyticsTracker.KEY_CONNECTED_PRODUCTS_LIST_ACTION to action.value
             )
         )
     }

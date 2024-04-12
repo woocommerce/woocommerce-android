@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.grouped
 
 import android.os.Bundle
 import android.view.View
@@ -15,7 +15,9 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
+import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.products.ProductNavigationTarget
+import com.woocommerce.android.ui.products.ProductNavigator
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -25,12 +27,17 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class GroupedProductListFragment : BaseFragment(R.layout.fragment_grouped_product_list), BackPressListener {
-    @Inject lateinit var navigator: ProductNavigator
+class GroupedProductListFragment :
+    BaseFragment(R.layout.fragment_grouped_product_list),
+    MainActivity.Companion.BackPressListener {
+    @Inject
+    lateinit var navigator: ProductNavigator
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
     val viewModel: GroupedProductListViewModel by viewModels()
 

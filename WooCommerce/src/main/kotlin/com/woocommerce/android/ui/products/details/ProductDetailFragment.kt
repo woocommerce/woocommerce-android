@@ -47,7 +47,6 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.BaseProductFragment
-import com.woocommerce.android.ui.products.GroupedProductListType
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDetailBottomSheet
 import com.woocommerce.android.ui.products.ProductsCommunicationViewModel
@@ -67,6 +66,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowDu
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowDuplicateProductInProgress
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowLinkedProductPromoBanner
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.TrashProduct
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment

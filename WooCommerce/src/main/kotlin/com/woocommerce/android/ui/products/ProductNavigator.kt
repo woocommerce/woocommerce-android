@@ -13,11 +13,11 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.orders.creation.configuration.Flow
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
-import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.details.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentDirections
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
