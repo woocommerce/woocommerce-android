@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 15:54:03+0000
+Translation-Revision-Date: 2024-04-09 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="login_app_password_support_button">Support kontaktieren</string>
+    <string name="login_app_password_continue_button">Weiter</string>
+    <string name="login_app_password_instructions_footer">Wende dich bei Problemen an unser Support-Team.</string>
+    <string name="login_app_password_instructions_step_3">3. Wenn der Verbindungsvorgang abgeschlossen ist, wirst du in deinem Shop angemeldet.</string>
+    <string name="login_app_password_instructions_step_2">2. Genehmige die Verbindung über den Button zum Bestätigen, sobald du dazu aufgefordert wirst.</string>
+    <string name="login_app_password_instructions_step_1">1. Melde dich mit deinen Website-Anmeldedaten an.</string>
+    <string name="login_app_password_instructions_title">Befolge diese Schritte, um deine Woo-App mithilfe eines Anwendungspassworts direkt mit deinem Shop zu verbinden.</string>
+    <string name="login_app_password_subtitle">Dies liegt wahrscheinlich daran, dass dein Shop über einige zusätzliche Sicherheitsschritte verfügt.</string>
+    <string name="login_app_password_title">Die Anmeldung in deinem Shop ist fehlgeschlagen</string>
+    <string name="empty_order_detail_message">Wenn du eine Bestellung getätigt hast, werden deine Bestelldetails hier angezeigt.</string>
+    <string name="empty_order_detail_title">Noch keine Bestelldetails vorhanden</string>
+    <string name="order_creation_simple_payment_migration_button">Individuellen Betrag hinzufügen</string>
+    <string name="order_creation_simple_payment_migration_message_two">Um einen Zahlungsbetrag festzulegen, füge\ndeiner neuen Bestellung einen individuellen Betrag hinzu.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Wir haben die Funktion zum Empfang von Zahlungen mit der\nBestellerstellung kombiniert – für ein zugänglicheres\nund leistungsstärkeres Erlebnis.</string>
+    <string name="order_creation_simple_payment_migration_title">Die Funktion zum Empfang von Zahlungen \nwurde verschoben</string>
+    <string name="analytics_bundles_card_title">Pakete</string>
+    <string name="analytics_bundles_list_header_subtitle">Verkaufte Pakete</string>
+    <string name="analytics_bundles_list_header_title">Pakete</string>
+    <string name="analytics_bundles_list_items_sold">Verkaufte Pakete</string>
+    <string name="my_store_widget_blaze_title">Blaze-Kampagnen</string>
+    <string name="my_store_widget_top_products_title">Beste Produkte</string>
+    <string name="my_store_widget_stats_title">Statistiken</string>
+    <string name="my_store_widget_onboarding_title">Einführung</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Shop-Einführung</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze-Kampagnen</string>
+    <string name="my_store_edit_screen_widget_top_performers">Produkte, die am besten performen</string>
+    <string name="my_store_edit_screen_widget_stats">Shop-Statistiken</string>
+    <string name="my_store_edit_screen_widgets">Abschnitte meines Shops bearbeiten</string>
     <string name="product_list_unsaved_product_unselected_message">Bist du sicher, dass du die an diesem Produkt vorgenommenen Änderungen verwerfen möchtest?</string>
     <string name="product_list_unsaved_product_unselected_title">Du bist im Begriff, Änderungen an %s zu verwerfen</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">Die Statistiken-Funktion unterstützt nicht die Anzeige von Besucher- und Konversionsdaten für beliebige Zeiträume.\n\nDu kannst jedoch auf einen Wert im Diagramm tippen, um Besucher- und Konversionsdaten für diesen spezifischen Zeitraum anzuzeigen.</string>

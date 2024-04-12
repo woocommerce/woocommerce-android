@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-03 16:54:04+0000
+Translation-Revision-Date: 2024-04-09 18:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="login_app_password_support_button">Contactar con el servicio de soporte</string>
+    <string name="login_app_password_continue_button">Continuar</string>
+    <string name="login_app_password_instructions_footer">Si tienes algún problema, ponte en contacto con nuestro equipo de soporte.</string>
+    <string name="login_app_password_instructions_step_3">3. Una vez completada la conexión, tendrás acceso a tu tienda.</string>
+    <string name="login_app_password_instructions_step_2">2. Cuando se te pida, aprueba la conexión pulsando el botón de confirmación.</string>
+    <string name="login_app_password_instructions_step_1">1. En primer lugar, inicia sesión con las credenciales de acceso a tu sitio.</string>
+    <string name="login_app_password_instructions_title">Sigue estos pasos para conectar la aplicación Woo directamente a tu tienda usando una contraseña de aplicación.</string>
+    <string name="login_app_password_subtitle">Podría deberse a que en tu tienda haya que seguir algunos pasos de seguridad adicionales.</string>
+    <string name="login_app_password_title">No hemos podido acceder a tu tienda</string>
+    <string name="empty_order_detail_message">Cuando realices un pedido, los detalles se mostrarán aquí.</string>
+    <string name="empty_order_detail_title">Aún no hay detalles del pedido</string>
+    <string name="order_creation_simple_payment_migration_button">Añadir una cantidad personalizada</string>
+    <string name="order_creation_simple_payment_migration_message_two">Para establecer un importe de pago, añade\nun importe personalizado en tu nuevo pedido.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Hemos combinado el cobro de pagos con\nla creación de pedidos, de manera que sea una función más accesible\ny potente.</string>
+    <string name="order_creation_simple_payment_migration_title">Cobrar pago \nha cambiado de ubicación</string>
+    <string name="analytics_bundles_card_title">Paquetes</string>
+    <string name="analytics_bundles_list_header_subtitle">Paquetes vendidos</string>
+    <string name="analytics_bundles_list_header_title">Paquetes</string>
+    <string name="analytics_bundles_list_items_sold">Paquetes vendidos</string>
+    <string name="my_store_widget_blaze_title">Campañas de Blaze</string>
+    <string name="my_store_widget_top_products_title">Productos principales</string>
+    <string name="my_store_widget_stats_title">Estadísticas</string>
+    <string name="my_store_widget_onboarding_title">Iniciación</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Iniciación a la tienda</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Campañas de Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">Productos con mejor rendimiento</string>
+    <string name="my_store_edit_screen_widget_stats">Estadísticas de la tienda</string>
+    <string name="my_store_edit_screen_widgets">Editar secciones de mi tienda</string>
     <string name="product_list_unsaved_product_unselected_message">¿Seguro que deseas descartar los cambios realizados a este producto?</string>
     <string name="product_list_unsaved_product_unselected_title">Vas a descartar los cambios en %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">La función de estadísticas no admite la visualización de los datos de visitantes y conversiones para rangos de fechas arbitrarios.\n\nSin embargo, puedes pulsar un valor del gráfico para consultar los visitantes y las conversiones de ese rango específico.</string>
