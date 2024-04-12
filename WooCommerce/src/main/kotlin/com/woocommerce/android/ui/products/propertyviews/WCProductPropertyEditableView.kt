@@ -1,10 +1,9 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.propertyviews
 
 import android.content.Context
 import android.content.res.ColorStateList
 import android.text.Editable
 import android.util.AttributeSet
-import android.view.View
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -17,7 +16,7 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle) {
-    private val view = View.inflate(context, R.layout.product_property_editable_view_layout, this)
+    private val view = inflate(context, R.layout.product_property_editable_view_layout, this)
     private val editableText = view.findViewById<EditText>(R.id.editText)
     private val badgeTextView = view.findViewById<MaterialTextView>(R.id.badgeTextView)
 
@@ -40,13 +39,13 @@ class WCProductPropertyEditableView @JvmOverloads constructor(
     }
 
     fun showBadge(badgeTextRes: Int, badgeColorRes: Int) {
-        badgeTextView.visibility = View.VISIBLE
+        badgeTextView.visibility = VISIBLE
         badgeTextView.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, badgeColorRes))
         badgeTextView.setText(badgeTextRes)
     }
 
     fun hideBadge() {
-        badgeTextView.visibility = View.GONE
+        badgeTextView.visibility = GONE
         badgeTextView.text = ""
     }
 

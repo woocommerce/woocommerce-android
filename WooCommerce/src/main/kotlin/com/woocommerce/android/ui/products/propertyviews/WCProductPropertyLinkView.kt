@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.propertyviews
 
 import android.content.Context
 import android.util.AttributeSet

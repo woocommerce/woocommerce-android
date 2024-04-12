@@ -1,9 +1,8 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.propertyviews
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
-import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -24,7 +23,7 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
     private var btnReadMore: MaterialButton
 
     init {
-        with(View.inflate(context, R.layout.product_property_read_more_view_layout, this)) {
+        with(inflate(context, R.layout.product_property_read_more_view_layout, this)) {
             textCaption = findViewById(R.id.textCaption)
             textContent = findViewById(R.id.textContent)
             btnReadMore = findViewById(R.id.btnReadMore)
@@ -40,22 +39,22 @@ class WCProductPropertyReadMoreView @JvmOverloads constructor(
         textCaption.text = caption
         textContent.text = content
 
-        textContent.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+        textContent.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 textContent.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 if (textContent.lineCount > maxLines) {
                     textContent.maxLines = maxLines
-                    btnReadMore.visibility = View.VISIBLE
+                    btnReadMore.visibility = VISIBLE
                     btnReadMore.setOnClickListener { showFullContent(caption, content) }
                 } else {
-                    btnReadMore.visibility = View.GONE
+                    btnReadMore.visibility = GONE
                 }
             }
         })
     }
 
     private fun showFullContent(caption: String, content: String) {
-        val customView = View.inflate(context, R.layout.view_alert_dialog, null)
+        val customView = inflate(context, R.layout.view_alert_dialog, null)
         customView.findViewById<MaterialTextView>(R.id.product_purchase_note).text = content
         MaterialAlertDialogBuilder(context)
             .setTitle(caption)

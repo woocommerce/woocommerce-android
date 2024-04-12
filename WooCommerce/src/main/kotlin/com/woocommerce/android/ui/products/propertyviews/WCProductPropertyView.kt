@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.propertyviews
 
 import android.content.Context
 import android.util.AttributeSet
@@ -70,7 +70,7 @@ class WCProductPropertyView @JvmOverloads constructor(
      */
     fun setClickListener(onClickListener: ((view: View) -> Unit)? = null) {
         if (onClickListener != null) {
-            propertyGroupImg?.visibility = View.VISIBLE
+            propertyGroupImg?.visibility = VISIBLE
             view?.setOnClickListener(onClickListener)
             this.isClickable = true
         } else {
@@ -82,7 +82,7 @@ class WCProductPropertyView @JvmOverloads constructor(
         this.isClickable = false
         this.background = null
         view?.setOnClickListener(null)
-        propertyGroupImg?.visibility = View.GONE
+        propertyGroupImg?.visibility = GONE
     }
 
     fun setMaxLines(maxLines: Int) {
@@ -94,7 +94,7 @@ class WCProductPropertyView @JvmOverloads constructor(
 
         try {
             ratingBar?.rating = rating
-            ratingBar?.visibility = View.VISIBLE
+            ratingBar?.visibility = VISIBLE
         } catch (e: NumberFormatException) {
             WooLog.e(WooLog.T.UTILS, e)
         }
@@ -121,12 +121,12 @@ class WCProductPropertyView @JvmOverloads constructor(
     private fun ensureViewCreated(orientation: Int = LinearLayout.VERTICAL, isRating: Boolean) {
         if (view == null) {
             view = if (isRating) {
-                View.inflate(context, R.layout.rating_property_view_layout, this)
+                inflate(context, R.layout.rating_property_view_layout, this)
             } else {
                 if (orientation == LinearLayout.VERTICAL) {
-                    View.inflate(context, R.layout.product_property_view_vert_layout, this)
+                    inflate(context, R.layout.product_property_view_vert_layout, this)
                 } else {
-                    View.inflate(context, R.layout.product_property_view_horz_layout, this)
+                    inflate(context, R.layout.product_property_view_horz_layout, this)
                 }
             }
             propertyGroupImg = view?.findViewById(R.id.imgProperty)

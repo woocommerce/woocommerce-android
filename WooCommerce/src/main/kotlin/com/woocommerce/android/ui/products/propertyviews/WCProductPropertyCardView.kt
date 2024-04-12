@@ -1,9 +1,8 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.propertyviews
 
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -25,10 +24,10 @@ class WCProductPropertyCardView @JvmOverloads constructor(
 
     fun show(caption: String?, properties: List<ProductProperty>) {
         if (caption.isNullOrBlank()) {
-            viewBinding.cardCaptionText.visibility = View.GONE
+            viewBinding.cardCaptionText.visibility = GONE
             viewBinding.cardCaptionDivider.hide()
         } else {
-            viewBinding.cardCaptionText.visibility = View.VISIBLE
+            viewBinding.cardCaptionText.visibility = VISIBLE
             viewBinding.cardCaptionText.text = caption
             viewBinding.cardCaptionDivider.show()
         }
