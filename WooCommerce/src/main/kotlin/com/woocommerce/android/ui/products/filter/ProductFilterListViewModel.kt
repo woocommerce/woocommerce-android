@@ -1,36 +1,29 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.filter
 
 import android.os.Parcelable
 import androidx.annotation.DimenRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.PluginUrls.BUNDLES_URL
-import com.woocommerce.android.model.PluginUrls.COMPOSITE_URL
-import com.woocommerce.android.model.PluginUrls.SUBSCRIPTIONS_URL
+import com.woocommerce.android.model.PluginUrls
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.sortCategories
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
-import com.woocommerce.android.ui.products.ProductStockStatus.Companion.fromString
-import com.woocommerce.android.ui.products.ProductType.BUNDLE
-import com.woocommerce.android.ui.products.ProductType.COMPOSITE
-import com.woocommerce.android.ui.products.ProductType.OTHER
-import com.woocommerce.android.ui.products.ProductType.SUBSCRIPTION
-import com.woocommerce.android.ui.products.ProductType.VARIABLE_SUBSCRIPTION
+import com.woocommerce.android.ui.products.ProductFilterProductRestrictions
+import com.woocommerce.android.ui.products.ProductRestriction
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -44,6 +37,9 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STAT
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.STOCK_STATUS
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption.TYPE
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_COMPOSITE_PRODUCTS
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES
+import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS
 import javax.inject.Inject
 
 @HiltViewModel
@@ -164,9 +160,9 @@ class ProductFilterListViewModel @Inject constructor(
         }
 
         val screenTitle = if (productFilterOptions.isNotEmpty()) {
-            resourceProvider.getString(string.product_list_filters_count, productFilterOptions.size)
+            resourceProvider.getString(R.string.product_list_filters_count, productFilterOptions.size)
         } else {
-            resourceProvider.getString(string.product_list_filters)
+            resourceProvider.getString(R.string.product_list_filters)
         }
 
         productFilterListViewState = productFilterListViewState.copy(
@@ -176,37 +172,37 @@ class ProductFilterListViewModel @Inject constructor(
     }
 
     private fun getTypeFilterWithExploreOptions(): MutableList<FilterListOptionItemUiModel> {
-        return ProductType.values().filterNot { it == OTHER }.map {
+        return ProductType.values().filterNot { it == ProductType.OTHER }.map {
             when {
-                it == BUNDLE && isPluginInstalled(it) == false -> {
+                it == ProductType.BUNDLE && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
-                        BUNDLE.value,
-                        BUNDLES_URL
+                        ProductType.BUNDLE.value,
+                        PluginUrls.BUNDLES_URL
                     )
                 }
 
-                it == SUBSCRIPTION && isPluginInstalled(it) == false -> {
+                it == ProductType.SUBSCRIPTION && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
-                        SUBSCRIPTION.value,
-                        SUBSCRIPTIONS_URL
+                        ProductType.SUBSCRIPTION.value,
+                        PluginUrls.SUBSCRIPTIONS_URL
                     )
                 }
 
-                it == VARIABLE_SUBSCRIPTION && isPluginInstalled(it) == false -> {
+                it == ProductType.VARIABLE_SUBSCRIPTION && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
-                        VARIABLE_SUBSCRIPTION.value,
-                        SUBSCRIPTIONS_URL
+                        ProductType.VARIABLE_SUBSCRIPTION.value,
+                        PluginUrls.SUBSCRIPTIONS_URL
                     )
                 }
 
-                it == COMPOSITE && isPluginInstalled(it) == false -> {
+                it == ProductType.COMPOSITE && isPluginInstalled(it) == false -> {
                     FilterListOptionItemUiModel.ExploreOptionItemUiModel(
                         resourceProvider.getString(it.stringResource),
-                        COMPOSITE.value,
-                        COMPOSITE_URL
+                        ProductType.COMPOSITE.value,
+                        PluginUrls.COMPOSITE_URL
                     )
                 }
 
@@ -263,11 +259,11 @@ class ProductFilterListViewModel @Inject constructor(
     fun onBackButtonClicked(): Boolean {
         return if (hasChanges()) {
             triggerEvent(
-                ShowDialog.buildDiscardDialogEvent(
+                MultiLiveEvent.Event.ShowDialog.buildDiscardDialogEvent(
                     positiveBtnAction = { _, _ ->
-                        triggerEvent(Exit)
+                        triggerEvent(MultiLiveEvent.Event.Exit)
                     },
-                    negativeButtonId = string.keep_changes
+                    negativeButtonId = R.string.keep_changes
                 )
             )
             false
@@ -283,12 +279,12 @@ class ProductFilterListViewModel @Inject constructor(
 
     private fun isPluginInstalled(productType: ProductType): Boolean? {
         return when (productType) {
-            BUNDLE -> pluginsInformation[WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName]?.isInstalled
-            SUBSCRIPTION -> pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]?.isInstalled
-            VARIABLE_SUBSCRIPTION ->
-                pluginsInformation[WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName]?.isInstalled
+            ProductType.BUNDLE -> pluginsInformation[WOO_PRODUCT_BUNDLES.pluginName]?.isInstalled
+            ProductType.SUBSCRIPTION -> pluginsInformation[WOO_SUBSCRIPTIONS.pluginName]?.isInstalled
+            ProductType.VARIABLE_SUBSCRIPTION ->
+                pluginsInformation[WOO_SUBSCRIPTIONS.pluginName]?.isInstalled
 
-            COMPOSITE -> pluginsInformation[WooCommerceStore.WooPlugin.WOO_COMPOSITE_PRODUCTS.pluginName]?.isInstalled
+            ProductType.COMPOSITE -> pluginsInformation[WOO_COMPOSITE_PRODUCTS.pluginName]?.isInstalled
             else -> null
         }
     }
@@ -321,7 +317,7 @@ class ProductFilterListViewModel @Inject constructor(
                     // if the selected filter option item is the default filter item i.e. ANY,
                     // then remove the filter from the map, since this means the filter for that option has been cleared,
                     // otherwise update the filter item.
-                    val defaultOption = resourceProvider.getString(string.product_filter_default)
+                    val defaultOption = resourceProvider.getString(R.string.product_filter_default)
                     if (selectedFilterItem.filterOptionItemName == defaultOption) {
                         productFilterOptions.remove(filterItem.filterItemKey)
                     } else {
@@ -348,7 +344,7 @@ class ProductFilterListViewModel @Inject constructor(
             productCategory = getFilterByProductCategory(),
             productCategoryName = selectedCategoryName
         )
-        triggerEvent(ExitWithResult(result))
+        triggerEvent(MultiLiveEvent.Event.ExitWithResult(result))
     }
 
     private fun buildFilterListItemUiModel(): List<FilterListItemUiModel> {
@@ -356,11 +352,11 @@ class ProductFilterListViewModel @Inject constructor(
         filterListItems.add(
             FilterListItemUiModel(
                 STOCK_STATUS,
-                resourceProvider.getString(string.product_stock_status),
+                resourceProvider.getString(R.string.product_stock_status),
                 addDefaultFilterOption(
                     CoreProductStockStatus.values().map {
                         FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
-                            resourceProvider.getString(fromString(it.value).stringResource),
+                            resourceProvider.getString(ProductStockStatus.fromString(it.value).stringResource),
                             filterOptionItemValue = it.value,
                             isSelected = productFilterOptions[STOCK_STATUS] == it.value
                         )
@@ -373,7 +369,7 @@ class ProductFilterListViewModel @Inject constructor(
             filterListItems.add(
                 FilterListItemUiModel(
                     STATUS,
-                    resourceProvider.getString(string.product_status),
+                    resourceProvider.getString(R.string.product_status),
                     addDefaultFilterOption(
                         ProductStatus.values().map {
                             FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
@@ -391,8 +387,11 @@ class ProductFilterListViewModel @Inject constructor(
         filterListItems.add(
             FilterListItemUiModel(
                 TYPE,
-                resourceProvider.getString(string.product_type),
-                addDefaultFilterOption(typeFilters, productFilterOptions[TYPE].isNullOrEmpty())
+                resourceProvider.getString(R.string.product_type),
+                addDefaultFilterOption(
+                    typeFilters,
+                    productFilterOptions[TYPE].isNullOrEmpty()
+                )
             )
         )
         filterListItems.add(buildCategoryFilterListItemUiModel())
@@ -417,7 +416,7 @@ class ProductFilterListViewModel @Inject constructor(
     private fun buildCategoryFilterListItemUiModel(): FilterListItemUiModel {
         return FilterListItemUiModel(
             CATEGORY,
-            resourceProvider.getString(string.product_category),
+            resourceProvider.getString(R.string.product_category),
             productCategoriesToOptionListItems()
         )
     }
@@ -434,7 +433,7 @@ class ProductFilterListViewModel @Inject constructor(
             add(
                 0,
                 FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
-                    filterOptionItemName = resourceProvider.getString(string.product_filter_default),
+                    filterOptionItemName = resourceProvider.getString(R.string.product_filter_default),
                     filterOptionItemValue = "",
                     isSelected = isDefaultFilterOptionSelected
                 )
@@ -465,7 +464,7 @@ class ProductFilterListViewModel @Inject constructor(
                     productFilterOptionListViewState = productFilterOptionListViewState.copy(isLoadingMore = true)
                     productCategories = productCategoriesRepository.fetchProductCategories(loadMore = true)
                         .getOrElse {
-                            triggerEvent(ShowSnackbar(string.error_generic))
+                            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.error_generic))
                             return@launch
                         }
                     val categoryOptions = productCategoriesToOptionListItems()
@@ -478,7 +477,9 @@ class ProductFilterListViewModel @Inject constructor(
     }
 
     private fun updateCategoryFilterListItem(categoryOptions: List<FilterListOptionItemUiModel>) {
-        _filterListItems.value?.find { it.filterItemKey == CATEGORY }?.filterOptionListItems = categoryOptions
+        _filterListItems.value?.find {
+            it.filterItemKey == CATEGORY
+        }?.filterOptionListItems = categoryOptions
     }
 
     @Parcelize

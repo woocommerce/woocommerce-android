@@ -1,15 +1,16 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.filter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductFilterOptionListItemBinding
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
-import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.ProductFilterOptionViewHolder
+import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel
+import com.woocommerce.android.ui.products.filter.ProductFilterOptionListAdapter.ProductFilterOptionViewHolder
 
 class ProductFilterOptionListAdapter(
     private val clickListener: OnProductFilterOptionClickListener,
@@ -57,7 +58,7 @@ class ProductFilterOptionListAdapter(
                 is FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel -> {
                     viewBinding.filterOptionItemName.apply {
                         if (filter.margin != 0) {
-                            val newLayoutParams = layoutParams as LayoutParams
+                            val newLayoutParams = layoutParams as ConstraintLayout.LayoutParams
                             newLayoutParams.marginStart = filter.margin
                             layoutParams = newLayoutParams
                         }

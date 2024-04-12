@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.filter
 
 import android.os.Bundle
 import android.view.View
@@ -16,12 +16,12 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
-import com.woocommerce.android.ui.products.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
+import com.woocommerce.android.ui.products.OnLoadMoreListener
+import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel
+import com.woocommerce.android.ui.products.filter.ProductFilterOptionListAdapter.OnProductFilterOptionClickListener
 import com.woocommerce.android.ui.products.list.ProductListFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import com.woocommerce.android.widgets.SkeletonView
@@ -103,7 +103,7 @@ class ProductFilterOptionListFragment :
                 is MultiLiveEvent.Event.LaunchUrlInChromeTab -> {
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 }
-                is ExitWithResult<*> -> {
+                is MultiLiveEvent.Event.ExitWithResult<*> -> {
                     navigateToParentWithResult(
                         ProductListFragment.PRODUCT_FILTER_RESULT_KEY,
                         event.data,

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.filter
 
 import android.os.Bundle
 import android.view.Menu
@@ -18,21 +18,17 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.ProductFilterListAdapter.OnProductFilterClickListener
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
+import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.products.list.ProductListFragment
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProductFilterListFragment :
     BaseFragment(R.layout.fragment_product_filter_list),
-    OnProductFilterClickListener,
-    BackPressListener,
+    ProductFilterListAdapter.OnProductFilterClickListener,
+    MainActivity.Companion.BackPressListener,
     MenuProvider {
     companion object {
         const val TAG = "ProductFilterListFragment"
@@ -112,9 +108,9 @@ class ProductFilterListFragment :
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is Exit -> findNavController().navigateUp()
-                is ShowDialog -> event.showDialog()
-                is ExitWithResult<*> -> {
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
+                is MultiLiveEvent.Event.ExitWithResult<*> -> {
                     navigateBackWithResult(ProductListFragment.PRODUCT_FILTER_RESULT_KEY, event.data)
                 }
                 else -> event.isHandled = false
@@ -124,7 +120,7 @@ class ProductFilterListFragment :
         viewModel.loadFilters()
     }
 
-    private fun showProductFilterList(productFilterList: List<FilterListItemUiModel>) {
+    private fun showProductFilterList(productFilterList: List<ProductFilterListViewModel.FilterListItemUiModel>) {
         productFilterListAdapter.filterList = productFilterList
     }
 

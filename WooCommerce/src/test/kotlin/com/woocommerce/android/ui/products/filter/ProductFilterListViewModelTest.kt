@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.filter
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -8,11 +8,14 @@ import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.PluginRepository
+import com.woocommerce.android.ui.products.ProductFilterProductRestrictions
+import com.woocommerce.android.ui.products.ProductRestriction
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -148,9 +151,9 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             .filterIsInstance<ProductFilterListViewModel.FilterListOptionItemUiModel.ExploreOptionItemUiModel>()
 
         // Size equals 2 Subscription & Variable Subscriptions
-        assertThat(exploreOptions.size).isEqualTo(2)
+        Assertions.assertThat(exploreOptions.size).isEqualTo(2)
         exploreOptions.forEach { option ->
-            assertThat(option.url).isEqualTo(PluginUrls.SUBSCRIPTIONS_URL)
+            Assertions.assertThat(option.url).isEqualTo(PluginUrls.SUBSCRIPTIONS_URL)
         }
     }
 
@@ -176,9 +179,9 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             .filterIsInstance<ProductFilterListViewModel.FilterListOptionItemUiModel.ExploreOptionItemUiModel>()
 
         // Only one explore option for bundles
-        assertThat(exploreOptions.size).isEqualTo(1)
+        Assertions.assertThat(exploreOptions.size).isEqualTo(1)
         exploreOptions.forEach { option ->
-            assertThat(option.url).isEqualTo(PluginUrls.BUNDLES_URL)
+            Assertions.assertThat(option.url).isEqualTo(PluginUrls.BUNDLES_URL)
         }
     }
 
@@ -204,9 +207,9 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             .filterIsInstance<ProductFilterListViewModel.FilterListOptionItemUiModel.ExploreOptionItemUiModel>()
 
         // Only one explore option for composite
-        assertThat(exploreOptions.size).isEqualTo(1)
+        Assertions.assertThat(exploreOptions.size).isEqualTo(1)
         exploreOptions.forEach { option ->
-            assertThat(option.url).isEqualTo(PluginUrls.COMPOSITE_URL)
+            Assertions.assertThat(option.url).isEqualTo(PluginUrls.COMPOSITE_URL)
         }
     }
 

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.filter
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

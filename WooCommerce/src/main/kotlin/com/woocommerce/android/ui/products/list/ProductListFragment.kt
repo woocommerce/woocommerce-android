@@ -42,7 +42,6 @@ import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.ui.products.DefaultProductListItemLookup
 import com.woocommerce.android.ui.products.MutableMultipleSelectionPredicate
 import com.woocommerce.android.ui.products.OnLoadMoreListener
-import com.woocommerce.android.ui.products.ProductFilterResult
 import com.woocommerce.android.ui.products.ProductSelectionItemKeyProvider
 import com.woocommerce.android.ui.products.ProductSortAndFiltersCard.ProductSortAndFilterListener
 import com.woocommerce.android.ui.products.ProductSortingFragment
@@ -52,6 +51,7 @@ import com.woocommerce.android.ui.products.UpdateProductStockStatusFragment
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusExitState
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.details.ProductDetailFragmentArgs
+import com.woocommerce.android.ui.products.filter.ProductFilterResult
 import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.OpenEmptyProduct
 import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.OpenProduct
 import com.woocommerce.android.ui.products.list.ProductListViewModel.ProductListEvent.ScrollToTop

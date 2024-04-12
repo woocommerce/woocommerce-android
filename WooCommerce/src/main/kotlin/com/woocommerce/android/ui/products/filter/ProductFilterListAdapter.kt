@@ -1,13 +1,13 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.filter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.FilterListItemBinding
-import com.woocommerce.android.ui.products.ProductFilterListAdapter.ProductFilterViewHolder
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListItemUiModel
-import com.woocommerce.android.ui.products.ProductFilterListViewModel.FilterListOptionItemUiModel
+import com.woocommerce.android.ui.products.filter.ProductFilterListAdapter.ProductFilterViewHolder
+import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListItemUiModel
+import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel
 
 class ProductFilterListAdapter(
     private val clickListener: OnProductFilterClickListener
