@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.login.sitecredentials.applicationpassword
 
 import android.os.Parcelable
-import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -46,18 +45,23 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     }
 
     fun onNavigationButtonClicked() {
-        analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_LOGIN_EXIT_CONFIRMATION)
-        triggerEvent(ShowExitConfirmationDialog)
+        if (_viewState.value.authorizationStarted) {
+            analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_LOGIN_EXIT_CONFIRMATION)
+            triggerEvent(ShowExitConfirmationDialog)
+        } else {
+            analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_LOGIN_DISMISSED)
+            triggerEvent(ExitWithResult(""))
+        }
     }
 
     fun onExitConfirmed() {
         analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_LOGIN_DISMISSED)
-        triggerEvent(ExitWithResult(null))
+        triggerEvent(ExitWithResult(""))
     }
 
     fun onWebViewDataAvailable(
         authorizationUrl: String?,
-        errorMessage: Int?
+        errorMessage: String?
     ) {
         _viewState.update {
             it.copy(
@@ -74,7 +78,7 @@ class ApplicationPasswordTutorialViewModel @Inject constructor(
     data class ViewState(
         val authorizationStarted: Boolean = false,
         val authorizationUrl: String? = null,
-        @StringRes val errorMessage: Int? = null,
+        val errorMessage: String? = null,
     ) : Parcelable
 
     companion object {

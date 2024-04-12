@@ -84,7 +84,7 @@ class LoginSiteCredentialsFragment : Fragment() {
                 is ShowHelpScreen -> loginListener.helpUsernamePassword(it.siteAddress, it.username, false)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
                 is ShowApplicationPasswordTutorialScreen ->
-                    passwordTutorialListener?.onApplicationPasswordHelpRequired(it.url, it.errorMessageRes)
+                    passwordTutorialListener?.onApplicationPasswordHelpRequired(it.url, it.errorMessage)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
@@ -111,12 +111,13 @@ class LoginSiteCredentialsFragment : Fragment() {
             viewLifecycleOwner
         ) { _, result ->
             result.getString(ApplicationPasswordTutorialFragment.URL_KEY)
+                ?.takeIf { it.isNotEmpty() }
                 ?.let { viewModel.onWebAuthorizationUrlLoaded(it) }
                 ?: viewModel.onPasswordTutorialAborted()
         }
     }
 
     interface Listener {
-        fun onApplicationPasswordHelpRequired(url: String, errorMessageRes: Int)
+        fun onApplicationPasswordHelpRequired(url: String, errorMessage: String)
     }
 }
