@@ -13,6 +13,7 @@ import com.woocommerce.android.model.AnalyticsCards
 import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -28,6 +29,7 @@ import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInfo
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
 import com.woocommerce.android.ui.analytics.hub.sync.BundlesState
+import com.woocommerce.android.ui.analytics.hub.sync.GiftCardsState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -132,6 +134,9 @@ class AnalyticsHubViewModel @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var bundlesObservationJob: Job? = null
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var giftCardsObservationJob: Job? = null
+
     init {
         observeConfigurationChanges()
         observeRangeSelectionChanges()
@@ -183,6 +188,10 @@ class AnalyticsHubViewModel @Inject constructor(
                             }
                             AnalyticsCards.Bundles -> {
                                 observeBundlesChanges()
+                                LoadingViewState(cardConfiguration.card)
+                            }
+                            AnalyticsCards.GiftCards -> {
+                                observeGiftCardsChanges()
                                 LoadingViewState(cardConfiguration.card)
                             }
                         }
@@ -391,9 +400,26 @@ class AnalyticsHubViewModel @Inject constructor(
                 }
             }
         }
-            .drop(1)
-            .filter { state -> state is BundlesState.Available }
-            .onEach { transactionLauncher.onProductsFetched() }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observeGiftCardsChanges() {
+        giftCardsObservationJob = updateStats.giftCardsState.onEach { state ->
+            when (state) {
+                is GiftCardsState.Available -> {
+                    updateCardStatus(AnalyticsCards.GiftCards, buildGiftCardsDataViewState(state.giftCardStats))
+                }
+
+                is GiftCardsState.Error -> {
+                    val message = resourceProvider.getString(R.string.analytics_gift_cards_no_data)
+                    updateCardStatus(AnalyticsCards.GiftCards, NoDataState(AnalyticsCards.GiftCards, message))
+                }
+
+                is GiftCardsState.Loading -> {
+                    updateCardStatus(AnalyticsCards.GiftCards, LoadingViewState(AnalyticsCards.GiftCards))
+                }
+            }
+        }
             .launchIn(viewModelScope)
     }
 
@@ -572,6 +598,28 @@ class AnalyticsHubViewModel @Inject constructor(
         )
     }
 
+    private fun buildGiftCardsDataViewState(giftCardsStat: GiftCardsStat) =
+        DataViewState(
+            card = AnalyticsCards.GiftCards,
+            title = resourceProvider.getString(R.string.analytics_gift_cards_card_title),
+            leftSection = AnalyticsHubInformationSectionViewState(
+                resourceProvider.getString(R.string.analytics_used_title),
+                giftCardsStat.usedValue.toString(),
+                if (giftCardsStat.usedDelta is DeltaPercentage.Value) giftCardsStat.usedDelta.value else null,
+                giftCardsStat.usedByInterval.map { it.toFloat() }
+            ),
+            rightSection = AnalyticsHubInformationSectionViewState(
+                resourceProvider.getString(R.string.analytics_net_sales_title),
+                formatValue(giftCardsStat.netValue.toString(), giftCardsStat.currencyCode),
+                if (giftCardsStat.netDelta is DeltaPercentage.Value) giftCardsStat.netDelta.value else null,
+                giftCardsStat.netRevenueByInterval.map { it.toFloat() }
+            ),
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.GiftCard
+            )
+        )
+
     private fun trackSelectedDateRange() {
         onTrackableUIInteraction()
         tracker.track(
@@ -627,6 +675,7 @@ class AnalyticsHubViewModel @Inject constructor(
         productObservationJob?.cancel()
         sessionObservationJob?.cancel()
         bundlesObservationJob?.cancel()
+        giftCardsObservationJob?.cancel()
     }
 
     fun onOpenSettings() {
@@ -635,7 +684,7 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 }
 
-enum class ReportCard { Revenue, Orders, Products, Bundles }
+enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
     return when (this) {
@@ -643,6 +692,7 @@ fun AnalyticsCards.toReportCard(): ReportCard? {
         AnalyticsCards.Orders -> ReportCard.Orders
         AnalyticsCards.Products -> ReportCard.Products
         AnalyticsCards.Bundles -> ReportCard.Bundles
+        AnalyticsCards.GiftCards -> ReportCard.GiftCard
         else -> null
     }
 }

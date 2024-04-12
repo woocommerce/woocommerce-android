@@ -57,7 +57,7 @@ class InfoScreenFragment : Fragment(R.layout.fragment_info_screen) {
 
     sealed class InfoScreenLinkAction : Serializable {
         object LearnMoreAboutShippingLabels : InfoScreenLinkAction() {
-            const val LINK: String = "https://woo.com/products/shipping/"
+            const val LINK: String = "https://woocommerce.com/products/shipping/"
         }
     }
 }

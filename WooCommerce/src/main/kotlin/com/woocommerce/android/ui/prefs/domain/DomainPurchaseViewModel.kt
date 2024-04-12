@@ -30,7 +30,7 @@ class DomainPurchaseViewModel @Inject constructor(
     companion object {
         const val CART_URL = "https://wordpress.com/checkout"
         const val WEBVIEW_SUCCESS_TRIGGER_KEYWORD = "https://wordpress.com/checkout/thank-you/"
-        const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woo.com/"
+        const val WEBVIEW_EXIT_TRIGGER_KEYWORD = "https://woocommerce.com/"
     }
 
     private val navArgs: DomainPurchaseFragmentArgs by savedStateHandle.navArgs()

@@ -764,6 +764,7 @@ Language: fr
     <string name="settings_privacy_header">Confidentialité</string>
     <string name="settings_usage_tracking_description">Apprenez-en davantage sur les données que nous recueillons à propos de votre boutique et sur les options dont vous disposez pour contrôler le partage de ces informations.</string>
     <string name="settings_usage_tracking">Suivi d’utilisation</string>
+    <string name="settings_web_options_description">Plus d’options de confidentialité disponibles pour les utilisateurs de woocommerce.com. Cliquez ici pour en savoir plus.</string>
     <string name="settings_web_options">Options Web</string>
     <string name="settings_more_privacy_options_header">Plus d’options de confidentialité</string>
     <string name="settings_tracking_analytics_error_update">Une erreur est survenue lors de la mise à jour de vos réglages de confidentialité</string>

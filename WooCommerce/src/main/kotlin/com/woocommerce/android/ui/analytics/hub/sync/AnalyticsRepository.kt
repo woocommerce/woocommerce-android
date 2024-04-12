@@ -4,6 +4,7 @@ import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
+import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductItem
 import com.woocommerce.android.model.ProductsStat
@@ -344,8 +345,8 @@ class AnalyticsRepository @Inject constructor(
             BundlesResult.BundlesError
         } else {
             val delta = calculateDeltaPercentage(
-                previousVal = previousBundleStats.netRevenue,
-                currentVal = currentBundleStats.netRevenue,
+                previousVal = previousBundleStats.itemsSold.toDouble(),
+                currentVal = currentBundleStats.itemsSold.toDouble(),
             )
             val bundles = bundlesReport.map { item ->
                 BundleItem(
@@ -361,6 +362,64 @@ class AnalyticsRepository @Inject constructor(
                     bundlesSold = currentBundleStats.itemsSold,
                     bundlesSoldDelta = delta,
                     bundles = bundles
+                )
+            )
+        }
+    }
+
+    suspend fun fetchGiftCardsStats(rangeSelection: StatsTimeRangeSelection) = coroutineScope {
+        val interval = rangeSelection.revenueStatsGranularity.toIntervalString()
+        val currentPeriod = rangeSelection.currentRange
+        val currentStartDate = currentPeriod.start.formatToYYYYmmDDhhmmss()
+        val currentEndDate = currentPeriod.end.formatToYYYYmmDDhhmmss()
+
+        val previousPeriod = rangeSelection.previousRange
+        val previousStartDate = previousPeriod.start.formatToYYYYmmDDhhmmss()
+        val previousEndDate = previousPeriod.end.formatToYYYYmmDDhhmmss()
+
+        val currentGiftCardsStatsCall = async {
+            statsRepository.fetchGiftCardStats(
+                startDate = currentStartDate,
+                endDate = currentEndDate,
+                interval = interval
+            )
+        }
+
+        val previousGiftCardsStatsCall = async {
+            statsRepository.fetchGiftCardStats(
+                startDate = previousStartDate,
+                endDate = previousEndDate,
+                interval = interval
+            )
+        }
+
+        val currentGiftCardsStats = currentGiftCardsStatsCall.await().model
+        val previousGiftCardsStats = previousGiftCardsStatsCall.await().model
+
+        if (currentGiftCardsStats == null || previousGiftCardsStats == null) {
+            GiftCardResult.GiftCardError
+        } else {
+            val deltaNetValue = calculateDeltaPercentage(
+                previousVal = previousGiftCardsStats.netValue,
+                currentVal = currentGiftCardsStats.netValue,
+            )
+            val deltaUsed = calculateDeltaPercentage(
+                previousVal = previousGiftCardsStats.usedValue.toDouble(),
+                currentVal = currentGiftCardsStats.usedValue.toDouble(),
+            )
+
+            val usedByInterval = currentGiftCardsStats.intervals.map { it.usedValue }
+            val usedByRevenue = currentGiftCardsStats.intervals.map { it.netValue }
+
+            GiftCardResult.GiftCardData(
+                GiftCardsStat(
+                    usedValue = currentGiftCardsStats.usedValue,
+                    usedDelta = deltaUsed,
+                    netValue = currentGiftCardsStats.netValue,
+                    netDelta = deltaNetValue,
+                    currencyCode = getCurrencyCode(),
+                    usedByInterval = usedByInterval,
+                    netRevenueByInterval = usedByRevenue
                 )
             )
         }
@@ -400,6 +459,11 @@ class AnalyticsRepository @Inject constructor(
         data class BundlesData(val bundleStat: BundleStat) : BundlesResult()
     }
 
+    sealed class GiftCardResult {
+        object GiftCardError : GiftCardResult()
+        data class GiftCardData(val giftCardStat: GiftCardsStat) : GiftCardResult()
+    }
+
     sealed class FetchStrategy {
         object ForceNew : FetchStrategy()
         object Saved : FetchStrategy()
@@ -416,5 +480,15 @@ class AnalyticsRepository @Inject constructor(
         private val selectionType: SelectionType
     ) {
         val id: String = selectionType.identifier.asRevenueRangeId(timeRange.start, timeRange.end)
+    }
+}
+
+fun StatsGranularity.toIntervalString(): String {
+    return when (this) {
+        StatsGranularity.HOURS -> "hour"
+        StatsGranularity.DAYS -> "day"
+        StatsGranularity.WEEKS -> "week"
+        StatsGranularity.MONTHS -> "month"
+        StatsGranularity.YEARS -> "year"
     }
 }

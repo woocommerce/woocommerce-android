@@ -13,7 +13,7 @@ import org.junit.Test
 class BlazeCampaignCreationAdDestinationParametersViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: BlazeCampaignCreationAdDestinationParametersViewModel
 
-    private val targetUrl = "https://woo.com"
+    private val targetUrl = "https://woocommerce.com"
 
     fun setup(params: Map<String, String> = emptyMap()) {
         viewModel = BlazeCampaignCreationAdDestinationParametersViewModel(

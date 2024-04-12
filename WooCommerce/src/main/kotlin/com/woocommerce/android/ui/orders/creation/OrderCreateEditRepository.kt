@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.Billin
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.ShippingAddress
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting.StoreAddress
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.NonCancellable
@@ -45,7 +46,8 @@ class OrderCreateEditRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val wooCommerceStore: WooCommerceStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val listItemMapper: ListItemMapper
+    private val listItemMapper: ListItemMapper,
+    private val getWooVersion: GetWooCorePluginCachedVersion,
 ) {
     suspend fun createOrUpdateOrder(order: Order, giftCard: String = ""): Result<Order> {
         val request = UpdateOrderRequest(
@@ -169,13 +171,7 @@ class OrderCreateEditRepository @Inject constructor(
     private var isAutoDraftSupported: Boolean? = null
     private suspend fun isAutoDraftSupported(): Boolean {
         isAutoDraftSupported?.let { return it }
-        val version = withContext(dispatchers.io) {
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )?.version
-                ?: "0.0"
-        }
+        val version = withContext(dispatchers.io) { getWooVersion() ?: "0.0" }
         val isSupported = version.semverCompareTo(AUTO_DRAFT_SUPPORTED_VERSION) >= 0
         isAutoDraftSupported = isSupported
         return isSupported

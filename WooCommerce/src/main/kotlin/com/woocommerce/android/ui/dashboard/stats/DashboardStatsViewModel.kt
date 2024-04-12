@@ -8,52 +8,51 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_STORE_TIMEZONE_DIFFER_FROM_DEVICE
-import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.offsetInHours
-import com.woocommerce.android.network.ConnectionChangeReceiver
-import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
+import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeastOne
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshState
-import com.woocommerce.android.ui.dashboard.JetpackBenefitsBannerUiModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.util.Date
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-@HiltViewModel
-class DashboardStatsViewModel @Inject constructor(
+@OptIn(ExperimentalCoroutinesApi::class)
+@HiltViewModel(assistedFactory = DashboardStatsViewModel.Factory::class)
+@Suppress("LongParameterList")
+class DashboardStatsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
+    @Assisted private val parentViewModel: DashboardViewModel,
     private val selectedSite: SelectedSite,
     private val getStats: GetStats,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
@@ -67,12 +66,6 @@ class DashboardStatsViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
 ) : ScopedViewModel(savedStateHandle) {
-    companion object {
-        private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
-    }
-
-    private val refreshTrigger = MutableSharedFlow<RefreshState>(extraBufferCapacity = 1)
-
     private var _hasOrders = MutableLiveData<OrderState>()
 
     private val _selectedDateRange = getSelectedDateRange()
@@ -90,14 +83,11 @@ class DashboardStatsViewModel @Inject constructor(
     val customRange = customDateRangeDataStore.dateRange.asLiveData()
 
     init {
-        ConnectionChangeReceiver.getEventBus().register(this)
-
         viewModelScope.launch {
-            combine(
-                _selectedDateRange,
-                refreshTrigger.onStart { emit(RefreshState()) }
-            ) { selectedRange, refreshEvent ->
-                Pair(selectedRange, refreshEvent.shouldRefresh)
+            _selectedDateRange.flatMapLatest { selectedRange ->
+                parentViewModel.refreshTrigger.onStart { emit(RefreshEvent()) }.map {
+                    Pair(selectedRange, it.isForced)
+                }
             }.collectLatest { (selectedRange, isForceRefresh) ->
                 loadStoreStats(selectedRange, isForceRefresh)
             }
@@ -155,18 +145,16 @@ class DashboardStatsViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        ConnectionChangeReceiver.getEventBus().unregister(this)
-        super.onCleared()
-    }
-
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) = coroutineScope {
         if (!networkStatus.isConnected()) {
             _revenueStatsState.value = RevenueStatsViewState.Content(null, selectedRange)
             _visitorStatsState.value = VisitorStatsViewState.NotLoaded
             return@coroutineScope
         }
-        _revenueStatsState.value = RevenueStatsViewState.Loading
+        _revenueStatsState.value = RevenueStatsViewState.Loading(isForced = forceRefresh)
+        if (forceRefresh) {
+            _visitorStatsState.value = VisitorStatsViewState.NotLoaded
+        }
         getStats(forceRefresh, selectedRange)
             .collect {
                 when (it) {
@@ -182,7 +170,9 @@ class DashboardStatsViewModel @Inject constructor(
                     )
 
                     is LoadStatsResult.VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
-                    is LoadStatsResult.VisitorStatUnavailable -> onVisitorStatsUnavailable(it.connectionType)
+                    is LoadStatsResult.VisitorStatUnavailable ->
+                        _visitorStatsState.value = VisitorStatsViewState.Unavailable
+
                     is LoadStatsResult.HasOrders -> _hasOrders.value = if (it.hasOrder) AtLeastOne else Empty
                 }
                 dashboardTransactionLauncher.onStoreStatisticsFetched()
@@ -214,28 +204,6 @@ class DashboardStatsViewModel @Inject constructor(
                 putIfNotNull(AnalyticsTracker.KEY_ID to result.stats?.rangeId)
             }
         )
-    }
-
-    private fun onVisitorStatsUnavailable(connectionType: SiteConnectionType) {
-        val daysSinceDismissal = TimeUnit.MILLISECONDS.toDays(
-            System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()
-        )
-        val supportsJetpackInstallation = connectionType == SiteConnectionType.JetpackConnectionPackage ||
-            connectionType == SiteConnectionType.ApplicationPasswords
-        val showBanner =
-            supportsJetpackInstallation && daysSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER
-        val benefitsBanner = JetpackBenefitsBannerUiModel(
-            show = showBanner,
-            onDismiss = {
-                _visitorStatsState.value = VisitorStatsViewState.Unavailable(JetpackBenefitsBannerUiModel(show = false))
-                appPrefsWrapper.recordJetpackBenefitsDismissal()
-                analyticsTrackerWrapper.track(
-                    stat = FEATURE_JETPACK_BENEFITS_BANNER,
-                    properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
-                )
-            }
-        )
-        _visitorStatsState.value = VisitorStatsViewState.Unavailable(benefitsBanner)
     }
 
     private fun trackLocalTimezoneDifferenceFromStore() {
@@ -285,16 +253,8 @@ class DashboardStatsViewModel @Inject constructor(
             )
         }
 
-    @Suppress("unused")
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onEventMainThread(event: ConnectionChangeEvent) {
-        if (event.isConnected) {
-            refreshTrigger.tryEmit(RefreshState())
-        }
-    }
-
     sealed class RevenueStatsViewState {
-        data object Loading : RevenueStatsViewState()
+        data class Loading(val isForced: Boolean) : RevenueStatsViewState()
         data object GenericError : RevenueStatsViewState()
         data object PluginNotActiveError : RevenueStatsViewState()
         data class Content(
@@ -306,9 +266,7 @@ class DashboardStatsViewModel @Inject constructor(
     sealed class VisitorStatsViewState {
         data object Error : VisitorStatsViewState()
         data object NotLoaded : VisitorStatsViewState()
-        data class Unavailable(
-            val benefitsBanner: JetpackBenefitsBannerUiModel
-        ) : VisitorStatsViewState()
+        data object Unavailable : VisitorStatsViewState()
 
         data class Content(
             val stats: Map<String, Int>,
@@ -332,4 +290,9 @@ class DashboardStatsViewModel @Inject constructor(
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
     data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MultiLiveEvent.Event()
+
+    @AssistedFactory
+    interface Factory {
+        fun create(parentViewModel: DashboardViewModel): DashboardStatsViewModel
+    }
 }

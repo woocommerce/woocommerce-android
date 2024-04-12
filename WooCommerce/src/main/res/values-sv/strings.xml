@@ -764,7 +764,6 @@ Language: sv_SE
     <string name="settings_privacy_header">Integritet</string>
     <string name="settings_usage_tracking_description">Läs mer om vilka data vi samlar in om din butik och dina möjligheter att styra vilka data som delas.</string>
     <string name="settings_usage_tracking">Användningsspårning</string>
-    <string name="settings_web_options_description">Fler integritetsalternativ tillgängliga för WooCommerce.com-användare. Kolla in här för att lära dig mer.</string>
     <string name="settings_web_options">Webbalternativ</string>
     <string name="settings_more_privacy_options_header">Fler integritetsalternativ</string>
     <string name="settings_tracking_analytics_error_update">Det uppstod ett fel vid uppdateringen av dina integritetsinställningar</string>
@@ -777,8 +776,9 @@ Language: sv_SE
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Du kan inte lägga till en variabel produkt direkt. Välj en specifik variant</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Produkten med SKU %s hittades inte. Det gick inte att lägga till i beställningen</string>
-    <string name="order_list_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
+    <string name="settings_web_options_description">Fler integritetsalternativ tillgängliga för woocommerce.com-användare. Kolla in här för att lära dig mer.</string>
     <string name="scan_barcode">Skanna streckkod</string>
+    <string name="order_list_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
     <string name="shipping_notice_banner_instructions_content">Leverans till länder som följer EU:s tullregler kräver nu att du tydligt beskriver varje vara. Om du till exempel skickar kläder måste du ange vilken typ av kläder det är (t.ex. herrskjortor, flickvästar, pojkjackor) för att beskrivningen ska vara godtagbar. Annars kan leveranser försenas eller avbrytas i tullen.</string>
     <string name="settings_close_account_dialog_contact_support_button">Kontakta support</string>
     <string name="settings_close_account_active_stores_error_description">Detta konto kan inte avslutas eftersom det har aktiva butiker.</string>

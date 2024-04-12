@@ -764,6 +764,7 @@ Language: tr
     <string name="settings_privacy_header">Gizlilik</string>
     <string name="settings_usage_tracking_description">Mağazanız hakkında topladığımız veriler ve bu verilerin paylaşımını kontrol etme seçenekleriniz hakkında daha fazla bilgi edinin.</string>
     <string name="settings_usage_tracking">Kullanım İzleme</string>
+    <string name="settings_web_options_description">woocommerce.com kullanıcıları için daha fazla gizlilik seçeneği mevcut. Daha fazla bilgi edinmek için burayı kontrol edin.</string>
     <string name="settings_web_options">Web Seçenekleri</string>
     <string name="settings_more_privacy_options_header">Daha fazla gizlilik seçeneği</string>
     <string name="settings_tracking_analytics_error_update">Gizlilik ayarlarınız güncellenirken bir hata oluştu</string>

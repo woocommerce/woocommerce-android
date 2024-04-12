@@ -764,6 +764,7 @@ Language: nl
     <string name="settings_privacy_header">Privacy</string>
     <string name="settings_usage_tracking_description">Lees meer over de gegevens die we verzamelen over je winkel en jouw opties voor het beheren van deze gegevensuitwisseling.</string>
     <string name="settings_usage_tracking">Gebruiksgegevens bijhouden</string>
+    <string name="settings_web_options_description">Meer privacyopties beschikbaar voor gebruikers van woocommerce.com. Kijk hier voor meer informatie.</string>
     <string name="settings_web_options">Webopties</string>
     <string name="settings_more_privacy_options_header">Meer privacyopties</string>
     <string name="settings_tracking_analytics_error_update">Er is een fout opgetreden bij het bijwerken van je privacy-instellingen</string>

@@ -764,6 +764,7 @@ Language: de
     <string name="settings_privacy_header">Datenschutz</string>
     <string name="settings_usage_tracking_description">Weitere Informationen zu den Daten, die wir über deinen Shop erfassen, sowie deinen Optionen zum Kontrollieren dieser Datenfreigabe.</string>
     <string name="settings_usage_tracking">Nutzungsaufzeichnung</string>
+    <string name="settings_web_options_description">Weitere Datenschutz-Optionen für woocommerce.com-Benutzer verfügbar. Hier erfährst du mehr.</string>
     <string name="settings_web_options">Web-Optionen</string>
     <string name="settings_more_privacy_options_header">Mehr Datenschutz-Optionen</string>
     <string name="settings_tracking_analytics_error_update">Beim Aktualisieren deiner Privatsphäre-Einstellungen ist ein Fehler aufgetreten</string>

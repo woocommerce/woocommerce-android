@@ -776,6 +776,7 @@ Language: ja_JP
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">直接バリエーション商品を追加できません。 特定のバリエーションを選択してください</string>
     <string name="order_creation_barcode_scanning_scanning_failed">スキャンに失敗しました。 後でもう一度お試しください。</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">SKU「%s」の商品が見つかりません。 注文に追加できません</string>
+    <string name="settings_web_options_description">woocommerce.com ユーザー向けのその他のプライバシーオプションを利用できます。 こちらをクリックして詳細をご確認ください。</string>
     <string name="order_list_barcode_scanning_scanning_failed">スキャンに失敗しました。 後でもう一度お試しください</string>
     <string name="scan_barcode">バーコードのスキャン</string>
     <string name="shipping_notice_banner_instructions_content">欧州連合 (EU) の関税法規則に従う国への発送は、すべての品目について明確な説明が求められるようになりました。 たとえば衣類を送る場合、どのようなタイプの衣類であるか (例: 男性用シャツ、女児用ベスト、男児用上着など) を明記しなければ認められません。 これを怠ると、配送が税関で遅延または中断されることがあります。</string>

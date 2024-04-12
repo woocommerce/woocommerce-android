@@ -45,8 +45,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.IsProductCurrentlyPromoted
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
@@ -74,7 +72,6 @@ import com.woocommerce.android.ui.products.variations.domain.VariationCandidate
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -139,7 +136,6 @@ class ProductDetailViewModel @Inject constructor(
     private val getComponentProducts: GetComponentProducts,
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val blazeUrlsHelper: BlazeUrlsHelper,
     private val isProductCurrentlyPromoted: IsProductCurrentlyPromoted,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : ScopedViewModel(savedState) {
@@ -494,19 +490,7 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onBlazeClicked() {
         viewState.productDraft?.let {
-            if (FeatureFlag.BLAZE_I3.isEnabled()) {
-                triggerEvent(ShowBlazeCreationScreen(it.remoteId))
-            } else {
-                triggerEvent(
-                    NavigateToBlazeWebView(
-                        url = blazeUrlsHelper.buildUrlForProduct(
-                            productId = it.remoteId,
-                            source = BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON
-                        ),
-                        source = BlazeFlowSource.PRODUCT_DETAIL_PROMOTE_BUTTON
-                    )
-                )
-            }
+            triggerEvent(ShowBlazeCreationScreen(it.remoteId))
         }
     }
 
@@ -2544,8 +2528,6 @@ class ProductDetailViewModel @Inject constructor(
     object ShowDuplicateProductError : Event()
 
     object ShowDuplicateProductInProgress : Event()
-
-    data class NavigateToBlazeWebView(val url: String, val source: BlazeFlowSource) : Event()
 
     data class ShowBlazeCreationScreen(val productId: Long) : Event()
 

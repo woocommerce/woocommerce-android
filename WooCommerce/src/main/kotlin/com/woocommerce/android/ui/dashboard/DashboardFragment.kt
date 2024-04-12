@@ -39,9 +39,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.MyStoreBlazeView
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
@@ -49,6 +46,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
@@ -92,7 +90,6 @@ class DashboardFragment :
 
     private val dashboardViewModel: DashboardViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -159,12 +156,27 @@ class DashboardFragment :
                     currencyFormatter = currencyFormatter,
                     usageTracksEventEmitter = usageTracksEventEmitter,
                     onPluginUnavailableError = { updateStatsAvailabilityError() },
-                    reportJetpackPluginStatus = { onVisitorStatsUnavailable(it) },
                     onStatsError = { showErrorSnack() },
                     openDatePicker = { start, end, callback ->
                         showDateRangePicker(start, end, callback)
-                    }
+                    },
+                    parentViewModel = dashboardViewModel
                 )
+            }
+        }
+
+        binding.blazeCampaignView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                WooThemeWithBackground {
+                    DashboardBlazeCard(
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                        updateContainerVisibility = { isVisible ->
+                            binding.blazeCampaignView.isVisible = isVisible
+                        }
+                    )
+                }
             }
         }
 
@@ -172,8 +184,6 @@ class DashboardFragment :
             binding.myStoreRefreshLayout.isRefreshing = false
             dashboardViewModel.onPullToRefresh()
             storeOnboardingViewModel.onPullToRefresh()
-//            binding.myStoreStats.clearStatsHeaderValues()
-//            binding.myStoreStats.clearChartData()
             refreshJitm()
         }
 
@@ -194,73 +204,8 @@ class DashboardFragment :
 
         setupStateObservers()
         setupOnboardingView()
-        setUpBlazeCampaignView()
 
         initJitm(savedInstanceState)
-    }
-
-    private fun setUpBlazeCampaignView() {
-        myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) {
-                binding.blazeCampaignView.hide()
-            } else {
-                binding.blazeCampaignView.apply {
-                    setContent {
-                        WooThemeWithBackground {
-                            MyStoreBlazeView(
-                                state = blazeCampaignState,
-                                onDismissBlazeView = myStoreBlazeViewModel::onBlazeViewDismissed,
-                            )
-                        }
-                    }
-                    show()
-                }
-            }
-        }
-        myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreationUsingWebView -> openBlazeWebView(
-                    url = event.url,
-                    source = event.source
-                )
-
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
-
-                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
-                    findNavController().navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToBlazeCampaignListFragment()
-                    )
-                }
-
-                is MyStoreBlazeViewModel.ShowCampaignDetails -> {
-                    findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
-                            title = getString(R.string.blaze_campaign_details_title)
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private fun openBlazeCreationFlow(productId: Long?) {
-        lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(
-                source = BlazeFlowSource.MY_STORE_SECTION,
-                productId = productId
-            )
-        }
-    }
-
-    private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
-                urlToLoad = url,
-                source = source
-            )
-        )
     }
 
     @Suppress("LongMethod")
@@ -421,9 +366,12 @@ class DashboardFragment :
         dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
             ((activity) as MainActivity).setSubtitle(storeName)
         }
+        dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
+            onVisitorStatsUnavailable(jetpackBenefitsBanner)
+        }
     }
 
-    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: JetpackBenefitsBannerUiModel?) {
+    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: DashboardViewModel.JetpackBenefitsBannerUiModel?) {
         if (jetpackBenefitsBanner == null) {
             binding.jetpackBenefitsBanner.root.isVisible = false
             return
