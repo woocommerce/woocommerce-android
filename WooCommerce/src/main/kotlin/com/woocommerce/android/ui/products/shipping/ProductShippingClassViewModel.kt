@@ -1,13 +1,12 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.shipping
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,7 +39,7 @@ class ProductShippingClassViewModel @Inject constructor(
      */
     fun loadShippingClasses(loadMore: Boolean = false) {
         if (loadMore && !productRepository.canLoadMoreShippingClasses) {
-            WooLog.d(T.PRODUCTS, "Can't load more product shipping classes")
+            WooLog.d(WooLog.T.PRODUCTS, "Can't load more product shipping classes")
             return
         }
 
@@ -88,7 +87,7 @@ class ProductShippingClassViewModel @Inject constructor(
                 shippingClassLoadJob?.join()
             } catch (e: CancellationException) {
                 WooLog.d(
-                    T.PRODUCTS,
+                    WooLog.T.PRODUCTS,
                     "CancellationException while waiting for existing shipping class list fetch"
                 )
             }
@@ -96,7 +95,7 @@ class ProductShippingClassViewModel @Inject constructor(
     }
 
     fun onShippingClassClicked(shippingClass: ShippingClass) {
-        triggerEvent(ExitWithResult(shippingClass))
+        triggerEvent(MultiLiveEvent.Event.ExitWithResult(shippingClass))
     }
 
     @Parcelize

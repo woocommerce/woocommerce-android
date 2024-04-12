@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.shipping
 
 import android.os.Bundle
 import android.view.View
@@ -18,7 +18,7 @@ import com.woocommerce.android.model.ShippingClass
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -102,7 +102,10 @@ class ProductShippingClassFragment : BaseFragment(R.layout.fragment_product_ship
 
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ExitWithResult<*> -> navigateBackWithResult(SELECTED_SHIPPING_CLASS_RESULT, event.data)
+                is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(
+                    SELECTED_SHIPPING_CLASS_RESULT,
+                    event.data
+                )
                 else -> event.isHandled = false
             }
         }

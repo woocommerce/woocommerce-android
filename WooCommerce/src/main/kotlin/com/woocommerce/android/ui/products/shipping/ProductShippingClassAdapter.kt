@@ -1,13 +1,11 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.shipping
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.DiffUtil.Callback
 import androidx.recyclerview.widget.RecyclerView
 import com.woocommerce.android.databinding.ProductShippingClassItemBinding
 import com.woocommerce.android.model.ShippingClass
-import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ViewHolder
 
 /**
  * RecyclerView adapter which shows a list of product shipping classes, the first of which will
@@ -16,7 +14,7 @@ import com.woocommerce.android.ui.products.ProductShippingClassAdapter.ViewHolde
 class ProductShippingClassAdapter(
     private val onItemClicked: (ShippingClass) -> Unit = { },
     private val onLoadMoreRequested: () -> Unit = { }
-) : RecyclerView.Adapter<ViewHolder>() {
+) : RecyclerView.Adapter<ProductShippingClassAdapter.ViewHolder>() {
     private var items = listOf<ShippingClass>()
     private var selectedShippingClassId: Long = -1
 
@@ -67,7 +65,7 @@ class ProductShippingClassAdapter(
     inner class ShippingClassDiffCallback(
         private val oldList: List<ShippingClass>,
         private val newList: List<ShippingClass>
-    ) : Callback() {
+    ) : DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldList[oldItemPosition].remoteShippingClassId == newList[newItemPosition].remoteShippingClassId
         }

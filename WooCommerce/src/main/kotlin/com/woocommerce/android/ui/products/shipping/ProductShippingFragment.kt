@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.shipping
 
 import android.os.Bundle
 import android.text.Editable
@@ -15,13 +15,10 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ShippingClass
-import com.woocommerce.android.ui.products.ProductShippingClassFragment.Companion.SELECTED_SHIPPING_CLASS_RESULT
+import com.woocommerce.android.ui.products.BaseProductEditorFragment
+import com.woocommerce.android.ui.products.shipping.ProductShippingClassFragment.Companion.SELECTED_SHIPPING_CLASS_RESULT
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCMaterialOutlinedEditTextView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,7 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_product_shipping) {
     private val viewModel: ProductShippingViewModel by viewModels()
 
-    override val lastEvent: Event?
+    override val lastEvent: MultiLiveEvent.Event?
         get() = viewModel.event.value
 
     private var _binding: FragmentProductShippingBinding? = null
@@ -87,10 +84,13 @@ class ProductShippingFragment : BaseProductEditorFragment(R.layout.fragment_prod
         }
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
-                is ExitWithResult<*> -> navigateBackWithResult(KEY_SHIPPING_DIALOG_RESULT, event.data)
-                is Exit -> findNavController().navigateUp()
-                is ShowDialog -> event.showDialog()
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(
+                    KEY_SHIPPING_DIALOG_RESULT,
+                    event.data
+                )
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
                 else -> event.isHandled = false
             }
         }

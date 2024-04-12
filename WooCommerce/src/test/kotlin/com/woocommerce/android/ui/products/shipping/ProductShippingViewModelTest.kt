@@ -1,19 +1,15 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.shipping
 
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.products.ProductShippingViewModel.ShippingData
-import com.woocommerce.android.ui.products.ProductShippingViewModel.ViewState
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -26,7 +22,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
     private val productDetailRepository: ProductDetailRepository = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
-    private val initialData = ShippingData(
+    private val initialData = ProductShippingViewModel.ShippingData(
         10f,
         9f,
         8f,
@@ -35,7 +31,7 @@ class ProductShippingViewModelTest : BaseUnitTest() {
         1
     )
 
-    private val expectedData = ShippingData(
+    private val expectedData = ProductShippingViewModel.ShippingData(
         1f,
         2f,
         3f,
@@ -65,18 +61,18 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Test that the initial data is displayed correctly`() = testBlocking {
-        var actual: ShippingData? = null
+        var actual: ProductShippingViewModel.ShippingData? = null
         viewModel.viewStateData.observeForever { _, new ->
             actual = new.shippingData
         }
 
-        assertThat(actual).isEqualTo(initialData)
+        Assertions.assertThat(actual).isEqualTo(initialData)
     }
 
     @Test
     fun `Test that when data is changed the view state is updated`() =
         testBlocking {
-            var actual: ShippingData? = null
+            var actual: ProductShippingViewModel.ShippingData? = null
             viewModel.viewStateData.observeForever { _, new ->
                 actual = new.shippingData
             }
@@ -90,29 +86,29 @@ class ProductShippingViewModelTest : BaseUnitTest() {
                 expectedData.shippingClassId
             )
 
-            assertThat(actual).isEqualTo(expectedData)
+            Assertions.assertThat(actual).isEqualTo(expectedData)
         }
 
     @Test
     fun `Test that a discard dialog isn't shown if no data changed`() =
         testBlocking {
-            val events = mutableListOf<Event>()
+            val events = mutableListOf<MultiLiveEvent.Event>()
             viewModel.event.observeForever {
                 events.add(it)
             }
 
-            assertThat(events).isEmpty()
+            Assertions.assertThat(events).isEmpty()
 
             viewModel.onExit()
 
-            assertThat(events.singleOrNull { it is Exit }).isNotNull
-            assertThat(events.any { it is ShowDialog }).isFalse()
-            assertThat(events.any { it is ExitWithResult<*> }).isFalse()
+            Assertions.assertThat(events.singleOrNull { it is MultiLiveEvent.Event.Exit }).isNotNull
+            Assertions.assertThat(events.any { it is MultiLiveEvent.Event.ShowDialog }).isFalse()
+            Assertions.assertThat(events.any { it is MultiLiveEvent.Event.ExitWithResult<*> }).isFalse()
         }
 
     @Test
     fun `Test that a the correct data is returned when exiting`() = testBlocking {
-        val events = mutableListOf<Event>()
+        val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever {
             events.add(it)
         }
@@ -128,23 +124,25 @@ class ProductShippingViewModelTest : BaseUnitTest() {
 
         viewModel.onExit()
 
-        assertThat(events.any { it is ShowDialog }).isFalse()
-        assertThat(events.any { it is Exit }).isFalse()
+        Assertions.assertThat(events.any { it is MultiLiveEvent.Event.ShowDialog }).isFalse()
+        Assertions.assertThat(events.any { it is MultiLiveEvent.Event.Exit }).isFalse()
 
         @Suppress("UNCHECKED_CAST")
-        val result = events.single { it is ExitWithResult<*> } as ExitWithResult<ShippingData>
+        val result = events.single {
+            it is MultiLiveEvent.Event.ExitWithResult<*>
+        } as MultiLiveEvent.Event.ExitWithResult<ProductShippingViewModel.ShippingData>
 
-        assertThat(result.data).isEqualTo(expectedData)
+        Assertions.assertThat(result.data).isEqualTo(expectedData)
     }
 
     @Test
     fun `Test that the class section is visible for products`() = testBlocking {
-        var viewState: ViewState? = null
+        var viewState: ProductShippingViewModel.ViewState? = null
         viewModel.viewStateData.observeForever { _, new ->
             viewState = new
         }
 
-        assertThat(viewState?.isShippingClassSectionVisible).isTrue()
+        Assertions.assertThat(viewState?.isShippingClassSectionVisible).isTrue()
     }
 
     @Test
@@ -152,12 +150,12 @@ class ProductShippingViewModelTest : BaseUnitTest() {
         testBlocking {
             viewModel = createViewModel(RequestCodes.VARIATION_DETAIL_SHIPPING)
 
-            var viewState: ViewState? = null
+            var viewState: ProductShippingViewModel.ViewState? = null
             viewModel.viewStateData.observeForever { _, new ->
                 viewState = new
             }
 
-            assertThat(viewState?.isShippingClassSectionVisible).isFalse()
+            Assertions.assertThat(viewState?.isShippingClassSectionVisible).isFalse()
         }
 
     @Test

@@ -379,7 +379,7 @@
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
-        android:name="com.woocommerce.android.ui.products.ProductShippingFragment"
+        android:name="com.woocommerce.android.ui.products.shipping.ProductShippingFragment"
         tools:layout="@layout/fragment_product_shipping">
         <action
             android:id="@+id/action_productShippingFragment_to_productShippingClassFragment"
@@ -389,11 +389,11 @@
             app:argType="integer" />
         <argument
             android:name="shippingData"
-            app:argType="com.woocommerce.android.ui.products.ProductShippingViewModel$ShippingData" />
+            app:argType="com.woocommerce.android.ui.products.shipping.ProductShippingViewModel$ShippingData" />
     </fragment>
     <fragment
         android:id="@+id/productShippingClassFragment"
-        android:name="com.woocommerce.android.ui.products.ProductShippingClassFragment"
+        android:name="com.woocommerce.android.ui.products.shipping.ProductShippingClassFragment"
         android:label="ProductShippingClassFragment">
         <argument
             android:name="productShippingClassId"

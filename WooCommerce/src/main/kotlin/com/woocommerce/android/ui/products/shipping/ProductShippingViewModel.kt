@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.shipping
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -6,11 +6,11 @@ import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -87,9 +87,9 @@ class ProductShippingViewModel @Inject constructor(
             mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)
         )
         if (hasChanges) {
-            triggerEvent(ExitWithResult(shippingData))
+            triggerEvent(MultiLiveEvent.Event.ExitWithResult(shippingData))
         } else {
-            triggerEvent(Exit)
+            triggerEvent(MultiLiveEvent.Event.Exit)
         }
     }
 
