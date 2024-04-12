@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 09:54:04+0000
+Translation-Revision-Date: 2024-04-09 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="login_app_password_support_button">지원 문의</string>
+    <string name="login_app_password_continue_button">계속</string>
+    <string name="login_app_password_instructions_footer">문제가 발생하면 지원팀에 문의해 주세요.</string>
+    <string name="login_app_password_instructions_step_3">3. 연결이 완료되면 스토어에 로그인됩니다.</string>
+    <string name="login_app_password_instructions_step_2">2. 메시지가 표시되면 확인 버튼을 눌러 연결을 승인합니다.</string>
+    <string name="login_app_password_instructions_step_1">1. 먼저 사이트 자격 증명을 사용하여 로그인합니다.</string>
+    <string name="login_app_password_instructions_title">애플리케이션 비밀번호를 사용하여 다음과 같은 단계에 따라 Woo 앱을 스토어에 직접 연결하세요.</string>
+    <string name="login_app_password_subtitle">스토어에 몇 가지 추가 보안 단계가 설정되었기 때문일 수 있습니다.</string>
+    <string name="login_app_password_title">사이트에 로그인할 수 없음</string>
+    <string name="empty_order_detail_message">주문하면 여기에 주문 상세 정보가 표시됩니다.</string>
+    <string name="empty_order_detail_title">아직 주문 상세 정보 없음</string>
+    <string name="order_creation_simple_payment_migration_button">사용자 정의 금액 추가</string>
+    <string name="order_creation_simple_payment_migration_message_two">결제 금액을 설정하려면\n새 주문에 사용자 정의 금액을 추가하세요.</string>
+    <string name="order_creation_simple_payment_migration_message_one">더 접근하기 쉽고 더 효과가 있도록\n결제 수령을 주문 생성과\n결합했습니다.</string>
+    <string name="order_creation_simple_payment_migration_title">결제 수령이\n이동했습니다.</string>
+    <string name="analytics_bundles_card_title">번들</string>
+    <string name="analytics_bundles_list_header_subtitle">판매된 번들</string>
+    <string name="analytics_bundles_list_header_title">번들</string>
+    <string name="analytics_bundles_list_items_sold">판매된 번들</string>
+    <string name="my_store_widget_blaze_title">Blaze 캠페인</string>
+    <string name="my_store_widget_top_products_title">상위 상품</string>
+    <string name="my_store_widget_stats_title">통계</string>
+    <string name="my_store_widget_onboarding_title">온보딩</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">스토어 온보딩</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze 캠페인</string>
+    <string name="my_store_edit_screen_widget_top_performers">성과 상위 상품</string>
+    <string name="my_store_edit_screen_widget_stats">스토어 통계</string>
+    <string name="my_store_edit_screen_widgets">내 스토어 섹션 편집</string>
     <string name="product_list_unsaved_product_unselected_message">이 상품에 적용한 변경 사항을 취소하시겠습니까?</string>
     <string name="product_list_unsaved_product_unselected_title">%s에 대한 변경 사항을 취소하시려는 참입니다.</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">이 통계 기능에서는 임의 날짜 범위의 방문자 수와 전환율 데이터 표시가 지원되지 않습니다.\n\n그러나 그래프의 값을 눌러 해당 특정 범위의 방문자 수와 전환율을 참조할 수 있습니다.</string>
@@ -736,7 +764,6 @@ Language: ko_KR
     <string name="settings_privacy_header">개인정보</string>
     <string name="settings_usage_tracking_description">이 데이터 공유를 제어하기 위해 당사에서 수집하는 회원님의 스토어와 옵션에 대한 데이터에 대해 자세히 알아보세요.</string>
     <string name="settings_usage_tracking">사용량 추적</string>
-    <string name="settings_web_options_description">Woo.com 사용자는 추가 개인정보 옵션을 사용할 수 있습니다. 여기에서 자세히 알아보세요.</string>
     <string name="settings_web_options">웹 옵션</string>
     <string name="settings_more_privacy_options_header">추가 개인정보 옵션</string>
     <string name="settings_tracking_analytics_error_update">프라이버시 설정 업데이트 중 오류가 발생했습니다.</string>

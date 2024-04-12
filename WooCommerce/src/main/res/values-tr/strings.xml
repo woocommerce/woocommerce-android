@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 13:54:04+0000
+Translation-Revision-Date: 2024-04-09 13:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="login_app_password_support_button">Desteğe Başvurun</string>
+    <string name="login_app_password_continue_button">Devam</string>
+    <string name="login_app_password_instructions_footer">Herhangi bir sorunla karşılaşırsanız lütfen destek ekibimizle iletişime geçin.</string>
+    <string name="login_app_password_instructions_step_3">3. Bağlantı tamamlandığında mağazanızda oturumunuz açılır.</string>
+    <string name="login_app_password_instructions_step_2">2. Sizden istendiğinde onay düğmesine dokunarak bağlantıyı onaylayın.</string>
+    <string name="login_app_password_instructions_step_1">1. İlk olarak site kimlik bilgilerinizi kullanarak oturum açın.</string>
+    <string name="login_app_password_instructions_title">Bir uygulama şifresi kullanarak Woo uygulamasını doğrudan mağazanıza bağlamak için şu adımları takip edin.</string>
+    <string name="login_app_password_subtitle">Bunun sebebi mağazanızda bazı ekstra güvenlik adımlarının olması olabilir.</string>
+    <string name="login_app_password_title">Sitenizde oturum açamadık</string>
+    <string name="empty_order_detail_message">Sipariş oluşturduğunuzda sipariş bilgileriniz burada görünür.</string>
+    <string name="empty_order_detail_title">Henüz Sipariş Ayrıntısı Yok</string>
+    <string name="order_creation_simple_payment_migration_button">Özel Tutar Ekle</string>
+    <string name="order_creation_simple_payment_migration_message_two">Ödeme tutarı belirlemek için yeni\nsiparişinize özel bir tutar ekleyin.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Ödeme almayı sipariş oluşturmayla birleştirdik\nbu sayede bunu daha erişilebilir\nve daha güçlü hale getirdik.</string>
+    <string name="order_creation_simple_payment_migration_title">Ödeme Alma \ntaşındı</string>
+    <string name="analytics_bundles_card_title">Paketler</string>
+    <string name="analytics_bundles_list_header_subtitle">Satılan paketler</string>
+    <string name="analytics_bundles_list_header_title">Paketler</string>
+    <string name="analytics_bundles_list_items_sold">Satılan paketler</string>
+    <string name="my_store_widget_blaze_title">Kampanyaları öne çıkarın</string>
+    <string name="my_store_widget_top_products_title">En popüler ürünler</string>
+    <string name="my_store_widget_stats_title">İstatistikler</string>
+    <string name="my_store_widget_onboarding_title">İlk Katılım</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Mağaza İlk Katılımı</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze Kampanyaları</string>
+    <string name="my_store_edit_screen_widget_top_performers">En Performanslı Ürünler</string>
+    <string name="my_store_edit_screen_widget_stats">Mağaza İstatistikleri</string>
+    <string name="my_store_edit_screen_widgets">Mağazanızın bölümlerini düzenleyin</string>
     <string name="product_list_unsaved_product_unselected_message">Bu üründe yaptığınız değişikliklerden vazgeçmek istediğinizden emin misiniz?</string>
     <string name="product_list_unsaved_product_unselected_title">%s ürününde yapılan değişikliklerden vazgeçmek üzeresiniz.</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">İstatistikler özelliği, ziyaretçiler ve dönüşüm verilerinin isteğe bağlı tarih aralıkları için görüntülenmesini desteklemiyor.\n\nAncak bu belirli aralık için ziyaretçileri ve dönüşümleri görmek için grafikte bir değere tıklayabilirsiniz.</string>
@@ -736,7 +764,6 @@ Language: tr
     <string name="settings_privacy_header">Gizlilik</string>
     <string name="settings_usage_tracking_description">Mağazanız hakkında topladığımız veriler ve bu verilerin paylaşımını kontrol etme seçenekleriniz hakkında daha fazla bilgi edinin.</string>
     <string name="settings_usage_tracking">Kullanım İzleme</string>
-    <string name="settings_web_options_description">woo.com kullanıcıları için daha fazla gizlilik seçeneği mevcut. Daha fazla bilgi edinmek için burayı kontrol edin.</string>
     <string name="settings_web_options">Web Seçenekleri</string>
     <string name="settings_more_privacy_options_header">Daha fazla gizlilik seçeneği</string>
     <string name="settings_tracking_analytics_error_update">Gizlilik ayarlarınız güncellenirken bir hata oluştu</string>

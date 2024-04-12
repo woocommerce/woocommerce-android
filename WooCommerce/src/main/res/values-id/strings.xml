@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 11:54:04+0000
+Translation-Revision-Date: 2024-04-09 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="login_app_password_support_button">Hubungi Dukungan</string>
+    <string name="login_app_password_continue_button">Lanjutkan</string>
+    <string name="login_app_password_instructions_footer">Jika ada masalah, silakan hubungi tim dukungan.</string>
+    <string name="login_app_password_instructions_step_3">3. Setelah koneksi selesai, Anda akan login ke toko Anda.</string>
+    <string name="login_app_password_instructions_step_2">2. Jika diminta, setujui koneksi dengan mengetuk tombol konfirmasi</string>
+    <string name="login_app_password_instructions_step_1">1. Pertama, login dengan kredensial situs Anda.</string>
+    <string name="login_app_password_instructions_title">Ikuti langkah-langkah berikut untuk menghubungkan aplikasi Woo langsung ke toko Anda dengan kata sandi aplikasi.</string>
+    <string name="login_app_password_subtitle">Alasannya mungkin karena Anda menerapkan beberapa langkah keamanan ekstra di toko Anda.</string>
+    <string name="login_app_password_title">Tidak dapat login ke toko Anda</string>
+    <string name="empty_order_detail_message">Setelah memesan, detail pesanan akan tertampil di sini.</string>
+    <string name="empty_order_detail_title">Belum Ada Detail Pesanan</string>
+    <string name="order_creation_simple_payment_migration_button">Tambahkan Jumlah Kustom</string>
+    <string name="order_creation_simple_payment_migration_message_two">Untuk menentukan jumlah pembayaran, tambahkan\njumlah kustom ke pesanan baru Anda.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Kami mengintegrasikan penagihan dengan\npembuatan pesanan agar proses lebih mudah diakses\ndan efisien.</string>
+    <string name="order_creation_simple_payment_migration_title">Tagih Pembayaran \ntelah dipindahkan</string>
+    <string name="analytics_bundles_card_title">Paket</string>
+    <string name="analytics_bundles_list_header_subtitle">Paket terjual</string>
+    <string name="analytics_bundles_list_header_title">Paket</string>
+    <string name="analytics_bundles_list_items_sold">Paket terjual</string>
+    <string name="my_store_widget_blaze_title">Kampanye Blaze</string>
+    <string name="my_store_widget_top_products_title">Produk peringkat teratas</string>
+    <string name="my_store_widget_stats_title">Statistik</string>
+    <string name="my_store_widget_onboarding_title">Penyiapan</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Penyiapan Toko</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Kampanye Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">Produk Performa Terbaik</string>
+    <string name="my_store_edit_screen_widget_stats">Statistik Toko</string>
+    <string name="my_store_edit_screen_widgets">Edit bagian toko saya</string>
     <string name="product_list_unsaved_product_unselected_message">Anda yakin ingin mengabaikan perubahan yang Anda buat pada produk ini?</string>
     <string name="product_list_unsaved_product_unselected_title">Anda akan mengabaikan perubahan pada %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">Fitur statistik tidak mendukung tampilan data pengunjung dan konversi untuk rentang tanggal acak.\n\nNamun, Anda dapat memilih nilai pada grafik untuk melihat pengunjung dan konversi pada rentang khusus tersebut.</string>
@@ -736,7 +764,6 @@ Language: id
     <string name="settings_privacy_header">Privasi</string>
     <string name="settings_usage_tracking_description">Pelajari selengkapnya tentang data yang kami kumpulkan seputar toko Anda dan pilihan Anda dalam mengelola pembagian data.</string>
     <string name="settings_usage_tracking">Pelacakan Penggunaan</string>
-    <string name="settings_web_options_description">Tersedia pilihan privasi lainnya untuk pengguna woo.com. Lihat di sini untuk membaca selengkapnya.</string>
     <string name="settings_web_options">Pilihan Web</string>
     <string name="settings_more_privacy_options_header">Pilihan privasi lainnya</string>
     <string name="settings_tracking_analytics_error_update">Terjadi error saat memperbarui pengaturan privasi Anda</string>

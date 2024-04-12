@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-03 16:54:04+0000
+Translation-Revision-Date: 2024-04-09 18:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="login_app_password_support_button">Поддержка</string>
+    <string name="login_app_password_continue_button">Продолжить</string>
+    <string name="login_app_password_instructions_footer">Если у вас возникают проблемы, обратитесь в нашу службу поддержки.</string>
+    <string name="login_app_password_instructions_step_3">3. После установки подключения вы автоматически выполните вход в свой магазин.</string>
+    <string name="login_app_password_instructions_step_2">2. Когда появится запрос, подтвердите подключение, нажав кнопку подтверждения.</string>
+    <string name="login_app_password_instructions_step_1">1. Сначала войдите с учётными данными вашего сайта.</string>
+    <string name="login_app_password_instructions_title">Следуйте этой процедуре, чтобы напрямую подключить приложение Woo к вашему магазину при помощи пароля приложения.</string>
+    <string name="login_app_password_subtitle">Возможно, это потому, что в вашем магазине действуют дополнительные меры безопасности.</string>
+    <string name="login_app_password_title">Не удалось войти в ваш магазин</string>
+    <string name="empty_order_detail_message">Когда вы сделаете заказ, сведения о нём отобразятся здесь.</string>
+    <string name="empty_order_detail_title">Сведений о заказе ещё нет</string>
+    <string name="order_creation_simple_payment_migration_button">Добавить индивидуальную сумму</string>
+    <string name="order_creation_simple_payment_migration_message_two">Чтобы указать сумму платежа, добавьте\nиндивидуальную сумму к своему заказу.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Мы объединили получение платежа и\nсоздание заказа, сделав операцию более доступной\nи эффективной.</string>
+    <string name="order_creation_simple_payment_migration_title">Получение платежа \nперемещено</string>
+    <string name="analytics_bundles_card_title">Комплекты</string>
+    <string name="analytics_bundles_list_header_subtitle">Продано комплектов</string>
+    <string name="analytics_bundles_list_header_title">Комплекты</string>
+    <string name="analytics_bundles_list_items_sold">Продано комплектов</string>
+    <string name="my_store_widget_blaze_title">Кампании Blaze</string>
+    <string name="my_store_widget_top_products_title">Популярные товары</string>
+    <string name="my_store_widget_stats_title">Статистика</string>
+    <string name="my_store_widget_onboarding_title">Вводный курс</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Вводный курс по работе с магазином</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Кампании Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">Хиты продаж</string>
+    <string name="my_store_edit_screen_widget_stats">Статистика магазина</string>
+    <string name="my_store_edit_screen_widgets">Редактировать отделы магазина</string>
     <string name="product_list_unsaved_product_unselected_message">Вы уверены, что хотите отменить изменения этого товара?</string>
     <string name="product_list_unsaved_product_unselected_title">Вы собираетесь отменить изменения %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">Функция статистики не поддерживает отображения данных о посетителях и переходах за произвольные периоды времени.\n\nТем не менее можно щёлкнуть по значению на графике, чтобы увидеть сведения о посетителях и переходах за данный период.</string>
@@ -736,7 +764,6 @@ Language: ru
     <string name="settings_privacy_header">Конфиденциальность</string>
     <string name="settings_usage_tracking_description">Узнайте больше о данных, которые мы собираем в вашем магазине, и о том, как вы можете управлять передачей этих данных.</string>
     <string name="settings_usage_tracking">Отслеживание использования</string>
-    <string name="settings_web_options_description">Для пользователей woo.com доступны дополнительные опции конфиденциальности. Подробности см. здесь.</string>
     <string name="settings_web_options">Интернет-опции</string>
     <string name="settings_more_privacy_options_header">Дополнительные параметры конфиденциальности</string>
     <string name="settings_tracking_analytics_error_update">При обновлении настроек конфиденциальности произошла ошибка</string>
