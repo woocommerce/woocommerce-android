@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.ai.description
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -23,11 +23,11 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_USEFU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCT_DESCRIPTION
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Celebration
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Generated
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Generating
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Regenerating
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Start
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState.GenerationState.Celebration
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState.GenerationState.Generated
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState.GenerationState.Generating
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState.GenerationState.Regenerating
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState.GenerationState.Start
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel

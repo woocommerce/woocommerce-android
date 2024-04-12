@@ -766,7 +766,7 @@
     </dialog>
     <dialog
         android:id="@+id/AIProductDescriptionBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ai.description.AIProductDescriptionBottomSheetFragment"
         android:label="AIProductDescriptionBottomSheetFragment">
         <argument
             android:name="productTitle"

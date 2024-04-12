@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.ai.description
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
@@ -51,12 +51,12 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Celebration
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Generated
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Regenerating
-import com.woocommerce.android.ui.products.AIProductDescriptionViewModel.ViewState.GenerationState.Start
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState.GenerationState
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState.GenerationState.Celebration
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState.GenerationState.Generated
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState.GenerationState.Regenerating
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionViewModel.ViewState.GenerationState.Start
 
 @Composable
 fun AIProductDescriptionBottomSheet(

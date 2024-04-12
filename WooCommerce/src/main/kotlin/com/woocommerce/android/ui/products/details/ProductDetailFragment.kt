@@ -45,7 +45,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.GroupedProductListType
@@ -55,6 +54,7 @@ import com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment
 import com.woocommerce.android.ui.products.ProductTypesBottomSheetViewModel.ProductTypesBottomSheetUiItem
 import com.woocommerce.android.ui.products.ProductsCommunicationViewModel
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
+import com.woocommerce.android.ui.products.ai.description.AIProductDescriptionBottomSheetFragment.Companion.KEY_AI_GENERATED_DESCRIPTION_RESULT
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.HideImageUploadErrorSnackbar
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.OpenProductDetails
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.Error
