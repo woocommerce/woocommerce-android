@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.images
 
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -23,26 +23,29 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.mediapicker.MediaPickerHelper
-import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
-import com.woocommerce.android.model.Product.Image
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowCamera
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageDetail
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowImageSourceDialog
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowStorageChooser
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowWPMediaPicker
+import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.BaseProductEditorFragment
+import com.woocommerce.android.ui.products.ConfirmRemoveProductImageDialog
+import com.woocommerce.android.ui.products.ProductNavigationTarget
+import com.woocommerce.android.ui.products.ProductNavigator
+import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ProductImagesState
+import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ShowCamera
+import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ShowDeleteImageConfirmation
+import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ShowImageDetail
+import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ShowImageSourceDialog
+import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ShowStorageChooser
+import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ShowWPMediaPicker
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.setHomeIcon
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
-import com.woocommerce.android.widgets.WCProductImageGalleryView.OnGalleryImageInteractionListener
+import com.woocommerce.android.widgets.WCProductImageGalleryView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.mediapicker.MediaPickerUtils
 import org.wordpress.android.mediapicker.api.MediaPickerSetup.DataSource.CAMERA
@@ -53,8 +56,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductImagesFragment :
     BaseProductEditorFragment(R.layout.fragment_product_images),
-    OnGalleryImageInteractionListener,
-    MediaPickerResultHandler {
+    WCProductImageGalleryView.OnGalleryImageInteractionListener,
+    MediaPickerHelper.MediaPickerResultHandler {
     private val navArgs: ProductImagesFragmentArgs by navArgs()
     private val viewModel: ProductImagesViewModel by fixedHiltNavGraphViewModels(R.id.nav_graph_image_gallery)
 
@@ -70,7 +73,7 @@ class ProductImagesFragment :
     private var _binding: FragmentProductImagesBinding? = null
     private val binding get() = _binding!!
 
-    override val lastEvent: Event?
+    override val lastEvent: MultiLiveEvent.Event?
         get() = viewModel.event.value
 
     private var imageSourceDialog: AlertDialog? = null
@@ -158,7 +161,7 @@ class ProductImagesFragment :
         )
     }
 
-    override fun onGalleryImageDeleteIconClicked(image: Image) {
+    override fun onGalleryImageDeleteIconClicked(image: Product.Image) {
         viewModel.onGalleryImageDeleteIconClicked(image)
     }
 
@@ -219,7 +222,7 @@ class ProductImagesFragment :
         }
     }
 
-    private fun showConfirmationDialog(image: Image) {
+    private fun showConfirmationDialog(image: Product.Image) {
         ConfirmRemoveProductImageDialog(
             requireActivity(),
             onPositiveButton = { viewModel.onDeleteImageConfirmed(image) },
@@ -244,12 +247,12 @@ class ProductImagesFragment :
         imageUploadErrorsSnackbar?.show()
     }
 
-    private fun updateImages(images: List<Image>, uris: List<Uri>?) {
+    private fun updateImages(images: List<Product.Image>, uris: List<Uri>?) {
         binding.imageGallery.showProductImages(images, this)
         binding.imageGallery.setPlaceholderImageUris(uris)
     }
 
-    override fun onGalleryImageClicked(image: Image) {
+    override fun onGalleryImageClicked(image: Product.Image) {
         viewModel.onGalleryImageClicked(image)
     }
 
@@ -261,7 +264,7 @@ class ProductImagesFragment :
         viewModel.onGalleryImageMoved(from, to)
     }
 
-    private fun showImageDetail(image: Image, skipThrottling: Boolean) {
+    private fun showImageDetail(image: Product.Image, skipThrottling: Boolean) {
         val action = ProductImageViewerFragmentDirections.actionGlobalProductImageViewerFragment(
             isDeletingAllowed = viewModel.isImageDeletingAllowed,
             mediaId = image.id,
@@ -311,7 +314,7 @@ class ProductImagesFragment :
         }
     }
 
-    override fun onWPMediaSelected(images: List<Image>) {
+    override fun onWPMediaSelected(images: List<Product.Image>) {
         AnalyticsTracker.track(
             AnalyticsEvent.PRODUCT_IMAGE_ADDED,
             mapOf(AnalyticsTracker.KEY_IMAGE_SOURCE to AnalyticsTracker.IMAGE_SOURCE_WPMEDIA)

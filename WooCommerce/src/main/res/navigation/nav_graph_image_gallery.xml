@@ -6,7 +6,7 @@
     app:startDestination="@id/productImagesFragment">
     <fragment
         android:id="@+id/productImagesFragment"
-        android:name="com.woocommerce.android.ui.products.ProductImagesFragment"
+        android:name="com.woocommerce.android.ui.products.images.ProductImagesFragment"
         android:label="ProductImagesFragment"
         tools:layout="@layout/fragment_product_images">
         <argument
@@ -30,7 +30,7 @@
     </fragment>
     <fragment
         android:id="@+id/productImageViewerFragment"
-        android:name="com.woocommerce.android.ui.products.ProductImageViewerFragment"
+        android:name="com.woocommerce.android.ui.products.images.ProductImageViewerFragment"
         android:label="ProductImageViewerFragment"
         tools:layout="@layout/fragment_image_viewer">
         <argument

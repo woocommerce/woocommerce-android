@@ -1,18 +1,14 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.images
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ShowDeleteImageConfirmation
-import com.woocommerce.android.ui.products.ProductTestUtils.generateProductImagesList
+import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -30,7 +26,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
-    private fun savedState(productImages: List<Image>) = ProductImagesFragmentArgs(
+    private fun savedState(productImages: List<Product.Image>) = ProductImagesFragmentArgs(
         remoteId = 0,
         images = productImages.toTypedArray(),
         selectedImage = null,
@@ -38,7 +34,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         requestCode = 123
     ).toSavedStateHandle()
 
-    private fun initialize(productImages: List<Image> = generateProductImagesList()) {
+    private fun initialize(productImages: List<Product.Image> = ProductTestUtils.generateProductImagesList()) {
         viewModel = ProductImagesViewModel(
             networkStatus,
             mediaFileUploadHandler,
@@ -57,19 +53,19 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         viewModel.onGalleryImageDragStarted()
 
         observeState { state ->
-            assertThat(state.productImagesState is Dragging).isTrue()
+            assertThat(state.productImagesState is ProductImagesViewModel.ProductImagesState.Dragging).isTrue()
         }
     }
 
     @Test
     fun `Trigger exit event on back button clicked when in browsing state`() {
-        val images = generateProductImagesList()
+        val images = ProductTestUtils.generateProductImagesList()
         initialize(images)
 
         viewModel.onNavigateBackButtonClicked()
 
         observeEvents { event ->
-            assertThat(event).isEqualTo(Exit)
+            assertThat(event).isEqualTo(MultiLiveEvent.Event.Exit)
         }
     }
 
@@ -77,31 +73,31 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     fun `Trigger exitWithResult event on back button clicked when in browsing state`() {
         initialize()
 
-        val images = generateProductImagesList()
+        val images = ProductTestUtils.generateProductImagesList()
         viewModel.onDeleteImageConfirmed(images[0])
         viewModel.onNavigateBackButtonClicked()
 
         observeEvents { event ->
-            assertThat(event).isEqualTo(ExitWithResult(images - images[0]))
+            assertThat(event).isEqualTo(MultiLiveEvent.Event.ExitWithResult(images - images[0]))
         }
     }
 
     @Test
     fun `Request image delete confirmation on image delete button clicked`() {
-        val images = generateProductImagesList()
+        val images = ProductTestUtils.generateProductImagesList()
         initialize(images)
         val imageToDelete = images.first()
 
         viewModel.onGalleryImageDeleteIconClicked(imageToDelete)
 
         observeEvents { event ->
-            assertThat(event).isEqualTo(ShowDeleteImageConfirmation(imageToDelete))
+            assertThat(event).isEqualTo(ProductImagesViewModel.ShowDeleteImageConfirmation(imageToDelete))
         }
     }
 
     @Test
     fun `Remove image on remove confirmation`() {
-        val images = generateProductImagesList()
+        val images = ProductTestUtils.generateProductImagesList()
         initialize(images)
         val imageToDelete = images.first()
 
@@ -114,7 +110,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Update list state on image reorder`() {
-        val images = generateProductImagesList()
+        val images = ProductTestUtils.generateProductImagesList()
         initialize(images)
         val imageA = images.first()
 
@@ -130,7 +126,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Show drag and drop description where there are more than one images`() {
-        val twoImagesList = generateProductImagesList().subList(0, 2)
+        val twoImagesList = ProductTestUtils.generateProductImagesList().subList(0, 2)
         initialize(twoImagesList)
 
         observeState { state ->
@@ -140,7 +136,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Hide drag and drop description where there is one image only`() {
-        val oneImageList = generateProductImagesList().subList(0, 1)
+        val oneImageList = ProductTestUtils.generateProductImagesList().subList(0, 1)
         initialize(oneImageList)
 
         observeState { state ->
@@ -150,7 +146,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Show drag and drop description when in dragging state even if there is one image only`() {
-        val twoImagesList = generateProductImagesList().subList(0, 2)
+        val twoImagesList = ProductTestUtils.generateProductImagesList().subList(0, 2)
         initialize(twoImagesList)
 
         viewModel.onGalleryImageDragStarted()
@@ -163,7 +159,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Validate drag and drop process on validation button clicked`() {
-        val images = generateProductImagesList()
+        val images = ProductTestUtils.generateProductImagesList()
         val imageToRemove = images[3]
         val imageToReorder = images[1]
         initialize(images)
@@ -184,7 +180,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Revert to initial images when in dragging and exit button clicked`() {
-        val images = generateProductImagesList()
+        val images = ProductTestUtils.generateProductImagesList()
         val imageToRemove = images[3]
         val imageToReorder = images[1]
         initialize(images)
@@ -223,7 +219,7 @@ class ProductImagesViewModelTest : BaseUnitTest() {
         initialize(emptyList())
 
         // when
-        viewModel.onMediaLibraryImagesAdded(generateProductImagesList())
+        viewModel.onMediaLibraryImagesAdded(ProductTestUtils.generateProductImagesList())
         viewModel.onNavigateBackButtonClicked()
 
         // then
@@ -236,6 +232,6 @@ class ProductImagesViewModelTest : BaseUnitTest() {
     private fun observeState(check: (ProductImagesViewModel.ViewState) -> Unit) =
         viewModel.viewStateData.liveData.observeForever { check(it) }
 
-    private fun observeEvents(check: (Event) -> Unit) =
+    private fun observeEvents(check: (MultiLiveEvent.Event) -> Unit) =
         viewModel.event.observeForever { check(it) }
 }

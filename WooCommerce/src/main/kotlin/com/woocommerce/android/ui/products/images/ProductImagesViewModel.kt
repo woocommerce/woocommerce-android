@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.images
 
 import android.net.Uri
 import android.os.Parcelable
@@ -7,26 +7,20 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.areSameImagesAs
-import com.woocommerce.android.model.Product.Image
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.getMediaUploadErrorMessage
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Browsing
-import com.woocommerce.android.ui.products.ProductImagesViewModel.ProductImagesState.Dragging
-import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewMediaUploadErrors
+import com.woocommerce.android.ui.products.ProductNavigationTarget
+import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ProductImagesState.Browsing
+import com.woocommerce.android.ui.products.images.ProductImagesViewModel.ProductImagesState.Dragging
 import com.woocommerce.android.util.swap
 import com.woocommerce.android.viewmodel.LiveDataDelegate
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowActionSnackbar
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -89,7 +83,7 @@ class ProductImagesViewModel @Inject constructor(
 
     fun uploadProductImages(remoteProductId: Long, localUriList: List<Uri>) {
         if (!networkStatus.isConnected()) {
-            triggerEvent(ShowSnackbar(R.string.offline_error))
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
             return
         }
 
@@ -128,7 +122,7 @@ class ProductImagesViewModel @Inject constructor(
         viewState = viewState.copy(images = images.filter { it.id != imageId })
     }
 
-    fun onMediaLibraryImagesAdded(newImages: List<Image>) {
+    fun onMediaLibraryImagesAdded(newImages: List<Product.Image>) {
         viewState = if (isMultiSelectionAllowed) {
             viewState.copy(images = images + newImages)
         } else {
@@ -138,12 +132,12 @@ class ProductImagesViewModel @Inject constructor(
 
     fun onImageSourceButtonClicked() {
         clearImageUploadErrors()
-        AnalyticsTracker.track(PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_IMAGE_SETTINGS_ADD_IMAGES_BUTTON_TAPPED)
         triggerEvent(ShowImageSourceDialog)
     }
 
-    fun onGalleryImageClicked(image: Image) {
-        AnalyticsTracker.track(PRODUCT_DETAIL_IMAGE_TAPPED)
+    fun onGalleryImageClicked(image: Product.Image) {
+        AnalyticsTracker.track(AnalyticsEvent.PRODUCT_DETAIL_IMAGE_TAPPED)
         triggerEvent(ShowImageDetail(image))
     }
 
@@ -166,9 +160,9 @@ class ProductImagesViewModel @Inject constructor(
                     mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChange)
                 )
                 if (hasChange) {
-                    triggerEvent(ExitWithResult(images))
+                    triggerEvent(MultiLiveEvent.Event.ExitWithResult(images))
                 } else {
-                    triggerEvent(Exit)
+                    triggerEvent(MultiLiveEvent.Event.Exit)
                 }
             }
         }
@@ -217,10 +211,10 @@ class ProductImagesViewModel @Inject constructor(
             .filter { it.isNotEmpty() }
             .onEach {
                 triggerEvent(
-                    ShowActionSnackbar(
+                    MultiLiveEvent.Event.ShowActionSnackbar(
                         message = resourceProvider.getMediaUploadErrorMessage(it.size),
                         actionText = resourceProvider.getString(R.string.details)
-                    ) { triggerEvent(ViewMediaUploadErrors(remoteProductId)) }
+                    ) { triggerEvent(ProductNavigationTarget.ViewMediaUploadErrors(remoteProductId)) }
                 )
             }
             .launchIn(this)
@@ -233,11 +227,11 @@ class ProductImagesViewModel @Inject constructor(
         }
     }
 
-    fun onGalleryImageDeleteIconClicked(image: Image) {
+    fun onGalleryImageDeleteIconClicked(image: Product.Image) {
         triggerEvent(ShowDeleteImageConfirmation(image))
     }
 
-    fun onDeleteImageConfirmed(image: Image) {
+    fun onDeleteImageConfirmed(image: Product.Image) {
         viewState = viewState.copy(images = images - image)
     }
 
@@ -254,23 +248,23 @@ class ProductImagesViewModel @Inject constructor(
         val showSourceChooser: Boolean? = null,
         val uploadingImageUris: List<Uri>? = null,
         val isImageDeletingAllowed: Boolean? = null,
-        val images: List<Image>? = null,
+        val images: List<Product.Image>? = null,
         val chooserButtonButtonTitleRes: Int? = null,
         val isWarningVisible: Boolean? = null,
         val isDragDropDescriptionVisible: Boolean? = null,
         val productImagesState: ProductImagesState = Browsing
     ) : Parcelable
 
-    object ShowImageSourceDialog : Event()
-    object ShowStorageChooser : Event()
-    object ShowCamera : Event()
-    object ShowWPMediaPicker : Event()
-    data class ShowDeleteImageConfirmation(val image: Image) : Event()
-    data class ShowImageDetail(val image: Image, val isOpenedDirectly: Boolean = false) : Event()
+    object ShowImageSourceDialog : MultiLiveEvent.Event()
+    object ShowStorageChooser : MultiLiveEvent.Event()
+    object ShowCamera : MultiLiveEvent.Event()
+    object ShowWPMediaPicker : MultiLiveEvent.Event()
+    data class ShowDeleteImageConfirmation(val image: Product.Image) : MultiLiveEvent.Event()
+    data class ShowImageDetail(val image: Product.Image, val isOpenedDirectly: Boolean = false) : MultiLiveEvent.Event()
 
     sealed class ProductImagesState : Parcelable {
         @Parcelize
-        data class Dragging(val initialState: List<Image>) : ProductImagesState()
+        data class Dragging(val initialState: List<Product.Image>) : ProductImagesState()
 
         @Parcelize
         object Browsing : ProductImagesState()

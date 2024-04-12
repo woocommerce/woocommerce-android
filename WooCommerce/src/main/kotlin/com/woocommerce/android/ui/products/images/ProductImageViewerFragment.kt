@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.images
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -21,8 +21,9 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
-import com.woocommerce.android.ui.products.ImageViewerFragment.Companion.ImageViewerListener
+import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.products.ConfirmRemoveProductImageDialog
+import com.woocommerce.android.ui.products.ImageViewerFragment
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
@@ -32,8 +33,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ProductImageViewerFragment :
     BaseFragment(R.layout.fragment_product_image_viewer),
-    ImageViewerListener,
-    BackPressListener {
+    ImageViewerFragment.Companion.ImageViewerListener,
+    MainActivity.Companion.BackPressListener {
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 

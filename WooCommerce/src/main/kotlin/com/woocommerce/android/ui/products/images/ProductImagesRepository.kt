@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.products
+package com.woocommerce.android.ui.products.images
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
