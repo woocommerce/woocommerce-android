@@ -135,7 +135,7 @@ class AIRepository @Inject constructor(
         prompt: String,
         feature: String,
         format: ResponseFormat? = null,
-        model: String? = null
+        model: String? = "gpt-3.5-turbo-1106"
     ): Result<String> = withContext(Dispatchers.IO) {
         jetpackAIStore.fetchJetpackAICompletions(selectedSite.get(), prompt, feature, format, model).run {
             when (this) {
