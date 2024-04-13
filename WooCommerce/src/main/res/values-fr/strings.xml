@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 13:54:05+0000
+Translation-Revision-Date: 2024-04-09 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="login_app_password_support_button">Contacter l’assistance</string>
+    <string name="login_app_password_continue_button">Continuer</string>
+    <string name="login_app_password_instructions_footer">En cas de problème, contactez notre équipe d’assistance.</string>
+    <string name="login_app_password_instructions_step_3">3. Une fois la connexion établie, vous serez connecté(e) à votre boutique.</string>
+    <string name="login_app_password_instructions_step_2">2. Lorsque vous y serez invité(e), approuvez la connexion en appuyant sur le bouton de confirmation.</string>
+    <string name="login_app_password_instructions_step_1">1. Commencez par vous connecter à l’aide de vos identifiants de connexion.</string>
+    <string name="login_app_password_instructions_title">Veuillez suivre ces étapes pour connecter l’application Woo directement à votre boutique à l’aide d’un mot de passe d’application.</string>
+    <string name="login_app_password_subtitle">Votre boutique dispose probablement de mesures de sécurité supplémentaires.</string>
+    <string name="login_app_password_title">Nous n’avons pas pu nous connecter à votre boutique</string>
+    <string name="empty_order_detail_message">Les détails de votre commande s’affichent ici lorsque vous avez passé une commande.</string>
+    <string name="empty_order_detail_title">Pas encore de détails de commande</string>
+    <string name="order_creation_simple_payment_migration_button">Ajouter un montant personnalisé</string>
+    <string name="order_creation_simple_payment_migration_message_two">Pour définir un montant de paiement, ajoutez\nun montant personnalisé à votre nouvelle commande.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Nous avons combiné la collecte des paiements avec\nla création des commandes, pour un processus plus accessible\net plus puissant.</string>
+    <string name="order_creation_simple_payment_migration_title">Percevoir le paiement \na changé d’emplacement</string>
+    <string name="analytics_bundles_card_title">Formules</string>
+    <string name="analytics_bundles_list_header_subtitle">Formules vendues</string>
+    <string name="analytics_bundles_list_header_title">Formules</string>
+    <string name="analytics_bundles_list_items_sold">Formules vendues</string>
+    <string name="my_store_widget_blaze_title">Campagnes Blaze</string>
+    <string name="my_store_widget_top_products_title">Produits les mieux notés</string>
+    <string name="my_store_widget_stats_title">Statistiques</string>
+    <string name="my_store_widget_onboarding_title">Intégration</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Initiation à la boutique</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Campagnes Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">Produits les plus performants</string>
+    <string name="my_store_edit_screen_widget_stats">Statistique de la boutique</string>
+    <string name="my_store_edit_screen_widgets">Modifier les sections de ma boutique</string>
     <string name="product_list_unsaved_product_unselected_message">Voulez-vous vraiment annuler les modifications apportées à ce produit ?</string>
     <string name="product_list_unsaved_product_unselected_title">Vous êtes sur le point d\'annuler les modifications apportées à %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">La fonctionnalité de statistiques ne prend pas en charge l’affichage des visites et des données de conversion pour les plages de dates arbitraires.\n\nCependant, vous pouvez appuyer sur une valeur sur le graphique pour voir les visites et les conversions pour cette plage spécifique.</string>

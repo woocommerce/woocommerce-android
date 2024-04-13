@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 09:54:05+0000
+Translation-Revision-Date: 2024-04-09 11:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="login_app_password_support_button">联系支持人员</string>
+    <string name="login_app_password_continue_button">继续</string>
+    <string name="login_app_password_instructions_footer">如果您遇到任何问题，请联系我们的支持团队。</string>
+    <string name="login_app_password_instructions_step_3">3. 完成连接后，您将登录到自己的商店。</string>
+    <string name="login_app_password_instructions_step_1">1. 首先，使用您的站点凭据登录。</string>
+    <string name="login_app_password_instructions_title">请按照以下步骤，使用应用程序密码，将 Woo 应用程序直接连接到您的商店。</string>
+    <string name="login_app_password_subtitle">这可能是因为您的商店采取了一些额外的安全措施。</string>
+    <string name="login_app_password_title">我们无法登录您的商店</string>
+    <string name="empty_order_detail_message">当您下单后，您的订单详情将显示在此处。</string>
+    <string name="empty_order_detail_title">暂无订单详情</string>
+    <string name="order_creation_simple_payment_migration_button">添加自定义金额</string>
+    <string name="order_creation_simple_payment_migration_message_two">要设置付款金额，请\n在新订单中添加自定义金额。</string>
+    <string name="login_app_password_instructions_step_2">2. 在收到系统提示后，点击“确认”按钮批准连接。</string>
+    <string name="order_creation_simple_payment_migration_message_one">我们合并了收款和\n订单创建功能，以提高便捷性\n并增强功能性。</string>
+    <string name="order_creation_simple_payment_migration_title">收款 \n已移动</string>
+    <string name="analytics_bundles_card_title">捆绑</string>
+    <string name="analytics_bundles_list_header_subtitle">已售捆绑</string>
+    <string name="analytics_bundles_list_header_title">捆绑</string>
+    <string name="analytics_bundles_list_items_sold">已售捆绑</string>
+    <string name="my_store_widget_blaze_title">Blaze 广告活动</string>
+    <string name="my_store_widget_top_products_title">热门产品</string>
+    <string name="my_store_widget_onboarding_title">入门流程</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">商店入门流程</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze 广告活动</string>
+    <string name="my_store_edit_screen_widget_top_performers">热销产品</string>
+    <string name="my_store_edit_screen_widget_stats">商店统计信息</string>
+    <string name="my_store_widget_stats_title">统计数据</string>
+    <string name="my_store_edit_screen_widgets">编辑我的商店的各个部分</string>
     <string name="product_list_unsaved_product_unselected_message">是否确定要放弃您对此产品所做的更改？</string>
     <string name="product_list_unsaved_product_unselected_title">您将放弃对 %s 所做的更改</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">统计信息功能不支持显示任意日期范围内的访客人数和转化数据。\n\n但您可以点击图表上的某个值，查看该特定范围内的访客人数和转化数据。</string>

@@ -4003,8 +4003,9 @@
 
     <string name="order_configuration_product_selection">Select product %s</string>
     <string name="order_configuration_product_selection_control">Product selection</string>
+    <string name="card_selection_control">Analytic card selection</string>
     <string name="disabled">Disabled</string>
-    <string name="see_report">See Report</string>
+    <string name="see_report">See report</string>
 
     <string name="product_update_stock_status_title">Update Stock Status</string>
     <string name="product_update_stock_status_done">DONE</string>

@@ -54,6 +54,7 @@ repositories {
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
             includeGroup "com.automattic.tracks"
+            includeGroup "com.gravatar"
         }
     }
     maven {
@@ -273,6 +274,8 @@ dependencies {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
+
+    implementation("com.gravatar:gravatar:$gravatarVersion")
 
     implementation project(":libs:cardreader")
     debugImplementation project(":libs:iap")
