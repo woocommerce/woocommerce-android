@@ -5,6 +5,10 @@ import androidx.core.util.PatternsCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.gravatar.AvatarQueryOptions
+import com.gravatar.AvatarUrl
+import com.gravatar.DefaultAvatarOption
+import com.gravatar.types.Email
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -23,7 +27,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.util.GravatarUtils
 import javax.inject.Inject
 
 @HiltViewModel
@@ -124,7 +127,10 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
 
     private fun avatarUrlFromEmail(email: String): String {
         val avatarSize = resourceProvider.getDimensionPixelSize(R.dimen.image_minor_100)
-        return GravatarUtils.gravatarFromEmail(email, avatarSize, GravatarUtils.DefaultImage.STATUS_404)
+        return AvatarUrl(
+            Email(email),
+            AvatarQueryOptions(preferredSize = avatarSize, defaultAvatarOption = DefaultAvatarOption.Status404)
+        ).toString()
     }
 
     private fun String.isAnEmail() = PatternsCompat.EMAIL_ADDRESS.matcher(this).matches()

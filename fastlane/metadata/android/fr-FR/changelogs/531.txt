@@ -1,2 +1,0 @@
-18.0 :
-Un shopping plus fluide ! Correction de bugs dans la section Produits pour une sélection et un aperçu parfaits, surtout en mode deux volets. Photos encore plus étincelantes avec nos écrans améliorés. La transition entre les volets ? Revue et améliorée pour plus de fluidité. Introduction d’une boîte de dialogue de confirmation pour les modifications non enregistrées. Plongez dans les performances de votre boutique grâce aux dates personnalisées dans Ma boutique. Mettez à jour pour en profiter !

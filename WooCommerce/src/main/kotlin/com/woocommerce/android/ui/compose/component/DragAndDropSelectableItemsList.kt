@@ -137,7 +137,7 @@ fun <T> DragAndDropItem(
             ) {
                 SelectionCheck(
                     isSelected = isSelected,
-                    onSelectionChange = { onSelectionChange(item, !isSelected) },
+                    onSelectionChange = null,
                     isEnabled = isEnabled
                 )
                 Text(
@@ -156,7 +156,7 @@ fun <T> DragAndDropItem(
 @Composable
 fun SelectionCheck(
     isSelected: Boolean,
-    onSelectionChange: (Boolean) -> Unit,
+    onSelectionChange: ((Boolean) -> Unit)?,
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true
 ) {
@@ -168,10 +168,10 @@ fun SelectionCheck(
 
     val colorFilter = if (isEnabled) null else ColorFilter.tint(Color.Gray)
 
-    val description = stringResource(id = R.string.order_configuration_product_selection_control)
+    val description = stringResource(id = R.string.card_selection_control)
     val state = if (!isEnabled) stringResource(id = R.string.disabled) else ""
 
-    val controlModifier = if (isEnabled) {
+    val controlModifier = if (isEnabled && onSelectionChange != null) {
         modifier.clickable { onSelectionChange(!isSelected) }
     } else {
         modifier

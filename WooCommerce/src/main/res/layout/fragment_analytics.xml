@@ -56,7 +56,8 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/analyticsDateSelectorCard" />
+                app:layout_constraintTop_toBottomOf="@+id/analyticsDateSelectorCard"
+                android:layout_marginTop="@dimen/major_100"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
