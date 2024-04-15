@@ -8,6 +8,7 @@ import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.JetpackAICompletionsResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.ResponseFormat
 import org.wordpress.android.fluxc.store.jetpackai.JetpackAIStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -75,7 +76,7 @@ class AIRepository @Inject constructor(
             languageISOCode
         )
 
-        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE)
+        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE, ResponseFormat.JSON)
             .mapCatching { json ->
                 Gson().fromJson(json, AIProductDetailsResult::class.java)
             }
@@ -105,7 +106,8 @@ class AIRepository @Inject constructor(
                 existingTags = existingTags.map { it.name },
                 languageISOCode = languageISOCode
             ),
-            feature = PRODUCT_CREATION_FEATURE
+            feature = PRODUCT_CREATION_FEATURE,
+            format = ResponseFormat.JSON
         )
     }
 
@@ -131,9 +133,11 @@ class AIRepository @Inject constructor(
 
     private suspend fun fetchJetpackAICompletionsForSite(
         prompt: String,
-        feature: String
+        feature: String,
+        format: ResponseFormat? = null,
+        model: String? = "gpt-3.5-turbo-1106"
     ): Result<String> = withContext(Dispatchers.IO) {
-        jetpackAIStore.fetchJetpackAICompletions(selectedSite.get(), prompt, feature).run {
+        jetpackAIStore.fetchJetpackAICompletions(selectedSite.get(), prompt, feature, format, model).run {
             when (this) {
                 is JetpackAICompletionsResponse.Success -> {
                     WooLog.d(WooLog.T.AI, "Fetching Jetpack AI completions succeeded")

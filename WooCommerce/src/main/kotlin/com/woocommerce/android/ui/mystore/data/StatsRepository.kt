@@ -10,6 +10,7 @@ import com.woocommerce.android.network.giftcard.toWCModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.CompletableDeferred
@@ -52,6 +53,7 @@ class StatsRepository @Inject constructor(
     private val wcLeaderboardsStore: WCLeaderboardsStore,
     private val wooCommerceStore: WooCommerceStore,
     private val giftCardRestClient: GiftCardRestClient,
+    private val getWooVersion: GetWooCorePluginCachedVersion,
     private val dispatchers: CoroutineDispatchers
 ) {
     companion object {
@@ -368,8 +370,7 @@ class StatsRepository @Inject constructor(
     }
 
     private fun supportsProductOnlyLeaderboardAndReportEndpoint(): Boolean {
-        val currentWooCoreVersion =
-            wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version ?: "0.0"
+        val currentWooCoreVersion = getWooVersion() ?: return false
         return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEADERBOARD_REPORT_MIN_WC_VERSION) >= 0
     }
 

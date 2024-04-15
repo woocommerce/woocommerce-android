@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_AI_SUGGESTION_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_AD_SAVE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val blazeRepository: BlazeRepository
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val TAGLINE_MAX_LENGTH = 32
@@ -113,20 +115,45 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
     }
 
     fun onLocalImageSelected(uri: String) {
-        _viewState.update {
-            it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
+        launch {
+            if (blazeRepository.isValidAdImage(uri)) {
+                _viewState.update {
+                    it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
+                }
+            } else {
+                showInvalidIMageDialog()
+            }
         }
     }
 
     fun onWPMediaSelected(image: Product.Image) {
-        _viewState.update {
-            it.copy(
-                adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
-                    mediaId = image.id,
-                    uri = image.source
-                )
-            )
+        launch {
+            if (blazeRepository.isValidAdImage(image.source)) {
+                _viewState.update {
+                    it.copy(
+                        adImage = BlazeRepository.BlazeCampaignImage.RemoteImage(
+                            mediaId = image.id,
+                            uri = image.source
+                        )
+                    )
+                }
+            } else {
+                showInvalidIMageDialog()
+            }
         }
+    }
+
+    private fun showInvalidIMageDialog() {
+        triggerEvent(
+            Event.ShowDialog(
+                titleId = R.string.blaze_campaign_edit_ad_invalid_image_title,
+                messageId = R.string.blaze_campaign_edit_ad_invalid_image_description,
+                positiveButtonId = R.string.dialog_ok,
+                positiveBtnAction = { dialog, _ ->
+                    dialog.dismiss()
+                },
+            )
+        )
     }
 
     private fun updateSuggestion(suggestion: AiSuggestionForAd) {

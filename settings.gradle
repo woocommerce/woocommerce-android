@@ -62,6 +62,7 @@ gradle.ext.loginFlowBinaryPath = "org.wordpress:login"
 gradle.ext.mediaPickerBinaryPath = "org.wordpress:mediapicker"
 gradle.ext.mediaPickerDomainBinaryPath = "org.wordpress.mediapicker:domain"
 gradle.ext.mediaPickerSourceCameraBinaryPath = "org.wordpress.mediapicker:source-camera"
+gradle.ext.mediaPickerSourceDeviceBinaryPath = "org.wordpress.mediapicker:source-device"
 gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gif"
 gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:source-wordpress"
 
