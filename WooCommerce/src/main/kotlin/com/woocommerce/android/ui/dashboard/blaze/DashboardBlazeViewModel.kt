@@ -20,6 +20,7 @@ import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.ObserveMostRecentBlazeCampaign
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Campaign
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Hidden
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.NoCampaign
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -51,6 +53,11 @@ class DashboardBlazeViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
+    private val refreshTrigger = parentViewModel
+        .refreshTrigger
+        .onStart { emit(RefreshEvent()) }
+
+    @Suppress("OPT_IN_USAGE")
     private val blazeCampaignState: Flow<DashboardBlazeCampaignState> = flow {
         if (!isBlazeEnabled()) {
             emit(Hidden)
@@ -63,14 +70,18 @@ class DashboardBlazeViewModel @Inject constructor(
             )
 
             emitAll(
-                combine(
-                    observeMostRecentBlazeCampaign(),
-                    getProductsFlow()
-                ) { blazeCampaignModel, products ->
-                    when {
-                        products.isEmpty() -> Hidden
-                        blazeCampaignModel == null -> showUiForNoCampaign(products)
-                        else -> showUiForCampaign(blazeCampaignModel)
+                refreshTrigger.flatMapLatest { refreshEvent ->
+                    combine(
+                        observeMostRecentBlazeCampaign(),
+                        getProductsFlow(forceRefresh = refreshEvent.isForced)
+                    ) { blazeCampaignModel, products ->
+                        when {
+                            products.isEmpty() -> Hidden
+                            blazeCampaignModel == null -> showUiForNoCampaign(products)
+                            else -> showUiForCampaign(blazeCampaignModel)
+                        }
+                    }.onStart {
+                        emit(DashboardBlazeCampaignState.Loading)
                     }
                 }
             )
@@ -153,13 +164,16 @@ class DashboardBlazeViewModel @Inject constructor(
         )
     }
 
-    private fun getProductsFlow(): Flow<List<Product>> {
+    private fun getProductsFlow(forceRefresh: Boolean): Flow<List<Product>> {
         fun getCachedProducts() = productListRepository.getProductList(
             productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
             sortType = ProductSorting.DATE_DESC,
         ).filterNot { it.isSampleProduct }
         return flow {
-            emit(getCachedProducts())
+            if (!forceRefresh) {
+                emit(getCachedProducts())
+            }
+
             refreshProducts()
             emit(getCachedProducts())
         }
@@ -187,7 +201,8 @@ class DashboardBlazeViewModel @Inject constructor(
     }
 
     sealed interface DashboardBlazeCampaignState {
-        object Hidden : DashboardBlazeCampaignState
+        data object Hidden : DashboardBlazeCampaignState
+        data object Loading : DashboardBlazeCampaignState
         data class NoCampaign(
             val product: BlazeProductUi,
             val onProductClicked: () -> Unit,
