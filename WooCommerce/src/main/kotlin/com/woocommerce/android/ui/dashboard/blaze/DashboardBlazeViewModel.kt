@@ -28,6 +28,9 @@ import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -40,12 +43,11 @@ import kotlinx.coroutines.flow.onStart
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
-import javax.inject.Inject
 
-@HiltViewModel
-class DashboardBlazeViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = DashboardBlazeViewModel.Factory::class)
+class DashboardBlazeViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
-    parentViewModel: DashboardViewModel,
+    @Assisted parentViewModel: DashboardViewModel,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
@@ -225,6 +227,7 @@ class DashboardBlazeViewModel @Inject constructor(
         val urlToTriggerExit: String
     ) : MultiLiveEvent.Event()
 
+    @AssistedFactory
     interface Factory {
         fun create(parentViewModel: DashboardViewModel): DashboardBlazeViewModel
     }

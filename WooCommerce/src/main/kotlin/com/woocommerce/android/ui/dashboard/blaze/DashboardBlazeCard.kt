@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.dashboard.blaze
 
-import android.content.res.Configuration
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,9 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
@@ -34,25 +34,27 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.R.string
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.CampaignStatusUi.Active
+import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignItem
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -158,6 +160,10 @@ fun DashboardBlazeView(
                 ) {
                     BlazeCampaignHeader()
                     when (state) {
+                        is DashboardBlazeCampaignState.Loading -> BlazeCampaignLoading(
+                            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                        )
+
                         is DashboardBlazeCampaignState.Campaign -> BlazeCampaignItem(
                             campaign = state.campaign,
                             onCampaignClicked = state.onCampaignClicked,
@@ -184,6 +190,10 @@ fun DashboardBlazeView(
                     }
                 }
                 when (state) {
+                    is DashboardBlazeCampaignState.Loading -> CampaignFooterLoading(
+                        Modifier.padding(dimensionResource(id = R.dimen.major_100))
+                    )
+
                     is DashboardBlazeCampaignState.Campaign -> ShowAllOrCreateCampaignFooter(
                         onShowAllClicked = state.onViewAllCampaignsClicked,
                         onCreateCampaignClicked = state.onCreateCampaignClicked
@@ -301,12 +311,78 @@ fun BlazeProductItem(
     }
 }
 
-@ExperimentalFoundationApi
-@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(name = "small screen", device = Devices.PIXEL)
-@Preview(name = "mid screen", device = Devices.PIXEL_4)
-@Preview(name = "large screen", device = Devices.NEXUS_10)
+@Composable
+private fun BlazeCampaignLoading(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .border(
+                width = dimensionResource(id = R.dimen.minor_10),
+                color = colorResource(R.color.divider_color),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
+            )
+            .clip(shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
+            .padding(dimensionResource(id = R.dimen.major_100))
+    ) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                SkeletonView(
+                    width = dimensionResource(id = R.dimen.major_275),
+                    height = dimensionResource(id = R.dimen.major_275)
+                )
+
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+
+                SkeletonView(
+                    width = dimensionResource(id = R.dimen.skeleton_text_large_width),
+                    height = dimensionResource(id = R.dimen.skeleton_text_height_100),
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_275)))
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+                SkeletonView(
+                    width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
+                    height = dimensionResource(id = R.dimen.skeleton_text_height_100),
+                )
+                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+
+                SkeletonView(
+                    width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
+                    height = dimensionResource(id = R.dimen.skeleton_text_height_100),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CampaignFooterLoading(
+    modifier: Modifier = Modifier
+) {
+    Row(modifier) {
+        SkeletonView(
+            width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
+            height = dimensionResource(id = R.dimen.skeleton_text_button_height)
+        )
+
+        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
+
+        SkeletonView(
+            width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
+            height = dimensionResource(id = R.dimen.skeleton_text_button_height)
+        )
+    }
+}
+
+
+@LightDarkThemePreviews
 @Composable
 fun MyStoreBlazeViewCampaignPreview() {
     val product = BlazeProductUi(
@@ -317,18 +393,18 @@ fun MyStoreBlazeViewCampaignPreview() {
         state = DashboardBlazeCampaignState.Campaign(
             campaign = BlazeCampaignUi(
                 product = product,
-                status = Active,
+                status = CampaignStatusUi.Active,
                 stats = listOf(
                     BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_impressions,
+                        name = string.blaze_campaign_status_impressions,
                         value = 100.toString()
                     ),
                     BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_clicks,
+                        name = string.blaze_campaign_status_clicks,
                         value = 10.toString()
                     ),
                     BlazeCampaignStat(
-                        name = R.string.blaze_campaign_status_budget,
+                        name = string.blaze_campaign_status_budget,
                         value = 1000.toString()
                     ),
                 ),
@@ -341,12 +417,7 @@ fun MyStoreBlazeViewCampaignPreview() {
     )
 }
 
-@ExperimentalFoundationApi
-@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(name = "small screen", device = Devices.PIXEL)
-@Preview(name = "mid screen", device = Devices.PIXEL_4)
-@Preview(name = "large screen", device = Devices.NEXUS_10)
+@LightDarkThemePreviews
 @Composable
 fun MyStoreBlazeViewNoCampaignPreview() {
     DashboardBlazeView(
@@ -360,4 +431,15 @@ fun MyStoreBlazeViewNoCampaignPreview() {
         ),
         onDismissBlazeView = {}
     )
+}
+
+@LightDarkThemePreviews
+@Composable
+fun DashboardBlazeLoadingPreview() {
+    WooThemeWithBackground {
+        DashboardBlazeView(
+            state = DashboardBlazeCampaignState.Loading,
+            onDismissBlazeView = {}
+        )
+    }
 }
