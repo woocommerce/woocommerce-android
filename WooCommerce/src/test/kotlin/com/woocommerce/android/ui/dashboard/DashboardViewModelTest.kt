@@ -5,6 +5,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
@@ -44,6 +45,9 @@ class DashboardViewModelTest : BaseUnitTest() {
     }
     private val observeLastUpdate: ObserveLastUpdate = mock()
     private val dateUtils: DateUtils = mock()
+    private val dashboardRepository: DashboardRepository = mock {
+        onBlocking { widgets } doReturn flowOf(emptyList())
+    }
 
     private lateinit var viewModel: DashboardViewModel
 
@@ -71,6 +75,7 @@ class DashboardViewModelTest : BaseUnitTest() {
             getTopPerformers = getTopPerformers,
             selectedSite = selectedSite,
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
+            dashboardRepository = dashboardRepository
         )
     }
 
