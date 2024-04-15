@@ -53,7 +53,9 @@ import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.rememberNavController
+import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
+import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.launch
@@ -61,10 +63,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun DashboardBlazeCard(
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    parentViewModel: DashboardViewModel,
     // This is a temporary solution until we introduce a dynamic container where we will communicate the event
     // to the parent ViewModel directly
     updateContainerVisibility: (Boolean) -> Unit,
-    viewModel: DashboardBlazeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: DashboardBlazeViewModel = viewModelWithFactory { factory: DashboardBlazeViewModel.Factory ->
+        factory.create(parentViewModel)
+    }
 ) {
     viewModel.blazeViewState.observeAsState().value?.let { state ->
         LaunchedEffect(state) {

@@ -172,6 +172,7 @@ class DashboardFragment :
                 WooThemeWithBackground {
                     DashboardBlazeCard(
                         blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                        parentViewModel = dashboardViewModel,
                         updateContainerVisibility = { isVisible ->
                             binding.blazeCampaignView.isVisible = isVisible
                         }

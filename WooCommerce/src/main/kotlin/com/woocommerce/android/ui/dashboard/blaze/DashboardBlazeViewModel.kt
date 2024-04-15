@@ -19,6 +19,7 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.ObserveMostRecentBlazeCampaign
+import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Campaign
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Hidden
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.NoCampaign
@@ -42,6 +43,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardBlazeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    parentViewModel: DashboardViewModel,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
@@ -207,4 +209,8 @@ class DashboardBlazeViewModel @Inject constructor(
         val url: String,
         val urlToTriggerExit: String
     ) : MultiLiveEvent.Event()
+
+    interface Factory {
+        fun create(parentViewModel: DashboardViewModel): DashboardBlazeViewModel
+    }
 }
