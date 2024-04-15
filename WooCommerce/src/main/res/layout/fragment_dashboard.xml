@@ -48,23 +48,15 @@
                         android:transitionName="@string/store_onboarding_collapsed_transition_name"
                         android:visibility="gone" />
 
-                    <!-- Order stats -->
+                    <!-- Dynamic dashboard container -->
                     <androidx.compose.ui.platform.ComposeView
-                        android:id="@+id/my_store_stats"
+                        android:id="@+id/dashboard_container"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
+                        android:layout_height="wrap_content" />
 
                     <!-- Feedback Request Card -->
                     <com.woocommerce.android.ui.feedback.FeedbackRequestCard
                         android:id="@+id/store_feedback_request_card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/minor_100"
-                        android:visibility="gone" />
-
-                    <androidx.compose.ui.platform.ComposeView
-                        android:id="@+id/blaze_campaign_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/minor_100"
@@ -97,7 +89,7 @@
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <ScrollView
-        android:id="@+id/stats_error_scroll_view"
+        android:id="@+id/plugin_unavailable_error_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/empty_state_bg_color"

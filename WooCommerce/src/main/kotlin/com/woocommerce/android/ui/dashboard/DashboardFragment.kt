@@ -147,36 +147,17 @@ class DashboardFragment :
 
         _binding = FragmentDashboardBinding.bind(view)
 
-        binding.myStoreStats.apply {
+        binding.dashboardContainer.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                DashboardStatsCard(
+                DashboardContainer(
                     dateUtils = dateUtils,
                     currencyFormatter = currencyFormatter,
                     usageTracksEventEmitter = usageTracksEventEmitter,
-                    onPluginUnavailableError = { updateStatsAvailabilityError() },
-                    onStatsError = { showErrorSnack() },
-                    openDatePicker = { start, end, callback ->
-                        showDateRangePicker(start, end, callback)
-                    },
-                    parentViewModel = dashboardViewModel
+                    dashboardViewModel = dashboardViewModel,
+                    blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
                 )
-            }
-        }
-
-        binding.blazeCampaignView.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
-            setContent {
-                WooThemeWithBackground {
-                    DashboardBlazeCard(
-                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                        updateContainerVisibility = { isVisible ->
-                            binding.blazeCampaignView.isVisible = isVisible
-                        }
-                    )
-                }
             }
         }
 
@@ -454,9 +435,9 @@ class DashboardFragment :
         super.onDestroy()
     }
 
-    private fun updateStatsAvailabilityError() {
+    private fun showPluginUnavailableError() {
         binding.myStoreRefreshLayout.visibility = View.GONE
-        WooAnimUtils.fadeIn(binding.statsErrorScrollView)
+        WooAnimUtils.fadeIn(binding.pluginUnavailableErrorScrollView)
     }
 
     private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>) {
@@ -572,7 +553,7 @@ class DashboardFragment :
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
         }
-        binding.myStoreStats.visibility = dashboardVisibility
+        binding.dashboardContainer.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show
     }
