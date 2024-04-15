@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.dashboard.blaze
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.AppPrefsWrapper
+import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLA
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_VIEW_DISMISSED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
@@ -22,6 +23,7 @@ import com.woocommerce.android.ui.blaze.ObserveMostRecentBlazeCampaign
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Campaign
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Hidden
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.NoCampaign
+import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -29,11 +31,9 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
@@ -47,7 +47,7 @@ class DashboardBlazeViewModel @Inject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val prefsWrapper: AppPrefsWrapper
+    private val dashboardRepository: DashboardRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val blazeCampaignState: Flow<DashboardBlazeCampaignState> = flow {
         if (!isBlazeEnabled()) {
@@ -75,17 +75,7 @@ class DashboardBlazeViewModel @Inject constructor(
         }
     }
 
-    private val isBlazeDismissed = prefsWrapper.observePrefs()
-        .onStart { emit(Unit) }
-        .map { prefsWrapper.isMyStoreBlazeViewDismissed }
-        .distinctUntilChanged()
-
-    val blazeViewState = combine(
-        blazeCampaignState,
-        isBlazeDismissed
-    ) { blazeViewState, isBlazeDismissed ->
-        if (isBlazeDismissed) Hidden else blazeViewState
-    }.asLiveData()
+    val blazeViewState = blazeCampaignState.asLiveData()
 
     private fun showUiForNoCampaign(products: List<Product>): DashboardBlazeCampaignState {
         val product = products.first()
@@ -175,17 +165,19 @@ class DashboardBlazeViewModel @Inject constructor(
     }
 
     fun onBlazeViewDismissed() {
-        prefsWrapper.isMyStoreBlazeViewDismissed = true
-        analyticsTrackerWrapper.track(
-            stat = BLAZE_VIEW_DISMISSED,
-            properties = mapOf(
-                AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MY_STORE_SECTION.trackingName
+        viewModelScope.launch {
+            dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.BLAZE, isVisible = false)
+            analyticsTrackerWrapper.track(
+                stat = BLAZE_VIEW_DISMISSED,
+                properties = mapOf(
+                    AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MY_STORE_SECTION.trackingName
+                )
             )
-        )
+        }
     }
 
     sealed interface DashboardBlazeCampaignState {
-        object Hidden : DashboardBlazeCampaignState
+        data object Hidden : DashboardBlazeCampaignState
         data class NoCampaign(
             val product: BlazeProductUi,
             val onProductClicked: () -> Unit,
