@@ -42,12 +42,13 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
-import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
-import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -337,6 +338,12 @@ class DashboardFragment :
                         DashboardFragmentDirections.actionDashboardToEditWidgetsFragment()
                     )
                 }
+
+                is ShowStatsError -> showErrorSnack()
+
+                is OpenRangePicker -> showDateRangePicker(event.start, event.end, event.callback)
+
+                is ShowPluginUnavailableError -> showPluginUnavailableError()
 
                 else -> event.isHandled = false
             }
