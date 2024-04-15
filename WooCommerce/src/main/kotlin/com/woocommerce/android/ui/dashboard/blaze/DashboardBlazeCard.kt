@@ -381,7 +381,6 @@ private fun CampaignFooterLoading(
     }
 }
 
-
 @LightDarkThemePreviews
 @Composable
 fun MyStoreBlazeViewCampaignPreview() {

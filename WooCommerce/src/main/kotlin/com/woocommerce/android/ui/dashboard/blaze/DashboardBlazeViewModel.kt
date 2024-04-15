@@ -45,6 +45,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 
 @HiltViewModel(assistedFactory = DashboardBlazeViewModel.Factory::class)
+@Suppress("LongParameterList")
 class DashboardBlazeViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     @Assisted parentViewModel: DashboardViewModel,
