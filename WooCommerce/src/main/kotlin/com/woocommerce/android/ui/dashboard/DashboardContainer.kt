@@ -1,5 +1,10 @@
 package com.woocommerce.android.ui.dashboard
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,6 +44,7 @@ fun DashboardContainer(
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun WidgetList(
     dashboardViewModel: DashboardViewModel,
@@ -53,40 +59,54 @@ private fun WidgetList(
             .fillMaxSize()
     ) {
         widgets.forEach {
-            if (it.isVisible) {
-                when (it.type) {
-                    DashboardWidget.Type.STATS -> {
-                        DashboardStatsCard(
-                            dateUtils = dateUtils,
-                            currencyFormatter = currencyFormatter,
-                            usageTracksEventEmitter = usageTracksEventEmitter,
-                            onPluginUnavailableError = {
-                                dashboardViewModel.onDashboardWidgetEvent(ShowPluginUnavailableError)
-                            },
-                            onStatsError = {
-                                dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
-                            },
-                            openDatePicker = { start, end, callback ->
-                                dashboardViewModel.onDashboardWidgetEvent(OpenRangePicker(start, end, callback))
-                            },
-                            parentViewModel = dashboardViewModel
-                        )
+            AnimatedVisibility(it.isVisible) {
+                Column {
+                    WidgetCard(
+                        modifier = Modifier
+                            .animateEnterExit(enter = slideInVertically(), exit = slideOutVertically())
+                    ) {
+                        when (it.type) {
+                            DashboardWidget.Type.STATS -> {
+                                DashboardStatsCard(
+                                    dateUtils = dateUtils,
+                                    currencyFormatter = currencyFormatter,
+                                    usageTracksEventEmitter = usageTracksEventEmitter,
+                                    onPluginUnavailableError = {
+                                        dashboardViewModel.onDashboardWidgetEvent(ShowPluginUnavailableError)
+                                    },
+                                    onStatsError = {
+                                        dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
+                                    },
+                                    openDatePicker = { start, end, callback ->
+                                        dashboardViewModel.onDashboardWidgetEvent(OpenRangePicker(start, end, callback))
+                                    },
+                                    parentViewModel = dashboardViewModel
+                                )
+                            }
+
+                            DashboardWidget.Type.POPULAR_PRODUCTS -> {}
+                            DashboardWidget.Type.BLAZE -> DashboardBlazeCard(
+                                blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                            )
+
+                            DashboardWidget.Type.ONBOARDING -> {}
+                        }
                     }
 
-                    DashboardWidget.Type.POPULAR_PRODUCTS -> {}
-                    DashboardWidget.Type.BLAZE -> DashboardBlazeCard(
-                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
                     )
-
-                    DashboardWidget.Type.ONBOARDING -> {}
                 }
-
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                )
             }
         }
+    }
+}
+
+@Composable
+private fun WidgetCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Box(modifier = modifier) {
+        content()
     }
 }
