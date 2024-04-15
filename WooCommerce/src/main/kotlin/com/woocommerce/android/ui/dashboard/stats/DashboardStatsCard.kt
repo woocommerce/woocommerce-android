@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.dashboard.stats
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
@@ -114,6 +116,7 @@ fun DashboardStatsCard(
     }
 
     AndroidView(
+        modifier = Modifier.fillMaxWidth(),
         factory = {
             statsView.apply {
                 customRangeButton.setOnClickListener { onAddCustomRangeClick() }
