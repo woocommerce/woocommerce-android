@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.dashboard
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -89,8 +87,6 @@ private fun WidgetList(
 
                         POPULAR_PRODUCTS -> {}
                         BLAZE -> DashboardBlazeCard(
-                            modifier = Modifier
-                                .animateEnterExit(enter = slideInVertically(), exit = slideOutVertically()),
                             blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
                         )
 
