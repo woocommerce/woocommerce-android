@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -29,7 +30,6 @@ import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
-import com.woocommerce.android.ui.mystore.JetpackBenefitsBannerUiModel
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -345,5 +345,14 @@ class DashboardViewModel @Inject constructor(
     data class JetpackBenefitsBannerUiModel(
         val show: Boolean = false,
         val onDismiss: () -> Unit = {}
+    )
+
+    data class DashboardWidgetMenu(
+        val items: List<DashboardWidgetAction>
+    )
+
+    data class DashboardWidgetAction(
+        @StringRes val titleResource: Int,
+        val action: () -> Unit
     )
 }
