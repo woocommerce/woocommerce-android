@@ -17,9 +17,12 @@ import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
+import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.MY_STORE_SECTION
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.ObserveMostRecentBlazeCampaign
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Campaign
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Hidden
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.NoCampaign
@@ -51,7 +54,7 @@ class DashboardBlazeViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val blazeCampaignState: Flow<DashboardBlazeCampaignState> = flow {
         if (!isBlazeEnabled()) {
-            emit(Hidden)
+            emit(Hidden(menu = DashboardWidgetMenu(items = listOf(hideWidgetAction))))
         } else {
             analyticsTrackerWrapper.track(
                 stat = BLAZE_ENTRY_POINT_DISPLAYED,
@@ -66,7 +69,7 @@ class DashboardBlazeViewModel @Inject constructor(
                     getProductsFlow()
                 ) { blazeCampaignModel, products ->
                     when {
-                        products.isEmpty() -> Hidden
+                        products.isEmpty() -> Hidden(menu = DashboardWidgetMenu(items = listOf(hideWidgetAction)))
                         blazeCampaignModel == null -> showUiForNoCampaign(products)
                         else -> showUiForCampaign(blazeCampaignModel)
                     }
@@ -74,6 +77,11 @@ class DashboardBlazeViewModel @Inject constructor(
             )
         }
     }
+
+    private val hideWidgetAction = DashboardWidgetAction(
+        titleResource = string.dynamic_dashboard_hide_widget_menu_item,
+        action = { onBlazeViewDismissed() }
+    )
 
     val blazeViewState = blazeCampaignState.asLiveData()
 
@@ -87,9 +95,15 @@ class DashboardBlazeViewModel @Inject constructor(
             onProductClicked = {
                 launchCampaignCreation(product.remoteId)
             },
-            onCreateCampaignClicked = {
-                launchCampaignCreation(if (products.size == 1) product.remoteId else null)
-            }
+            menu = DashboardWidgetMenu(
+                items = listOf(hideWidgetAction)
+            ),
+            createCampaignButton = DashboardWidgetAction(
+                titleResource = string.blaze_campaign_create_campaign_button,
+                action = {
+                    launchCampaignCreation(if (products.size == 1) product.remoteId else null)
+                }
+            )
         )
     }
 
@@ -127,18 +141,34 @@ class DashboardBlazeViewModel @Inject constructor(
                 )
             },
             onViewAllCampaignsClicked = {
-                analyticsTrackerWrapper.track(
-                    stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
-                    properties = mapOf(
-                        AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MY_STORE_SECTION.trackingName
+                viewAllCampaigns()
+            },
+            menu = DashboardWidgetMenu(
+                items = listOf(
+                    hideWidgetAction,
+                    DashboardWidgetAction(
+                        titleResource = string.blaze_campaign_show_all_button,
+                        action = { triggerEvent(ShowAllCampaigns) }
                     )
                 )
-                triggerEvent(ShowAllCampaigns)
-            },
-            onCreateCampaignClicked = {
-                launchCampaignCreation(productId = null)
-            }
+            ),
+            createCampaignButton = DashboardWidgetAction(
+                titleResource = string.blaze_campaign_create_campaign_button,
+                action = {
+                    launchCampaignCreation(productId = null)
+                }
+            )
         )
+    }
+
+    private fun viewAllCampaigns() {
+        analyticsTrackerWrapper.track(
+            stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
+            properties = mapOf(
+                AnalyticsTracker.KEY_BLAZE_SOURCE to MY_STORE_SECTION.trackingName
+            )
+        )
+        triggerEvent(ShowAllCampaigns)
     }
 
     private fun getProductsFlow(): Flow<List<Product>> {
@@ -176,20 +206,25 @@ class DashboardBlazeViewModel @Inject constructor(
         }
     }
 
-    sealed interface DashboardBlazeCampaignState {
-        data object Hidden : DashboardBlazeCampaignState
+    sealed class DashboardBlazeCampaignState(
+        open val menu: DashboardWidgetMenu,
+        open val createCampaignButton: DashboardWidgetAction? = null
+    ) {
+        data class Hidden(override val menu: DashboardWidgetMenu) : DashboardBlazeCampaignState(menu)
         data class NoCampaign(
             val product: BlazeProductUi,
             val onProductClicked: () -> Unit,
-            val onCreateCampaignClicked: () -> Unit,
-        ) : DashboardBlazeCampaignState
+            override val menu: DashboardWidgetMenu,
+            override val createCampaignButton: DashboardWidgetAction
+        ) : DashboardBlazeCampaignState(menu, createCampaignButton)
 
         data class Campaign(
             val campaign: BlazeCampaignUi,
             val onCampaignClicked: () -> Unit,
             val onViewAllCampaignsClicked: () -> Unit,
-            val onCreateCampaignClicked: () -> Unit,
-        ) : DashboardBlazeCampaignState
+            override val menu: DashboardWidgetMenu,
+            override val createCampaignButton: DashboardWidgetAction
+        ) : DashboardBlazeCampaignState(menu, createCampaignButton)
     }
 
     data class LaunchBlazeCampaignCreation(val productId: Long?) : MultiLiveEvent.Event()
