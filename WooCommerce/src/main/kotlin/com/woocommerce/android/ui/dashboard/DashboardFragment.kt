@@ -152,13 +152,16 @@ class DashboardFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-                DashboardContainer(
-                    dateUtils = dateUtils,
-                    currencyFormatter = currencyFormatter,
-                    usageTracksEventEmitter = usageTracksEventEmitter,
-                    dashboardViewModel = dashboardViewModel,
-                    blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
-                )
+
+                WooThemeWithBackground {
+                    DashboardContainer(
+                        dateUtils = dateUtils,
+                        currencyFormatter = currencyFormatter,
+                        usageTracksEventEmitter = usageTracksEventEmitter,
+                        dashboardViewModel = dashboardViewModel,
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                    )
+                }
             }
         }
 

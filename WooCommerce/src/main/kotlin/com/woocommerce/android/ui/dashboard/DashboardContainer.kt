@@ -4,17 +4,23 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.dimensionResource
+import com.woocommerce.android.R
 import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.model.DashboardWidget.Type.BLAZE
+import com.woocommerce.android.model.DashboardWidget.Type.ONBOARDING
+import com.woocommerce.android.model.DashboardWidget.Type.POPULAR_PRODUCTS
+import com.woocommerce.android.model.DashboardWidget.Type.STATS
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
@@ -57,56 +63,47 @@ private fun WidgetList(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colors.surface)
     ) {
         widgets.forEach {
             AnimatedVisibility(it.isVisible) {
                 Column {
-                    WidgetCard(
-                        modifier = Modifier
-                            .animateEnterExit(enter = slideInVertically(), exit = slideOutVertically())
-                    ) {
-                        when (it.type) {
-                            DashboardWidget.Type.STATS -> {
-                                DashboardStatsCard(
-                                    dateUtils = dateUtils,
-                                    currencyFormatter = currencyFormatter,
-                                    usageTracksEventEmitter = usageTracksEventEmitter,
-                                    onPluginUnavailableError = {
-                                        dashboardViewModel.onDashboardWidgetEvent(ShowPluginUnavailableError)
-                                    },
-                                    onStatsError = {
-                                        dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
-                                    },
-                                    openDatePicker = { start, end, callback ->
-                                        dashboardViewModel.onDashboardWidgetEvent(OpenRangePicker(start, end, callback))
-                                    },
-                                    parentViewModel = dashboardViewModel
-                                )
-                            }
-
-                            DashboardWidget.Type.POPULAR_PRODUCTS -> {}
-                            DashboardWidget.Type.BLAZE -> DashboardBlazeCard(
-                                blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                    when (it.type) {
+                        STATS -> {
+                            DashboardStatsCard(
+                                dateUtils = dateUtils,
+                                currencyFormatter = currencyFormatter,
+                                usageTracksEventEmitter = usageTracksEventEmitter,
+                                onPluginUnavailableError = {
+                                    dashboardViewModel.onDashboardWidgetEvent(ShowPluginUnavailableError)
+                                },
+                                onStatsError = {
+                                    dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
+                                },
+                                openDatePicker = { start, end, callback ->
+                                    dashboardViewModel.onDashboardWidgetEvent(OpenRangePicker(start, end, callback))
+                                },
+                                parentViewModel = dashboardViewModel
                             )
-
-                            DashboardWidget.Type.ONBOARDING -> {}
                         }
-                    }
 
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                    )
+                        POPULAR_PRODUCTS -> {}
+                        BLAZE -> DashboardBlazeCard(
+                            modifier = Modifier
+                                .animateEnterExit(enter = slideInVertically(), exit = slideOutVertically()),
+                            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                        )
+
+                        ONBOARDING -> {}
+                    }
                 }
+
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.major_100))
+                )
             }
         }
-    }
-}
-
-@Composable
-private fun WidgetCard(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Box(modifier = modifier) {
-        content()
     }
 }
