@@ -48,7 +48,16 @@ android {
 }
 
 dependencies {
+    // Wearable
     implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
+    implementation 'androidx.wear.tiles:tiles'
+    implementation 'androidx.wear.tiles:tiles-material'
+
+    implementation 'com.google.android.horologist:horologist-compose-tools:0.4.8'
+    implementation 'com.google.android.horologist:horologist-tiles:0.4.8'
+    implementation 'androidx.wear.watchface:watchface-complications-data-source-ktx'
+
+    // Compose
     implementation platform("androidx.compose:compose-bom:$composeBOMVersion")
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-tooling-preview'
@@ -56,11 +65,13 @@ dependencies {
     implementation 'androidx.wear.compose:compose-foundation'
     implementation 'androidx.activity:activity-compose'
     implementation 'androidx.core:core-splashscreen:1.0.1'
-    implementation 'androidx.wear.tiles:tiles'
-    implementation 'androidx.wear.tiles:tiles-material'
-    implementation 'com.google.android.horologist:horologist-compose-tools:0.4.8'
-    implementation 'com.google.android.horologist:horologist-tiles:0.4.8'
-    implementation 'androidx.wear.watchface:watchface-complications-data-source-ktx'
+    implementation 'androidx.compose.material:material'
+    implementation 'androidx.compose.animation:animation'
+    implementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.compose.runtime:runtime-livedata'
+    implementation "androidx.compose.material:material-icons-extended"
+    implementation 'androidx.compose.ui:ui-text-google-fonts'
+
     androidTestImplementation platform("androidx.compose:compose-bom:$composeBOMVersion")
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-tooling'
