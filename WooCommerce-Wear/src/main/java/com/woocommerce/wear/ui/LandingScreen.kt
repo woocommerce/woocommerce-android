@@ -15,11 +15,11 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import com.woocommerce.wear.R
-import com.woocommerce.wear.presentation.theme.WCAndroidTheme
+import com.woocommerce.wear.presentation.theme.WooTheme
 
 @Composable
 fun LandingScreen() {
-    WCAndroidTheme {
+    WooTheme {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -27,7 +27,7 @@ fun LandingScreen() {
             contentAlignment = Alignment.Center
         ) {
             TimeText()
-            Greeting(greetingName = greetingName)
+            Greeting(greetingName = "Woo")
         }
     }
 }
@@ -45,5 +45,5 @@ fun Greeting(greetingName: String) {
 @Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    LandingScreen("Preview Android")
+    LandingScreen()
 }
