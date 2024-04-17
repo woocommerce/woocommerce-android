@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics
 
 import com.woocommerce.android.model.BundleStat
+import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -9,12 +10,14 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.BundlesResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.ForceNew
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.FetchStrategy.Saved
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.GiftCardResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.VisitorsResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.hub.sync.BundlesState
+import com.woocommerce.android.ui.analytics.hub.sync.GiftCardsState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -247,27 +250,28 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when syncing bundles stats data successfully, then update the bundles with the expected states`() = testBlocking {
-        // Given
-        configureSuccessResponseStub()
-        val bundleStatsUpdates = mutableListOf<BundlesState>()
-        val job = sut.bundlesState
-            .onEach { bundleStatsUpdates.add(it) }
-            .launchIn(this)
+    fun `when syncing bundles stats data successfully, then update the bundles with the expected states`() =
+        testBlocking {
+            // Given
+            configureSuccessResponseStub()
+            val bundleStatsUpdates = mutableListOf<BundlesState>()
+            val job = sut.bundlesState
+                .onEach { bundleStatsUpdates.add(it) }
+                .launchIn(this)
 
-        // When
-        sut(testRangeSelection, this)
+            // When
+            sut(testRangeSelection, this)
 
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        // Then
-        assertThat(bundleStatsUpdates).hasSize(3)
-        assertThat(bundleStatsUpdates[0]).isEqualTo(BundlesState.Available(BundleStat.EMPTY))
-        assertThat(bundleStatsUpdates[1]).isEqualTo(BundlesState.Loading)
-        assertThat(bundleStatsUpdates[2]).isEqualTo(BundlesState.Available(testBundleStat))
+            // Then
+            assertThat(bundleStatsUpdates).hasSize(3)
+            assertThat(bundleStatsUpdates[0]).isEqualTo(BundlesState.Available(BundleStat.EMPTY))
+            assertThat(bundleStatsUpdates[1]).isEqualTo(BundlesState.Loading)
+            assertThat(bundleStatsUpdates[2]).isEqualTo(BundlesState.Available(testBundleStat))
 
-        job.cancel()
-    }
+            job.cancel()
+        }
 
     @Test
     fun `when syncing bundles stats data fails, then update the bundles with the expected states`() = testBlocking {
@@ -288,6 +292,53 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         assertThat(bundleStatsUpdates[0]).isEqualTo(BundlesState.Available(BundleStat.EMPTY))
         assertThat(bundleStatsUpdates[1]).isEqualTo(BundlesState.Loading)
         assertThat(bundleStatsUpdates[2]).isEqualTo(BundlesState.Error)
+
+        job.cancel()
+    }
+
+    @Test
+    fun `when syncing gift card stats data successfully, then update the bundles with the expected states`() =
+        testBlocking {
+            // Given
+            configureSuccessResponseStub()
+            val giftCardStatsUpdates = mutableListOf<GiftCardsState>()
+            val job = sut.giftCardsState
+                .onEach { giftCardStatsUpdates.add(it) }
+                .launchIn(this)
+
+            // When
+            sut(testRangeSelection, this)
+
+            advanceUntilIdle()
+
+            // Then
+            assertThat(giftCardStatsUpdates).hasSize(3)
+            assertThat(giftCardStatsUpdates[0]).isEqualTo(GiftCardsState.Available(GiftCardsStat.EMPTY))
+            assertThat(giftCardStatsUpdates[1]).isEqualTo(GiftCardsState.Loading)
+            assertThat(giftCardStatsUpdates[2]).isEqualTo(GiftCardsState.Available(testGiftCardStat))
+
+            job.cancel()
+        }
+
+    @Test
+    fun `when syncing gift cards stats data fails, then update the bundles with the expected states`() = testBlocking {
+        // Given
+        configureErrorResponseStub()
+        val giftCardStatsUpdates = mutableListOf<GiftCardsState>()
+        val job = sut.giftCardsState
+            .onEach { giftCardStatsUpdates.add(it) }
+            .launchIn(this)
+
+        // When
+        sut(testRangeSelection, this)
+
+        advanceUntilIdle()
+
+        // Then
+        assertThat(giftCardStatsUpdates).hasSize(3)
+        assertThat(giftCardStatsUpdates[0]).isEqualTo(GiftCardsState.Available(GiftCardsStat.EMPTY))
+        assertThat(giftCardStatsUpdates[1]).isEqualTo(GiftCardsState.Loading)
+        assertThat(giftCardStatsUpdates[2]).isEqualTo(GiftCardsState.Error)
 
         job.cancel()
     }
@@ -326,48 +377,50 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when selection type is CUSTOM, then follow the data store and request data with Stored strategy`() = testBlocking {
-        // Given
-        analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testCustomRangeSelection) } doReturn flowOf(false)
+    fun `when selection type is CUSTOM, then follow the data store and request data with Stored strategy`() =
+        testBlocking {
+            // Given
+            analyticsDataStore = mock {
+                onBlocking { shouldUpdateAnalytics(testCustomRangeSelection) } doReturn flowOf(false)
+            }
+            sut = UpdateAnalyticsHubStats(
+                analyticsUpdateDataStore = analyticsDataStore,
+                analyticsRepository = repository
+            )
+
+            // When
+            sut(testCustomRangeSelection, this)
+
+            // Then
+            verify(repository).fetchRevenueData(testCustomRangeSelection, Saved)
+            verify(repository).fetchOrdersData(testCustomRangeSelection, Saved)
+            verify(repository).fetchVisitorsData(testCustomRangeSelection, Saved)
+            verify(repository).fetchProductsData(testCustomRangeSelection, Saved)
         }
-        sut = UpdateAnalyticsHubStats(
-            analyticsUpdateDataStore = analyticsDataStore,
-            analyticsRepository = repository
-        )
-
-        // When
-        sut(testCustomRangeSelection, this)
-
-        // Then
-        verify(repository).fetchRevenueData(testCustomRangeSelection, Saved)
-        verify(repository).fetchOrdersData(testCustomRangeSelection, Saved)
-        verify(repository).fetchVisitorsData(testCustomRangeSelection, Saved)
-        verify(repository).fetchProductsData(testCustomRangeSelection, Saved)
-    }
 
     @Test
-    fun `when syncing stats data starts with forceUpdate true, then trigger update with ForceNew Strategy`() = testBlocking {
-        // Given
-        analyticsDataStore = mock {
-            onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+    fun `when syncing stats data starts with forceUpdate true, then trigger update with ForceNew Strategy`() =
+        testBlocking {
+            // Given
+            analyticsDataStore = mock {
+                onBlocking { shouldUpdateAnalytics(testRangeSelection) } doReturn flowOf(false)
+            }
+            sut = UpdateAnalyticsHubStats(
+                analyticsUpdateDataStore = analyticsDataStore,
+                analyticsRepository = repository
+            )
+
+            // When
+            sut(testRangeSelection, this, true)
+
+            // Then
+            verify(repository).fetchRevenueData(testRangeSelection, ForceNew)
+            verify(repository).fetchOrdersData(testRangeSelection, ForceNew)
+            verify(repository).fetchVisitorsData(testRangeSelection, ForceNew)
+            verify(repository).fetchProductsData(testRangeSelection, ForceNew)
+
+            verify(analyticsDataStore, never()).shouldUpdateAnalytics(testRangeSelection)
         }
-        sut = UpdateAnalyticsHubStats(
-            analyticsUpdateDataStore = analyticsDataStore,
-            analyticsRepository = repository
-        )
-
-        // When
-        sut(testRangeSelection, this, true)
-
-        // Then
-        verify(repository).fetchRevenueData(testRangeSelection, ForceNew)
-        verify(repository).fetchOrdersData(testRangeSelection, ForceNew)
-        verify(repository).fetchVisitorsData(testRangeSelection, ForceNew)
-        verify(repository).fetchProductsData(testRangeSelection, ForceNew)
-
-        verify(analyticsDataStore, never()).shouldUpdateAnalytics(testRangeSelection)
-    }
 
     @Test
     fun `when syncing stats data starts with forceUpdate false, then follow data store response`() = testBlocking {
@@ -465,6 +518,9 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             onBlocking {
                 repository.fetchProductBundlesStats(testRangeSelection)
             } doReturn testBundlesResult
+            onBlocking {
+                repository.fetchGiftCardsStats(testRangeSelection)
+            } doReturn testGiftCardResult
         }
     }
 
@@ -488,6 +544,9 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
             onBlocking {
                 repository.fetchProductBundlesStats(testRangeSelection)
             } doReturn BundlesResult.BundlesError
+            onBlocking {
+                repository.fetchGiftCardsStats(testRangeSelection)
+            } doReturn GiftCardResult.GiftCardError
         }
     }
 }

@@ -11,6 +11,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
@@ -26,10 +28,10 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
     val viewModel: ApplicationPasswordTutorialViewModel by viewModels()
 
     private val url: String by lazy { requireArguments().getString(URL_KEY, "") }
-    private val errorMessageRes: Int? by lazy {
+    private val errorMessage: String? by lazy {
         requireArguments()
-            .getInt(ERROR_MESSAGE_KEY, 0)
-            .takeIf { it != 0 }
+            .getString(ERROR_MESSAGE_KEY, "")
+            .takeIf { it.isNotEmpty() }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,7 +60,7 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
         super.onAttach(context)
         viewModel.onWebViewDataAvailable(
             authorizationUrl = url,
-            errorMessage = errorMessageRes
+            errorMessage = errorMessage
         )
     }
 
@@ -68,11 +70,15 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
             messageId = R.string.login_app_password_exit_dialog_message,
             positiveButtonId = R.string.login_app_password_exit_dialog_confirmation,
             negativeButtonId = R.string.login_app_password_exit_dialog_cancel,
-            posBtnAction = { _, _ -> exitWithResult() }
+            posBtnAction = { _, _ -> viewModel.onExitConfirmed() }
         )
     }
 
-    private fun exitWithResult(url: String? = null) {
+    private fun exitWithResult(url: String = "") {
+        if (url.isEmpty()) {
+            AnalyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_APP_PASSWORD_EXPLANATION_DISMISSED)
+        }
+
         setFragmentResult(
             requestKey = WEB_NAVIGATION_RESULT,
             result = bundleOf(URL_KEY to url)
@@ -93,11 +99,11 @@ class ApplicationPasswordTutorialFragment : BaseFragment() {
         const val URL_KEY = "url"
         const val ERROR_MESSAGE_KEY = "error_message"
         const val WEB_NAVIGATION_RESULT = "web_navigation_result"
-        fun newInstance(url: String, errorMessageRes: Int) =
+        fun newInstance(url: String, errorMessage: String) =
             ApplicationPasswordTutorialFragment().apply {
                 arguments = bundleOf(
                     URL_KEY to url,
-                    ERROR_MESSAGE_KEY to errorMessageRes
+                    ERROR_MESSAGE_KEY to errorMessage
                 )
             }
     }

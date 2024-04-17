@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-03 09:54:03+0000
+Translation-Revision-Date: 2024-04-09 09:54:17+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="login_app_password_support_button">サポートに連絡</string>
+    <string name="login_app_password_continue_button">続行</string>
+    <string name="login_app_password_instructions_footer">問題が発生した場合は、サポートチームまでお問い合わせください。</string>
+    <string name="login_app_password_instructions_step_3">3. 接続完了後にストアにログインします。</string>
+    <string name="login_app_password_instructions_step_2">2. プロンプトが表示されたら確認ボタンをタップして接続を承認します。</string>
+    <string name="login_app_password_instructions_step_1">1. まず、サイトのログイン情報を使ってログインします。</string>
+    <string name="login_app_password_instructions_title">これらのステップに沿い、アプリケーションパスワードを使用して Woo アプリを直接ストアに接続します。</string>
+    <string name="login_app_password_subtitle">ストアに追加のセキュリティ措置が講じられていることが原因の可能性があります。</string>
+    <string name="login_app_password_title">ストアにログインできませんでした</string>
+    <string name="empty_order_detail_message">注文が完了すると、ここに注文の詳細が表示されます。</string>
+    <string name="empty_order_detail_title">注文の詳細はまだありません</string>
+    <string name="order_creation_simple_payment_migration_button">カスタム金額を追加</string>
+    <string name="order_creation_simple_payment_migration_message_two">支払額を設定するには\n新規注文にカスタム金額を追加してください。</string>
+    <string name="order_creation_simple_payment_migration_message_one">支払いの受け取りと\n注文の作成を統合したことでアクセスしやすくなり、\nさらに高機能になりました。</string>
+    <string name="order_creation_simple_payment_migration_title">支払いを受け取る \nは移動しました</string>
+    <string name="analytics_bundles_card_title">パッケージ</string>
+    <string name="analytics_bundles_list_header_subtitle">販売済みパッケージ</string>
+    <string name="analytics_bundles_list_header_title">パッケージ</string>
+    <string name="analytics_bundles_list_items_sold">販売済みパッケージ</string>
+    <string name="my_store_widget_blaze_title">Blaze キャンペーン</string>
+    <string name="my_store_widget_top_products_title">上位の商品</string>
+    <string name="my_store_widget_stats_title">統計情報</string>
+    <string name="my_store_widget_onboarding_title">オンボーディング</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">ストアのオンボーディング</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze キャンペーン</string>
+    <string name="my_store_edit_screen_widget_top_performers">上位パフォーマンスの商品</string>
+    <string name="my_store_edit_screen_widget_stats">ストアの統計情報</string>
+    <string name="my_store_edit_screen_widgets">自分のストアのセクションを編集</string>
     <string name="product_list_unsaved_product_unselected_message">この商品に加えた変更を破棄してもよいですか ?</string>
     <string name="product_list_unsaved_product_unselected_title">%s への変更を破棄しようとしています</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">統計機能は、任意の日付範囲の訪問者データおよびコンバージョンデータの表示をサポートしていません。\n\nただし、グラフ上で値をタップすると、その特定の範囲の訪問者とコンバージョンを表示できます。</string>
@@ -748,7 +776,7 @@ Language: ja_JP
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">直接バリエーション商品を追加できません。 特定のバリエーションを選択してください</string>
     <string name="order_creation_barcode_scanning_scanning_failed">スキャンに失敗しました。 後でもう一度お試しください。</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">SKU「%s」の商品が見つかりません。 注文に追加できません</string>
-    <string name="settings_web_options_description">woo.com ユーザー向けのその他のプライバシーオプションを利用できます。 こちらをクリックして詳細をご確認ください。</string>
+    <string name="settings_web_options_description">woocommerce.com ユーザー向けのその他のプライバシーオプションを利用できます。 こちらをクリックして詳細をご確認ください。</string>
     <string name="order_list_barcode_scanning_scanning_failed">スキャンに失敗しました。 後でもう一度お試しください</string>
     <string name="scan_barcode">バーコードのスキャン</string>
     <string name="shipping_notice_banner_instructions_content">欧州連合 (EU) の関税法規則に従う国への発送は、すべての品目について明確な説明が求められるようになりました。 たとえば衣類を送る場合、どのようなタイプの衣類であるか (例: 男性用シャツ、女児用ベスト、男児用上着など) を明記しなければ認められません。 これを怠ると、配送が税関で遅延または中断されることがあります。</string>

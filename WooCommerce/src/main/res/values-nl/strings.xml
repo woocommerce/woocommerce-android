@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 15:54:04+0000
+Translation-Revision-Date: 2024-04-09 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="login_app_password_support_button">Neem contact op met de ondersteuning</string>
+    <string name="login_app_password_continue_button">Doorgaan</string>
+    <string name="login_app_password_instructions_footer">Als je problemen opmerkt, neem dan contact op met ons ondersteuningsteam.</string>
+    <string name="login_app_password_instructions_step_3">3. Wanneer de verbinding voltooid is, word je ingelogd bij je winkel.</string>
+    <string name="login_app_password_instructions_step_2">2. Wanneer dit wordt gevraagd, keur je de koppeling goed door op de bevestigingsknop te tikken.</string>
+    <string name="login_app_password_instructions_step_1">1. Log eerst in met de inloggegevens van je site.</string>
+    <string name="login_app_password_instructions_title">Volg deze stappen om de Woo-app direct aan je winkel te koppelen met een applicatiewachtwoord.</string>
+    <string name="login_app_password_subtitle">Misschien komt dit doordat er extra beveiligingsmaatregelen actief zijn in je winkel.</string>
+    <string name="login_app_password_title">We konden niet inloggen bij je winkel</string>
+    <string name="empty_order_detail_message">Je bestelgegevens worden hier weergegeven wanneer je een bestelling hebt aangemaakt.</string>
+    <string name="empty_order_detail_title">Nog geen bestelgegevens</string>
+    <string name="order_creation_simple_payment_migration_button">Aangepast bedrag toevoegen</string>
+    <string name="order_creation_simple_payment_migration_message_two">Om een betaalbedrag in te stellen, voeg je\neen aangepast bedrag toe aan je nieuwe bestelling.</string>
+    <string name="order_creation_simple_payment_migration_message_one">We hebben betalingen ontvangen gecombineerd met\nbestellingen aanmaken, wat het toegankelijker\nen krachtiger maakt.</string>
+    <string name="order_creation_simple_payment_migration_title">Betaling innen \nis verplaatst</string>
+    <string name="analytics_bundles_card_title">Bundels</string>
+    <string name="analytics_bundles_list_header_subtitle">Verkochte bundels</string>
+    <string name="analytics_bundles_list_header_title">Bundels</string>
+    <string name="analytics_bundles_list_items_sold">Verkochte bundels</string>
+    <string name="my_store_widget_blaze_title">Blaze-campagnes</string>
+    <string name="my_store_widget_top_products_title">Topproducten</string>
+    <string name="my_store_widget_stats_title">Statistieken</string>
+    <string name="my_store_widget_onboarding_title">Onboarding</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Winkel-onboarding</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze-campagnes</string>
+    <string name="my_store_edit_screen_widget_top_performers">Best presterende producten</string>
+    <string name="my_store_edit_screen_widget_stats">Winkelstatistieken</string>
+    <string name="my_store_edit_screen_widgets">Delen van mijn winkel bewerken</string>
     <string name="product_list_unsaved_product_unselected_message">Weet je zeker dat je de wijzigingen die je aan dit product hebt aangebracht, wil annuleren?</string>
     <string name="product_list_unsaved_product_unselected_title">Je staat op het punt wijzigingen te annuleren aan %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">De functie statistieken ondersteunt de weergave van bezoekers- en conversiegegevens niet voor willekeurige datumbereiken.\n\nJe kan wel op een waarde in de grafiek tikken om de bezoekers en conversies van dat specifieke bereik te bekijken.</string>
@@ -736,7 +764,7 @@ Language: nl
     <string name="settings_privacy_header">Privacy</string>
     <string name="settings_usage_tracking_description">Lees meer over de gegevens die we verzamelen over je winkel en jouw opties voor het beheren van deze gegevensuitwisseling.</string>
     <string name="settings_usage_tracking">Gebruiksgegevens bijhouden</string>
-    <string name="settings_web_options_description">Meer privacyopties beschikbaar voor gebruikers van woo.com. Kijk hier voor meer informatie.</string>
+    <string name="settings_web_options_description">Meer privacyopties beschikbaar voor gebruikers van woocommerce.com. Kijk hier voor meer informatie.</string>
     <string name="settings_web_options">Webopties</string>
     <string name="settings_more_privacy_options_header">Meer privacyopties</string>
     <string name="settings_tracking_analytics_error_update">Er is een fout opgetreden bij het bijwerken van je privacy-instellingen</string>

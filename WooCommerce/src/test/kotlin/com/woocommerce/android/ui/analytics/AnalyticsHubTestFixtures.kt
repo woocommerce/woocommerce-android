@@ -3,12 +3,15 @@ package com.woocommerce.android.ui.analytics
 import com.woocommerce.android.model.BundleItem
 import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
+import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
 import com.woocommerce.android.model.SessionStat
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.BundlesResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.BundlesResult.BundlesData
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.GiftCardResult
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.GiftCardResult.GiftCardData
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersResult.OrdersData
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult
@@ -91,8 +94,19 @@ val testBundleStat = BundleStat(
     )
 )
 
+val testGiftCardStat = GiftCardsStat(
+    usedValue = 200,
+    usedDelta = DeltaPercentage.Value(34),
+    netValue = 567.90,
+    netDelta = DeltaPercentage.Value(45),
+    currencyCode = "",
+    usedByInterval = emptyList(),
+    netRevenueByInterval = emptyList()
+)
+
 val testRevenueResult = RevenueData(testRevenueStat) as RevenueResult
 val testOrdersResult = OrdersData(testOrdersStat) as OrdersResult
 val testProductsResult = ProductsData(testProductsStat) as ProductsResult
 val testVisitorsResult = VisitorsData(testVisitorsCount) as VisitorsResult
 val testBundlesResult = BundlesData(testBundleStat) as BundlesResult
+val testGiftCardResult = GiftCardData(testGiftCardStat) as GiftCardResult

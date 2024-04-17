@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-03 16:54:03+0000
+Translation-Revision-Date: 2024-04-09 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="login_app_password_support_button">Contatta il supporto</string>
+    <string name="login_app_password_continue_button">Continua</string>
+    <string name="login_app_password_instructions_footer">In caso di problemi, contatta il nostro team di supporto.</string>
+    <string name="login_app_password_instructions_step_3">3. Una volta completata la connessione, potrai accedere al negozio.</string>
+    <string name="login_app_password_instructions_step_2">2. Quando richiesto, approva la connessione toccando il pulsante di conferma.</string>
+    <string name="login_app_password_instructions_step_1">1. Per prima cosa, accedi utilizzando le tue credenziali del sito.</string>
+    <string name="login_app_password_instructions_title">Segui questi passaggi per collegare l\'app Woo direttamente al tuo negozio utilizzando una password dell\'applicazione.</string>
+    <string name="login_app_password_subtitle">Questo potrebbe essere dovuto al fatto che il tuo negozio ha adottato misure di sicurezza aggiuntive.</string>
+    <string name="login_app_password_title">Impossibile accedere al negozio</string>
+    <string name="empty_order_detail_message">Una volta effettuato un ordine, i dettagli saranno mostrati qui.</string>
+    <string name="empty_order_detail_title">Nessun dettaglio dell\'ordine per ora</string>
+    <string name="order_creation_simple_payment_migration_button">Aggiungi un importo personalizzato</string>
+    <string name="order_creation_simple_payment_migration_message_two">Per impostare l\'importo di un pagamento, aggiungi\nun importo personalizzato al tuo nuovo ordine.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Abbiamo combinato la riscossione dei pagamenti con\nla creazione degli ordini, rendendola più accessibile\ne più potente.</string>
+    <string name="order_creation_simple_payment_migration_title">Ricevi pagamenti \nsi è spostato</string>
+    <string name="analytics_bundles_card_title">Pacchetti</string>
+    <string name="analytics_bundles_list_header_subtitle">Pacchetti venduti</string>
+    <string name="analytics_bundles_list_header_title">Pacchetti</string>
+    <string name="analytics_bundles_list_items_sold">Pacchetti venduti</string>
+    <string name="my_store_widget_blaze_title">Campagne Blaze</string>
+    <string name="my_store_widget_top_products_title">Migliori prodotti</string>
+    <string name="my_store_widget_stats_title">Statistiche</string>
+    <string name="my_store_widget_onboarding_title">Avviamento</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Avviamento del negozio</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Campagne Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">Prodotti migliori</string>
+    <string name="my_store_edit_screen_widget_stats">Statistiche del negozio</string>
+    <string name="my_store_edit_screen_widgets">Modifica sezioni del mio negozio</string>
     <string name="product_list_unsaved_product_unselected_message">Vuoi davvero eliminare le modifiche apportate a questo prodotto?</string>
     <string name="product_list_unsaved_product_unselected_title">Stai per annullare le modifiche a %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">La funzione statistiche non supporta la visualizzazione dei dati sui visitatori e sulle conversioni per intervalli di date arbitrari.\n\nTuttavia, puoi toccare un valore sul grafico per visualizzare i visitatori e le conversioni per quell\'intervallo specifico.</string>
@@ -736,7 +764,7 @@ Language: it
     <string name="settings_privacy_header">Privacy</string>
     <string name="settings_usage_tracking_description">Scopri di più sui dati che raccogliamo sul tuo negozio e sulle tue opzioni per il controllo di questa condivisione dei dati.</string>
     <string name="settings_usage_tracking">Tracciabilità dell\'utilizzo</string>
-    <string name="settings_web_options_description">Per gli utenti di woo.com sono disponibili ulteriori opzioni per la privacy. Controlla qui per saperne di più.</string>
+    <string name="settings_web_options_description">Per gli utenti di woocommerce.com sono disponibili ulteriori opzioni per la privacy. Controlla qui per saperne di più.</string>
     <string name="settings_web_options">Opinioni del web</string>
     <string name="settings_more_privacy_options_header">Ulteriori opzioni per la privacy</string>
     <string name="settings_tracking_analytics_error_update">Si è verificato un errore durante l\'aggiornamento delle impostazioni sulla privacy</string>

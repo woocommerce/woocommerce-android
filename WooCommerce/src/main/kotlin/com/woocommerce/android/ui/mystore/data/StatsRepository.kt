@@ -5,9 +5,12 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.extensions.semverCompareTo
+import com.woocommerce.android.network.giftcard.GiftCardRestClient
+import com.woocommerce.android.network.giftcard.toWCModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.CompletableDeferred
@@ -21,8 +24,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundleStats
+import org.wordpress.android.fluxc.model.WCGiftCardStats
 import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
@@ -45,6 +52,8 @@ class StatsRepository @Inject constructor(
     private val wcOrderStore: WCOrderStore,
     private val wcLeaderboardsStore: WCLeaderboardsStore,
     private val wooCommerceStore: WooCommerceStore,
+    private val giftCardRestClient: GiftCardRestClient,
+    private val getWooVersion: GetWooCorePluginCachedVersion,
     private val dispatchers: CoroutineDispatchers
 ) {
     companion object {
@@ -361,8 +370,7 @@ class StatsRepository @Inject constructor(
     }
 
     private fun supportsProductOnlyLeaderboardAndReportEndpoint(): Boolean {
-        val currentWooCoreVersion =
-            wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version ?: "0.0"
+        val currentWooCoreVersion = getWooVersion() ?: return false
         return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEADERBOARD_REPORT_MIN_WC_VERSION) >= 0
     }
 
@@ -382,6 +390,33 @@ class StatsRepository @Inject constructor(
     ): WooResult<List<WCProductBundleItemReport>> {
         val site = selectedSite.get()
         return wcStatsStore.fetchProductBundlesReport(site, startDate, endDate, quantity)
+    }
+    suspend fun fetchGiftCardStats(
+        startDate: String,
+        endDate: String,
+        interval: String = ""
+    ): WooResult<WCGiftCardStats> {
+        val site = selectedSite.get()
+        return withContext(dispatchers.io) {
+            val response = giftCardRestClient.fetchGiftCardStats(
+                site = site,
+                startDate = startDate,
+                endDate = endDate,
+                interval = interval
+            )
+            when {
+                response.isError -> {
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    val giftCards = response.result!!.toWCModel()
+                    WooResult(giftCards)
+                }
+
+                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN))
+            }
+        }
     }
 }
 

@@ -24,7 +24,7 @@ import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.common.MarginTopItemDecoration
+import com.woocommerce.android.ui.common.MarginBottomItemDecoration
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -136,7 +136,7 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
             layoutManager = LinearLayoutManager(context)
             adapter = cardsAdapter
             isNestedScrollingEnabled = false
-            addItemDecoration(MarginTopItemDecoration(R.dimen.major_100, requireContext()))
+            addItemDecoration(MarginBottomItemDecoration(R.dimen.major_100, requireContext()))
         }
     }
 

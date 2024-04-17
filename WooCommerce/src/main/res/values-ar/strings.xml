@@ -1,11 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 11:54:04+0000
+Translation-Revision-Date: 2024-04-09 15:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="login_app_password_support_button">الاتصال بالدعم</string>
+    <string name="login_app_password_continue_button">متابعة</string>
+    <string name="login_app_password_instructions_footer">إذا واجهت أي مشكلات، فيرجى الاتصال بفريق الدعم لدينا.</string>
+    <string name="login_app_password_instructions_step_3">3. عند اكتمال الربط، سيتم تسجيل دخولك إلى متجرك.</string>
+    <string name="login_app_password_instructions_step_2">2. عند المطالبة بذلك، وافق على الربط من خلال النقر على زر التأكيد.</string>
+    <string name="login_app_password_instructions_step_1">1. أولاً، سجِّل الدخول باستخدام صلاحيات الموقع الخاصة بك.</string>
+    <string name="login_app_password_instructions_title">اتبع هذه الخطوات لربط تطبيق Woo مباشرة بمتجرك باستخدام كلمة مرور التطبيق. </string>
+    <string name="login_app_password_subtitle">من المحتمل أن يرجع ذلك إلى وجود بعض الخطوات الإضافية المتعلقة بالأمان في متجرك.</string>
+    <string name="login_app_password_title">تعذر علينا تسجيل الدخول إلى متجرك</string>
+    <string name="empty_order_detail_message">ستظهر تفاصيل طلبك هنا عند تقديم طلب ما.</string>
+    <string name="empty_order_detail_title">لا توجد تفاصيل طلبات حتى الآن</string>
+    <string name="order_creation_simple_payment_migration_button">إضافة مبلغ مخصص</string>
+    <string name="order_creation_simple_payment_migration_message_two">لتعيين مبلغ الدفع، أضف\nمبلغًا مخصصًا إلى طلبك الجديد.</string>
+    <string name="order_creation_simple_payment_migration_message_one">قمنا بتجميع تحصيل المدفوعات مع\nإنشاء الطلب، ما يجعله قابلاً للوصول بشكل أكبر\nوأكثر فاعلية.</string>
+    <string name="order_creation_simple_payment_migration_title">تحصيل المدفوعات \nانتقل إلى</string>
+    <string name="analytics_bundles_card_title">الحزم</string>
+    <string name="analytics_bundles_list_header_subtitle">الحزم المبيعة</string>
+    <string name="analytics_bundles_list_header_title">الحزم</string>
+    <string name="analytics_bundles_list_items_sold">الحزم المبيعة</string>
+    <string name="my_store_widget_blaze_title">حملات Blaze</string>
+    <string name="my_store_widget_top_products_title">أهم المنتجات</string>
+    <string name="my_store_widget_stats_title">إحصاءات</string>
+    <string name="my_store_widget_onboarding_title">الإعداد</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">إعداد المتجر</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">حملات Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">أفضل المنتجات أداءً</string>
+    <string name="my_store_edit_screen_widget_stats">إحصاءات المتجر</string>
+    <string name="my_store_edit_screen_widgets">تحرير أقسام متجري</string>
     <string name="product_list_unsaved_product_unselected_message">هل تريد بالتأكيد تجاهل التغييرات التي أجريتها على هذا المنتج؟</string>
     <string name="product_list_unsaved_product_unselected_title">أنت على وشك التخلص من التغييرات على %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">لا تدعم ميزة الإحصاءات عرض بيانات الزائرين والتحويلات لنطاقات زمنية عشوائية.\n\nومع ذلك، يمكنك النقر على قيمة موجودة على الرسم البياني لرؤية الزائرين والتحويلات لذلك النطاق المحدد.</string>
@@ -736,7 +764,7 @@ Language: ar
     <string name="settings_privacy_header">الخصوصية</string>
     <string name="settings_usage_tracking_description">تعرّف على المزيد حول البيانات التي نجمعها حول متجرك وخياراتك للتحكم في مشاركة البيانات هذه.</string>
     <string name="settings_usage_tracking">تعقب الاستخدام</string>
-    <string name="settings_web_options_description">يتوافر مزيد من خيارات الخصوصية لمستخدمي woo.com. تحقق هنا للتعرف على المزيد.</string>
+    <string name="settings_web_options_description">يتوافر مزيد من خيارات الخصوصية لمستخدمي woocommerce.com. تحقق هنا للتعرف على المزيد.</string>
     <string name="settings_web_options">خيارات الويب</string>
     <string name="settings_more_privacy_options_header">مزيد من خيارات الخصوصية</string>
     <string name="settings_tracking_analytics_error_update">كان هناك خطأ في أثناء تحديث إعدادات الخصوصية لديك</string>

@@ -35,6 +35,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCBundleStats
+import org.wordpress.android.fluxc.model.WCGiftCardStats
 import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -961,6 +962,48 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // Then
             assertThat(result).isInstanceOf(AnalyticsRepository.BundlesResult.BundlesData::class.java)
+        }
+
+    @Test
+    fun `given fetch gift cards stats succeed, then result is gift card data`() =
+        runTest {
+            // Given
+            val stats = WCGiftCardStats(
+                usedValue = 45L,
+                netValue = 300.89,
+                intervals = emptyList()
+            )
+
+            val giftCardsStatsResponse = WooResult(stats)
+
+            whenever(statsRepository.fetchGiftCardStats(any(), any(), any())).thenReturn(giftCardsStatsResponse)
+
+            // When
+            val result = sut.fetchGiftCardsStats(testSelectionData)
+
+            // Then
+            assertThat(result).isInstanceOf(AnalyticsRepository.GiftCardResult.GiftCardData::class.java)
+        }
+
+    @Test
+    fun `given fetch gift cards stats fails, then result is gift card error`() =
+        runTest {
+            // Given
+            val error = WooError(
+                type = WooErrorType.INVALID_RESPONSE,
+                original = BaseRequest.GenericErrorType.INVALID_RESPONSE,
+                message = "something fails"
+            )
+
+            val giftCardsStatsResponse = WooResult<WCGiftCardStats>(error)
+
+            whenever(statsRepository.fetchGiftCardStats(any(), any(), any())).thenReturn(giftCardsStatsResponse)
+
+            // When
+            val result = sut.fetchGiftCardsStats(testSelectionData)
+
+            // Then
+            assertThat(result).isInstanceOf(AnalyticsRepository.GiftCardResult.GiftCardError::class.java)
         }
 
     private fun givenARevenue(totalSales: Double?, netValue: Double?, itemsSold: Int?): WCRevenueStatsModel {

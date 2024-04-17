@@ -568,6 +568,8 @@ class OrderListFragment :
                     action = event.action
                 )
                 is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
+                is OrderListViewModel.OrderListEvent.OpenOrderCreationWithSimplePaymentsMigration ->
+                    openOrderCreationFragment(indicateSimplePaymentsMigration = true)
                 else -> event.isHandled = false
             }
         }
@@ -715,12 +717,16 @@ class OrderListFragment :
         )
     }
 
-    private fun openOrderCreationFragment(code: String? = null, barcodeFormat: BarcodeFormat? = null) {
+    private fun openOrderCreationFragment(
+        code: String? = null,
+        barcodeFormat: BarcodeFormat? = null,
+        indicateSimplePaymentsMigration: Boolean = false,
+    ) {
         OrderDurationRecorder.startRecording()
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-                OrderCreateEditViewModel.Mode.Creation(),
+                OrderCreateEditViewModel.Mode.Creation(indicateSimplePaymentsMigration),
                 code,
                 barcodeFormat,
             )
@@ -991,8 +997,12 @@ class OrderListFragment :
                 show = show,
                 title = getString(R.string.orderlist_timeout_error_title),
                 message = getString(R.string.orderlist_timeout_error_message),
-                supportContactClick = { openSupportRequestScreen() },
+                supportContactClick = {
+                    viewModel.changeTroubleshootingBannerVisibility(show = false)
+                    openSupportRequestScreen()
+                },
                 troubleshootingClick = {
+                    viewModel.changeTroubleshootingBannerVisibility(show = false)
                     viewModel.trackConnectivityTroubleshootClicked()
                     openConnectivityTool()
                 }

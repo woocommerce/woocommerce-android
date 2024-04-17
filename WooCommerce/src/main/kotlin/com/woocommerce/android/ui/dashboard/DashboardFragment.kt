@@ -40,9 +40,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.MyStoreBlazeView
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
@@ -50,6 +47,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersCard
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -94,7 +92,6 @@ class DashboardFragment :
 
     private val dashboardViewModel: DashboardViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -161,13 +158,27 @@ class DashboardFragment :
                     currencyFormatter = currencyFormatter,
                     usageTracksEventEmitter = usageTracksEventEmitter,
                     onPluginUnavailableError = { updateStatsAvailabilityError() },
-                    reportJetpackPluginStatus = { onVisitorStatsUnavailable(it) },
                     onStatsError = { showErrorSnack() },
                     openDatePicker = { start, end, callback ->
                         showDateRangePicker(start, end, callback)
                     },
                     parentViewModel = dashboardViewModel
                 )
+            }
+        }
+
+        binding.blazeCampaignView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                WooThemeWithBackground {
+                    DashboardBlazeCard(
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                        updateContainerVisibility = { isVisible ->
+                            binding.blazeCampaignView.isVisible = isVisible
+                        }
+                    )
+                }
             }
         }
 
@@ -194,7 +205,6 @@ class DashboardFragment :
         setupStateObservers()
         setTopPerformersView()
         setupOnboardingView()
-        setUpBlazeCampaignView()
 
         initJitm(savedInstanceState)
     }
@@ -403,9 +413,12 @@ class DashboardFragment :
         dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
             ((activity) as MainActivity).setSubtitle(storeName)
         }
+        dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
+            onVisitorStatsUnavailable(jetpackBenefitsBanner)
+        }
     }
 
-    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: JetpackBenefitsBannerUiModel?) {
+    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: DashboardViewModel.JetpackBenefitsBannerUiModel?) {
         if (jetpackBenefitsBanner == null) {
             binding.jetpackBenefitsBanner.root.isVisible = false
             return

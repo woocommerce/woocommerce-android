@@ -17,6 +17,7 @@ import com.woocommerce.android.applicationpasswords.ApplicationPasswordGeneratio
 import com.woocommerce.android.applicationpasswords.ApplicationPasswordsNotifier
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
@@ -24,6 +25,7 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -58,6 +60,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefsWrapper,
     private val userAgent: UserAgent,
+    private val resourceProvider: ResourceProvider,
     @ApplicationPasswordsClientId private val applicationPasswordsClientId: String
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -158,6 +161,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         }
     }
 
+    /**
+     * This is currently a unreachable event due to the current usage of the application passwords feature
+     * available in the [ShowApplicationPasswordTutorialScreen] event, but it's kept here for future reference
+     * in case we need to start the Authorization from here back again.
+     */
     fun onStartWebAuthorizationClick() {
         state.value = State.WebAuthorization
         analyticsTracker.track(AnalyticsEvent.APPLICATION_PASSWORDS_AUTHORIZATION_WEB_VIEW_SHOWN)
@@ -268,8 +276,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                             fetchSiteForTutorial(
                                 username = state.username,
                                 password = state.password,
-                                detectedErrorMessage = authenticationError?.errorMessage as? UiStringRes
+                                detectedErrorMessage = authenticationError?.errorMessage
                             )
+                            analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
                         }
                     }
                 } else {
@@ -292,7 +301,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private suspend fun fetchSiteForTutorial(
         username: String,
         password: String,
-        detectedErrorMessage: UiStringRes? = null
+        detectedErrorMessage: UiString? = null
     ) {
         loadingMessage.value = R.string.login_site_credentials_fetching_site
         wpApiSiteRepository.fetchSite(
@@ -304,9 +313,12 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 if (site.hasWooCommerce) {
                     fetchedSiteId.value = site.id
                     loadingMessage.value = 0
+                    val errorMessage = detectedErrorMessage
+                        ?.toPresentableString()
+                        ?: resourceProvider.getString(R.string.error_generic)
                     ShowApplicationPasswordTutorialScreen(
                         url = generateAuthorizationUrl(site).orEmpty(),
-                        errorMessageRes = detectedErrorMessage?.stringRes ?: R.string.error_generic
+                        errorMessage = errorMessage
                     ).let { triggerEvent(it) }
                 } else {
                     triggerEvent(ShowNonWooErrorScreen(siteAddress))
@@ -433,6 +445,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private fun String.removeSchemeAndSuffix() = UrlUtils.removeScheme(UrlUtils.removeXmlrpcSuffix(this))
 
+    private fun UiString.toPresentableString() = when (this) {
+        is UiStringRes -> resourceProvider.getString(stringRes)
+        is UiStringText -> text
+    }
+
     private enum class State {
         NativeLogin, WebAuthorization, RetryWebAuthorization
     }
@@ -476,6 +493,6 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     data class ShowApplicationPasswordTutorialScreen(
         val url: String,
-        val errorMessageRes: Int
+        val errorMessage: String
     ) : MultiLiveEvent.Event()
 }
