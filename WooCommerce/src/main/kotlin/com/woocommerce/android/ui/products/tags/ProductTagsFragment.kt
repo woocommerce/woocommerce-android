@@ -47,7 +47,7 @@ class ProductTagsFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductTagsBinding.bind(view)
-
+        initializeView()
         setupObservers(viewModel)
         viewModel.loadProductTags()
 
@@ -73,12 +73,8 @@ class ProductTagsFragment :
         AnalyticsTracker.trackViewShown(this)
     }
 
-    @Suppress("DEPRECATION")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    private fun initializeView() {
         val activity = requireActivity()
-
         productTagsAdapter = ProductTagsAdapter(this, this)
         with(binding.productTagsRecycler) {
             layoutManager = LinearLayoutManager(activity)
