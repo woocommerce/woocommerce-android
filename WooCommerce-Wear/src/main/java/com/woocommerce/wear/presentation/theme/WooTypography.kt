@@ -1,12 +1,12 @@
 package com.woocommerce.wear.presentation.theme
 
-import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material.Typography
 import com.woocommerce.wear.R
 
 val provider = GoogleFont.Provider(
@@ -23,69 +23,76 @@ val robotoFamily = FontFamily(
 
 val WooTypography = Typography(
     defaultFontFamily = robotoFamily,
-    h1 = TextStyle(
-        fontWeight = FontWeight.Light,
-        fontSize = 96.sp,
-        lineHeight = 112.sp
+    display1 = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 40.sp,
+        lineHeight = 46.sp,
+        letterSpacing = 0.5.sp
     ),
-    h2 = TextStyle(
-        fontWeight = FontWeight.Light,
-        fontSize = 60.sp,
-        lineHeight = 72.sp
-    ),
-    h3 = TextStyle(
-        fontWeight = FontWeight.Normal,
-        fontSize = 48.sp,
-        lineHeight = 56.sp
-    ),
-    h4 = TextStyle(
-        fontWeight = FontWeight.Normal,
+    display2 = TextStyle(
+        fontWeight = FontWeight.Medium,
         fontSize = 34.sp,
-        lineHeight = 36.sp
+        lineHeight = 40.sp,
+        letterSpacing = 1.sp
     ),
-    h5 = TextStyle(
-        fontWeight = FontWeight.Normal,
+    display3 = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 30.sp,
+        lineHeight = 36.sp,
+        letterSpacing = 0.8.sp,
+    ),
+    title1 = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 34.sp,
+        lineHeight = 36.sp,
+        letterSpacing = 0.2.sp
+    ),
+    title2 = TextStyle(
+        fontWeight = FontWeight.Medium,
         fontSize = 24.sp,
-        lineHeight = 24.sp
+        lineHeight = 24.sp,
+        letterSpacing = 0.2.sp
     ),
-    h6 = TextStyle(
+    title3 = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 20.sp,
-        lineHeight = 24.sp
-    ),
-    subtitle1 = TextStyle(
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp
-    ),
-    subtitle2 = TextStyle(
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 24.sp
+        lineHeight = 24.sp,
+        letterSpacing = 0.2.sp
     ),
     body1 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
-        lineHeight = 24.sp
+        lineHeight = 24.sp,
+        letterSpacing = 0.18.sp
     ),
     body2 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = 20.sp
+        lineHeight = 20.sp,
+        letterSpacing = 0.2.sp
     ),
     button = TextStyle(
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 20.sp,
+        letterSpacing = 0.38.sp
     ),
-    caption = TextStyle(
+    caption1 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 16.sp,
+        letterSpacing = 0.1.sp
     ),
-    overline = TextStyle(
+    caption2 = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 10.sp,
-        lineHeight = 16.sp
+        lineHeight = 14.sp,
+        letterSpacing = 0.1.sp
+    ),
+    caption3 = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 8.sp,
+        lineHeight = 12.sp,
+        letterSpacing = 0.1.sp
     )
 )
