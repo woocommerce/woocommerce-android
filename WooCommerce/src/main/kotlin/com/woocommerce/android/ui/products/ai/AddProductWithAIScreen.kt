@@ -13,6 +13,7 @@ import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
@@ -48,7 +49,7 @@ fun AddProductWithAIScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                navigationIcon = if (state.isFirstStep) Icons.Filled.Clear else Icons.Filled.ArrowBack,
+                navigationIcon = if (state.isFirstStep) Icons.Filled.Clear else Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationButtonClick = onBackButtonClick,
                 actions = {
                     when (state.saveButtonState) {

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
@@ -44,7 +45,7 @@ fun WPComWebViewScreen(
                 title = viewState.title ?: stringResource(id = R.string.app_name),
                 onNavigationButtonClick = onClose,
                 navigationIcon = when (viewState.displayMode) {
-                    REGULAR -> Icons.Filled.ArrowBack
+                    REGULAR -> Icons.AutoMirrored.Filled.ArrowBack
                     MODAL -> Icons.Filled.Clear
                 }
             )

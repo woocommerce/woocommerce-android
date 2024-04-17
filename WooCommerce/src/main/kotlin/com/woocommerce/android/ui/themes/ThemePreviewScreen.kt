@@ -27,8 +27,10 @@ import androidx.compose.material.ModalBottomSheetValue.HalfExpanded
 import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.Icons.Outlined
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Devices
@@ -125,7 +127,7 @@ fun ThemePreviewScreen(
                             modalSheetState
                         )
                     },
-                    navigationIcon = Filled.ArrowBack,
+                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                     onNavigationButtonClick = onBackNavigationClicked,
                     actions = {
                         ThemePreviewMenu(state.previewType, onPreviewTypeChanged)

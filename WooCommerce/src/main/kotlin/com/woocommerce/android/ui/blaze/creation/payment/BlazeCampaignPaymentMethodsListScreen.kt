@@ -19,6 +19,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
@@ -61,7 +62,8 @@ private fun BlazeCampaignPaymentMethodsListScreen(
                 title = stringResource(id = R.string.blaze_campaign_payment_list_screen_title),
                 onNavigationButtonClick = viewState.onDismiss,
                 navigationIcon = when (viewState) {
-                    is BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList -> Icons.Default.ArrowBack
+                    is BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList ->
+                        Icons.AutoMirrored.Filled.ArrowBack
                     is BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView -> Icons.Default.Clear
                 }
             )

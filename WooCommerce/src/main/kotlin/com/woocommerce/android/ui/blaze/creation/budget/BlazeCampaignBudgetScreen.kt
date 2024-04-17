@@ -20,7 +20,9 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -98,7 +100,7 @@ private fun CampaignBudgetScreen(
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_budget_toolbar_title),
                 onNavigationButtonClick = onBackPressed,
-                navigationIcon = Filled.ArrowBack
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)

@@ -6,7 +6,9 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,7 +27,7 @@ fun ToolbarWithHelpButton(
     modifier: Modifier = Modifier,
     title: String = "",
     onNavigationButtonClick: (() -> Unit)? = null,
-    navigationIcon: ImageVector? = Filled.ArrowBack,
+    navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
     onHelpButtonClick: (() -> Unit)
 ) {
@@ -46,7 +48,7 @@ fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
     onNavigationButtonClick: (() -> Unit),
-    navigationIcon: ImageVector = Filled.ArrowBack,
+    navigationIcon: ImageVector = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back)
 ) {
     Toolbar(
@@ -63,7 +65,7 @@ fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
     onNavigationButtonClick: (() -> Unit)? = null,
-    navigationIcon: ImageVector? = Filled.ArrowBack,
+    navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
     actionButtonIcon: ImageVector,
     onActionButtonClick: (() -> Unit),
@@ -91,7 +93,7 @@ fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
     onNavigationButtonClick: (() -> Unit)? = null,
-    navigationIcon: ImageVector? = Filled.ArrowBack,
+    navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
@@ -110,7 +112,7 @@ fun Toolbar(
     modifier: Modifier = Modifier,
     title: String = "",
     onNavigationButtonClick: (() -> Unit)? = null,
-    navigationIcon: ImageVector? = Filled.ArrowBack,
+    navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
     onActionButtonClick: (() -> Unit),
     actionButtonText: String

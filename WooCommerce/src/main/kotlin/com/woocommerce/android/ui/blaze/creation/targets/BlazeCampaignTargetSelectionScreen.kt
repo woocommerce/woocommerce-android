@@ -22,7 +22,9 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -95,7 +97,7 @@ private fun TargetSelectionScreen(
             Toolbar(
                 title = state.title,
                 onNavigationButtonClick = onBackPressed,
-                navigationIcon = Filled.ArrowBack,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 actions = {
                     if (state.searchState is SearchState.Hidden || state.searchState is Inactive) {
                         WCTextButton(

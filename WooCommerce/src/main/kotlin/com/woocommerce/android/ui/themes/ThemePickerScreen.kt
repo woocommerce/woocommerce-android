@@ -24,7 +24,9 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
@@ -65,7 +67,7 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
         Scaffold(topBar = {
             Toolbar(
                 title = stringResource(id = R.string.settings_themes),
-                navigationIcon = Filled.ArrowBack,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationButtonClick = viewModel::onArrowBackPressed
             )
         }) { padding ->
