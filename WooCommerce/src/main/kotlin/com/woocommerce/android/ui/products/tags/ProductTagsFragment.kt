@@ -39,6 +39,7 @@ class ProductTagsFragment :
     private val skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
     private val searchHandler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
 
     private var _binding: FragmentProductTagsBinding? = null
     private val binding get() = _binding!!
@@ -63,10 +64,14 @@ class ProductTagsFragment :
     }
 
     override fun onDestroyView() {
+        clearSearchRunnable()
         skeletonView.hide()
         super.onDestroyView()
+        searchRunnable = null
         _binding = null
     }
+
+    private fun clearSearchRunnable() = searchRunnable?.let { searchHandler.removeCallbacks(it) }
 
     override fun onResume() {
         super.onResume()
@@ -114,14 +119,13 @@ class ProductTagsFragment :
      * perform a search while the user is typing
      */
     private fun setProductTagsFilterDelayed(filter: String) {
-        searchHandler.postDelayed(
-            {
-                if (filter == binding.addProductTagView.getEnteredTag()) {
-                    viewModel.setProductTagsFilter(filter)
-                }
-            },
-            AppConstants.SEARCH_TYPING_DELAY_MS
-        )
+        clearSearchRunnable()
+        searchRunnable = Runnable {
+            if (filter == binding.addProductTagView.getEnteredTag()) {
+                viewModel.setProductTagsFilter(filter)
+            }
+        }
+        searchHandler.postDelayed(searchRunnable!!, AppConstants.SEARCH_TYPING_DELAY_MS)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
