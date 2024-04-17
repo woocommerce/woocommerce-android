@@ -9,11 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
+import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.wear.R
 import com.woocommerce.wear.presentation.theme.WooTheme
 
@@ -42,7 +42,8 @@ fun Greeting(greetingName: String) {
     )
 }
 
-@Preview(device = Devices.WEAR_OS_SMALL_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.SQUARE, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
     LandingScreen()
