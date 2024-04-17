@@ -9,7 +9,18 @@ sealed interface AnalyticsCardViewState {
 
 sealed class AnalyticsHubInformationViewState : AnalyticsCardViewState {
     data class LoadingViewState(override val card: AnalyticsCards) : AnalyticsHubInformationViewState()
-    data class NoDataState(override val card: AnalyticsCards, val message: String) : AnalyticsHubInformationViewState()
+    data class NoDataState(
+        override val card: AnalyticsCards,
+        val title: String,
+        val message: String
+    ) : AnalyticsHubInformationViewState()
+
+    data class NoSupportedState(
+        override val card: AnalyticsCards,
+        val title: String,
+        val message: String,
+        val description: String
+    ) : AnalyticsHubInformationViewState()
     data class DataViewState(
         override val card: AnalyticsCards,
         val title: String,
