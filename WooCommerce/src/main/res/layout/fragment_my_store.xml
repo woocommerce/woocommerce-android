@@ -56,18 +56,11 @@
                         android:visibility="gone" />
 
                     <!-- Order stats -->
-                    <com.google.android.material.card.MaterialCardView
-                        style="@style/Woo.Card"
+                    <com.woocommerce.android.ui.mystore.MyStoreStatsView
+                        android:id="@+id/my_store_stats"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <com.woocommerce.android.ui.mystore.MyStoreStatsView
-                            android:id="@+id/my_store_stats"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical" />
-
-                    </com.google.android.material.card.MaterialCardView>
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
 
                     <!-- Feedback Request Card -->
                     <com.woocommerce.android.ui.feedback.FeedbackRequestCard

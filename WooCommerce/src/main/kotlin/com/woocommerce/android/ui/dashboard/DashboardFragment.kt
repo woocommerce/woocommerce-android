@@ -152,7 +152,6 @@ class DashboardFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
-
                 WooThemeWithBackground {
                     DashboardContainer(
                         dateUtils = dateUtils,
