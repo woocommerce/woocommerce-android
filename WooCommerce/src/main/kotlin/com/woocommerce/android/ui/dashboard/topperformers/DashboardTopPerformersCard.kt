@@ -86,7 +86,6 @@ private fun HandleEvents(event: LiveData<Event>) {
     }
 }
 
-
 @Composable
 private fun TopPerformersCard(
     topPerformersState: TopPerformersState?,
@@ -112,15 +111,16 @@ private fun TopPerformersContent(
     topPerformersState: TopPerformersState?,
     lastUpdateState: String?
 ) {
-    Column(
-        modifier = Modifier.padding(16.dp)
-    ) {
+    Column {
         Text(
+            modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
             text = stringResource(id = R.string.dashboard_top_performers_title),
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.Bold,
         )
-        Row(modifier = Modifier.padding(top = 8.dp)) {
+        Row(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+        ) {
             Text(
                 modifier = Modifier.weight(1f),
                 text = stringResource(id = R.string.product),
@@ -137,7 +137,7 @@ private fun TopPerformersContent(
             topPerformersState?.isError == true -> TopPerformersErrorView()
             topPerformersState?.topPerformers.isNullOrEmpty() -> TopPerformersEmptyView()
             else -> TopPerformerProductList(
-                topPerformers = topPerformersState?.topPerformers!!,
+                topPerformers = topPerformersState?.topPerformers!!
             )
         }
 
@@ -145,6 +145,7 @@ private fun TopPerformersContent(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(16.dp)
                     .align(Alignment.CenterHorizontally),
                 text = lastUpdateState,
                 style = MaterialTheme.typography.body2,
@@ -160,12 +161,7 @@ private fun TopPerformerProductList(
     topPerformers: List<TopPerformerProductUiModel>,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.padding(
-            top = 16.dp,
-            bottom = 16.dp
-        )
-    ) {
+    Column(modifier = modifier) {
         topPerformers.forEachIndexed { index, product ->
             TopPerformerProductItem(topPerformer = product, onItemClicked = product.onClick)
             if (index < topPerformers.size - 1) {
@@ -256,7 +252,7 @@ private fun TopPerformerProductItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onItemClicked(topPerformer.productId) }
-            .padding(top = 16.dp, bottom = 16.dp),
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         ProductThumbnail(
@@ -329,36 +325,51 @@ private fun TopPerformersErrorView() {
 @LightDarkThemePreviews
 @Composable
 private fun TopPerformersCardPreview() {
-    TopPerformersCard(
-        topPerformersState = TopPerformersState(
-            topPerformers = listOf(
-                TopPerformerProductUiModel(
-                    productId = 1,
-                    name = "Product 1",
-                    timesOrdered = "10 times",
-                    netSales = "$100",
-                    imageUrl = "",
-                    onClick = {}
-                ),
-                TopPerformerProductUiModel(
-                    productId = 2,
-                    name = "Product 2",
-                    timesOrdered = "20 times",
-                    netSales = "$200",
-                    imageUrl = "",
-                    onClick = {}
-                ),
-                TopPerformerProductUiModel(
-                    productId = 3,
-                    name = "Product 3",
-                    timesOrdered = "30 times",
-                    netSales = "$300",
-                    imageUrl = "",
-                    onClick = {}
-                ),
+    val topPerformersState = TopPerformersState(
+        topPerformers = listOf(
+            TopPerformerProductUiModel(
+                productId = 1,
+                name = "Product 1",
+                timesOrdered = "10 times",
+                netSales = "$100",
+                imageUrl = "",
+                onClick = {}
             ),
-            isError = false
+            TopPerformerProductUiModel(
+                productId = 2,
+                name = "Product 2",
+                timesOrdered = "20 times",
+                netSales = "$200",
+                imageUrl = "",
+                onClick = {}
+            ),
+            TopPerformerProductUiModel(
+                productId = 3,
+                name = "Product 3",
+                timesOrdered = "30 times",
+                netSales = "$300",
+                imageUrl = "",
+                onClick = {}
+            ),
         ),
-        lastUpdateState = "Last update: 8:52 AM"
+        isError = false
     )
+    Column {
+        TopPerformersCard(
+            topPerformersState = topPerformersState,
+            lastUpdateState = "Last update: 8:52 AM"
+        )
+        TopPerformersCard(
+            topPerformersState = topPerformersState.copy(isLoading = true),
+            lastUpdateState = "Last update: 8:52 AM"
+        )
+        TopPerformersCard(
+            topPerformersState = topPerformersState.copy(isError = true),
+            lastUpdateState = "Last update: 8:52 AM"
+        )
+        TopPerformersCard(
+            topPerformersState = topPerformersState.copy(topPerformers = emptyList()),
+            lastUpdateState = "Last update: 8:52 AM"
+        )
+    }
 }

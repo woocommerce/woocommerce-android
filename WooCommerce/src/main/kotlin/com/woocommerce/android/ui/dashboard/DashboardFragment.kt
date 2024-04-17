@@ -211,7 +211,9 @@ class DashboardFragment :
         binding.myStoreTopPerformers.apply {
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                DashboardTopPerformersCard(parentViewModel = dashboardViewModel)
+                WooThemeWithBackground {
+                    DashboardTopPerformersCard(parentViewModel = dashboardViewModel)
+                }
             }
         }
     }
