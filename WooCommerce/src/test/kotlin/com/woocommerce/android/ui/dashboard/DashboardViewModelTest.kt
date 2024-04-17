@@ -3,14 +3,10 @@ package com.woocommerce.android.ui.dashboard
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
-import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
-import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -24,15 +20,10 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class DashboardViewModelTest : BaseUnitTest() {
-    private val networkStatus: NetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
-    private val wooCommerceStore: WooCommerceStore = mock()
-    private val getTopPerformers: GetTopPerformers = mock()
-    private val currencyFormatter: CurrencyFormatter = mock()
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
@@ -42,7 +33,6 @@ class DashboardViewModelTest : BaseUnitTest() {
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock {
         onBlocking { invoke() } doReturn true
     }
-    private val observeLastUpdate: ObserveLastUpdate = mock()
     private val dateUtils: DateUtils = mock()
 
     private lateinit var viewModel: DashboardViewModel
@@ -58,17 +48,12 @@ class DashboardViewModelTest : BaseUnitTest() {
 
         viewModel = DashboardViewModel(
             savedState = SavedStateHandle(),
-            wooCommerceStore = wooCommerceStore,
-            observeLastUpdate = observeLastUpdate,
-            networkStatus = networkStatus,
             getSelectedDateRange = getSelectedDateRange,
             appPrefsWrapper = appPrefsWrapper,
             dashboardTransactionLauncher = myStoreTransactionLauncher,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             usageTracksEventEmitter = usageTracksEventEmitter,
-            currencyFormatter = currencyFormatter,
             resourceProvider = resourceProvider,
-            getTopPerformers = getTopPerformers,
             selectedSite = selectedSite,
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
         )
