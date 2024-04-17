@@ -237,9 +237,11 @@ class MyStoreStatsView @JvmOverloads constructor(
             customRangeGranularityLabel.isVisible = true
             customRangeLabel.text = selectedTimeRange.currentRangeDescription
             customRangeGranularityLabel.text = getStringForGranularity(selectedTimeRange.revenueStatsGranularity)
+            statsDateValue.isVisible = false
         } else {
             customRangeLabel.isVisible = false
             customRangeGranularityLabel.isVisible = false
+            statsDateValue.isVisible = true
         }
     }
 
