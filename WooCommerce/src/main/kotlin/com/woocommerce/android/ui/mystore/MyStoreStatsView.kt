@@ -419,7 +419,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         return when (activeGranularity) {
             StatsGranularity.HOURS -> dateUtils.getFriendlyDayHourString(dateString).orEmpty()
             StatsGranularity.DAYS -> dateUtils.getDayMonthDateString(dateString).orEmpty()
-            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayStringForWeek(dateString).orEmpty()
             StatsGranularity.MONTHS -> dateUtils.getMonthString(dateString).orEmpty()
             StatsGranularity.YEARS -> dateString
         }.also { result -> trackUnexpectedFormat(result, dateString) }
