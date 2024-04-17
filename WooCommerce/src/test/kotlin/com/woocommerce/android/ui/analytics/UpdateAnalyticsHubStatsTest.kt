@@ -41,6 +41,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
@@ -344,6 +345,37 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when syncing stats with an unsupported visitors granularity, then update the session with the unsupported states`() =
+        testBlocking {
+            // Given
+            configureSuccessResponseStub()
+            whenever(
+                repository.fetchVisitorsData(
+                    testRangeSelection,
+                    ForceNew
+                )
+            ).doReturn(VisitorsResult.VisitorsNotSupported)
+
+            val sessionStatsUpdates = mutableListOf<SessionState>()
+            val job = sut.sessionState
+                .onEach { sessionStatsUpdates.add(it) }
+                .launchIn(this)
+
+            // When
+            sut(testRangeSelection, this)
+
+            advanceUntilIdle()
+
+            // Then
+            assertThat(sessionStatsUpdates).hasSize(3)
+            assertThat(sessionStatsUpdates[0]).isEqualTo(SessionState.Available(SessionStat.EMPTY))
+            assertThat(sessionStatsUpdates[1]).isEqualTo(SessionState.Loading)
+            assertThat(sessionStatsUpdates[2]).isEqualTo(SessionState.NotSupported)
+
+            job.cancel()
+        }
+
+    @Test
     fun `when data store allows new stats fetch, then request data with ForceNew strategy`() = testBlocking {
         // When
         sut(testRangeSelection, this)
@@ -497,6 +529,7 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         verify(repository).fetchVisitorsData(testRangeSelection, ForceNew)
         verify(repository).fetchProductsData(testRangeSelection, ForceNew)
     }
+
 
     private fun configureSuccessResponseStub() {
         repository.stub {
