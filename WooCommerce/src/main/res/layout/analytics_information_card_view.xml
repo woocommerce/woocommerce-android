@@ -96,7 +96,8 @@
             app:layout_constraintTop_toTopOf="@+id/reportText"
             app:layout_constraintBottom_toBottomOf="@+id/reportText"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="@dimen/minor_100"/>
+            android:layout_marginEnd="@dimen/minor_100"
+            android:contentDescription="@null"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/statUnavailable"
@@ -120,7 +121,8 @@
                 android:src="@drawable/ic_tintable_error_outline_24"
                 app:tint="@color/color_error"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@null"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/statUnavailableTitle"

@@ -530,7 +530,6 @@ internal class UpdateAnalyticsHubStatsTest : BaseUnitTest() {
         verify(repository).fetchProductsData(testRangeSelection, ForceNew)
     }
 
-
     private fun configureSuccessResponseStub() {
         repository.stub {
             onBlocking {

@@ -25,7 +25,6 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import kotlin.Result
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -51,6 +50,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import kotlin.Result
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -1018,27 +1018,28 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             )
 
             val result = Result.success(mapOf("2024-01-05" to 5))
-            whenever(statsRepository.fetchVisitorStats(any(),any(),any())).thenReturn(result)
+            whenever(statsRepository.fetchVisitorStats(any(), any(), any())).thenReturn(result)
 
             sut.fetchVisitorsData(rangeSelection = latQuarterRangeSelection, ForceNew)
-            verify(statsRepository).fetchVisitorStats(any(),any(),any())
+            verify(statsRepository).fetchVisitorStats(any(), any(), any())
         }
 
     @Test
     fun `given fetch session stats is call with a quarter to date granularity, then visitors stats is called`() =
         runTest {
-            val quarterToDateRangeSelection = StatsTimeRangeSelection.SelectionType.QUARTER_TO_DATE.generateSelectionData(
-                referenceStartDate = "2024-04-01".dayStartFrom(),
-                referenceEndDate = "2024-04-14".dayEndFrom(),
-                calendar = testCalendar,
-                locale = testLocale
-            )
+            val quarterToDateRangeSelection =
+                StatsTimeRangeSelection.SelectionType.QUARTER_TO_DATE.generateSelectionData(
+                    referenceStartDate = "2024-04-01".dayStartFrom(),
+                    referenceEndDate = "2024-04-14".dayEndFrom(),
+                    calendar = testCalendar,
+                    locale = testLocale
+                )
 
             val result = Result.success(mapOf("2024-01-05" to 5))
-            whenever(statsRepository.fetchVisitorStats(any(),any(),any())).thenReturn(result)
+            whenever(statsRepository.fetchVisitorStats(any(), any(), any())).thenReturn(result)
 
             sut.fetchVisitorsData(rangeSelection = quarterToDateRangeSelection, ForceNew)
-            verify(statsRepository).fetchVisitorStats(any(),any(),any())
+            verify(statsRepository).fetchVisitorStats(any(), any(), any())
         }
 
     @Test
@@ -1051,11 +1052,11 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 locale = testLocale
             )
 
-            val result = Result.success( 5)
-            whenever(statsRepository.fetchTotalVisitorStats(any(),any(),any())).thenReturn(result)
+            val result = Result.success(5)
+            whenever(statsRepository.fetchTotalVisitorStats(any(), any(), any())).thenReturn(result)
 
             sut.fetchVisitorsData(rangeSelection = todayRangeSelection, ForceNew)
-            verify(statsRepository).fetchTotalVisitorStats(any(),any(),any())
+            verify(statsRepository).fetchTotalVisitorStats(any(), any(), any())
         }
 
     @Test
@@ -1071,8 +1072,6 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
             val result = sut.fetchVisitorsData(rangeSelection = todayRangeSelection, ForceNew)
             assertThat(result).isInstanceOf(AnalyticsRepository.VisitorsResult.VisitorsNotSupported::class.java)
         }
-
-
 
     private fun givenARevenue(totalSales: Double?, netValue: Double?, itemsSold: Int?): WCRevenueStatsModel {
         val stats: WCRevenueStatsModel = mock()
