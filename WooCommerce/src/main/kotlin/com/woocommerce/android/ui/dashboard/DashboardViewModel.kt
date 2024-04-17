@@ -27,6 +27,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -42,6 +43,7 @@ import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -69,9 +71,6 @@ class DashboardViewModel @Inject constructor(
 
     private var _hasOrders = MutableLiveData<OrderState>()
     val hasOrders: LiveData<OrderState> = _hasOrders
-
-    private var _lastUpdateTopPerformers = MutableLiveData<Long?>()
-    val lastUpdateTopPerformers: LiveData<Long?> = _lastUpdateTopPerformers
 
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState

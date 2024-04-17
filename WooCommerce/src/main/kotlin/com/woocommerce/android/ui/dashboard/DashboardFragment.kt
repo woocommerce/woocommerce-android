@@ -218,56 +218,6 @@ class DashboardFragment :
         }
     }
 
-    private fun setUpBlazeCampaignView() {
-        myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) {
-                binding.blazeCampaignView.hide()
-            } else {
-                binding.blazeCampaignView.apply {
-                    setContent {
-                        WooThemeWithBackground {
-                            MyStoreBlazeView(
-                                state = blazeCampaignState,
-                                onDismissBlazeView = myStoreBlazeViewModel::onBlazeViewDismissed,
-                            )
-                        }
-                    }
-                    show()
-                }
-            }
-        }
-        myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
-
-                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
-                    findNavController().navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToBlazeCampaignListFragment()
-                    )
-                }
-
-                is MyStoreBlazeViewModel.ShowCampaignDetails -> {
-                    findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
-                            title = getString(R.string.blaze_campaign_details_title)
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private fun openBlazeCreationFlow(productId: Long?) {
-        lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(
-                source = BlazeFlowSource.MY_STORE_SECTION,
-                productId = productId
-            )
-        }
-    }
-
     @Suppress("LongMethod")
     private fun setupOnboardingView() {
         storeOnboardingViewModel.viewState.observe(viewLifecycleOwner) { state ->
