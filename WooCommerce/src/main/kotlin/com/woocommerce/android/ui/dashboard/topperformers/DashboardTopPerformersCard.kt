@@ -16,11 +16,13 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,15 +30,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.Factory
+import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersState
+import com.woocommerce.android.ui.products.ProductDetailFragment.Mode.ShowProduct
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 @Composable
 fun DashboardTopPerformersCard(
@@ -50,7 +60,32 @@ fun DashboardTopPerformersCard(
     val topPerformersState by viewModel.topPerformersState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateTopPerformers.observeAsState()
     TopPerformersCard(topPerformersState, lastUpdateState)
+    HandleEvents(viewModel.event)
 }
+
+@Composable
+private fun HandleEvents(event: LiveData<Event>) {
+    val navController = rememberNavController()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(event, navController, lifecycleOwner) {
+        val observer = Observer { event: Event ->
+            when (event) {
+                is OpenTopPerformer -> navController.navigateSafely(
+                    NavGraphMainDirections.actionGlobalProductDetailFragment(
+                        mode = ShowProduct(event.productId),
+                        isTrashEnabled = false
+                    )
+                )
+            }
+        }
+        event.observe(lifecycleOwner, observer)
+        onDispose {
+            event.removeObserver(observer)
+        }
+    }
+}
+
 
 @Composable
 private fun TopPerformersCard(
@@ -219,9 +254,9 @@ private fun TopPerformerProductItem(
 ) {
     Row(
         modifier = modifier
-            .padding(top = 16.dp, bottom = 16.dp)
             .fillMaxWidth()
-            .clickable { onItemClicked(topPerformer.productId) },
+            .clickable { onItemClicked(topPerformer.productId) }
+            .padding(top = 16.dp, bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         ProductThumbnail(

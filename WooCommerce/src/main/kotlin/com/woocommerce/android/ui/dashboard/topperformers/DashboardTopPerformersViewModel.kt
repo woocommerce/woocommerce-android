@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.An
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
@@ -25,6 +24,7 @@ import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
@@ -113,8 +113,8 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         }
     }
 
-    private fun onTopPerformerSelected(productId: Long) {
-        triggerEvent(DashboardEvent.OpenTopPerformer(productId))
+    fun onTopPerformerTapped(productId: Long) {
+        triggerEvent(OpenTopPerformer(productId))
         analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         usageTracksEventEmitter.interacted()
     }
@@ -156,7 +156,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                 getTotalSpendFormatted(total.toBigDecimal(), currency)
             ),
             imageUrl = imageUrl?.toImageUrl(),
-            onClick = ::onTopPerformerSelected
+            onClick = ::onTopPerformerTapped
         )
 
     private fun getTotalSpendFormatted(totalSpend: BigDecimal, currency: String) =
@@ -177,6 +177,10 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         val isError: Boolean = false,
         val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
     )
+
+    data class OpenTopPerformer(
+        val productId: Long
+    ) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

@@ -189,9 +189,6 @@ class DashboardViewModel @Inject constructor(
     )
 
     sealed class DashboardEvent : MultiLiveEvent.Event() {
-        data class OpenTopPerformer(
-            val productId: Long
-        ) : DashboardEvent()
 
         data object ShowPrivacyBanner : DashboardEvent()
 

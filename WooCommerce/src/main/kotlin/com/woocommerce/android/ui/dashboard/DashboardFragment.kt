@@ -43,7 +43,6 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
@@ -61,7 +60,6 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -332,13 +330,6 @@ class DashboardFragment :
         }
         dashboardViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OpenTopPerformer -> findNavController().navigateSafely(
-                    NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
-                        isTrashEnabled = false
-                    )
-                )
-
                 is ShowPrivacyBanner ->
                     findNavController().navigate(
                         PrivacyBannerFragmentDirections.actionGlobalPrivacyBannerFragment()
