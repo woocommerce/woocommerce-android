@@ -1,15 +1,26 @@
 package com.woocommerce.android.ui.dashboard.stats
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.isVisible
 import androidx.lifecycle.LiveData
@@ -18,6 +29,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
@@ -114,6 +126,93 @@ fun DashboardStatsCard(
     onAddCustomRangeClick: () -> Unit,
     onTabSelected: (SelectionType) -> Unit,
 ) {
+
+    Column {
+        StatsHeader(
+            selectedDateRange = selectedDateRange,
+            dateUtils = dateUtils,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Divider()
+        StatsChart(
+            selectedDateRange = selectedDateRange,
+            customRange = customRange,
+            revenueStatsState = revenueStatsState,
+            visitorsStatsState = visitorsStatsState,
+            lastUpdateState = lastUpdateState,
+            dateUtils = dateUtils,
+            currencyFormatter = currencyFormatter,
+            usageTracksEventEmitter = usageTracksEventEmitter,
+            onViewAnalyticsClick = onViewAnalyticsClick,
+            onAddCustomRangeClick = onAddCustomRangeClick,
+            onTabSelected = onTabSelected,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Suppress("UNUSED_PARAMETER")
+@Composable
+private fun StatsHeader(
+    selectedDateRange: StatsTimeRangeSelection?,
+    dateUtils: DateUtils,
+    modifier: Modifier = Modifier
+) {
+    if (selectedDateRange == null) return
+
+    val dateRange by remember {
+        derivedStateOf {
+            // TODO
+            return@derivedStateOf selectedDateRange.currentRange.start.formatToYYYYmmDD() +
+                " – " +
+                selectedDateRange.currentRange.end.formatToYYYYmmDD()
+        }
+    }
+
+    Row(
+        modifier = modifier.padding(
+            horizontal = dimensionResource(id = R.dimen.major_100),
+            vertical = dimensionResource(id = R.dimen.minor_100)
+        ),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+    ) {
+        Text(
+            text = stringResource(
+                id = when (selectedDateRange.selectionType) {
+                    SelectionType.TODAY -> R.string.today
+                    SelectionType.WEEK_TO_DATE -> R.string.this_week
+                    SelectionType.MONTH_TO_DATE -> R.string.this_month
+                    SelectionType.YEAR_TO_DATE -> R.string.this_year
+                    SelectionType.CUSTOM -> R.string.date_timeframe_custom
+                    else -> error("Invalid selection type")
+                }
+            ),
+            style = MaterialTheme.typography.body2,
+            color = MaterialTheme.colors.onSurface
+        )
+        Text(
+            text = dateRange,
+            style = MaterialTheme.typography.body2,
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+        )
+    }
+}
+
+@Composable
+private fun StatsChart(
+    selectedDateRange: StatsTimeRangeSelection?,
+    customRange: StatsTimeRange?,
+    revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
+    visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
+    lastUpdateState: Long?,
+    dateUtils: DateUtils,
+    currencyFormatter: CurrencyFormatter,
+    usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
+    onViewAnalyticsClick: () -> Unit,
+    onAddCustomRangeClick: () -> Unit,
+    onTabSelected: (SelectionType) -> Unit,
+    modifier: Modifier = Modifier
+) {
     val lifecycleScope = LocalLifecycleOwner.current.lifecycleScope
     val context = LocalContext.current
 
@@ -130,7 +229,7 @@ fun DashboardStatsCard(
     }
 
     AndroidView(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         factory = {
             statsView.apply {
                 customRangeButton.setOnClickListener { onAddCustomRangeClick() }
