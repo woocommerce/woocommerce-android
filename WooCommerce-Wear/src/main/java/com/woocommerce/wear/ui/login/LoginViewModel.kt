@@ -1,13 +1,22 @@
 package com.woocommerce.wear.ui.login
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
+import androidx.navigation.NavHostController
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 
-@HiltViewModel
-class LoginViewModel(
-    private val loginRepository: LoginRepository
+class LoginViewModel @AssistedInject constructor (
+    private val loginRepository: LoginRepository,
+    @Assisted private val navController: NavHostController
 ) : ViewModel() {
     fun onLoginButtonClicked() {
-        // TODO: Implement this function
+        loginRepository.apply {  }
+        navController.navigate("myStore")
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(navController: NavHostController): LoginViewModel
     }
 }
