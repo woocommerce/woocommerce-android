@@ -2,6 +2,9 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 
+## 18.3
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
 ## 18.2
 In our latest update, we're enhancing your WooCommerce experience! We're transitioning from simple payments to a more customizable order creation flow, enabling you to set the desired amount with ease. Plus, our improved Analytics Hub now provides insights into Product Bundles and Gift Cards, offering a more comprehensive view of your business stats, given those extensions are active. Enjoy the upgrade!
 
