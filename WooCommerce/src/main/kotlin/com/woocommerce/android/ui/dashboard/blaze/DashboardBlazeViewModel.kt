@@ -75,7 +75,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
             emitAll(
                 refreshTrigger.flatMapLatest { refreshEvent ->
                     combine(
-                        observeMostRecentBlazeCampaign(),
+                        observeMostRecentBlazeCampaign(forceRefresh = refreshEvent.isForced),
                         getProductsFlow(forceRefresh = refreshEvent.isForced)
                     ) { blazeCampaignModel, products ->
                         when {
@@ -173,12 +173,15 @@ class DashboardBlazeViewModel @AssistedInject constructor(
             sortType = ProductSorting.DATE_DESC,
         ).filterNot { it.isSampleProduct }
         return flow {
+            val cachedProducts = getCachedProducts()
             if (!forceRefresh) {
-                emit(getCachedProducts())
+                emit(cachedProducts)
             }
 
-            refreshProducts()
-            emit(getCachedProducts())
+            if (forceRefresh || cachedProducts.isEmpty()) {
+                refreshProducts()
+                emit(getCachedProducts())
+            }
         }
     }
 
