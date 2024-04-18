@@ -1,4 +1,4 @@
-package com.woocommerce.wear.ui
+package com.woocommerce.wear.ui.mystore
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -18,7 +18,7 @@ import com.woocommerce.wear.R
 import com.woocommerce.wear.presentation.theme.WooTheme
 
 @Composable
-fun LandingScreen() {
+fun MyStoreScreen() {
     WooTheme {
         Box(
             modifier = Modifier
@@ -46,5 +46,5 @@ fun Greeting(greetingName: String) {
 @Preview(device = WearDevices.SQUARE, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    LandingScreen()
+    MyStoreScreen()
 }
