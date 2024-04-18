@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
@@ -18,7 +17,7 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.wear.presentation.theme.WooTheme
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = hiltViewModel()) {
+fun LoginScreen(viewModel: LoginViewModel) {
     LoginScreen(
         onLoginButtonClicked = viewModel::onLoginButtonClicked
     )
@@ -53,5 +52,7 @@ fun LoginScreen(
 @Preview(device = WearDevices.SQUARE, showSystemUi = true)
 @Composable
 fun Preview() {
-    LoginScreen()
+    LoginScreen(
+        onLoginButtonClicked = {}
+    )
 }
