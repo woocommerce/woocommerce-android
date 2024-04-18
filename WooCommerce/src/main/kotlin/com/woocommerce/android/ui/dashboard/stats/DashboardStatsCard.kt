@@ -17,6 +17,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
@@ -26,6 +27,7 @@ import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -71,19 +73,31 @@ fun DashboardStatsCard(
         }
     )
 
-    DashboardStatsCard(
-        selectedDateRange = selectedDateRange,
-        customRange = customRange,
-        revenueStatsState = revenueStatsState,
-        visitorsStatsState = visitorsStatsState,
-        lastUpdateState = lastUpdateState,
-        dateUtils = dateUtils,
-        currencyFormatter = currencyFormatter,
-        usageTracksEventEmitter = usageTracksEventEmitter,
-        onViewAnalyticsClick = viewModel::onViewAnalyticsClicked,
-        onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
-        onTabSelected = viewModel::onTabSelected
-    )
+    WidgetCard(
+        titleResource = R.string.my_store_widget_stats_title,
+        menu = DashboardViewModel.DashboardWidgetMenu(
+            items = listOf(
+                DashboardViewModel.DashboardWidgetAction(
+                    titleResource = R.string.dynamic_dashboard_hide_widget_menu_item,
+                    action = { /* TODO */ }
+                )
+            )
+        )
+    ) {
+        DashboardStatsCard(
+            selectedDateRange = selectedDateRange,
+            customRange = customRange,
+            revenueStatsState = revenueStatsState,
+            visitorsStatsState = visitorsStatsState,
+            lastUpdateState = lastUpdateState,
+            dateUtils = dateUtils,
+            currencyFormatter = currencyFormatter,
+            usageTracksEventEmitter = usageTracksEventEmitter,
+            onViewAnalyticsClick = viewModel::onViewAnalyticsClicked,
+            onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
+            onTabSelected = viewModel::onTabSelected
+        )
+    }
 }
 
 @Composable
