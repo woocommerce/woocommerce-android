@@ -79,6 +79,7 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
     implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
     implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-navigation-compose:1.2.0"
 
     ksp "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
     ksp "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
