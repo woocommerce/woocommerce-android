@@ -1,17 +1,29 @@
 package com.woocommerce.wear.ui
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.woocommerce.wear.ui.login.LoginScreen
+import com.woocommerce.wear.ui.mystore.MyStoreScreen
 
-val nav = NavHost(
-    navController = navController,
-    startDestination = "login"
+@Composable
+fun WooWearNavHost(
+    modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController(),
+    startDestination: String = "login"
 ) {
-    composable("login") {
-        LoginScreen()
-    }
-    composable("home") {
-        LandingScreen()
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        composable("login") {
+            LoginScreen()
+        }
+        composable("home") {
+            MyStoreScreen()
+        }
     }
 }
