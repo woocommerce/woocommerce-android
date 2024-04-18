@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android'
+    id 'com.google.devtools.ksp'
 }
 
 def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
@@ -72,6 +74,18 @@ dependencies {
     implementation 'androidx.compose.ui:ui-text-google-fonts'
     implementation 'androidx.core:core-splashscreen:1.0.1'
 
+    // Dagger & Hilt
+    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+    implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-common:$hiltJetpackVersion"
+    implementation "androidx.hilt:hilt-work:$hiltJetpackVersion"
+
+    ksp "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
+    ksp "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$gradle.ext.daggerVersion"
+    ksp "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
+
+    // Testing
     androidTestImplementation platform("androidx.compose:compose-bom:$composeBOMWearVersion")
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-tooling'
