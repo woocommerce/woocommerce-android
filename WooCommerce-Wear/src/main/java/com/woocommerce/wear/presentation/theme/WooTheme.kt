@@ -1,6 +1,5 @@
 package com.woocommerce.wear.presentation.theme
 
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme
 
@@ -13,13 +12,4 @@ fun WooTheme(
         typography = WooTypography,
         content = content
     )
-}
-
-@Composable
-private fun SurfacedContent(
-    content: @Composable () -> Unit
-) {
-    Surface(color = MaterialTheme.colors.background) {
-        content()
-    }
 }

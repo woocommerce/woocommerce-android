@@ -8,12 +8,12 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel(assistedFactory = LoginViewModel.Factory::class)
-class LoginViewModel @AssistedInject constructor (
+class LoginViewModel @AssistedInject constructor(
     private val loginRepository: LoginRepository,
     @Assisted private val navController: NavHostController
 ) : ViewModel() {
     fun onLoginButtonClicked() {
-        loginRepository.apply {  }
+        loginRepository.apply { }
         navController.navigate("myStore")
     }
 

@@ -3,6 +3,7 @@ package com.woocommerce.wear.presentation.theme
 import androidx.compose.ui.graphics.Color
 import androidx.wear.compose.material.Colors
 
+@Suppress("MagicNumber")
 object WooColors {
     val md_theme_dark_primary = Color(0xFFB17FD4)
     val md_theme_dark_onPrimary = Color(0xFF000000)
