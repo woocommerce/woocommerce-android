@@ -5,7 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 
 @HiltViewModel
 class LoginViewModel(
-
+    private val loginRepository: LoginRepository
 ) : ViewModel() {
     fun onLoginButtonClicked() {
         // TODO: Implement this function
