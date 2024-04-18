@@ -13,7 +13,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withCreated
 import androidx.navigation.fragment.FragmentNavigatorExtras
@@ -39,7 +38,6 @@ import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
-import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
@@ -52,7 +50,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeView
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
-import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -136,15 +133,10 @@ class MyStoreFragment :
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 
-    @Inject
-    lateinit var dashboardRepository: DashboardRepository
-
     private var _binding: FragmentMyStoreBinding? = null
     private val binding get() = _binding!!
 
     private var errorSnackbar: Snackbar? = null
-
-    private var isBlazeHidden: Boolean = false
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
@@ -234,19 +226,8 @@ class MyStoreFragment :
     }
 
     private fun setUpBlazeCampaignView() {
-        dashboardRepository.widgets.asLiveData().observe(viewLifecycleOwner) { widgets ->
-            widgets.firstOrNull { it.type == DashboardWidget.Type.BLAZE }?.let { widget ->
-                if (!widget.isVisible) {
-                    isBlazeHidden = true
-                    binding.blazeCampaignView.hide()
-                } else {
-                    isBlazeHidden = false
-                }
-            }
-        }
-
         myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is DashboardBlazeCampaignState.Hidden || isBlazeHidden) {
+            if (blazeCampaignState is DashboardBlazeCampaignState.Hidden) {
                 binding.blazeCampaignView.hide()
             } else {
                 binding.blazeCampaignView.apply {
