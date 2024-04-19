@@ -116,7 +116,7 @@ ext {
     hiltJetpackVersion = '1.1.0'
     wordPressUtilsVersion = '3.5.0'
     mediapickerVersion = '0.3.0'
-    wordPressLoginVersion = '1.13.0'
+    wordPressLoginVersion = '1.15.0'
     aboutAutomatticVersion = '0.0.6'
     automatticTracksVersion = '4.0.2'
     workManagerVersion = '2.7.1'
@@ -127,6 +127,7 @@ ext {
     androidxCameraVersion = '1.2.3'
     guavaVersion = '33.1.0-android'
     protobufVersion = '3.25.3'
+    gravatarVersion = '0.2.0'
 
     // Apache
     commonsText = '1.10.0'
@@ -134,7 +135,7 @@ ext {
     httpClientAndroidVersion = '4.3.5.1'
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
-    composeBOMVersion = "2023.10.01"
+    composeBOMVersion = "2024.04.00"
     composeCompilerVersion = "1.5.9"
     composeAccompanistVersion = "0.32.0"
 

@@ -92,7 +92,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             analyticsTracker = analyticsTracker,
             appPrefs = appPrefs,
             userAgent = userAgent,
-            applicationPasswordsClientId = clientId
+            applicationPasswordsClientId = clientId,
+            resourceProvider = mock()
         )
     }
 
