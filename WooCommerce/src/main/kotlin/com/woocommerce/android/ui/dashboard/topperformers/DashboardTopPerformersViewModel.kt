@@ -12,7 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
+import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange.StatsViewType
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -65,7 +66,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     getSelectedDateRange: GetSelectedDateRange,
 ) : ScopedViewModel(savedState) {
 
-    private val _selectedDateRange = getSelectedDateRange()
+    private val _selectedDateRange = getSelectedDateRange(StatsViewType.TOP_PERFORMERS)
 
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
@@ -139,7 +140,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             launch {
                 observeLastUpdate(
                     selectedRange,
-                    TOP_PERFORMERS
+                    AnalyticData.TOP_PERFORMERS
                 ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
             }
         }

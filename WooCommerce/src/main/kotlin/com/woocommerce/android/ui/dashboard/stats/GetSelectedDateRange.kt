@@ -21,10 +21,10 @@ class GetSelectedDateRange @Inject constructor(
     private val customDateRangeDataStore: CustomDateRangeDataStore,
     private val dateUtils: DateUtils
 ) {
-    operator fun invoke(): Flow<StatsTimeRangeSelection> {
+    operator fun invoke(statsViewType: StatsViewType): Flow<StatsTimeRangeSelection> {
         val selectedRangeTypeFlow = appPrefs.observePrefs()
-            .map { getSelectedRangeTypeIfAny() }
-            .onStart { emit(getSelectedRangeTypeIfAny()) }
+            .map { getSelectedRangeFor(statsViewType) }
+            .onStart { emit(getSelectedRangeFor(statsViewType)) }
             .distinctUntilChanged()
 
         val customRangeFlow = customDateRangeDataStore.dateRange
@@ -52,10 +52,18 @@ class GetSelectedDateRange @Inject constructor(
         }
     }
 
-    private fun getSelectedRangeTypeIfAny(): SelectionType {
-        val previouslySelectedTab = appPrefs.getActiveStatsTab()
+    private fun getSelectedRangeFor(statsViewType: StatsViewType): SelectionType {
+        val previouslySelectedTab = when (statsViewType) {
+            StatsViewType.STORE_STATS -> appPrefs.getActiveStoreStatsTab()
+            StatsViewType.TOP_PERFORMERS -> appPrefs.getActiveTopPerformersGranularity()
+        }
         return runCatching {
             SelectionType.valueOf(previouslySelectedTab)
         }.getOrDefault(SelectionType.TODAY)
+    }
+
+    enum class StatsViewType {
+        STORE_STATS,
+        TOP_PERFORMERS,
     }
 }
