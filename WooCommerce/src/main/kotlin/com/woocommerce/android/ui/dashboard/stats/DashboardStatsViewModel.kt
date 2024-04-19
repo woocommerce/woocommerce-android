@@ -67,9 +67,8 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
+    private val dateRangeFormatter: DashboardStatsRangeFormatter
 ) : ScopedViewModel(savedStateHandle) {
-    private val dateRangeFormatter = DashboardStatsRangeFormatter()
-
     private var _hasOrders = MutableLiveData<OrderState>()
 
     private val selectedDateRange = getSelectedDateRange()
@@ -84,7 +83,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
             rangeSelection = selectedRange,
             customRange = custom,
             rangeFormatted = dateRangeFormatter.formatRangeDate(selectedRange),
-            selectedDateFormatted = selectedDate
+            selectedDateFormatted = selectedDate?.let { dateRangeFormatter.formatSelectedDate(it, selectedRange) }
         )
     }.asLiveData()
 
