@@ -148,18 +148,21 @@ class DashboardStatsView @JvmOverloads constructor(
     private lateinit var chartUserInteractionsJob: Job
 
     private var isChartValueSelected = false
+    private lateinit var onDateSelected: (String?) -> Unit
 
     fun initView(
         dateUtils: DateUtils,
         currencyFormatter: CurrencyFormatter,
         usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
         lifecycleScope: LifecycleCoroutineScope,
-        onViewAnalyticsClick: () -> Unit
+        onViewAnalyticsClick: () -> Unit,
+        onDateSelected: (String?) -> Unit
     ) {
         this.dateUtils = dateUtils
         this.currencyFormatter = currencyFormatter
         this.usageTracksEventEmitter = usageTracksEventEmitter
         this.coroutineScope = lifecycleScope
+        this.onDateSelected = onDateSelected
 
         initChart()
 
@@ -206,6 +209,7 @@ class DashboardStatsView @JvmOverloads constructor(
     }
 
     fun loadDashboardStats(selectedTimeRange: StatsTimeRangeSelection) {
+        onDateSelected(null)
         this.statsTimeRangeSelection = selectedTimeRange
         // Track range change
         AnalyticsTracker.track(
@@ -319,6 +323,7 @@ class DashboardStatsView @JvmOverloads constructor(
      * Called when nothing has been selected or an "un-select" has been made.
      */
     override fun onNothingSelected() {
+        onDateSelected(null)
         // update the total values of the chart here
         binding.chart.highlightValue(null)
         updateChartView()
@@ -435,6 +440,7 @@ class DashboardStatsView @JvmOverloads constructor(
 
         // display the order count for this entry
         val date = getDateFromIndex(entry.x.toInt())
+        onDateSelected(date)
         val orderCount = chartOrderStats[date]?.toInt() ?: 0
         ordersValue.text = orderCount.toString()
         updateVisitorsValue(date)

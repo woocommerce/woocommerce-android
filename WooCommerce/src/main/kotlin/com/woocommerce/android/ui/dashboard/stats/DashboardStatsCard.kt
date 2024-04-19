@@ -59,8 +59,7 @@ fun DashboardStatsCard(
         }
     )
 ) {
-    val customRange by viewModel.customRange.observeAsState()
-    val dateRange by viewModel.dateRange.observeAsState()
+    val dateRange by viewModel.dateRangeState.observeAsState()
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
@@ -95,7 +94,6 @@ fun DashboardStatsCard(
     ) {
         DashboardStatsCard(
             dateRange = dateRange,
-            customRange = customRange,
             revenueStatsState = revenueStatsState,
             visitorsStatsState = visitorsStatsState,
             lastUpdateState = lastUpdateState,
@@ -104,7 +102,8 @@ fun DashboardStatsCard(
             usageTracksEventEmitter = usageTracksEventEmitter,
             onViewAnalyticsClick = viewModel::onViewAnalyticsClicked,
             onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
-            onTabSelected = viewModel::onTabSelected
+            onTabSelected = viewModel::onTabSelected,
+            onChartDateSelected = viewModel::onChartDateSelected
         )
     }
 }
@@ -112,7 +111,6 @@ fun DashboardStatsCard(
 @Composable
 fun DashboardStatsCard(
     dateRange: DashboardStatsViewModel.DateRangeState?,
-    customRange: StatsTimeRange?,
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
     lastUpdateState: Long?,
@@ -122,6 +120,7 @@ fun DashboardStatsCard(
     onViewAnalyticsClick: () -> Unit,
     onAddCustomRangeClick: () -> Unit,
     onTabSelected: (SelectionType) -> Unit,
+    onChartDateSelected: (String?) -> Unit
 ) {
 
     Column {
@@ -132,7 +131,6 @@ fun DashboardStatsCard(
         Divider()
         StatsChart(
             dateRange = dateRange,
-            customRange = customRange,
             revenueStatsState = revenueStatsState,
             visitorsStatsState = visitorsStatsState,
             lastUpdateState = lastUpdateState,
@@ -142,6 +140,7 @@ fun DashboardStatsCard(
             onViewAnalyticsClick = onViewAnalyticsClick,
             onAddCustomRangeClick = onAddCustomRangeClick,
             onTabSelected = onTabSelected,
+            onChartDateSelected = onChartDateSelected,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -176,7 +175,7 @@ private fun StatsHeader(
             color = MaterialTheme.colors.onSurface
         )
         Text(
-            text = dateRange.rangeFormatted,
+            text = dateRange.selectedDateFormatted ?: dateRange.rangeFormatted,
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
         )
@@ -186,7 +185,6 @@ private fun StatsHeader(
 @Composable
 private fun StatsChart(
     dateRange: DashboardStatsViewModel.DateRangeState?,
-    customRange: StatsTimeRange?,
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
     lastUpdateState: Long?,
@@ -196,6 +194,7 @@ private fun StatsChart(
     onViewAnalyticsClick: () -> Unit,
     onAddCustomRangeClick: () -> Unit,
     onTabSelected: (SelectionType) -> Unit,
+    onChartDateSelected: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lifecycleScope = LocalLifecycleOwner.current.lifecycleScope
@@ -208,7 +207,8 @@ private fun StatsChart(
                 currencyFormatter = currencyFormatter,
                 usageTracksEventEmitter = usageTracksEventEmitter,
                 lifecycleScope = lifecycleScope,
-                onViewAnalyticsClick = onViewAnalyticsClick
+                onViewAnalyticsClick = onViewAnalyticsClick,
+                onDateSelected = onChartDateSelected
             )
         }
     }
@@ -240,11 +240,11 @@ private fun StatsChart(
     // is applying all properties on each composition (even the unchanged ones) which creates issues with the legacy
     // view.
 
-    LaunchedEffect(customRange) {
-        statsView.handleCustomRangeTab(customRange)
+    LaunchedEffect(dateRange?.customRange) {
+        statsView.handleCustomRangeTab(dateRange?.customRange)
     }
 
-    LaunchedEffect(dateRange) {
+    LaunchedEffect(dateRange?.rangeSelection) {
         dateRange?.rangeSelection?.let { statsView.loadDashboardStats(it) }
         val selectionType = dateRange?.rangeSelection?.selectionType
         if (statsView.tabLayout.getTabAt(statsView.tabLayout.selectedTabPosition)?.tag != selectionType) {
