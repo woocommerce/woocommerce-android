@@ -30,7 +30,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -89,7 +89,7 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
                         IconButton(viewModel::onNavigateBack) {
                             Icon(
                                 imageVector = if (state.searchState.isActive) {
-                                    Icons.Filled.ArrowBack
+                                    Icons.AutoMirrored.Filled.ArrowBack
                                 } else {
                                     Icons.Filled.Close
                                 },
