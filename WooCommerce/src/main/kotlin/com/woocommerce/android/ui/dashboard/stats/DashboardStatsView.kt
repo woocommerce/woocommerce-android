@@ -150,6 +150,12 @@ class DashboardStatsView @JvmOverloads constructor(
     private var isChartValueSelected = false
     private lateinit var onDateSelected: (String?) -> Unit
 
+    init {
+        // TODO: Remove those views from the layout when releasing Dynamic Dashboard
+        customRangeLabel.isVisible = false
+        statsDateValue.isVisible = false
+    }
+
     fun initView(
         dateUtils: DateUtils,
         currencyFormatter: CurrencyFormatter,
@@ -236,12 +242,9 @@ class DashboardStatsView @JvmOverloads constructor(
 
     private fun applyCustomRange(selectedTimeRange: StatsTimeRangeSelection) {
         if (selectedTimeRange.selectionType == SelectionType.CUSTOM) {
-            customRangeLabel.isVisible = true
             customRangeGranularityLabel.isVisible = true
-            customRangeLabel.text = selectedTimeRange.currentRangeDescription
             customRangeGranularityLabel.text = getStringForGranularity(selectedTimeRange.revenueStatsGranularity)
         } else {
-            customRangeLabel.isVisible = false
             customRangeGranularityLabel.isVisible = false
         }
     }
@@ -328,10 +331,8 @@ class DashboardStatsView @JvmOverloads constructor(
         binding.chart.highlightValue(null)
         updateChartView()
         showTotalVisitorStats()
-        updateDate(revenueStatsModel, statsTimeRangeSelection)
         updateColorForStatsHeaderValues(R.color.color_on_surface_high)
         onUserInteractionWithChart()
-        if (statsTimeRangeSelection.selectionType == SelectionType.CUSTOM) statsDateValue.isVisible = false
         isChartValueSelected = false
     }
 
@@ -347,86 +348,6 @@ class DashboardStatsView @JvmOverloads constructor(
         ordersValue.setTextColor(color)
         visitorsValue.setTextColor(color)
         conversionValue.setTextColor(color)
-    }
-
-    /**
-     * Method to update the date value for a given [revenueStatsModel] based on the [rangeType]
-     * This is used to display the date bar when the **stats tab is loaded**
-     * [StatsGranularity.DAYS] would be Tuesday, Aug 08
-     * [StatsGranularity.WEEKS] would be Aug 4 - Aug 08
-     * [StatsGranularity.MONTHS] would be August
-     * [StatsGranularity.YEARS] would be 2019
-     */
-    private fun updateDate(
-        revenueStats: RevenueStatsUiModel?,
-        statsTimeRangeSelection: StatsTimeRangeSelection
-    ) {
-        if (revenueStats?.intervalList.isNullOrEmpty()) {
-            statsDateValue.visibility = View.GONE
-        } else {
-            val rangeType = statsTimeRangeSelection.selectionType
-            val startInterval = revenueStats?.intervalList?.first()?.interval
-            val startDate = startInterval?.let { getDateValueFromRangeType(it, rangeType) }
-
-            val dateRangeString = when (rangeType) {
-                SelectionType.WEEK_TO_DATE -> {
-                    val endInterval = revenueStats?.intervalList?.last()?.interval
-                    val endDate = endInterval?.let { getDateValueFromRangeType(it, rangeType) }
-                    String.format(Locale.getDefault(), "%s – %s", startDate, endDate)
-                }
-
-                else -> startDate
-            }
-            if (statsTimeRangeSelection.selectionType != SelectionType.CUSTOM) statsDateValue.isVisible = true
-            statsDateValue.text = dateRangeString
-        }
-    }
-
-    /**
-     * Method to get the date value for a given [dateString] based on the [rangeType]
-     * This is used to populate the date bar when the **stats tab is loaded**
-     * [TODAY] would be Tuesday, Aug 08
-     * [WEEK_TO_DATE] would be Aug 4
-     * [MONTH_TO_DATE] would be August
-     * [YEAR_TO_DATE] would be 2019
-     * [CUSTOM] Any of the above formats depending on the custom range length
-     */
-    private fun getDateValueFromRangeType(
-        dateString: String,
-        rangeType: SelectionType
-    ): String {
-        return when (rangeType) {
-            SelectionType.TODAY -> dateUtils.getDayMonthDateString(dateString).orEmpty()
-            SelectionType.WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            SelectionType.MONTH_TO_DATE -> dateUtils.getMonthString(dateString).orEmpty()
-            SelectionType.YEAR_TO_DATE -> dateUtils.getYearString(dateString).orEmpty()
-            SelectionType.CUSTOM -> getDateValueFromGranularity(
-                dateString,
-                statsTimeRangeSelection.revenueStatsGranularity
-            )
-            else -> error("Unsupported range value used in my store tab: $rangeType")
-        }.also { result -> trackUnexpectedFormat(result, dateString) }
-    }
-
-    /**
-     * Method to get the date value for a given [dateString] based on the [rangeType]
-     * This is used to populate the date bar when the **stats tab is loaded**
-     * [StatsGranularity.DAYS] would be Tuesday, Aug 08
-     * [StatsGranularity.WEEKS] would be Aug 4
-     * [StatsGranularity.MONTHS] would be August
-     * [StatsGranularity.YEARS] would be 2019
-     */
-    private fun getDateValueFromGranularity(
-        dateString: String,
-        activeGranularity: StatsGranularity
-    ): String {
-        return when (activeGranularity) {
-            StatsGranularity.HOURS -> dateUtils.getFriendlyDayHourString(dateString).orEmpty()
-            StatsGranularity.DAYS -> dateUtils.getDayMonthDateString(dateString).orEmpty()
-            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            StatsGranularity.MONTHS -> dateUtils.getMonthString(dateString).orEmpty()
-            StatsGranularity.YEARS -> dateString
-        }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
     override fun onValueSelected(entry: Entry?, h: Highlight?) {
@@ -445,10 +366,8 @@ class DashboardStatsView @JvmOverloads constructor(
         ordersValue.text = orderCount.toString()
         updateVisitorsValue(date)
         updateConversionRate()
-        updateDateOnScrubbing(date, statsTimeRangeSelection.selectionType)
         updateColorForStatsHeaderValues(R.color.color_secondary)
         onUserInteractionWithChart()
-        statsDateValue.isVisible = true
         isChartValueSelected = true
     }
 
@@ -464,30 +383,6 @@ class DashboardStatsView @JvmOverloads constructor(
             binding.statsViewRow.emptyVisitorsStatsGroup.isVisible = false
             visitorsValue.text = visitorStats[date]?.toString() ?: "0"
         }
-    }
-
-    /**
-     * Method to update the date value for a given [dateString] based on the [SelectionType]
-     * This is used to display the date bar when the **scrubbing interaction is taking place**
-     * [SelectionType.TODAY] would be Tuesday, Aug 08›7am
-     * [SelectionType.WEEK_TO_DATE] would be Tuesday, Aug 08›7am
-     * [SelectionType.MONTH_TO_DATE] would be Aug 08
-     * [SelectionType.YEAR_TO_DATE] would be August›08
-     * [SelectionType.CUSTOM] Any of the above formats depending on the custom range length
-     */
-    private fun updateDateOnScrubbing(dateString: String, rangeType: SelectionType) {
-        statsDateValue.text = when (rangeType) {
-            SelectionType.TODAY -> dateUtils.getFriendlyDayHourString(dateString).orEmpty()
-            SelectionType.WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
-            SelectionType.MONTH_TO_DATE -> dateUtils.getLongMonthDayString(dateString).orEmpty()
-            SelectionType.YEAR_TO_DATE -> dateUtils.getFriendlyLongMonthYear(dateString).orEmpty()
-            SelectionType.CUSTOM -> getDisplayDateForGranularity(
-                dateString,
-                statsTimeRangeSelection.revenueStatsGranularity
-            )
-
-            else -> error("Unsupported range value used in my store tab: $rangeType")
-        }.also { result -> trackUnexpectedFormat(result, dateString) }
     }
 
     /**
@@ -518,7 +413,6 @@ class DashboardStatsView @JvmOverloads constructor(
     }
 
     fun updateView(revenueStatsModel: RevenueStatsUiModel?) {
-        updateDate(revenueStatsModel, statsTimeRangeSelection)
         this.revenueStatsModel = revenueStatsModel
 
         // There are times when the stats v4 api returns no grossRevenue or ordersCount for a site
@@ -664,7 +558,6 @@ class DashboardStatsView @JvmOverloads constructor(
     }
 
     fun clearStatsHeaderValues() {
-        statsDateValue.text = ""
         lastUpdated.text = ""
         updateColorForStatsHeaderValues(R.color.skeleton_color)
 
