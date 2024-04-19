@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.dashboard.topperformers
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,34 +15,47 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.analytics.ranges.toDashboardLocalizedGranularityStringId
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.Factory
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
@@ -59,7 +74,15 @@ fun DashboardTopPerformersCard(
 ) {
     val topPerformersState by viewModel.topPerformersState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateTopPerformers.observeAsState()
-    TopPerformersCard(topPerformersState, lastUpdateState)
+    val selectedDateRange by viewModel.selectedDateRange.observeAsState()
+
+    TopPerformersCard(
+        topPerformersState,
+        lastUpdateState,
+        selectedDateRange,
+        viewModel::onGranularityChanged,
+        viewModel::onEditCustomRangeTapped
+    )
     HandleEvents(viewModel.event)
 }
 
@@ -89,7 +112,10 @@ private fun HandleEvents(event: LiveData<Event>) {
 @Composable
 private fun TopPerformersCard(
     topPerformersState: TopPerformersState?,
-    lastUpdateState: String?
+    lastUpdateState: String?,
+    selectedDateRange: StatsTimeRangeSelection?,
+    onGranularityChanged: (SelectionType) -> Unit,
+    onEditCustomRangeTapped: () -> Unit,
 ) {
     Card(
         modifier = Modifier
@@ -101,7 +127,13 @@ private fun TopPerformersCard(
         if (topPerformersState?.isLoading == true) {
             TopPerformersLoading(modifier = Modifier.padding(16.dp))
         } else {
-            TopPerformersContent(topPerformersState, lastUpdateState)
+            TopPerformersContent(
+                topPerformersState,
+                lastUpdateState,
+                selectedDateRange,
+                onGranularityChanged,
+                onEditCustomRangeTapped
+            )
         }
     }
 }
@@ -109,7 +141,10 @@ private fun TopPerformersCard(
 @Composable
 private fun TopPerformersContent(
     topPerformersState: TopPerformersState?,
-    lastUpdateState: String?
+    lastUpdateState: String?,
+    selectedDateRange: StatsTimeRangeSelection?,
+    onGranularityChanged: (SelectionType) -> Unit,
+    onEditCustomRangeTapped: () -> Unit,
 ) {
     Column {
         Text(
@@ -118,6 +153,11 @@ private fun TopPerformersContent(
             style = MaterialTheme.typography.subtitle1,
             fontWeight = FontWeight.Bold,
         )
+        TopPerformersDatePicker(
+            selectedDateRange,
+            onGranularityChanged,
+            onEditCustomRangeTapped
+        )
         Row(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp)
         ) {
@@ -125,12 +165,14 @@ private fun TopPerformersContent(
                 modifier = Modifier.weight(1f),
                 text = stringResource(id = R.string.product),
                 style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium_selector)
+                color = colorResource(id = R.color.color_on_surface_medium_selector),
+                fontWeight = FontWeight.SemiBold,
             )
             Text(
                 text = stringResource(id = R.string.dashboard_top_performers_items_sold),
                 style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium_selector)
+                color = colorResource(id = R.color.color_on_surface_medium_selector),
+                fontWeight = FontWeight.SemiBold,
             )
         }
         when {
@@ -152,6 +194,99 @@ private fun TopPerformersContent(
                 color = colorResource(id = R.color.color_on_surface_medium_selector),
                 textAlign = TextAlign.Center
             )
+        }
+    }
+}
+
+@Composable
+private fun TopPerformersDatePicker(
+    selectedDateRange: StatsTimeRangeSelection?,
+    onGranularityChanged: (SelectionType) -> Unit,
+    onCustomRangeClicked: () -> Unit,
+) {
+    val isCustomRange = selectedDateRange?.selectionType == StatsTimeRangeSelection.SelectionType.CUSTOM
+    Row(
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = stringResource(
+                id = selectedDateRange?.selectionType?.toDashboardLocalizedGranularityStringId() ?: 0
+            ),
+            style = MaterialTheme.typography.body2,
+        )
+        Row(
+            modifier = Modifier
+                .clickable(enabled = isCustomRange) { onCustomRangeClicked() }
+                .weight(1f)
+        ) {
+            Text(
+                text = selectedDateRange?.currentRangeDescription ?: "",
+                style = MaterialTheme.typography.body2,
+                color = colorResource(id = R.color.color_on_surface_medium_selector)
+            )
+            if (isCustomRange) {
+                Icon(
+                    modifier = Modifier.padding(start = 8.dp),
+                    painter = painterResource(id = R.drawable.ic_edit_pencil),
+                    contentDescription = "",
+                    tint = colorResource(id = R.color.color_on_surface_medium_selector)
+                )
+            }
+        }
+        TopPerformersDateGranularityDropDown(
+            selectedDateRange = selectedDateRange,
+            dateGranularityOptions = SUPPORTED_RANGES_ON_MY_STORE_TAB,
+            onGranularityChanged = onGranularityChanged
+        )
+    }
+}
+
+@Composable
+private fun TopPerformersDateGranularityDropDown(
+    selectedDateRange: StatsTimeRangeSelection?,
+    dateGranularityOptions: List<SelectionType>,
+    onGranularityChanged: (SelectionType) -> Unit
+) {
+    var showDropDown by remember { mutableStateOf(false) }
+    Box(modifier = Modifier.padding(top = 8.dp)) {
+        IconButton(onClick = { showDropDown = !showDropDown }) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_calendar_16),
+                tint = colorResource(id = R.color.color_on_surface_medium_selector),
+                contentDescription = stringResource(R.string.dashboard_stats_edit_granularity_content_description),
+            )
+        }
+        DropdownMenu(
+            offset = DpOffset(
+                x = dimensionResource(id = R.dimen.major_100),
+                y = 0.dp
+            ),
+            expanded = showDropDown,
+            onDismissRequest = { showDropDown = false }
+        ) {
+            dateGranularityOptions.forEach { granularity ->
+                DropdownMenuItem(
+                    modifier = Modifier.height(28.dp),
+                    onClick = {
+                        onGranularityChanged(granularity)
+                        showDropDown = false
+                    }
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = granularity.toDashboardLocalizedGranularityStringId())
+                    )
+                    if (selectedDateRange?.selectionType == granularity) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_menu_check),
+                            contentDescription = stringResource(
+                                id = R.string.dashboard_stats_edit_granularity_selected_content_description
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -357,19 +492,23 @@ private fun TopPerformersCardPreview() {
     Column {
         TopPerformersCard(
             topPerformersState = topPerformersState,
-            lastUpdateState = "Last update: 8:52 AM"
+            lastUpdateState = "Last update: 8:52 AM",
+            selectedDateRange = selectedDateRange
         )
         TopPerformersCard(
             topPerformersState = topPerformersState.copy(isLoading = true),
-            lastUpdateState = "Last update: 8:52 AM"
+            lastUpdateState = "Last update: 8:52 AM",
+            selectedDateRange = selectedDateRange
         )
         TopPerformersCard(
             topPerformersState = topPerformersState.copy(isError = true),
-            lastUpdateState = "Last update: 8:52 AM"
+            lastUpdateState = "Last update: 8:52 AM",
+            selectedDateRange = selectedDateRange
         )
         TopPerformersCard(
             topPerformersState = topPerformersState.copy(topPerformers = emptyList()),
-            lastUpdateState = "Last update: 8:52 AM"
+            lastUpdateState = "Last update: 8:52 AM",
+            selectedDateRange = selectedDateRange
         )
     }
 }

@@ -369,6 +369,8 @@
     <string name="dashboard_stats_granularity_weeks">Weeks</string>
     <string name="dashboard_stats_granularity_months">Months</string>
     <string name="dashboard_stats_granularity_years">Years</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Change date range button</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">Item selected</string>
 
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
