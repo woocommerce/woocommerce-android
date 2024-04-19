@@ -1,11 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 11:54:04+0000
+Translation-Revision-Date: 2024-04-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="login_app_password_exit_dialog_cancel">Batalkan</string>
+    <string name="login_app_password_exit_dialog_confirmation">Keluar</string>
+    <string name="login_app_password_exit_dialog_message">Anda sepertinya belum menyetujui koneksi aplikasi. Anda yakin ingin keluar?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Pilih gambar dengan dimensi minimal 500x500 piksel.</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Gambar tidak valid</string>
+    <string name="login_invalid_credentials_message">Nama pengguna atau kata sandi Anda sepertinya salah. Periksa kembali kredensial Anda dan coba lagi.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Jika data Anda masih belum dimuat, hubungi tim dukungan untuk mendapatkan bantuan.</string>
+    <string name="orderlist_connectivity_tool_summary_title">Tidak ada masalah koneksi</string>
+    <string name="orderlist_connectivity_tool_return_action">Kembali ke layar sebelumnya</string>
+    <string name="orderlist_connectivity_tool_retry_action">Coba sambungkan lagi</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Menyambungkan ke situs Anda</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Kami tidak dapat menyambungkan ke WordPress.com saat ini.\n\nCoba lagi dalam beberapa menit, atau hubungi tim dukungan kami yang akan dengan senang hati membantu Anda.</string>
+    <string name="orderlist_connectivity_tool_subtitle">Harap tunggu, kami sedang mencoba mengidentifikasi masalah koneksi Anda.</string>
+    <string name="orderlist_connectivity_tool_title">Memecahkan Masalah Koneksi</string>
+    <string name="analytics_gift_cards_card_title">Kartu Hadiah</string>
+    <string name="analytics_used_title">Digunakan</string>
+    <string name="analytics_gift_cards_no_data">Tidak ada kartu hadiah pada periode ini</string>
+    <string name="login_app_password_support_button">Hubungi Dukungan</string>
+    <string name="login_app_password_continue_button">Lanjutkan</string>
+    <string name="login_app_password_instructions_footer">Jika ada masalah, silakan hubungi tim dukungan.</string>
+    <string name="login_app_password_instructions_step_3">3. Setelah koneksi selesai, Anda akan login ke toko Anda.</string>
+    <string name="login_app_password_instructions_step_2">2. Jika diminta, setujui koneksi dengan mengetuk tombol konfirmasi</string>
+    <string name="login_app_password_instructions_step_1">1. Pertama, login dengan kredensial situs Anda.</string>
+    <string name="login_app_password_instructions_title">Ikuti langkah-langkah berikut untuk menghubungkan aplikasi Woo langsung ke toko Anda dengan kata sandi aplikasi.</string>
+    <string name="login_app_password_subtitle">Alasannya mungkin karena Anda menerapkan beberapa langkah keamanan ekstra di toko Anda.</string>
+    <string name="login_app_password_title">Tidak dapat login ke toko Anda</string>
+    <string name="empty_order_detail_message">Setelah memesan, detail pesanan akan tertampil di sini.</string>
+    <string name="empty_order_detail_title">Belum Ada Detail Pesanan</string>
+    <string name="order_creation_simple_payment_migration_button">Tambahkan Jumlah Kustom</string>
+    <string name="order_creation_simple_payment_migration_message_two">Untuk menentukan jumlah pembayaran, tambahkan\njumlah kustom ke pesanan baru Anda.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Kami mengintegrasikan penagihan dengan\npembuatan pesanan agar proses lebih mudah diakses\ndan efisien.</string>
+    <string name="order_creation_simple_payment_migration_title">Tagih Pembayaran \ntelah dipindahkan</string>
+    <string name="analytics_bundles_card_title">Paket</string>
+    <string name="analytics_bundles_list_header_subtitle">Paket terjual</string>
+    <string name="analytics_bundles_list_header_title">Paket</string>
+    <string name="analytics_bundles_list_items_sold">Paket terjual</string>
+    <string name="my_store_widget_blaze_title">Kampanye Blaze</string>
+    <string name="my_store_widget_top_products_title">Produk peringkat teratas</string>
+    <string name="my_store_widget_stats_title">Statistik</string>
+    <string name="my_store_widget_onboarding_title">Penyiapan</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Penyiapan Toko</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Kampanye Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">Produk Performa Terbaik</string>
+    <string name="my_store_edit_screen_widget_stats">Statistik Toko</string>
+    <string name="my_store_edit_screen_widgets">Edit bagian toko saya</string>
     <string name="product_list_unsaved_product_unselected_message">Anda yakin ingin mengabaikan perubahan yang Anda buat pada produk ini?</string>
     <string name="product_list_unsaved_product_unselected_title">Anda akan mengabaikan perubahan pada %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">Fitur statistik tidak mendukung tampilan data pengunjung dan konversi untuk rentang tanggal acak.\n\nNamun, Anda dapat memilih nilai pada grafik untuk melihat pengunjung dan konversi pada rentang khusus tersebut.</string>
@@ -68,20 +113,17 @@ Language: id
     <string name="order_creation_tablet_mode_fragment_title">Ringkasan Pesanan</string>
     <string name="orderlist_order_trashed_error">Error saat memindahkan pesanan ke tempat sampah</string>
     <string name="orderlist_order_trashed">Pesanan dipindahkan ke tempat sampah</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Ups! Tampaknya situs Anda mengalami masalah.\n\nHubungi penyedia hosting Anda untuk mendapatkan bantuan lebih lanjut.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Ups! Tampaknya terjadi masalah dengan koneksi Jetpack Anda.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami dan kami siap membantu Anda.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Ups! Tampaknya kami tidak dapat menangani respons situs Anda.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami dan kami siap membantu Anda.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Ups! Tampaknya situs Anda merespons terlalu lama.\n\nHubungi penyedia hosting Anda untuk mendapatkan bantuan lebih lanjut.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Ups! Tampaknya saat ini kami tidak dapat terhubung dengan WordPress.com.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami dan kami siap membantu Anda.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Situs Anda tampaknya mengalami masalah.\n\nHubungi penyedia hosting Anda untuk mendapatkan bantuan lebih lanjut.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Koneksi Jetpack Anda tampaknya bermasalah.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami. Kami siap membantu Anda.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Tampaknya kami tidak dapat menangani respons situs Anda.\n\nTenang, tim dukungan kami siap membantu. Hubungi kami. Kami siap membantu Anda.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Situs Anda tampaknya merespons terlalu lama.\n\nHubungi penyedia hosting Anda untuk mendapatkan bantuan lebih lanjut.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Tampaknya Anda tidak terhubung ke internet.\n\nPastikan Wi-Fi Anda aktif. Jika Anda menggunakan data seluler, aktifkan di pengaturan perangkat Anda.</string>
     <string name="product_detail_product_not_selected">Produk tidak dipilih</string>
     <string name="orderlist_connectivity_tool_read_more_action">Baca Selengkapnya</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Hubungi Dukungan</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Pesanan situs Anda</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Situs Anda</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">Server WordPress.com</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Mengambil pesanan situs Anda</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Menyambungkan ke server WordPress.com</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Koneksi Internet</string>
-    <string name="orderlist_connectivity_tool_title">Uji Konektivitas</string>
     <string name="my_store_custom_range_content_description">Tambahkan statistik rentang tanggal kustom</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Lokasi tidak ditemukan.\nCoba lagi.</string>
     <string name="order_detail_attribution_session_page_views">Kunjungan halaman sesi</string>
@@ -736,7 +778,7 @@ Language: id
     <string name="settings_privacy_header">Privasi</string>
     <string name="settings_usage_tracking_description">Pelajari selengkapnya tentang data yang kami kumpulkan seputar toko Anda dan pilihan Anda dalam mengelola pembagian data.</string>
     <string name="settings_usage_tracking">Pelacakan Penggunaan</string>
-    <string name="settings_web_options_description">Tersedia pilihan privasi lainnya untuk pengguna woocommerce.com. Lihat di sini untuk membaca selengkapnya.</string>
+    <string name="settings_web_options_description">Pilihan privasi lainnya tersedia untuk pengguna woocommerce.com. Lihat di sini untuk membaca selengkapnya.</string>
     <string name="settings_web_options">Pilihan Web</string>
     <string name="settings_more_privacy_options_header">Pilihan privasi lainnya</string>
     <string name="settings_tracking_analytics_error_update">Terjadi error saat memperbarui pengaturan privasi Anda</string>

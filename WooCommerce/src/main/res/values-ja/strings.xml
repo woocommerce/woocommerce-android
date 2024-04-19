@@ -1,11 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-03 09:54:03+0000
+Translation-Revision-Date: 2024-04-16 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="login_app_password_exit_dialog_cancel">キャンセル</string>
+    <string name="login_app_password_exit_dialog_confirmation">終了</string>
+    <string name="login_app_password_exit_dialog_message">アプリの連携をまだ承認していないようです。 終了してもよろしいですか ?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">サイズが500x500ピクセル以上の画像を選択してください</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">無効な画像</string>
+    <string name="login_invalid_credentials_message">入力したユーザー名またはパスワードが一致しません。 ログイン情報を再確認してもう一度お試しください。</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">引き続きデータが読み込まれない場合は、サポートチームに問い合わせてサポートを受けてください。</string>
+    <string name="orderlist_connectivity_tool_summary_title">接続の問題なし</string>
+    <string name="orderlist_connectivity_tool_return_action">前の画面に戻る</string>
+    <string name="orderlist_connectivity_tool_retry_action">再度接続を試す</string>
+    <string name="orderlist_connectivity_tool_store_check_title">サイトに接続しています</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">現在 WordPress.com に接続できません。\n\n数分後にもう一度お試しください。またはサポートチームにお気軽にご相談ください。</string>
+    <string name="orderlist_connectivity_tool_subtitle">接続の問題を特定する間しばらくお待ちください。</string>
+    <string name="orderlist_connectivity_tool_title">接続をトラブルシューティング</string>
+    <string name="analytics_gift_cards_card_title">ギフトカード</string>
+    <string name="analytics_used_title">使用済み</string>
+    <string name="analytics_gift_cards_no_data">この期間はギフトカードがありません</string>
+    <string name="login_app_password_support_button">サポートに連絡</string>
+    <string name="login_app_password_continue_button">続行</string>
+    <string name="login_app_password_instructions_footer">問題が発生した場合は、サポートチームまでお問い合わせください。</string>
+    <string name="login_app_password_instructions_step_3">3. 接続完了後にストアにログインします。</string>
+    <string name="login_app_password_instructions_step_2">2. プロンプトが表示されたら確認ボタンをタップして接続を承認します。</string>
+    <string name="login_app_password_instructions_step_1">1. まず、サイトのログイン情報を使ってログインします。</string>
+    <string name="login_app_password_instructions_title">これらのステップに沿い、アプリケーションパスワードを使用して Woo アプリを直接ストアに接続します。</string>
+    <string name="login_app_password_subtitle">ストアに追加のセキュリティ措置が講じられていることが原因の可能性があります。</string>
+    <string name="login_app_password_title">ストアにログインできませんでした</string>
+    <string name="empty_order_detail_message">注文が完了すると、ここに注文の詳細が表示されます。</string>
+    <string name="empty_order_detail_title">注文の詳細はまだありません</string>
+    <string name="order_creation_simple_payment_migration_button">カスタム金額を追加</string>
+    <string name="order_creation_simple_payment_migration_message_two">支払額を設定するには\n新規注文にカスタム金額を追加してください。</string>
+    <string name="order_creation_simple_payment_migration_message_one">支払いの受け取りと\n注文の作成を統合したことでアクセスしやすくなり、\nさらに高機能になりました。</string>
+    <string name="order_creation_simple_payment_migration_title">支払いを受け取る \nは移動しました</string>
+    <string name="analytics_bundles_card_title">パッケージ</string>
+    <string name="analytics_bundles_list_header_subtitle">販売済みパッケージ</string>
+    <string name="analytics_bundles_list_header_title">パッケージ</string>
+    <string name="analytics_bundles_list_items_sold">販売済みパッケージ</string>
+    <string name="my_store_widget_blaze_title">Blaze キャンペーン</string>
+    <string name="my_store_widget_top_products_title">上位の商品</string>
+    <string name="my_store_widget_stats_title">統計情報</string>
+    <string name="my_store_widget_onboarding_title">オンボーディング</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">ストアのオンボーディング</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze キャンペーン</string>
+    <string name="my_store_edit_screen_widget_top_performers">上位パフォーマンスの商品</string>
+    <string name="my_store_edit_screen_widget_stats">ストアの統計情報</string>
+    <string name="my_store_edit_screen_widgets">自分のストアのセクションを編集</string>
     <string name="product_list_unsaved_product_unselected_message">この商品に加えた変更を破棄してもよいですか ?</string>
     <string name="product_list_unsaved_product_unselected_title">%s への変更を破棄しようとしています</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">統計機能は、任意の日付範囲の訪問者データおよびコンバージョンデータの表示をサポートしていません。\n\nただし、グラフ上で値をタップすると、その特定の範囲の訪問者とコンバージョンを表示できます。</string>
@@ -68,21 +113,18 @@ Language: ja_JP
     <string name="order_creation_tablet_mode_fragment_title">ご注文内容</string>
     <string name="orderlist_order_trashed_error">注文をゴミ箱へ移動する際にエラーが発生しました</string>
     <string name="orderlist_order_trashed">注文をゴミ箱へ移動しました</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">エラーです。 サイトに問題があるようです。\n\nホスティングサービスに連絡のうえサポートを受けてください。</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">エラーです。 Jetpack 連携に問題があるようです。\n\nしかしご安心ください。サポートチームがお手伝いします。 いつでもお気軽にご相談ください。</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">エラーです。 サイトの応答が正常に機能していないようです。\n\nしかしご安心ください。サポートチームがお手伝いします。 いつでもお気軽にご相談ください。</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">エラーです。 サイトの応答が遅すぎるようです。\n\nホスティングサービスに連絡のうえサポートを受けてください。</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">エラーです。 現在 WordPress.com に接続できないようです。\n\nしかしご安心ください。サポートチームがお手伝いします。 いつでもお気軽にご相談ください。</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">サイトに問題があるようです。\n\nホスティングサービスに連絡のうえサポートを受けてください。</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">インターネットに接続されていないようです。\n\nWi-Fi がオンになっていることをご確認ください。 モバイルデータを使用している場合、デバイスの設定で有効になっていることを確認してください。 </string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Jetpack 連携に問題があるようです。\n\nしかしご安心ください。サポートチームがお手伝いします。 いつでもお気軽にご相談ください。</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">サイトの応答が正常に機能していないようです。\n\nしかしご安心ください。サポートチームがお手伝いします。 いつでもお気軽にご相談ください。</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">サイトの応答が遅すぎるようです。\n\nホスティングサービスに連絡のうえサポートを受けてください。</string>
     <string name="product_detail_product_not_selected">商品が選択されていません</string>
     <string name="orderlist_connectivity_tool_read_more_action">続きを読む</string>
     <string name="orderlist_connectivity_tool_contact_support_action">サポートに連絡</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">サイトの注文</string>
-    <string name="orderlist_connectivity_tool_store_check_title">サイト</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com サーバー</string>
     <string name="orderlist_connectivity_tool_internet_check_title">インターネット接続</string>
-    <string name="orderlist_connectivity_tool_title">接続テスト</string>
     <string name="my_store_custom_range_content_description">カスタム日付範囲の指標を追加</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">サイトの注文を取得しています</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com サーバーに接続しています</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">場所が見つかりませんでした。\nもう一度お試しください。</string>
     <string name="order_detail_attribution_session_page_views">セッションページ表示数</string>
     <string name="order_detail_attribution_device_type">端末タイプ</string>

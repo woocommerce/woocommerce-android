@@ -1,11 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 15:54:03+0000
+Translation-Revision-Date: 2024-04-16 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="login_app_password_exit_dialog_cancel">Abbrechen</string>
+    <string name="login_app_password_exit_dialog_confirmation">Trotzdem beenden</string>
+    <string name="login_app_password_exit_dialog_message">Du hast die App-Verbindung anscheinend noch nicht genehmigt. Bist du sicher, dass du den Vorgang beenden möchtest?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Bitte wähle ein Bild aus, das mindestens 500 x 500 Pixel groß ist</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Ungültiges Bild</string>
+    <string name="login_invalid_credentials_message">Der eingegebene Benutzername und das eingegebene Passwort stimmen offenbar nicht überein. Überprüfe deine Anmeldedaten und versuche es noch einmal.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Wenn deine Daten immer noch nicht geladen werden, wende dich an unser Support-Team, um Unterstützung zu erhalten.</string>
+    <string name="orderlist_connectivity_tool_summary_title">Keine Verbindungsprobleme</string>
+    <string name="orderlist_connectivity_tool_return_action">Zurück zum vorherigen Bildschirm</string>
+    <string name="orderlist_connectivity_tool_retry_action">Verbindung erneut versuchen</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Verbindung mit deiner Website wird hergestellt</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Es kann derzeit keine Verbindung zu WordPress.com hergestellt werden.\n\nVersuche es in ein paar Minuten erneut oder kontaktiere unser Support-Team. Wir helfen dir gerne weiter.</string>
+    <string name="orderlist_connectivity_tool_subtitle">Bitte warte, während wir versuchen, dein Verbindungsproblem zu identifizieren.</string>
+    <string name="orderlist_connectivity_tool_title">Problembehandlung der Verbindung</string>
+    <string name="analytics_gift_cards_card_title">Geschenkkarten</string>
+    <string name="analytics_used_title">Verwendet</string>
+    <string name="analytics_gift_cards_no_data">Keine Geschenkkarten in diesem Zeitraum</string>
+    <string name="login_app_password_support_button">Support kontaktieren</string>
+    <string name="login_app_password_continue_button">Weiter</string>
+    <string name="login_app_password_instructions_footer">Wende dich bei Problemen an unser Support-Team.</string>
+    <string name="login_app_password_instructions_step_3">3. Wenn der Verbindungsvorgang abgeschlossen ist, wirst du in deinem Shop angemeldet.</string>
+    <string name="login_app_password_instructions_step_2">2. Genehmige die Verbindung über den Button zum Bestätigen, sobald du dazu aufgefordert wirst.</string>
+    <string name="login_app_password_instructions_step_1">1. Melde dich mit deinen Website-Anmeldedaten an.</string>
+    <string name="login_app_password_instructions_title">Befolge diese Schritte, um deine Woo-App mithilfe eines Anwendungspassworts direkt mit deinem Shop zu verbinden.</string>
+    <string name="login_app_password_subtitle">Dies liegt wahrscheinlich daran, dass dein Shop über einige zusätzliche Sicherheitsschritte verfügt.</string>
+    <string name="login_app_password_title">Die Anmeldung in deinem Shop ist fehlgeschlagen</string>
+    <string name="empty_order_detail_message">Wenn du eine Bestellung getätigt hast, werden deine Bestelldetails hier angezeigt.</string>
+    <string name="empty_order_detail_title">Noch keine Bestelldetails vorhanden</string>
+    <string name="order_creation_simple_payment_migration_button">Individuellen Betrag hinzufügen</string>
+    <string name="order_creation_simple_payment_migration_message_two">Um einen Zahlungsbetrag festzulegen, füge\ndeiner neuen Bestellung einen individuellen Betrag hinzu.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Wir haben die Funktion zum Empfang von Zahlungen mit der\nBestellerstellung kombiniert – für ein zugänglicheres\nund leistungsstärkeres Erlebnis.</string>
+    <string name="order_creation_simple_payment_migration_title">Die Funktion zum Empfang von Zahlungen \nwurde verschoben</string>
+    <string name="analytics_bundles_card_title">Pakete</string>
+    <string name="analytics_bundles_list_header_subtitle">Verkaufte Pakete</string>
+    <string name="analytics_bundles_list_header_title">Pakete</string>
+    <string name="analytics_bundles_list_items_sold">Verkaufte Pakete</string>
+    <string name="my_store_widget_blaze_title">Blaze-Kampagnen</string>
+    <string name="my_store_widget_top_products_title">Beste Produkte</string>
+    <string name="my_store_widget_stats_title">Statistiken</string>
+    <string name="my_store_widget_onboarding_title">Einführung</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Shop-Einführung</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze-Kampagnen</string>
+    <string name="my_store_edit_screen_widget_top_performers">Produkte, die am besten performen</string>
+    <string name="my_store_edit_screen_widget_stats">Shop-Statistiken</string>
+    <string name="my_store_edit_screen_widgets">Abschnitte meines Shops bearbeiten</string>
     <string name="product_list_unsaved_product_unselected_message">Bist du sicher, dass du die an diesem Produkt vorgenommenen Änderungen verwerfen möchtest?</string>
     <string name="product_list_unsaved_product_unselected_title">Du bist im Begriff, Änderungen an %s zu verwerfen</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">Die Statistiken-Funktion unterstützt nicht die Anzeige von Besucher- und Konversionsdaten für beliebige Zeiträume.\n\nDu kannst jedoch auf einen Wert im Diagramm tippen, um Besucher- und Konversionsdaten für diesen spezifischen Zeitraum anzuzeigen.</string>
@@ -68,20 +113,17 @@ Language: de
     <string name="order_creation_tablet_mode_fragment_title">Zusammenfassung der Bestellung</string>
     <string name="orderlist_order_trashed_error">Fehler beim Verschieben der Bestellung in den Papierkorb</string>
     <string name="orderlist_order_trashed">Bestellung in den Papierkorb verschoben</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Ups! Es scheint ein Problem mit deiner Website zu geben.\n\nKontaktiere deinen Hosting-Anbieter für weitere Unterstützung.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Ups! Es scheint ein Problem mit deiner Jetpack-Verbindung zu geben.\n\nAber keine Sorge, unser Support-Team wird dich unterstützen. Kontaktiere uns und wir helfen dir gerne weiter.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Ups! Wir können mit der Antwort deiner Website anscheinend nicht richtig arbeiten.\n\nAber keine Sorge, unser Support-Team wird dich unterstützen. Kontaktiere uns und wir helfen dir gerne weiter.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Ups! Deine Website braucht scheinbar zu lange, um zu antworten.\n\nKontaktiere deinen Hosting-Anbieter für weitere Unterstützung.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Ups! Wir können derzeit scheinbar keine Verbindung zu WordPress.com herstellen.\n\nAber keine Sorge, unser Support-Team wird dich unterstützen. Kontaktiere uns und wir helfen dir gerne weiter.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Anscheinend gibt es ein Problem mit deiner Website.\n\nKontaktiere deinen Hosting-Anbieter, um weitere Unterstützung zu erhalten.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Anscheinend gibt es ein Problem mit deiner Jetpack-Verbindung.\n\nAber keine Sorge, unser Support-Team wird dich unterstützen. Kontaktiere uns und wir helfen dir gerne weiter.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Wir können mit der Antwort deiner Website anscheinend nicht richtig arbeiten.\n\nAber keine Sorge, unser Support-Team wird dich unterstützen. Kontaktiere uns und wir helfen dir gerne weiter.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Deine Website braucht anscheinend zu lange, um zu antworten.\n\nKontaktiere deinen Hosting-Anbieter, um weitere Unterstützung zu erhalten.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Du bist scheinbar nicht mit dem Internet verbunden.\n\nStelle sicher, dass dein WLAN eingeschaltet ist. Falls du mobile Daten verwendest, solltest du prüfen, ob sie in deinen Geräteeinstellungen aktiviert sind.</string>
     <string name="product_detail_product_not_selected">Produkt nicht ausgewählt</string>
     <string name="orderlist_connectivity_tool_read_more_action">Weitere Informationen</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Support kontaktieren</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Bestellungen über deine Website</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Deine Website</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com-Server</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Befehle deiner Website werden abgerufen</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Verbindung zu den Servern von WordPress.com wird hergestellt</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Internetverbindung</string>
-    <string name="orderlist_connectivity_tool_title">Verbindungstest</string>
     <string name="my_store_custom_range_content_description">Statistiken zum angepassten Zeitraum hinzufügen</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Kein Ort gefunden.\nBitte versuche es erneut.</string>
     <string name="order_detail_attribution_session_page_views">Seitenaufrufe der Sitzung</string>
@@ -736,7 +778,7 @@ Language: de
     <string name="settings_privacy_header">Datenschutz</string>
     <string name="settings_usage_tracking_description">Weitere Informationen zu den Daten, die wir über deinen Shop erfassen, sowie deinen Optionen zum Kontrollieren dieser Datenfreigabe.</string>
     <string name="settings_usage_tracking">Nutzungsaufzeichnung</string>
-    <string name="settings_web_options_description">Weitere Datenschutz-Optionen für woocommerce.com-Benutzer verfügbar. Hier erfährst du mehr.</string>
+    <string name="settings_web_options_description">Es sind weitere Datenschutz-Optionen für woocommerce.com-Benutzer verfügbar. Hier erhältst du weitere Informationen.</string>
     <string name="settings_web_options">Web-Optionen</string>
     <string name="settings_more_privacy_options_header">Mehr Datenschutz-Optionen</string>
     <string name="settings_tracking_analytics_error_update">Beim Aktualisieren deiner Privatsphäre-Einstellungen ist ein Fehler aufgetreten</string>
