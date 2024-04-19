@@ -38,6 +38,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -66,10 +67,18 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
 ) : ScopedViewModel(savedStateHandle) {
+    private val dateRangeFormatter = DashboardStatsRangeFormatter()
+
     private var _hasOrders = MutableLiveData<OrderState>()
 
     private val _selectedDateRange = getSelectedDateRange()
-    val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
+    val dateRange = combine(_selectedDateRange, customDateRangeDataStore.dateRange) { selectedRange, custom ->
+        DateRangeState(
+            rangeSelection = selectedRange,
+            customRange = custom,
+            rangeFormatted = dateRangeFormatter.formatRangeDate(selectedRange)
+        )
+    }.asLiveData()
 
     private var _revenueStatsState = MutableLiveData<RevenueStatsViewState>()
     val revenueStatsState: LiveData<RevenueStatsViewState> = _revenueStatsState
@@ -114,7 +123,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
             )
         )
 
-        if (selectedDateRange.value?.selectionType != SelectionType.CUSTOM) {
+        if (dateRange.value?.rangeSelection?.selectionType != SelectionType.CUSTOM) {
             onTabSelected(SelectionType.CUSTOM)
         }
         viewModelScope.launch {
@@ -140,7 +149,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
     fun onViewAnalyticsClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
-        selectedDateRange.value?.let {
+        dateRange.value?.rangeSelection?.let {
             triggerEvent(OpenAnalytics(it))
         }
     }
@@ -273,6 +282,12 @@ class DashboardStatsViewModel @AssistedInject constructor(
             val totalVisitorCount: Int?
         ) : VisitorStatsViewState()
     }
+
+    data class DateRangeState(
+        val rangeSelection: StatsTimeRangeSelection,
+        val customRange: StatsTimeRange?,
+        val rangeFormatted: String
+    )
 
     data class RevenueStatsUiModel(
         val intervalList: List<StatsIntervalUiModel> = emptyList(),

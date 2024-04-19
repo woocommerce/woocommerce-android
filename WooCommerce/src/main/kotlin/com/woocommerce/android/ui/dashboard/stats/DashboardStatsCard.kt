@@ -12,7 +12,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -29,10 +28,8 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
-import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
@@ -63,7 +60,7 @@ fun DashboardStatsCard(
     )
 ) {
     val customRange by viewModel.customRange.observeAsState()
-    val selectedDateRange by viewModel.selectedDateRange.observeAsState()
+    val dateRange by viewModel.dateRange.observeAsState()
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
@@ -97,7 +94,7 @@ fun DashboardStatsCard(
         )
     ) {
         DashboardStatsCard(
-            selectedDateRange = selectedDateRange,
+            dateRange = dateRange,
             customRange = customRange,
             revenueStatsState = revenueStatsState,
             visitorsStatsState = visitorsStatsState,
@@ -114,7 +111,7 @@ fun DashboardStatsCard(
 
 @Composable
 fun DashboardStatsCard(
-    selectedDateRange: StatsTimeRangeSelection?,
+    dateRange: DashboardStatsViewModel.DateRangeState?,
     customRange: StatsTimeRange?,
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
@@ -129,13 +126,12 @@ fun DashboardStatsCard(
 
     Column {
         StatsHeader(
-            selectedDateRange = selectedDateRange,
-            dateUtils = dateUtils,
+            dateRange = dateRange,
             modifier = Modifier.fillMaxWidth()
         )
         Divider()
         StatsChart(
-            selectedDateRange = selectedDateRange,
+            dateRange = dateRange,
             customRange = customRange,
             revenueStatsState = revenueStatsState,
             visitorsStatsState = visitorsStatsState,
@@ -151,23 +147,12 @@ fun DashboardStatsCard(
     }
 }
 
-@Suppress("UNUSED_PARAMETER")
 @Composable
 private fun StatsHeader(
-    selectedDateRange: StatsTimeRangeSelection?,
-    dateUtils: DateUtils,
+    dateRange: DashboardStatsViewModel.DateRangeState?,
     modifier: Modifier = Modifier
 ) {
-    if (selectedDateRange == null) return
-
-    val dateRange by remember {
-        derivedStateOf {
-            // TODO
-            return@derivedStateOf selectedDateRange.currentRange.start.formatToYYYYmmDD() +
-                " – " +
-                selectedDateRange.currentRange.end.formatToYYYYmmDD()
-        }
-    }
+    if (dateRange == null) return
 
     Row(
         modifier = modifier.padding(
@@ -178,7 +163,7 @@ private fun StatsHeader(
     ) {
         Text(
             text = stringResource(
-                id = when (selectedDateRange.selectionType) {
+                id = when (dateRange.rangeSelection.selectionType) {
                     SelectionType.TODAY -> R.string.today
                     SelectionType.WEEK_TO_DATE -> R.string.this_week
                     SelectionType.MONTH_TO_DATE -> R.string.this_month
@@ -191,7 +176,7 @@ private fun StatsHeader(
             color = MaterialTheme.colors.onSurface
         )
         Text(
-            text = dateRange,
+            text = dateRange.rangeFormatted,
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
         )
@@ -200,7 +185,7 @@ private fun StatsHeader(
 
 @Composable
 private fun StatsChart(
-    selectedDateRange: StatsTimeRangeSelection?,
+    dateRange: DashboardStatsViewModel.DateRangeState?,
     customRange: StatsTimeRange?,
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
@@ -259,9 +244,9 @@ private fun StatsChart(
         statsView.handleCustomRangeTab(customRange)
     }
 
-    LaunchedEffect(selectedDateRange) {
-        selectedDateRange?.let { statsView.loadDashboardStats(it) }
-        val selectionType = selectedDateRange?.selectionType
+    LaunchedEffect(dateRange) {
+        dateRange?.rangeSelection?.let { statsView.loadDashboardStats(it) }
+        val selectionType = dateRange?.rangeSelection?.selectionType
         if (statsView.tabLayout.getTabAt(statsView.tabLayout.selectedTabPosition)?.tag != selectionType) {
             val index = (0..statsView.tabLayout.tabCount)
                 .firstOrNull { statsView.tabLayout.getTabAt(it)?.tag == selectionType }
