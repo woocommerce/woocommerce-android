@@ -7,10 +7,8 @@ import com.woocommerce.android.extensions.formatToMMMMyyyy
 import com.woocommerce.android.extensions.formatToYYYY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.dashboard.data.asRevenueRangeId
 import com.woocommerce.android.util.DateUtils
-import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import javax.inject.Inject
 
 class DashboardStatsRangeFormatter @Inject constructor(private val dateUtils: DateUtils) {
@@ -29,29 +27,18 @@ class DashboardStatsRangeFormatter @Inject constructor(private val dateUtils: Da
         }
     }
 
-    fun formatSelectedDate(dateString: String, rangeSelection: StatsTimeRangeSelection) : String {
+    fun formatSelectedDate(dateString: String, rangeSelection: StatsTimeRangeSelection) : String? {
         return when (rangeSelection.selectionType) {
             SelectionType.TODAY -> dateUtils.getFriendlyDayHourString(dateString).orEmpty()
             SelectionType.WEEK_TO_DATE -> dateUtils.getShortMonthDayString(dateString).orEmpty()
             SelectionType.MONTH_TO_DATE -> dateUtils.getLongMonthDayString(dateString).orEmpty()
             SelectionType.YEAR_TO_DATE -> dateUtils.getFriendlyLongMonthYear(dateString).orEmpty()
-            SelectionType.CUSTOM -> getDisplayDateForGranularity(
-                dateString,
-                rangeSelection.revenueStatsGranularity
-            )
+            // For custom ranges, we don't display the selected date
+            SelectionType.CUSTOM -> null
 
             else -> error("Unsupported range value used in dashboard card: ${rangeSelection.selectionType}")
-        }.also { result -> trackUnexpectedFormat(result, dateString, rangeSelection) }
+        }?.also { result -> trackUnexpectedFormat(result, dateString, rangeSelection) }
     }
-
-    private fun getDisplayDateForGranularity(dateString: String, statsGranularity: StatsGranularity): String =
-        when (statsGranularity) {
-            StatsGranularity.HOURS -> dateUtils.getShortHourString(dateString).orEmpty()
-            StatsGranularity.DAYS -> dateUtils.getDayString(dateString).orEmpty()
-            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayStringForWeek(dateString).orEmpty()
-            StatsGranularity.MONTHS -> dateUtils.getShortMonthString(dateString).orEmpty()
-            StatsGranularity.YEARS -> dateString
-        }
 
     private fun trackUnexpectedFormat(result: String, dateString: String, rangeSelection: StatsTimeRangeSelection) {
         if (result.isEmpty()) {

@@ -1,20 +1,26 @@
 package com.woocommerce.android.ui.dashboard.stats
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -126,6 +132,7 @@ fun DashboardStatsCard(
     Column {
         StatsHeader(
             dateRange = dateRange,
+            onCustomRangeClick = onAddCustomRangeClick,
             modifier = Modifier.fillMaxWidth()
         )
         Divider()
@@ -149,16 +156,17 @@ fun DashboardStatsCard(
 @Composable
 private fun StatsHeader(
     dateRange: DashboardStatsViewModel.DateRangeState?,
+    onCustomRangeClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (dateRange == null) return
 
     Row(
         modifier = modifier.padding(
-            horizontal = dimensionResource(id = R.dimen.major_100),
-            vertical = dimensionResource(id = R.dimen.minor_100)
+            horizontal = dimensionResource(id = R.dimen.major_100)
         ),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = stringResource(
@@ -174,11 +182,29 @@ private fun StatsHeader(
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.onSurface
         )
-        Text(
-            text = dateRange.selectedDateFormatted ?: dateRange.rangeFormatted,
-            style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-        )
+        val isCustomRange = dateRange.rangeSelection.selectionType == SelectionType.CUSTOM
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100)),
+            modifier = Modifier
+                .then(if (isCustomRange) Modifier.clickable(onClick = onCustomRangeClick) else Modifier)
+                .padding(dimensionResource(id = R.dimen.minor_100))
+        ) {
+            Text(
+                text = dateRange.selectedDateFormatted ?: dateRange.rangeFormatted,
+                style = MaterialTheme.typography.body2,
+                color = if (isCustomRange) MaterialTheme.colors.primary
+                else MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+            )
+            if (isCustomRange) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary,
+                    modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40))
+                )
+            }
+        }
     }
 }
 
