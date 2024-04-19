@@ -22,7 +22,6 @@ import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
-import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -54,7 +53,6 @@ class DashboardViewModel @Inject constructor(
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     dashboardTransactionLauncher: DashboardTransactionLauncher,
-    getSelectedDateRange: GetSelectedDateRange,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
     private val dashboardRepository: DashboardRepository
 ) : ScopedViewModel(savedState) {

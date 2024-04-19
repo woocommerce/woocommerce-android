@@ -5,10 +5,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
-import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -30,11 +27,9 @@ class DashboardViewModelTest : BaseUnitTest() {
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val myStoreTransactionLauncher: DashboardTransactionLauncher = mock()
-    private val customDateRangeDataStore: CustomDateRangeDataStore = mock()
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock {
         onBlocking { invoke() } doReturn true
     }
-    private val dateUtils: DateUtils = mock()
     private val dashboardRepository: DashboardRepository = mock {
         onBlocking { widgets } doReturn flowOf(emptyList())
     }
@@ -44,15 +39,8 @@ class DashboardViewModelTest : BaseUnitTest() {
     suspend fun setup(prepareMocks: suspend () -> Unit) {
         prepareMocks()
 
-        val getSelectedDateRange = GetSelectedDateRange(
-            customDateRangeDataStore = customDateRangeDataStore,
-            appPrefs = appPrefsWrapper,
-            dateUtils = dateUtils
-        )
-
         viewModel = DashboardViewModel(
             savedState = SavedStateHandle(),
-            getSelectedDateRange = getSelectedDateRange,
             appPrefsWrapper = appPrefsWrapper,
             dashboardTransactionLauncher = myStoreTransactionLauncher,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
