@@ -133,7 +133,6 @@ private fun DashboardStatsContent(
     onTabSelected: (SelectionType) -> Unit,
     onChartDateSelected: (String?) -> Unit
 ) {
-
     Column {
         StatsHeader(
             dateRange = dateRange,
@@ -208,8 +207,11 @@ private fun StatsHeader(
             Text(
                 text = dateRange.selectedDateFormatted ?: dateRange.rangeFormatted,
                 style = MaterialTheme.typography.body2,
-                color = if (isCustomRange) MaterialTheme.colors.primary
-                else MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                color = if (isCustomRange) {
+                    MaterialTheme.colors.primary
+                } else {
+                    MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                }
             )
             if (isCustomRange) {
                 Icon(
@@ -233,32 +235,30 @@ private fun StatsHeader(
                 )
             }
 
-            if (isMenuExpanded) {
-                DropdownMenu(
-                    expanded = isMenuExpanded,
-                    onDismissRequest = { isMenuExpanded = false }
-                ) {
-                    DashboardViewModel.SUPPORTED_RANGES_ON_MY_STORE_TAB.forEach {
-                        DropdownMenuItem(
-                            onClick = {
-                                onTabSelected(it)
-                                isMenuExpanded = false
-                            }
+            DropdownMenu(
+                expanded = isMenuExpanded,
+                onDismissRequest = { isMenuExpanded = false }
+            ) {
+                DashboardViewModel.SUPPORTED_RANGES_ON_MY_STORE_TAB.forEach {
+                    DropdownMenuItem(
+                        onClick = {
+                            onTabSelected(it)
+                            isMenuExpanded = false
+                        }
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
                         ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
-                            ) {
-                                Text(text = it.title)
-                                Spacer(modifier = Modifier.weight(1f))
-                                if (dateRange.rangeSelection.selectionType == it) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = stringResource(id = androidx.compose.ui.R.string.selected),
-                                        tint = MaterialTheme.colors.primary
-                                    )
-                                } else {
-                                    Spacer(modifier = Modifier.size(dimensionResource(R.dimen.image_minor_50)))
-                                }
+                            Text(text = it.title)
+                            Spacer(modifier = Modifier.weight(1f))
+                            if (dateRange.rangeSelection.selectionType == it) {
+                                Icon(
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = stringResource(id = androidx.compose.ui.R.string.selected),
+                                    tint = MaterialTheme.colors.primary
+                                )
+                            } else {
+                                Spacer(modifier = Modifier.size(dimensionResource(R.dimen.image_minor_50)))
                             }
                         }
                     }

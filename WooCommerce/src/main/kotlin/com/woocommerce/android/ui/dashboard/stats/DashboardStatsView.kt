@@ -10,7 +10,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.ColorRes
-import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnDetach
 import androidx.core.view.isVisible
@@ -139,7 +138,7 @@ class DashboardStatsView @JvmOverloads constructor(
     private lateinit var onDateSelected: (String?) -> Unit
 
     init {
-        // TODO: Remove those views from the layout when releasing Dynamic Dashboard
+        // TODO Remove those views from the layout when releasing Dynamic Dashboard
         customRangeLabel.isVisible = false
         statsDateValue.isVisible = false
         binding.statsTabLayout.isVisible = false
@@ -147,6 +146,7 @@ class DashboardStatsView @JvmOverloads constructor(
         binding.viewAnalyticsButton.isVisible = false
     }
 
+    @Suppress("LongParameterList")
     fun initView(
         dateUtils: DateUtils,
         currencyFormatter: CurrencyFormatter,
@@ -653,18 +653,6 @@ class DashboardStatsView @JvmOverloads constructor(
             Entry((index + 1).toFloat(), value.toFloat())
         }
         return LineDataSet(entries, "")
-    }
-
-    @StringRes
-    private fun getStringForRangeType(rangeType: SelectionType): Int {
-        return when (rangeType) {
-            SelectionType.TODAY -> R.string.today
-            SelectionType.WEEK_TO_DATE -> R.string.this_week
-            SelectionType.MONTH_TO_DATE -> R.string.this_month
-            SelectionType.YEAR_TO_DATE -> R.string.this_year
-            SelectionType.CUSTOM -> R.string.orderfilters_date_range_filter_custom_range
-            else -> error("Unsupported range value used in my store tab: $rangeType")
-        }
     }
 
     private fun getStringForGranularity(granularity: StatsGranularity): String {
