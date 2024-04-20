@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -49,7 +50,8 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 @Suppress("LongParameterList")
 class DashboardBlazeViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
-    @Assisted parentViewModel: DashboardViewModel,
+    // TODO make this non-nullable when enabling [FeatureFlag.DYNAMIC_DASHBOARD]
+    @Assisted parentViewModel: DashboardViewModel?,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
@@ -58,7 +60,8 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val refreshTrigger = parentViewModel
-        .refreshTrigger
+        ?.refreshTrigger
+        ?: emptyFlow<RefreshEvent>()
         .onStart { emit(RefreshEvent()) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -234,6 +237,6 @@ class DashboardBlazeViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(parentViewModel: DashboardViewModel): DashboardBlazeViewModel
+        fun create(parentViewModel: DashboardViewModel?): DashboardBlazeViewModel
     }
 }
