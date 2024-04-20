@@ -42,6 +42,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
@@ -101,7 +102,7 @@ fun DashboardStatsCard(
             )
         )
     ) {
-        DashboardStatsCard(
+        DashboardStatsContent(
             dateRange = dateRange,
             revenueStatsState = revenueStatsState,
             visitorsStatsState = visitorsStatsState,
@@ -118,7 +119,7 @@ fun DashboardStatsCard(
 }
 
 @Composable
-fun DashboardStatsCard(
+private fun DashboardStatsContent(
     dateRange: DashboardStatsViewModel.DateRangeState?,
     revenueStatsState: DashboardStatsViewModel.RevenueStatsViewState?,
     visitorsStatsState: DashboardStatsViewModel.VisitorStatsViewState?,
@@ -148,11 +149,20 @@ fun DashboardStatsCard(
             dateUtils = dateUtils,
             currencyFormatter = currencyFormatter,
             usageTracksEventEmitter = usageTracksEventEmitter,
-            onViewAnalyticsClick = onViewAnalyticsClick,
             onAddCustomRangeClick = onAddCustomRangeClick,
             onChartDateSelected = onChartDateSelected,
             modifier = Modifier.fillMaxWidth()
         )
+
+        WCTextButton(
+            onClick = onViewAnalyticsClick,
+            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        ) {
+            Text(
+                text = stringResource(id = R.string.analytics_section_see_all),
+                style = MaterialTheme.typography.body1
+            )
+        }
     }
 }
 
@@ -252,7 +262,6 @@ private fun StatsChart(
     dateUtils: DateUtils,
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
-    onViewAnalyticsClick: () -> Unit,
     onAddCustomRangeClick: () -> Unit,
     onChartDateSelected: (String?) -> Unit,
     modifier: Modifier = Modifier
@@ -267,7 +276,7 @@ private fun StatsChart(
                 currencyFormatter = currencyFormatter,
                 usageTracksEventEmitter = usageTracksEventEmitter,
                 lifecycleScope = lifecycleScope,
-                onViewAnalyticsClick = onViewAnalyticsClick,
+                onViewAnalyticsClick = {},
                 onDateSelected = onChartDateSelected
             )
         }

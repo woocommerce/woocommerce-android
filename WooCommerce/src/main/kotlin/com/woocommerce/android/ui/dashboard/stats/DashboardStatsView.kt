@@ -144,6 +144,7 @@ class DashboardStatsView @JvmOverloads constructor(
         statsDateValue.isVisible = false
         binding.statsTabLayout.isVisible = false
         customRangeButton.isVisible = false
+        binding.viewAnalyticsButton.isVisible = false
     }
 
     fun initView(
