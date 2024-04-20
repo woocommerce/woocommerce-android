@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -159,8 +160,9 @@ private fun TopPerformersContent(
         TopPerformersDatePicker(
             selectedDateRange,
             onGranularityChanged,
-            onEditCustomRangeTapped
+            onEditCustomRangeTapped,
         )
+        Divider(modifier = Modifier.padding(bottom = 16.dp))
         Row(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp)
         ) {
@@ -182,7 +184,8 @@ private fun TopPerformersContent(
             topPerformersState?.isError == true -> TopPerformersErrorView()
             topPerformersState?.topPerformers.isNullOrEmpty() -> TopPerformersEmptyView()
             else -> TopPerformerProductList(
-                topPerformers = topPerformersState?.topPerformers!!
+                topPerformers = topPerformersState?.topPerformers!!,
+                modifier = Modifier.padding(top = 8.dp)
             )
         }
 
@@ -206,11 +209,13 @@ private fun TopPerformersDatePicker(
     selectedDateRange: StatsTimeRangeSelection?,
     onGranularityChanged: (SelectionType) -> Unit,
     onCustomRangeClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val isCustomRange = selectedDateRange?.selectionType == StatsTimeRangeSelection.SelectionType.CUSTOM
     Row(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = modifier.padding(start = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Text(
             text = stringResource(
@@ -226,14 +231,17 @@ private fun TopPerformersDatePicker(
             Text(
                 text = selectedDateRange?.currentRangeDescription ?: "",
                 style = MaterialTheme.typography.body2,
-                color = colorResource(id = R.color.color_on_surface_medium_selector)
+                color = if (isCustomRange) colorResource(id = R.color.color_primary)
+                else colorResource(id = R.color.color_on_surface_medium_selector)
             )
             if (isCustomRange) {
                 Icon(
-                    modifier = Modifier.padding(start = 8.dp),
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(16.dp),
                     painter = painterResource(id = R.drawable.ic_edit_pencil),
                     contentDescription = "",
-                    tint = colorResource(id = R.color.color_on_surface_medium_selector)
+                    tint = colorResource(id = R.color.color_primary)
                 )
             }
         }
@@ -252,7 +260,7 @@ private fun TopPerformersDateGranularityDropDown(
     onGranularityChanged: (SelectionType) -> Unit
 ) {
     var showDropDown by remember { mutableStateOf(false) }
-    Box(modifier = Modifier.padding(top = 8.dp)) {
+    Box {
         IconButton(onClick = { showDropDown = !showDropDown }) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_calendar_16),
@@ -261,6 +269,7 @@ private fun TopPerformersDateGranularityDropDown(
             )
         }
         DropdownMenu(
+            modifier = Modifier.width(250.dp),
             offset = DpOffset(
                 x = dimensionResource(id = R.dimen.major_100),
                 y = 0.dp
@@ -270,7 +279,7 @@ private fun TopPerformersDateGranularityDropDown(
         ) {
             dateGranularityOptions.forEach { granularity ->
                 DropdownMenuItem(
-                    modifier = Modifier.height(28.dp),
+                    modifier = Modifier.height(40.dp),
                     onClick = {
                         onGranularityChanged(granularity)
                         showDropDown = false
@@ -301,10 +310,11 @@ private fun TopPerformerProductList(
 ) {
     Column(modifier = modifier) {
         topPerformers.forEachIndexed { index, product ->
-            TopPerformerProductItem(topPerformer = product, onItemClicked = product.onClick)
-            if (index < topPerformers.size - 1) {
-                Divider()
-            }
+            TopPerformerProductItem(
+                topPerformer = product,
+                onItemClicked = product.onClick,
+                displayDivider = index != topPerformers.size - 1
+            )
         }
     }
 }
@@ -384,40 +394,42 @@ fun TopPerformerSkeletonItem() {
 private fun TopPerformerProductItem(
     topPerformer: TopPerformerProductUiModel,
     onItemClicked: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    displayDivider: Boolean
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onItemClicked(topPerformer.productId) }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp),
     ) {
         ProductThumbnail(
             imageUrl = topPerformer.imageUrl ?: "",
             contentDescription = stringResource(id = R.string.product_image_content_description),
         )
-        Column(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .weight(1f)
-        ) {
-            Text(
-                text = topPerformer.name,
-                style = MaterialTheme.typography.subtitle1,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+        Column(modifier = Modifier.padding(start = 8.dp)) {
+            Row(modifier = Modifier.padding(bottom = 4.dp, end = 16.dp)) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = topPerformer.name,
+                    style = MaterialTheme.typography.subtitle1,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = topPerformer.timesOrdered,
+                    style = MaterialTheme.typography.subtitle1,
+                )
+            }
             Text(
                 text = topPerformer.netSales,
                 style = MaterialTheme.typography.body2,
                 color = colorResource(id = R.color.color_on_surface_medium_selector)
             )
+            if (displayDivider) {
+                Divider(modifier = Modifier.padding(top = 8.dp))
+            }
         }
-        Text(
-            text = topPerformer.timesOrdered,
-            style = MaterialTheme.typography.subtitle1,
-        )
     }
 }
 

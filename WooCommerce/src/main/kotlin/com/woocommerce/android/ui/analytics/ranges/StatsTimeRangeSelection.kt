@@ -199,7 +199,7 @@ fun SelectionType.toDashboardLocalizedGranularityStringId(): Int {
         WEEK_TO_DATE -> R.string.this_week
         MONTH_TO_DATE -> R.string.this_month
         YEAR_TO_DATE -> R.string.this_year
-        CUSTOM -> R.string.orderfilters_date_range_filter_custom_range
+        CUSTOM -> R.string.dashboard_stats_custom_range_label
         else -> error("Unsupported range value used in my store tab: $this")
     }
 }
