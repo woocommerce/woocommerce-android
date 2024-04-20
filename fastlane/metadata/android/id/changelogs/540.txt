@@ -1,0 +1,2 @@
+18.2:
+Pembaruan terkini kami akan menyempurnakan pengalaman WooCommerce Anda. Kami sedang mengalihkan pembayaran simpel menjadi alur pembuatan pesanan yang lebih mudah disesuaikan agar Anda dapat menetapkan jumlah yang diinginkan tanpa repot. Selain itu, Hub Analitik kami kini menyajikan wawasan seputar Bundel Produk dan Kartu Hadiah sehingga Anda memiliki gambaran yang lebih utuh terkait statistik bisnis Anda, selama ekstensi tersebut aktif. Nikmati upgrade ini!

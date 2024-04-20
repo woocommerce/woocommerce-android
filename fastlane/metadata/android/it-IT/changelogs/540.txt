@@ -1,0 +1,2 @@
+18.2:
+Nel nostro ultimo aggiornamento, stiamo migliorando l'esperienza WooCommerce. Stiamo passando dai pagamenti facili a un flusso di creazione degli ordini più personalizzabile, consentendoti di impostare l'importo desiderato in modo semplice. Inoltre, il nostro Analytics Hub aggiornato ora fornisce una panoramica su Product Bundles e Gift Card, offrendo una visione più completa delle statistiche della tua attività, dato che queste estensioni sono attive. Goditi l'aggiornamento.
