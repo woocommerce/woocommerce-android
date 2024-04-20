@@ -28,7 +28,6 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.tabs.TabLayout.Tab
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -37,19 +36,16 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_GRANULAR
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_RANGE
 import com.woocommerce.android.databinding.MyStoreStatsBinding
 import com.woocommerce.android.extensions.convertedFrom
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.myStoreTrackingGranularityString
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.dashboard.BarChartGestureListener
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsUiModel
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.VisitorStatsViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.roundToTheNextPowerOfTen
@@ -135,14 +131,6 @@ class DashboardStatsView @JvmOverloads constructor(
 
     val customRangeButton = binding.customRangeButton
 
-    val tabLayout = binding.statsTabLayout
-    private val customRangeTab: Tab by lazy {
-        tabLayout.newTab().apply {
-            setText(getStringForRangeType(SelectionType.CUSTOM))
-            tag = SelectionType.CUSTOM
-        }
-    }
-
     private lateinit var coroutineScope: CoroutineScope
     private val chartUserInteractions = MutableSharedFlow<Unit>()
     private lateinit var chartUserInteractionsJob: Job
@@ -154,6 +142,8 @@ class DashboardStatsView @JvmOverloads constructor(
         // TODO: Remove those views from the layout when releasing Dynamic Dashboard
         customRangeLabel.isVisible = false
         statsDateValue.isVisible = false
+        binding.statsTabLayout.isVisible = false
+        customRangeButton.isVisible = false
     }
 
     fun initView(
@@ -195,18 +185,6 @@ class DashboardStatsView @JvmOverloads constructor(
                     }
                 }
         }
-
-        customRangeButton.isVisible = FeatureFlag.CUSTOM_RANGE_ANALYTICS.isEnabled()
-        // Create tabs and add to appbar
-        SUPPORTED_RANGES_ON_MY_STORE_TAB
-            .filter { it != SelectionType.CUSTOM }
-            .forEach { rangeType ->
-                val tab = tabLayout.newTab().apply {
-                    setText(getStringForRangeType(rangeType))
-                    tag = rangeType
-                }
-                tabLayout.addTab(tab)
-            }
     }
 
     override fun onDetachedFromWindow() {
@@ -224,20 +202,6 @@ class DashboardStatsView @JvmOverloads constructor(
         )
         isRequestingStats = true
         applyCustomRange(statsTimeRangeSelection)
-    }
-
-    fun handleCustomRangeTab(customRange: StatsTimeRange?) {
-        if (customRange != null) {
-            customRangeButton.isVisible = false
-            if (customRangeTab.view.parent == null) {
-                tabLayout.addTab(customRangeTab)
-            }
-        } else {
-            customRangeButton.isVisible = true
-            if (customRangeTab.view.parent != null) {
-                tabLayout.removeTab(customRangeTab)
-            }
-        }
     }
 
     private fun applyCustomRange(selectedTimeRange: StatsTimeRangeSelection) {
