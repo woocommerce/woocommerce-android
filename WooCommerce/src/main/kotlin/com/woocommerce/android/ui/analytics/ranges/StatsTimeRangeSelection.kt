@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.analytics.ranges
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
@@ -189,4 +190,16 @@ fun SelectionType.toDashBoardTrackingGranularityString(): String {
         CUSTOM -> this.identifier
         else -> error("My Store tracking granularity unsupported range")
     }.lowercase()
+}
+
+@StringRes
+fun SelectionType.toDashboardLocalizedGranularityStringId(): Int {
+    return when (this) {
+        TODAY -> R.string.today
+        WEEK_TO_DATE -> R.string.this_week
+        MONTH_TO_DATE -> R.string.this_month
+        YEAR_TO_DATE -> R.string.this_year
+        CUSTOM -> R.string.orderfilters_date_range_filter_custom_range
+        else -> error("Unsupported range value used in my store tab: $this")
+    }
 }

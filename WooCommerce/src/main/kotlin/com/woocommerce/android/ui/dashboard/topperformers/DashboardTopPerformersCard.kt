@@ -62,6 +62,9 @@ import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformers
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersState
 import com.woocommerce.android.ui.products.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun DashboardTopPerformersCard(
@@ -460,6 +463,12 @@ private fun TopPerformersErrorView() {
 @LightDarkThemePreviews
 @Composable
 private fun TopPerformersCardPreview() {
+    val selectedDateRange = SelectionType.TODAY.generateSelectionData(
+        referenceStartDate = Date(),
+        referenceEndDate = Date(),
+        calendar = Calendar.getInstance(),
+        locale = Locale.getDefault()
+    )
     val topPerformersState = TopPerformersState(
         topPerformers = listOf(
             TopPerformerProductUiModel(
@@ -493,22 +502,30 @@ private fun TopPerformersCardPreview() {
         TopPerformersCard(
             topPerformersState = topPerformersState,
             lastUpdateState = "Last update: 8:52 AM",
-            selectedDateRange = selectedDateRange
+            selectedDateRange = selectedDateRange,
+            onGranularityChanged = {},
+            onEditCustomRangeTapped = {}
         )
         TopPerformersCard(
             topPerformersState = topPerformersState.copy(isLoading = true),
             lastUpdateState = "Last update: 8:52 AM",
-            selectedDateRange = selectedDateRange
+            selectedDateRange = selectedDateRange,
+            onGranularityChanged = {},
+            onEditCustomRangeTapped = {}
         )
         TopPerformersCard(
             topPerformersState = topPerformersState.copy(isError = true),
             lastUpdateState = "Last update: 8:52 AM",
-            selectedDateRange = selectedDateRange
+            selectedDateRange = selectedDateRange,
+            onGranularityChanged = {},
+            onEditCustomRangeTapped = {}
         )
         TopPerformersCard(
             topPerformersState = topPerformersState.copy(topPerformers = emptyList()),
             lastUpdateState = "Last update: 8:52 AM",
-            selectedDateRange = selectedDateRange
+            selectedDateRange = selectedDateRange,
+            onGranularityChanged = {},
+            onEditCustomRangeTapped = {}
         )
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED
@@ -14,6 +15,7 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
@@ -63,10 +65,12 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val wooCommerceStore: WooCommerceStore,
     private val dateUtils: DateUtils,
+    private val appPrefsWrapper: AppPrefsWrapper,
     getSelectedDateRange: GetSelectedDateRange,
 ) : ScopedViewModel(savedState) {
 
     private val _selectedDateRange = getSelectedDateRange(StatsViewType.TOP_PERFORMERS)
+    val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
@@ -114,7 +118,21 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         }
     }
 
-    fun onTopPerformerTapped(productId: Long) {
+    fun onGranularityChanged(selectionType: SelectionType) {
+        usageTracksEventEmitter.interacted()
+        appPrefsWrapper.setActiveTopPerformersGranularity(selectionType.name)
+        if (selectionType == SelectionType.CUSTOM) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
+            )
+        }
+    }
+
+    fun onEditCustomRangeTapped() {
+        TODO()
+    }
+
+    private fun onTopPerformerTapped(productId: Long) {
         triggerEvent(OpenTopPerformer(productId))
         analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         usageTracksEventEmitter.interacted()
