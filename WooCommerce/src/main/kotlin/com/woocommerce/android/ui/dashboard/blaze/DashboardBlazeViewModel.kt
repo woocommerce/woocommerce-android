@@ -32,6 +32,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -60,7 +61,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         .refreshTrigger
         .onStart { emit(RefreshEvent()) }
 
-    @Suppress("OPT_IN_USAGE")
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val blazeCampaignState: Flow<DashboardBlazeCampaignState> = flow {
         if (!isBlazeEnabled()) {
             emit(Hidden)
