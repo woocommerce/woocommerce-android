@@ -18,6 +18,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
@@ -244,7 +245,21 @@ private fun StatsHeader(
                                 isMenuExpanded = false
                             }
                         ) {
-                            Text(text = it.title)
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.minor_100))
+                            ) {
+                                Text(text = it.title)
+                                Spacer(modifier = Modifier.weight(1f))
+                                if (dateRange.rangeSelection.selectionType == it) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = stringResource(id = androidx.compose.ui.R.string.selected),
+                                        tint = MaterialTheme.colors.primary
+                                    )
+                                } else {
+                                    Spacer(modifier = Modifier.size(dimensionResource(R.dimen.image_minor_50)))
+                                }
+                            }
                         }
                     }
                 }
