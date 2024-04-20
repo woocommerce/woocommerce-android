@@ -51,7 +51,7 @@ class DashboardWidgetEditorViewModel @Inject constructor(
                 .map { widget ->
                     DashboardWidgetUi(
                         title = resourceProvider.getString(widget.type.titleResource),
-                        isSelected = widget.isAdded,
+                        isSelected = widget.isVisible,
                         type = widget.type
                     )
                 }
@@ -71,7 +71,7 @@ class DashboardWidgetEditorViewModel @Inject constructor(
                 editedWidgets.map { widget ->
                     DashboardWidget(
                         type = widget.type,
-                        isAdded = widget.isSelected
+                        isVisible = widget.isSelected
                     )
                 }
             )

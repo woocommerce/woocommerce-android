@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 
 data class DashboardWidget(
     val type: Type,
-    val isAdded: Boolean
+    val isVisible: Boolean
 ) {
     enum class Type(@StringRes val titleResource: Int) {
         ONBOARDING(R.string.my_store_widget_onboarding_title),
@@ -20,7 +20,7 @@ data class DashboardWidget(
 fun DashboardWidget.toDataModel(): DashboardWidgetDataModel =
     DashboardWidgetDataModel.newBuilder()
         .setType(type.name)
-        .setIsAdded(isAdded)
+        .setIsAdded(isVisible)
         .build()
 
 fun DashboardWidgetDataModel.toModel() =

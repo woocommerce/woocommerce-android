@@ -6,6 +6,7 @@ import com.woocommerce.android.model.toWidgetModelList
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -16,10 +17,10 @@ class DashboardRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers
 ) {
     private val defaultWidgets = listOf(
-        DashboardWidget(type = DashboardWidget.Type.ONBOARDING, isAdded = true),
-        DashboardWidget(type = DashboardWidget.Type.STATS, isAdded = true),
-        DashboardWidget(type = DashboardWidget.Type.POPULAR_PRODUCTS, isAdded = true),
-        DashboardWidget(type = DashboardWidget.Type.BLAZE, isAdded = true)
+        DashboardWidget(type = DashboardWidget.Type.ONBOARDING, isVisible = true),
+        DashboardWidget(type = DashboardWidget.Type.STATS, isVisible = true),
+        DashboardWidget(type = DashboardWidget.Type.POPULAR_PRODUCTS, isVisible = true),
+        DashboardWidget(type = DashboardWidget.Type.BLAZE, isVisible = true)
     )
 
     val widgets = dashboardDataStore.dashboard
@@ -36,5 +37,17 @@ class DashboardRepository @Inject constructor(
         }.onFailure { throwable ->
             WooLog.e(WooLog.T.DASHBOARD, "Failed to update dashboard data", throwable)
         }
+    }
+
+    suspend fun updateWidgetVisibility(type: DashboardWidget.Type, isVisible: Boolean) = withContext(dispatchers.io) {
+        val dataStoreWidgets = widgets.first()
+            .toMutableList()
+            .apply {
+                val index = indexOfFirst { it.type == type }
+                if (index != -1) {
+                    set(index, get(index).copy(isVisible = isVisible))
+                }
+            }
+        updateWidgets(dataStoreWidgets)
     }
 }
