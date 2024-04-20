@@ -18,7 +18,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -69,7 +69,7 @@ fun ApplicationPasswordTutorialScreen(
                 onNavigationButtonClick = onNavigationButtonClicked,
                 navigationIcon = when {
                     authorizationStarted -> Icons.Filled.Close
-                    else -> Icons.Filled.ArrowBack
+                    else -> Icons.AutoMirrored.Filled.ArrowBack
                 }
             )
         }

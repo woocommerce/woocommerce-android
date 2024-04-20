@@ -147,7 +147,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
         triggerEvent(
             Event.ShowDialog(
                 titleId = R.string.blaze_campaign_edit_ad_invalid_image_title,
-                messageId = R.string.blaze_campaign_edit_ad_invalid_image_description,
+                messageId = R.string.blaze_campaign_edit_ad_invalid_image_size_description,
                 positiveButtonId = R.string.dialog_ok,
                 positiveBtnAction = { dialog, _ ->
                     dialog.dismiss()

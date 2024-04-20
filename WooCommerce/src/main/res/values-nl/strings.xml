@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-09 15:54:04+0000
+Translation-Revision-Date: 2024-04-16 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="login_app_password_exit_dialog_cancel">Annuleren</string>
+    <string name="login_app_password_exit_dialog_confirmation">Toch afsluiten</string>
+    <string name="login_app_password_exit_dialog_message">Het lijkt erop dat je de verbinding met de app nog niet hebt goedgekeurd. Weet je zeker dat je wilt afsluiten?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Selecteer een afbeelding met een minimale afmeting van 500 x 500 px</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Ongeldige afbeelding</string>
+    <string name="login_invalid_credentials_message">Het lijkt erop dat de ingevoerde gebruikersnaam en wachtwoord niet overeenkomen. Controleer je inloggegevens en probeer het nogmaals.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Als je gegevens nog steeds niet worden geladen, neem dan contact op met ons ondersteuningsteam voor hulp.</string>
+    <string name="orderlist_connectivity_tool_summary_title">Geen verbindingsproblemen</string>
+    <string name="orderlist_connectivity_tool_return_action">Terug naar het vorige scherm</string>
+    <string name="orderlist_connectivity_tool_retry_action">Opnieuw verbinding maken</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Er wordt verbinding gemaakt met je site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">We kunnen momenteel geen verbinding maken met WordPress.com.\n\nProbeer het over een paar minuten opnieuw, of neem contact op met ons ondersteuningsteam. We helpen je graag.</string>
+    <string name="orderlist_connectivity_tool_subtitle">Een moment geduld terwijl we proberen je verbindingsprobleem vast te stellen.</string>
+    <string name="orderlist_connectivity_tool_title">Problemen met verbinding oplossen</string>
+    <string name="analytics_gift_cards_card_title">Cadeaubonnen</string>
+    <string name="analytics_used_title">Gebruikt</string>
+    <string name="analytics_gift_cards_no_data">Geen cadeaubonnen voor deze periode</string>
     <string name="login_app_password_support_button">Neem contact op met de ondersteuning</string>
     <string name="login_app_password_continue_button">Doorgaan</string>
     <string name="login_app_password_instructions_footer">Als je problemen opmerkt, neem dan contact op met ons ondersteuningsteam.</string>
@@ -96,20 +113,17 @@ Language: nl
     <string name="order_creation_tablet_mode_fragment_title">Besteloverzicht</string>
     <string name="orderlist_order_trashed_error">Fout bij bestelling naar prullenbak verplaatsen</string>
     <string name="orderlist_order_trashed">Bestelling naar prullenbak verplaatst</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Oeps! Er lijkt een probleem te zijn met je site.\n\nNeem contact op met je hostingprovider voor meer hulp.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oeps! Er lijkt een probleem te zijn met je Jetpack-verbinding.\n\nGeen zorgen, ons ondersteuningsteam staat klaar om te helpen. Neem contact met ons op, dan helpen we je graag verder.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oeps! De reactie van je site zorgt ervoor dat we niet goed kunnen werken.\n\nGeen zorgen, ons ondersteuningsteam staat klaar om te helpen. Neem contact met ons op, dan helpen we je graag verder.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Oeps! Je site doet er te lang over om te reageren.\n\nNeem contact op met je hostingprovider voor meer hulp.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Oeps! Het lijkt erop dat we op dit moment geen verbinding kunnen maken met WordPress.com.\n\nGeen zorgen, ons ondersteuningsteam staat klaar om te helpen. Neem contact met ons op, dan helpen we je graag verder.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Er lijkt een probleem te zijn met je site.\n\nNeem contact op met je hostingprovider voor meer hulp.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Er lijkt een probleem te zijn met je Jetpack-verbinding.\n\nGeen zorgen, ons ondersteuningsteam staat klaar om te helpen. Neem contact met ons op, dan helpen we je graag verder.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">De reactie van je site zorgt ervoor dat we niet goed kunnen werken.\n\nGeen zorgen, ons ondersteuningsteam staat klaar om te helpen. Neem contact met ons op, dan helpen we je graag verder.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Je site doet er te lang over om te reageren.\n\nNeem contact op met je hostingprovider voor meer hulp.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Het lijkt erop dat je niet bent verbonden met het internet.\n\nZorg ervoor dat je wifi aan staat. Als je mobiele data gebruikt, zorg er dan voor dat deze is ingeschakeld in de instellingen van je apparaat.</string>
     <string name="product_detail_product_not_selected"> product geselecteerd</string>
     <string name="orderlist_connectivity_tool_read_more_action">Meer informatie</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Neem contact op met de ondersteuning</string>
     <string name="orderlist_connectivity_tool_store_orders_check_title">De bestellingen van je site worden opgehaald</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Je site</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">Gebruik WordPress.com naamservers</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Er wordt verbinding gemaakt met de servers van WordPress.com</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Internetverbinding</string>
-    <string name="orderlist_connectivity_tool_title">Connectiviteitstest</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Geen locatie gevonden.\nProbeer het opnieuw.</string>
     <string name="order_detail_attribution_session_page_views">Paginaweergaven sessie</string>
