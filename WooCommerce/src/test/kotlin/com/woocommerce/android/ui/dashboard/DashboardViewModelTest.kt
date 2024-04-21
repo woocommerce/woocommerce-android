@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
@@ -34,6 +35,9 @@ class DashboardViewModelTest : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
     private val dateUtils: DateUtils = mock()
+    private val dashboardRepository: DashboardRepository = mock {
+        onBlocking { widgets } doReturn flowOf(emptyList())
+    }
 
     private lateinit var viewModel: DashboardViewModel
 
@@ -56,6 +60,7 @@ class DashboardViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
+            dashboardRepository = dashboardRepository
         )
     }
 

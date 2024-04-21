@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-09 15:54:04+0000
+Translation-Revision-Date: 2024-04-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="login_app_password_exit_dialog_cancel">Annuler</string>
+    <string name="login_app_password_exit_dialog_confirmation">Quitter quand même</string>
+    <string name="login_app_password_exit_dialog_message">Il semble que vous n’ayez pas encore approuvé la connexion à l’application. Voulez-vous vraiment quitter ?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Veuillez sélectionner une image dont les dimensions minimales sont de 500x500 pixels</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Image non valide</string>
+    <string name="login_invalid_credentials_message">Il semble que l’identifiant ou le mot de passe saisi ne corresponde pas. Vérifiez vos identifiants de connexion et réessayez.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Si vos données ne se chargent toujours pas, contactez notre équipe d’assistance pour obtenir de l’aide.</string>
+    <string name="orderlist_connectivity_tool_summary_title">Aucun problème de connexion</string>
+    <string name="orderlist_connectivity_tool_return_action">Retour à l’écran précédent</string>
+    <string name="orderlist_connectivity_tool_retry_action">Réessayer de se connecter</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Connexion à votre site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Nous ne parvenons pas à nous connecter à WordPress.com actuellement.\n\nRéessayez dans quelques minutes ou contactez notre équipe d’assistance, nous serons ravis de vous aider.</string>
+    <string name="orderlist_connectivity_tool_subtitle">Veuillez patienter pendant que nous tentons d’identifier votre problème de connexion.</string>
+    <string name="orderlist_connectivity_tool_title">Connexion à la résolution de problème</string>
+    <string name="analytics_gift_cards_card_title">Cartes-cadeaux</string>
+    <string name="analytics_used_title">Utilisé</string>
+    <string name="analytics_gift_cards_no_data">Aucune carte-cadeau pour cette période</string>
     <string name="login_app_password_support_button">Contacter l’assistance</string>
     <string name="login_app_password_continue_button">Continuer</string>
     <string name="login_app_password_instructions_footer">En cas de problème, contactez notre équipe d’assistance.</string>
@@ -96,20 +113,17 @@ Language: fr
     <string name="order_creation_tablet_mode_fragment_title">Récapitulatif de commande</string>
     <string name="orderlist_order_trashed_error">Erreur lors de l’envoi de la commande dans la corbeille</string>
     <string name="orderlist_order_trashed">Commande mise à la corbeille</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Oups ! Il semble y avoir un problème avec votre site.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oups ! Il semble y avoir un problème avec votre connexion Jetpack.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oups ! Il semble que la réponse de votre site ne nous permette pas de travailler convenablement.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Oups ! Votre site semble mettre du temps à répondre.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Oups ! Il semble que nous ne puissions pas nous connecter à WordPress.com pour l’instant.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Il semble y avoir un problème avec votre site.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Il semble y avoir un problème avec votre connexion Jetpack.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Il semble que la réponse de votre site ne nous permette pas de travailler convenablement.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Votre site semble mettre du temps à répondre.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Il semble que vous ne soyez pas connecté(e) à Internet.\n\nAssurez-vous que votre Wi-Fi est activé. Si vous utilisez des données mobiles, assurez-vous qu’elles sont activées dans les réglages de votre appareil.</string>
     <string name="product_detail_product_not_selected">Produit non sélectionné</string>
     <string name="orderlist_connectivity_tool_read_more_action">Lire la suite</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contacter l’assistance</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Commandes de votre site</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Votre site</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">Serveurs WordPress.com</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Extraction des commandes de votre site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Connexion aux serveurs WordPress.com</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Connexion Internet</string>
-    <string name="orderlist_connectivity_tool_title">Test de connectivité</string>
     <string name="my_store_custom_range_content_description">Ajouter des statistiques avec une plage de données personnalisée</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Aucun lieu trouvé.\nVeuillez réessayer.</string>
     <string name="order_detail_attribution_session_page_views">Pages vues par session</string>
