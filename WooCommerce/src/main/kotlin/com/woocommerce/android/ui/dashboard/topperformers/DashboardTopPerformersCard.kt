@@ -119,7 +119,6 @@ private fun HandleEvents(
                 )
 
                 is OpenDatePicker -> openDatePicker(event.fromDate.time, event.toDate.time)
-
             }
         }
         event.observe(lifecycleOwner, observer)
@@ -247,8 +246,11 @@ private fun TopPerformersDatePicker(
             Text(
                 text = selectedDateRange?.currentRangeDescription ?: "",
                 style = MaterialTheme.typography.body2,
-                color = if (isCustomRange) colorResource(id = R.color.color_primary)
-                else colorResource(id = R.color.color_on_surface_medium_selector)
+                color = if (isCustomRange) {
+                    colorResource(id = R.color.color_primary)
+                } else {
+                    colorResource(id = R.color.color_on_surface_medium_selector)
+                }
             )
             if (isCustomRange) {
                 Icon(

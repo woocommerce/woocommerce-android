@@ -30,7 +30,7 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
 
-            DYNAMIC_DASHBOARD -> false
+            DYNAMIC_DASHBOARD -> PackageUtils.isDebugBuild()
 
             CONNECTIVITY_TOOL,
             CUSTOM_RANGE_ANALYTICS,
