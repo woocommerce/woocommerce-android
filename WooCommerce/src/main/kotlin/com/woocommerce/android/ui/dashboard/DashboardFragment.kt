@@ -196,7 +196,12 @@ class DashboardFragment :
             setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 WooThemeWithBackground {
-                    DashboardTopPerformersCard(parentViewModel = dashboardViewModel)
+                    DashboardTopPerformersCard(
+                        parentViewModel = dashboardViewModel,
+                        openDatePicker = { start, end, callback ->
+                            showDateRangePicker(start, end, callback)
+                        },
+                    )
                 }
             }
         }

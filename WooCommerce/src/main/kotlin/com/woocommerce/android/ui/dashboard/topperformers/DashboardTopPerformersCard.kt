@@ -47,6 +47,7 @@ import androidx.lifecycle.Observer
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.toDashboardLocalizedGranularityStringId
@@ -59,6 +60,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.Factory
+import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersState
 import com.woocommerce.android.ui.products.ProductDetailFragment.Mode.ShowProduct
@@ -70,6 +72,7 @@ import java.util.Locale
 @Composable
 fun DashboardTopPerformersCard(
     parentViewModel: DashboardViewModel,
+    openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
     viewModel: DashboardTopPerformersViewModel = viewModelWithFactory<DashboardTopPerformersViewModel, Factory>(
         creationCallback = {
             it.create(parentViewModel)
@@ -87,11 +90,21 @@ fun DashboardTopPerformersCard(
         viewModel::onGranularityChanged,
         viewModel::onEditCustomRangeTapped
     )
-    HandleEvents(viewModel.event)
+    HandleEvents(
+        viewModel.event,
+        openDatePicker = { fromDate, toDate ->
+            openDatePicker(fromDate, toDate) { from, to ->
+                viewModel.onCustomRangeSelected(StatsTimeRange(Date(from), Date(to)))
+            }
+        }
+    )
 }
 
 @Composable
-private fun HandleEvents(event: LiveData<Event>) {
+private fun HandleEvents(
+    event: LiveData<Event>,
+    openDatePicker: (Long, Long) -> Unit,
+) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -104,6 +117,9 @@ private fun HandleEvents(event: LiveData<Event>) {
                         isTrashEnabled = false
                     )
                 )
+
+                is OpenDatePicker -> openDatePicker(event.fromDate.time, event.toDate.time)
+
             }
         }
         event.observe(lifecycleOwner, observer)

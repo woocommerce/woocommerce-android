@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
@@ -25,6 +26,7 @@ import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformer
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange.StatsViewType
+import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -47,6 +49,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -66,6 +69,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val dateUtils: DateUtils,
     private val appPrefsWrapper: AppPrefsWrapper,
+    private val customDateRangeDataStore: CustomDateRangeDataStore,
     getSelectedDateRange: GetSelectedDateRange,
 ) : ScopedViewModel(savedState) {
 
@@ -85,6 +89,8 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                 dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
             )
         }.asLiveData()
+
+    private val customRange = customDateRangeDataStore.dateRange.asLiveData()
 
     init {
         _topPerformersState.value = TopPerformersState(isLoading = true)
@@ -129,7 +135,12 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     }
 
     fun onEditCustomRangeTapped() {
-        TODO()
+        triggerEvent(
+            OpenDatePicker(
+                fromDate = customRange.value?.start ?: Date(),
+                toDate = customRange.value?.end ?: Date()
+            )
+        )
     }
 
     private fun onTopPerformerTapped(productId: Long) {
@@ -191,6 +202,18 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             0
         )
 
+    fun onCustomRangeSelected(statsTimeRange: StatsTimeRange) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_EDITING to (customRange.value != null),
+            )
+        )
+        viewModelScope.launch {
+            customDateRangeDataStore.updateDateRange(statsTimeRange)
+        }
+    }
+
     data class TopPerformersState(
         val isLoading: Boolean = false,
         val isError: Boolean = false,
@@ -200,6 +223,8 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     data class OpenTopPerformer(
         val productId: Long
     ) : MultiLiveEvent.Event()
+
+    data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {
