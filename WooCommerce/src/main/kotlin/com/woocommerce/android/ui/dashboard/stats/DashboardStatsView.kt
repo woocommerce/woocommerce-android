@@ -635,7 +635,7 @@ class DashboardStatsView @JvmOverloads constructor(
         WooAnimUtils.fadeOut(view, duration, View.INVISIBLE)
 
         // fade in the new value after fade out finishes
-        val delay = duration.toMillis(context) + 100
+        val delay = duration.toMillis(context) + 200
         fadeHandler.postDelayed(
             {
                 WooAnimUtils.fadeIn(view, duration)
