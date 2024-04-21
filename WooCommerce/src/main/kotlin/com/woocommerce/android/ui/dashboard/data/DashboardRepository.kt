@@ -16,15 +16,8 @@ class DashboardRepository @Inject constructor(
     private val dashboardDataStore: DashboardDataStore,
     private val dispatchers: CoroutineDispatchers
 ) {
-    private val defaultWidgets = listOf(
-        DashboardWidget(type = DashboardWidget.Type.ONBOARDING, isVisible = true),
-        DashboardWidget(type = DashboardWidget.Type.STATS, isVisible = true),
-        DashboardWidget(type = DashboardWidget.Type.POPULAR_PRODUCTS, isVisible = true),
-        DashboardWidget(type = DashboardWidget.Type.BLAZE, isVisible = true)
-    )
-
     val widgets = dashboardDataStore.dashboard
-        .map { it?.toWidgetModelList() ?: defaultWidgets }
+        .map { it.toWidgetModelList() }
         .flowOn(dispatchers.io)
 
     suspend fun updateWidgets(widgets: List<DashboardWidget>) = withContext(dispatchers.io) {
