@@ -21,9 +21,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeastOne
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
@@ -66,8 +63,6 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
 ) : ScopedViewModel(savedStateHandle) {
-    private var _hasOrders = MutableLiveData<OrderState>()
-
     private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
@@ -172,8 +167,6 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     is LoadStatsResult.VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
                     is LoadStatsResult.VisitorStatUnavailable ->
                         _visitorStatsState.value = VisitorStatsViewState.Unavailable
-
-                    is LoadStatsResult.HasOrders -> _hasOrders.value = if (it.hasOrder) AtLeastOne else Empty
                 }
                 dashboardTransactionLauncher.onStoreStatisticsFetched()
             }

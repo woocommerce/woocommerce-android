@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.analytics.ranges.visitorSummaryStatsGranularit
 import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.dashboard.data.StatsRepository.StatsException
 import com.woocommerce.android.ui.dashboard.data.asRevenueRangeId
-import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.PluginNotActive
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.RevenueStatsError
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult.RevenueStatsSuccess
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.transform
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore.OrderStatsErrorType
 import javax.inject.Inject
@@ -48,7 +46,6 @@ class GetStats @Inject constructor(
         val shouldRefreshVisitors =
             shouldUpdateStats(selectedRange, refresh, AnalyticsUpdateDataStore.AnalyticData.VISITORS)
         return merge(
-            hasOrders(),
             revenueStats(selectedRange, shouldRefreshRevenue),
             visitorStats(selectedRange, shouldRefreshVisitors)
         ).onEach { result ->
@@ -66,16 +63,6 @@ class GetStats @Inject constructor(
             }
         }.flowOn(coroutineDispatchers.computation)
     }
-
-    private suspend fun hasOrders(): Flow<HasOrders> =
-        statsRepository.checkIfStoreHasNoOrders()
-            .transform {
-                if (it.getOrNull() == true) {
-                    emit(HasOrders(false))
-                } else {
-                    emit(HasOrders(true))
-                }
-            }
 
     private fun revenueStats(
         rangeSelection: StatsTimeRangeSelection,
@@ -207,10 +194,6 @@ class GetStats @Inject constructor(
         data class VisitorsStatsSuccess(
             val stats: Map<String, Int>,
             val totalVisitorCount: Int?
-        ) : LoadStatsResult()
-
-        data class HasOrders(
-            val hasOrder: Boolean
         ) : LoadStatsResult()
 
         object RevenueStatsError : LoadStatsResult()
