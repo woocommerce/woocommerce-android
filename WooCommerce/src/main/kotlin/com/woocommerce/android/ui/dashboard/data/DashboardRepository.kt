@@ -8,10 +8,13 @@ import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import javax.inject.Inject
 
 class DashboardRepository @Inject constructor(
@@ -23,6 +26,23 @@ class DashboardRepository @Inject constructor(
     private val statsWidgetsAvailability = orderStore
         .observeOrderCountForSite(selectedSite.get())
         .map { count -> count != 0 }
+        .distinctUntilChanged()
+        .transform { hasOrders ->
+            if (!hasOrders) {
+                // Start with true to emit an initial value immediately
+                emit(true)
+                val fetchResult = orderStore.fetchHasOrders(selectedSite.get(), null).let {
+                    when (it) {
+                        is HasOrdersResult.Success -> it.hasOrders
+                        // Default to true if we can't determine if there are orders
+                        is HasOrdersResult.Failure -> true
+                    }
+                }
+                emit(fetchResult)
+            } else {
+                emit(true)
+            }
+        }
 
     val widgets = combine(
         dashboardDataStore.dashboard.map { it.widgetsList },
