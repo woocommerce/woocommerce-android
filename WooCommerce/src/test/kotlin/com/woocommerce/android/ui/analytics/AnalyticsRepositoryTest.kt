@@ -50,6 +50,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import kotlin.Result
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -1004,6 +1005,72 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
 
             // Then
             assertThat(result).isInstanceOf(AnalyticsRepository.GiftCardResult.GiftCardError::class.java)
+        }
+
+    @Test
+    fun `given fetch session stats is call with a last quarter granularity, then visitors stats is called`() =
+        runTest {
+            val latQuarterRangeSelection = StatsTimeRangeSelection.SelectionType.LAST_QUARTER.generateSelectionData(
+                referenceStartDate = "2024-01-01".dayStartFrom(),
+                referenceEndDate = "2024-03-31".dayEndFrom(),
+                calendar = testCalendar,
+                locale = testLocale
+            )
+
+            val result = Result.success(mapOf("2024-01-05" to 5))
+            whenever(statsRepository.fetchVisitorStats(any(), any(), any())).thenReturn(result)
+
+            sut.fetchVisitorsData(rangeSelection = latQuarterRangeSelection, ForceNew)
+            verify(statsRepository).fetchVisitorStats(any(), any(), any())
+        }
+
+    @Test
+    fun `given fetch session stats is call with a quarter to date granularity, then visitors stats is called`() =
+        runTest {
+            val quarterToDateRangeSelection =
+                StatsTimeRangeSelection.SelectionType.QUARTER_TO_DATE.generateSelectionData(
+                    referenceStartDate = "2024-04-01".dayStartFrom(),
+                    referenceEndDate = "2024-04-14".dayEndFrom(),
+                    calendar = testCalendar,
+                    locale = testLocale
+                )
+
+            val result = Result.success(mapOf("2024-01-05" to 5))
+            whenever(statsRepository.fetchVisitorStats(any(), any(), any())).thenReturn(result)
+
+            sut.fetchVisitorsData(rangeSelection = quarterToDateRangeSelection, ForceNew)
+            verify(statsRepository).fetchVisitorStats(any(), any(), any())
+        }
+
+    @Test
+    fun `given fetch session stats is call with a summary supported granularity, then visitors summary stats is called`() =
+        runTest {
+            val todayRangeSelection = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
+                referenceStartDate = "2024-04-17".dayStartFrom(),
+                referenceEndDate = "2024-04-17".dayEndFrom(),
+                calendar = testCalendar,
+                locale = testLocale
+            )
+
+            val result = Result.success(5)
+            whenever(statsRepository.fetchTotalVisitorStats(any(), any(), any())).thenReturn(result)
+
+            sut.fetchVisitorsData(rangeSelection = todayRangeSelection, ForceNew)
+            verify(statsRepository).fetchTotalVisitorStats(any(), any(), any())
+        }
+
+    @Test
+    fun `given fetch session stats is call with a non supported granularity, then result is VisitorsNotSupported`() =
+        runTest {
+            val todayRangeSelection = StatsTimeRangeSelection.SelectionType.CUSTOM.generateSelectionData(
+                referenceStartDate = "2024-01-17".dayStartFrom(),
+                referenceEndDate = "2024-04-17".dayEndFrom(),
+                calendar = testCalendar,
+                locale = testLocale
+            )
+
+            val result = sut.fetchVisitorsData(rangeSelection = todayRangeSelection, ForceNew)
+            assertThat(result).isInstanceOf(AnalyticsRepository.VisitorsResult.VisitorsNotSupported::class.java)
         }
 
     private fun givenARevenue(totalSales: Double?, netValue: Double?, itemsSold: Int?): WCRevenueStatsModel {

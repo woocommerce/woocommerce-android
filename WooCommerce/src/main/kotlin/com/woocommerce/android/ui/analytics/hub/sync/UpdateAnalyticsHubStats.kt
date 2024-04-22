@@ -173,12 +173,19 @@ class UpdateAnalyticsHubStats @Inject constructor(
 
     private fun combineSessionDataChanges() =
         combine(_ordersState, visitorsCountState) { orders, visitors ->
-            if (orders is OrdersState.Available && visitors is VisitorsState.Available) {
-                SessionState.Available(SessionStat(orders.orders.ordersCount, visitors.visitors))
-            } else if (orders is OrdersState.Error || visitors is VisitorsState.Error) {
-                SessionState.Error
-            } else {
-                SessionState.Loading
+            when {
+                orders is OrdersState.Available && visitors is VisitorsState.Available -> {
+                    SessionState.Available(SessionStat(orders.orders.ordersCount, visitors.visitors))
+                }
+                visitors is VisitorsState.NotSupported -> {
+                    SessionState.NotSupported
+                }
+                orders is OrdersState.Error || visitors is VisitorsState.Error -> {
+                    SessionState.Error
+                }
+                else -> {
+                    SessionState.Loading
+                }
             }
         }.distinctUntilChanged()
 
@@ -196,10 +203,19 @@ class UpdateAnalyticsHubStats @Inject constructor(
         rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ) = async {
-        analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy)
-            .run { this as? AnalyticsRepository.VisitorsResult.VisitorsData }
-            ?.let { visitorsCountState.value = VisitorsState.Available(it.visitorsCount) }
-            ?: visitorsCountState.update { VisitorsState.Error }
+        analyticsRepository.fetchVisitorsData(rangeSelection, fetchStrategy).run {
+            when (this) {
+                is AnalyticsRepository.VisitorsResult.VisitorsData -> {
+                    visitorsCountState.value = VisitorsState.Available(visitorsCount)
+                }
+                is AnalyticsRepository.VisitorsResult.VisitorsError -> {
+                    visitorsCountState.update { VisitorsState.Error }
+                }
+                is AnalyticsRepository.VisitorsResult.VisitorsNotSupported -> {
+                    visitorsCountState.update { VisitorsState.NotSupported }
+                }
+            }
+        }
     }
 
     private fun CoroutineScope.fetchRevenueDataAsync(
