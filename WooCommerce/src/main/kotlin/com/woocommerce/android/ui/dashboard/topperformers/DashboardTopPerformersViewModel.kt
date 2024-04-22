@@ -214,6 +214,13 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         }
     }
 
+    fun onViewAllAnalyticsTapped() {
+        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
+        selectedDateRange.value?.let {
+            triggerEvent(OpenAnalytics(it))
+        }
+    }
+
     data class TopPerformersState(
         val isLoading: Boolean = false,
         val isError: Boolean = false,
@@ -225,6 +232,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     ) : MultiLiveEvent.Event()
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
+    data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

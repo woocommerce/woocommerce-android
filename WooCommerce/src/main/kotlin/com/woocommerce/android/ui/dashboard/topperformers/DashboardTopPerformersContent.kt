@@ -54,6 +54,7 @@ import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
+import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
@@ -62,6 +63,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMe
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.Factory
+import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenAnalytics
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersState
@@ -96,7 +98,7 @@ fun DashboardTopPerformersWidgetCard(
         button = DashboardWidgetAction(
             titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
             action = {
-                // TODO Hide top performers
+                topPerformersViewModel.onViewAllAnalyticsTapped()
             }
         )
     ) {
@@ -158,6 +160,11 @@ private fun HandleEvents(
                 )
 
                 is OpenDatePicker -> openDatePicker(event.fromDate.time, event.toDate.time)
+                is OpenAnalytics -> {
+                    navController.navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToAnalytics(event.analyticsPeriod)
+                    )
+                }
             }
         }
         event.observe(lifecycleOwner, observer)
