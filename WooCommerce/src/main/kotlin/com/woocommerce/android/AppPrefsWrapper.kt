@@ -24,6 +24,8 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
 
+    var isMyStoreBlazeViewDismissed by AppPrefs::isMyStoreBlazeViewDismissed
+
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
 
     var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed

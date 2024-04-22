@@ -458,6 +458,8 @@
     <string name="analytics_products_no_data">No products this period</string>
     <string name="analytics_gift_cards_no_data">No gift cards this period</string>
     <string name="analytics_session_no_data">No sessions this period</string>
+    <string name="analytics_session_no_available">Session data unavailable</string>
+    <string name="analytics_session_no_available_description">Session analytics rely on unique visitor counts not available for custom date ranges</string>
     <string name="analytics_total_sales_title">Total sales</string>
     <string name="analytics_used_title">Used</string>
     <string name="analytics_net_sales_title">Net sales</string>
@@ -3827,7 +3829,7 @@
     <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Invalid image</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">Please select and image with a minimum dimension of 500x500 pixels</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_size_description">Please select and image with a minimum dimension of 600x600 pixels</string>
 
     <!--
     Blaze campaign payment

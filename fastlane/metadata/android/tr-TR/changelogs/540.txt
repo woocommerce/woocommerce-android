@@ -1,0 +1,2 @@
+18.2:
+En yeni güncellememizde WooCommerce deneyiminizi geliştiriyoruz! Basit ödemelerden daha özelleştirilebilir bir sipariş oluşturma akışına geçiş yaparak dilediğiniz tutarı kolaylıkla belirlemenizi sağlıyoruz. Ayrıca iyileştirilmiş Analytics Hub'ımız artık Ürün Paketlerine ve Hediye Kartlarına dair bilgiler sağlayarak bu uzantıların etkin olması halinde işletme istatistikleriniz hakkında daha kapsayıcı bir görünüm sunar. Yükseltmenin keyfini çıkarın!

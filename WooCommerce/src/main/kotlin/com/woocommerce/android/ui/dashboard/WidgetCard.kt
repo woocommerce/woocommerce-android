@@ -31,10 +31,10 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMe
 
 @Composable
 fun WidgetCard(
-    modifier: Modifier = Modifier,
     @StringRes titleResource: Int,
-    @DrawableRes iconResource: Int? = null,
+    modifier: Modifier = Modifier,
     menu: DashboardWidgetMenu,
+    @DrawableRes iconResource: Int? = null,
     button: DashboardWidgetAction? = null,
     content: @Composable () -> Unit
 ) {
