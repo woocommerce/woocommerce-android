@@ -1,4 +1,4 @@
-package com.woocommerce.wear.tile
+package com.woocommerce.android.tile
 
 import android.content.Context
 import androidx.compose.runtime.Composable

@@ -1,4 +1,4 @@
-package com.woocommerce.wear.ui.mystore
+package com.woocommerce.android.ui.mystore
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,8 +14,8 @@ import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.woocommerce.wear.R
-import com.woocommerce.wear.presentation.theme.WooTheme
+import com.woocommerce.android.R
+import com.woocommerce.android.presentation.theme.WooTheme
 
 @Composable
 fun MyStoreScreen() {

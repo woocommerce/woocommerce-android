@@ -1,4 +1,4 @@
-package com.woocommerce.wear.ui.login
+package com.woocommerce.android.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController

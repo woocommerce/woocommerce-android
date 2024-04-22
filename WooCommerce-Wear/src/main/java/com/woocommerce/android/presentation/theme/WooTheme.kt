@@ -1,4 +1,4 @@
-package com.woocommerce.wear.presentation.theme
+package com.woocommerce.android.presentation.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme

@@ -1,4 +1,4 @@
-package com.woocommerce.wear.app
+package com.woocommerce.android.app
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

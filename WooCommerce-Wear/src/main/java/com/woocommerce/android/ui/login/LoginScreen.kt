@@ -1,4 +1,4 @@
-package com.woocommerce.wear.ui.login
+package com.woocommerce.android.ui.login
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +14,7 @@ import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.woocommerce.wear.presentation.theme.WooTheme
+import com.woocommerce.android.presentation.theme.WooTheme
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {

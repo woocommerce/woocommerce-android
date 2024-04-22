@@ -1,4 +1,4 @@
-package com.woocommerce.wear.complication
+package com.woocommerce.android.complication
 
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType
