@@ -34,6 +34,6 @@ fun ProductThumbnail(
         contentScale = ContentScale.Crop,
         modifier = modifier
             .size(42.dp)
-            .clip(shape = RoundedCornerShape(6.dp))
+            .clip(shape = RoundedCornerShape(4.dp))
     )
 }
