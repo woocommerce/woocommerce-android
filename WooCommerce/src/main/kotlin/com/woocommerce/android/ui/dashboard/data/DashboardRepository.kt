@@ -90,6 +90,6 @@ class DashboardRepository @Inject constructor(
                     else -> true
                 }
             )
-        }
+        }.sortedBy { it.isAvailable }
     }
 }

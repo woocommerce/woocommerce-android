@@ -53,9 +53,9 @@ fun <T> DragAndDropSelectableItemsList(
     selectedItems: List<T>,
     onSelectionChange: (T, Boolean) -> Unit,
     onOrderChange: (fromIndex: Int, toIndex: Int) -> Unit,
-    itemFormatter: T.() -> String = { toString() },
     itemKey: ((index: Int, item: T) -> Any),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    itemFormatter: @Composable T.() -> String = { toString() },
 ) {
     val listState = rememberLazyListState()
     val dragDropState = rememberDragDropState(listState) { fromIndex, toIndex -> onOrderChange(fromIndex, toIndex) }

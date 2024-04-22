@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
-import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +19,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DashboardWidgetEditorViewModel @Inject constructor(
-    private val resourceProvider: ResourceProvider,
     private val dashboardRepository: DashboardRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -28,11 +26,11 @@ class DashboardWidgetEditorViewModel @Inject constructor(
     val viewState = combine(widgetEditorState, dashboardRepository.widgets) { state, widgets ->
         state.copy(
             isLoading = state.widgetList.isEmpty(),
-            isSaveButtonEnabled = state.widgetList.map { DashboardWidget(it.type, it.isSelected) } != widgets,
+            isSaveButtonEnabled = state.widgetList != widgets,
         )
     }.asLiveData()
 
-    private var editedWidgets: List<DashboardWidgetUi>
+    private var editedWidgets: List<DashboardWidget>
         get() = widgetEditorState.value.widgetList
         set(value) {
             widgetEditorState.update { it.copy(widgetList = value) }
@@ -48,13 +46,6 @@ class DashboardWidgetEditorViewModel @Inject constructor(
     private fun loadWidgets() {
         viewModelScope.launch {
             editedWidgets = dashboardRepository.widgets.first()
-                .map { widget ->
-                    DashboardWidgetUi(
-                        title = resourceProvider.getString(widget.type.titleResource),
-                        isSelected = widget.isVisible,
-                        type = widget.type
-                    )
-                }
         }
     }
 
@@ -67,20 +58,13 @@ class DashboardWidgetEditorViewModel @Inject constructor(
 
     fun onSaveClicked() {
         viewModelScope.launch {
-            dashboardRepository.updateWidgets(
-                editedWidgets.map { widget ->
-                    DashboardWidget(
-                        type = widget.type,
-                        isVisible = widget.isSelected
-                    )
-                }
-            )
+            dashboardRepository.updateWidgets(editedWidgets)
         }
         triggerEvent(Exit)
     }
 
-    fun onSelectionChange(dashboardWidget: DashboardWidgetUi, selected: Boolean) {
-        editedWidgets = editedWidgets.map { if (it == dashboardWidget) it.copy(isSelected = selected) else it }
+    fun onSelectionChange(dashboardWidget: DashboardWidget, selected: Boolean) {
+        editedWidgets = editedWidgets.map { if (it == dashboardWidget) it.copy(isVisible = selected) else it }
     }
 
     fun onOrderChange(fromIndex: Int, toIndex: Int) {
@@ -97,16 +81,9 @@ class DashboardWidgetEditorViewModel @Inject constructor(
 
     @Parcelize
     data class WidgetEditorState(
-        val widgetList: List<DashboardWidgetUi> = emptyList(),
+        val widgetList: List<DashboardWidget> = emptyList(),
         val showDiscardDialog: Boolean = false,
         val isSaveButtonEnabled: Boolean = false,
         val isLoading: Boolean = true
-    ) : Parcelable
-
-    @Parcelize
-    data class DashboardWidgetUi(
-        val title: String,
-        val isSelected: Boolean,
-        val type: DashboardWidget.Type
     ) : Parcelable
 }

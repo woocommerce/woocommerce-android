@@ -53,10 +53,10 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                 else -> {
                     DragAndDropSelectableItemsList(
                         items = state.widgetList,
-                        selectedItems = state.widgetList.filter { it.isSelected },
+                        selectedItems = state.widgetList.filter { it.isVisible },
                         onSelectionChange = viewModel::onSelectionChange,
                         onOrderChange = viewModel::onOrderChange,
-                        itemFormatter = { title },
+                        itemFormatter = { stringResource(id = title) },
                         itemKey = { _, widget -> widget.type },
                         modifier = Modifier.padding(padding)
                     )
