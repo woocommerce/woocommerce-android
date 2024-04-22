@@ -22,7 +22,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowOutward
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
@@ -275,7 +275,7 @@ fun ConnectivitySummary(
                     allCaps = false,
                     onClick = onReturnClick,
                     text = stringResource(id = R.string.orderlist_connectivity_tool_return_action),
-                    icon = Icons.Default.ArrowBack,
+                    icon = Icons.AutoMirrored.Filled.ArrowBack,
                     contentPadding = PaddingValues(
                         vertical = dimensionResource(id = R.dimen.minor_100),
                         horizontal = dimensionResource(id = R.dimen.minor_00)

@@ -45,6 +45,7 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50f // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
         const val DEFAULT_CAMPAIGN_BUDGET_MODE = "total" // "total" or "daily" for campaigns that run without end date
+        const val BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS = 600 // Must be at least 600 x 600 pixels
     }
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
@@ -151,7 +152,7 @@ class BlazeRepository @Inject constructor(
             tagLine = "",
             description = "",
             campaignImage = product.images.firstOrNull().let {
-                if (it != null) {
+                if (it != null && isValidAdImage(it.source)) {
                     BlazeCampaignImage.RemoteImage(it.id, it.source)
                 } else {
                     BlazeCampaignImage.None
@@ -323,6 +324,19 @@ class BlazeRepository @Inject constructor(
 
         return result.onFailure {
             WooLog.w(WooLog.T.BLAZE, "Failed to prepare campaign image: ${it.message}")
+        }
+    }
+
+    suspend fun isValidAdImage(uri: String): Boolean {
+        val (width, height) = mediaFilesRepository.getImageDimensions(uri)
+        return when {
+            width == 0 || height == 0 -> {
+                WooLog.w(WooLog.T.BLAZE, "isValidAdImage uri: Failed to get image dimens from uri: $uri")
+                false
+            }
+
+            width < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS || height < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> false
+            else -> true
         }
     }
 

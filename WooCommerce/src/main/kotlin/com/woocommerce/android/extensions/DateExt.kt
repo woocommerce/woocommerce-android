@@ -157,7 +157,7 @@ fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): Str
         other.formatToMMMddYYYY(locale)
     }
 
-    return "$formattedStartDate - $formattedEndDate"
+    return "$formattedStartDate – $formattedEndDate"
 }
 
 private const val THREE_MONTHS = 3

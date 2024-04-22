@@ -1,0 +1,2 @@
+18.2 :
+Avec notre dernière mise à jour, nous améliorons votre expérience WooCommerce ! Nous passons de paiements simplifiés à un flux de création de commande plus personnalisable, vous permettant de définir aisément le montant désiré. Par ailleurs, notre espace statistique fournit désormais des tendances concernant Product Bundles et Gift Cards, ce qui offre un aperçu plus complet de vos statistiques commerciales si ces extensions sont actives. Profitez de cette mise à niveau !
