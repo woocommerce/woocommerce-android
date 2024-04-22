@@ -387,6 +387,8 @@
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">Hide top performers</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">View all store analytics</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>

@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -58,7 +56,11 @@ import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
+import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.Factory
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
@@ -70,34 +72,71 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun DashboardTopPerformersCard(
+fun DashboardTopPerformersWidgetCard(
     parentViewModel: DashboardViewModel,
-    openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
-    viewModel: DashboardTopPerformersViewModel = viewModelWithFactory<DashboardTopPerformersViewModel, Factory>(
-        creationCallback = {
-            it.create(parentViewModel)
-        }
-    )
+    topPerformersViewModel: DashboardTopPerformersViewModel =
+        viewModelWithFactory<DashboardTopPerformersViewModel, Factory>(
+            creationCallback = {
+                it.create(parentViewModel)
+            }
+        )
 ) {
-    val topPerformersState by viewModel.topPerformersState.observeAsState()
-    val lastUpdateState by viewModel.lastUpdateTopPerformers.observeAsState()
-    val selectedDateRange by viewModel.selectedDateRange.observeAsState()
+    WidgetCard(
+        titleResource = R.string.dashboard_top_performers_title,
+        menu = DashboardWidgetMenu(
+            items = listOf(
+                DashboardWidgetAction(
+                    titleResource = R.string.dashboard_top_performers_overflow_menu_hide_option,
+                    action = {
+                        // TODO Hide top performers
+                    }
+                )
+            )
+        ),
+        button = DashboardWidgetAction(
+            titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
+            action = {
+                // TODO Hide top performers
+            }
+        )
+    ) {
+        DashboardTopPerformersContent(
+            topPerformersViewModel = topPerformersViewModel
+        )
+    }
 
-    TopPerformersCard(
-        topPerformersState,
-        lastUpdateState,
-        selectedDateRange,
-        viewModel::onGranularityChanged,
-        viewModel::onEditCustomRangeTapped
-    )
+    val openDatePicker = { start: Long, end: Long, callback: (Long, Long) -> Unit ->
+        parentViewModel.onDashboardWidgetEvent(
+            OpenRangePicker(start, end, callback)
+        )
+    }
     HandleEvents(
-        viewModel.event,
+        topPerformersViewModel.event,
         openDatePicker = { fromDate, toDate ->
             openDatePicker(fromDate, toDate) { from, to ->
-                viewModel.onCustomRangeSelected(StatsTimeRange(Date(from), Date(to)))
+                topPerformersViewModel.onCustomRangeSelected(StatsTimeRange(Date(from), Date(to)))
             }
         }
     )
+}
+
+@Composable
+fun DashboardTopPerformersContent(topPerformersViewModel: DashboardTopPerformersViewModel) {
+    val topPerformersState by topPerformersViewModel.topPerformersState.observeAsState()
+    val lastUpdateState by topPerformersViewModel.lastUpdateTopPerformers.observeAsState()
+    val selectedDateRange by topPerformersViewModel.selectedDateRange.observeAsState()
+
+    if (topPerformersState?.isLoading == true) {
+        TopPerformersLoading(modifier = Modifier.padding(16.dp))
+    } else {
+        TopPerformersContent(
+            topPerformersState,
+            lastUpdateState,
+            selectedDateRange,
+            topPerformersViewModel::onGranularityChanged,
+            topPerformersViewModel::onEditCustomRangeTapped
+        )
+    }
 }
 
 @Composable
@@ -129,35 +168,6 @@ private fun HandleEvents(
 }
 
 @Composable
-private fun TopPerformersCard(
-    topPerformersState: TopPerformersState?,
-    lastUpdateState: String?,
-    selectedDateRange: StatsTimeRangeSelection?,
-    onGranularityChanged: (SelectionType) -> Unit,
-    onEditCustomRangeTapped: () -> Unit,
-) {
-    Card(
-        modifier = Modifier
-            .padding(top = 16.dp, bottom = 16.dp)
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        shape = RoundedCornerShape(0.dp)
-    ) {
-        if (topPerformersState?.isLoading == true) {
-            TopPerformersLoading(modifier = Modifier.padding(16.dp))
-        } else {
-            TopPerformersContent(
-                topPerformersState,
-                lastUpdateState,
-                selectedDateRange,
-                onGranularityChanged,
-                onEditCustomRangeTapped
-            )
-        }
-    }
-}
-
-@Composable
 private fun TopPerformersContent(
     topPerformersState: TopPerformersState?,
     lastUpdateState: String?,
@@ -166,12 +176,6 @@ private fun TopPerformersContent(
     onEditCustomRangeTapped: () -> Unit,
 ) {
     Column {
-        Text(
-            modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
-            text = stringResource(id = R.string.dashboard_top_performers_title),
-            style = MaterialTheme.typography.subtitle1,
-            fontWeight = FontWeight.Bold,
-        )
         TopPerformersDatePicker(
             selectedDateRange,
             onGranularityChanged,
@@ -492,7 +496,7 @@ private fun TopPerformersErrorView() {
 
 @LightDarkThemePreviews
 @Composable
-private fun TopPerformersCardPreview() {
+private fun TopPerformersWidgetCardPreview() {
     val selectedDateRange = SelectionType.TODAY.generateSelectionData(
         referenceStartDate = Date(),
         referenceEndDate = Date(),
@@ -529,28 +533,28 @@ private fun TopPerformersCardPreview() {
         isError = false
     )
     Column {
-        TopPerformersCard(
+        TopPerformersContent(
             topPerformersState = topPerformersState,
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
             onGranularityChanged = {},
             onEditCustomRangeTapped = {}
         )
-        TopPerformersCard(
+        TopPerformersContent(
             topPerformersState = topPerformersState.copy(isLoading = true),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
             onGranularityChanged = {},
             onEditCustomRangeTapped = {}
         )
-        TopPerformersCard(
+        TopPerformersContent(
             topPerformersState = topPerformersState.copy(isError = true),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
             onGranularityChanged = {},
             onEditCustomRangeTapped = {}
         )
-        TopPerformersCard(
+        TopPerformersContent(
             topPerformersState = topPerformersState.copy(topPerformers = emptyList()),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
