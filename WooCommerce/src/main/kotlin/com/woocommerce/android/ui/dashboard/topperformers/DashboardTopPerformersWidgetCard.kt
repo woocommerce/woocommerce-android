@@ -84,26 +84,22 @@ fun DashboardTopPerformersWidgetCard(
             }
         )
 ) {
-    WidgetCard(
-        titleResource = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
-        menu = DashboardWidgetMenu(
-            items = listOf(
-                DashboardWidgetAction(
-                    titleResource = R.string.dashboard_top_performers_overflow_menu_hide_option,
-                    action = { topPerformersViewModel.hideTopPerformers() }
-                )
+    topPerformersViewModel.topPerformersState.observeAsState().value?.let { topPerformersState ->
+        val lastUpdateState by topPerformersViewModel.lastUpdateTopPerformers.observeAsState()
+        val selectedDateRange by topPerformersViewModel.selectedDateRange.observeAsState()
+        WidgetCard(
+            titleResource = topPerformersState.titleStringRes,
+            menu = topPerformersState.menu,
+            button = topPerformersState.onOpenAnalyticsTapped,
+        ) {
+            DashboardTopPerformersContent(
+                topPerformersState,
+                selectedDateRange,
+                lastUpdateState,
+                topPerformersViewModel::onGranularityChanged,
+                topPerformersViewModel::onEditCustomRangeTapped
             )
-        ),
-        button = DashboardWidgetAction(
-            titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
-            action = {
-                topPerformersViewModel.onViewAllAnalyticsTapped()
-            }
-        )
-    ) {
-        DashboardTopPerformersContent(
-            topPerformersViewModel = topPerformersViewModel
-        )
+        }
     }
 
     val openDatePicker = { start: Long, end: Long, callback: (Long, Long) -> Unit ->
@@ -122,21 +118,24 @@ fun DashboardTopPerformersWidgetCard(
 }
 
 @Composable
-fun DashboardTopPerformersContent(topPerformersViewModel: DashboardTopPerformersViewModel) {
-    val topPerformersState by topPerformersViewModel.topPerformersState.observeAsState()
-    val lastUpdateState by topPerformersViewModel.lastUpdateTopPerformers.observeAsState()
-    val selectedDateRange by topPerformersViewModel.selectedDateRange.observeAsState()
-
-    if (topPerformersState?.isLoading == true) {
-        TopPerformersLoading(modifier = Modifier.padding(16.dp))
-    } else {
-        TopPerformersContent(
-            topPerformersState,
-            lastUpdateState,
-            selectedDateRange,
-            topPerformersViewModel::onGranularityChanged,
-            topPerformersViewModel::onEditCustomRangeTapped
-        )
+fun DashboardTopPerformersContent(
+    topPerformersState: TopPerformersState?,
+    selectedDateRange: StatsTimeRangeSelection?,
+    lastUpdateState: String?,
+    onGranularityChanged: (SelectionType) -> Unit,
+    onEditCustomRangeTapped: () -> Unit,
+) {
+    when {
+        topPerformersState?.isLoading == true -> TopPerformersLoading(modifier = Modifier.padding(16.dp))
+        else -> {
+            TopPerformersContent(
+                topPerformersState,
+                lastUpdateState,
+                selectedDateRange,
+                onGranularityChanged,
+                onEditCustomRangeTapped
+            )
+        }
     }
 }
 
@@ -536,7 +535,14 @@ private fun TopPerformersWidgetCardPreview() {
                 onClick = {}
             ),
         ),
-        isError = false
+        isError = false,
+        isLoading = false,
+        titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
+        menu = DashboardWidgetMenu(emptyList()),
+        onOpenAnalyticsTapped = DashboardWidgetAction(
+            titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
+            action = {}
+        )
     )
     Column {
         TopPerformersContent(

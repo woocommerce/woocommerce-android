@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.topperformers
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -20,6 +21,8 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
@@ -96,7 +99,22 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val customRange = customDateRangeDataStore.dateRange.asLiveData()
 
     init {
-        _topPerformersState.value = TopPerformersState(isLoading = true)
+        _topPerformersState.value = TopPerformersState(
+            isLoading = true,
+            titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
+            menu = DashboardWidgetMenu(
+                items = listOf(
+                    DashboardWidgetAction(
+                        titleResource = R.string.dashboard_top_performers_overflow_menu_hide_option,
+                        action = ::hideTopPerformers
+                    )
+                )
+            ),
+            onOpenAnalyticsTapped = DashboardWidgetAction(
+                titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
+                action = ::onViewAllAnalyticsTapped
+            )
+        )
 
         viewModelScope.launch {
             _selectedDateRange.flatMapLatest { selectedRange ->
@@ -233,7 +251,10 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     data class TopPerformersState(
         val isLoading: Boolean = false,
         val isError: Boolean = false,
+        @StringRes val titleStringRes: Int,
         val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
+        val menu: DashboardWidgetMenu,
+        val onOpenAnalyticsTapped: DashboardWidgetAction
     )
 
     data class OpenTopPerformer(
