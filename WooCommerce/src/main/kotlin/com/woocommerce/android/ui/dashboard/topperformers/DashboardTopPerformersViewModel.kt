@@ -11,6 +11,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData
@@ -21,6 +22,7 @@ import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitte
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
+import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
@@ -70,6 +72,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val dateUtils: DateUtils,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
+    private val dashboardRepository: DashboardRepository,
     getSelectedDateRange: GetSelectedDateRange,
 ) : ScopedViewModel(savedState) {
 
@@ -218,6 +221,12 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         selectedDateRange.value?.let {
             triggerEvent(OpenAnalytics(it))
+        }
+    }
+
+    fun hideTopPerformers() {
+        viewModelScope.launch {
+            dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.POPULAR_PRODUCTS, isVisible = false)
         }
     }
 

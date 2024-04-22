@@ -89,9 +89,7 @@ fun DashboardTopPerformersWidgetCard(
             items = listOf(
                 DashboardWidgetAction(
                     titleResource = R.string.dashboard_top_performers_overflow_menu_hide_option,
-                    action = {
-                        // TODO Hide top performers
-                    }
+                    action = { topPerformersViewModel.hideTopPerformers() }
                 )
             )
         ),
