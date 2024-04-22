@@ -15,6 +15,8 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONObject
 import java.util.Locale
 import java.util.UUID
@@ -29,6 +31,8 @@ class AnalyticsTracker private constructor(
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
     private var anonymousID: String? = null
+
+    private val mutex = Mutex()
 
     private fun clearAllData() {
         clearAnonID()
@@ -69,27 +73,29 @@ class AnalyticsTracker private constructor(
 
     private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
         appCoroutineScope.launch {
-            if (tracksClient == null) {
-                return@launch
-            }
+            mutex.withLock {
+                if (tracksClient == null) {
+                    return@withLock
+                }
 
-            val eventName = stat.name.lowercase(Locale.getDefault())
+                val eventName = stat.name.lowercase(Locale.getDefault())
 
-            val user = username ?: getAnonID() ?: generateNewAnonID()
+                val user = username ?: getAnonID() ?: generateNewAnonID()
 
-            val userType = if (username != null) {
-                TracksClient.NosaraUserType.WPCOM
-            } else {
-                TracksClient.NosaraUserType.ANON
-            }
+                val userType = if (username != null) {
+                    TracksClient.NosaraUserType.WPCOM
+                } else {
+                    TracksClient.NosaraUserType.ANON
+                }
 
-            val propertiesJson = JSONObject(properties.buildFinalProperties(stat.siteless))
-            tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+                val propertiesJson = JSONObject(properties.buildFinalProperties(stat.siteless))
+                tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
 
-            if (propertiesJson.length() > 0) {
-                WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
-            } else {
-                WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
+                if (propertiesJson.length() > 0) {
+                    WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
+                } else {
+                    WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
+                }
             }
         }
     }
