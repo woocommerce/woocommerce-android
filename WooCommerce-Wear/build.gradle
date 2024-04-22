@@ -8,11 +8,11 @@ plugins {
 def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
 
 android {
-    namespace 'com.woocommerce.wear'
+    namespace 'com.woocommerce.android'
     compileSdk gradle.ext.compileSdkVersion
 
     defaultConfig {
-        applicationId "com.woocommerce.wear"
+        applicationId "com.woocommerce.android"
         minSdk gradle.ext.minSdkVersion
         targetSdk gradle.ext.targetSdkVersion
         versionName versionProperties.getProperty("wearVersionName")
@@ -45,6 +45,25 @@ android {
     packaging {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+
+    flavorDimensions = ["buildType"]
+    productFlavors {
+        // Used for release/beta builds. Usually shouldn't be build locally.
+        // AppName: WooCommerce
+        vanilla {
+            dimension "buildType"
+        }
+
+        // Used for local development - preferred variant for developers.
+        // AppName: WooCommerce (Dev)
+        wasabi {
+            applicationId "com.woocommerce.android.dev"
+            dimension "buildType"
+            isDefault true
+
+            resConfigs("en", "xxhdpi")
         }
     }
 }
