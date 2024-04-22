@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -40,15 +39,18 @@ fun <T> DragAndDropItemsList(
     onOrderChange: (fromIndex: Int, toIndex: Int) -> Unit,
     itemKey: ((index: Int, item: T) -> Any),
     modifier: Modifier = Modifier,
+    isItemDraggable: (T) -> Boolean = { true },
     itemContent: @Composable (item: T, dragDropState: DragDropState) -> Unit
 ) {
     val listState = rememberLazyListState()
-    val dragDropState = rememberDragDropState(listState) { fromIndex, toIndex -> onOrderChange(fromIndex, toIndex) }
+    val dragDropState = rememberDragDropState(
+        listState,
+        isDraggable = { index -> isItemDraggable(items[index]) }
+    ) { fromIndex, toIndex -> onOrderChange(fromIndex, toIndex) }
 
     LazyColumn(
         state = listState,
         modifier = modifier
-            .fillMaxSize()
             .background(MaterialTheme.colors.surface)
     ) {
         itemsIndexed(items = items, key = itemKey) { i, item ->
@@ -83,7 +85,7 @@ fun <T> DragAndDropSelectableItemsList(
     onOrderChange: (fromIndex: Int, toIndex: Int) -> Unit,
     itemKey: ((index: Int, item: T) -> Any),
     modifier: Modifier = Modifier,
-    itemFormatter: @Composable T.() -> String = { toString() },
+    itemFormatter: @Composable T.() -> String = { toString() }
 ) {
     DragAndDropItemsList(
         items = items,
@@ -133,7 +135,7 @@ fun <T> DragAndDropSelectableItem(
         Text(
             text = itemFormatter(item),
             modifier
-                .weight(2f)
+                .weight(1f)
                 .padding(horizontal = 16.dp)
         )
 

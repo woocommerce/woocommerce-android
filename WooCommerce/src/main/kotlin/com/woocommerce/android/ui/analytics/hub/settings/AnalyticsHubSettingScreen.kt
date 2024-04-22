@@ -96,6 +96,7 @@ fun AnalyticsHubSettingScreen(
                     items = state.cardsConfiguration,
                     onOrderChange = onOrderChange,
                     itemKey = { _, card -> card.card },
+                    isItemDraggable = { it is AnalyticCardConfigurationUI.SelectableCardConfigurationUI },
                     modifier = Modifier.padding(padding)
                 ) { item, dragDropState ->
                     when (item) {
@@ -158,7 +159,6 @@ private fun ExplorePluginItem(
                 .padding(vertical = 8.dp)
         ) {
             Box(
-
                 modifier = Modifier
                     .background(MaterialTheme.colors.primary)
                     .padding(vertical = 6.dp, horizontal = 12.dp)
