@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -68,7 +69,9 @@ class DashboardWidgetEditorViewModel @Inject constructor(
     }
 
     fun onOrderChange(fromIndex: Int, toIndex: Int) {
-        editedWidgets = editedWidgets.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+        val mappedFromIndex = editedWidgets.indexOf(widgetEditorState.value.orderedWidgetList[fromIndex])
+        val mappedToIndex = editedWidgets.indexOf(widgetEditorState.value.orderedWidgetList[toIndex])
+        editedWidgets = editedWidgets.toMutableList().apply { add(mappedFromIndex, removeAt(mappedToIndex)) }
     }
 
     fun onDismissDiscardDialog() {
@@ -85,5 +88,9 @@ class DashboardWidgetEditorViewModel @Inject constructor(
         val showDiscardDialog: Boolean = false,
         val isSaveButtonEnabled: Boolean = false,
         val isLoading: Boolean = true
-    ) : Parcelable
+    ) : Parcelable {
+        @IgnoredOnParcel
+        val orderedWidgetList: List<DashboardWidget> =
+            widgetList.filter { it.isAvailable } + widgetList.filterNot { it.isAvailable }
+    }
 }
