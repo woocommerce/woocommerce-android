@@ -1,11 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-02 13:54:05+0000
+Translation-Revision-Date: 2024-04-16 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="login_app_password_exit_dialog_cancel">Annuler</string>
+    <string name="login_app_password_exit_dialog_confirmation">Quitter quand même</string>
+    <string name="login_app_password_exit_dialog_message">Il semble que vous n’ayez pas encore approuvé la connexion à l’application. Voulez-vous vraiment quitter ?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Veuillez sélectionner une image dont les dimensions minimales sont de 500x500 pixels</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Image non valide</string>
+    <string name="login_invalid_credentials_message">Il semble que l’identifiant ou le mot de passe saisi ne corresponde pas. Vérifiez vos identifiants de connexion et réessayez.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Si vos données ne se chargent toujours pas, contactez notre équipe d’assistance pour obtenir de l’aide.</string>
+    <string name="orderlist_connectivity_tool_summary_title">Aucun problème de connexion</string>
+    <string name="orderlist_connectivity_tool_return_action">Retour à l’écran précédent</string>
+    <string name="orderlist_connectivity_tool_retry_action">Réessayer de se connecter</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Connexion à votre site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Nous ne parvenons pas à nous connecter à WordPress.com actuellement.\n\nRéessayez dans quelques minutes ou contactez notre équipe d’assistance, nous serons ravis de vous aider.</string>
+    <string name="orderlist_connectivity_tool_subtitle">Veuillez patienter pendant que nous tentons d’identifier votre problème de connexion.</string>
+    <string name="orderlist_connectivity_tool_title">Connexion à la résolution de problème</string>
+    <string name="analytics_gift_cards_card_title">Cartes-cadeaux</string>
+    <string name="analytics_used_title">Utilisé</string>
+    <string name="analytics_gift_cards_no_data">Aucune carte-cadeau pour cette période</string>
+    <string name="login_app_password_support_button">Contacter l’assistance</string>
+    <string name="login_app_password_continue_button">Continuer</string>
+    <string name="login_app_password_instructions_footer">En cas de problème, contactez notre équipe d’assistance.</string>
+    <string name="login_app_password_instructions_step_3">3. Une fois la connexion établie, vous serez connecté(e) à votre boutique.</string>
+    <string name="login_app_password_instructions_step_2">2. Lorsque vous y serez invité(e), approuvez la connexion en appuyant sur le bouton de confirmation.</string>
+    <string name="login_app_password_instructions_step_1">1. Commencez par vous connecter à l’aide de vos identifiants de connexion.</string>
+    <string name="login_app_password_instructions_title">Veuillez suivre ces étapes pour connecter l’application Woo directement à votre boutique à l’aide d’un mot de passe d’application.</string>
+    <string name="login_app_password_subtitle">Votre boutique dispose probablement de mesures de sécurité supplémentaires.</string>
+    <string name="login_app_password_title">Nous n’avons pas pu nous connecter à votre boutique</string>
+    <string name="empty_order_detail_message">Les détails de votre commande s’affichent ici lorsque vous avez passé une commande.</string>
+    <string name="empty_order_detail_title">Pas encore de détails de commande</string>
+    <string name="order_creation_simple_payment_migration_button">Ajouter un montant personnalisé</string>
+    <string name="order_creation_simple_payment_migration_message_two">Pour définir un montant de paiement, ajoutez\nun montant personnalisé à votre nouvelle commande.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Nous avons combiné la collecte des paiements avec\nla création des commandes, pour un processus plus accessible\net plus puissant.</string>
+    <string name="order_creation_simple_payment_migration_title">Percevoir le paiement \na changé d’emplacement</string>
+    <string name="analytics_bundles_card_title">Formules</string>
+    <string name="analytics_bundles_list_header_subtitle">Formules vendues</string>
+    <string name="analytics_bundles_list_header_title">Formules</string>
+    <string name="analytics_bundles_list_items_sold">Formules vendues</string>
+    <string name="my_store_widget_blaze_title">Campagnes Blaze</string>
+    <string name="my_store_widget_top_products_title">Produits les mieux notés</string>
+    <string name="my_store_widget_stats_title">Statistiques</string>
+    <string name="my_store_widget_onboarding_title">Intégration</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Initiation à la boutique</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Campagnes Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">Produits les plus performants</string>
+    <string name="my_store_edit_screen_widget_stats">Statistique de la boutique</string>
+    <string name="my_store_edit_screen_widgets">Modifier les sections de ma boutique</string>
     <string name="product_list_unsaved_product_unselected_message">Voulez-vous vraiment annuler les modifications apportées à ce produit ?</string>
     <string name="product_list_unsaved_product_unselected_title">Vous êtes sur le point d\'annuler les modifications apportées à %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">La fonctionnalité de statistiques ne prend pas en charge l’affichage des visites et des données de conversion pour les plages de dates arbitraires.\n\nCependant, vous pouvez appuyer sur une valeur sur le graphique pour voir les visites et les conversions pour cette plage spécifique.</string>
@@ -68,20 +113,17 @@ Language: fr
     <string name="order_creation_tablet_mode_fragment_title">Récapitulatif de commande</string>
     <string name="orderlist_order_trashed_error">Erreur lors de l’envoi de la commande dans la corbeille</string>
     <string name="orderlist_order_trashed">Commande mise à la corbeille</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Oups ! Il semble y avoir un problème avec votre site.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oups ! Il semble y avoir un problème avec votre connexion Jetpack.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oups ! Il semble que la réponse de votre site ne nous permette pas de travailler convenablement.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Oups ! Votre site semble mettre du temps à répondre.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Oups ! Il semble que nous ne puissions pas nous connecter à WordPress.com pour l’instant.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Il semble y avoir un problème avec votre site.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Il semble y avoir un problème avec votre connexion Jetpack.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Il semble que la réponse de votre site ne nous permette pas de travailler convenablement.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Votre site semble mettre du temps à répondre.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Il semble que vous ne soyez pas connecté(e) à Internet.\n\nAssurez-vous que votre Wi-Fi est activé. Si vous utilisez des données mobiles, assurez-vous qu’elles sont activées dans les réglages de votre appareil.</string>
     <string name="product_detail_product_not_selected">Produit non sélectionné</string>
     <string name="orderlist_connectivity_tool_read_more_action">Lire la suite</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contacter l’assistance</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Commandes de votre site</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Votre site</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">Serveurs WordPress.com</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Extraction des commandes de votre site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Connexion aux serveurs WordPress.com</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Connexion Internet</string>
-    <string name="orderlist_connectivity_tool_title">Test de connectivité</string>
     <string name="my_store_custom_range_content_description">Ajouter des statistiques avec une plage de données personnalisée</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Aucun lieu trouvé.\nVeuillez réessayer.</string>
     <string name="order_detail_attribution_session_page_views">Pages vues par session</string>

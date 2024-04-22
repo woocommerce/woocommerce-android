@@ -453,8 +453,10 @@
     <string name="analytics_revenue_no_data">No revenue this period</string>
     <string name="analytics_orders_no_data">No orders this period</string>
     <string name="analytics_products_no_data">No products this period</string>
+    <string name="analytics_gift_cards_no_data">No gift cards this period</string>
     <string name="analytics_session_no_data">No sessions this period</string>
     <string name="analytics_total_sales_title">Total sales</string>
+    <string name="analytics_used_title">Used</string>
     <string name="analytics_net_sales_title">Net sales</string>
     <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
     <string name="analytics_orders_card_title">Orders</string>
@@ -470,6 +472,7 @@
     <string name="analytics_products_list_item_description">Net sales: %1$s</string>
     <string name="analytics_session_card_title">Sessions</string>
     <string name="analytics_bundles_card_title">Bundles</string>
+    <string name="analytics_gift_cards_card_title">Gift Cards</string>
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
     <string name="analytics_item">item</string>
@@ -510,19 +513,24 @@
     <string name="error_troubleshooting">Troubleshooting</string>
     <string name="orderlist_timeout_error_title">Your site is taking a long time to respond</string>
     <string name="orderlist_timeout_error_message">Please try again later or reach out to us and we\'ll be happy to assist you</string>
-    <string name="orderlist_connectivity_tool_title">Connectivity Test</string>
-    <string name="orderlist_connectivity_tool_internet_check_title">Internet Connection</string>
+    <string name="orderlist_connectivity_tool_title">Troubleshoot Connection</string>
+    <string name="orderlist_connectivity_tool_subtitle">Please wait while we attempt to identify your connection issue.</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Internet connection</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">It looks like you\'re not connected to the internet.\n\nEnsure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com servers</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Oops! It seems we can\'t connect to WordPress.com at the moment.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Your site</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Your site orders</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Connecting to WordPress.com servers</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">We can\'t connect to WordPress.com right now.\n\nTry again in a few minutes, or contact our support team and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Connecting to your site</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Fetching your site orders</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contact Support</string>
     <string name="orderlist_connectivity_tool_read_more_action">Read More</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Oops! Your site seems to be taking too long to respond.\n\nContact your hosting provider for further assistance.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oops! It seems we can\'t work properly with your site\'s response.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oops! There seems to be a problem with your jetpack connection.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Oops! There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_retry_action">Retry connection</string>
+    <string name="orderlist_connectivity_tool_return_action">Return to the previous screen</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Your site seems to be taking too long to respond.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">It seems we can\'t work properly with your site\'s response.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">There seems to be a problem with your jetpack connection.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_summary_title">No connection issues</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">If your data still isn\'t loading, contact our support team for assistance.</string>
     <string name="orderlist_order_trashed">Order trashed</string>
     <string name="orderlist_order_trashed_error">Error trashing order</string>
 
@@ -2551,6 +2559,7 @@
 
     <string name="google_error_timeout">Google took too long to respond. You may need to wait until you have a stronger internet connection.</string>
 
+    <string name="login_invalid_credentials_message">It seems the username or password you entered doesn\'t quite match. Double-check your credentials and try again.</string>
     <string name="username_or_password_incorrect">The username or password you entered is incorrect</string>
     <string name="cannot_add_duplicate_site">This site already exists in the app, you can\'t add it.</string>
     <string name="duplicate_site_detected">A duplicate site has been detected.</string>
@@ -3814,6 +3823,8 @@
     <string name="blaze_campaign_edit_ad_change_description_title">Description</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Invalid image</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Please select and image with a minimum dimension of 500x500 pixels</string>
 
     <!--
     Blaze campaign payment
@@ -3992,8 +4003,9 @@
 
     <string name="order_configuration_product_selection">Select product %s</string>
     <string name="order_configuration_product_selection_control">Product selection</string>
+    <string name="card_selection_control">Analytic card selection</string>
     <string name="disabled">Disabled</string>
-    <string name="see_report">See Report</string>
+    <string name="see_report">See report</string>
 
     <string name="product_update_stock_status_title">Update Stock Status</string>
     <string name="product_update_stock_status_done">DONE</string>
@@ -4027,4 +4039,7 @@
     <string name="login_app_password_instructions_footer">If you run into any issues, please contact our support team.</string>
     <string name="login_app_password_continue_button">Continue</string>
     <string name="login_app_password_support_button">Contact Support</string>
+    <string name="login_app_password_exit_dialog_message">It seems that you have not approved the app connection yet. Are you sure you want to exit?</string>
+    <string name="login_app_password_exit_dialog_confirmation">Exit Anyway</string>
+    <string name="login_app_password_exit_dialog_cancel">Cancel</string>
 </resources>

@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_181"
+msgctxt "release_note_183"
 msgid ""
-"18.1:\n"
-"Introducing refined features in our WooCommerce mobile app! We've enhanced the accuracy of visitor stats to offer you more precise insights. Enjoy a better understanding of your customer interactions, further helping you optimize your strategies. Update now for a superior user experience.\n"
+"18.3:\n"
+"This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.\n"
 msgstr ""
 
-msgctxt "release_note_180"
+msgctxt "release_note_182"
 msgid ""
-"18.0:\n"
-"Discover a smoother shopping experience in our latest update! We've squashed some pesky bugs in the products section for a flawless selection and viewing, especially in 2-pane mode. Photos now shine brighter with our enhanced screens. Transitioning between panes? We've polished that too, ensuring seamless shifts. Plus, we're introducing a helpful confirmation dialog for unsaved changes. Most excitingly, dive into your store's performance with custom date ranges in the My Store tab. Update now for these improvements and more!\n"
+"18.2:\n"
+"In our latest update, we're enhancing your WooCommerce experience! We're transitioning from simple payments to a more customizable order creation flow, enabling you to set the desired amount with ease. Plus, our improved Analytics Hub now provides insights into Product Bundles and Gift Cards, offering a more comprehensive view of your business stats, given those extensions are active. Enjoy the upgrade!\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
