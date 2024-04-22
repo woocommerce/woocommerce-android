@@ -22,7 +22,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -61,16 +60,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun DashboardBlazeCard(
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
-    // This is a temporary solution until we introduce a dynamic container where we will communicate the event
-    // to the parent ViewModel directly
-    updateContainerVisibility: (Boolean) -> Unit,
     viewModel: DashboardBlazeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     viewModel.blazeViewState.observeAsState().value?.let { state ->
-        LaunchedEffect(state) {
-            updateContainerVisibility(state != DashboardBlazeCampaignState.Hidden)
-        }
-
         if (state != DashboardBlazeCampaignState.Hidden) {
             DashboardBlazeView(
                 state = state,

@@ -1,0 +1,2 @@
+18.2:
+Im Rahmen unseres letzten Updates wird dein WooCommerce-Erlebnis verbessert! Wir wechseln vom einfachen Bezahlen zu einer besser anpassbaren Bestellerstellung und geben dir somit die Möglichkeit, ganz einfach den gewünschten Betrag festzulegen.  In unserem verbesserten Analyse-Hub findest du nun Einsichten zu Produktpaketen und Geschenkkarten. Wenn du diese Erweiterungen aktivierst, profitierst du von einer umfassenderen Übersicht über deine Unternehmensstatistiken. Viel Spaß mit dem Upgrade!

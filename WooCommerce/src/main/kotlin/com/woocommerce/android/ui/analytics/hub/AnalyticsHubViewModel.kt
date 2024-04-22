@@ -22,6 +22,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoSupportedState
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
@@ -186,10 +187,12 @@ class AnalyticsHubViewModel @Inject constructor(
                                 observeSessionChanges()
                                 LoadingViewState(cardConfiguration.card)
                             }
+
                             AnalyticsCards.Bundles -> {
                                 observeBundlesChanges()
                                 LoadingViewState(cardConfiguration.card)
                             }
+
                             AnalyticsCards.GiftCards -> {
                                 observeGiftCardsChanges()
                                 LoadingViewState(cardConfiguration.card)
@@ -300,7 +303,8 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is OrdersState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_orders_no_data)
-                    updateCardStatus(AnalyticsCards.Orders, NoDataState(AnalyticsCards.Orders, message))
+                    val title = resourceProvider.getString(AnalyticsCards.Orders.resId)
+                    updateCardStatus(AnalyticsCards.Orders, NoDataState(AnalyticsCards.Orders, title, message))
                 }
 
                 is OrdersState.Loading -> {
@@ -323,11 +327,21 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is SessionState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_session_no_data)
-                    updateCardStatus(AnalyticsCards.Session, NoDataState(AnalyticsCards.Session, message))
+                    val title = resourceProvider.getString(AnalyticsCards.Session.resId)
+                    updateCardStatus(AnalyticsCards.Session, NoDataState(AnalyticsCards.Session, title, message))
                 }
 
                 is SessionState.Loading -> {
                     updateCardStatus(AnalyticsCards.Session, LoadingViewState(AnalyticsCards.Session))
+                }
+
+                is SessionState.NotSupported -> {
+                    val message = resourceProvider.getString(R.string.analytics_session_no_available)
+                    val description = resourceProvider.getString(R.string.analytics_session_no_available_description)
+                    val title = resourceProvider.getString(AnalyticsCards.Session.resId)
+                    updateCardStatus(
+                        AnalyticsCards.Session, NoSupportedState(AnalyticsCards.Session, title, message, description)
+                    )
                 }
             }
         }
@@ -369,7 +383,8 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is RevenueState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_revenue_no_data)
-                    updateCardStatus(AnalyticsCards.Revenue, NoDataState(AnalyticsCards.Revenue, message))
+                    val title = resourceProvider.getString(AnalyticsCards.Revenue.resId)
+                    updateCardStatus(AnalyticsCards.Revenue, NoDataState(AnalyticsCards.Revenue, title, message))
                 }
 
                 is RevenueState.Loading -> {
@@ -412,7 +427,8 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is GiftCardsState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_gift_cards_no_data)
-                    updateCardStatus(AnalyticsCards.GiftCards, NoDataState(AnalyticsCards.GiftCards, message))
+                    val title = resourceProvider.getString(AnalyticsCards.GiftCards.resId)
+                    updateCardStatus(AnalyticsCards.GiftCards, NoDataState(AnalyticsCards.GiftCards, title, message))
                 }
 
                 is GiftCardsState.Loading -> {

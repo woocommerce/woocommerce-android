@@ -16,11 +16,13 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.OrdersR
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.ProductsResult.ProductsError
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueData
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueError
+import com.woocommerce.android.ui.analytics.ranges.NotSupportedGranularity
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
+import com.woocommerce.android.ui.analytics.ranges.visitorSummaryStatsGranularity
 import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
 import kotlinx.coroutines.Deferred
@@ -181,11 +183,28 @@ class AnalyticsRepository @Inject constructor(
         rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
     ): VisitorsResult {
-        return getVisitorsCount(rangeSelection, fetchStrategy)
-            .fold(
-                onFailure = { VisitorsResult.VisitorsError },
-                onSuccess = { VisitorsResult.VisitorsData(it.values.sum()) }
-            )
+        val result = when (rangeSelection.selectionType) {
+            SelectionType.LAST_QUARTER, SelectionType.QUARTER_TO_DATE -> {
+                getVisitorsCount(rangeSelection, fetchStrategy)
+            }
+            else -> {
+                getVisitorsSummaryCount(rangeSelection, fetchStrategy)
+            }
+        }
+        return result.fold(
+            onFailure = {
+                when (it) {
+                    is NotSupportedGranularity -> {
+                        VisitorsResult.VisitorsNotSupported
+                    }
+
+                    else -> {
+                        VisitorsResult.VisitorsError
+                    }
+                }
+            },
+            onSuccess = { VisitorsResult.VisitorsData(it) }
+        )
     }
 
     private suspend fun getCurrentPeriodStats(
@@ -268,11 +287,26 @@ class AnalyticsRepository @Inject constructor(
     private suspend fun getVisitorsCount(
         rangeSelection: StatsTimeRangeSelection,
         fetchStrategy: FetchStrategy
-    ): Result<Map<String, Int>> = statsRepository.fetchVisitorStats(
+    ): Result<Int> = statsRepository.fetchVisitorStats(
         range = rangeSelection.currentRange,
         granularity = rangeSelection.visitorStatsGranularity,
         fetchStrategy is ForceNew,
-    )
+    ).map { it.values.sum() }
+
+    private suspend fun getVisitorsSummaryCount(
+        rangeSelection: StatsTimeRangeSelection,
+        fetchStrategy: FetchStrategy
+    ): Result<Int> {
+        return try {
+            statsRepository.fetchTotalVisitorStats(
+                date = rangeSelection.currentRange.end,
+                granularity = rangeSelection.visitorSummaryStatsGranularity,
+                fetchStrategy is ForceNew,
+            )
+        } catch (e: NotSupportedGranularity) {
+            Result.failure(e)
+        }
+    }
 
     private fun calculateDeltaPercentage(previousVal: Double, currentVal: Double): DeltaPercentage = when {
         previousVal <= ZERO_VALUE -> DeltaPercentage.NotExist
@@ -450,7 +484,8 @@ class AnalyticsRepository @Inject constructor(
     }
 
     sealed class VisitorsResult {
-        object VisitorsError : VisitorsResult()
+        data object VisitorsNotSupported : VisitorsResult()
+        data object VisitorsError : VisitorsResult()
         data class VisitorsData(val visitorsCount: Int) : VisitorsResult()
     }
 

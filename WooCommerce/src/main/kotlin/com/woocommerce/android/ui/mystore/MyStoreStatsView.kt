@@ -237,9 +237,11 @@ class MyStoreStatsView @JvmOverloads constructor(
             customRangeGranularityLabel.isVisible = true
             customRangeLabel.text = selectedTimeRange.currentRangeDescription
             customRangeGranularityLabel.text = getStringForGranularity(selectedTimeRange.revenueStatsGranularity)
+            statsDateValue.isVisible = false
         } else {
             customRangeLabel.isVisible = false
             customRangeGranularityLabel.isVisible = false
+            statsDateValue.isVisible = true
         }
     }
 
@@ -419,7 +421,7 @@ class MyStoreStatsView @JvmOverloads constructor(
         return when (activeGranularity) {
             StatsGranularity.HOURS -> dateUtils.getFriendlyDayHourString(dateString).orEmpty()
             StatsGranularity.DAYS -> dateUtils.getDayMonthDateString(dateString).orEmpty()
-            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayString(dateString).orEmpty()
+            StatsGranularity.WEEKS -> dateUtils.getShortMonthDayStringForWeek(dateString).orEmpty()
             StatsGranularity.MONTHS -> dateUtils.getMonthString(dateString).orEmpty()
             StatsGranularity.YEARS -> dateString
         }.also { result -> trackUnexpectedFormat(result, dateString) }
