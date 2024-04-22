@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -24,6 +25,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
+import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
@@ -73,7 +75,8 @@ class DashboardViewModel @Inject constructor(
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     private val observeLastUpdate: ObserveLastUpdate,
     getSelectedDateRange: GetSelectedDateRange,
-    shouldShowPrivacyBanner: ShouldShowPrivacyBanner
+    shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
+    private val dashboardRepository: DashboardRepository
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -119,6 +122,8 @@ class DashboardViewModel @Inject constructor(
         .flatMapLatest { site ->
             jetpackBenefitsBannerState(site.connectionType)
         }.asLiveData()
+
+    val dashboardWidgets = dashboardRepository.widgets.asLiveData()
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
@@ -188,6 +193,10 @@ class DashboardViewModel @Inject constructor(
     fun onEditWidgetsClicked() {
         // TODO ADD TRACKING HERE
         triggerEvent(OpenEditWidgets)
+    }
+
+    fun onDashboardWidgetEvent(event: DashboardEvent) {
+        triggerEvent(event)
     }
 
     private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) =
@@ -319,6 +328,16 @@ class DashboardViewModel @Inject constructor(
         data class ShareStore(val storeUrl: String) : DashboardEvent()
 
         data object OpenEditWidgets : DashboardEvent()
+
+        data object ShowStatsError : DashboardEvent()
+
+        data class OpenRangePicker(
+            val start: Long,
+            val end: Long,
+            val callback: (Long, Long) -> Unit
+        ) : DashboardEvent()
+
+        data object ShowPluginUnavailableError : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)
@@ -326,5 +345,14 @@ class DashboardViewModel @Inject constructor(
     data class JetpackBenefitsBannerUiModel(
         val show: Boolean = false,
         val onDismiss: () -> Unit = {}
+    )
+
+    data class DashboardWidgetMenu(
+        val items: List<DashboardWidgetAction>
+    )
+
+    data class DashboardWidgetAction(
+        @StringRes val titleResource: Int,
+        val action: () -> Unit
     )
 }

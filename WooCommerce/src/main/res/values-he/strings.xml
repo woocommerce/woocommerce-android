@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-10 15:54:03+0000
+Translation-Revision-Date: 2024-04-16 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="login_app_password_exit_dialog_cancel">ביטול</string>
+    <string name="login_app_password_exit_dialog_confirmation">לצאת בכל מקרה</string>
+    <string name="login_app_password_exit_dialog_message">נראה שעדיין לא אישרת את החיבור לאפליקציה. האם ברצונך לצאת?</string>
+    <string name="login_invalid_credentials_message">נראה ששם המשתמש והסיסמה שהזנת לא תואמים. יש לבדוק את פרטי הכניסה ולנסות שוב.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">אם הנתונים עדיין לא נטענים, יש ליצור קשר עם צוות התמיכה שלנו לסיוע.</string>
+    <string name="orderlist_connectivity_tool_summary_title">לא נמצאו בעיות בחיבור</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">יש לבחור תמונה עם ממדים מינמליים של 500 ‏x ‏500 פיקסלים</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">תמונה לא תקינה</string>
+    <string name="orderlist_connectivity_tool_retry_action">לנסות שוב את החיבור</string>
+    <string name="orderlist_connectivity_tool_store_check_title">התחברות לאתר שלך</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">אנחנו לא יכולים להתחבר אל WordPress.com כרגע.\n\nיש לנסות שוב בעוד דקות אחדות או לפנות לצוות התמיכה שלנו כדי שנוכל לעזור.</string>
+    <string name="orderlist_connectivity_tool_return_action">יש לחזור למסך הקודם</string>
+    <string name="orderlist_connectivity_tool_subtitle">רק רגע, אנחנו מנסים לזהות את הבעיה עם החיבור שלך.</string>
+    <string name="orderlist_connectivity_tool_title">פתרון בעיות לחיבור</string>
+    <string name="analytics_gift_cards_card_title">שוברי מתנה</string>
+    <string name="analytics_used_title">נוצל</string>
+    <string name="analytics_gift_cards_no_data">אין שוברי מתנה בפרק זמן זה</string>
     <string name="login_app_password_support_button">לפנות לתמיכה</string>
     <string name="login_app_password_continue_button">המשך</string>
     <string name="login_app_password_instructions_footer">אם נתקלת בבעיות, יש לפנות לצוות התמיכה שלנו.</string>
@@ -96,21 +113,18 @@ Language: he_IL
     <string name="order_creation_tablet_mode_fragment_title">סיכום הזמנה</string>
     <string name="orderlist_order_trashed_error">שגיאה בהעברת ההזמנה לפח</string>
     <string name="orderlist_order_trashed">ההזמנה הועברה לפח</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">אופס! נראה שיש בעיה באתר שלך.\n\nיש לפנות לספקית האחסון להמשך עזרה.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">אופס! נראה שיש בעיה עם החיבור שלך ל-Jetpack.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">אופס! נראה שאנחנו לא יכולים לאפשר פעילות תקינה עם התגובה של האתר שלך.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">אופס! זמן התגובה של האתר שלך היה ארוך מדי.\n\nיש לפנות לספקית האחסון להמשך עזרה.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">אופס! נראה שאנחנו לא יכולים להתחבר אל WordPress.com כרגע.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">נראה שיש בעיה באתר שלך.\n\nיש לפנות לספקית האחסון להמשך עזרה.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">נראה שהחיבור לאינטרנט לא פעיל אצלך.\n\nיש לוודא שהחיבור ל-Wi-Fi הופעל. אם ברצונך להשתמש בנתונים הניידים, עליך לוודא שהאפשרות הופעלה בהגדרות המכשיר.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">נראה שיש בעיה עם החיבור שלך ל-Jetpack.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">נראה שאנחנו לא יכולים לאפשר פעילות תקינה עם התגובה של האתר שלך.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">זמן התגובה של האתר שלך היה ארוך מדי.\n\nיש לפנות לספקית האחסון להמשך עזרה.</string>
     <string name="orderlist_connectivity_tool_read_more_action">להמשיך לקרוא</string>
     <string name="orderlist_connectivity_tool_contact_support_action">לפנות לתמיכה</string>
-    <string name="orderlist_connectivity_tool_store_check_title">האתר שלך</string>
     <string name="orderlist_connectivity_tool_internet_check_title">חיבור לאינטרנט</string>
-    <string name="orderlist_connectivity_tool_title">בדיקת קישוריות</string>
     <string name="product_detail_product_not_selected">המוצר לא נבחר</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">ההזמנות של האתר</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">שרתים של WordPress.com</string>
     <string name="my_store_custom_range_content_description">להוסיף נתונים סטטיסטיים מטווח תאריכים מותאם אישית</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">הבאת הזמנות מהאתר שלך</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">התחברות לשרתי WordPress.com</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">לא נמצא מיקום.\nיש לנסות שוב.</string>
     <string name="order_detail_attribution_session_page_views">צפיות בעמודים במהלך ההפעלה</string>
     <string name="order_detail_attribution_device_type">סוג מכשיר</string>
@@ -764,7 +778,6 @@ Language: he_IL
     <string name="settings_privacy_header">פרטיות</string>
     <string name="settings_usage_tracking_description">למידע נוסף על הנתונים שאנחנו אוספים לגביך ומאחסנים ועל האפשרויות שיש לך לשלוט בשיתוף הנתונים האלו.</string>
     <string name="settings_usage_tracking">מעקב אחר השימוש</string>
-    <string name="settings_web_options_description">אפשרויות פרטיות נוספות עבור משתמשי woocommerce.com. לרשותך כאן מידע נוסף.</string>
     <string name="settings_web_options">אפשרויות באינטרנט</string>
     <string name="settings_more_privacy_options_header">אפשרויות פרטיות נוספות</string>
     <string name="settings_tracking_analytics_error_update">אירעה שגיאה בעדכון הגדרות הפרטיות שלך</string>
@@ -777,6 +790,7 @@ Language: he_IL
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">לא ניתן להוסיף ישירות מוצר עם סוגים. יש לבחור סוג ספציפי</string>
     <string name="order_creation_barcode_scanning_scanning_failed">הסריקה נכשלה. יש לנסות שוב מאוחר יותר</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">לא ניתן למצוא מוצר עם SKU %s. לא ניתן להוסיף להזמנה</string>
+    <string name="settings_web_options_description">למשתמשי WooCommerce.com יש אפשרויות פרטיות נוספות. לרשותך כאן מידע נוסף.</string>
     <string name="order_list_barcode_scanning_scanning_failed">הסריקה נכשלה. יש לנסות שוב מאוחר יותר</string>
     <string name="scan_barcode">לסרוק את הברקוד</string>
     <string name="shipping_notice_banner_instructions_content">במשלוחים למדינות שעונות על כללי המכס של האיחוד האירופי חובה לספק כעת תיאור ברור וספציפי לגבי כל פריט. לדוגמה, אם המשלוח כולל בגדים, יש לציין את סוגי הבגדים במשלוח (למשל, חולצות גברים, אפודות של נשים, ג\'קטים של ילדים) כדי שהתיאור יענה על הדרישות. אחרת, ייתכן שמשלוחים יעוכבו או יחסמו במכס.</string>

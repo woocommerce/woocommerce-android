@@ -42,12 +42,13 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
-import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
-import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -147,34 +148,17 @@ class DashboardFragment :
 
         _binding = FragmentDashboardBinding.bind(view)
 
-        binding.myStoreStats.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
-            setContent {
-                DashboardStatsCard(
-                    dateUtils = dateUtils,
-                    currencyFormatter = currencyFormatter,
-                    usageTracksEventEmitter = usageTracksEventEmitter,
-                    onPluginUnavailableError = { updateStatsAvailabilityError() },
-                    onStatsError = { showErrorSnack() },
-                    openDatePicker = { start, end, callback ->
-                        showDateRangePicker(start, end, callback)
-                    },
-                    parentViewModel = dashboardViewModel
-                )
-            }
-        }
-
-        binding.blazeCampaignView.apply {
+        binding.dashboardContainer.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
                 WooThemeWithBackground {
-                    DashboardBlazeCard(
-                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                        updateContainerVisibility = { isVisible ->
-                            binding.blazeCampaignView.isVisible = isVisible
-                        }
+                    DashboardContainer(
+                        dateUtils = dateUtils,
+                        currencyFormatter = currencyFormatter,
+                        usageTracksEventEmitter = usageTracksEventEmitter,
+                        dashboardViewModel = dashboardViewModel,
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
                     )
                 }
             }
@@ -357,6 +341,12 @@ class DashboardFragment :
                     )
                 }
 
+                is ShowStatsError -> showErrorSnack()
+
+                is OpenRangePicker -> showDateRangePicker(event.start, event.end, event.callback)
+
+                is ShowPluginUnavailableError -> showPluginUnavailableError()
+
                 else -> event.isHandled = false
             }
         }
@@ -454,9 +444,9 @@ class DashboardFragment :
         super.onDestroy()
     }
 
-    private fun updateStatsAvailabilityError() {
+    private fun showPluginUnavailableError() {
         binding.myStoreRefreshLayout.visibility = View.GONE
-        WooAnimUtils.fadeIn(binding.statsErrorScrollView)
+        WooAnimUtils.fadeIn(binding.pluginUnavailableErrorScrollView)
     }
 
     private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>) {
@@ -572,7 +562,7 @@ class DashboardFragment :
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
         }
-        binding.myStoreStats.visibility = dashboardVisibility
+        binding.dashboardContainer.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show
     }
