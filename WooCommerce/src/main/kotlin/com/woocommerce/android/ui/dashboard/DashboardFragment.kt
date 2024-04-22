@@ -6,6 +6,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -43,12 +44,12 @@ import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
+import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersCard
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -60,7 +61,6 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -171,8 +171,6 @@ class DashboardFragment :
             refreshJitm()
         }
 
-        binding.myStoreTopPerformers.initView(selectedSite, dateUtils)
-
         val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
         binding.myStoreStatsAvailabilityMessage.setClickableText(
             content = getString(R.string.my_store_stats_availability_description, contactUsText),
@@ -187,9 +185,21 @@ class DashboardFragment :
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
+        setTopPerformersView()
         setupOnboardingView()
 
         initJitm(savedInstanceState)
+    }
+
+    private fun setTopPerformersView() {
+        binding.myStoreTopPerformers.apply {
+            setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                WooThemeWithBackground {
+                    DashboardTopPerformersCard(parentViewModel = dashboardViewModel)
+                }
+            }
+        }
     }
 
     @Suppress("LongMethod")
@@ -298,16 +308,6 @@ class DashboardFragment :
     private fun setupStateObservers() {
         dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
-        dashboardViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
-            binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
-        }
-        dashboardViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
-            when {
-                topPerformers.isLoading -> showTopPerformersLoading()
-                topPerformers.isError -> showTopPerformersError()
-                else -> showTopPerformers(topPerformers.topPerformers)
-            }
-        }
         dashboardViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
             when (newValue) {
                 DashboardViewModel.OrderState.Empty -> showEmptyView(true)
@@ -316,13 +316,6 @@ class DashboardFragment :
         }
         dashboardViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OpenTopPerformer -> findNavController().navigateSafely(
-                    NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
-                        isTrashEnabled = false
-                    )
-                )
-
                 is ShowPrivacyBanner ->
                     findNavController().navigate(
                         PrivacyBannerFragmentDirections.actionGlobalPrivacyBannerFragment()
@@ -350,9 +343,6 @@ class DashboardFragment :
                 else -> event.isHandled = false
             }
         }
-        dashboardViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
-        }
         dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
             ((activity) as MainActivity).setSubtitle(storeName)
         }
@@ -379,11 +369,6 @@ class DashboardFragment :
             )
         }
         binding.jetpackBenefitsBanner.root.isVisible = jetpackBenefitsBanner.show
-    }
-
-    private fun showTopPerformersLoading() {
-        binding.myStoreTopPerformers.showErrorView(false)
-        binding.myStoreTopPerformers.showSkeleton(true)
     }
 
     @Suppress("ForbiddenComment")
@@ -447,18 +432,6 @@ class DashboardFragment :
     private fun showPluginUnavailableError() {
         binding.myStoreRefreshLayout.visibility = View.GONE
         WooAnimUtils.fadeIn(binding.pluginUnavailableErrorScrollView)
-    }
-
-    private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>) {
-        binding.myStoreTopPerformers.showSkeleton(false)
-        binding.myStoreTopPerformers.showErrorView(false)
-        binding.myStoreTopPerformers.updateView(topPerformers)
-    }
-
-    private fun showTopPerformersError() {
-        binding.myStoreTopPerformers.showSkeleton(false)
-        binding.myStoreTopPerformers.showErrorView(true)
-        showErrorSnack()
     }
 
     private fun showErrorSnack() {
