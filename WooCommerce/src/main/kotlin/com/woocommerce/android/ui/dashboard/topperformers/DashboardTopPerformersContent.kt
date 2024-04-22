@@ -45,6 +45,7 @@ import androidx.lifecycle.Observer
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
@@ -84,7 +85,7 @@ fun DashboardTopPerformersWidgetCard(
         )
 ) {
     WidgetCard(
-        titleResource = R.string.dashboard_top_performers_title,
+        titleResource = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
         menu = DashboardWidgetMenu(
             items = listOf(
                 DashboardWidgetAction(
