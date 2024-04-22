@@ -185,26 +185,8 @@ class DashboardFragment :
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
-        setTopPerformersView()
         setupOnboardingView()
-
         initJitm(savedInstanceState)
-    }
-
-    private fun setTopPerformersView() {
-        binding.myStoreTopPerformers.apply {
-            setViewCompositionStrategy(DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                WooThemeWithBackground {
-                    DashboardTopPerformersCard(
-                        parentViewModel = dashboardViewModel,
-                        openDatePicker = { start, end, callback ->
-                            showDateRangePicker(start, end, callback)
-                        },
-                    )
-                }
-            }
-        }
     }
 
     @Suppress("LongMethod")
