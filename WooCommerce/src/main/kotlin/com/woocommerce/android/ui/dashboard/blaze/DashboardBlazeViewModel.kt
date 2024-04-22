@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.MY_STORE_SECTION
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
@@ -54,12 +53,12 @@ class DashboardBlazeViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private val blazeCampaignState: Flow<DashboardBlazeCampaignState> = flow {
         if (!isBlazeEnabled()) {
-            emit(Hidden(menu = DashboardWidgetMenu(items = listOf(hideWidgetAction))))
+            emit(Hidden)
         } else {
             analyticsTrackerWrapper.track(
                 stat = BLAZE_ENTRY_POINT_DISPLAYED,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MY_STORE_SECTION.trackingName
+                    AnalyticsTracker.KEY_BLAZE_SOURCE to MY_STORE_SECTION.trackingName
                 )
             )
 
@@ -69,7 +68,7 @@ class DashboardBlazeViewModel @Inject constructor(
                     getProductsFlow()
                 ) { blazeCampaignModel, products ->
                     when {
-                        products.isEmpty() -> Hidden(menu = DashboardWidgetMenu(items = listOf(hideWidgetAction)))
+                        products.isEmpty() -> Hidden
                         blazeCampaignModel == null -> showUiForNoCampaign(products)
                         else -> showUiForCampaign(blazeCampaignModel)
                     }
@@ -130,7 +129,7 @@ class DashboardBlazeViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(
                     stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
                     properties = mapOf(
-                        AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MY_STORE_SECTION.trackingName
+                        AnalyticsTracker.KEY_BLAZE_SOURCE to MY_STORE_SECTION.trackingName
                     )
                 )
                 triggerEvent(
@@ -200,7 +199,7 @@ class DashboardBlazeViewModel @Inject constructor(
             analyticsTrackerWrapper.track(
                 stat = BLAZE_VIEW_DISMISSED,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_BLAZE_SOURCE to BlazeFlowSource.MY_STORE_SECTION.trackingName
+                    AnalyticsTracker.KEY_BLAZE_SOURCE to MY_STORE_SECTION.trackingName
                 )
             )
         }
@@ -210,7 +209,7 @@ class DashboardBlazeViewModel @Inject constructor(
         open val menu: DashboardWidgetMenu,
         open val createCampaignButton: DashboardWidgetAction? = null
     ) {
-        data class Hidden(override val menu: DashboardWidgetMenu) : DashboardBlazeCampaignState(menu)
+        data object Hidden : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
         data class NoCampaign(
             val product: BlazeProductUi,
             val onProductClicked: () -> Unit,
