@@ -11,7 +11,7 @@ data class DashboardWidget(
     val type: Type,
     val isVisible: Boolean,
     val isAvailable: Boolean
-): Parcelable {
+) : Parcelable {
     val title: Int
         get() = type.titleResource
 
