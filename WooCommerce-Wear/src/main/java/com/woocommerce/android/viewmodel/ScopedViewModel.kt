@@ -1,4 +1,4 @@
-package com.woocommerce.android.app
+package com.woocommerce.android.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
