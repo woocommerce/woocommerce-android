@@ -14,9 +14,9 @@ import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import org.json.JSONObject
 import java.util.Locale
 import java.util.UUID
@@ -26,13 +26,23 @@ class AnalyticsTracker private constructor(
     private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs,
     private val getWooVersion: GetWooCorePluginCachedVersion,
-    private val appCoroutineScope: CoroutineScope,
+    appCoroutineScope: CoroutineScope,
 ) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
     private var anonymousID: String? = null
 
-    private val mutex = Mutex()
+    private val analyticsEventsToTrack = Channel<Pair<AnalyticsEvent, Map<String, *>>>(capacity = BUFFERED)
+
+    init {
+        appCoroutineScope.launch {
+            for (event in analyticsEventsToTrack) {
+                doTrack(event.first, event.second)
+            }
+        }.invokeOnCompletion {
+            analyticsEventsToTrack.close()
+        }
+    }
 
     private fun clearAllData() {
         clearAnonID()
@@ -72,31 +82,31 @@ class AnalyticsTracker private constructor(
     }
 
     private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
-        appCoroutineScope.launch {
-            mutex.withLock {
-                if (tracksClient == null) {
-                    return@withLock
-                }
+        analyticsEventsToTrack.trySend(Pair(stat, properties))
+    }
 
-                val eventName = stat.name.lowercase(Locale.getDefault())
+    private fun doTrack(stat: AnalyticsEvent, properties: Map<String, *>) {
+        if (tracksClient == null) {
+            return
+        }
 
-                val user = username ?: getAnonID() ?: generateNewAnonID()
+        val eventName = stat.name.lowercase(Locale.getDefault())
 
-                val userType = if (username != null) {
-                    TracksClient.NosaraUserType.WPCOM
-                } else {
-                    TracksClient.NosaraUserType.ANON
-                }
+        val user = username ?: getAnonID() ?: generateNewAnonID()
 
-                val propertiesJson = JSONObject(properties.buildFinalProperties(stat.siteless))
-                tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+        val userType = if (username != null) {
+            TracksClient.NosaraUserType.WPCOM
+        } else {
+            TracksClient.NosaraUserType.ANON
+        }
 
-                if (propertiesJson.length() > 0) {
-                    WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
-                } else {
-                    WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
-                }
-            }
+        val propertiesJson = JSONObject(properties.buildFinalProperties(stat.siteless))
+        tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+
+        if (propertiesJson.length() > 0) {
+            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
+        } else {
+            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
         }
     }
 
