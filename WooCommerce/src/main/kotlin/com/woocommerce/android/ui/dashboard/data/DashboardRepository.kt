@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.data
 
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
@@ -7,21 +8,27 @@ import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
     private val dashboardDataStore: DashboardDataStore,
     orderStore: WCOrderStore,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     private val statsWidgetsAvailability = orderStore
         .observeOrderCountForSite(selectedSite.get())
@@ -29,8 +36,6 @@ class DashboardRepository @Inject constructor(
         .distinctUntilChanged()
         .transform { hasOrders ->
             if (!hasOrders) {
-                // Start with true to emit an initial value immediately
-                emit(true)
                 val fetchResult = orderStore.fetchHasOrders(selectedSite.get(), null).let {
                     when (it) {
                         is HasOrdersResult.Success -> it.hasOrders
@@ -43,6 +48,7 @@ class DashboardRepository @Inject constructor(
                 emit(true)
             }
         }
+        .stateIn(appCoroutineScope, SharingStarted.Lazily, true)
 
     val widgets = combine(
         dashboardDataStore.dashboard.map { it.widgetsList },
