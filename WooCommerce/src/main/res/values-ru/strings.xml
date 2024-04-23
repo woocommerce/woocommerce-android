@@ -458,7 +458,6 @@ Language: ru
     <string name="blaze_campaign_status_active">Активно</string>
     <string name="blaze_campaign_status_in_moderation">На модерации</string>
     <string name="blaze_campaign_show_all_button">Показать всё</string>
-    <string name="blaze_campaign_create_campaign_button">Создать кампанию</string>
     <string name="blaze_campaign_subtitle">Станьте заметнее и быстрее продавайте товары.</string>
     <string name="blaze_campaign_title">Кампания Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Символ бесконтактной оплаты (Contactless Symbol) — торговая марка, принадлежащая компании EMVCo, LLC и используемая с её разрешения.</string>

@@ -458,7 +458,6 @@ Language: fr
     <string name="blaze_campaign_status_active">Active</string>
     <string name="blaze_campaign_status_in_moderation">En modération</string>
     <string name="blaze_campaign_show_all_button">Afficher tout</string>
-    <string name="blaze_campaign_create_campaign_button">Créer une campagne</string>
     <string name="blaze_campaign_subtitle">Augmentez la visibilité et vendez rapidement vos produits.</string>
     <string name="blaze_campaign_title">Campagne Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Le symbole du sans contact est une marque déposée et utilisée avec l’autorisation de EMVCo, LLC.</string>

@@ -458,7 +458,6 @@ Language: he_IL
     <string name="blaze_campaign_status_active">פעיל</string>
     <string name="blaze_campaign_status_in_moderation">בתהליך אישור</string>
     <string name="blaze_campaign_show_all_button">להציג הכל</string>
-    <string name="blaze_campaign_create_campaign_button">ליצור קמפיין</string>
     <string name="blaze_campaign_subtitle">מגדילים את הנראות ומאיצים את מכירת המוצרים.</string>
     <string name="blaze_campaign_title">קמפיין של Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">סמל \'ללא מגע\' הוא סימן מסחרי בבעלות EMVCo, LLC.‎ ובשימוש לפי הרשאתה.</string>
