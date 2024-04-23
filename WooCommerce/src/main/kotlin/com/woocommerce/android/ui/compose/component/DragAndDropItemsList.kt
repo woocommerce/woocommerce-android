@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -43,9 +44,11 @@ fun <T> DragAndDropItemsList(
     itemContent: @Composable (item: T, dragDropState: DragDropState) -> Unit
 ) {
     val listState = rememberLazyListState()
+    // This is needed to make sure that we access the updated list in the captured value in isDraggable lambda
+    val itemsState by rememberUpdatedState(newValue = items)
     val dragDropState = rememberDragDropState(
         listState,
-        isDraggable = { index -> isItemDraggable(items[index]) }
+        isDraggable = { index -> isItemDraggable(itemsState[index]) }
     ) { fromIndex, toIndex -> onOrderChange(fromIndex, toIndex) }
 
     LazyColumn(
@@ -53,7 +56,7 @@ fun <T> DragAndDropItemsList(
         modifier = modifier
             .background(MaterialTheme.colors.surface)
     ) {
-        itemsIndexed(items = items, key = itemKey) { i, item ->
+        itemsIndexed(items = itemsState, key = itemKey) { i, item ->
             DraggableItem(dragDropState, i) { isDragging ->
                 val elevation by animateDpAsState(if (isDragging) 4.dp else 1.dp, label = "card_elevation")
                 val showDividers = when {
