@@ -1,11 +1,11 @@
-package com.woocommerce.android.datastore
+package com.woocommerce.android.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.woocommerce.android.app.AppCoroutineScope
+import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.LOGIN
 import dagger.Module
 import dagger.Provides

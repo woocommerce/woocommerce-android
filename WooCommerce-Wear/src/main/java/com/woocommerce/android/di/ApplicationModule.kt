@@ -1,4 +1,4 @@
-package com.woocommerce.android.app
+package com.woocommerce.android.di
 
 import dagger.Binds
 import dagger.Provides
