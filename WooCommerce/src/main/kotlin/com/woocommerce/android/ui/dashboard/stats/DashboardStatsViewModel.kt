@@ -26,7 +26,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeas
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
-import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange.StatsViewType.STORE_STATS
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
 import com.woocommerce.android.ui.mystore.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.util.TimezoneProvider
@@ -57,7 +56,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val selectedSite: SelectedSite,
     private val getStats: GetStats,
     private val customDateRangeDataStore: StatsCustomDateRangeDataStore,
-    getSelectedDateRange: GetSelectedDateRange,
+    getSelectedDateRange: GetSelectedRangeStats,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val networkStatus: NetworkStatus,
     private val dashboardTransactionLauncher: DashboardTransactionLauncher,
@@ -69,7 +68,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     private var _hasOrders = MutableLiveData<OrderState>()
 
-    private val _selectedDateRange = getSelectedDateRange(STORE_STATS)
+    private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
     private var _revenueStatsState = MutableLiveData<RevenueStatsViewState>()
