@@ -70,7 +70,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock()
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock {
-        on { this.getActiveStatsTab() } doReturn DEFAULT_SELECTION_TYPE.identifier
+        on { this.getActiveStoreStatsTab() } doReturn DEFAULT_SELECTION_TYPE.identifier
     }
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
