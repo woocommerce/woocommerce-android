@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.dashboard.data
 
-import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.di.SiteComponentEntryPoint
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
@@ -8,11 +8,15 @@ import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.CoroutineScope
+import dagger.hilt.EntryPoints
+import dagger.hilt.android.scopes.ActivityRetainedScoped
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
@@ -20,18 +24,23 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+@ActivityRetainedScoped
 class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
     private val dashboardDataStore: DashboardDataStore,
     orderStore: WCOrderStore,
-    private val dispatchers: CoroutineDispatchers,
-    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
+    private val dispatchers: CoroutineDispatchers
 ) {
-    private val statsWidgetsAvailability = orderStore
-        .observeOrderCountForSite(selectedSite.get())
+    private val siteCoroutineScope = EntryPoints.get(
+        selectedSite.siteComponent!!,
+        SiteComponentEntryPoint::class.java
+    ).siteCoroutineScope()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val statsWidgetsAvailability = selectedSite.observe()
+        .filterNotNull()
+        .flatMapLatest { orderStore.observeOrderCountForSite(it) }
         .map { count -> count != 0 }
         .distinctUntilChanged()
         .transform { hasOrders ->
@@ -48,7 +57,7 @@ class DashboardRepository @Inject constructor(
                 emit(true)
             }
         }
-        .stateIn(appCoroutineScope, SharingStarted.Lazily, true)
+        .stateIn(siteCoroutineScope, SharingStarted.Lazily, true)
 
     val widgets = combine(
         dashboardDataStore.dashboard.map { it.widgetsList },

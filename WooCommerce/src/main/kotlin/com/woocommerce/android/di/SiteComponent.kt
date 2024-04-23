@@ -33,6 +33,7 @@ interface SiteComponent {
 @EntryPoint
 interface SiteComponentEntryPoint {
     fun dashboardDataStore(): DataStore<DashboardDataModel>
+    @SiteCoroutineScope fun siteCoroutineScope(): CoroutineScope
 }
 
 @Qualifier
