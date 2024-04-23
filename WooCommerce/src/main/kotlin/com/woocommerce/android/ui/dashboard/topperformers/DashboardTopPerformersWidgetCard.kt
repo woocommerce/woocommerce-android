@@ -68,7 +68,7 @@ import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformers
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersState
-import com.woocommerce.android.ui.products.ProductDetailFragment.Mode.ShowProduct
+import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import java.util.Calendar
 import java.util.Date
