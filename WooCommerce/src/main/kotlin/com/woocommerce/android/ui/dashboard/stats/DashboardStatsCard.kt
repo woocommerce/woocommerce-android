@@ -41,6 +41,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -93,7 +94,7 @@ fun DashboardStatsCard(
     )
 
     WidgetCard(
-        titleResource = R.string.my_store_widget_stats_title,
+        titleResource = DashboardWidget.Type.STATS.titleResource,
         menu = DashboardViewModel.DashboardWidgetMenu(
             items = listOf(
                 DashboardViewModel.DashboardWidgetAction(
