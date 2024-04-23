@@ -122,3 +122,31 @@ static def loadPropertiesFromFile(inputFile) {
     }
     return properties
 }
+
+// For app signing
+if (["uploadStoreFile", "uploadStorePassword", "uploadKeyAlias", "uploadKeyPassword"].count { !project.hasProperty(it) } == 0) {
+    android {
+        signingConfigs {
+            release {
+                storeFile = rootProject.file(project.uploadStoreFile)
+                storePassword = project.uploadStorePassword
+                keyAlias = project.uploadKeyAlias
+                keyPassword = project.uploadKeyPassword
+            }
+        }
+    }
+    android.buildTypes.release.signingConfig = android.signingConfigs.release
+}
+
+if (project.hasProperty("debugStoreFile")) {
+    def sharedDebugStore = file(project.debugStoreFile.replaceFirst("^~", System.getProperty("user.home")))
+    if (sharedDebugStore.exists()) {
+        android {
+            signingConfigs {
+                debug {
+                    storeFile sharedDebugStore
+                }
+            }
+        }
+    }
+}
