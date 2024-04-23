@@ -15,7 +15,7 @@ import com.woocommerce.android.ui.mystore.MyStoreScreen
 @Composable
 fun WooWearNavHost(
     navController: NavHostController = rememberNavController(),
-    startDestination: String = "login"
+    startDestination: String = LOGIN.route
 ) {
     NavHost(
         navController = navController,
