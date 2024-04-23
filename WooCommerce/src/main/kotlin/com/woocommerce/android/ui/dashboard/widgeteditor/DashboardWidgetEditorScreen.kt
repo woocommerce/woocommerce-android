@@ -123,7 +123,7 @@ private fun UnavailableWidget(
 
         Box(
             modifier = Modifier
-                .background(Color.LightGray, RoundedCornerShape(4.dp))
+                .background(Color.Gray, RoundedCornerShape(4.dp))
                 .padding(vertical = 4.dp, horizontal = 8.dp)
         ) {
             Text(
