@@ -119,7 +119,7 @@ class DashboardBlazeViewModel @Inject constructor(
                 items = listOf(hideWidgetAction)
             ),
             createCampaignButton = DashboardWidgetAction(
-                titleResource = string.blaze_campaign_create_campaign_button,
+                titleResource = string.blaze_campaign_promote_button,
                 action = {
                     launchCampaignCreation(if (products.size == 1) product.remoteId else null)
                 }
@@ -173,7 +173,7 @@ class DashboardBlazeViewModel @Inject constructor(
                 )
             ),
             createCampaignButton = DashboardWidgetAction(
-                titleResource = string.blaze_campaign_create_campaign_button,
+                titleResource = string.blaze_campaign_promote_button,
                 action = {
                     launchCampaignCreation(productId = null)
                 }

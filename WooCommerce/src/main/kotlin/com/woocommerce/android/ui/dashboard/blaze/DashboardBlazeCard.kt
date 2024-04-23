@@ -224,7 +224,7 @@ private fun BlazeCampaignFooter(state: DashboardBlazeCampaignState) {
                         bottom = ButtonDefaults.TextButtonContentPadding.calculateBottomPadding(),
                     )
                 ) {
-                    Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+                    Text(stringResource(id = R.string.blaze_campaign_promote_button))
                 }
             }
 
@@ -248,7 +248,7 @@ private fun ShowAllOrCreateCampaignFooter(
             modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
             onClick = onCreateCampaignClicked
         ) {
-            Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
+            Text(stringResource(id = R.string.blaze_campaign_promote_button))
         }
     }
 }
@@ -354,7 +354,7 @@ fun MyStoreBlazeViewCampaignPreview() {
                 )
             ),
             createCampaignButton = DashboardWidgetAction(
-                titleResource = R.string.blaze_campaign_create_campaign_button,
+                titleResource = R.string.blaze_campaign_promote_button,
                 action = {}
             )
         ),
@@ -386,7 +386,7 @@ fun MyStoreBlazeViewNoCampaignPreview() {
                 )
             ),
             createCampaignButton = DashboardWidgetAction(
-                titleResource = R.string.blaze_campaign_create_campaign_button,
+                titleResource = R.string.blaze_campaign_promote_button,
                 action = {}
             )
         ),

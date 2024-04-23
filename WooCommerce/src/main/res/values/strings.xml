@@ -3738,7 +3738,7 @@
     -->
     <string name="blaze_campaign_title">Blaze campaign</string>
     <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
-    <string name="blaze_campaign_create_campaign_button">Create campaign</string>
+    <string name="blaze_campaign_promote_button">Promote</string>
     <string name="blaze_campaign_show_all_button">Show all</string>
     <string name="blaze_campaign_status_in_moderation">In moderation</string>
     <string name="blaze_campaign_status_active">Active</string>
