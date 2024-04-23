@@ -458,7 +458,6 @@ Language: zh_TW
     <string name="blaze_campaign_status_active">已啟用</string>
     <string name="blaze_campaign_status_in_moderation">審核中</string>
     <string name="blaze_campaign_show_all_button">顯示全部</string>
-    <string name="blaze_campaign_create_campaign_button">建立行銷活動</string>
     <string name="blaze_campaign_subtitle">提升能見度，加速產品銷售。</string>
     <string name="blaze_campaign_title">Blaze 行銷活動</string>
     <string name="card_reader_tap_to_pay_about_copyright">「感應支付符號」為 EMVCo, LLC 所擁有，並經其許可所使用的商標。</string>

@@ -458,7 +458,6 @@ Language: id
     <string name="blaze_campaign_status_active">Aktif</string>
     <string name="blaze_campaign_status_in_moderation">Dalam moderasi</string>
     <string name="blaze_campaign_show_all_button">Tampilkan semua</string>
-    <string name="blaze_campaign_create_campaign_button">Buat kampanye</string>
     <string name="blaze_campaign_subtitle">Tingkatkan visibilitas dan jual produk Anda segera.</string>
     <string name="blaze_campaign_title">Kampanye Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol adalah merek dagang yang dimiliki oleh dan digunakan dengan izin EMVCo, LLC.</string>

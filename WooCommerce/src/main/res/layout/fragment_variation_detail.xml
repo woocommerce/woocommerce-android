@@ -21,7 +21,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="false"
         android:focusableInTouchMode="true"
-        tools:context="com.woocommerce.android.ui.products.ProductDetailFragment">
+        tools:context="com.woocommerce.android.ui.products.details.ProductDetailFragment">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/app_bar_layout"

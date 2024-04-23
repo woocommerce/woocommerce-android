@@ -8,7 +8,7 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.joinToUrl
 import kotlinx.coroutines.flow.catch

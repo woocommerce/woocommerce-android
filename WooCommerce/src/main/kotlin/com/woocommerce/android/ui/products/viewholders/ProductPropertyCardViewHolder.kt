@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.products.WCProductPropertyCardView
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.propertyviews.WCProductPropertyCardView
 
 open class ProductPropertyCardViewHolder(
     parent: ViewGroup

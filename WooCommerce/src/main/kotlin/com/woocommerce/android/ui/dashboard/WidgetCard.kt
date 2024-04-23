@@ -89,7 +89,10 @@ fun WidgetCard(
                     ),
                 onClick = button.action
             ) {
-                Text(stringResource(id = button.titleResource))
+                Text(
+                    text = stringResource(id = button.titleResource),
+                    style = MaterialTheme.typography.body1
+                )
             }
         }
     }

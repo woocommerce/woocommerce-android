@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.products.inventory
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.CheckDigitRemoverFactory
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
-import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 

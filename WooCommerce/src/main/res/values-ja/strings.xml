@@ -458,7 +458,6 @@ Language: ja_JP
     <string name="blaze_campaign_status_active">有効</string>
     <string name="blaze_campaign_status_in_moderation">モデレーション中</string>
     <string name="blaze_campaign_show_all_button">すべて表示</string>
-    <string name="blaze_campaign_create_campaign_button">キャンペーンを作成</string>
     <string name="blaze_campaign_subtitle">認知度を高め、商品を迅速に販売します。</string>
     <string name="blaze_campaign_title">Blaze キャンペーン</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol は EMVCo, LLC が所有し、EMVCo, LLC の許可を得て使用している商標です。</string>

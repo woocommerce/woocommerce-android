@@ -96,6 +96,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             observeLastUpdate = observeLastUpdate,
             timezoneProvider = timezoneProvider,
             wooCommerceStore = wooCommerceStore,
+            dateRangeFormatter = DashboardStatsRangeFormatter(dateUtils)
         )
     }
 
