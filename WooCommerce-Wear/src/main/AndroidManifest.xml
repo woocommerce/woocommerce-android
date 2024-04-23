@@ -74,7 +74,7 @@
         </service>
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.WearMainActivity"
             android:exported="true"
             android:taskAffinity=""
             android:theme="@style/MainActivityTheme.Starting">
