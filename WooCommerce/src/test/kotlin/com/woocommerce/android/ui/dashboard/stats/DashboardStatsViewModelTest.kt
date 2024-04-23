@@ -54,7 +54,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private val prefsChangesFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val appPrefsWrapper: AppPrefsWrapper = mock {
         on { observePrefs() } doReturn prefsChangesFlow
-        on { getActiveStatsTab() } doReturn DEFAULT_SELECTION_TYPE.name
+        on { getActiveStoreStatsTab() } doReturn DEFAULT_SELECTION_TYPE.name
     }
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -96,6 +96,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             observeLastUpdate = observeLastUpdate,
             timezoneProvider = timezoneProvider,
             wooCommerceStore = wooCommerceStore,
+            dateRangeFormatter = DashboardStatsRangeFormatter(dateUtils)
         )
     }
 
@@ -135,7 +136,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     fun `given cached stats, when tab changes, then load stats for given tab from cache`() = testBlocking {
         val getStatsArgumentCaptor = argumentCaptor<StatsTimeRangeSelection>()
         setup {
-            whenever(appPrefsWrapper.getActiveStatsTab())
+            whenever(appPrefsWrapper.getActiveStoreStatsTab())
                 .doReturn(DEFAULT_SELECTION_TYPE.name)
                 .thenReturn(ANY_SELECTION_TYPE.name)
         }
@@ -177,7 +178,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             setup {
                 whenever(getStats.invoke(any(), any()))
                     .thenReturn(flow { emit(GetStats.LoadStatsResult.RevenueStatsSuccess(null)) })
-                whenever(appPrefsWrapper.getActiveStatsTab())
+                whenever(appPrefsWrapper.getActiveStoreStatsTab())
                     .doReturn(DEFAULT_SELECTION_TYPE.name)
                     .thenReturn(ANY_SELECTION_TYPE.name)
             }

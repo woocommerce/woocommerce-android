@@ -1,27 +1,37 @@
 package com.woocommerce.android.ui.dashboard.topperformers
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData.TOP_PERFORMERS
+import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore.AnalyticData
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
+import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
+import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange.StatsViewType
+import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -44,6 +54,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
 import java.math.BigDecimal
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -62,10 +73,14 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val wooCommerceStore: WooCommerceStore,
     private val dateUtils: DateUtils,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val customDateRangeDataStore: CustomDateRangeDataStore,
+    private val dashboardRepository: DashboardRepository,
     getSelectedDateRange: GetSelectedDateRange,
 ) : ScopedViewModel(savedState) {
 
-    private val _selectedDateRange = getSelectedDateRange()
+    private val _selectedDateRange = getSelectedDateRange(StatsViewType.TOP_PERFORMERS)
+    val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
@@ -81,8 +96,25 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             )
         }.asLiveData()
 
+    private val customRange = customDateRangeDataStore.dateRange.asLiveData()
+
     init {
-        _topPerformersState.value = TopPerformersState(isLoading = true)
+        _topPerformersState.value = TopPerformersState(
+            isLoading = true,
+            titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
+            menu = DashboardWidgetMenu(
+                items = listOf(
+                    DashboardWidgetAction(
+                        titleResource = R.string.dashboard_top_performers_overflow_menu_hide_option,
+                        action = ::hideTopPerformers
+                    )
+                )
+            ),
+            onOpenAnalyticsTapped = DashboardWidgetAction(
+                titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
+                action = ::onViewAllAnalyticsTapped
+            )
+        )
 
         viewModelScope.launch {
             _selectedDateRange.flatMapLatest { selectedRange ->
@@ -113,7 +145,26 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         }
     }
 
-    fun onTopPerformerTapped(productId: Long) {
+    fun onGranularityChanged(selectionType: SelectionType) {
+        usageTracksEventEmitter.interacted()
+        appPrefsWrapper.setActiveTopPerformersGranularity(selectionType.name)
+        if (selectionType == SelectionType.CUSTOM) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
+            )
+        }
+    }
+
+    fun onEditCustomRangeTapped() {
+        triggerEvent(
+            OpenDatePicker(
+                fromDate = customRange.value?.start ?: Date(),
+                toDate = customRange.value?.end ?: Date()
+            )
+        )
+    }
+
+    private fun onTopPerformerTapped(productId: Long) {
         triggerEvent(OpenTopPerformer(productId))
         analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         usageTracksEventEmitter.interacted()
@@ -139,7 +190,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             launch {
                 observeLastUpdate(
                     selectedRange,
-                    TOP_PERFORMERS
+                    AnalyticData.TOP_PERFORMERS
                 ).collect { lastUpdateMillis -> _lastUpdateTopPerformers.value = lastUpdateMillis }
             }
         }
@@ -172,15 +223,46 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             0
         )
 
+    fun onCustomRangeSelected(statsTimeRange: StatsTimeRange) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
+            mapOf(
+                AnalyticsTracker.KEY_IS_EDITING to (customRange.value != null),
+            )
+        )
+        viewModelScope.launch {
+            customDateRangeDataStore.updateDateRange(statsTimeRange)
+        }
+    }
+
+    private fun onViewAllAnalyticsTapped() {
+        AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
+        selectedDateRange.value?.let {
+            triggerEvent(OpenAnalytics(it))
+        }
+    }
+
+    private fun hideTopPerformers() {
+        viewModelScope.launch {
+            dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.POPULAR_PRODUCTS, isVisible = false)
+        }
+    }
+
     data class TopPerformersState(
         val isLoading: Boolean = false,
         val isError: Boolean = false,
+        @StringRes val titleStringRes: Int,
         val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
+        val menu: DashboardWidgetMenu,
+        val onOpenAnalyticsTapped: DashboardWidgetAction
     )
 
     data class OpenTopPerformer(
         val productId: Long
     ) : MultiLiveEvent.Event()
+
+    data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
+    data class OpenAnalytics(val analyticsPeriod: StatsTimeRangeSelection) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

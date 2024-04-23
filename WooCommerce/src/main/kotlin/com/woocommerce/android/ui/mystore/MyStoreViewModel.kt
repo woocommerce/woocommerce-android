@@ -455,7 +455,7 @@ class MyStoreViewModel @Inject constructor(
         )
 
     private fun getSelectedRangeTypeIfAny(): SelectionType {
-        val previouslySelectedTab = appPrefsWrapper.getActiveStatsTab()
+        val previouslySelectedTab = appPrefsWrapper.getActiveStoreStatsTab()
         return runCatching {
             SelectionType.valueOf(previouslySelectedTab)
         }.getOrDefault(SelectionType.TODAY)

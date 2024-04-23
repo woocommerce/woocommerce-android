@@ -458,7 +458,6 @@ Language: tr
     <string name="blaze_campaign_status_active">Etkin</string>
     <string name="blaze_campaign_status_in_moderation">Denetlemede</string>
     <string name="blaze_campaign_show_all_button">Hepsini göster</string>
-    <string name="blaze_campaign_create_campaign_button">Kampanya oluştur</string>
     <string name="blaze_campaign_subtitle">Görünürlüğü artırın ve ürünlerinizin hızla satılmasını sağlayın.</string>
     <string name="blaze_campaign_title">Kampanyayı öne çıkarın</string>
     <string name="card_reader_tap_to_pay_about_copyright">Temassız Simgesi; EMVCo, LLC\'ye ait ve onun izni ile kullanılan bir ticari markadır.</string>

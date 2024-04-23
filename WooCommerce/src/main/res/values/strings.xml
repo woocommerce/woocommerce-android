@@ -369,6 +369,8 @@
     <string name="dashboard_stats_granularity_weeks">Weeks</string>
     <string name="dashboard_stats_granularity_months">Months</string>
     <string name="dashboard_stats_granularity_years">Years</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Change date range button</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">Item selected</string>
 
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
@@ -378,12 +380,15 @@
     <string name="dashboard_stats_error">Error fetching data</string>
     <string name="dashboard_stats_error_content_description">Error image</string>
     <string name="dashboard_stats_todays_stats">Today\'s Stats</string>
+    <string name="dashboard_stats_custom_range_label">Custom</string>
 
     <string name="dashboard_top_performers_title">Top performers</string>
     <string name="dashboard_top_performers_items_sold">Items Sold</string>
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">Hide top performers</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">View all store analytics</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -409,7 +414,7 @@
     <string name="my_store_edit_screen_widget_onboarding_list">Store Onboarding</string>
 
     <string name="my_store_widget_onboarding_title">Onboarding</string>
-    <string name="my_store_widget_stats_title">Statistics</string>
+    <string name="my_store_widget_stats_title">Performance</string>
     <string name="my_store_widget_top_products_title">Top products</string>
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
 
@@ -3738,7 +3743,7 @@
     -->
     <string name="blaze_campaign_title">Blaze campaign</string>
     <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
-    <string name="blaze_campaign_create_campaign_button">Create campaign</string>
+    <string name="blaze_campaign_promote_button">Promote</string>
     <string name="blaze_campaign_show_all_button">Show all</string>
     <string name="blaze_campaign_status_in_moderation">In moderation</string>
     <string name="blaze_campaign_status_active">Active</string>

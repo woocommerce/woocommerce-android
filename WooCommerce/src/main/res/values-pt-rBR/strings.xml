@@ -458,7 +458,6 @@ Language: pt_BR
     <string name="blaze_campaign_status_active">Ativa</string>
     <string name="blaze_campaign_status_in_moderation">Em moderação</string>
     <string name="blaze_campaign_show_all_button">Mostrar tudo</string>
-    <string name="blaze_campaign_create_campaign_button">Criar campanha</string>
     <string name="blaze_campaign_subtitle">Aumente a visibilidade para vender seus produtos mais rápido.</string>
     <string name="blaze_campaign_title">Campanha no Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">O símbolo de pagamento por aproximação é uma marca comercial de propriedade da EMVCo LLC e é usado mediante permissão.</string>

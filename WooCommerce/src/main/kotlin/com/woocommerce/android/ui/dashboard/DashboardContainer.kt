@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Sh
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
+import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 
@@ -85,7 +86,8 @@ private fun WidgetList(
                             )
                         }
 
-                        POPULAR_PRODUCTS -> {}
+                        POPULAR_PRODUCTS -> DashboardTopPerformersWidgetCard(dashboardViewModel)
+
                         BLAZE -> DashboardBlazeCard(
                             blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
                         )

@@ -458,7 +458,6 @@ Language: it
     <string name="blaze_campaign_status_active">Attiva</string>
     <string name="blaze_campaign_status_in_moderation">In moderazione</string>
     <string name="blaze_campaign_show_all_button">Mostra tutte</string>
-    <string name="blaze_campaign_create_campaign_button">Crea la campagna</string>
     <string name="blaze_campaign_subtitle">Aumenta la visibilità e vendi i tuoi prodotti rapidamente.</string>
     <string name="blaze_campaign_title">Campagna Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Il simbolo del contactless è un marchio registrato di proprietà e utilizzato su concessione di EMVCo, LLC.</string>
