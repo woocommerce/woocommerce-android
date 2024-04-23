@@ -310,6 +310,7 @@ dependencies {
     implementation "com.google.mlkit:barcode-scanning:$mlkitBarcodeScanningVersion"
 
     implementation "com.google.zxing:core:3.5.1"
+    implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"

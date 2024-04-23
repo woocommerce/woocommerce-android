@@ -1,0 +1,8 @@
+<resources>
+
+    <style name="MainActivityTheme.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/img_woo_bubble_white_animated</item>
+        <item name="postSplashScreenTheme">@android:style/Theme.DeviceDefault</item>
+    </style>
+</resources>

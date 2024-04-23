@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- WARNING -->
+
+    <!-- ERROR -->
+    <issue id="InconsistentArrays" severity="error" />
+    <issue id="HardcodedText" severity="error" />
+    <issue id="IconDuplicates" severity="error" />
+    <issue id="IconDipSize" severity="error" />
+    <issue id="StringFormatCount" severity="error" />
+
+    <!-- IGNORE -->
+    <issue id="MissingTranslation" severity="ignore" />
+    <issue id="ExtraTranslation" severity="ignore" />
+    <issue id="PluralsCandidate" severity="ignore" /> <!-- GlotPress doesn't support plurals -->
+
+    <issue id="InvalidPackage">
+        <ignore regexp="java-common-1.13.jar" />
+        <ignore path="**/sentry*.jar"/>
+    </issue>
+
+    <issue id="IconDuplicates" severity="error">
+        <ignore path="**/login_notification_icon.webp" />
+    </issue>
+    <!-- Ignore the IconLocation for the Tile preview images -->
+    <issue id="IconLocation">
+        <ignore path="res/drawable/tile_preview.png" />
+        <ignore path="res/drawable-round/tile_preview.png" />
+    </issue>
+</lint>
