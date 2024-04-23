@@ -93,6 +93,8 @@ dependencies {
 
     // Android Support
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     implementation 'androidx.core:core-splashscreen:1.0.1'
     implementation "androidx.navigation:navigation-compose:2.7.7"
     implementation 'androidx.activity:activity-compose'
