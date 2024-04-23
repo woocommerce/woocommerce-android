@@ -55,8 +55,8 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T

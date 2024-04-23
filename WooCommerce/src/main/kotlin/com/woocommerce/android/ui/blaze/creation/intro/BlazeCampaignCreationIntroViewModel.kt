@@ -7,8 +7,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_INTRO_LEARN_MORE_T
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent

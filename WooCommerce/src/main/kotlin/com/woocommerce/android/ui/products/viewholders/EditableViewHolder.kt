@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.products.viewholders
 
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.products.WCProductPropertyEditableView
 import com.woocommerce.android.ui.products.models.ProductProperty.Editable
+import com.woocommerce.android.ui.products.propertyviews.WCProductPropertyEditableView
 
 class EditableViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(
     parent,

@@ -409,7 +409,7 @@
     <string name="my_store_edit_screen_widget_onboarding_list">Store Onboarding</string>
 
     <string name="my_store_widget_onboarding_title">Onboarding</string>
-    <string name="my_store_widget_stats_title">Statistics</string>
+    <string name="my_store_widget_stats_title">Performance</string>
     <string name="my_store_widget_top_products_title">Top products</string>
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
     <string name="my_store_widget_unavailable">Unavailable</string>
@@ -459,6 +459,8 @@
     <string name="analytics_products_no_data">No products this period</string>
     <string name="analytics_gift_cards_no_data">No gift cards this period</string>
     <string name="analytics_session_no_data">No sessions this period</string>
+    <string name="analytics_session_no_available">Session data unavailable</string>
+    <string name="analytics_session_no_available_description">Session analytics rely on unique visitor counts not available for custom date ranges</string>
     <string name="analytics_total_sales_title">Total sales</string>
     <string name="analytics_used_title">Used</string>
     <string name="analytics_net_sales_title">Net sales</string>
@@ -3737,7 +3739,7 @@
     -->
     <string name="blaze_campaign_title">Blaze campaign</string>
     <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
-    <string name="blaze_campaign_create_campaign_button">Create campaign</string>
+    <string name="blaze_campaign_promote_button">Promote</string>
     <string name="blaze_campaign_show_all_button">Show all</string>
     <string name="blaze_campaign_status_in_moderation">In moderation</string>
     <string name="blaze_campaign_status_active">Active</string>

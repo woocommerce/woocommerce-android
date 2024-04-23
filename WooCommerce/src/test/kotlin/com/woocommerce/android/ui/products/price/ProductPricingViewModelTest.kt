@@ -8,8 +8,8 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.TaxClass
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTaxStatus.Taxable
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.models.CurrencyFormattingParameters
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData

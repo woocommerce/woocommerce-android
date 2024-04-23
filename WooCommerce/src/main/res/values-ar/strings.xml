@@ -458,7 +458,6 @@ Language: ar
     <string name="blaze_campaign_status_active">نشط</string>
     <string name="blaze_campaign_status_in_moderation">قيد الإشراف</string>
     <string name="blaze_campaign_show_all_button">عرض الكل</string>
-    <string name="blaze_campaign_create_campaign_button">إنشاء حملة</string>
     <string name="blaze_campaign_subtitle">يمكنك زيادة إمكانية الرؤية وبيع منتجاتك بسرعة.</string>
     <string name="blaze_campaign_title">حملة Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol هو علامة تجارية تمتلكها EMVCo, LLC وتُستخدم بصلاحية منها.</string>

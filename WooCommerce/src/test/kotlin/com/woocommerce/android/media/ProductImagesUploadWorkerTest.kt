@@ -14,8 +14,8 @@ import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUpda
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.ProductUploadsCompleted
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
