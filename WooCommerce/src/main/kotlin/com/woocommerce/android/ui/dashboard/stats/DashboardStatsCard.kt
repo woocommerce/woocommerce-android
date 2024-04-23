@@ -44,7 +44,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
@@ -102,6 +101,10 @@ fun DashboardStatsCard(
                     action = { /* TODO */ }
                 )
             )
+        ),
+        button = DashboardViewModel.DashboardWidgetAction(
+            titleResource = R.string.analytics_section_see_all,
+            action = viewModel::onViewAnalyticsClicked
         )
     ) {
         DashboardStatsContent(
@@ -112,7 +115,6 @@ fun DashboardStatsCard(
             dateUtils = dateUtils,
             currencyFormatter = currencyFormatter,
             usageTracksEventEmitter = usageTracksEventEmitter,
-            onViewAnalyticsClick = viewModel::onViewAnalyticsClicked,
             onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
             onTabSelected = viewModel::onTabSelected,
             onChartDateSelected = viewModel::onChartDateSelected
@@ -129,7 +131,6 @@ private fun DashboardStatsContent(
     dateUtils: DateUtils,
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
-    onViewAnalyticsClick: () -> Unit,
     onAddCustomRangeClick: () -> Unit,
     onTabSelected: (SelectionType) -> Unit,
     onChartDateSelected: (String?) -> Unit
@@ -154,16 +155,6 @@ private fun DashboardStatsContent(
             onChartDateSelected = onChartDateSelected,
             modifier = Modifier.fillMaxWidth()
         )
-
-        WCTextButton(
-            onClick = onViewAnalyticsClick,
-            modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
-        ) {
-            Text(
-                text = stringResource(id = R.string.analytics_section_see_all),
-                style = MaterialTheme.typography.body1
-            )
-        }
     }
 }
 
