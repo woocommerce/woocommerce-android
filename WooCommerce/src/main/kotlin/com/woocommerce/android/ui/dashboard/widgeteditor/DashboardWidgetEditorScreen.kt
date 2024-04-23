@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,8 +69,8 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                         onOrderChange = viewModel::onOrderChange,
                         itemKey = { _, widget -> widget.type },
                         modifier = Modifier
-                            .padding(padding)
-                            .background(Color.Red),
+                            .fillMaxSize()
+                            .padding(padding),
                         isItemDraggable = { it.isAvailable }
                     ) { item, dragDropState ->
                         when (item.isAvailable) {

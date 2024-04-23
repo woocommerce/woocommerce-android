@@ -97,7 +97,7 @@ fun AnalyticsHubSettingScreen(
                     onOrderChange = onOrderChange,
                     itemKey = { _, card -> card.card },
                     isItemDraggable = { it is AnalyticCardConfigurationUI.SelectableCardConfigurationUI },
-                    modifier = Modifier.padding(padding)
+                    modifier = Modifier.fillMaxSize().padding(padding)
                 ) { item, dragDropState ->
                     when (item) {
                         is AnalyticCardConfigurationUI.SelectableCardConfigurationUI -> {
