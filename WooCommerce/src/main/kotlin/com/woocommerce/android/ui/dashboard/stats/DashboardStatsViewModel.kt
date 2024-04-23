@@ -56,7 +56,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val selectedSite: SelectedSite,
     private val getStats: GetStats,
     private val customDateRangeDataStore: StatsCustomDateRangeDataStore,
-    getSelectedDateRange: GetSelectedRangeStats,
+    getSelectedDateRange: GetSelectedRangeForDashboardStats,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val networkStatus: NetworkStatus,
     private val dashboardTransactionLauncher: DashboardTransactionLauncher,

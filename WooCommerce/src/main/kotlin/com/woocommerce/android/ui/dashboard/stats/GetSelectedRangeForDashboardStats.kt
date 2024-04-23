@@ -1,18 +1,19 @@
-package com.woocommerce.android.ui.dashboard.stats
+package com.woocommerce.android.ui.dashboard.stats;
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.mystore.data.TopPerformersCustomDateRangeDataStore
+import com.woocommerce.android.ui.mystore.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.util.DateUtils
-import javax.inject.Inject
+import javax.inject.Inject;
 
-class GetSelectedRangeTopPerformers @Inject constructor(
+class GetSelectedRangeForDashboardStats @Inject constructor(
     private val appPrefs: AppPrefsWrapper,
-    customDateRangeDataStore: TopPerformersCustomDateRangeDataStore,
+    customDateRangeDataStore: StatsCustomDateRangeDataStore,
     dateUtils: DateUtils
 ) : GetSelectedDateRange(appPrefs, customDateRangeDataStore, dateUtils) {
     override fun getSelectedRange(): SelectionType =
         runCatching {
-            SelectionType.valueOf(appPrefs.getActiveTopPerformersGranularity())
+            SelectionType.valueOf(appPrefs.getActiveStoreStatsTab())
         }.getOrDefault(SelectionType.TODAY)
 }
+

@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.mystore.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -59,7 +59,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val dashboardTransactionLauncher: DashboardTransactionLauncher = mock()
-    private val customDateRangeDataStore: CustomDateRangeDataStore = mock {
+    private val customDateRangeDataStore: StatsCustomDateRangeDataStore = mock {
         on { dateRange } doReturn flowOf(null)
     }
     private val timezoneProvider: TimezoneProvider = mock()
@@ -75,7 +75,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
-        val getSelectedDateRange = GetSelectedDateRange(
+        val getSelectedDateRange = GetSelectedRangeForDashboardStats(
             appPrefs = appPrefsWrapper,
             customDateRangeDataStore = customDateRangeDataStore,
             dateUtils = dateUtils
