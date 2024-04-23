@@ -10,8 +10,8 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.IgnoredOnParcel
@@ -46,7 +46,16 @@ class DashboardWidgetEditorViewModel @Inject constructor(
 
     private fun loadWidgets() {
         viewModelScope.launch {
-            editedWidgets = dashboardRepository.widgets.first()
+            dashboardRepository.widgets.collectIndexed { index, storedWidgets ->
+                editedWidgets = if (index == 0) {
+                    storedWidgets
+                } else {
+                    editedWidgets.map { dashboardWidget ->
+                        val storedWidget = storedWidgets.first { it.type == dashboardWidget.type }
+                        dashboardWidget.copy(isAvailable = storedWidget.isAvailable)
+                    }
+                }
+            }
         }
     }
 
