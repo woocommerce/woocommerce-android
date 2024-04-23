@@ -31,7 +31,7 @@ import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformer
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange.StatsViewType
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.mystore.data.TopPerformersCustomDateRangeDataStore
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -74,7 +74,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val dateUtils: DateUtils,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val customDateRangeDataStore: CustomDateRangeDataStore,
+    private val customDateRangeDataStore: TopPerformersCustomDateRangeDataStore,
     private val dashboardRepository: DashboardRepository,
     getSelectedDateRange: GetSelectedDateRange,
 ) : ScopedViewModel(savedState) {

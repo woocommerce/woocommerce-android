@@ -28,7 +28,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange.StatsViewType.STORE_STATS
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.mystore.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -56,7 +56,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val selectedSite: SelectedSite,
     private val getStats: GetStats,
-    private val customDateRangeDataStore: CustomDateRangeDataStore,
+    private val customDateRangeDataStore: StatsCustomDateRangeDataStore,
     getSelectedDateRange: GetSelectedDateRange,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val networkStatus: NetworkStatus,
