@@ -188,7 +188,7 @@ private fun TopPerformersContent(
         )
         Divider(modifier = Modifier.padding(bottom = 16.dp))
         Row(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             Text(
                 modifier = Modifier.weight(1f),
