@@ -16,6 +16,7 @@ import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.Locale
