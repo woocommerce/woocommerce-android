@@ -10,6 +10,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class PhoneConnectionRepository @Inject constructor(
@@ -20,9 +21,9 @@ class PhoneConnectionRepository @Inject constructor(
 ) {
     fun handleReceivedData(dataEvent: DataEvent) {
         when (dataEvent.dataItem.uri.path) {
-            DataPath.AUTH_DATA.value -> loginRepository.receiveStoreData(
-                    DataMapItem.fromDataItem(dataEvent.dataItem)
-                )
+            DataPath.AUTH_DATA.value -> coroutineScope.launch {
+                handleStoreDataEvent(dataEvent)
+            }
             else -> Log.d(TAG, "Unknown path data received")
         }
     }
@@ -45,6 +46,12 @@ class PhoneConnectionRepository @Inject constructor(
         }.filter { (_, capabilityInfo) ->
             WOO_MOBILE_CAPABILITY in capabilityInfo
         }.map { (node, _) -> node }
+
+    private suspend fun handleStoreDataEvent(dataEvent: DataEvent) {
+        loginRepository.receiveStoreData(
+            DataMapItem.fromDataItem(dataEvent.dataItem).dataMap
+        )
+    }
 
     enum class MessagePath(val value: String) {
         START_AUTH("/start-auth")
