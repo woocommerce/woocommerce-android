@@ -10,8 +10,8 @@ import com.woocommerce.android.media.ProductImagesUploadWorker
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work.UploadMedia
-import com.woocommerce.android.ui.products.ProductDetailRepository
-import com.woocommerce.android.ui.products.ProductDetailViewModel
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider

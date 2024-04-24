@@ -18,6 +18,11 @@ fun Date.formatToYYYYmm(locale: Locale = Locale.getDefault()): String = SimpleDa
     locale
 ).format(this)
 
+fun Date.formatToMMMMyyyy(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    "MMMM yyyy",
+    locale
+).format(this)
+
 fun Date.formatToYYYYmmDD(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
     "yyyy-MM-dd",
     locale

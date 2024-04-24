@@ -5,7 +5,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationViewModel.NavigateToParametersScreen
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult

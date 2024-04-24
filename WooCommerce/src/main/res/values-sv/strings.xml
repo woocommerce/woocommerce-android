@@ -458,7 +458,6 @@ Language: sv_SE
     <string name="blaze_campaign_status_active">Aktiv</string>
     <string name="blaze_campaign_status_in_moderation">Under granskning</string>
     <string name="blaze_campaign_show_all_button">Visa alla</string>
-    <string name="blaze_campaign_create_campaign_button">Skapa kampanj</string>
     <string name="blaze_campaign_subtitle">Öka synligheten och få dina produkter sålda snabbt.</string>
     <string name="blaze_campaign_title">Blaze-kampanj</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol är ett varumärke som ägs av och används med tillåtelse av EMVCo, LLC.</string>

@@ -234,14 +234,14 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         }
     }
 
-    fun onViewAllAnalyticsTapped() {
+    private fun onViewAllAnalyticsTapped() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         selectedDateRange.value?.let {
             triggerEvent(OpenAnalytics(it))
         }
     }
 
-    fun hideTopPerformers() {
+    private fun hideTopPerformers() {
         viewModelScope.launch {
             dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.POPULAR_PRODUCTS, isVisible = false)
         }

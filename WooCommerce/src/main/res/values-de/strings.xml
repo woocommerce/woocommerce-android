@@ -458,7 +458,6 @@ Language: de
     <string name="blaze_campaign_status_active">Aktiv</string>
     <string name="blaze_campaign_status_in_moderation">Freischaltung läuft</string>
     <string name="blaze_campaign_show_all_button">Alle zeigen</string>
-    <string name="blaze_campaign_create_campaign_button">Kampagne erstellen</string>
     <string name="blaze_campaign_subtitle">Erhöhe die Sichtbarkeit und verkaufe deine Produkte schnell.</string>
     <string name="blaze_campaign_title">Blaze-Kampagne</string>
     <string name="card_reader_tap_to_pay_about_copyright">Das Kontaktlos-Symbol ist eine Marke von EMVCo, LLC, die mit deren Genehmigung verwendet wird.</string>

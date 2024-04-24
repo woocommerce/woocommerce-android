@@ -458,7 +458,6 @@ Language: zh_CN
     <string name="blaze_campaign_status_active">已启用</string>
     <string name="blaze_campaign_status_in_moderation">审核中</string>
     <string name="blaze_campaign_show_all_button">显示全部</string>
-    <string name="blaze_campaign_create_campaign_button">创建广告活动</string>
     <string name="blaze_campaign_subtitle">提高展示率，让产品更快售出。</string>
     <string name="blaze_campaign_title">Blaze 广告活动</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol（非接触式标志）是 EMVCo, LLC 的商标，经其许可方能使用。</string>

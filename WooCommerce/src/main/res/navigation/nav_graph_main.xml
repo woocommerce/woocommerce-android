@@ -225,7 +225,7 @@
         tools:layout="@layout/fragment_barcode_scanning" />
     <fragment
         android:id="@+id/products"
-        android:name="com.woocommerce.android.ui.products.ProductListFragment"
+        android:name="com.woocommerce.android.ui.products.list.ProductListFragment"
         android:label="fragment_product_list"
         tools:layout="@layout/fragment_product_list">
         <action
@@ -455,7 +455,7 @@
         app:destination="@id/nav_graph_products">
         <argument
             android:name="mode"
-            app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
+            app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"
@@ -589,7 +589,7 @@
     </action>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
             android:name="remoteProductId"

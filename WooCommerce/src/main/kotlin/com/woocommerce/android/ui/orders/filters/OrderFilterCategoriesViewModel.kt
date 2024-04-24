@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.orders.filters.model.getNumberOfSelectedFilter
 import com.woocommerce.android.ui.orders.filters.model.isAnyFilterOptionSelected
 import com.woocommerce.android.ui.orders.filters.model.markOptionAllIfNothingSelected
 import com.woocommerce.android.ui.orders.filters.model.toOrderFilterOptionUiModel
-import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit

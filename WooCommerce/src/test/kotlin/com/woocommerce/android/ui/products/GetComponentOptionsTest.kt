@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.QueryType
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
