@@ -1,4 +1,4 @@
-package com.woocommerce.commons.wear
+package com.woocommerce.commons.di
 
 import android.content.Context
 import com.google.android.gms.wearable.CapabilityClient
