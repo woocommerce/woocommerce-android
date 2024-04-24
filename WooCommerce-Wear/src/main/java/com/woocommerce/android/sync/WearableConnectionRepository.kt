@@ -16,28 +16,27 @@ class WearableConnectionRepository @Inject constructor(
     suspend fun sendMessageToAllNodes(
         path: MessagePath,
         data: ByteArray = byteArrayOf()
-    ) {
-        fetchReachableNodes()
-            .map { (node, _) ->
-                coroutineScope.async {
-                    messageClient.sendMessage(node.id, path.value, data)
-                }
-            }.awaitAll()
-    }
+    ): Result<Unit> = fetchReachableNodes()
+            .takeIf { it.isNotEmpty() }
+            ?.map { coroutineScope.async { messageClient.sendMessage(it.id, path.value, data) } }
+            ?.awaitAll()
+            ?.let { Result.success(Unit) }
+            ?: Result.failure(Exception("No reachable nodes found"))
 
     private suspend fun fetchReachableNodes() = capabilityClient
         .getAllCapabilities(CapabilityClient.FILTER_REACHABLE)
         .await()
         .flatMap { (capability, capabilityInfo) ->
             capabilityInfo.nodes.map { it to capability }
-        }
-        .groupBy(
-            keySelector = { it.first },
-            valueTransform = { it.second }
-        )
-        .mapValues { it.value.toSet() }
+        }.filter { (_, capabilityInfo) ->
+            WOO_MOBILE_CAPABILITY in capabilityInfo
+        }.map { (node, _) -> node }
 
     enum class MessagePath(val value: String) {
         START_AUTH("/start-auth")
+    }
+
+    companion object {
+        const val WOO_MOBILE_CAPABILITY = "woo_mobile"
     }
 }

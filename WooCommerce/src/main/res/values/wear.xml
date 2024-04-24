@@ -5,6 +5,6 @@
         translatable="false"
         tools:ignore="UnusedResources">
         <!-- declaring the provided capabilities -->
-        <item>mobile</item>
+        <item>woo_mobile</item>
     </string-array>
 </resources>
