@@ -20,10 +20,13 @@ import com.woocommerce.android.model.DashboardWidget.Type.ONBOARDING
 import com.woocommerce.android.model.DashboardWidget.Type.POPULAR_PRODUCTS
 import com.woocommerce.android.model.DashboardWidget.Type.STATS
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.NavigateToAddProduct
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenOnboardingListInFullScreen
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
+import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 import com.woocommerce.android.util.CurrencyFormatter
@@ -92,7 +95,15 @@ private fun WidgetList(
                             blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
                         )
 
-                        ONBOARDING -> {}
+                        ONBOARDING -> DashboardOnboardingCard(
+                            parentViewModel = dashboardViewModel,
+                            openOnboardingInFullScreen = {
+                                dashboardViewModel.onDashboardWidgetEvent(OpenOnboardingListInFullScreen)
+                            },
+                            navigateToAddProduct = {
+                                dashboardViewModel.onDashboardWidgetEvent(NavigateToAddProduct)
+                            },
+                        )
                     }
                 }
 

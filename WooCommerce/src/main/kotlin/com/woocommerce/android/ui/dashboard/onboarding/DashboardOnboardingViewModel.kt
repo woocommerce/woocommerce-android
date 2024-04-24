@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.onboarding
+package com.woocommerce.android.ui.dashboard.onboarding
 
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -15,7 +15,28 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
+import com.woocommerce.android.ui.onboarding.AddProductTaskRes
+import com.woocommerce.android.ui.onboarding.CustomizeDomainTaskRes
+import com.woocommerce.android.ui.onboarding.LaunchStoreTaskRes
+import com.woocommerce.android.ui.onboarding.NameYourStoreTaskRes
+import com.woocommerce.android.ui.onboarding.NavigateToAboutYourStore
+import com.woocommerce.android.ui.onboarding.NavigateToAddProduct
+import com.woocommerce.android.ui.onboarding.NavigateToDomains
+import com.woocommerce.android.ui.onboarding.NavigateToLaunchStore
+import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
+import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
+import com.woocommerce.android.ui.onboarding.NavigateToSetupWooPayments
+import com.woocommerce.android.ui.onboarding.NavigateToSurvey
+import com.woocommerce.android.ui.onboarding.OnboardingState
+import com.woocommerce.android.ui.onboarding.OnboardingTaskUi
+import com.woocommerce.android.ui.onboarding.SetupPaymentsTaskRes
+import com.woocommerce.android.ui.onboarding.SetupWooPaymentsTaskRes
+import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
 import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
+import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
+import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
@@ -27,14 +48,17 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.Onboardin
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class StoreOnboardingViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = DashboardOnboardingViewModel.Factory::class)
+class DashboardOnboardingViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
+    @Assisted private val parentViewModel: DashboardViewModel,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val shouldShowOnboarding: ShouldShowOnboarding
@@ -116,7 +140,7 @@ class StoreOnboardingViewModel @Inject constructor(
     fun onTaskClicked(task: OnboardingTaskUi) {
         when (task.taskUiResources) {
             AboutYourStoreTaskRes -> triggerEvent(NavigateToAboutYourStore)
-            is AddProductTaskRes -> triggerEvent(NavigateToAddProduct)
+            AddProductTaskRes -> triggerEvent(NavigateToAddProduct)
             CustomizeDomainTaskRes -> triggerEvent(NavigateToDomains)
             LaunchStoreTaskRes -> triggerEvent(NavigateToLaunchStore)
             NameYourStoreTaskRes -> triggerEvent(ShowNameYourStoreDialog)
@@ -152,5 +176,10 @@ class StoreOnboardingViewModel @Inject constructor(
         } else {
             _viewState.value = _viewState.value?.copy(show = false)
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(parentViewModel: DashboardViewModel): DashboardOnboardingViewModel
     }
 }
