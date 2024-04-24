@@ -7,8 +7,8 @@ import androidx.navigation.NavHostController
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.phone.PhoneConnectionRepository.MessagePath.START_AUTH
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
-import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.commons.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
