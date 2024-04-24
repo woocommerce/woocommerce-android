@@ -10,7 +10,7 @@ class WearableConnectionRepository @Inject constructor(
     private val dataClient: DataClient
 ) {
     fun sendDataToAllNodes(
-        path: MessagePath,
+        path: DataPath,
         data: DataMap = DataMap()
     ) {
         PutDataMapRequest
@@ -25,7 +25,7 @@ class WearableConnectionRepository @Inject constructor(
         dataMap.putLong("timestamp", Instant.now().epochSecond)
     }
 
-    enum class MessagePath(val value: String) {
-        AUTH("/auth")
+    enum class DataPath(val value: String) {
+        AUTH("/auth-data")
     }
 }
