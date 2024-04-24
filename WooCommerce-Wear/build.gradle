@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.parcelize'
     id 'com.google.dagger.hilt.android'
     id 'com.google.devtools.ksp'
 }
@@ -69,6 +70,9 @@ android {
 }
 
 dependencies {
+    // Project
+    implementation project(":libs:commons")
+
     // WearOS
     implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
     implementation 'androidx.wear.tiles:tiles'
@@ -93,12 +97,20 @@ dependencies {
 
     // Android Support
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
     implementation 'androidx.core:core-splashscreen:1.0.1'
     implementation "androidx.navigation:navigation-compose:2.7.7"
     implementation 'androidx.activity:activity-compose'
     implementation "androidx.preference:preference-ktx:1.2.1"
     implementation "androidx.datastore:datastore-preferences:1.1.0"
     implementation "androidx.datastore:datastore:1.1.0"
+
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:$coroutinesVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
     // Dagger & Hilt
     implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"

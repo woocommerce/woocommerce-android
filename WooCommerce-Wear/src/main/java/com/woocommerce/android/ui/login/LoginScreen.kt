@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,13 +20,16 @@ import com.woocommerce.android.presentation.theme.WooTheme
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
+    val viewState by viewModel.viewState.observeAsState()
     LoginScreen(
+        isLoading = viewState?.isLoading ?: false,
         onLoginButtonClicked = viewModel::onLoginButtonClicked
     )
 }
 
 @Composable
 fun LoginScreen(
+    isLoading: Boolean,
     onLoginButtonClicked: () -> Unit
 ) {
     WooTheme {
@@ -33,16 +38,27 @@ fun LoginScreen(
             contentAlignment = Alignment.Center
         ) {
             TimeText()
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Button(
-                    onClick = onLoginButtonClicked,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Continue on phone")
-                }
+            if (isLoading) {
+                Text("Loading...")
+            } else {
+                SyncScreen(onLoginButtonClicked)
             }
+        }
+    }
+}
+
+@Composable
+fun SyncScreen(
+    onLoginButtonClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        Button(
+            onClick = onLoginButtonClicked,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Continue on phone")
         }
     }
 }
@@ -52,6 +68,7 @@ fun LoginScreen(
 @Composable
 fun Preview() {
     LoginScreen(
+        isLoading = false,
         onLoginButtonClicked = {}
     )
 }

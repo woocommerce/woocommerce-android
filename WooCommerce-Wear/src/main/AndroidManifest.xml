@@ -29,15 +29,23 @@
             android:value="@integer/google_play_services_version" />
 
         <service
-            android:name=".sync.DataLayerListenerService"
+            android:name=".phone.PhoneConnectionService"
             android:exported="true">
             <intent-filter>
                 <!-- listeners receive events that match the action and data filters -->
-                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
                 <data
                     android:host="*"
-                    android:pathPrefix="/auth"
+                    android:pathPrefix="/token-data"
+                    android:scheme="wear" />
+            </intent-filter>
+
+            <intent-filter>
+                <!-- listeners receive events that match the action and data filters -->
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/site-data"
                     android:scheme="wear" />
             </intent-filter>
         </service>
@@ -74,7 +82,7 @@
         </service>
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".app.WearMainActivity"
             android:exported="true"
             android:taskAffinity=""
             android:theme="@style/MainActivityTheme.Starting">
