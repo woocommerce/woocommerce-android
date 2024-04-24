@@ -23,7 +23,7 @@ class PhoneConnectionRepository @Inject constructor(
 ) {
     fun handleReceivedData(dataItem: DataItem) {
         when (dataItem.uri.path) {
-            DataPath.AUTH_DATA.value -> handleAuthenticationData(dataItem)
+            DataPath.TOKEN_DATA.value -> handleAuthenticationData(dataItem)
             else -> Log.d(TAG, "Unknown path data received")
         }
     }

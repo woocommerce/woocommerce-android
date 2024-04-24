@@ -8,7 +8,7 @@ import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
-import com.woocommerce.commons.wear.MessagePath.START_AUTH
+import com.woocommerce.commons.wear.MessagePath.REQUEST_TOKEN
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -47,7 +47,7 @@ class LoginViewModel @AssistedInject constructor(
     fun onLoginButtonClicked() {
         _viewState.update { it.copy(isLoading = true) }
         launch {
-            connRepository.sendMessageToAllNodes(START_AUTH)
+            connRepository.sendMessageToAllNodes(REQUEST_TOKEN)
             _viewState.update { it.copy(isLoading = false) }
         }
     }
