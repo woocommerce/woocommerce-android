@@ -515,7 +515,7 @@ class MyStoreFragment :
             // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
             // (no update as of Oct 2023)
             val appBarLayout = requireActivity().findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
-            withCreated {
+            viewLifecycleOwner.withCreated {
                 appBarLayout?.verticalOffsetChanges()
                     ?.onEach { verticalOffset ->
                         binding.jetpackBenefitsBanner.root.translationY =
