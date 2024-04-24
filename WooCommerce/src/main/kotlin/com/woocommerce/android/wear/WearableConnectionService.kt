@@ -23,7 +23,9 @@ class WearableConnectionService : WearableListenerService() {
 
     override fun onMessageReceived(message: MessageEvent) {
         super.onMessageReceived(message)
-        connRepository.sendTokenData()
+        when (message.path) {
+            TOKEN_DATA.value -> connRepository.sendTokenData()
+        }
     }
 
     companion object {
