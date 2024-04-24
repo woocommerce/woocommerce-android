@@ -70,6 +70,9 @@ android {
 }
 
 dependencies {
+    // Project
+    implementation project(":Commons")
+
     // WearOS
     implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
     implementation 'androidx.wear.tiles:tiles'
