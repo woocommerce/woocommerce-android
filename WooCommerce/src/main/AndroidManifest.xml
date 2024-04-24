@@ -258,7 +258,7 @@
                 <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
                 <data
                     android:host="*"
-                    android:pathPrefix="/request_auth"
+                    android:pathPrefix="/start-auth"
                     android:scheme="wear" />
             </intent-filter>
         </service>
