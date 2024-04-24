@@ -13,6 +13,11 @@ import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.Locale
 import java.util.UUID
@@ -22,10 +27,23 @@ class AnalyticsTracker private constructor(
     private val selectedSite: SelectedSite,
     private val appPrefs: AppPrefs,
     private val getWooVersion: GetWooCorePluginCachedVersion,
+    appCoroutineScope: CoroutineScope,
 ) {
     private var tracksClient: TracksClient? = TracksClient.getClient(context)
     private var username: String? = null
     private var anonymousID: String? = null
+
+    private val analyticsEventsToTrack = Channel<Pair<AnalyticsEvent, Map<String, *>>>(capacity = BUFFERED)
+
+    init {
+        appCoroutineScope.launch {
+            analyticsEventsToTrack.consumeEach { (stat, properties) ->
+                doTrack(stat, properties)
+            }
+        }.invokeOnCompletion {
+            analyticsEventsToTrack.close()
+        }
+    }
 
     private fun clearAllData() {
         clearAnonID()
@@ -65,6 +83,10 @@ class AnalyticsTracker private constructor(
     }
 
     private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
+        analyticsEventsToTrack.trySend(Pair(stat, properties))
+    }
+
+    private fun doTrack(stat: AnalyticsEvent, properties: Map<String, *>) {
         if (tracksClient == null) {
             return
         }
@@ -79,10 +101,21 @@ class AnalyticsTracker private constructor(
             TracksClient.NosaraUserType.ANON
         }
 
-        val finalProperties = properties.toMutableMap()
+        val propertiesJson = JSONObject(properties.buildFinalProperties(stat.siteless))
+        tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+
+        if (propertiesJson.length() > 0) {
+            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
+        } else {
+            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
+        }
+    }
+
+    private fun Map<String, *>.buildFinalProperties(siteLess: Boolean): MutableMap<String, Any?> {
+        val finalProperties = this.toMutableMap()
 
         val selectedSiteModel = selectedSite.getOrNull()
-        if (!stat.siteless) {
+        if (!siteLess) {
             selectedSiteModel?.let {
                 if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
@@ -93,17 +126,9 @@ class AnalyticsTracker private constructor(
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
         selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
-
         getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
 
-        val propertiesJson = JSONObject(finalProperties)
-        tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
-
-        if (propertiesJson.length() > 0) {
-            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
-        } else {
-            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
-        }
+        return finalProperties
     }
 
     private fun flush() {
@@ -648,8 +673,15 @@ class AnalyticsTracker private constructor(
             selectedSite: SelectedSite,
             appPrefs: AppPrefs,
             getWooVersion: GetWooCorePluginCachedVersion,
+            appCoroutineScope: CoroutineScope,
         ) {
-            instance = AnalyticsTracker(context.applicationContext, selectedSite, appPrefs, getWooVersion)
+            instance = AnalyticsTracker(
+                context.applicationContext,
+                selectedSite,
+                appPrefs,
+                getWooVersion,
+                appCoroutineScope
+            )
             val prefs = PreferenceManager.getDefaultSharedPreferences(context)
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
