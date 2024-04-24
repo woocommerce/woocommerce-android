@@ -1,4 +1,4 @@
-package com.woocommerce.android.viewmodel
+package com.woocommerce.commons.viewmodel
 
 import android.os.Parcelable
 import androidx.lifecycle.Observer
