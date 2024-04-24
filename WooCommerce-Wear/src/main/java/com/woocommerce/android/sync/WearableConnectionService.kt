@@ -5,7 +5,7 @@ import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.WearableListenerService
 
-class DataLayerListenerService : WearableListenerService() {
+class WearableConnectionService : WearableListenerService() {
 
     override fun onDataChanged(dataEvents: DataEventBuffer) {
         super.onDataChanged(dataEvents)
