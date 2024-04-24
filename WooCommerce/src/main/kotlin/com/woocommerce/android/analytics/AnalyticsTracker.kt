@@ -36,8 +36,8 @@ class AnalyticsTracker private constructor(
 
     init {
         appCoroutineScope.launch {
-            for (event in analyticsEventsToTrack) {
-                doTrack(event.first, event.second)
+            analyticsEventsToTrack.consumeEach { (stat, properties) ->
+                doTrack(stat, properties)
             }
         }.invokeOnCompletion {
             analyticsEventsToTrack.close()
