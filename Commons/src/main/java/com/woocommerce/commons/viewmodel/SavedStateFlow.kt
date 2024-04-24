@@ -3,13 +3,13 @@ package com.woocommerce.commons.viewmodel
 import android.os.Parcelable
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
-import java.io.Serializable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.Serializable
 
 /**
  * A helper function to create a [MutableStateFlow] that creates an entry in [SavedStateHandle] to persist value

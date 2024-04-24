@@ -7,24 +7,24 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.android.gms.wearable.DataMap
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
-import javax.inject.Inject
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.LOGIN) private val loginDataStore: DataStore<Preferences>,
 ) {
     fun isUserLoggedIn() = loginDataStore.data
-        .map { it[stringPreferencesKey(generateStoreConfigKey())].isNullOrEmpty().not() }
+        .map { it[stringPreferencesKey(STORE_CONFIG_KEY)].isNullOrEmpty().not() }
 
     suspend fun receiveStoreData(data: DataMap) {
         data.getString("token")?.let { token ->
             loginDataStore.edit { prefs ->
-                prefs[stringPreferencesKey(generateStoreConfigKey())] = token
+                prefs[stringPreferencesKey(STORE_CONFIG_KEY)] = token
             }
         }
     }
 
-    private fun generateStoreConfigKey(): String {
-        return "store_config_key"
+    companion object {
+        const val STORE_CONFIG_KEY = "store_config_key"
     }
 }

@@ -36,5 +36,4 @@ fun WooWearNavHost(
 enum class NavRoutes(val route: String) {
     LOGIN("login"),
     MY_STORE("myStore")
-
 }

@@ -6,12 +6,12 @@ import com.google.android.gms.wearable.DataItem
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.woocommerce.android.ui.login.LoginRepository
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 class PhoneConnectionRepository @Inject constructor(
     private val loginRepository: LoginRepository,
@@ -30,11 +30,11 @@ class PhoneConnectionRepository @Inject constructor(
         path: MessagePath,
         data: ByteArray = byteArrayOf()
     ): Result<Unit> = fetchReachableNodes()
-            .takeIf { it.isNotEmpty() }
-            ?.map { coroutineScope.async { messageClient.sendMessage(it.id, path.value, data) } }
-            ?.awaitAll()
-            ?.let { Result.success(Unit) }
-            ?: Result.failure(Exception("No reachable nodes found"))
+        .takeIf { it.isNotEmpty() }
+        ?.map { coroutineScope.async { messageClient.sendMessage(it.id, path.value, data) } }
+        ?.awaitAll()
+        ?.let { Result.success(Unit) }
+        ?: Result.failure(Exception("No reachable nodes found"))
 
     private suspend fun fetchReachableNodes() = capabilityClient
         .getAllCapabilities(CapabilityClient.FILTER_REACHABLE)
