@@ -2,11 +2,10 @@ package com.woocommerce.android.wear
 
 import android.util.Log
 import com.google.android.gms.wearable.DataEventBuffer
-import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.WearableListenerService
-import com.woocommerce.commons.wear.DataParameters.TOKEN
-import com.woocommerce.commons.wear.DataPath.TOKEN_DATA
+import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
+import com.woocommerce.commons.wear.MessagePath.REQUEST_TOKEN
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -24,7 +23,8 @@ class WearableConnectionService : WearableListenerService() {
     override fun onMessageReceived(message: MessageEvent) {
         super.onMessageReceived(message)
         when (message.path) {
-            TOKEN_DATA.value -> connRepository.sendTokenData()
+            REQUEST_TOKEN.value -> connRepository.sendTokenData()
+            REQUEST_SITE.value -> connRepository.sendSiteData()
         }
     }
 
