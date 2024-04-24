@@ -3,6 +3,7 @@ package com.woocommerce.android.wear
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.PutDataMapRequest
+import com.woocommerce.commons.wear.DataPath
 import java.time.Instant
 import javax.inject.Inject
 
@@ -23,9 +24,5 @@ class WearableConnectionRepository @Inject constructor(
     private fun PutDataMapRequest.addData(data: DataMap) = apply {
         dataMap.putAll(data)
         dataMap.putLong("timestamp", Instant.now().epochSecond)
-    }
-
-    enum class DataPath(val value: String) {
-        AUTH_DATA("/auth-data")
     }
 }

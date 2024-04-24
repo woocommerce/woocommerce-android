@@ -6,6 +6,8 @@ import com.google.android.gms.wearable.DataItem
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.woocommerce.android.ui.login.LoginRepository
+import com.woocommerce.commons.wear.DataPath
+import com.woocommerce.commons.wear.MessagePath
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -48,14 +50,6 @@ class PhoneConnectionRepository @Inject constructor(
     private fun handleAuthenticationData(dataItem: DataItem) {
         val dataMap = DataMapItem.fromDataItem(dataItem).dataMap
         coroutineScope.launch { loginRepository.receiveStoreData(dataMap) }
-    }
-
-    enum class MessagePath(val value: String) {
-        START_AUTH("/start-auth")
-    }
-
-    enum class DataPath(val value: String) {
-        AUTH_DATA("/auth-data")
     }
 
     companion object {
