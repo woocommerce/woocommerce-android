@@ -4,7 +4,6 @@ import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.commons.wear.DataParameters
 import com.woocommerce.commons.wear.DataParameters.SITE_ID
 import com.woocommerce.commons.wear.DataParameters.TIMESTAMP
 import com.woocommerce.commons.wear.DataParameters.TOKEN
@@ -42,11 +41,11 @@ class WearableConnectionRepository @Inject constructor(
 
     private fun sendData(
         dataPath: DataPath,
-        dataMap: DataMap
+        data: DataMap
     ) {
         PutDataMapRequest
             .create(dataPath.value)
-            .apply { dataMap.putAll(dataMap) }
+            .apply { dataMap.putAll(data) }
             .asPutDataRequest().setUrgent()
             .let { dataClient.putDataItem(it) }
     }
