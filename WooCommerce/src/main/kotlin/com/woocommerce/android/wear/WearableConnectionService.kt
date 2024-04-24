@@ -23,12 +23,7 @@ class WearableConnectionService : WearableListenerService() {
 
     override fun onMessageReceived(message: MessageEvent) {
         super.onMessageReceived(message)
-        Log.d(TAG, "onMessageReceived: ${message.path}")
-        connRepository.sendDataToAllNodes(
-            path = TOKEN_DATA,
-            data = DataMap().apply { putString(TOKEN.value, "a-test-token") }
-        )
-        Log.d(TAG, "${message.path} replied")
+        connRepository.sendTokenData()
     }
 
     companion object {
