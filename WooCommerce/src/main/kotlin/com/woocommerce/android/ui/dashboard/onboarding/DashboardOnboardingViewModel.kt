@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.onboarding
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +16,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUC
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.onboarding.AddProductTaskRes
 import com.woocommerce.android.ui.onboarding.CustomizeDomainTaskRes
@@ -29,12 +33,10 @@ import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
 import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
 import com.woocommerce.android.ui.onboarding.NavigateToSetupWooPayments
 import com.woocommerce.android.ui.onboarding.NavigateToSurvey
-import com.woocommerce.android.ui.onboarding.OnboardingState
 import com.woocommerce.android.ui.onboarding.OnboardingTaskUi
 import com.woocommerce.android.ui.onboarding.SetupPaymentsTaskRes
 import com.woocommerce.android.ui.onboarding.SetupWooPaymentsTaskRes
 import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
-import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
 import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
@@ -63,15 +65,26 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val shouldShowOnboarding: ShouldShowOnboarding
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
-    companion object {
-        const val NUMBER_ITEMS_IN_COLLAPSED_MODE = 3
-    }
-
     private val _viewState = MutableLiveData(
-        OnboardingState(
-            show = false,
-            title = R.string.store_onboarding_title,
+        OnboardingDashBoardState(
+            title = DashboardWidget.Type.ONBOARDING.titleResource,
             tasks = emptyList(),
+            menu = DashboardWidgetMenu(
+                items = listOf(
+                    DashboardWidgetAction(
+                        titleResource = R.string.store_onboarding_menu_share_feedback,
+                        action = ::onShareFeedbackClicked
+                    ),
+                    DashboardWidgetAction(
+                        titleResource = R.string.store_onboarding_menu_hide_store_setup,
+                        action = ::onHideOnboardingClicked
+                    )
+                )
+            ),
+            onViewAllTapped = DashboardWidgetAction(
+                titleResource = R.string.store_onboarding_task_view_all,
+                action = ::viewAllClicked
+            )
         )
     )
     val viewState = _viewState
@@ -80,10 +93,8 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         launch {
             onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
-                    _viewState.value = OnboardingState(
-                        show = shouldShowOnboarding.showForTasks(tasks),
-                        title = R.string.store_onboarding_title,
-                        tasks = tasks.map { mapToOnboardingTaskState(it) },
+                    _viewState.value = _viewState.value?.copy(
+                        tasks = tasks.map { mapToOnboardingTaskState(it) }
                     )
                 }
         }
@@ -113,28 +124,12 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    fun onShareFeedbackClicked() {
+    private fun onShareFeedbackClicked() {
         triggerEvent(NavigateToSurvey)
     }
 
-    fun onHideOnboardingClicked() {
-        triggerEvent(
-            MultiLiveEvent.Event.ShowDialog(
-                titleId = R.string.store_onboarding_dialog_title,
-                messageId = R.string.store_onboarding_dialog_description,
-                positiveButtonId = R.string.remove,
-                positiveBtnAction = { dialog, _ ->
-                    _viewState.value = _viewState.value?.copy(show = false)
-                    shouldShowOnboarding.updateOnboardingVisibilitySetting(
-                        show = false,
-                        source = ONBOARDING_LIST
-                    )
-                    dialog.dismiss()
-                },
-                negativeBtnAction = { dialog, _ -> dialog.dismiss() },
-                negativeButtonId = R.string.cancel,
-            )
-        )
+    private fun onHideOnboardingClicked() {
+        // TODO open widget editor
     }
 
     fun onTaskClicked(task: OnboardingTaskUi) {
@@ -173,10 +168,15 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
             launch {
                 onboardingRepository.fetchOnboardingTasks()
             }
-        } else {
-            _viewState.value = _viewState.value?.copy(show = false)
         }
     }
+
+    data class OnboardingDashBoardState(
+        @StringRes val title: Int,
+        val tasks: List<OnboardingTaskUi>,
+        val menu: DashboardWidgetMenu,
+        val onViewAllTapped: DashboardWidgetAction
+    )
 
     @AssistedFactory
     interface Factory {

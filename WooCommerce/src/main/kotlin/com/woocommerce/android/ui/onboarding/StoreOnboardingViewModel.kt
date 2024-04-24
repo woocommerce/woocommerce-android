@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.onboarding
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -153,4 +154,10 @@ class StoreOnboardingViewModel @Inject constructor(
             _viewState.value = _viewState.value?.copy(show = false)
         }
     }
+
+    data class OnboardingState(
+        val show: Boolean,
+        @StringRes val title: Int,
+        val tasks: List<OnboardingTaskUi>,
+    )
 }

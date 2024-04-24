@@ -6,12 +6,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
-data class OnboardingState(
-    val show: Boolean,
-    @StringRes val title: Int,
-    val tasks: List<OnboardingTaskUi>,
-)
-
 data class OnboardingTaskUi(
     val taskUiResources: OnboardingTaskUiResources,
     val isCompleted: Boolean,

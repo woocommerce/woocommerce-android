@@ -1,57 +1,45 @@
 package com.woocommerce.android.ui.dashboard.onboarding
 
-import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
+import androidx.compose.material.Divider
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Outlined
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
+import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Factory
+import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.OnboardingDashBoardState
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.onboarding.NavigateToAboutYourStore
@@ -62,10 +50,10 @@ import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
 import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
 import com.woocommerce.android.ui.onboarding.NavigateToSetupWooPayments
 import com.woocommerce.android.ui.onboarding.NavigateToSurvey
-import com.woocommerce.android.ui.onboarding.OnboardingState
-import com.woocommerce.android.ui.onboarding.OnboardingTaskList
+import com.woocommerce.android.ui.onboarding.OnboardingTaskCollapsedProgressHeader
 import com.woocommerce.android.ui.onboarding.OnboardingTaskUi
 import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
+import com.woocommerce.android.ui.onboarding.TaskItem
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 @Composable
@@ -81,13 +69,16 @@ fun DashboardOnboardingCard(
         )
 ) {
     onboardingViewModel.viewState.observeAsState().value?.let { onboardingState ->
-        StoreOnboardingCardContent(
-            onboardingState = onboardingState,
-            onViewAllClicked = onboardingViewModel::viewAllClicked,
-            onShareFeedbackClicked = onboardingViewModel::onShareFeedbackClicked,
-            onTaskClicked = onboardingViewModel::onTaskClicked,
-            onHideOnboardingClicked = onboardingViewModel::onHideOnboardingClicked
-        )
+        WidgetCard(
+            titleResource = onboardingState.title,
+            menu = onboardingState.menu,
+            button = onboardingState.onViewAllTapped,
+        ) {
+            StoreOnboardingCardContent(
+                onboardingState = onboardingState,
+                onTaskClicked = onboardingViewModel::onTaskClicked,
+            )
+        }
     }
     HandleEvents(
         onboardingViewModel.event,
@@ -159,12 +150,9 @@ private fun HandleEvents(
 
 @Composable
 fun StoreOnboardingCardContent(
-    onboardingState: OnboardingState,
-    onViewAllClicked: () -> Unit,
-    onShareFeedbackClicked: () -> Unit,
+    onboardingState: OnboardingDashBoardState,
     onTaskClicked: (OnboardingTaskUi) -> Unit,
     modifier: Modifier = Modifier,
-    onHideOnboardingClicked: () -> Unit,
 ) {
     Box(modifier = modifier.fillMaxWidth()) {
         Column(
@@ -191,81 +179,23 @@ fun StoreOnboardingCardContent(
                     )
                     .fillMaxWidth(0.5f)
             ))
-            val taskToDisplay = if (onboardingState.tasks.filter { !it.isCompleted }.size == 1) {
-                onboardingState.tasks.filter { !it.isCompleted }
-            } else {
-                onboardingState.tasks.take(DashboardOnboardingViewModel.NUMBER_ITEMS_IN_COLLAPSED_MODE)
-            }
-            OnboardingTaskList(
-                tasks = taskToDisplay,
-                onTaskClicked = onTaskClicked,
+            Column(
                 modifier = Modifier
                     .padding(top = dimensionResource(id = R.dimen.major_100))
                     .fillMaxWidth()
-            )
-            if (onboardingState.tasks.size > DashboardOnboardingViewModel.NUMBER_ITEMS_IN_COLLAPSED_MODE || taskToDisplay.size == 1) {
-                WCTextButton(
-                    contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_100)),
-                    onClick = onViewAllClicked
-                ) {
-                    Text(
-                        text = stringResource(R.string.store_onboarding_task_view_all, onboardingState.tasks.size),
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
+            ) {
+                onboardingState.tasks
+                    .filter { it.isCompleted.not() }
+                    .forEachIndexed { index, task ->
+                        TaskItem(task, onTaskClicked)
+                        if (index < onboardingState.tasks.size - 1) {
+                            Divider(
+                                color = colorResource(id = R.color.divider_color),
+                                thickness = dimensionResource(id = R.dimen.minor_10)
+                            )
+                        }
+                    }
             }
-        }
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = dimensionResource(id = R.dimen.minor_100))
-        ) {
-            OnboardingMoreMenu(onShareFeedbackClicked, onHideOnboardingClicked)
-        }
-    }
-}
-
-@Composable
-private fun OnboardingMoreMenu(
-    onShareFeedbackClicked: () -> Unit,
-    onHideOnboardingClicked: () -> Unit
-) {
-    var showMenu by remember { mutableStateOf(false) }
-    IconButton(onClick = { showMenu = !showMenu }) {
-        Icon(
-            imageVector = Outlined.MoreVert,
-            contentDescription = stringResource(R.string.more_menu),
-        )
-    }
-    DropdownMenu(
-        offset = DpOffset(
-            x = dimensionResource(id = R.dimen.major_100),
-            y = 0.dp
-        ),
-        expanded = showMenu,
-        onDismissRequest = { showMenu = false }
-    ) {
-        DropdownMenuItem(
-            modifier = Modifier
-                .height(dimensionResource(id = R.dimen.major_175)),
-            onClick = {
-                showMenu = false
-                onShareFeedbackClicked()
-            }
-        ) {
-            Text(stringResource(id = R.string.store_onboarding_menu_share_feedback))
-        }
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-        DropdownMenuItem(
-            modifier = Modifier
-                .height(dimensionResource(id = R.dimen.major_175)),
-            onClick = {
-                showMenu = false
-                onHideOnboardingClicked()
-            }
-        ) {
-            Text(stringResource(id = R.string.store_onboarding_menu_hide_store_setup))
         }
     }
 }
@@ -277,10 +207,11 @@ fun OnboardingTaskCollapsedProgressHeader(
 ) {
     val completedTasks = tasks.count { it.isCompleted }
     val totalTasks = tasks.count()
-    val progress by remember { mutableStateOf(completedTasks / totalTasks.toFloat()) }
+    val progress by remember { mutableFloatStateOf(completedTasks / totalTasks.toFloat()) }
     val animatedProgress = animateFloatAsState(
         targetValue = progress,
-        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+        label = "OnboardingProgressAnimation"
     ).value
     Column(modifier) {
         LinearProgressIndicator(
@@ -298,19 +229,17 @@ fun OnboardingTaskCollapsedProgressHeader(
     }
 }
 
-@ExperimentalFoundationApi
-@Preview(name = "dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "light", uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(name = "small screen", device = Devices.PIXEL)
-@Preview(name = "mid screen", device = Devices.PIXEL_4)
-@Preview(name = "large screen", device = Devices.NEXUS_10)
-@Suppress("unused")
+@LightDarkThemePreviews
 @Composable
 private fun OnboardingPreview() {
     StoreOnboardingCardContent(
-        OnboardingState(
-            show = true,
+        OnboardingDashBoardState(
             title = R.string.store_onboarding_title,
+            menu = DashboardWidgetMenu(emptyList()),
+            onViewAllTapped = DashboardWidgetAction(
+                titleResource = R.string.store_onboarding_task_view_all,
+                action = {}
+            ),
             tasks = listOf(
                 OnboardingTaskUi(
                     taskUiResources = AboutYourStoreTaskRes,
@@ -326,9 +255,6 @@ private fun OnboardingPreview() {
                 )
             )
         ),
-        onViewAllClicked = {},
-        onShareFeedbackClicked = {},
-        onHideOnboardingClicked = {},
         onTaskClicked = {}
     )
 }
