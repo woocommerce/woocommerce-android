@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Companion.MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Factory
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.OnboardingDashBoardState
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -50,7 +51,6 @@ import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
 import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
 import com.woocommerce.android.ui.onboarding.NavigateToSetupWooPayments
 import com.woocommerce.android.ui.onboarding.NavigateToSurvey
-import com.woocommerce.android.ui.onboarding.OnboardingTaskCollapsedProgressHeader
 import com.woocommerce.android.ui.onboarding.OnboardingTaskUi
 import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.TaskItem
@@ -169,7 +169,7 @@ fun StoreOnboardingCardContent(
                 style = MaterialTheme.typography.h6,
             )
             @Suppress("MagicNumber")
-            (OnboardingTaskCollapsedProgressHeader(
+            OnboardingCardProgressHeader(
                 tasks = onboardingState.tasks,
                 modifier = Modifier
                     .padding(
@@ -178,7 +178,7 @@ fun StoreOnboardingCardContent(
                         end = dimensionResource(id = R.dimen.major_100)
                     )
                     .fillMaxWidth(0.5f)
-            ))
+            )
             Column(
                 modifier = Modifier
                     .padding(top = dimensionResource(id = R.dimen.major_100))
@@ -186,6 +186,7 @@ fun StoreOnboardingCardContent(
             ) {
                 onboardingState.tasks
                     .filter { it.isCompleted.not() }
+                    .take(MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD)
                     .forEachIndexed { index, task ->
                         TaskItem(task, onTaskClicked)
                         if (index < onboardingState.tasks.size - 1) {
@@ -201,7 +202,7 @@ fun StoreOnboardingCardContent(
 }
 
 @Composable
-fun OnboardingTaskCollapsedProgressHeader(
+fun OnboardingCardProgressHeader(
     tasks: List<OnboardingTaskUi>,
     modifier: Modifier = Modifier
 ) {

@@ -65,6 +65,10 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val shouldShowOnboarding: ShouldShowOnboarding
 ) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
+    companion object {
+        const val MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD = 3
+    }
+
     private val _viewState = MutableLiveData(
         OnboardingDashBoardState(
             title = DashboardWidget.Type.ONBOARDING.titleResource,
