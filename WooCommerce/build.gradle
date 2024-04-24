@@ -277,7 +277,7 @@ dependencies {
 
     implementation("com.gravatar:gravatar:$gravatarVersion")
 
-    implementation project(":Commons")
+    implementation project(":libs:commons")
     implementation project(":libs:cardreader")
     debugImplementation project(":libs:iap")
 

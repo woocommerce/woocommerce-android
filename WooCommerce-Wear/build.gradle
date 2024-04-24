@@ -71,7 +71,7 @@ android {
 
 dependencies {
     // Project
-    implementation project(":Commons")
+    implementation project(":libs:commons")
 
     // WearOS
     implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
