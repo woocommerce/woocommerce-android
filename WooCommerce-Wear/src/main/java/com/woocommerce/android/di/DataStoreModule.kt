@@ -26,7 +26,7 @@ class DataStoreModule {
         @AppCoroutineScope appCoroutineScope: CoroutineScope
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = {
-            appContext.preferencesDataStoreFile("login")
+            appContext.preferencesDataStoreFile(LOGIN.typeName)
         },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
