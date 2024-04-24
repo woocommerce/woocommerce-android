@@ -2,7 +2,7 @@ package com.woocommerce.android.phone
 
 import android.util.Log
 import com.google.android.gms.wearable.CapabilityClient
-import com.google.android.gms.wearable.DataEvent
+import com.google.android.gms.wearable.DataItem
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.woocommerce.android.ui.login.LoginRepository
@@ -19,11 +19,9 @@ class PhoneConnectionRepository @Inject constructor(
     private val messageClient: MessageClient,
     private val coroutineScope: CoroutineScope
 ) {
-    fun handleReceivedData(dataEvent: DataEvent) {
-        when (dataEvent.dataItem.uri.path) {
-            DataPath.AUTH_DATA.value -> coroutineScope.launch {
-                handleStoreDataEvent(dataEvent)
-            }
+    fun handleReceivedData(dataItem: DataItem) {
+        when (dataItem.uri.path) {
+            DataPath.AUTH_DATA.value -> handleAuthenticationData(dataItem)
             else -> Log.d(TAG, "Unknown path data received")
         }
     }
@@ -47,10 +45,9 @@ class PhoneConnectionRepository @Inject constructor(
             WOO_MOBILE_CAPABILITY in capabilityInfo
         }.map { (node, _) -> node }
 
-    private suspend fun handleStoreDataEvent(dataEvent: DataEvent) {
-        loginRepository.receiveStoreData(
-            DataMapItem.fromDataItem(dataEvent.dataItem).dataMap
-        )
+    private fun handleAuthenticationData(dataItem: DataItem) {
+        val dataMap = DataMapItem.fromDataItem(dataItem).dataMap
+        coroutineScope.launch { loginRepository.receiveStoreData(dataMap) }
     }
 
     enum class MessagePath(val value: String) {
