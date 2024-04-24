@@ -5,7 +5,7 @@ import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.WearableListenerService
-import com.woocommerce.android.wear.WearableConnectionRepository.DataPath.AUTH
+import com.woocommerce.android.wear.WearableConnectionRepository.DataPath.AUTH_DATA
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -24,7 +24,7 @@ class WearableConnectionService : WearableListenerService() {
         super.onMessageReceived(message)
         Log.d(TAG, "onMessageReceived: ${message.path}")
         connRepository.sendDataToAllNodes(
-            path = AUTH,
+            path = AUTH_DATA,
             data = DataMap().apply { putString("token", "a-test-token") }
         )
         Log.d(TAG, "${message.path} replied")

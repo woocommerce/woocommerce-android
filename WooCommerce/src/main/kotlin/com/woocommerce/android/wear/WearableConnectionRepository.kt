@@ -26,6 +26,6 @@ class WearableConnectionRepository @Inject constructor(
     }
 
     enum class DataPath(val value: String) {
-        AUTH("/auth-data")
+        AUTH_DATA("/auth-data")
     }
 }
