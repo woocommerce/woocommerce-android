@@ -1,4 +1,4 @@
-package com.woocommerce.android.sync
+package com.woocommerce.android.phone
 
 import com.google.android.gms.wearable.CapabilityClient
 import com.google.android.gms.wearable.MessageClient
@@ -8,7 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
 
-class WearableConnectionRepository @Inject constructor(
+class PhoneConnectionRepository @Inject constructor(
     private val capabilityClient: CapabilityClient,
     private val messageClient: MessageClient,
     private val coroutineScope: CoroutineScope

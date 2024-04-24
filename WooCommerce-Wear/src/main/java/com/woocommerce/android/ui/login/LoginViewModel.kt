@@ -4,8 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
-import com.woocommerce.android.sync.WearableConnectionRepository
-import com.woocommerce.android.sync.WearableConnectionRepository.MessagePath.START_AUTH
+import com.woocommerce.android.phone.PhoneConnectionRepository
+import com.woocommerce.android.phone.PhoneConnectionRepository.MessagePath.START_AUTH
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -20,7 +20,7 @@ import kotlinx.parcelize.Parcelize
 @HiltViewModel(assistedFactory = LoginViewModel.Factory::class)
 class LoginViewModel @AssistedInject constructor(
     private val loginRepository: LoginRepository,
-    private val connRepository: WearableConnectionRepository,
+    private val connRepository: PhoneConnectionRepository,
     @Assisted private val navController: NavHostController,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
