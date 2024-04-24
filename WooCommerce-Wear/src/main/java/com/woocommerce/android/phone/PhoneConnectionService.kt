@@ -15,6 +15,7 @@ class PhoneConnectionService : WearableListenerService() {
     override fun onDataChanged(dataEvents: DataEventBuffer) {
         super.onDataChanged(dataEvents)
         Log.d("DATA RECEIVED", "onDataChanged")
+        dataEvents.forEach { connRepository.handleReceivedData(it) }
     }
 
     override fun onMessageReceived(message: MessageEvent) {

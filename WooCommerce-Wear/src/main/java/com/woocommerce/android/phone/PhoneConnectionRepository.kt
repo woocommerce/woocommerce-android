@@ -1,7 +1,11 @@
 package com.woocommerce.android.phone
 
+import android.util.Log
 import com.google.android.gms.wearable.CapabilityClient
+import com.google.android.gms.wearable.DataEvent
+import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
+import com.woocommerce.android.ui.login.LoginRepository
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -9,10 +13,20 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
 
 class PhoneConnectionRepository @Inject constructor(
+    private val loginRepository: LoginRepository,
     private val capabilityClient: CapabilityClient,
     private val messageClient: MessageClient,
     private val coroutineScope: CoroutineScope
 ) {
+    fun handleReceivedData(dataEvent: DataEvent) {
+        when (dataEvent.dataItem.uri.path) {
+            DataPath.AUTH_DATA.value -> loginRepository.receiveStoreData(
+                    DataMapItem.fromDataItem(dataEvent.dataItem)
+                )
+            else -> Log.d(TAG, "Unknown path data received")
+        }
+    }
+
     suspend fun sendMessageToAllNodes(
         path: MessagePath,
         data: ByteArray = byteArrayOf()
@@ -36,7 +50,12 @@ class PhoneConnectionRepository @Inject constructor(
         START_AUTH("/start-auth")
     }
 
+    enum class DataPath(val value: String) {
+        AUTH_DATA("/auth-data")
+    }
+
     companion object {
+        const val TAG = "PhoneConnectionRepository"
         const val WOO_MOBILE_CAPABILITY = "woo_mobile"
     }
 }
