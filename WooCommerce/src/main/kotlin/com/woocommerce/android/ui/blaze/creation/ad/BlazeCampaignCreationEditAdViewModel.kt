@@ -121,7 +121,7 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
                     it.copy(adImage = BlazeRepository.BlazeCampaignImage.LocalImage(uri))
                 }
             } else {
-                showInvalidIMageDialog()
+                showInvalidImageSizeDialog()
             }
         }
     }
@@ -138,16 +138,16 @@ class BlazeCampaignCreationEditAdViewModel @Inject constructor(
                     )
                 }
             } else {
-                showInvalidIMageDialog()
+                showInvalidImageSizeDialog()
             }
         }
     }
 
-    private fun showInvalidIMageDialog() {
+    private fun showInvalidImageSizeDialog() {
         triggerEvent(
             Event.ShowDialog(
                 titleId = R.string.blaze_campaign_edit_ad_invalid_image_title,
-                messageId = R.string.blaze_campaign_edit_ad_invalid_image_size_description,
+                messageId = R.string.blaze_campaign_edit_ad_invalid_image_description,
                 positiveButtonId = R.string.dialog_ok,
                 positiveBtnAction = { dialog, _ ->
                     dialog.dismiss()
