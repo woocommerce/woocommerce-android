@@ -10,9 +10,9 @@ import com.woocommerce.commons.wear.DataParameters.TOKEN
 import com.woocommerce.commons.wear.DataPath
 import com.woocommerce.commons.wear.DataPath.SITE_DATA
 import com.woocommerce.commons.wear.DataPath.TOKEN_DATA
+import org.wordpress.android.fluxc.store.AccountStore
 import java.time.Instant
 import javax.inject.Inject
-import org.wordpress.android.fluxc.store.AccountStore
 
 class WearableConnectionRepository @Inject constructor(
     private val dataClient: DataClient,
