@@ -8,9 +8,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import java.util.Date
-import javax.inject.Inject
 
-class CustomDateRangeDataStore @Inject constructor(
+abstract class CustomDateRangeDataStore(
     private val dataStore: DataStore<CustomDateRange>
 ) {
     val dateRange: Flow<StatsTimeRange?> = dataStore.data
