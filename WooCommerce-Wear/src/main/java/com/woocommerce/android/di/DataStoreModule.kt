@@ -7,7 +7,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.LOGIN
-import com.woocommerce.commons.di.AppCoroutineScope
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

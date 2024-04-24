@@ -1,4 +1,4 @@
-package com.woocommerce.commons.di
+package com.woocommerce.android.di
 
 import android.content.Context
 import dagger.Binds
