@@ -7,8 +7,10 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.Onboardin
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.values
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.onboarding.TaskDto
 import org.wordpress.android.fluxc.store.OnboardingStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -25,12 +27,11 @@ class StoreOnboardingRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val siteStore: SiteStore
 ) {
+    private val onboardingTasksCacheFlow: MutableSharedFlow<OnboardingTasksEvent> = MutableSharedFlow(replay = 1)
 
-    private val onboardingTasksCacheFlow: MutableSharedFlow<List<OnboardingTask>> = MutableSharedFlow(
-        replay = 1
-    )
-
-    fun observeOnboardingTasks(): SharedFlow<List<OnboardingTask>> = onboardingTasksCacheFlow
+    fun observeOnboardingTasks(): Flow<List<OnboardingTask>> = onboardingTasksCacheFlow
+        .filter { it.siteId == selectedSite.get().id }
+        .map { it.tasks }
 
     suspend fun fetchOnboardingTasks() {
         WooLog.d(WooLog.T.ONBOARDING, "Fetching onboarding tasks")
@@ -54,7 +55,7 @@ class StoreOnboardingRepository @Inject constructor(
                     ?.sortedBy { it.isComplete }
                     ?: emptyList()
 
-                onboardingTasksCacheFlow.emit(mobileSupportedTasks)
+                onboardingTasksCacheFlow.emit(OnboardingTasksEvent(selectedSite.get().id, mobileSupportedTasks))
             }
         }
     }
@@ -134,6 +135,11 @@ class StoreOnboardingRepository @Inject constructor(
         PAYMENTS(id = "payments", order = 7),
         MOBILE_UNSUPPORTED(id = "mobile-unsupported", order = -1)
     }
+
+    private class OnboardingTasksEvent(
+        val siteId: Int,
+        val tasks: List<OnboardingTask>
+    )
 
     sealed class LaunchStoreResult
     object Success : LaunchStoreResult()
