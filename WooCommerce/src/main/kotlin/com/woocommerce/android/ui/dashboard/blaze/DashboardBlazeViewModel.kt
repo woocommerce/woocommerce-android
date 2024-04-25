@@ -257,6 +257,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         open val menu: DashboardWidgetMenu,
         open val createCampaignButton: DashboardWidgetAction? = null
     ) {
+        // TODO remove this state when enabling [FeatureFlag.DYNAMIC_DASHBOARD] and clean up the code
         data object Hidden : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
         data object Loading : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
         data class NoCampaign(
