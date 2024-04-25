@@ -57,11 +57,8 @@ import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTag
 import com.woocommerce.android.ui.compose.component.WCTextButton
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.Companion.NUMBER_ITEMS_IN_COLLAPSED_MODE
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.LaunchStoreTaskRes
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.OnboardingState
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
 
 @Composable
 fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
@@ -96,6 +93,7 @@ fun StoreOnboardingScreen(viewModel: StoreOnboardingViewModel) {
     }
 }
 
+// TODO to be removed once dynamic dashboard is enabled
 @Composable
 fun StoreOnboardingCollapsed(
     onboardingState: OnboardingState,
@@ -230,7 +228,7 @@ fun OnboardingTaskList(
 }
 
 @Composable
-private fun TaskItem(
+fun TaskItem(
     task: OnboardingTaskUi,
     onTaskClicked: (OnboardingTaskUi) -> Unit
 ) {
