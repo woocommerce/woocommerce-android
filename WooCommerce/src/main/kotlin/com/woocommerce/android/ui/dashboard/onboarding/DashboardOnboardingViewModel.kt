@@ -6,13 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ADD_DOMAIN
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LAUNCH_SITE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOCAL_NAME_STORE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMENTS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -37,15 +30,8 @@ import com.woocommerce.android.ui.onboarding.SetupPaymentsTaskRes
 import com.woocommerce.android.ui.onboarding.SetupWooPaymentsTaskRes
 import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.CUSTOMIZE_DOMAIN
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
+import com.woocommerce.android.ui.onboarding.toOnboardingTaskState
+import com.woocommerce.android.ui.onboarding.toTrackingKey
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -102,7 +88,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
             onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
                     _viewState.value = _viewState.value?.copy(
-                        tasks = tasks.map { mapToOnboardingTaskState(it) },
+                        tasks = tasks.map { it.toOnboardingTaskState() },
                         isLoading = false
                     )
                 }
@@ -115,18 +101,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
             onboardingRepository.fetchOnboardingTasks()
         }
     }
-
-    private fun mapToOnboardingTaskState(task: OnboardingTask) =
-        when (task.type) {
-            ABOUT_YOUR_STORE -> OnboardingTaskUi(AboutYourStoreTaskRes, isCompleted = task.isComplete)
-            LAUNCH_YOUR_STORE -> OnboardingTaskUi(LaunchStoreTaskRes, isCompleted = task.isComplete)
-            CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTaskRes, isCompleted = task.isComplete)
-            WC_PAYMENTS -> OnboardingTaskUi(SetupWooPaymentsTaskRes, isCompleted = task.isComplete)
-            PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
-            ADD_FIRST_PRODUCT -> OnboardingTaskUi(AddProductTaskRes, isCompleted = task.isComplete)
-            LOCAL_NAME_STORE -> OnboardingTaskUi(NameYourStoreTaskRes, isCompleted = task.isComplete)
-            MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
-        }
 
     private fun viewAllClicked() {
         triggerEvent(NavigateToOnboardingFullScreen)
@@ -152,20 +126,9 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         }
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.STORE_ONBOARDING_TASK_TAPPED,
-            properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to getTaskTrackingKey(task))
+            properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to task.toTrackingKey())
         )
     }
-
-    private fun getTaskTrackingKey(task: OnboardingTaskUi) =
-        when (task.taskUiResources) {
-            AboutYourStoreTaskRes -> VALUE_STORE_DETAILS
-            is AddProductTaskRes -> VALUE_PRODUCTS
-            CustomizeDomainTaskRes -> VALUE_ADD_DOMAIN
-            LaunchStoreTaskRes -> VALUE_LAUNCH_SITE
-            SetupPaymentsTaskRes -> VALUE_PAYMENTS
-            SetupWooPaymentsTaskRes -> VALUE_WOO_PAYMENTS
-            NameYourStoreTaskRes -> VALUE_LOCAL_NAME_STORE
-        }
 
     data class OnboardingDashBoardState(
         @StringRes val title: Int,
