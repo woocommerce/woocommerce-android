@@ -41,7 +41,7 @@ class MyStoreViewModel @AssistedInject constructor(
         _viewState.update {
             it.copy(
                 currentSiteId = site.siteId.toString(),
-                currentSiteName = site.displayName
+                currentSiteName = site.name
             )
         }
     }

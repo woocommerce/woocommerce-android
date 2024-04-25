@@ -5,7 +5,6 @@ import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.gson.Gson
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.commons.wear.DataParameters
 import com.woocommerce.commons.wear.DataParameters.SITE_ID
 import com.woocommerce.commons.wear.DataParameters.SITE_JSON
 import com.woocommerce.commons.wear.DataParameters.TIMESTAMP
