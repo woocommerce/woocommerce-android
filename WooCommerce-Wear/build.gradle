@@ -6,6 +6,25 @@ plugins {
     id 'com.google.devtools.ksp'
 }
 
+repositories {
+    maven {
+        url 'https://a8c-libs.s3.amazonaws.com/android'
+        content {
+            includeGroup "org.wordpress"
+            includeGroup "org.wordpress.fluxc"
+            includeGroup "org.wordpress.fluxc.plugins"
+            includeGroup "org.wordpress.wellsql"
+        }
+    }
+    mavenCentral()
+    maven {
+        url "https://a8c-libs.s3.amazonaws.com/android/jcenter-mirror"
+        content {
+            includeVersion "com.android.volley", "volley", "1.1.1"
+        }
+    }
+}
+
 def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
 
 android {
@@ -72,6 +91,14 @@ android {
 dependencies {
     // Project
     implementation project(":libs:commons")
+    implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
+    implementation("${gradle.ext.fluxCWooCommercePluginBinaryPath}:$fluxCVersion") {
+        exclude group: "com.android.support"
+        exclude group: "org.wordpress", module: "utils"
+    }
 
     // WearOS
     implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
