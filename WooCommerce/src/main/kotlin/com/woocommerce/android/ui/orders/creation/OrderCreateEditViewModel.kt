@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.model.Product as ModelProduct
 import android.os.Parcelable
 import android.view.View
 import androidx.annotation.StringRes
@@ -128,6 +129,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.inventory.FetchProductBySKU
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
@@ -164,13 +166,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
-import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -198,6 +198,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
     private val totalsHelper: OrderCreateEditTotalsHelper,
+    private val fetchProductBySKU: FetchProductBySKU,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -860,12 +861,11 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         }.orEmpty()
         viewModelScope.launch {
-            productRepository.searchProductList(
-                searchQuery = barcodeOptions.sku,
-                skuSearchOptions = WCProductStore.SkuSearchOptions.ExactSearch,
-            )?.let { products ->
-                handleFetchProductBySKUSuccess(products, selectedItems, source, barcodeOptions)
-            } ?: run {
+            val productResult = fetchProductBySKU(barcodeOptions.sku, barcodeOptions.barcodeFormat)
+            val product = productResult.getOrNull()
+            if (productResult.isSuccess && product != null) {
+                handleFetchProductBySKUSuccess(listOf(product), selectedItems, source, barcodeOptions)
+            } else {
                 handleFetchProductBySKUFailure(
                     source,
                     barcodeOptions,
