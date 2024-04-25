@@ -7,7 +7,6 @@ import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.EntryPoints
 import dagger.hilt.android.scopes.ActivityRetainedScoped
@@ -21,7 +20,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import javax.inject.Inject
@@ -62,8 +60,8 @@ class DashboardRepository @Inject constructor(
     val widgets = combine(
         dashboardDataStore.dashboard.map { it.widgetsList },
         statsWidgetsAvailability
-    ) { widgets, hasOrders ->
-        widgets.toDomainModel(hasOrders)
+    ) { widgets, statsWidgetsAvailability ->
+        widgets.toDomainModel(statsWidgetsAvailability)
     }
 
     suspend fun updateWidgets(widgets: List<DashboardWidget>) = runCatching {
