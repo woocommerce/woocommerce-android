@@ -21,7 +21,6 @@ import com.woocommerce.android.model.DashboardWidget.Type.POPULAR_PRODUCTS
 import com.woocommerce.android.model.DashboardWidget.Type.STATS
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.NavigateToAddProduct
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenOnboardingListInFullScreen
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
@@ -97,9 +96,6 @@ private fun WidgetList(
 
                         ONBOARDING -> DashboardOnboardingCard(
                             parentViewModel = dashboardViewModel,
-                            openOnboardingInFullScreen = {
-                                dashboardViewModel.onDashboardWidgetEvent(OpenOnboardingListInFullScreen)
-                            },
                             navigateToAddProduct = {
                                 dashboardViewModel.onDashboardWidgetEvent(NavigateToAddProduct)
                             },

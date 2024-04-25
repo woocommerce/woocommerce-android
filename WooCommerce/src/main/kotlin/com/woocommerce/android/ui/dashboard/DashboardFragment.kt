@@ -39,7 +39,6 @@ import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.NavigateToAddProduct
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenOnboardingListInFullScreen
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
@@ -188,12 +187,6 @@ class DashboardFragment :
         }
     }
 
-    private fun openOnboardingInFullScreen() {
-        findNavController().navigateSafely(
-            directions = DashboardFragmentDirections.actionDashboardToOnboardingFragment(),
-        )
-    }
-
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
     private fun setupStateObservers() {
         dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
@@ -229,8 +222,6 @@ class DashboardFragment :
                 is OpenRangePicker -> showDateRangePicker(event.start, event.end, event.callback)
 
                 is ShowPluginUnavailableError -> showPluginUnavailableError()
-
-                is OpenOnboardingListInFullScreen -> openOnboardingInFullScreen()
 
                 is NavigateToAddProduct -> navigateToAddProductFlow()
 

@@ -66,7 +66,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 @Composable
 fun DashboardOnboardingCard(
     parentViewModel: DashboardViewModel,
-    openOnboardingInFullScreen: () -> Unit,
     navigateToAddProduct: () -> Unit,
     onboardingViewModel: DashboardOnboardingViewModel =
         viewModelWithFactory<DashboardOnboardingViewModel, Factory>(
@@ -93,7 +92,6 @@ fun DashboardOnboardingCard(
     }
     HandleEvents(
         onboardingViewModel.event,
-        openOnboardingInFullScreen = openOnboardingInFullScreen,
         navigateToAddProduct = navigateToAddProduct
     )
 }
@@ -101,7 +99,6 @@ fun DashboardOnboardingCard(
 @Composable
 private fun HandleEvents(
     event: LiveData<MultiLiveEvent.Event>,
-    openOnboardingInFullScreen: () -> Unit,
     navigateToAddProduct: () -> Unit
 ) {
     val navController = rememberNavController()
@@ -109,7 +106,6 @@ private fun HandleEvents(
     DisposableEffect(event, navController, lifecycleOwner) {
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
-                is NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
                 is NavigateToSurvey ->
                     NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
                         navController.navigateSafely(this)
@@ -153,6 +149,12 @@ private fun HandleEvents(
                 is NavigateToDashboardWidgetEditor -> {
                     navController.navigateSafely(
                         DashboardFragmentDirections.actionDashboardToEditWidgetsFragment()
+                    )
+                }
+
+                is NavigateToOnboardingFullScreen -> {
+                    navController.navigateSafely(
+                        directions = DashboardFragmentDirections.actionDashboardToOnboardingFragment(),
                     )
                 }
             }

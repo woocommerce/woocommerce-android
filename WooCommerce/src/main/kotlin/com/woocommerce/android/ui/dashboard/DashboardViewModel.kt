@@ -211,8 +211,6 @@ class DashboardViewModel @Inject constructor(
 
         data object ShowPluginUnavailableError : DashboardEvent()
 
-        data object OpenOnboardingListInFullScreen : DashboardEvent()
-
         data object NavigateToAddProduct : DashboardEvent()
     }
 
