@@ -37,7 +37,6 @@ import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.NavigateToAddProduct
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
@@ -52,7 +51,6 @@ import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
-import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -102,9 +100,6 @@ class DashboardFragment :
 
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
-
-    @Inject
-    lateinit var addProductNavigator: AddProductNavigator
 
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
@@ -177,16 +172,6 @@ class DashboardFragment :
         setupStateObservers()
     }
 
-    private fun navigateToAddProductFlow() {
-        with(addProductNavigator) {
-            findNavController().navigateToAddProducts(
-                aiBottomSheetAction = DashboardFragmentDirections
-                    .actionDashboardToAddProductWithAIBottomSheet(),
-                typesBottomSheetAction = DashboardFragmentDirections.actionDashboardToProductTypesBottomSheet()
-            )
-        }
-    }
-
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
     private fun setupStateObservers() {
         dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
@@ -222,8 +207,6 @@ class DashboardFragment :
                 is OpenRangePicker -> showDateRangePicker(event.start, event.end, event.callback)
 
                 is ShowPluginUnavailableError -> showPluginUnavailableError()
-
-                is NavigateToAddProduct -> navigateToAddProductFlow()
 
                 else -> event.isHandled = false
             }

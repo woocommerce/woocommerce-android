@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.ui.onboarding.toOnboardingTaskState
 import com.woocommerce.android.ui.onboarding.toTrackingKey
+import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
@@ -48,6 +49,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    val addProductNavigator: AddProductNavigator
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD = 3

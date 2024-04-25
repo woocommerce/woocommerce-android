@@ -61,12 +61,12 @@ import com.woocommerce.android.ui.onboarding.NavigateToSurvey
 import com.woocommerce.android.ui.onboarding.OnboardingTaskUi
 import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.TaskItem
+import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 @Composable
 fun DashboardOnboardingCard(
     parentViewModel: DashboardViewModel,
-    navigateToAddProduct: () -> Unit,
     onboardingViewModel: DashboardOnboardingViewModel =
         viewModelWithFactory<DashboardOnboardingViewModel, Factory>(
             creationCallback = {
@@ -92,14 +92,14 @@ fun DashboardOnboardingCard(
     }
     HandleEvents(
         onboardingViewModel.event,
-        navigateToAddProduct = navigateToAddProduct
+        onboardingViewModel.addProductNavigator
     )
 }
 
 @Composable
 private fun HandleEvents(
     event: LiveData<MultiLiveEvent.Event>,
-    navigateToAddProduct: () -> Unit
+    addProductNavigator: AddProductNavigator
 ) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -121,7 +121,16 @@ private fun HandleEvents(
                         directions = DashboardFragmentDirections.actionDashboardToNavGraphDomainChange()
                     )
 
-                is NavigateToAddProduct -> navigateToAddProduct()
+                is NavigateToAddProduct -> {
+                    with(addProductNavigator) {
+                        navController.navigateToAddProducts(
+                            aiBottomSheetAction = DashboardFragmentDirections
+                                .actionDashboardToAddProductWithAIBottomSheet(),
+                            typesBottomSheetAction = DashboardFragmentDirections
+                                .actionDashboardToProductTypesBottomSheet()
+                        )
+                    }
+                }
 
                 is NavigateToSetupPayments ->
                     navController.navigateSafely(

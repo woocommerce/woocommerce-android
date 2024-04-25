@@ -212,8 +212,6 @@ class DashboardViewModel @Inject constructor(
         ) : DashboardEvent()
 
         data object ShowPluginUnavailableError : DashboardEvent()
-
-        data object NavigateToAddProduct : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)
