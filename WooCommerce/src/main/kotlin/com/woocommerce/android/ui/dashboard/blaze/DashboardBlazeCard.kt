@@ -185,7 +185,7 @@ fun DashboardBlazeView(
         ) {
             when (state) {
                 is DashboardBlazeCampaignState.Loading -> BlazeCampaignLoading(
-                    modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
+                    modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
                 )
 
                 is DashboardBlazeCampaignState.Campaign -> {
