@@ -13,5 +13,6 @@ enum class DataPath(val value: String) {
 enum class DataParameters(val value: String) {
     TOKEN("token"),
     SITE_ID("site-id"),
+    SITE_DATA("site-data"),
     TIMESTAMP("timestamp")
 }
