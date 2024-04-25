@@ -183,9 +183,9 @@ class DashboardFragment :
     private fun navigateToAddProductFlow() {
         with(addProductNavigator) {
             findNavController().navigateToAddProducts(
-                aiBottomSheetAction = com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
+                aiBottomSheetAction = DashboardFragmentDirections
                     .actionDashboardToAddProductWithAIBottomSheet(),
-                typesBottomSheetAction = com.woocommerce.android.ui.dashboard.DashboardFragmentDirections.actionDashboardToProductTypesBottomSheet()
+                typesBottomSheetAction = DashboardFragmentDirections.actionDashboardToProductTypesBottomSheet()
             )
         }
     }

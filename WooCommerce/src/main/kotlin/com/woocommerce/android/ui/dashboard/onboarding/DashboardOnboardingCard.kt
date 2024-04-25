@@ -109,7 +109,6 @@ private fun HandleEvents(
     DisposableEffect(event, navController, lifecycleOwner) {
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
-
                 is NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
                 is NavigateToSurvey ->
                     NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
