@@ -8,7 +8,7 @@ import com.google.android.gms.wearable.DataMap
 import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
-import com.woocommerce.commons.wear.DataParameters.SITE_DATA
+import com.woocommerce.commons.wear.DataParameters.SITE_JSON
 import com.woocommerce.commons.wear.DataParameters.TOKEN
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -23,7 +23,7 @@ class LoginRepository @Inject constructor(
         .map { it[stringPreferencesKey(STORE_CONFIG_KEY)].isNullOrEmpty().not() }
 
     suspend fun receiveStoreData(data: DataMap) {
-        val site = data.getString(SITE_DATA.value)
+        val site = data.getString(SITE_JSON.value)
             ?.let { gson.fromJson(it, SiteModel::class.java) }
 
         data.getString(TOKEN.value)?.let { token ->
