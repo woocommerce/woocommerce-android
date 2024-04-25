@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.ui.onboarding.toOnboardingTaskState
 import com.woocommerce.android.ui.onboarding.toTrackingKey
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -105,7 +106,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     }
 
     private fun onHideOnboardingClicked() {
-        // TODO open widget editor
+        triggerEvent(NavigateToDashboardWidgetEditor)
     }
 
     fun onTaskClicked(task: OnboardingTaskUi) {
@@ -131,6 +132,8 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         val onViewAllTapped: DashboardWidgetAction,
         val isLoading: Boolean = false
     )
+
+    object NavigateToDashboardWidgetEditor : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

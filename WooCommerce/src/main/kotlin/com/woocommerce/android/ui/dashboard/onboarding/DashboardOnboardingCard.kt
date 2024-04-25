@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMe
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Companion.MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Factory
+import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.NavigateToDashboardWidgetEditor
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.OnboardingDashBoardState
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
@@ -147,6 +148,12 @@ private fun HandleEvents(
                 is ShowNameYourStoreDialog -> {
                     navController.navigateSafely(
                         DashboardFragmentDirections.actionDashboardToNameYourStoreDialogFragment(fromOnboarding = true)
+                    )
+                }
+
+                is NavigateToDashboardWidgetEditor -> {
+                    navController.navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToEditWidgetsFragment()
                     )
                 }
             }
