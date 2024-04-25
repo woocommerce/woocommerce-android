@@ -35,7 +35,7 @@ class LoginViewModel @AssistedInject constructor(
     }
 
     private suspend fun observeLoginChanges() {
-        loginRepository.isUserLoggedIn().collect { isLoggedIn ->
+        loginRepository.isUserLoggedIn.collect { isLoggedIn ->
             if (isLoggedIn) {
                 navController.navigate(MY_STORE.route)
             } else {
