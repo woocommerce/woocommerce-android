@@ -10,6 +10,10 @@ import com.woocommerce.commons.wear.MessagePath.REQUEST_TOKEN
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -26,11 +30,11 @@ class WearableConnectionService : WearableListenerService() {
 
     override fun onCreate() {
         super.onCreate()
-        coroutineScope.launch {
-            selectedSite.observe().collect {
-                connRepository.sendTokenData()
-            }
-        }
+        selectedSite.observe()
+            .filterNotNull()
+            .distinctUntilChanged()
+            .onEach { connRepository.sendSiteData() }
+            .launchIn(coroutineScope)
     }
 
     override fun onDataChanged(dataEvents: DataEventBuffer) {
