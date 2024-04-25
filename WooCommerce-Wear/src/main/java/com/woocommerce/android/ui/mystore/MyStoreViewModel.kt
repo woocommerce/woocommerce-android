@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 
+@Suppress("UnusedPrivateProperty")
 @HiltViewModel(assistedFactory = MyStoreViewModel.Factory::class)
 class MyStoreViewModel @AssistedInject constructor(
     private val loginRepository: LoginRepository,

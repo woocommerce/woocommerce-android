@@ -21,7 +21,7 @@ fun MyStoreScreen(viewModel: MyStoreViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     MyStoreScreen(
         currentSiteId = viewState?.currentSiteId.orEmpty(),
-        currentSiteName =  viewState?.currentSiteName.orEmpty()
+        currentSiteName = viewState?.currentSiteName.orEmpty()
     )
 }
 
