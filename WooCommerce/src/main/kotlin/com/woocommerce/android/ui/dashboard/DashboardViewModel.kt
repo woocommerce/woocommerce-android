@@ -92,7 +92,9 @@ class DashboardViewModel @Inject constructor(
             jetpackBenefitsBannerState(site.connectionType)
         }.asLiveData()
 
-    val dashboardWidgets = dashboardRepository.widgets.asLiveData()
+    val dashboardWidgets = dashboardRepository.widgets
+        .map { it.filter { widget -> widget.isVisible && widget.isAvailable } }
+        .asLiveData()
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)

@@ -90,6 +90,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -113,7 +114,13 @@ class MyStoreFragment :
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val myStoreBlazeViewModel: DashboardBlazeViewModel by viewModels()
+    private val myStoreBlazeViewModel: DashboardBlazeViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<DashboardBlazeViewModel.Factory> { factory ->
+                factory.create(parentViewModel = null)
+            }
+        }
+    )
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -504,7 +511,6 @@ class MyStoreFragment :
         binding.myStoreTopPerformers.showSkeleton(true)
     }
 
-    @Suppress("ForbiddenComment")
     private fun prepareJetpackBenefitsBanner() {
         appPrefsWrapper.setJetpackInstallationIsFromBanner(false)
         binding.jetpackBenefitsBanner.root.isVisible = false
@@ -521,10 +527,10 @@ class MyStoreFragment :
             // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
             // we are using `withCreated` here, since if this view doesn't reach the created state,
             // the scope will not get cancelled.
-            // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
+            // TODO revisit this once https://issuetracker.google.com/issues/127528777 is implemented
             // (no update as of Oct 2023)
             val appBarLayout = requireActivity().findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
-            withCreated {
+            viewLifecycleOwner.withCreated {
                 appBarLayout?.verticalOffsetChanges()
                     ?.onEach { verticalOffset ->
                         binding.jetpackBenefitsBanner.root.translationY =

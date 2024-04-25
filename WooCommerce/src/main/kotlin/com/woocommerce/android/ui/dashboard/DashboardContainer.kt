@@ -1,13 +1,11 @@
 package com.woocommerce.android.ui.dashboard
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -51,7 +49,6 @@ fun DashboardContainer(
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun WidgetList(
     dashboardViewModel: DashboardViewModel,
@@ -62,37 +59,39 @@ private fun WidgetList(
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 ) {
     Column(
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
+            .padding(vertical = dimensionResource(id = R.dimen.major_100))
     ) {
         widgets.forEach {
             AnimatedVisibility(it.isVisible) {
-                Column {
-                    when (it.type) {
-                        STATS -> {
-                            DashboardStatsCard(
-                                dateUtils = dateUtils,
-                                currencyFormatter = currencyFormatter,
-                                usageTracksEventEmitter = usageTracksEventEmitter,
-                                onPluginUnavailableError = {
-                                    dashboardViewModel.onDashboardWidgetEvent(ShowPluginUnavailableError)
-                                },
-                                onStatsError = {
-                                    dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
-                                },
-                                openDatePicker = { start, end, callback ->
-                                    dashboardViewModel.onDashboardWidgetEvent(OpenRangePicker(start, end, callback))
-                                },
-                                parentViewModel = dashboardViewModel
-                            )
-                        }
-
-                        POPULAR_PRODUCTS -> DashboardTopPerformersWidgetCard(dashboardViewModel)
-
-                        BLAZE -> DashboardBlazeCard(
-                            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                when (it.type) {
+                    STATS -> {
+                        DashboardStatsCard(
+                            dateUtils = dateUtils,
+                            currencyFormatter = currencyFormatter,
+                            usageTracksEventEmitter = usageTracksEventEmitter,
+                            onPluginUnavailableError = {
+                                dashboardViewModel.onDashboardWidgetEvent(ShowPluginUnavailableError)
+                            },
+                            onStatsError = {
+                                dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
+                            },
+                            openDatePicker = { start, end, callback ->
+                                dashboardViewModel.onDashboardWidgetEvent(OpenRangePicker(start, end, callback))
+                            },
+                            parentViewModel = dashboardViewModel
                         )
+                    }
+
+                    POPULAR_PRODUCTS -> DashboardTopPerformersWidgetCard(dashboardViewModel)
+
+                    BLAZE -> DashboardBlazeCard(
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                        parentViewModel = dashboardViewModel
+                    )
 
                         ONBOARDING -> DashboardOnboardingCard(
                             parentViewModel = dashboardViewModel,
@@ -102,12 +101,6 @@ private fun WidgetList(
                         )
                     }
                 }
-
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.major_100))
-                )
             }
         }
     }

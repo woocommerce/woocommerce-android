@@ -21,14 +21,10 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeastOne
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
-import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange.StatsViewType.STORE_STATS
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.mystore.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -58,8 +54,8 @@ class DashboardStatsViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val selectedSite: SelectedSite,
     private val getStats: GetStats,
-    private val customDateRangeDataStore: CustomDateRangeDataStore,
-    getSelectedDateRange: GetSelectedDateRange,
+    private val customDateRangeDataStore: StatsCustomDateRangeDataStore,
+    getSelectedDateRange: GetSelectedRangeForDashboardStats,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val networkStatus: NetworkStatus,
     private val dashboardTransactionLauncher: DashboardTransactionLauncher,
@@ -70,9 +66,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     private val dateRangeFormatter: DashboardStatsRangeFormatter
 ) : ScopedViewModel(savedStateHandle) {
-    private var _hasOrders = MutableLiveData<OrderState>()
-
-    private val selectedDateRange = getSelectedDateRange(STORE_STATS)
+    private val selectedDateRange = getSelectedDateRange()
     private val selectedChartDate = MutableStateFlow<String?>(null)
 
     val dateRangeState = combine(
@@ -195,8 +189,6 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     is LoadStatsResult.VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
                     is LoadStatsResult.VisitorStatUnavailable ->
                         _visitorStatsState.value = VisitorStatsViewState.Unavailable
-
-                    is LoadStatsResult.HasOrders -> _hasOrders.value = if (it.hasOrder) AtLeastOne else Empty
                 }
                 dashboardTransactionLauncher.onStoreStatisticsFetched()
             }
