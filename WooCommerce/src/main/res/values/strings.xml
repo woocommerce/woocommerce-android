@@ -181,6 +181,7 @@
     <string name="date_timeframe_older_month">Older than a month</string>
     <string name="date_at_time">%1$s at %2$s</string>
     <string name="date_compared_to">Compared to</string>
+    <string name="images_unavailable_notice">The images are unavailable because your site is marked Private. You change this by switching to Coming Soon mode. <a href="">Tap to learn more.</a></string>
     <!--
         Error Strings
     -->
