@@ -40,7 +40,7 @@ class MyStoreViewModel @AssistedInject constructor(
     private fun updateSiteData(site: SiteModel) {
         _viewState.update {
             it.copy(
-                currentSiteId = site.siteId,
+                currentSiteId = site.siteId.toString(),
                 currentSiteName = site.displayName
             )
         }
@@ -48,7 +48,7 @@ class MyStoreViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
-        val currentSiteId: Long? = null,
+        val currentSiteId: String? = null,
         val currentSiteName: String? = null
     ) : Parcelable
 
