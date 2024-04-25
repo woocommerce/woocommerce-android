@@ -20,10 +20,10 @@ import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfi
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment.Companion.PRODUCT_CONFIGURATION_EDITED_RESULT
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment.Companion.PRODUCT_CONFIGURATION_RESULT
 import com.woocommerce.android.ui.orders.creation.configuration.SelectProductConfigurationResult
-import com.woocommerce.android.ui.products.ProductFilterResult
-import com.woocommerce.android.ui.products.ProductListFragment.Companion.PRODUCT_FILTER_RESULT_KEY
 import com.woocommerce.android.ui.products.ProductNavigationTarget
 import com.woocommerce.android.ui.products.ProductNavigator
+import com.woocommerce.android.ui.products.filter.ProductFilterResult
+import com.woocommerce.android.ui.products.list.ProductListFragment.Companion.PRODUCT_FILTER_RESULT_KEY
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.variations.picker.VariationPickerFragment
 import com.woocommerce.android.ui.products.variations.picker.VariationPickerViewModel.VariationPickerResult

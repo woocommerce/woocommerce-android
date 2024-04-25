@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-09 15:54:04+0000
+Translation-Revision-Date: 2024-04-16 13:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="login_app_password_exit_dialog_cancel">Annulla</string>
+    <string name="login_app_password_exit_dialog_confirmation">Esci comunque</string>
+    <string name="login_app_password_exit_dialog_message">Sembra che tu non abbia ancora approvato la connessione dell\'app. Desideri uscire?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Seleziona un\'immagine con una dimensione minima di 500x500 pixel</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Immagine non valida</string>
+    <string name="login_invalid_credentials_message">Sembra che il nome utente o la password inseriti non corrispondano. Controlla di nuovo le credenziali e riprova.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Se i dati non vengono ancora caricati, contatta il nostro team di supporto.</string>
+    <string name="orderlist_connectivity_tool_summary_title">Nessun problema di connessione</string>
+    <string name="orderlist_connectivity_tool_return_action">Torna alla schermata precedente</string>
+    <string name="orderlist_connectivity_tool_retry_action">Riprova la connessione</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Connessione al tuo sito</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Non è possibile connettersi a WordPress.com al momento.\n\nRiprova tra qualche minuto o contatta il nostro team di supporto e saremo felici di assisterti.</string>
+    <string name="orderlist_connectivity_tool_subtitle">Attendi mentre cerchiamo di identificare il problema di connessione.</string>
+    <string name="orderlist_connectivity_tool_title">Risoluzione dei problemi di connessione</string>
+    <string name="analytics_gift_cards_card_title">Gift card</string>
+    <string name="analytics_used_title">Usate</string>
+    <string name="analytics_gift_cards_no_data">Nessuna gift card in questo periodo</string>
     <string name="login_app_password_support_button">Contatta il supporto</string>
     <string name="login_app_password_continue_button">Continua</string>
     <string name="login_app_password_instructions_footer">In caso di problemi, contatta il nostro team di supporto.</string>
@@ -96,20 +113,17 @@ Language: it
     <string name="order_creation_tablet_mode_fragment_title">Riepilogo degli ordini</string>
     <string name="orderlist_order_trashed_error">Errore nel cestinare l\'ordine</string>
     <string name="orderlist_order_trashed">Ordine cestinato</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Siamo spiacenti. Sembra che ci sia un problema con il tuo sito.\n\nContatta il tuo provider di hosting per ulteriore assistenza.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Siamo spiacenti. Sembra esserci un problema con la connessione Jetpack.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Siamo spiacenti. Sembra che non sia possibile lavorare correttamente con la risposta del sito.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Siamo spiacenti. Sembra che il tuo sito stia impiegando troppo tempo per rispondere.\n\nContatta il tuo provider di hosting per ulteriore assistenza.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Siamo spiacenti. Sembra che al momento non sia possibile connettersi a WordPress.com.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Sembra che ci sia un problema con il tuo sito.\n\nContatta il tuo provider di hosting per ulteriore assistenza.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Sembra esserci un problema con la connessione Jetpack.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Sembra che non sia possibile lavorare correttamente con la risposta del sito.\n\nMa non preoccuparti, il nostro team di supporto è qui per aiutarti. Contattaci e saremo lieti di assisterti.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Sembra che il tuo sito stia impiegando troppo tempo per rispondere.\n\nContatta il tuo provider di hosting per ulteriore assistenza.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Sembra non ci sia connessione a Internet.\n\nAssicurati che il Wi-Fi sia acceso. Se stai utilizzando i dati mobili, accertati che siano abilitati nelle impostazioni del dispositivo.</string>
     <string name="product_detail_product_not_selected">Prodotto non selezionato</string>
     <string name="orderlist_connectivity_tool_read_more_action">Continua a leggere</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contatta il supporto</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Gli ordini del sito</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Il tuo sito</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">Server di WordPress.com</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Recupero degli ordini del sito</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Connessione ai server di WordPress.com</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Connessione Internet</string>
-    <string name="orderlist_connectivity_tool_title">Test di connettività</string>
     <string name="my_store_custom_range_content_description">Aggiungi statistiche sugli intervalli di date personalizzate</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Non è stata trovata alcuna posizione.\nRiprova.</string>
     <string name="order_detail_attribution_session_page_views">Visualizzazioni della pagina delle sessioni</string>
@@ -444,7 +458,6 @@ Language: it
     <string name="blaze_campaign_status_active">Attiva</string>
     <string name="blaze_campaign_status_in_moderation">In moderazione</string>
     <string name="blaze_campaign_show_all_button">Mostra tutte</string>
-    <string name="blaze_campaign_create_campaign_button">Crea la campagna</string>
     <string name="blaze_campaign_subtitle">Aumenta la visibilità e vendi i tuoi prodotti rapidamente.</string>
     <string name="blaze_campaign_title">Campagna Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Il simbolo del contactless è un marchio registrato di proprietà e utilizzato su concessione di EMVCo, LLC.</string>
@@ -764,7 +777,7 @@ Language: it
     <string name="settings_privacy_header">Privacy</string>
     <string name="settings_usage_tracking_description">Scopri di più sui dati che raccogliamo sul tuo negozio e sulle tue opzioni per il controllo di questa condivisione dei dati.</string>
     <string name="settings_usage_tracking">Tracciabilità dell\'utilizzo</string>
-    <string name="settings_web_options_description">Per gli utenti di woocommerce.com sono disponibili ulteriori opzioni per la privacy. Controlla qui per saperne di più.</string>
+    <string name="settings_web_options_description">Ulteriori opzioni per la privacy sono disponibili per gli utenti di woocommerce.com. Controlla qui per saperne di più.</string>
     <string name="settings_web_options">Opinioni del web</string>
     <string name="settings_more_privacy_options_header">Ulteriori opzioni per la privacy</string>
     <string name="settings_tracking_analytics_error_update">Si è verificato un errore durante l\'aggiornamento delle impostazioni sulla privacy</string>

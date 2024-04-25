@@ -6,11 +6,11 @@
     app:startDestination="@+id/productDetailFragment">
     <fragment
         android:id="@+id/productDetailFragment"
-        android:name="com.woocommerce.android.ui.products.ProductDetailFragment"
+        android:name="com.woocommerce.android.ui.products.details.ProductDetailFragment"
         tools:layout="@layout/fragment_product_detail">
         <argument
             android:name="mode"
-            app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
+            app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"
@@ -379,7 +379,7 @@
     </fragment>
     <fragment
         android:id="@+id/productShippingFragment"
-        android:name="com.woocommerce.android.ui.products.ProductShippingFragment"
+        android:name="com.woocommerce.android.ui.products.shipping.ProductShippingFragment"
         tools:layout="@layout/fragment_product_shipping">
         <action
             android:id="@+id/action_productShippingFragment_to_productShippingClassFragment"
@@ -389,11 +389,11 @@
             app:argType="integer" />
         <argument
             android:name="shippingData"
-            app:argType="com.woocommerce.android.ui.products.ProductShippingViewModel$ShippingData" />
+            app:argType="com.woocommerce.android.ui.products.shipping.ProductShippingViewModel$ShippingData" />
     </fragment>
     <fragment
         android:id="@+id/productShippingClassFragment"
-        android:name="com.woocommerce.android.ui.products.ProductShippingClassFragment"
+        android:name="com.woocommerce.android.ui.products.shipping.ProductShippingClassFragment"
         android:label="ProductShippingClassFragment">
         <argument
             android:name="productShippingClassId"
@@ -452,7 +452,7 @@
     </fragment>
     <dialog
         android:id="@+id/productDetailBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ProductDetailBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.details.ProductDetailBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
             android:name="productType"
@@ -460,7 +460,7 @@
     </dialog>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
             android:name="remoteProductId"
@@ -495,7 +495,7 @@
     </fragment>
     <fragment
         android:id="@+id/groupedProductListFragment"
-        android:name="com.woocommerce.android.ui.products.GroupedProductListFragment"
+        android:name="com.woocommerce.android.ui.products.grouped.GroupedProductListFragment"
         tools:layout="@layout/fragment_product_list">
         <argument
             android:name="remoteProductId"
@@ -506,7 +506,7 @@
             app:argType="long[]" />
         <argument
             android:name="groupedProductListType"
-            app:argType="com.woocommerce.android.ui.products.GroupedProductListType" />
+            app:argType="com.woocommerce.android.ui.products.grouped.GroupedProductListType" />
     </fragment>
     <fragment
         android:id="@+id/productSelectionListFragment"
@@ -518,7 +518,7 @@
             app:argType="long" />
         <argument
             android:name="groupedProductListType"
-            app:argType="com.woocommerce.android.ui.products.GroupedProductListType" />
+            app:argType="com.woocommerce.android.ui.products.grouped.GroupedProductListType" />
         <argument
             android:name="excludedProductIds"
             app:argType="long[]" />
@@ -766,7 +766,7 @@
     </dialog>
     <dialog
         android:id="@+id/AIProductDescriptionBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.AIProductDescriptionBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ai.description.AIProductDescriptionBottomSheetFragment"
         android:label="AIProductDescriptionBottomSheetFragment">
         <argument
             android:name="productTitle"

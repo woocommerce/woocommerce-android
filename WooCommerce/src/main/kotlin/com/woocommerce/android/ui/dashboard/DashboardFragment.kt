@@ -42,12 +42,12 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenTopPerformer
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
-import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
-import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -59,7 +59,6 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -147,35 +146,17 @@ class DashboardFragment :
 
         _binding = FragmentDashboardBinding.bind(view)
 
-        binding.myStoreStats.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
-            setContent {
-                DashboardStatsCard(
-                    dateUtils = dateUtils,
-                    currencyFormatter = currencyFormatter,
-                    usageTracksEventEmitter = usageTracksEventEmitter,
-                    onPluginUnavailableError = { updateStatsAvailabilityError() },
-                    onStatsError = { showErrorSnack() },
-                    openDatePicker = { start, end, callback ->
-                        showDateRangePicker(start, end, callback)
-                    },
-                    parentViewModel = dashboardViewModel
-                )
-            }
-        }
-
-        binding.blazeCampaignView.apply {
+        binding.dashboardContainer.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
             setContent {
                 WooThemeWithBackground {
-                    DashboardBlazeCard(
-                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                        parentViewModel = dashboardViewModel,
-                        updateContainerVisibility = { isVisible ->
-                            binding.blazeCampaignView.isVisible = isVisible
-                        }
+                    DashboardContainer(
+                        dateUtils = dateUtils,
+                        currencyFormatter = currencyFormatter,
+                        usageTracksEventEmitter = usageTracksEventEmitter,
+                        dashboardViewModel = dashboardViewModel,
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
                     )
                 }
             }
@@ -187,8 +168,6 @@ class DashboardFragment :
             storeOnboardingViewModel.onPullToRefresh()
             refreshJitm()
         }
-
-        binding.myStoreTopPerformers.initView(selectedSite, dateUtils)
 
         val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
         binding.myStoreStatsAvailabilityMessage.setClickableText(
@@ -205,7 +184,6 @@ class DashboardFragment :
 
         setupStateObservers()
         setupOnboardingView()
-
         initJitm(savedInstanceState)
     }
 
@@ -315,16 +293,6 @@ class DashboardFragment :
     private fun setupStateObservers() {
         dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
-        dashboardViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
-            binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
-        }
-        dashboardViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
-            when {
-                topPerformers.isLoading -> showTopPerformersLoading()
-                topPerformers.isError -> showTopPerformersError()
-                else -> showTopPerformers(topPerformers.topPerformers)
-            }
-        }
         dashboardViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
             when (newValue) {
                 DashboardViewModel.OrderState.Empty -> showEmptyView(true)
@@ -333,13 +301,6 @@ class DashboardFragment :
         }
         dashboardViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OpenTopPerformer -> findNavController().navigateSafely(
-                    NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
-                        isTrashEnabled = false
-                    )
-                )
-
                 is ShowPrivacyBanner ->
                     findNavController().navigate(
                         PrivacyBannerFragmentDirections.actionGlobalPrivacyBannerFragment()
@@ -358,11 +319,14 @@ class DashboardFragment :
                     )
                 }
 
+                is ShowStatsError -> showErrorSnack()
+
+                is OpenRangePicker -> showDateRangePicker(event.start, event.end, event.callback)
+
+                is ShowPluginUnavailableError -> showPluginUnavailableError()
+
                 else -> event.isHandled = false
             }
-        }
-        dashboardViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
         }
         dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
             ((activity) as MainActivity).setSubtitle(storeName)
@@ -390,11 +354,6 @@ class DashboardFragment :
             )
         }
         binding.jetpackBenefitsBanner.root.isVisible = jetpackBenefitsBanner.show
-    }
-
-    private fun showTopPerformersLoading() {
-        binding.myStoreTopPerformers.showErrorView(false)
-        binding.myStoreTopPerformers.showSkeleton(true)
     }
 
     @Suppress("ForbiddenComment")
@@ -455,21 +414,9 @@ class DashboardFragment :
         super.onDestroy()
     }
 
-    private fun updateStatsAvailabilityError() {
+    private fun showPluginUnavailableError() {
         binding.myStoreRefreshLayout.visibility = View.GONE
-        WooAnimUtils.fadeIn(binding.statsErrorScrollView)
-    }
-
-    private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>) {
-        binding.myStoreTopPerformers.showSkeleton(false)
-        binding.myStoreTopPerformers.showErrorView(false)
-        binding.myStoreTopPerformers.updateView(topPerformers)
-    }
-
-    private fun showTopPerformersError() {
-        binding.myStoreTopPerformers.showSkeleton(false)
-        binding.myStoreTopPerformers.showErrorView(true)
-        showErrorSnack()
+        WooAnimUtils.fadeIn(binding.pluginUnavailableErrorScrollView)
     }
 
     private fun showErrorSnack() {
@@ -573,7 +520,7 @@ class DashboardFragment :
             binding.emptyView.hide()
             dashboardVisibility = View.VISIBLE
         }
-        binding.myStoreStats.visibility = dashboardVisibility
+        binding.dashboardContainer.visibility = dashboardVisibility
         binding.myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show
     }

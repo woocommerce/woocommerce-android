@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoSupportedState
 import com.woocommerce.android.ui.analytics.hub.ReportCard
 import com.woocommerce.android.ui.analytics.hub.toReportCard
 import com.woocommerce.android.widgets.SkeletonView
@@ -32,6 +33,7 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
             is LoadingViewState -> setSkeleton()
             is DataViewState -> setDataViewState(viewState)
             is NoDataState -> setNoDataViewState(viewState)
+            is NoSupportedState -> setNoSupportedViewState(viewState)
         }
     }
 
@@ -53,6 +55,7 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
         binding.leftAnalyticsSection.visibility = VISIBLE
         binding.rightAnalyticsSection.visibility = VISIBLE
         binding.noDataText.visibility = GONE
+        binding.statUnavailable.visibility = GONE
         if (viewState.reportUrl != null) {
             binding.reportGroup.visibility = VISIBLE
             binding.reportText.setOnClickListener {
@@ -69,11 +72,26 @@ class AnalyticsHubInformationCardView @JvmOverloads constructor(
 
     private fun setNoDataViewState(viewState: NoDataState) {
         skeletonView.hide()
+        binding.analyticsCardTitle.text = viewState.title
         binding.noDataText.text = viewState.message
-        binding.analyticsCardTitle.visibility = GONE
+        binding.analyticsCardTitle.visibility = VISIBLE
         binding.leftAnalyticsSection.visibility = GONE
         binding.rightAnalyticsSection.visibility = GONE
         binding.noDataText.visibility = VISIBLE
+        binding.statUnavailable.visibility = GONE
+        visibility = VISIBLE
+    }
+
+    private fun setNoSupportedViewState(viewState: NoSupportedState) {
+        skeletonView.hide()
+        binding.analyticsCardTitle.text = viewState.title
+        binding.statUnavailableTitle.text = viewState.message
+        binding.statUnavailableDescription.text = viewState.description
+        binding.analyticsCardTitle.visibility = VISIBLE
+        binding.leftAnalyticsSection.visibility = GONE
+        binding.rightAnalyticsSection.visibility = GONE
+        binding.noDataText.visibility = GONE
+        binding.statUnavailable.visibility = VISIBLE
         visibility = VISIBLE
     }
 }

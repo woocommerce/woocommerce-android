@@ -38,14 +38,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun rememberDragDropState(
     lazyListState: LazyListState,
-    onMove: (Int, Int) -> Unit
+    isDraggable: (Int) -> Boolean = { true },
+    onMove: (Int, Int) -> Unit,
 ): DragDropState {
     val scope = rememberCoroutineScope()
     val state = remember(lazyListState) {
         DragDropState(
             state = lazyListState,
             onMove = onMove,
-            scope = scope
+            scope = scope,
+            isDraggable = isDraggable
         )
     }
     LaunchedEffect(state) {
@@ -60,7 +62,8 @@ fun rememberDragDropState(
 class DragDropState internal constructor(
     private val state: LazyListState,
     private val scope: CoroutineScope,
-    private val onMove: (Int, Int) -> Unit
+    private val onMove: (Int, Int) -> Unit,
+    private val isDraggable: (Int) -> Boolean
 ) {
     var draggingItemIndex by mutableStateOf<Int?>(null)
         private set
@@ -90,6 +93,12 @@ class DragDropState internal constructor(
                 draggingItemIndex?.minus(state.firstVisibleItemIndex)
                     ?: 0
             ].offset
+
+        draggingItemIndex?.let(isDraggable)?.let { isDraggable ->
+            if (!isDraggable) {
+                onDragInterrupted()
+            }
+        }
     }
 
     internal fun onDragInterrupted() {
@@ -124,7 +133,7 @@ class DragDropState internal constructor(
         val targetItem = state.layoutInfo.visibleItemsInfo.find { item ->
             middleOffset.toInt() in item.offset..item.offsetEnd && draggingItem.index != item.index
         }
-        if (targetItem != null) {
+        if (targetItem != null && isDraggable(targetItem.index)) {
             val scrollToIndex = if (targetItem.index == state.firstVisibleItemIndex) {
                 draggingItem.index
             } else if (draggingItem.index == state.firstVisibleItemIndex) {

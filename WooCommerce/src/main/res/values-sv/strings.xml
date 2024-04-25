@@ -1,11 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-11 09:37:47+0000
+Translation-Revision-Date: 2024-04-16 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="login_app_password_exit_dialog_cancel">Avbryt</string>
+    <string name="login_app_password_exit_dialog_confirmation">Avsluta ändå</string>
+    <string name="login_app_password_exit_dialog_message">Det verkar som att du inte har godkänt appanslutningen än. Är du säker på att du vill lämna sidan?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Välj en bild med minsta mått på 500x500 pixlar</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Ogiltig bild</string>
+    <string name="login_invalid_credentials_message">Det verkar som att användarnamnet eller lösenordet som du angav är felaktigt. Dubbelkolla dina autentiseringsuppgifter och försök igen.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Om dina data fortfarande inte laddas, kontakta vårt supportteam för att få hjälp.</string>
+    <string name="orderlist_connectivity_tool_summary_title">Inga anslutningsproblem</string>
+    <string name="orderlist_connectivity_tool_return_action">Gå tillbaka till föregående skärm</string>
+    <string name="orderlist_connectivity_tool_retry_action">Försök ansluta igen</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Ansluter till din webbplats</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Vi kan inte ansluta till WordPress.com för tillfället.\n\nFörsök igen om några minuter, eller kontakta vårt supportteam så hjälper vi dig.</string>
+    <string name="orderlist_connectivity_tool_subtitle">Vänta medan vi försöker identifiera ditt anslutningsproblem.</string>
+    <string name="orderlist_connectivity_tool_title">Felsök anslutning</string>
+    <string name="analytics_gift_cards_card_title">Presentkort</string>
+    <string name="analytics_used_title">Använt</string>
+    <string name="analytics_gift_cards_no_data">Inga presentkort denna period</string>
     <string name="login_app_password_support_button">Kontakta support</string>
     <string name="login_app_password_continue_button">Fortsätt</string>
     <string name="login_app_password_instructions_footer">Om du stöter på problem, kontakta vårt supportteam.</string>
@@ -96,20 +113,17 @@ Language: sv_SE
     <string name="order_creation_tablet_mode_fragment_title">Ordersammanfattning</string>
     <string name="orderlist_order_trashed_error">Ett fel uppstod när ordern togs bort</string>
     <string name="orderlist_order_trashed">Ordern borttagen</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Hoppsan! Det verkar vara ett problem med din webbplats.\n\nKontakta ditt webbhotell för att få ytterligare hjälp.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Hoppsan! Det verkar ha uppstått ett problem med din Jetpack-anslutning.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Hoppsan! Det verkar som att vi inte kan arbeta korrekt med din webbplats svar.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Hoppsan! Det verkar ta för lång tid för din webbplats att svara.\n\nKontakta ditt webbhotell för att få ytterligare hjälp.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Hoppsan! Det verkar som att vi inte kan ansluta till WordPress.com för tillfället.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Det verkar vara ett problem med din webbplats.\n\nKontakta ditt webbhotell för vidare hjälp.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Det verkar ha uppstått ett problem med din Jetpack-anslutning.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Det verkar som att vi inte kan arbeta korrekt med din webbplats svar.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Din webbplats verkar ta för lång tid att svara.\n\nKontakta ditt webbhotell för ytterligare hjälp.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Det verkar som att du inte är ansluten till internet.\n\nKontrollera att ditt Wi-Fi är på. Se till att mobildata är aktiverat i dina enhetsinställningar om du använder detta.</string>
     <string name="product_detail_product_not_selected">Ingen produkt vald</string>
     <string name="orderlist_connectivity_tool_read_more_action">Läs mer</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Kontakta supporten</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Dina webbplatsbeställningar</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Din webbplats</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com-servrar</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Hämtar dina webbplatsbeställningar</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Ansluter till WordPress.com-servrar</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Internetanslutning</string>
-    <string name="orderlist_connectivity_tool_title">Anslutningstest</string>
     <string name="my_store_custom_range_content_description">Lägg till statistik för anpassade datumintervall</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Ingen plats hittades.\nFörsök igen.</string>
     <string name="order_detail_attribution_session_page_views">Sidvisningar under session</string>
@@ -444,7 +458,6 @@ Language: sv_SE
     <string name="blaze_campaign_status_active">Aktiv</string>
     <string name="blaze_campaign_status_in_moderation">Under granskning</string>
     <string name="blaze_campaign_show_all_button">Visa alla</string>
-    <string name="blaze_campaign_create_campaign_button">Skapa kampanj</string>
     <string name="blaze_campaign_subtitle">Öka synligheten och få dina produkter sålda snabbt.</string>
     <string name="blaze_campaign_title">Blaze-kampanj</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol är ett varumärke som ägs av och används med tillåtelse av EMVCo, LLC.</string>
@@ -764,6 +777,7 @@ Language: sv_SE
     <string name="settings_privacy_header">Integritet</string>
     <string name="settings_usage_tracking_description">Läs mer om vilka data vi samlar in om din butik och dina möjligheter att styra vilka data som delas.</string>
     <string name="settings_usage_tracking">Användningsspårning</string>
+    <string name="settings_web_options_description">Fler integritetsalternativ tillgängliga för WooCommerce.com-användare. Kolla in här för att lära dig mer.</string>
     <string name="settings_web_options">Webbalternativ</string>
     <string name="settings_more_privacy_options_header">Fler integritetsalternativ</string>
     <string name="settings_tracking_analytics_error_update">Det uppstod ett fel vid uppdateringen av dina integritetsinställningar</string>
@@ -776,9 +790,8 @@ Language: sv_SE
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">Du kan inte lägga till en variabel produkt direkt. Välj en specifik variant</string>
     <string name="order_creation_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Produkten med SKU %s hittades inte. Det gick inte att lägga till i beställningen</string>
-    <string name="settings_web_options_description">Fler integritetsalternativ tillgängliga för woocommerce.com-användare. Kolla in här för att lära dig mer.</string>
-    <string name="scan_barcode">Skanna streckkod</string>
     <string name="order_list_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
+    <string name="scan_barcode">Skanna streckkod</string>
     <string name="shipping_notice_banner_instructions_content">Leverans till länder som följer EU:s tullregler kräver nu att du tydligt beskriver varje vara. Om du till exempel skickar kläder måste du ange vilken typ av kläder det är (t.ex. herrskjortor, flickvästar, pojkjackor) för att beskrivningen ska vara godtagbar. Annars kan leveranser försenas eller avbrytas i tullen.</string>
     <string name="settings_close_account_dialog_contact_support_button">Kontakta support</string>
     <string name="settings_close_account_active_stores_error_description">Detta konto kan inte avslutas eftersom det har aktiva butiker.</string>

@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.analytics.ranges.myStoreTrackingGranularityStr
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.OpenDatePicker
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowAIProductDescriptionDialog
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.mystore.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.HasOrders
 import com.woocommerce.android.ui.mystore.domain.GetStats.LoadStatsResult.PluginNotActive
@@ -93,7 +93,7 @@ class MyStoreViewModel @Inject constructor(
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher,
     private val timezoneProvider: TimezoneProvider,
     private val observeLastUpdate: ObserveLastUpdate,
-    private val customDateRangeDataStore: CustomDateRangeDataStore,
+    private val customDateRangeDataStore: StatsCustomDateRangeDataStore,
     private val dateUtils: DateUtils,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner
 ) : ScopedViewModel(savedState) {
@@ -455,7 +455,7 @@ class MyStoreViewModel @Inject constructor(
         )
 
     private fun getSelectedRangeTypeIfAny(): SelectionType {
-        val previouslySelectedTab = appPrefsWrapper.getActiveStatsTab()
+        val previouslySelectedTab = appPrefsWrapper.getActiveStoreStatsTab()
         return runCatching {
             SelectionType.valueOf(previouslySelectedTab)
         }.getOrDefault(SelectionType.TODAY)

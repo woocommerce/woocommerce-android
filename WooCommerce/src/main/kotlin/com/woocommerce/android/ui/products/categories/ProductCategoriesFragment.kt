@@ -15,13 +15,13 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.OnLoadMoreListener
-import com.woocommerce.android.ui.products.ProductDetailViewModel
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.ui.products.categories.AddProductCategoryFragment.Companion.ARG_CATEGORY_UPDATE_RESULT
 import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.CategoryUpdateResult
 import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.UpdateAction.Add
 import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.UpdateAction.Delete
 import com.woocommerce.android.ui.products.categories.AddProductCategoryViewModel.UpdateAction.Update
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductCategories
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.widgets.AlignedDividerDecoration

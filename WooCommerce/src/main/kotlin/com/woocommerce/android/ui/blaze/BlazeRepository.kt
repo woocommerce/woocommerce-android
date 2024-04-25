@@ -8,7 +8,7 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.joinToUrl
 import kotlinx.coroutines.flow.catch
@@ -45,7 +45,7 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50f // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
         const val DEFAULT_CAMPAIGN_BUDGET_MODE = "total" // "total" or "daily" for campaigns that run without end date
-        const val BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS = 600 // Must be at least 600 x 600 pixels
+        const val BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS = 400 // Must be at least 400 x 400 pixels
     }
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()

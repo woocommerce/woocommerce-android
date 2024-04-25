@@ -1,14 +1,20 @@
 package com.woocommerce.android.model
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class DashboardWidget(
     val type: Type,
-    val isAdded: Boolean
-) {
+    val isVisible: Boolean,
+    val isAvailable: Boolean
+) : Parcelable {
+    val title: Int
+        get() = type.titleResource
+
     enum class Type(@StringRes val titleResource: Int) {
         ONBOARDING(R.string.my_store_widget_onboarding_title),
         STATS(R.string.my_store_widget_stats_title),
@@ -20,11 +26,5 @@ data class DashboardWidget(
 fun DashboardWidget.toDataModel(): DashboardWidgetDataModel =
     DashboardWidgetDataModel.newBuilder()
         .setType(type.name)
-        .setIsAdded(isAdded)
+        .setIsAdded(isVisible)
         .build()
-
-fun DashboardWidgetDataModel.toModel() =
-    DashboardWidget(DashboardWidget.Type.valueOf(type), isAdded)
-
-fun DashboardDataModel.toWidgetModelList(): List<DashboardWidget> =
-    widgetsList.map { it.toModel() }
