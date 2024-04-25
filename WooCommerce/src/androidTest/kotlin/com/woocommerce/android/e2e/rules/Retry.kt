@@ -1,6 +1,5 @@
 package com.woocommerce.android.e2e.rules
 
-
 /**
  * Annotation used to denote you want to retry a UI test function.
  *
