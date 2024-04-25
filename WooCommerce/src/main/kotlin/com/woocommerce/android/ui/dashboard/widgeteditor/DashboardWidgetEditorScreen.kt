@@ -126,8 +126,10 @@ private fun UnavailableWidget(
                 .background(Color.Gray, RoundedCornerShape(4.dp))
                 .padding(vertical = 4.dp, horizontal = 8.dp)
         ) {
+            val widgetStatus = widget.status as DashboardWidget.Status.Unavailable
+
             Text(
-                text = stringResource(id = R.string.my_store_widget_unavailable),
+                text = stringResource(id = widgetStatus.badgeText),
                 color = Color.White,
                 style = MaterialTheme.typography.caption
             )

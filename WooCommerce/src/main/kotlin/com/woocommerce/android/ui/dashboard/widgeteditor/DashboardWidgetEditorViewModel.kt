@@ -52,7 +52,7 @@ class DashboardWidgetEditorViewModel @Inject constructor(
                 } else {
                     editedWidgets.map { dashboardWidget ->
                         val storedWidget = storedWidgets.first { it.type == dashboardWidget.type }
-                        dashboardWidget.copy(isAvailable = storedWidget.isAvailable)
+                        dashboardWidget.copy(status = storedWidget.status)
                     }
                 }
             }

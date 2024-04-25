@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.data
 
+import com.woocommerce.android.R
 import com.woocommerce.android.di.SiteComponentEntryPoint
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.toDataModel
@@ -98,11 +99,19 @@ class DashboardRepository @Inject constructor(
             DashboardWidget(
                 type = type,
                 isVisible = widget.isAdded,
-                isAvailable = when (type) {
+                status = when (type) {
                     DashboardWidget.Type.STATS,
-                    DashboardWidget.Type.POPULAR_PRODUCTS -> statsWidgetsAvailability
+                    DashboardWidget.Type.POPULAR_PRODUCTS -> {
+                        if (statsWidgetsAvailability) {
+                            DashboardWidget.Status.Available
+                        } else {
+                            DashboardWidget.Status.Unavailable(
+                                badgeText = R.string.my_store_widget_unavailable
+                            )
+                        }
+                    }
 
-                    else -> true
+                    else -> DashboardWidget.Status.Available
                 }
             )
         }.sortedBy { it.isAvailable }
