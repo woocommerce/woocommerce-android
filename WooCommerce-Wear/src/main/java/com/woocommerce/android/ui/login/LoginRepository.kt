@@ -20,20 +20,26 @@ class LoginRepository @Inject constructor(
     private val gson by lazy { Gson() }
 
     fun isUserLoggedIn() = loginDataStore.data
-        .map { it[stringPreferencesKey(STORE_CONFIG_KEY)].isNullOrEmpty().not() }
+        .map { it[stringPreferencesKey(CURRENT_SITE_KEY)] }
 
     suspend fun receiveStoreData(data: DataMap) {
-        val site = data.getString(SITE_JSON.value)
+        val siteJSON = data.getString(SITE_JSON.value)
+        val site = siteJSON
             ?.let { gson.fromJson(it, SiteModel::class.java) }
+            ?: return
 
-        data.getString(TOKEN.value)?.let { token ->
-            loginDataStore.edit { prefs ->
-                prefs[stringPreferencesKey(STORE_CONFIG_KEY)] = token
+        loginDataStore.edit { prefs ->
+            prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
+            data.getString(TOKEN.value)?.let { token ->
+                prefs[stringPreferencesKey(generateTokenKey(site.siteId))] = token
             }
         }
     }
 
+    private fun generateTokenKey(siteId: Long) = "$TOKEN_KEY:$siteId"
+
     companion object {
-        const val STORE_CONFIG_KEY = "store_config_key"
+        const val CURRENT_SITE_KEY = "current_site_key"
+        const val TOKEN_KEY = "token_key"
     }
 }
