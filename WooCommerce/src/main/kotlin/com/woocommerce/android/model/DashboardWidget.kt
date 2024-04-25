@@ -25,11 +25,13 @@ data class DashboardWidget(
         BLAZE(R.string.my_store_widget_blaze_title)
     }
 
-    sealed interface Status: Parcelable {
+    sealed interface Status : Parcelable {
         @Parcelize
         data object Available : Status
+
         @Parcelize
         data class Unavailable(@StringRes val badgeText: Int) : Status
+
         @Parcelize
         data object Hidden : Status
     }
