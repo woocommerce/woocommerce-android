@@ -26,7 +26,9 @@ class StoreOnboardingRepository @Inject constructor(
     private val siteStore: SiteStore
 ) {
 
-    private val onboardingTasksCacheFlow: MutableSharedFlow<List<OnboardingTask>> = MutableSharedFlow()
+    private val onboardingTasksCacheFlow: MutableSharedFlow<List<OnboardingTask>> = MutableSharedFlow(
+        replay = 1
+    )
 
     fun observeOnboardingTasks(): SharedFlow<List<OnboardingTask>> = onboardingTasksCacheFlow
 

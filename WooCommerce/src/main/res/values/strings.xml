@@ -417,7 +417,9 @@
     <string name="my_store_widget_stats_title">Performance</string>
     <string name="my_store_widget_top_products_title">Top products</string>
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
+
     <string name="my_store_widget_unavailable">Unavailable</string>
+    <string name="my_store_widget_onboarding_completed">Completed</string>
 
     <string name="dynamic_dashboard_hide_widget_menu_item">Hide</string>
 
