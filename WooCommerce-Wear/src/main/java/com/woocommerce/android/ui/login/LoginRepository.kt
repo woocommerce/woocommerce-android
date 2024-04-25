@@ -13,6 +13,7 @@ import com.woocommerce.commons.wear.DataParameters.TOKEN
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import org.wordpress.android.fluxc.model.SiteModel
 
 class LoginRepository @Inject constructor(
@@ -25,13 +26,11 @@ class LoginRepository @Inject constructor(
             .map { it[stringPreferencesKey(CURRENT_SITE_KEY)] }
             .distinctUntilChanged()
             .map { it?.let { gson.fromJson(it, SiteModel::class.java) } }
+            .filterNotNull()
 
     val isUserLoggedIn
         get() = loginDataStore.data
-            .map { prefs ->
-                searchToken(prefs)?.isNotEmpty()
-                    ?: false
-            }
+            .map { searchToken(it)?.isNotEmpty() ?: false }
 
     suspend fun receiveStoreData(data: DataMap) {
         val siteJSON = data.getString(SITE_JSON.value)
