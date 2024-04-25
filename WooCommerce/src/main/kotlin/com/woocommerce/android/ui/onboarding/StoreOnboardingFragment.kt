@@ -38,7 +38,7 @@ class StoreOnboardingFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         sharedElementEnterTransition = MaterialContainerTransform().apply {
             drawingViewId = R.id.nav_host_fragment_main
-            duration = 800L
+            duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
             scrimColor = Color.TRANSPARENT
             setAllContainerColors(ContextCompat.getColor(requireContext(), R.color.color_surface))
         }
