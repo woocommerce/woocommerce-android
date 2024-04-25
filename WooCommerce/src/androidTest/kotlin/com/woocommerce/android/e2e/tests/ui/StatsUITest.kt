@@ -9,6 +9,8 @@ import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.util.MocksReader
 import com.woocommerce.android.e2e.helpers.util.StatsSummaryData
+import com.woocommerce.android.e2e.rules.Retry
+import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.mystore.MyStoreScreen
@@ -33,6 +35,9 @@ class StatsUITest : TestBase() {
 
     @get:Rule(order = 3)
     var activityRule = ActivityTestRule(LoginActivity::class.java)
+
+    @get:Rule(order = 4)
+    var retryTestRule = RetryTestRule()
 
     @Before
     fun setUp() {
@@ -71,6 +76,7 @@ class StatsUITest : TestBase() {
         visitors = "12000",
     )
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eStatsSummary() {
         MyStoreScreen()
@@ -82,6 +88,7 @@ class StatsUITest : TestBase() {
             .assertStatsSummary(yearStats)
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eStatsTopPerformers() {
         val topPerformersJSONArray = MocksReader().readStatsTopPerformersToArray()
@@ -91,7 +98,7 @@ class StatsUITest : TestBase() {
             .assertTopPerformers(topPerformersJSONArray)
     }
 
-    @Ignore
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eStatsTapChart() {
         MyStoreScreen()

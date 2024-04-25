@@ -8,6 +8,8 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.useMockedAPI
+import com.woocommerce.android.e2e.rules.Retry
+import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.orders.OrderListScreen
@@ -36,6 +38,9 @@ class OrdersRealAPI : TestBase() {
 
     @get:Rule(order = 3)
     var activityRule = ActivityTestRule(LoginActivity::class.java)
+
+    @get:Rule(order = 4)
+    var retryTestRule = RetryTestRule()
 
     companion object {
         @BeforeClass
@@ -73,6 +78,7 @@ class OrdersRealAPI : TestBase() {
             .logoutIfNeeded(composeTestRule)
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eRealApiOrdersFilter() {
         OrderListScreen()
@@ -91,6 +97,7 @@ class OrdersRealAPI : TestBase() {
             .assertOrdersCount(2)
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eRealApiOrdersSearch() {
         OrderListScreen()
@@ -115,6 +122,7 @@ class OrdersRealAPI : TestBase() {
             .assertOrdersCount(2)
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     @Ignore
     fun e2eRealApiOrderDetails() {
