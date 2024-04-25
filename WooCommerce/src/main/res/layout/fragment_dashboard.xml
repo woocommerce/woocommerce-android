@@ -40,13 +40,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/minor_100" />
 
-                    <androidx.compose.ui.platform.ComposeView
-                        android:id="@+id/store_onboarding_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:transitionName="@string/store_onboarding_collapsed_transition_name"
-                        android:visibility="gone" />
-
                     <!-- Dynamic dashboard container -->
                     <androidx.compose.ui.platform.ComposeView
                         android:id="@+id/dashboard_container"

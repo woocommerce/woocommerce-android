@@ -65,9 +65,18 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowPriv
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.onboarding.NavigateToAboutYourStore
+import com.woocommerce.android.ui.onboarding.NavigateToAddProduct
+import com.woocommerce.android.ui.onboarding.NavigateToDomains
+import com.woocommerce.android.ui.onboarding.NavigateToLaunchStore
+import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
+import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
+import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments.taskId
+import com.woocommerce.android.ui.onboarding.NavigateToSetupWooPayments
+import com.woocommerce.android.ui.onboarding.NavigateToSurvey
+import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
@@ -316,23 +325,23 @@ class MyStoreFragment :
 
     private fun Event.handle() {
         when (this) {
-            is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
-            is StoreOnboardingViewModel.NavigateToSurvey ->
+            is NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
+            is NavigateToSurvey ->
                 NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
                     findNavController().navigateSafely(this)
                 }
 
-            is StoreOnboardingViewModel.NavigateToLaunchStore ->
+            is NavigateToLaunchStore ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()
                 )
 
-            is StoreOnboardingViewModel.NavigateToDomains ->
+            is NavigateToDomains ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToNavGraphDomainChange()
                 )
 
-            is StoreOnboardingViewModel.NavigateToAddProduct ->
+            is NavigateToAddProduct ->
                 with(addProductNavigator) {
                     findNavController().navigateToAddProducts(
                         aiBottomSheetAction = MyStoreFragmentDirections.actionDashboardToAddProductWithAIBottomSheet(),
@@ -340,24 +349,24 @@ class MyStoreFragment :
                     )
                 }
 
-            is StoreOnboardingViewModel.NavigateToSetupPayments ->
+            is NavigateToSetupPayments ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToPaymentsPreSetupFragment(
                         taskId = taskId
                     )
                 )
 
-            is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
+            is NavigateToSetupWooPayments ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToWooPaymentsSetupInstructionsFragment()
                 )
 
-            is StoreOnboardingViewModel.NavigateToAboutYourStore ->
+            is NavigateToAboutYourStore ->
                 findNavController().navigateSafely(
                     MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
                 )
 
-            is StoreOnboardingViewModel.ShowNameYourStoreDialog -> {
+            is ShowNameYourStoreDialog -> {
                 findNavController()
                     .navigateSafely(
                         MyStoreFragmentDirections.actionMyStoreToNameYourStoreDialogFragment(fromOnboarding = true)

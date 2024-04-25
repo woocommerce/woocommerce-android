@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
+import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 import com.woocommerce.android.util.CurrencyFormatter
@@ -91,7 +92,7 @@ private fun WidgetList(
                         parentViewModel = dashboardViewModel
                     )
 
-                    ONBOARDING -> {}
+                    ONBOARDING -> DashboardOnboardingCard(parentViewModel = dashboardViewModel)
                 }
             }
         }
