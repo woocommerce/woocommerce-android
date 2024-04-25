@@ -10,6 +10,7 @@ import com.woocommerce.commons.wear.MessagePath.REQUEST_TOKEN
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -28,9 +29,11 @@ class WearableConnectionService : WearableListenerService() {
     @Inject
     lateinit var selectedSite: SelectedSite
 
+    private var siteObservationJob: Job? = null
+
     override fun onCreate() {
         super.onCreate()
-        selectedSite.observe()
+        siteObservationJob = selectedSite.observe()
             .filterNotNull()
             .distinctUntilChanged()
             .onEach { connRepository.sendSiteData() }
@@ -48,6 +51,12 @@ class WearableConnectionService : WearableListenerService() {
             REQUEST_TOKEN.value -> connRepository.sendTokenData()
             REQUEST_SITE.value -> connRepository.sendSiteData()
         }
+    }
+
+    override fun onDestroy() {
+        siteObservationJob?.cancel()
+        siteObservationJob = null
+        super.onDestroy()
     }
 
     companion object {
