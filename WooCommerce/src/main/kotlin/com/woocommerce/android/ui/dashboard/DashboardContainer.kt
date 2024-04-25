@@ -89,7 +89,8 @@ private fun WidgetList(
                         POPULAR_PRODUCTS -> DashboardTopPerformersWidgetCard(dashboardViewModel)
 
                         BLAZE -> DashboardBlazeCard(
-                            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                            parentViewModel = dashboardViewModel
                         )
 
                         ONBOARDING -> {}
