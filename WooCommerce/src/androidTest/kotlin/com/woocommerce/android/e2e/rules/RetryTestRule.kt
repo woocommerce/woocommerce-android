@@ -9,6 +9,8 @@ const val TAG = "RetryTestRule"
 
 /**
  * Custom rule used to retry running a test if a problem occurs.
+ * Credit: notandyvee
+ * https://github.com/wordpress-mobile/WordPress-Android/pull/20517
  */
 class RetryTestRule : TestRule {
     override fun apply(base: Statement?, description: Description?): Statement {
