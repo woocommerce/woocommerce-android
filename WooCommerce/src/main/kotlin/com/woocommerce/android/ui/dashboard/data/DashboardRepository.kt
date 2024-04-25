@@ -8,6 +8,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
+import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.EntryPoints
 import dagger.hilt.android.scopes.ActivityRetainedScoped
@@ -21,8 +23,10 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.withIndex
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
+import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import javax.inject.Inject
 
 @ActivityRetainedScoped
@@ -30,7 +34,8 @@ class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
     private val dashboardDataStore: DashboardDataStore,
     orderStore: WCOrderStore,
-    private val isBlazeEnabled: IsBlazeEnabled
+    private val isBlazeEnabled: IsBlazeEnabled,
+    productListRepository: ProductListRepository
 ) {
     private val siteCoroutineScope = EntryPoints.get(
         selectedSite.siteComponent!!,
@@ -62,7 +67,26 @@ class DashboardRepository @Inject constructor(
     private val blazeAvailability = selectedSite.observe()
         .filterNotNull()
         .map { isBlazeEnabled() }
-        .stateIn(siteCoroutineScope, SharingStarted.WhileSubscribed(), false)
+        .combine(
+            productListRepository
+                .observeProductsCount(
+                    filterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
+                    excludeSampleProducts = true
+                )
+                .withIndex()
+                .map { (index, productsCount) ->
+                    if (productsCount == 0L && index == 0) {
+                        productListRepository.fetchProductList()
+                        false
+                    } else {
+                        productsCount > 0
+                    }
+                }
+                .distinctUntilChanged()
+        ) { isBlazeEnabled, hasPublishedProducts ->
+            isBlazeEnabled && hasPublishedProducts
+        }
+        .stateIn(siteCoroutineScope, SharingStarted.Lazily, false)
 
     val widgets = combine(
         dashboardDataStore.dashboard.map { it.widgetsList },
