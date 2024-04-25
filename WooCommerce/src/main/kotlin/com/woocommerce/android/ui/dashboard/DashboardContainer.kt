@@ -93,13 +93,12 @@ private fun WidgetList(
                         parentViewModel = dashboardViewModel
                     )
 
-                        ONBOARDING -> DashboardOnboardingCard(
-                            parentViewModel = dashboardViewModel,
-                            navigateToAddProduct = {
-                                dashboardViewModel.onDashboardWidgetEvent(NavigateToAddProduct)
-                            },
-                        )
-                    }
+                    ONBOARDING -> DashboardOnboardingCard(
+                        parentViewModel = dashboardViewModel,
+                        navigateToAddProduct = {
+                            dashboardViewModel.onDashboardWidgetEvent(NavigateToAddProduct)
+                        },
+                    )
                 }
             }
         }
