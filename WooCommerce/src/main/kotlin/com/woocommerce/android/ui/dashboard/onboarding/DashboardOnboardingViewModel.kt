@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.dashboard.onboarding
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
@@ -20,6 +18,7 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.onboarding.AddProductTaskRes
 import com.woocommerce.android.ui.onboarding.CustomizeDomainTaskRes
@@ -36,7 +35,6 @@ import com.woocommerce.android.ui.onboarding.NavigateToSurvey
 import com.woocommerce.android.ui.onboarding.OnboardingTaskUi
 import com.woocommerce.android.ui.onboarding.SetupPaymentsTaskRes
 import com.woocommerce.android.ui.onboarding.SetupWooPaymentsTaskRes
-import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
 import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
@@ -48,13 +46,13 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.Onboardin
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = DashboardOnboardingViewModel.Factory::class)
@@ -63,8 +61,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val shouldShowOnboarding: ShouldShowOnboarding
-) : ScopedViewModel(savedStateHandle), DefaultLifecycleObserver {
+) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD = 3
     }
@@ -95,7 +92,13 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
 
     init {
         launch {
-            _viewState.value = _viewState.value?.copy(isLoading = true)
+            parentViewModel.refreshTrigger
+                .onStart { emit(RefreshEvent()) }
+                .collectLatest {
+                    refreshOnboardingList()
+                }
+        }
+        launch {
             onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
                     _viewState.value = _viewState.value?.copy(
@@ -106,8 +109,11 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         }
     }
 
-    override fun onResume(owner: LifecycleOwner) {
-        refreshOnboardingList()
+    private fun refreshOnboardingList() {
+        launch {
+            _viewState.value = _viewState.value?.copy(isLoading = true)
+            onboardingRepository.fetchOnboardingTasks()
+        }
     }
 
     private fun mapToOnboardingTaskState(task: OnboardingTask) =
@@ -124,10 +130,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
 
     private fun viewAllClicked() {
         triggerEvent(NavigateToOnboardingFullScreen)
-    }
-
-    fun onBackPressed() {
-        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     private fun onShareFeedbackClicked() {
@@ -164,18 +166,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
             SetupWooPaymentsTaskRes -> VALUE_WOO_PAYMENTS
             NameYourStoreTaskRes -> VALUE_LOCAL_NAME_STORE
         }
-
-    fun onPullToRefresh() {
-        refreshOnboardingList()
-    }
-
-    private fun refreshOnboardingList() {
-        if (!shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
-            launch {
-                onboardingRepository.fetchOnboardingTasks()
-            }
-        }
-    }
 
     data class OnboardingDashBoardState(
         @StringRes val title: Int,
