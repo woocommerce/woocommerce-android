@@ -95,10 +95,12 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
 
     init {
         launch {
+            _viewState.value = _viewState.value?.copy(isLoading = true)
             onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
                     _viewState.value = _viewState.value?.copy(
-                        tasks = tasks.map { mapToOnboardingTaskState(it) }
+                        tasks = tasks.map { mapToOnboardingTaskState(it) },
+                        isLoading = false
                     )
                 }
         }
@@ -120,7 +122,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
             MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
         }
 
-    fun viewAllClicked() {
+    private fun viewAllClicked() {
         triggerEvent(NavigateToOnboardingFullScreen)
     }
 
@@ -179,7 +181,8 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         @StringRes val title: Int,
         val tasks: List<OnboardingTaskUi>,
         val menu: DashboardWidgetMenu,
-        val onViewAllTapped: DashboardWidgetAction
+        val onViewAllTapped: DashboardWidgetAction,
+        val isLoading: Boolean = false
     )
 
     @AssistedFactory

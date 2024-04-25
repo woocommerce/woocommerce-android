@@ -4,9 +4,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.LinearProgressIndicator
@@ -19,17 +22,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
@@ -74,10 +80,14 @@ fun DashboardOnboardingCard(
             menu = onboardingState.menu,
             button = onboardingState.onViewAllTapped,
         ) {
-            StoreOnboardingCardContent(
-                onboardingState = onboardingState,
-                onTaskClicked = onboardingViewModel::onTaskClicked,
-            )
+            when {
+                onboardingState.isLoading -> StoreOnboardingLoading()
+                else ->
+                    StoreOnboardingCardContent(
+                        onboardingState = onboardingState,
+                        onTaskClicked = onboardingViewModel::onTaskClicked,
+                    )
+            }
         }
     }
     HandleEvents(
@@ -160,24 +170,12 @@ fun StoreOnboardingCardContent(
                 .fillMaxWidth()
                 .background(MaterialTheme.colors.surface)
         ) {
-            Text(
-                modifier = Modifier.padding(
-                    top = dimensionResource(id = R.dimen.major_100),
-                    start = dimensionResource(id = R.dimen.major_100)
-                ),
-                text = stringResource(id = onboardingState.title),
-                style = MaterialTheme.typography.h6,
-            )
             @Suppress("MagicNumber")
             OnboardingCardProgressHeader(
                 tasks = onboardingState.tasks,
                 modifier = Modifier
-                    .padding(
-                        top = dimensionResource(id = R.dimen.major_100),
-                        start = dimensionResource(id = R.dimen.major_100),
-                        end = dimensionResource(id = R.dimen.major_100)
-                    )
                     .fillMaxWidth(0.5f)
+                    .padding(horizontal = 16.dp)
             )
             Column(
                 modifier = Modifier
@@ -227,6 +225,65 @@ fun OnboardingCardProgressHeader(
             text = stringResource(R.string.store_onboarding_completed_tasks_status, completedTasks, totalTasks),
             style = MaterialTheme.typography.body2,
         )
+    }
+}
+
+@Composable
+private fun StoreOnboardingLoading(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        SkeletonView(
+            modifier = Modifier
+                .height(10.dp)
+                .width(200.dp)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        SkeletonView(
+            modifier = Modifier
+                .height(10.dp)
+                .width(80.dp)
+        )
+        repeat(MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD) {
+            OnboardingSkeletonItem()
+            Divider()
+        }
+    }
+}
+
+@Composable
+private fun OnboardingSkeletonItem() {
+    Row(
+        modifier = Modifier
+            .padding(top = 16.dp, bottom = 16.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SkeletonView(
+            modifier = Modifier
+                .height(42.dp)
+                .width(42.dp)
+                .clip(RoundedCornerShape(6.dp))
+        )
+        Column(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .weight(1f)
+        ) {
+            SkeletonView(
+                modifier = Modifier
+                    .height(12.dp)
+                    .width(150.dp)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            SkeletonView(
+                modifier = Modifier
+                    .height(10.dp)
+                    .width(250.dp)
+            )
+        }
     }
 }
 
