@@ -30,8 +30,7 @@ import javax.inject.Inject
 class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
     private val dashboardDataStore: DashboardDataStore,
-    orderStore: WCOrderStore,
-    private val dispatchers: CoroutineDispatchers
+    orderStore: WCOrderStore
 ) {
     private val siteCoroutineScope = EntryPoints.get(
         selectedSite.siteComponent!!,
@@ -67,19 +66,17 @@ class DashboardRepository @Inject constructor(
         widgets.toDomainModel(hasOrders)
     }
 
-    suspend fun updateWidgets(widgets: List<DashboardWidget>) = withContext(dispatchers.io) {
-        runCatching {
-            dashboardDataStore.updateDashboard(
-                DashboardDataModel.newBuilder()
-                    .addAllWidgets(widgets.map { it.toDataModel() })
-                    .build()
-            )
-        }.onFailure { throwable ->
-            WooLog.e(WooLog.T.DASHBOARD, "Failed to update dashboard data", throwable)
-        }
+    suspend fun updateWidgets(widgets: List<DashboardWidget>) = runCatching {
+        dashboardDataStore.updateDashboard(
+            DashboardDataModel.newBuilder()
+                .addAllWidgets(widgets.map { it.toDataModel() })
+                .build()
+        )
+    }.onFailure { throwable ->
+        WooLog.e(WooLog.T.DASHBOARD, "Failed to update dashboard data", throwable)
     }
 
-    suspend fun updateWidgetVisibility(type: DashboardWidget.Type, isVisible: Boolean) = withContext(dispatchers.io) {
+    suspend fun updateWidgetVisibility(type: DashboardWidget.Type, isVisible: Boolean) {
         val dataStoreWidgets = widgets.first()
             .toMutableList()
             .apply {
