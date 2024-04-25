@@ -5,6 +5,7 @@ import com.woocommerce.android.di.SiteComponentEntryPoint
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 import com.woocommerce.android.util.WooLog
@@ -28,7 +29,8 @@ import javax.inject.Inject
 class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
     private val dashboardDataStore: DashboardDataStore,
-    orderStore: WCOrderStore
+    orderStore: WCOrderStore,
+    private val isBlazeEnabled: IsBlazeEnabled
 ) {
     private val siteCoroutineScope = EntryPoints.get(
         selectedSite.siteComponent!!,
@@ -57,11 +59,17 @@ class DashboardRepository @Inject constructor(
         }
         .stateIn(siteCoroutineScope, SharingStarted.Lazily, true)
 
+    private val blazeAvailability = selectedSite.observe()
+        .filterNotNull()
+        .map { isBlazeEnabled() }
+        .stateIn(siteCoroutineScope, SharingStarted.WhileSubscribed(), false)
+
     val widgets = combine(
         dashboardDataStore.dashboard.map { it.widgetsList },
-        statsWidgetsAvailability
-    ) { widgets, statsWidgetsAvailability ->
-        widgets.toDomainModel(statsWidgetsAvailability)
+        statsWidgetsAvailability,
+        blazeAvailability
+    ) { widgets, statsWidgetsAvailability, blazeAvailability ->
+        widgets.toDomainModel(statsWidgetsAvailability, blazeAvailability)
     }
 
     suspend fun updateWidgets(widgets: List<DashboardWidget>) = runCatching {
@@ -87,7 +95,8 @@ class DashboardRepository @Inject constructor(
     }
 
     private fun List<DashboardWidgetDataModel>.toDomainModel(
-        statsWidgetsAvailability: Boolean
+        statsWidgetsAvailability: Boolean,
+        blazeAvailability: Boolean
     ): List<DashboardWidget> {
         return map { widget ->
             val type = DashboardWidget.Type.valueOf(widget.type)
@@ -104,6 +113,10 @@ class DashboardRepository @Inject constructor(
                                 badgeText = R.string.my_store_widget_unavailable
                             )
                         }
+                    }
+
+                    DashboardWidget.Type.BLAZE -> {
+                        if (blazeAvailability) DashboardWidget.Status.Available else DashboardWidget.Status.Hidden
                     }
 
                     else -> DashboardWidget.Status.Available
