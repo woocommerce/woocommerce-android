@@ -81,7 +81,8 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
             parentViewModel.refreshTrigger
                 .onStart { emit(RefreshEvent()) }
                 .collectLatest {
-                    refreshOnboardingList()
+                    _viewState.value = _viewState.value?.copy(isLoading = true)
+                    onboardingRepository.fetchOnboardingTasks()
                 }
         }
         launch {
@@ -92,13 +93,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                         isLoading = false
                     )
                 }
-        }
-    }
-
-    private fun refreshOnboardingList() {
-        launch {
-            _viewState.value = _viewState.value?.copy(isLoading = true)
-            onboardingRepository.fetchOnboardingTasks()
         }
     }
 
