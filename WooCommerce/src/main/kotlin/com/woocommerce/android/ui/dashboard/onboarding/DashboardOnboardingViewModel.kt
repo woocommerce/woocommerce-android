@@ -70,7 +70,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                 )
             ),
             onViewAllTapped = DashboardWidgetAction(
-                titleResource = R.string.store_onboarding_task_view_all,
+                titleResource = R.string.store_onboarding_task_view_all_tasks,
                 action = ::viewAllClicked
             )
         )
