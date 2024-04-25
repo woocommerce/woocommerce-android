@@ -8,7 +8,7 @@ import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
-import com.woocommerce.commons.wear.MessagePath.REQUEST_TOKEN
+import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -20,7 +20,7 @@ import kotlinx.parcelize.Parcelize
 @HiltViewModel(assistedFactory = LoginViewModel.Factory::class)
 class LoginViewModel @AssistedInject constructor(
     private val loginRepository: LoginRepository,
-    private val connRepository: PhoneConnectionRepository,
+    private val phoneConnectionRepository: PhoneConnectionRepository,
     @Assisted private val navController: NavHostController,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -47,7 +47,7 @@ class LoginViewModel @AssistedInject constructor(
     fun onLoginButtonClicked() {
         _viewState.update { it.copy(isLoading = true) }
         launch {
-            connRepository.sendMessageToAllNodes(REQUEST_TOKEN)
+            phoneConnectionRepository.sendMessage(REQUEST_SITE)
             _viewState.update { it.copy(isLoading = false) }
         }
     }

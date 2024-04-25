@@ -23,12 +23,12 @@ class PhoneConnectionRepository @Inject constructor(
 ) {
     fun handleReceivedData(dataItem: DataItem) {
         when (dataItem.uri.path) {
-            DataPath.TOKEN_DATA.value -> handleAuthenticationData(dataItem)
+            DataPath.SITE_DATA.value -> handleAuthenticationData(dataItem)
             else -> Log.d(TAG, "Unknown path data received")
         }
     }
 
-    suspend fun sendMessageToAllNodes(
+    suspend fun sendMessage(
         path: MessagePath,
         data: ByteArray = byteArrayOf()
     ): Result<Unit> = fetchReachableNodes()

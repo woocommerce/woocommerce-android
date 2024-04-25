@@ -249,14 +249,6 @@
                 <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
                 <data
                     android:host="*"
-                    android:pathPrefix="/request-token"
-                    android:scheme="wear" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
-                <data
-                    android:host="*"
                     android:pathPrefix="/request-site"
                     android:scheme="wear" />
             </intent-filter>

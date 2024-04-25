@@ -20,7 +20,7 @@ class SiteObserver @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val environmentRepository: EnvironmentRepository,
-    private val connRepository: WearableConnectionRepository
+    private val wearableConnectionRepository: WearableConnectionRepository
 ) {
     suspend fun observeAndUpdateSelectedSiteData() {
         selectedSite.observe()
@@ -37,7 +37,7 @@ class SiteObserver @Inject constructor(
                         WooLog.d(WooLog.T.UTILS, "Fetched StoreID $storeID for site ${site.name}")
                     }
 
-                connRepository.sendTokenData()
+                wearableConnectionRepository.sendSiteData()
             }
     }
 }
