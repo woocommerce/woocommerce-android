@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -60,6 +61,7 @@ private fun WidgetList(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.surface)
+            .padding(vertical = dimensionResource(id = R.dimen.major_100))
     ) {
         widgets.forEach {
             AnimatedVisibility(it.isVisible) {
