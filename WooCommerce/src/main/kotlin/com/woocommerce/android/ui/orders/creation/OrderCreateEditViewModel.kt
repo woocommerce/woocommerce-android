@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.creation
 
+import com.woocommerce.android.model.Product as ModelProduct
 import android.os.Parcelable
+import android.util.Log
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
@@ -85,8 +87,10 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.WooPlugin
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
+import com.woocommerce.android.ui.common.subscription.SubscriptionRepository
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
@@ -128,6 +132,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.inventory.FetchProductBySKU
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
@@ -164,13 +169,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
 import org.wordpress.android.fluxc.utils.putIfNotNull
 import java.math.BigDecimal
 import java.util.Date
 import javax.inject.Inject
-import com.woocommerce.android.model.Product as ModelProduct
 
 @HiltViewModel
 @Suppress("LargeClass")
@@ -198,6 +201,9 @@ class OrderCreateEditViewModel @Inject constructor(
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
     private val totalsHelper: OrderCreateEditTotalsHelper,
+    private val subscriptionRepository: SubscriptionRepository,
+    private val selectedSite: SelectedSite,
+    private val fetchProductBySKU: FetchProductBySKU,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -1317,8 +1323,27 @@ class OrderCreateEditViewModel @Inject constructor(
         launch {
             viewState = viewState.copy(isProgressDialogShown = true)
             val giftCard = _selectedGiftCard.value
+            val customerId = order.customer?.customerId
+            Log.d("OrderCreateEditViewModel", "customerId: $customerId")
+
             orderCreateEditRepository.createOrUpdateOrder(order, giftCard).fold(
                 onSuccess = {
+                    Log.d("OrderCreateEditViewModel", "Order creation result: $it")
+
+                    val subscriptionProducts =
+                        it.items.map { productRepository.getProduct(it.productId) }.filterNotNull().filter { product ->
+                            listOf(ProductType.SUBSCRIPTION, ProductType.VARIABLE_SUBSCRIPTION)
+                                .map { type-> type.value }.contains(product.type)
+                        }
+                    Log.d("OrderCreateEditViewModel", "customerId: $customerId")
+                    if (subscriptionProducts.isNotEmpty() && customerId != null) {
+                        val subscriptionResult = subscriptionRepository.createSubscription(
+                            site = selectedSite.get(),
+                            orderId = order.id
+                        )
+                        Log.d("OrderCreateEditViewModel", "Subscription result: $subscriptionResult")
+                    }
+
                     trackOrderCreationSuccess()
                     onSuccess(it)
                 },

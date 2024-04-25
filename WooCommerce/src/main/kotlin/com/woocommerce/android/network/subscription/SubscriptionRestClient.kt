@@ -31,6 +31,15 @@ class SubscriptionRestClient @Inject constructor(private val wooNetwork: WooNetw
         ).toWooPayload()
     }
 
+    suspend fun createSubscription(site: SiteModel, orderId: Long): WooPayload<SubscriptionDto> {
+        val url = WOOCOMMERCE.orders.id(orderId).subscriptions.pathV3
+        return wooNetwork.executePostGsonRequest(
+            site = site,
+            path = url,
+            clazz = SubscriptionDto::class.java,
+        ).toWooPayload()
+    }
+
     @Suppress("PropertyName", "VariableNaming")
     class SubscriptionDto : Response {
         val id: Long? = null
@@ -43,3 +52,4 @@ class SubscriptionRestClient @Inject constructor(private val wooNetwork: WooNetw
         val currency: String? = null
     }
 }
+

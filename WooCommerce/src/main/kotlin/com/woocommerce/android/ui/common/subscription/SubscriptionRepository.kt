@@ -56,4 +56,23 @@ class SubscriptionRepository @Inject constructor(
             }
         }
     }
+
+    suspend fun createSubscription(
+        site: SiteModel = selectedSite.get(),
+        orderId: Long
+    ): WooResult<Subscription> {
+        return withContext(dispatchers.io) {
+            val response = subscriptionRestClient.createSubscription(site, orderId)
+            when {
+                response.isError -> {
+                    WooResult(response.error)
+                }
+                response.result != null -> {
+                    val subscription = subscriptionMapper.toAppModel(response.result!!)
+                    WooResult(subscription)
+                }
+                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN))
+            }
+        }
+    }
 }
