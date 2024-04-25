@@ -13,11 +13,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withCreated
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.transition.MaterialElevationScale
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
@@ -31,6 +29,7 @@ import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -177,7 +176,6 @@ class DashboardFragment :
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
-        initJitm(savedInstanceState)
     }
 
     private fun navigateToAddProductFlow() {
@@ -191,17 +189,8 @@ class DashboardFragment :
     }
 
     private fun openOnboardingInFullScreen() {
-        exitTransition = MaterialElevationScale(false).apply {
-            duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-        }
-        reenterTransition = MaterialElevationScale(true).apply {
-            duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-        }
-        val transitionName = getString(R.string.store_onboarding_full_screen_transition_name)
-        val extras = FragmentNavigatorExtras(binding.storeOnboardingView to transitionName)
         findNavController().navigateSafely(
             directions = DashboardFragmentDirections.actionDashboardToOnboardingFragment(),
-            extras = extras
         )
     }
 
@@ -253,6 +242,12 @@ class DashboardFragment :
         }
         dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
             onVisitorStatsUnavailable(jetpackBenefitsBanner)
+        }
+        dashboardViewModel.dashboardWidgets.observe(viewLifecycleOwner) { widgets ->
+            // Show banners only if onboarding list is NOT displayed
+            if (widgets.any { it.type == DashboardWidget.Type.ONBOARDING }.not()) {
+                initJitm()
+            }
         }
     }
 
@@ -346,17 +341,14 @@ class DashboardFragment :
         }
     }
 
-    private fun initJitm(savedInstanceState: Bundle?) {
-        // Show banners only if onboarding list is not displayed
-        if (!binding.storeOnboardingView.isVisible && savedInstanceState == null) {
-            childFragmentManager.beginTransaction()
-                .replace(
-                    R.id.jitmFragment,
-                    JitmFragment.newInstance(JitmMessagePathsProvider.MY_STORE),
-                    JITM_FRAGMENT_TAG
-                )
-                .commit()
-        }
+    private fun initJitm() {
+        childFragmentManager.beginTransaction()
+            .replace(
+                R.id.jitmFragment,
+                JitmFragment.newInstance(JitmMessagePathsProvider.MY_STORE),
+                JITM_FRAGMENT_TAG
+            )
+            .commit()
     }
 
     private fun refreshJitm() {
