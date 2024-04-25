@@ -68,9 +68,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     private val dashboardRepository: DashboardRepository,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    private val refreshTrigger = parentViewModel
-        ?.refreshTrigger
-        ?: emptyFlow<RefreshEvent>()
+    private val refreshTrigger = (parentViewModel?.refreshTrigger ?: emptyFlow())
         .onStart { emit(RefreshEvent()) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
