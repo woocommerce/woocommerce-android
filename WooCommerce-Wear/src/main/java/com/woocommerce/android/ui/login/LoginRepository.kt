@@ -29,8 +29,7 @@ class LoginRepository @Inject constructor(
             .filterNotNull()
 
     val isUserLoggedIn
-        get() = loginDataStore.data
-            .map { searchToken(it)?.isNotEmpty() ?: false }
+        get() = currentSite.map { it.siteId > 0 }
 
     suspend fun receiveStoreData(data: DataMap) {
         val siteJSON = data.getString(SITE_JSON.value)
@@ -45,12 +44,6 @@ class LoginRepository @Inject constructor(
             }
         }
     }
-
-    private fun searchToken(prefs: Preferences) =
-        prefs[stringPreferencesKey(CURRENT_SITE_KEY)]
-            ?.let { gson.fromJson(it, SiteModel::class.java) }
-            ?.takeIf { it.siteId > 0 }
-            ?.let { prefs[stringPreferencesKey(generateTokenKey(it.siteId))] }
 
     private fun generateTokenKey(siteId: Long) = "$TOKEN_KEY:$siteId"
 
