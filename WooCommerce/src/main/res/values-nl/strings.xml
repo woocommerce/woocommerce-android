@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-16 11:54:03+0000
+Translation-Revision-Date: 2024-04-23 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="card_selection_control">Selectie analysekaarten</string>
     <string name="login_app_password_exit_dialog_cancel">Annuleren</string>
     <string name="login_app_password_exit_dialog_confirmation">Toch afsluiten</string>
     <string name="login_app_password_exit_dialog_message">Het lijkt erop dat je de verbinding met de app nog niet hebt goedgekeurd. Weet je zeker dat je wilt afsluiten?</string>
@@ -458,6 +459,7 @@ Language: nl
     <string name="blaze_campaign_status_active">Actief</string>
     <string name="blaze_campaign_status_in_moderation">Wordt beheerd</string>
     <string name="blaze_campaign_show_all_button">Alles tonen</string>
+    <string name="blaze_campaign_create_campaign_button">Campagne aanmaken</string>
     <string name="blaze_campaign_subtitle">Verhoog de zichtbaarheid en verkoop snel je producten.</string>
     <string name="blaze_campaign_title">Blaze-campagne</string>
     <string name="card_reader_tap_to_pay_about_copyright">Het pictogram voor contactloos betalen is een handelsmerk dat gebruikt wordt met toestemming van en dat eigendom is van EMVCo, LLC.</string>

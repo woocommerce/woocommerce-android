@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-16 19:54:04+0000
+Translation-Revision-Date: 2024-04-23 17:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="card_selection_control">Selección de tarjeta de análisis</string>
     <string name="login_app_password_exit_dialog_cancel">Cancelar</string>
     <string name="login_app_password_exit_dialog_confirmation">Salir igualmente</string>
     <string name="login_app_password_exit_dialog_message">Parece que aún no has aprobado la conexión de la aplicación. ¿Estás seguro que quieres salir?</string>
@@ -458,6 +459,7 @@ Language: es
     <string name="blaze_campaign_status_active">Activa</string>
     <string name="blaze_campaign_status_in_moderation">En moderación</string>
     <string name="blaze_campaign_show_all_button">Mostrar todos</string>
+    <string name="blaze_campaign_create_campaign_button">Crear campaña</string>
     <string name="blaze_campaign_subtitle">Aumenta la visibilidad y vende tus productos rápidamente.</string>
     <string name="blaze_campaign_title">Campaña de Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">El símbolo del pago sin contacto es una marca registrada propiedad de EMVCo, LLC y se utiliza con su autorización.</string>

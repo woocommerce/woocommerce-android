@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-16 13:54:04+0000
+Translation-Revision-Date: 2024-04-23 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="card_selection_control">Selezione carta analisi</string>
     <string name="login_app_password_exit_dialog_cancel">Annulla</string>
     <string name="login_app_password_exit_dialog_confirmation">Esci comunque</string>
     <string name="login_app_password_exit_dialog_message">Sembra che tu non abbia ancora approvato la connessione dell\'app. Desideri uscire?</string>
@@ -458,6 +459,7 @@ Language: it
     <string name="blaze_campaign_status_active">Attiva</string>
     <string name="blaze_campaign_status_in_moderation">In moderazione</string>
     <string name="blaze_campaign_show_all_button">Mostra tutte</string>
+    <string name="blaze_campaign_create_campaign_button">Crea la campagna</string>
     <string name="blaze_campaign_subtitle">Aumenta la visibilità e vendi i tuoi prodotti rapidamente.</string>
     <string name="blaze_campaign_title">Campagna Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Il simbolo del contactless è un marchio registrato di proprietà e utilizzato su concessione di EMVCo, LLC.</string>
