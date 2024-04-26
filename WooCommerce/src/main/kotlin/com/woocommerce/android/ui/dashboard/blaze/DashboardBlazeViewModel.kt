@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.Dashbo
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Hidden
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.NoCampaign
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
+import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.FeatureFlag
@@ -118,10 +119,9 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         if (isBlazeDismissed) Hidden else blazeViewState
     }.asLiveData()
 
-    private val hideWidgetAction = DashboardWidgetAction(
-        titleResource = string.dynamic_dashboard_hide_widget_menu_item,
-        action = { onBlazeViewDismissed() }
-    )
+    private val hideWidgetAction = DashboardWidget.Type.BLAZE.defaultHideMenuEntry {
+        onBlazeViewDismissed()
+    }
 
     private fun showUiForNoCampaign(products: List<Product>): DashboardBlazeCampaignState {
         val product = products.first()
@@ -183,11 +183,11 @@ class DashboardBlazeViewModel @AssistedInject constructor(
             },
             menu = DashboardWidgetMenu(
                 items = listOf(
-                    hideWidgetAction,
                     DashboardWidgetAction(
                         titleResource = string.blaze_campaign_show_all_button,
                         action = { triggerEvent(ShowAllCampaigns) }
-                    )
+                    ),
+                    hideWidgetAction
                 )
             ),
             createCampaignButton = DashboardWidgetAction(

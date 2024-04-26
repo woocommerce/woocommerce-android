@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
+import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.onboarding.AddProductTaskRes
 import com.woocommerce.android.ui.onboarding.CustomizeDomainTaskRes
@@ -65,10 +66,9 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                         titleResource = R.string.store_onboarding_menu_share_feedback,
                         action = ::onShareFeedbackClicked
                     ),
-                    DashboardWidgetAction(
-                        titleResource = R.string.store_onboarding_menu_hide_store_setup,
-                        action = ::onHideOnboardingClicked
-                    )
+                    DashboardWidget.Type.ONBOARDING.defaultHideMenuEntry {
+                        onHideOnboardingClicked()
+                    }
                 )
             ),
             onViewAllTapped = DashboardWidgetAction(

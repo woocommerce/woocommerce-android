@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -96,10 +97,9 @@ fun DashboardStatsCard(
         titleResource = DashboardWidget.Type.STATS.titleResource,
         menu = DashboardViewModel.DashboardWidgetMenu(
             items = listOf(
-                DashboardViewModel.DashboardWidgetAction(
-                    titleResource = R.string.dynamic_dashboard_hide_widget_menu_item,
-                    action = { /* TODO */ }
-                )
+                DashboardWidget.Type.STATS.defaultHideMenuEntry {
+                    /* TODO */
+                }
             )
         ),
         button = DashboardViewModel.DashboardWidgetAction(

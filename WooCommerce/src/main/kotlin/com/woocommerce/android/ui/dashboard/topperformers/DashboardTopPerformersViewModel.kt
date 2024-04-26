@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMe
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
+import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
@@ -77,7 +78,6 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val dashboardRepository: DashboardRepository,
     getSelectedDateRange: GetSelectedRangeForTopPerformers,
 ) : ScopedViewModel(savedState) {
-
     private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
@@ -103,10 +103,9 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
             menu = DashboardWidgetMenu(
                 items = listOf(
-                    DashboardWidgetAction(
-                        titleResource = R.string.dashboard_top_performers_overflow_menu_hide_option,
-                        action = ::hideTopPerformers
-                    )
+                    DashboardWidget.Type.POPULAR_PRODUCTS.defaultHideMenuEntry {
+                        hideTopPerformers()
+                    }
                 )
             ),
             onOpenAnalyticsTapped = DashboardWidgetAction(
