@@ -74,7 +74,7 @@ class DashboardWidgetEditorViewModel @Inject constructor(
     }
 
     fun onSelectionChange(dashboardWidget: DashboardWidget, selected: Boolean) {
-        editedWidgets = editedWidgets.map { if (it == dashboardWidget) it.copy(isVisible = selected) else it }
+        editedWidgets = editedWidgets.map { if (it == dashboardWidget) it.copy(isSelected = selected) else it }
     }
 
     fun onOrderChange(fromIndex: Int, toIndex: Int) {

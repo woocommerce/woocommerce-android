@@ -76,7 +76,7 @@ class DashboardRepository @Inject constructor(
             .apply {
                 val index = indexOfFirst { it.type == type }
                 if (index != -1) {
-                    set(index, get(index).copy(isVisible = isVisible))
+                    set(index, get(index).copy(isSelected = isVisible))
                 }
             }
         updateWidgets(dataStoreWidgets)
@@ -91,7 +91,7 @@ class DashboardRepository @Inject constructor(
             val type = DashboardWidget.Type.valueOf(widget.type)
             DashboardWidget(
                 type = type,
-                isVisible = widget.isAdded,
+                isSelected = widget.isAdded,
                 status = when (type) {
                     DashboardWidget.Type.STATS,
                     DashboardWidget.Type.POPULAR_PRODUCTS -> statsWidgetsStatus
@@ -101,6 +101,6 @@ class DashboardRepository @Inject constructor(
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
                 }
             )
-        }.sortedBy { it.isAvailable }
+        }
     }
 }
