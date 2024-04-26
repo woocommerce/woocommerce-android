@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.phone.PhoneConnectionRepository
@@ -31,13 +32,13 @@ class LoginViewModelTest: BaseUnitTest() {
         createSut()
 
         // Then
-        assertEquals(NavRoutes.MY_STORE.route, navController.currentDestination?.route)
+        verify(navController).navigate(NavRoutes.MY_STORE.route)
     }
 
     @Test
     fun `when user is not logged in, loading is stopped`() = testBlocking {
         // Given
-        whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(true))
+        whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
 
         // When
         createSut()
@@ -49,6 +50,7 @@ class LoginViewModelTest: BaseUnitTest() {
     @Test
     fun `on login button clicked, loading is started and message is sent`() = testBlocking {
         // Given
+        whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
         createSut()
 
         // When
@@ -62,6 +64,7 @@ class LoginViewModelTest: BaseUnitTest() {
     @Test
     fun `on login button clicked, loading is stopped after message is sent`() = testBlocking {
         // Given
+        whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
         createSut()
 
         // When
@@ -76,7 +79,7 @@ class LoginViewModelTest: BaseUnitTest() {
             loginRepository,
             phoneConnectionRepository,
             navController,
-            mock()
+            SavedStateHandle()
         )
     }
 }
