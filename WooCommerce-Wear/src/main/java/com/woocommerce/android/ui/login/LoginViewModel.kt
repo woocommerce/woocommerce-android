@@ -48,7 +48,6 @@ class LoginViewModel @AssistedInject constructor(
         _viewState.update { it.copy(isLoading = true) }
         launch {
             phoneConnectionRepository.sendMessage(REQUEST_SITE)
-            _viewState.update { it.copy(isLoading = false) }
         }
     }
 

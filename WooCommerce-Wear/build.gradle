@@ -152,10 +152,16 @@ dependencies {
     ksp "com.google.dagger:dagger-android-processor:$gradle.ext.daggerVersion"
 
     // Testing
-    androidTestImplementation platform("androidx.compose:compose-bom:$composeBOMVersion")
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
-    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+    testImplementation "junit:junit:$jUnitVersion"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoKotlinVersion"
+    testImplementation "org.mockito:mockito-inline:$mockitoVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$gradle.ext.kotlinVersion"
+    testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation("androidx.arch.core:core-testing:2.1.0", {
+        exclude group: 'com.android.support', module: 'support-compat'
+        exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.android.support', module: 'support-core-utils'
+    })
 }
 
 static def loadPropertiesFromFile(inputFile) {
