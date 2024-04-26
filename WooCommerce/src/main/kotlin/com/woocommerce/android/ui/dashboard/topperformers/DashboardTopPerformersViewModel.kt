@@ -29,9 +29,8 @@ import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
-import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange
-import com.woocommerce.android.ui.dashboard.stats.GetSelectedDateRange.StatsViewType
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.dashboard.stats.GetSelectedRangeForTopPerformers
+import com.woocommerce.android.ui.mystore.data.TopPerformersCustomDateRangeDataStore
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -74,12 +73,12 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val dateUtils: DateUtils,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val customDateRangeDataStore: CustomDateRangeDataStore,
+    private val customDateRangeDataStore: TopPerformersCustomDateRangeDataStore,
     private val dashboardRepository: DashboardRepository,
-    getSelectedDateRange: GetSelectedDateRange,
+    getSelectedDateRange: GetSelectedRangeForTopPerformers,
 ) : ScopedViewModel(savedState) {
 
-    private val _selectedDateRange = getSelectedDateRange(StatsViewType.TOP_PERFORMERS)
+    private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
     private var _topPerformersState = MutableLiveData<TopPerformersState>()

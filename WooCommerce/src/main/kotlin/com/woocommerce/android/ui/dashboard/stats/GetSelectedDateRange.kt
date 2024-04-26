@@ -14,17 +14,16 @@ import kotlinx.coroutines.flow.onStart
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import javax.inject.Inject
 
-class GetSelectedDateRange @Inject constructor(
+abstract class GetSelectedDateRange(
     private val appPrefs: AppPrefsWrapper,
     private val customDateRangeDataStore: CustomDateRangeDataStore,
     private val dateUtils: DateUtils
 ) {
-    operator fun invoke(statsViewType: StatsViewType): Flow<StatsTimeRangeSelection> {
+    operator fun invoke(): Flow<StatsTimeRangeSelection> {
         val selectedRangeTypeFlow = appPrefs.observePrefs()
-            .map { getSelectedRangeFor(statsViewType) }
-            .onStart { emit(getSelectedRangeFor(statsViewType)) }
+            .map { getSelectedRange() }
+            .onStart { emit(getSelectedRange()) }
             .distinctUntilChanged()
 
         val customRangeFlow = customDateRangeDataStore.dateRange
@@ -52,18 +51,5 @@ class GetSelectedDateRange @Inject constructor(
         }
     }
 
-    private fun getSelectedRangeFor(statsViewType: StatsViewType): SelectionType {
-        val previouslySelectedTab = when (statsViewType) {
-            StatsViewType.STORE_STATS -> appPrefs.getActiveStoreStatsTab()
-            StatsViewType.TOP_PERFORMERS -> appPrefs.getActiveTopPerformersGranularity()
-        }
-        return runCatching {
-            SelectionType.valueOf(previouslySelectedTab)
-        }.getOrDefault(SelectionType.TODAY)
-    }
-
-    enum class StatsViewType {
-        STORE_STATS,
-        TOP_PERFORMERS,
-    }
+    abstract fun getSelectedRange(): SelectionType
 }

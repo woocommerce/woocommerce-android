@@ -236,7 +236,7 @@ class MainActivity :
                     toolbar.navigationIcon = appBarStatus.navigationIcon?.let {
                         ContextCompat.getDrawable(this@MainActivity, it)
                     }
-                    binding.appBarLayout.elevation = if (appBarStatus.hasShadow) {
+                    binding.appBarLayout.targetElevation = if (appBarStatus.hasShadow) {
                         resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
                     } else {
                         0f

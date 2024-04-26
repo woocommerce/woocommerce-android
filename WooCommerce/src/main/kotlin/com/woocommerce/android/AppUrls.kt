@@ -22,6 +22,8 @@ object AppUrls {
     const val URL_LEARN_MORE_REVIEWS = "https://woocommerce.com/document/ratings-and-reviews/"
     const val URL_LEARN_MORE_ORDERS = "https://woocommerce.com/blog/"
 
+    const val WORDPRESS_PRIVACY_SETTINGS = "https://wordpress.com/support/settings/privacy-settings/"
+
     const val JETPACK_INSTRUCTIONS =
         "https://woocommerce.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app//"
     const val JETPACK_TROUBLESHOOTING =

@@ -21,8 +21,10 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource.MY_STORE
 import com.woocommerce.android.ui.blaze.CampaignStatusUi
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.blaze.ObserveMostRecentBlazeCampaign
+import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Campaign
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Hidden
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.NoCampaign
@@ -32,11 +34,17 @@ import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -45,11 +53,13 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
-import javax.inject.Inject
 
-@HiltViewModel
-class DashboardBlazeViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = DashboardBlazeViewModel.Factory::class)
+@Suppress("LongParameterList")
+class DashboardBlazeViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
+    // TODO make this non-nullable when enabling [FeatureFlag.DYNAMIC_DASHBOARD]
+    @Assisted parentViewModel: DashboardViewModel?,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
     private val isBlazeEnabled: IsBlazeEnabled,
@@ -58,6 +68,10 @@ class DashboardBlazeViewModel @Inject constructor(
     private val dashboardRepository: DashboardRepository,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
+    private val refreshTrigger = (parentViewModel?.refreshTrigger ?: emptyFlow())
+        .onStart { emit(RefreshEvent()) }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val blazeCampaignState: Flow<DashboardBlazeCampaignState> = flow {
         if (!isBlazeEnabled()) {
             emit(Hidden)
@@ -70,14 +84,18 @@ class DashboardBlazeViewModel @Inject constructor(
             )
 
             emitAll(
-                combine(
-                    observeMostRecentBlazeCampaign(),
-                    getProductsFlow()
-                ) { blazeCampaignModel, products ->
-                    when {
-                        products.isEmpty() -> Hidden
-                        blazeCampaignModel == null -> showUiForNoCampaign(products)
-                        else -> showUiForCampaign(blazeCampaignModel)
+                refreshTrigger.flatMapLatest { refreshEvent ->
+                    combine(
+                        observeMostRecentBlazeCampaign(forceRefresh = refreshEvent.isForced),
+                        getProductsFlow(forceRefresh = refreshEvent.isForced)
+                    ) { blazeCampaignModel, products ->
+                        when {
+                            products.isEmpty() -> Hidden
+                            blazeCampaignModel == null -> showUiForNoCampaign(products)
+                            else -> showUiForCampaign(blazeCampaignModel)
+                        }
+                    }.onStart {
+                        emit(DashboardBlazeCampaignState.Loading)
                     }
                 }
             )
@@ -191,15 +209,21 @@ class DashboardBlazeViewModel @Inject constructor(
         triggerEvent(ShowAllCampaigns)
     }
 
-    private fun getProductsFlow(): Flow<List<Product>> {
+    private fun getProductsFlow(forceRefresh: Boolean): Flow<List<Product>> {
         fun getCachedProducts() = productListRepository.getProductList(
             productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
             sortType = ProductSorting.DATE_DESC,
         ).filterNot { it.isSampleProduct }
         return flow {
-            emit(getCachedProducts())
-            refreshProducts()
-            emit(getCachedProducts())
+            val cachedProducts = getCachedProducts()
+            if (!forceRefresh) {
+                emit(cachedProducts)
+            }
+
+            if (forceRefresh || cachedProducts.isEmpty()) {
+                refreshProducts()
+                emit(getCachedProducts())
+            }
         }
     }
 
@@ -235,6 +259,7 @@ class DashboardBlazeViewModel @Inject constructor(
         open val createCampaignButton: DashboardWidgetAction? = null
     ) {
         data object Hidden : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
+        data object Loading : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
         data class NoCampaign(
             val product: BlazeProductUi,
             val onProductClicked: () -> Unit,
@@ -258,4 +283,9 @@ class DashboardBlazeViewModel @Inject constructor(
         val url: String,
         val urlToTriggerExit: String
     ) : MultiLiveEvent.Event()
+
+    @AssistedFactory
+    interface Factory {
+        fun create(parentViewModel: DashboardViewModel?): DashboardBlazeViewModel
+    }
 }

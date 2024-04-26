@@ -19,6 +19,7 @@ import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -326,7 +327,7 @@ class ProductDetailFragment :
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {
         viewModel.productDetailViewStateData.observe(viewLifecycleOwner) { old, new ->
-            new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it) }
+            new.productDraft?.takeIfNotEqualTo(old?.productDraft) { showProductDetails(it, new.areImagesAvailable) }
             new.auxiliaryState.takeIfNotEqualTo(old?.auxiliaryState) { showAuxiliaryState(it) }
             new.isProgressDialogShown?.takeIfNotEqualTo(old?.isProgressDialogShown) {
                 if (it) {
@@ -453,7 +454,7 @@ class ProductDetailFragment :
     /**
      *  Triggered when the view modal updates or creates an order that doesn't already have linked products
      */
-    private fun showProductDetails(product: Product) {
+    private fun showProductDetails(product: Product, isImageUploadAvailable: Boolean) {
         binding.productErrorStateContainer.isVisible = false
         binding.productDetailRoot.isVisible = true
         binding.productDetailAddMoreContainer.isVisible = true
@@ -461,13 +462,23 @@ class ProductDetailFragment :
         productName = updateProductNameFromDetails(product)
         productId = product.remoteId
 
-        if (product.images.isEmpty() && !viewModel.isUploadingImages()) {
-            binding.imageGallery.hide()
-            startAddImageContainer()
+        if (isImageUploadAvailable) {
+            if (product.images.isEmpty() && !viewModel.isUploadingImages()) {
+                binding.imageGallery.hide()
+                startAddImageContainer()
+            } else {
+                binding.addImageContainer.hide()
+                binding.imageGallery.show()
+                binding.imageGallery.showProductImages(product.images, this)
+            }
+            binding.imagesUnavailableNotice.hide()
         } else {
+            binding.imageGallery.hide()
             binding.addImageContainer.hide()
-            binding.imageGallery.show()
-            binding.imageGallery.showProductImages(product.images, this)
+            binding.imagesUnavailableNotice.show()
+            binding.imagesUnavailableNotice.setOnClickListener {
+                ChromeCustomTabUtils.launchUrl(requireContext(), AppUrls.WORDPRESS_PRIVACY_SETTINGS)
+            }
         }
 
         binding.productDetailAddMoreButton.setOnClickListener {

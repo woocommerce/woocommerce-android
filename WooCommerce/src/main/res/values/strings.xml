@@ -181,6 +181,7 @@
     <string name="date_timeframe_older_month">Older than a month</string>
     <string name="date_at_time">%1$s at %2$s</string>
     <string name="date_compared_to">Compared to</string>
+    <string name="images_unavailable_notice">The images are unavailable because your site is marked Private. You can change this by switching to Coming Soon mode.\n<a href="">Tap to learn more.</a></string>
     <!--
         Error Strings
     -->
@@ -417,6 +418,7 @@
     <string name="my_store_widget_stats_title">Performance</string>
     <string name="my_store_widget_top_products_title">Top products</string>
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
+    <string name="my_store_widget_unavailable">Unavailable</string>
 
     <string name="dynamic_dashboard_hide_widget_menu_item">Hide</string>
 
@@ -3441,6 +3443,7 @@
     <string name="store_onboarding_task_name_store_description">Customizing your store name can also help your store\'s search engine optimization.</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d of %2$d tasks completed</string>
+    <string name="store_onboarding_task_view_all_tasks">View all tasks</string>
     <string name="store_onboarding_task_view_all">View all (%1$d)</string>
     <string name="store_onboarding_task_product_description_ai_generator_text">AI content generator available</string>
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
@@ -3834,7 +3837,7 @@
     <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Invalid image</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_size_description">Please select and image with a minimum dimension of 600x600 pixels</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Please select an image with a minimum size of 400x400 pixels</string>
 
     <!--
     Blaze campaign payment
