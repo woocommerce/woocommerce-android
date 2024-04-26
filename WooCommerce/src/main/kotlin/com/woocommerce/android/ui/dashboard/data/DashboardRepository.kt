@@ -7,7 +7,6 @@ import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
-import com.woocommerce.android.util.WooLog
 import dagger.hilt.EntryPoints
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.SharingStarted
@@ -51,15 +50,11 @@ class DashboardRepository @Inject constructor(
         widgets.toDomainModel(statsWidgetStatus, blazeWidgetStatus)
     }
 
-    suspend fun updateWidgets(widgets: List<DashboardWidget>) = runCatching {
-        dashboardDataStore.updateDashboard(
-            DashboardDataModel.newBuilder()
-                .addAllWidgets(widgets.map { it.toDataModel() })
-                .build()
-        )
-    }.onFailure { throwable ->
-        WooLog.e(WooLog.T.DASHBOARD, "Failed to update dashboard data", throwable)
-    }
+    suspend fun updateWidgets(widgets: List<DashboardWidget>) = dashboardDataStore.updateDashboard(
+        DashboardDataModel.newBuilder()
+            .addAllWidgets(widgets.map { it.toDataModel() })
+            .build()
+    )
 
     suspend fun updateWidgetVisibility(type: DashboardWidget.Type, isVisible: Boolean) {
         val dataStoreWidgets = widgets.first()
