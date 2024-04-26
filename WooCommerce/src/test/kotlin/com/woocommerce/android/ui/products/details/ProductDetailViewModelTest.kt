@@ -1083,7 +1083,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         selectedSite = mock {
             on { get() } doReturn SiteModel().apply { publishedStatus = SiteVisibility.COMING_SOON.value() }
         }
-        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID)).toSavedStateHandle()
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+            .toSavedStateHandle()
         viewModel = spy(
             ProductDetailViewModel(
                 savedState = savedState,
@@ -1128,7 +1129,8 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         selectedSite = mock {
             on { get() } doReturn SiteModel().apply { publishedStatus = SiteVisibility.COMING_SOON.value() }
         }
-        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID)).toSavedStateHandle()
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+            .toSavedStateHandle()
         viewModel = spy(
             ProductDetailViewModel(
                 savedState = savedState,
