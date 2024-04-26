@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.dashboard.data
 
-import com.woocommerce.android.AppConstants
 import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
@@ -16,10 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
@@ -276,27 +273,6 @@ class StatsRepository @Inject constructor(
         any { topPerformerProductEntity ->
             System.currentTimeMillis() - topPerformerProductEntity.millisSinceLastUpdated > AN_HOUR_IN_MILLIS
         }
-
-    suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
-        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            wcOrderStore.hasOrders(selectedSite.get())
-        }
-
-        when (result) {
-            is WCOrderStore.HasOrdersResult.Success -> {
-                emit(Result.success(!result.hasOrders))
-            }
-
-            is WCOrderStore.HasOrdersResult.Failure, null -> {
-                val errorMessage = (result as? WCOrderStore.HasOrdersResult.Failure)?.error?.message ?: "Timeout"
-                WooLog.e(
-                    DASHBOARD,
-                    "$TAG - Error fetching whether orders exist: $errorMessage"
-                )
-                emit(Result.failure(Exception(errorMessage)))
-            }
-        }
-    }
 
     data class StatsException(val error: OrderStatsError?) : Exception()
     data class SiteStats(

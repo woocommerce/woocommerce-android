@@ -12,7 +12,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -48,37 +47,12 @@ class GetStatsTest : BaseUnitTest() {
 
     @Before
     fun setup() = testBlocking {
-        givenCheckIfStoreHasNoOrdersFlow(Result.success(true))
         givenIsJetpackConnected(false)
         givenShouldUpdateAnalyticsReturns(true)
         givenFetchRevenueStats(Result.success(ANY_REVENUE_STATS))
         givenFetchVisitorStats(Result.success(ANY_VISITOR_STATS))
         givenFetchTotalVisitorStats(Result.success(ANY_TOTAL_VISITOR_COUNT))
     }
-
-    @Test
-    fun `Given it has no orders, when get stats, then emits HasOrders to false`() =
-        testBlocking {
-            givenCheckIfStoreHasNoOrdersFlow(Result.success(true))
-
-            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
-                .filter { it is GetStats.LoadStatsResult.HasOrders }
-                .first()
-
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.HasOrders(false))
-        }
-
-    @Test
-    fun `Given it has some orders, When get stats, then emits HasOrders to true`() =
-        testBlocking {
-            givenCheckIfStoreHasNoOrdersFlow(Result.success(false))
-
-            val result = getStats(refresh = false, selectedRange = ANY_STATS_RANGE_SELECTION)
-                .filter { it is GetStats.LoadStatsResult.HasOrders }
-                .first()
-
-            assertThat(result).isEqualTo(GetStats.LoadStatsResult.HasOrders(true))
-        }
 
     @Test
     fun `Given revenue stats success, when get stats, then emits revenue stats`() =
@@ -299,12 +273,6 @@ class GetStatsTest : BaseUnitTest() {
                     eq(AnalyticsUpdateDataStore.AnalyticData.REVENUE)
                 )
         }
-
-    private suspend fun givenCheckIfStoreHasNoOrdersFlow(result: Result<Boolean>) {
-        whenever(
-            statsRepository.checkIfStoreHasNoOrders()
-        ).thenReturn(flow { emit(result) })
-    }
 
     private suspend fun givenFetchRevenueStats(result: Result<WCRevenueStatsModel?>) {
         whenever(statsRepository.fetchRevenueStats(any(), any(), any(), any()))
