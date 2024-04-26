@@ -41,7 +41,7 @@ class ShouldShowOnboarding @Inject constructor(
             }
             true
         } else {
-            if(appPrefsWrapper.isOnboardingCompleted(siteId)) {
+            if (appPrefsWrapper.isOnboardingCompleted(siteId)) {
                 // Reset the onboarding completed status if there are still pending tasks
                 appPrefsWrapper.updateOnboardingCompletedStatus(siteId, false)
             }
