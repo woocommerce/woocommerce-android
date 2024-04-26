@@ -13,7 +13,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
-class MyStoreViewModelTest: BaseUnitTest() {
+class MyStoreViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: MyStoreViewModel
     private val loginRepository: LoginRepository = mock()

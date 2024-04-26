@@ -15,7 +15,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class LoginViewModelTest: BaseUnitTest() {
+class LoginViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: LoginViewModel
     private val loginRepository: LoginRepository = mock()
