@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -73,7 +74,7 @@ fun WidgetCard(
             WCOverflowMenu(
                 items = menu.items,
                 onSelected = { item -> item.action() },
-                mapper = { stringResource(id = it.titleResource) },
+                mapper = { it.title.getText() },
                 tint = colorResource(id = R.color.color_on_surface_high)
             )
         }
@@ -90,7 +91,7 @@ fun WidgetCard(
                 onClick = button.action
             ) {
                 Text(
-                    text = stringResource(id = button.titleResource),
+                    text = button.title.getText(),
                     style = MaterialTheme.typography.body1
                 )
             }

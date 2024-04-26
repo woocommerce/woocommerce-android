@@ -14,6 +14,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSitePublic
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.SelectedSite
@@ -226,7 +228,12 @@ class DashboardViewModel @Inject constructor(
     )
 
     data class DashboardWidgetAction(
-        @StringRes val titleResource: Int,
+        val title: UiString,
         val action: () -> Unit
-    )
+    ) {
+        constructor(@StringRes titleResource: Int, action: () -> Unit) : this(
+            title = UiStringRes(titleResource),
+            action = action
+        )
+    }
 }
