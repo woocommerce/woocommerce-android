@@ -5,7 +5,7 @@
     android:id="@+id/dashboardStats_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/empty_state_bg_color"
+    android:background="@color/color_surface"
     tools:context="com.woocommerce.android.ui.dashboard.DashboardFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
