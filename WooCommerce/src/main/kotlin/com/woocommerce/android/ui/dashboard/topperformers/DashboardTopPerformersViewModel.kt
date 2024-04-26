@@ -104,7 +104,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             menu = DashboardWidgetMenu(
                 items = listOf(
                     DashboardWidget.Type.POPULAR_PRODUCTS.defaultHideMenuEntry {
-                        hideTopPerformers()
+                        parentViewModel.onHideWidgetClicked(DashboardWidget.Type.POPULAR_PRODUCTS)
                     }
                 )
             ),
@@ -237,12 +237,6 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         selectedDateRange.value?.let {
             triggerEvent(OpenAnalytics(it))
-        }
-    }
-
-    private fun hideTopPerformers() {
-        viewModelScope.launch {
-            dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.POPULAR_PRODUCTS, isVisible = false)
         }
     }
 

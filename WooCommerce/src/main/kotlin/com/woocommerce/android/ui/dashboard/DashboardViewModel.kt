@@ -14,6 +14,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSitePublic
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.network.ConnectionChangeReceiver
@@ -156,6 +157,12 @@ class DashboardViewModel @Inject constructor(
 
     fun onDashboardWidgetEvent(event: DashboardEvent) {
         triggerEvent(event)
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onHideWidgetClicked(type: DashboardWidget.Type) {
+        // TODO ADD TRACKING HERE
+        triggerEvent(OpenEditWidgets)
     }
 
     private fun jetpackBenefitsBannerState(

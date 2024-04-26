@@ -34,7 +34,6 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.ui.onboarding.toOnboardingTaskState
 import com.woocommerce.android.ui.onboarding.toTrackingKey
 import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -67,7 +66,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                         action = ::onShareFeedbackClicked
                     ),
                     DashboardWidget.Type.ONBOARDING.defaultHideMenuEntry {
-                        onHideOnboardingClicked()
+                        parentViewModel.onHideWidgetClicked(DashboardWidget.Type.ONBOARDING)
                     }
                 )
             ),
@@ -107,10 +106,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         triggerEvent(NavigateToSurvey)
     }
 
-    private fun onHideOnboardingClicked() {
-        triggerEvent(NavigateToDashboardWidgetEditor)
-    }
-
     fun onTaskClicked(task: OnboardingTaskUi) {
         when (task.taskUiResources) {
             AboutYourStoreTaskRes -> triggerEvent(NavigateToAboutYourStore)
@@ -134,8 +129,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         val onViewAllTapped: DashboardWidgetAction,
         val isLoading: Boolean = false
     )
-
-    object NavigateToDashboardWidgetEditor : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

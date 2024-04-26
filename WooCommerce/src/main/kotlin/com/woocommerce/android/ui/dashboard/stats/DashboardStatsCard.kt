@@ -98,7 +98,7 @@ fun DashboardStatsCard(
         menu = DashboardViewModel.DashboardWidgetMenu(
             items = listOf(
                 DashboardWidget.Type.STATS.defaultHideMenuEntry {
-                    /* TODO */
+                    parentViewModel.onHideWidgetClicked(DashboardWidget.Type.STATS)
                 }
             )
         ),
@@ -133,7 +133,7 @@ private fun DashboardStatsContent(
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     onAddCustomRangeClick: () -> Unit,
     onTabSelected: (SelectionType) -> Unit,
-    onChartDateSelected: (String?) -> Unit
+    onChartDateSelected: (String?) -> Unit,
 ) {
     Column {
         StatsHeader(
