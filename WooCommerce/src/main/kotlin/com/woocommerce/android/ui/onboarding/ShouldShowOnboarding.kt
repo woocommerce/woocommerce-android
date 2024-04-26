@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.Onboardin
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
+import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -44,7 +45,7 @@ class ShouldShowOnboarding @Inject constructor(
         }
 
         return if (!areAllTaskCompleted &&
-            isOnboardingListSettingVisible()
+            (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled() || isOnboardingListSettingVisible())
         ) {
             appPrefsWrapper.setStoreOnboardingShown(siteId)
             true
