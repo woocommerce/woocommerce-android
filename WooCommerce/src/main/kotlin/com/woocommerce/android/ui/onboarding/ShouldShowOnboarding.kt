@@ -35,12 +35,16 @@ class ShouldShowOnboarding @Inject constructor(
 
         val siteId = selectedSite.getSelectedSiteId()
         val areAllTaskCompleted = if (tasks.all { it.isComplete }) {
-            appPrefsWrapper.markAllOnboardingTasksCompleted(siteId)
+            appPrefsWrapper.updateOnboardingCompletedStatus(siteId, true)
             if (appPrefsWrapper.getStoreOnboardingShown(siteId)) {
                 analyticsTrackerWrapper.track(stat = STORE_ONBOARDING_COMPLETED)
             }
             true
         } else {
+            if(appPrefsWrapper.isOnboardingCompleted(siteId)) {
+                // Reset the onboarding completed status if there are still pending tasks
+                appPrefsWrapper.updateOnboardingCompletedStatus(siteId, false)
+            }
             false
         }
 

@@ -7,11 +7,11 @@ import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transformLatest
 import javax.inject.Inject
 
 class ObserveOnboardingWidgetStatus @Inject constructor(
@@ -22,14 +22,16 @@ class ObserveOnboardingWidgetStatus @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     operator fun invoke() = selectedSite.observe()
         .filterNotNull()
-        .flatMapLatest {
+        .transformLatest {
+            // Start with the cached value
             if (shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
-                flowOf(
-                    DashboardWidget.Status.Unavailable(R.string.my_store_widget_onboarding_completed)
-                )
+                emit(DashboardWidget.Status.Unavailable(R.string.my_store_widget_onboarding_completed))
             } else {
+                emit(DashboardWidget.Status.Available)
+            }
+
+            emitAll(
                 storeOnboardingRepository.observeOnboardingTasks()
-                    .distinctUntilChanged()
                     .map { tasks ->
                         shouldShowOnboarding.showForTasks(tasks)
                     }
@@ -41,6 +43,7 @@ class ObserveOnboardingWidgetStatus @Inject constructor(
                         }
                     }
                     .onStart { storeOnboardingRepository.fetchOnboardingTasks() }
-            }
+            )
         }
+        .distinctUntilChanged()
 }
