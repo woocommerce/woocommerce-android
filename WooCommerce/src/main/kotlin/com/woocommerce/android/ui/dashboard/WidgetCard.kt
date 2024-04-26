@@ -71,7 +71,7 @@ fun WidgetCard(
             )
 
             WCOverflowMenu(
-                items = menu.items.toTypedArray(),
+                items = menu.items,
                 onSelected = { item -> item.action() },
                 mapper = { stringResource(id = it.titleResource) },
                 tint = colorResource(id = R.color.color_on_surface_high)

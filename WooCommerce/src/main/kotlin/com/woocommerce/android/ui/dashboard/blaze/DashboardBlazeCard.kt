@@ -285,7 +285,7 @@ private fun BlazeCampaignHeader(onDismissBlazeView: () -> Unit) {
             modifier = Modifier.weight(1f)
         )
         WCOverflowMenu(
-            items = arrayOf(stringResource(id = R.string.blaze_overflow_menu_hide_blaze)),
+            items = listOf(stringResource(id = R.string.blaze_overflow_menu_hide_blaze)),
             onSelected = { onDismissBlazeView() },
         )
     }

@@ -26,7 +26,7 @@ import com.woocommerce.android.R.string
 
 @Composable
 fun <T> WCOverflowMenu(
-    items: Array<T>,
+    items: List<T>,
     modifier: Modifier = Modifier,
     onSelected: (T) -> Unit,
     mapper: @Composable (T) -> String = { it.toString() },
