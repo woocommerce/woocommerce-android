@@ -165,6 +165,10 @@ class DashboardViewModel @Inject constructor(
         triggerEvent(OpenEditWidgets)
     }
 
+    fun onContactSupportClicked() {
+        triggerEvent(DashboardEvent.ContactSupport)
+    }
+
     private fun jetpackBenefitsBannerState(
         connectionType: SiteConnectionType
     ): Flow<JetpackBenefitsBannerUiModel?> {
@@ -220,7 +224,7 @@ class DashboardViewModel @Inject constructor(
             val callback: (Long, Long) -> Unit
         ) : DashboardEvent()
 
-        data object ShowPluginUnavailableError : DashboardEvent()
+        data object ContactSupport : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)

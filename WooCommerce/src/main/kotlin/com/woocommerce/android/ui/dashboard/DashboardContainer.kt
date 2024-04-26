@@ -19,7 +19,6 @@ import com.woocommerce.android.model.DashboardWidget.Type.POPULAR_PRODUCTS
 import com.woocommerce.android.model.DashboardWidget.Type.STATS
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
@@ -72,9 +71,6 @@ private fun WidgetList(
                             dateUtils = dateUtils,
                             currencyFormatter = currencyFormatter,
                             usageTracksEventEmitter = usageTracksEventEmitter,
-                            onPluginUnavailableError = {
-                                dashboardViewModel.onDashboardWidgetEvent(ShowPluginUnavailableError)
-                            },
                             onStatsError = {
                                 dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
                             },

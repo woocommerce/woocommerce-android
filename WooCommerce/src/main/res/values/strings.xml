@@ -398,6 +398,9 @@
     <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
+    <string name="my_store_stats_plugin_inactive_title">We can\'t display your\n store\'s analytics</string>
+    <string name="my_store_stats_plugin_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">Still need help? Contact us</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
     <string name="my_store_custom_range_granularity_label">%s interval</string>
     <string name="my_store_custom_range_granularity_hour">Hourly</string>

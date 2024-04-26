@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.stats
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +35,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -44,6 +48,7 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
@@ -51,6 +56,7 @@ import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitte
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -61,7 +67,6 @@ fun DashboardStatsCard(
     dateUtils: DateUtils,
     currencyFormatter: CurrencyFormatter,
     usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
-    onPluginUnavailableError: () -> Unit,
     onStatsError: () -> Unit,
     openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
     parentViewModel: DashboardViewModel,
@@ -79,7 +84,6 @@ fun DashboardStatsCard(
     LaunchedEffect(revenueStatsState) {
         when (revenueStatsState) {
             is DashboardStatsViewModel.RevenueStatsViewState.GenericError -> onStatsError()
-            is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError -> onPluginUnavailableError()
             else -> Unit
         }
     }
@@ -102,23 +106,31 @@ fun DashboardStatsCard(
                 }
             )
         ),
-        button = DashboardViewModel.DashboardWidgetAction(
-            titleResource = R.string.analytics_section_see_all,
-            action = viewModel::onViewAnalyticsClicked
-        )
+        button = if (revenueStatsState !is PluginNotActiveError) {
+            DashboardViewModel.DashboardWidgetAction(
+                titleResource = R.string.analytics_section_see_all,
+                action = viewModel::onViewAnalyticsClicked
+            )
+        } else null
     ) {
-        DashboardStatsContent(
-            dateRange = dateRange,
-            revenueStatsState = revenueStatsState,
-            visitorsStatsState = visitorsStatsState,
-            lastUpdateState = lastUpdateState,
-            dateUtils = dateUtils,
-            currencyFormatter = currencyFormatter,
-            usageTracksEventEmitter = usageTracksEventEmitter,
-            onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
-            onTabSelected = viewModel::onTabSelected,
-            onChartDateSelected = viewModel::onChartDateSelected
-        )
+        if (revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError) {
+            DashboardStatsContent(
+                dateRange = dateRange,
+                revenueStatsState = revenueStatsState,
+                visitorsStatsState = visitorsStatsState,
+                lastUpdateState = lastUpdateState,
+                dateUtils = dateUtils,
+                currencyFormatter = currencyFormatter,
+                usageTracksEventEmitter = usageTracksEventEmitter,
+                onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
+                onTabSelected = viewModel::onTabSelected,
+                onChartDateSelected = viewModel::onChartDateSelected
+            )
+        } else {
+            PluginNotAvailableError(
+                onContactSupportClick = parentViewModel::onContactSupportClicked
+            )
+        }
     }
 }
 
@@ -344,6 +356,40 @@ private fun StatsChart(
         }
     }
 }
+
+@Composable
+private fun PluginNotAvailableError(onContactSupportClick: () -> Unit) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_search),
+            contentDescription = null
+        )
+
+        Text(
+            text = stringResource(id = R.string.my_store_stats_plugin_inactive_title),
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = stringResource(id = R.string.my_store_stats_plugin_inactive_description),
+            style = MaterialTheme.typography.body1,
+            textAlign = TextAlign.Center
+        )
+
+        WCOutlinedButton(
+            text = stringResource(id = R.string.my_store_stats_plugin_inactive_contact_us),
+            onClick = onContactSupportClick
+        )
+    }
+}
+
 
 @Composable
 private fun HandleEvents(
