@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.inventory.FetchProductBySKU
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
@@ -88,7 +89,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var tracker: AnalyticsTrackerWrapper
     protected lateinit var resourceProvider: ResourceProvider
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
-    private lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
+    protected lateinit var checkDigitRemoverFactory: CheckDigitRemoverFactory
     private lateinit var productRestrictions: OrderCreationProductRestrictions
     private lateinit var taxRateToAddress: GetAddressFromTaxRate
     private lateinit var getAutoTaxRateSetting: GetAutoTaxRateSetting
@@ -1305,6 +1306,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             )
                 .thenReturn("Product with SKU $skuCode not found. Unable to add to the order")
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover>()
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
             createSut()
             val scannedStatus = CodeScannerStatus.Success(skuCode, BarcodeFormat.FormatUPCA)
             whenever(
@@ -1333,6 +1340,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 )
             )
                 .thenReturn("Product with SKU $skuCode not found. Unable to add to the order")
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover>()
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
             createSut()
             val scannedStatus = CodeScannerStatus.Success(skuCode, BarcodeFormat.FormatUPCA)
             whenever(
@@ -1575,6 +1588,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `given product search via sku fails, then track proper event`() {
         testBlocking {
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover>()
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -1596,6 +1615,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `given product search via sku fails, then track event with proper source`() {
         testBlocking {
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover>()
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -1621,6 +1646,12 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `given product search via sku fails, then track event with proper reason`() {
         testBlocking {
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover>()
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
             createSut()
             val scannedStatus = CodeScannerStatus.Success("12345", BarcodeFormat.FormatUPCA)
             whenever(
@@ -1701,7 +1732,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 mapOf(
                     KEY_SCANNING_SOURCE to "order_creation",
                     KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatQRCode.formatName,
-                    KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
                 )
             )
         }
@@ -2514,7 +2545,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel,
             currencySymbolFinder = currencySymbolFinder,
             totalsHelper = totalsHelper,
-            dateUtils = mock()
+            dateUtils = mock(),
+            fetchProductBySKU = FetchProductBySKU(productListRepository, checkDigitRemoverFactory),
         )
     }
 

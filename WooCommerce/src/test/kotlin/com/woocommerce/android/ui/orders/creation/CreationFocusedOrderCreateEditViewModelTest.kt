@@ -1412,6 +1412,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 )
             ).thenReturn(null)
 
+            val mockUPCCheckDigitRemover = mock<UPCCheckDigitRemover>()
+            whenever(
+                checkDigitRemoverFactory.getCheckDigitRemoverFor(any())
+            ).thenReturn(
+                mockUPCCheckDigitRemover
+            )
             createSut(navArgs)
 
             verify(tracker).track(
@@ -1457,7 +1463,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 mapOf(
                     AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
                     KEY_SCANNING_BARCODE_FORMAT to BarcodeFormat.FormatQRCode.formatName,
-                    KEY_SCANNING_FAILURE_REASON to "Empty data response (no product found for the SKU)"
+                    KEY_SCANNING_FAILURE_REASON to "Product search via SKU API call failed"
                 )
             )
         }
