@@ -27,8 +27,8 @@ import com.woocommerce.android.R.string
 @Composable
 fun <T> WCOverflowMenu(
     items: List<T>,
-    modifier: Modifier = Modifier,
     onSelected: (T) -> Unit,
+    modifier: Modifier = Modifier,
     mapper: @Composable (T) -> String = { it.toString() },
     tint: Color = Color.Black
 ) {
