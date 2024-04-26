@@ -1,10 +1,9 @@
-package com.woocommerce.android.ui
+package com.woocommerce.android.ui.mystore
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.mystore.MyStoreViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat

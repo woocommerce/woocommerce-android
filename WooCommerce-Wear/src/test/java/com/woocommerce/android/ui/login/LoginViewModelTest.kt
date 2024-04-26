@@ -1,11 +1,10 @@
-package com.woocommerce.android.ui
+package com.woocommerce.android.ui.login
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.phone.PhoneConnectionRepository
-import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.login.LoginViewModel
+import com.woocommerce.android.ui.NavRoutes
 import com.woocommerce.commons.wear.MessagePath
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -42,9 +41,6 @@ class LoginViewModelTest: BaseUnitTest() {
         whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
         createSut()
         sut.viewState.observeForever { isLoading = it.isLoading }
-
-        // When
-        createSut()
 
         // Then
         assertThat(isLoading).isNotNull()
