@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-09 13:54:03+0000
+Translation-Revision-Date: 2024-04-23 13:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="card_selection_control">所選分析卡片</string>
+    <string name="login_app_password_exit_dialog_cancel">取消</string>
+    <string name="login_app_password_exit_dialog_confirmation">仍要結束</string>
+    <string name="login_app_password_exit_dialog_message">看來你尚未核准應用程式連結。 你確定要結束嗎？</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">請選取並使用最小尺寸為 500x500 像素的圖片</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">無效圖片</string>
+    <string name="login_invalid_credentials_message">看來你輸入的使用者名稱或密碼並不相符。 請再次檢查你的憑證，然後再試一次。</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">如果仍無法載入資料，請聯絡我們的支援團隊取得協助。</string>
+    <string name="orderlist_connectivity_tool_summary_title">沒有連結問題</string>
+    <string name="orderlist_connectivity_tool_return_action">返回上一個畫面</string>
+    <string name="orderlist_connectivity_tool_retry_action">重試連結</string>
+    <string name="orderlist_connectivity_tool_store_check_title">正在連結你的網站</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">我們目前無法連結至 WordPress.com。\n\n請稍待幾分鐘後再試一次，或聯絡我們的支援團隊，我們很樂意提供協助。</string>
+    <string name="orderlist_connectivity_tool_subtitle">我們正嘗試找出你的連結問題，請稍待片刻。</string>
+    <string name="orderlist_connectivity_tool_title">對連結進行疑難排解</string>
+    <string name="analytics_gift_cards_card_title">禮物卡</string>
+    <string name="analytics_used_title">已使用</string>
+    <string name="analytics_gift_cards_no_data">這段時間沒有禮物卡</string>
     <string name="login_app_password_support_button">聯絡支援團隊</string>
     <string name="login_app_password_continue_button">繼續</string>
     <string name="login_app_password_instructions_footer">如果你遇到任何問題，請聯絡我們的支援團隊。</string>
@@ -96,20 +114,17 @@ Language: zh_TW
     <string name="order_creation_tablet_mode_fragment_title">訂單摘要</string>
     <string name="orderlist_order_trashed_error">將訂單移至垃圾桶時發生錯誤</string>
     <string name="orderlist_order_trashed">已移至垃圾桶的訂單</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">糟糕！ 你的網站發生問題。\n\n聯絡你的主機服務提供者，尋求進一步協助。</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">糟糕！ 你的 Jetpack 連線發生問題。\n\n別擔心，我們的支援團隊可以提供協助。 聯絡我們，我們很樂意提供協助。</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">糟糕！ 你的網站回應無法正常運作。\n\n別擔心，我們的支援團隊可以提供協助。 聯絡我們，我們很樂意提供協助。</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">糟糕！ 你的網站太久沒有回應。\n\n聯絡你的主機服務提供者，尋求進一步協助。</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">糟糕！ 我們目前無法連結 WordPress.com。\n\n別擔心，我們的支援團隊可以提供協助。 聯絡我們，我們很樂意提供協助。</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">看來你的網站發生問題。\n\n請聯絡你的主機服務提供者，尋求進一步協助。</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">看來你的 Jetpack 連結發生問題。\n\n別擔心，我們的支援團隊可以提供協助。 歡迎聯絡我們，我們很樂意提供協助。</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">看來你的網站回應無法正常運作。\n\n別擔心，我們的支援團隊可以提供協助。 歡迎聯絡我們，我們很樂意提供協助。</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">看來你的網站太久沒有回應。\n\n請聯絡你的主機服務提供者，尋求進一步協助。</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">你目前沒有網際網路連線。\n\n請確認 Wi-Fi 已開啟。 如果你使用行動數據，請確認已在裝置設定中啟用。</string>
     <string name="product_detail_product_not_selected">未選取商品</string>
     <string name="orderlist_connectivity_tool_read_more_action">閱讀更多</string>
     <string name="orderlist_connectivity_tool_contact_support_action">聯絡支援團隊</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">你的網站指令</string>
-    <string name="orderlist_connectivity_tool_store_check_title">你的網站</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com 伺服器</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">正在擷取網站指令</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">正在連結 WordPress.com 伺服器</string>
     <string name="orderlist_connectivity_tool_internet_check_title">網際網路連線</string>
-    <string name="orderlist_connectivity_tool_title">連線測試</string>
     <string name="my_store_custom_range_content_description">新增自訂日期範圍統計</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">找不到地點。\n請再試一次。</string>
     <string name="order_detail_attribution_session_page_views">工作階段頁面瀏覽次數</string>
@@ -764,7 +779,7 @@ Language: zh_TW
     <string name="settings_privacy_header">隱私權</string>
     <string name="settings_usage_tracking_description">深入瞭解我們針對你的商店收集了哪些資料，以及您可使用的資料分享控制選項。</string>
     <string name="settings_usage_tracking">使用情況追蹤</string>
-    <string name="settings_web_options_description">woocommerce.com 為使用者提供更多隱私權選項。 如要瞭解詳情，請查看此處。</string>
+    <string name="settings_web_options_description">woocommerce.com 為使用者提供更多隱私權選項。 若想深入了解，請查看此處。</string>
     <string name="settings_web_options">網頁選項</string>
     <string name="settings_more_privacy_options_header">其他隱私權選項</string>
     <string name="settings_tracking_analytics_error_update">更新你的隱私權設定時發生錯誤</string>

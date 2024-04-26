@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-09 15:54:04+0000
+Translation-Revision-Date: 2024-04-22 20:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="card_selection_control">تحديد البطاقة التحليلية</string>
+    <string name="login_app_password_exit_dialog_cancel">إلغاء</string>
+    <string name="login_app_password_exit_dialog_confirmation">الإنهاء على أي حال</string>
+    <string name="login_app_password_exit_dialog_message">يبدو أنك لم توافق على ربط التطبيق حتى الآن. هل تريد بالتأكيد الإنهاء؟</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">يرجى تحديد صورة بأبعاد 500×500 بكسل بحد أدنى</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">صورة غير صالحة</string>
+    <string name="login_invalid_credentials_message">يبدو أن اسم المستخدم أو كلمة المرور التي أدخلتها غير متطابقة تمامًا. تحقق مجددًا من بيانات الاعتماد الخاصة بك وحاول مجددًا!</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">إذا لم يتم تحميل بياناتك، فاتصل بفريق الدعم لديك للحصول على المساعدة.</string>
+    <string name="orderlist_connectivity_tool_summary_title">لا توجد مشكلات في الاتصال</string>
+    <string name="orderlist_connectivity_tool_return_action">العودة إلى الشاشة السابقة</string>
+    <string name="orderlist_connectivity_tool_retry_action">إعادة محاولة الاتصال</string>
+    <string name="orderlist_connectivity_tool_store_check_title">ربط موقعك</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">يتعذر علينا الاتصال بووردبريس.كوم الآن.\n\nحاول مجددًا في غضون دقائق، أو اتصل بفريق الدعم لدينا وستسعدنا مساعدتك.</string>
+    <string name="orderlist_connectivity_tool_subtitle">يرجى الانتظار بينما نحاول تحديد مشكلة الاتصال الخاصة بك.</string>
+    <string name="orderlist_connectivity_tool_title">حل مشكلات الاتصال</string>
+    <string name="analytics_gift_cards_card_title">بطاقات الهدايا</string>
+    <string name="analytics_used_title">مستخدم</string>
+    <string name="analytics_gift_cards_no_data">لا توجد بطاقات هدايا في هذه الفترة</string>
     <string name="login_app_password_support_button">الاتصال بالدعم</string>
     <string name="login_app_password_continue_button">متابعة</string>
     <string name="login_app_password_instructions_footer">إذا واجهت أي مشكلات، فيرجى الاتصال بفريق الدعم لدينا.</string>
@@ -96,20 +114,17 @@ Language: ar
     <string name="order_creation_tablet_mode_fragment_title">ملخص الطلبات</string>
     <string name="orderlist_order_trashed_error">حدث خطأ في أثناء وضع الطلب في سلة المهملات</string>
     <string name="orderlist_order_trashed">تم وضع الطلب في سلة المهملات</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">عفوًا! يبدو أن هناك مشكلة في موقعك.\n\nاتصل بمزوّد خدمة الاستضافة للحصول على مزيد من المساعدة.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">عفوًا! يبدو أن هناك مشكلة في الربط بـ Jetpack الخاص بك.\n\nلكن لا داعي للقلق، فريق الدعم لدينا موجود هنا لمساعدتك. اتصل بنا وستسعدنا مساعدتك.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">عفوًا! يبدو أنه يتعذر علينا التعامل بشكل صحيح مع استجابة موقعك. \n\nلكن لا داعي للقلق، فريق الدعم لدينا موجود هنا لمساعدتك. اتصل بنا وستسعدنا مساعدتك.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">عفوًا! يبدو أن موقعك يستغرق وقتًا طويلاً للغاية لكي يستجيب.\n\nاتصل بمزوّد خدمة الاستضافة للحصول على مزيد من المساعدة.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">عفوًا! يبدو أنه يتعذر علينا الربط بووردبريس.كوم في الوقت الحالي.\n\nلكن لا داعي للقلق، فريق الدعم لدينا موجود هنا لمساعدتك. اتصل بنا وستسعدنا مساعدتك.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">يبدو أن هناك مشكلة في موقعك.\n\nاتصل بمزوّد خدمة الاستضافة للحصول على مزيد من المساعدة.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">يبدو أن هناك مشكلة في الربط بـ Jetpack الخاص بك.\n\nلكن لا داعي للقلق، فريق الدعم لدينا موجود هنا لمساعدتك. اتصل بنا وستسعدنا مساعدتك.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">يبدو أنه يتعذر علينا التعامل بشكل صحيح مع استجابة موقعك. \n\nلكن لا داعي للقلق، فريق الدعم لدينا موجود هنا لمساعدتك. اتصل بنا وستسعدنا مساعدتك.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">يبدو أن موقعك يستغرق وقتًا طويلاً للغاية لكي يستجيب.\n\nاتصل بمزوّد خدمة الاستضافة للحصول على مزيد من المساعدة.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">يبدو أنك أنتَ غير متصل بالإنترنت.\n\nتأكد من تشغيل شبكة Wi-Fi الخاصة بك. إذا كنت تستخدم بيانات الهاتف المحمول، فتأكد من تمكينها ضمن إعدادات الجهاز لديك.</string>
     <string name="product_detail_product_not_selected">لم يتم تحديد منتجات</string>
     <string name="orderlist_connectivity_tool_read_more_action">قراءة المزيد</string>
     <string name="orderlist_connectivity_tool_contact_support_action">الاتصال بالدعم</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">الطلبات في موقعك</string>
-    <string name="orderlist_connectivity_tool_store_check_title">موقعك</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">خوادم ووردبريس.كوم</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">إحضار طلبات موقعك</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">الربط بخوادم ووردبريس.كوم</string>
     <string name="orderlist_connectivity_tool_internet_check_title">الاتصال بالإنترنت</string>
-    <string name="orderlist_connectivity_tool_title">اختبار إمكانية الربط</string>
     <string name="my_store_custom_range_content_description">إضافة إحصاءات نطاق التاريخ المخصصة</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">لم يتم العثور على الموقع.\nترجى المحاولة مجددًا.</string>
     <string name="order_detail_attribution_session_page_views">مشاهدات صفحة الجلسة</string>
@@ -764,7 +779,7 @@ Language: ar
     <string name="settings_privacy_header">الخصوصية</string>
     <string name="settings_usage_tracking_description">تعرّف على المزيد حول البيانات التي نجمعها حول متجرك وخياراتك للتحكم في مشاركة البيانات هذه.</string>
     <string name="settings_usage_tracking">تعقب الاستخدام</string>
-    <string name="settings_web_options_description">يتوافر مزيد من خيارات الخصوصية لمستخدمي woocommerce.com. تحقق هنا للتعرف على المزيد.</string>
+    <string name="settings_web_options_description">يتوفر مزيد من خيارات الخصوصية لمستخدمي woocommerce.com. تحقق هنا للتعرف على المزيد.</string>
     <string name="settings_web_options">خيارات الويب</string>
     <string name="settings_more_privacy_options_header">مزيد من خيارات الخصوصية</string>
     <string name="settings_tracking_analytics_error_update">كان هناك خطأ في أثناء تحديث إعدادات الخصوصية لديك</string>
