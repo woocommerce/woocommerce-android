@@ -3,6 +3,7 @@ package com.woocommerce.android
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.environment.EnvironmentRepository
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.wear.WearableConnectionRepository
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class SiteObserver @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
-    private val environmentRepository: EnvironmentRepository
+    private val environmentRepository: EnvironmentRepository,
+    private val wearableConnectionRepository: WearableConnectionRepository
 ) {
     suspend fun observeAndUpdateSelectedSiteData() {
         selectedSite.observe()
@@ -34,6 +36,8 @@ class SiteObserver @Inject constructor(
                     ?.model?.let { storeID ->
                         WooLog.d(WooLog.T.UTILS, "Fetched StoreID $storeID for site ${site.name}")
                     }
+
+                wearableConnectionRepository.sendSiteData()
             }
     }
 }

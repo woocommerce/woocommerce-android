@@ -32,16 +32,6 @@
             android:name=".phone.PhoneConnectionService"
             android:exported="true">
             <intent-filter>
-                <!-- listeners receive events that match the action and data filters -->
-                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
-                <data
-                    android:host="*"
-                    android:pathPrefix="/token-data"
-                    android:scheme="wear" />
-            </intent-filter>
-
-            <intent-filter>
-                <!-- listeners receive events that match the action and data filters -->
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
                 <data
                     android:host="*"

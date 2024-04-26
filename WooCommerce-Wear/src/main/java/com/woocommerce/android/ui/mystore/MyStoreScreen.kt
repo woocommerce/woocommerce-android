@@ -1,50 +1,57 @@
 package com.woocommerce.android.ui.mystore
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.wear.compose.material.MaterialTheme
+import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.woocommerce.android.R
 import com.woocommerce.android.presentation.theme.WooTheme
 
 @Composable
-fun MyStoreScreen() {
-    WooTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            contentAlignment = Alignment.Center
-        ) {
-            TimeText()
-            Greeting(greetingName = "Woo")
-        }
-    }
+fun MyStoreScreen(viewModel: MyStoreViewModel) {
+    val viewState by viewModel.viewState.observeAsState()
+    MyStoreScreen(
+        currentSiteId = viewState?.currentSiteId.orEmpty(),
+        currentSiteName = viewState?.currentSiteName.orEmpty()
+    )
 }
 
 @Composable
-fun Greeting(greetingName: String) {
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center,
-        color = MaterialTheme.colors.primary,
-        text = stringResource(R.string.hello_world, greetingName)
-    )
+fun MyStoreScreen(
+    currentSiteId: String?,
+    currentSiteName: String?
+) {
+    WooTheme {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            TimeText()
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(text = currentSiteId ?: "No site selected")
+                Text(text = currentSiteName ?: "No site selected")
+            }
+        }
+    }
 }
 
 @Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
 @Preview(device = WearDevices.SQUARE, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    MyStoreScreen()
+    MyStoreScreen(
+        currentSiteId = "1",
+        currentSiteName = "My Store"
+    )
 }
