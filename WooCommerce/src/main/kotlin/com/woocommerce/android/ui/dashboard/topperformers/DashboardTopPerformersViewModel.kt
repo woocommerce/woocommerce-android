@@ -25,7 +25,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAc
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
-import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
@@ -75,7 +74,6 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val dateUtils: DateUtils,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val customDateRangeDataStore: TopPerformersCustomDateRangeDataStore,
-    private val dashboardRepository: DashboardRepository,
     getSelectedDateRange: GetSelectedRangeForTopPerformers,
 ) : ScopedViewModel(savedState) {
     private val _selectedDateRange = getSelectedDateRange()
