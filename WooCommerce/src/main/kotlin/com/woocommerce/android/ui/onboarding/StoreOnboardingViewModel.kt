@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.onboarding
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -9,24 +8,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_ADD_DOMAIN
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LAUNCH_SITE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_LOCAL_NAME_STORE
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PAYMENTS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_PRODUCTS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_STORE_DETAILS
-import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_WOO_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.CUSTOMIZE_DOMAIN
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.LAUNCH_YOUR_STORE
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.LOCAL_NAME_STORE
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
-import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -61,7 +44,7 @@ class StoreOnboardingViewModel @Inject constructor(
                     _viewState.value = OnboardingState(
                         show = shouldShowOnboarding.showForTasks(tasks),
                         title = R.string.store_onboarding_title,
-                        tasks = tasks.map { mapToOnboardingTaskState(it) },
+                        tasks = tasks.map { it.toOnboardingTaskState() },
                     )
                 }
         }
@@ -70,18 +53,6 @@ class StoreOnboardingViewModel @Inject constructor(
     override fun onResume(owner: LifecycleOwner) {
         refreshOnboardingList()
     }
-
-    private fun mapToOnboardingTaskState(task: OnboardingTask) =
-        when (task.type) {
-            ABOUT_YOUR_STORE -> OnboardingTaskUi(AboutYourStoreTaskRes, isCompleted = task.isComplete)
-            LAUNCH_YOUR_STORE -> OnboardingTaskUi(LaunchStoreTaskRes, isCompleted = task.isComplete)
-            CUSTOMIZE_DOMAIN -> OnboardingTaskUi(CustomizeDomainTaskRes, isCompleted = task.isComplete)
-            WC_PAYMENTS -> OnboardingTaskUi(SetupWooPaymentsTaskRes, isCompleted = task.isComplete)
-            PAYMENTS -> OnboardingTaskUi(SetupPaymentsTaskRes, isCompleted = task.isComplete)
-            ADD_FIRST_PRODUCT -> OnboardingTaskUi(AddProductTaskRes, isCompleted = task.isComplete)
-            LOCAL_NAME_STORE -> OnboardingTaskUi(NameYourStoreTaskRes, isCompleted = task.isComplete)
-            MOBILE_UNSUPPORTED -> error("Unknown task type is not allowed in UI layer")
-        }
 
     fun viewAllClicked() {
         triggerEvent(NavigateToOnboardingFullScreen)
@@ -127,20 +98,9 @@ class StoreOnboardingViewModel @Inject constructor(
         }
         analyticsTrackerWrapper.track(
             stat = AnalyticsEvent.STORE_ONBOARDING_TASK_TAPPED,
-            properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to getTaskTrackingKey(task))
+            properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to task.toTrackingKey())
         )
     }
-
-    private fun getTaskTrackingKey(task: OnboardingTaskUi) =
-        when (task.taskUiResources) {
-            AboutYourStoreTaskRes -> VALUE_STORE_DETAILS
-            is AddProductTaskRes -> VALUE_PRODUCTS
-            CustomizeDomainTaskRes -> VALUE_ADD_DOMAIN
-            LaunchStoreTaskRes -> VALUE_LAUNCH_SITE
-            SetupPaymentsTaskRes -> VALUE_PAYMENTS
-            SetupWooPaymentsTaskRes -> VALUE_WOO_PAYMENTS
-            NameYourStoreTaskRes -> VALUE_LOCAL_NAME_STORE
-        }
 
     fun onPullToRefresh() {
         refreshOnboardingList()
@@ -161,73 +121,4 @@ class StoreOnboardingViewModel @Inject constructor(
         @StringRes val title: Int,
         val tasks: List<OnboardingTaskUi>,
     )
-
-    data class OnboardingTaskUi(
-        val taskUiResources: OnboardingTaskUiResources,
-        val isCompleted: Boolean,
-    )
-
-    sealed class OnboardingTaskUiResources(
-        @DrawableRes val icon: Int,
-        @StringRes val title: Int,
-        @StringRes val description: Int,
-        @StringRes val labelText: Int = 0,
-        @DrawableRes val labelIcon: Int = 0
-    )
-
-    object NameYourStoreTaskRes : OnboardingTaskUiResources(
-        icon = R.drawable.ic_onboarding_name_your_store,
-        title = R.string.store_onboarding_task_name_store_title,
-        description = R.string.store_onboarding_task_name_store_description
-    )
-
-    object AboutYourStoreTaskRes : OnboardingTaskUiResources(
-        icon = R.drawable.ic_onboarding_about_your_store,
-        title = R.string.store_onboarding_task_about_your_store_title,
-        description = R.string.store_onboarding_task_about_your_store_description
-    )
-
-    object AddProductTaskRes : OnboardingTaskUiResources(
-        icon = R.drawable.ic_onboarding_add_product,
-        title = R.string.store_onboarding_task_add_product_title,
-        description = R.string.store_onboarding_task_add_product_description,
-        labelText = R.string.store_onboarding_task_product_description_ai_generator_text,
-        labelIcon = R.drawable.ic_ai
-    )
-
-    object LaunchStoreTaskRes : OnboardingTaskUiResources(
-        icon = R.drawable.ic_onboarding_launch_store,
-        title = R.string.store_onboarding_task_launch_store_title,
-        description = R.string.store_onboarding_task_launch_store_description
-    )
-
-    object CustomizeDomainTaskRes : OnboardingTaskUiResources(
-        icon = R.drawable.ic_onboarding_customize_domain,
-        title = R.string.store_onboarding_task_change_domain_title,
-        description = R.string.store_onboarding_task_change_domain_description
-    )
-
-    object SetupPaymentsTaskRes : OnboardingTaskUiResources(
-        icon = R.drawable.ic_onboarding_payments_setup,
-        title = R.string.store_onboarding_task_payments_setup_title,
-        description = R.string.store_onboarding_task_payments_setup_description
-    )
-
-    object SetupWooPaymentsTaskRes : OnboardingTaskUiResources(
-        icon = R.drawable.ic_onboarding_payments_setup,
-        title = R.string.store_onboarding_task_payments_setup_title,
-        description = R.string.store_onboarding_task_woopayments_setup_description
-    )
-
-    object NavigateToOnboardingFullScreen : MultiLiveEvent.Event()
-    object NavigateToSurvey : MultiLiveEvent.Event()
-    object NavigateToLaunchStore : MultiLiveEvent.Event()
-    object NavigateToDomains : MultiLiveEvent.Event()
-    object NavigateToSetupPayments : MultiLiveEvent.Event() {
-        val taskId = PAYMENTS.id
-    }
-    object NavigateToSetupWooPayments : MultiLiveEvent.Event()
-    object NavigateToAboutYourStore : MultiLiveEvent.Event()
-    object NavigateToAddProduct : MultiLiveEvent.Event()
-    object ShowNameYourStoreDialog : MultiLiveEvent.Event()
 }

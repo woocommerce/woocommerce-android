@@ -19,9 +19,8 @@ import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -96,7 +95,7 @@ fun AdDestinationParametersScreen(
                 Toolbar(
                     title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameters_property_title),
                     onNavigationButtonClick = onBackPressed,
-                    navigationIcon = Filled.ArrowBack
+                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
                 )
             },
             modifier = Modifier.background(MaterialTheme.colors.surface)

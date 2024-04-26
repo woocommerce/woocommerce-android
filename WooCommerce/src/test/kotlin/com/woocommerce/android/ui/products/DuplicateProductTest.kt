@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider

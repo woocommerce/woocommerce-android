@@ -36,11 +36,11 @@ import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHe
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.util.captureValues

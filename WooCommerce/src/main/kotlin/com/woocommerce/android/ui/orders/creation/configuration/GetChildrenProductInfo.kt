@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.orders.creation.configuration
 
 import com.woocommerce.android.ui.products.GetBundledProducts
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map

@@ -65,12 +65,21 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowPriv
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.onboarding.NavigateToAboutYourStore
+import com.woocommerce.android.ui.onboarding.NavigateToAddProduct
+import com.woocommerce.android.ui.onboarding.NavigateToDomains
+import com.woocommerce.android.ui.onboarding.NavigateToLaunchStore
+import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
+import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
+import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments.taskId
+import com.woocommerce.android.ui.onboarding.NavigateToSetupWooPayments
+import com.woocommerce.android.ui.onboarding.NavigateToSurvey
+import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.ui.products.ProductDetailFragment.Mode.ShowProduct
+import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -81,6 +90,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -104,7 +114,13 @@ class MyStoreFragment :
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val myStoreBlazeViewModel: DashboardBlazeViewModel by viewModels()
+    private val myStoreBlazeViewModel: DashboardBlazeViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<DashboardBlazeViewModel.Factory> { factory ->
+                factory.create(parentViewModel = null)
+            }
+        }
+    )
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -309,23 +325,23 @@ class MyStoreFragment :
 
     private fun Event.handle() {
         when (this) {
-            is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
-            is StoreOnboardingViewModel.NavigateToSurvey ->
+            is NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
+            is NavigateToSurvey ->
                 NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
                     findNavController().navigateSafely(this)
                 }
 
-            is StoreOnboardingViewModel.NavigateToLaunchStore ->
+            is NavigateToLaunchStore ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()
                 )
 
-            is StoreOnboardingViewModel.NavigateToDomains ->
+            is NavigateToDomains ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToNavGraphDomainChange()
                 )
 
-            is StoreOnboardingViewModel.NavigateToAddProduct ->
+            is NavigateToAddProduct ->
                 with(addProductNavigator) {
                     findNavController().navigateToAddProducts(
                         aiBottomSheetAction = MyStoreFragmentDirections.actionDashboardToAddProductWithAIBottomSheet(),
@@ -333,24 +349,24 @@ class MyStoreFragment :
                     )
                 }
 
-            is StoreOnboardingViewModel.NavigateToSetupPayments ->
+            is NavigateToSetupPayments ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToPaymentsPreSetupFragment(
                         taskId = taskId
                     )
                 )
 
-            is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
+            is NavigateToSetupWooPayments ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToWooPaymentsSetupInstructionsFragment()
                 )
 
-            is StoreOnboardingViewModel.NavigateToAboutYourStore ->
+            is NavigateToAboutYourStore ->
                 findNavController().navigateSafely(
                     MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
                 )
 
-            is StoreOnboardingViewModel.ShowNameYourStoreDialog -> {
+            is ShowNameYourStoreDialog -> {
                 findNavController()
                     .navigateSafely(
                         MyStoreFragmentDirections.actionMyStoreToNameYourStoreDialogFragment(fromOnboarding = true)
@@ -495,7 +511,6 @@ class MyStoreFragment :
         binding.myStoreTopPerformers.showSkeleton(true)
     }
 
-    @Suppress("ForbiddenComment")
     private fun prepareJetpackBenefitsBanner() {
         appPrefsWrapper.setJetpackInstallationIsFromBanner(false)
         binding.jetpackBenefitsBanner.root.isVisible = false
@@ -512,10 +527,10 @@ class MyStoreFragment :
             // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
             // we are using `withCreated` here, since if this view doesn't reach the created state,
             // the scope will not get cancelled.
-            // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
+            // TODO revisit this once https://issuetracker.google.com/issues/127528777 is implemented
             // (no update as of Oct 2023)
             val appBarLayout = requireActivity().findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
-            withCreated {
+            viewLifecycleOwner.withCreated {
                 appBarLayout?.verticalOffsetChanges()
                     ?.onEach { verticalOffset ->
                         binding.jetpackBenefitsBanner.root.translationY =

@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.Sto
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusExitState
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusResult
 import com.woocommerce.android.ui.products.UpdateProductStockStatusViewModel.UpdateStockStatusUiState
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider

@@ -14,9 +14,7 @@ import com.woocommerce.android.e2e.helpers.util.ProductData
 import com.woocommerce.android.e2e.helpers.util.Screen
 import org.hamcrest.Matchers
 
-class SingleOrderScreen : Screen {
-    constructor() : super(R.id.toolbar)
-
+class SingleOrderScreen : Screen(R.id.toolbar) {
     fun goBackToOrdersScreen(): OrderListScreen {
         if (isElementDisplayed(R.id.orderDetail_container)) {
             pressBack()

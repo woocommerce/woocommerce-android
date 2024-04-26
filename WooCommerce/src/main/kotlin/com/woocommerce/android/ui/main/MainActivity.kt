@@ -103,8 +103,8 @@ import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
-import com.woocommerce.android.ui.products.ProductDetailFragment
-import com.woocommerce.android.ui.products.ProductListFragmentDirections
+import com.woocommerce.android.ui.products.details.ProductDetailFragment
+import com.woocommerce.android.ui.products.list.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
@@ -236,7 +236,7 @@ class MainActivity :
                     toolbar.navigationIcon = appBarStatus.navigationIcon?.let {
                         ContextCompat.getDrawable(this@MainActivity, it)
                     }
-                    binding.appBarLayout.elevation = if (appBarStatus.hasShadow) {
+                    binding.appBarLayout.targetElevation = if (appBarStatus.hasShadow) {
                         resources.getDimensionPixelSize(dimen.appbar_elevation).toFloat()
                     } else {
                         0f

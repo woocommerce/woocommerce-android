@@ -17,9 +17,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToAboutYourStore
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToDomains
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToLaunchStore
 import com.woocommerce.android.ui.products.AddProductNavigator
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,13 +80,13 @@ class StoreOnboardingFragment : BaseFragment() {
                             .actionStoreOnboardingFragmentToNavGraphDomainChange()
                     )
 
-                is StoreOnboardingViewModel.NavigateToSetupPayments ->
+                is NavigateToSetupPayments ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections
                             .actionStoreOnboardingFragmentToPaymentsPreSetupFragment(taskId = event.taskId)
                     )
 
-                is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
+                is NavigateToSetupWooPayments ->
                     findNavController().navigateSafely(
                         directions = StoreOnboardingFragmentDirections
                             .actionStoreOnboardingFragmentToWooPaymentsSetupInstructionsFragment()
@@ -100,7 +97,7 @@ class StoreOnboardingFragment : BaseFragment() {
                         StoreOnboardingFragmentDirections.actionStoreOnboardingFragmentToAboutYourStoreFragment()
                     )
 
-                is StoreOnboardingViewModel.NavigateToAddProduct ->
+                is NavigateToAddProduct ->
                     with(addProductNavigator) {
                         findNavController().navigateToAddProducts(
                             aiBottomSheetAction = StoreOnboardingFragmentDirections

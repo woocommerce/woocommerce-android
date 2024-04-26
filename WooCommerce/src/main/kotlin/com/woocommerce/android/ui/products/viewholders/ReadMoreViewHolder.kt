@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.products.viewholders
 
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.products.WCProductPropertyReadMoreView
 import com.woocommerce.android.ui.products.models.ProductProperty.ReadMore
+import com.woocommerce.android.ui.products.propertyviews.WCProductPropertyReadMoreView
 import org.wordpress.android.util.HtmlUtils
 
 class ReadMoreViewHolder(

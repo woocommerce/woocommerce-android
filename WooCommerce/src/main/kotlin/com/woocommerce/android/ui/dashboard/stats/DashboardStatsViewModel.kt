@@ -21,13 +21,10 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.AtLeastOne
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState.Empty
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.mystore.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -37,7 +34,9 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -55,8 +54,8 @@ class DashboardStatsViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val selectedSite: SelectedSite,
     private val getStats: GetStats,
-    private val customDateRangeDataStore: CustomDateRangeDataStore,
-    getSelectedDateRange: GetSelectedDateRange,
+    private val customDateRangeDataStore: StatsCustomDateRangeDataStore,
+    getSelectedDateRange: GetSelectedRangeForDashboardStats,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val networkStatus: NetworkStatus,
     private val dashboardTransactionLauncher: DashboardTransactionLauncher,
@@ -65,11 +64,23 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
+    private val dateRangeFormatter: DashboardStatsRangeFormatter
 ) : ScopedViewModel(savedStateHandle) {
-    private var _hasOrders = MutableLiveData<OrderState>()
+    private val selectedDateRange = getSelectedDateRange()
+    private val selectedChartDate = MutableStateFlow<String?>(null)
 
-    private val _selectedDateRange = getSelectedDateRange()
-    val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
+    val dateRangeState = combine(
+        selectedDateRange,
+        customDateRangeDataStore.dateRange,
+        selectedChartDate
+    ) { selectedRange, custom, selectedDate ->
+        DateRangeState(
+            rangeSelection = selectedRange,
+            customRange = custom,
+            rangeFormatted = dateRangeFormatter.formatRangeDate(selectedRange),
+            selectedDateFormatted = selectedDate?.let { dateRangeFormatter.formatSelectedDate(it, selectedRange) }
+        )
+    }.asLiveData()
 
     private var _revenueStatsState = MutableLiveData<RevenueStatsViewState>()
     val revenueStatsState: LiveData<RevenueStatsViewState> = _revenueStatsState
@@ -80,11 +91,9 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private var _lastUpdateStats = MutableLiveData<Long?>()
     val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
 
-    val customRange = customDateRangeDataStore.dateRange.asLiveData()
-
     init {
         viewModelScope.launch {
-            _selectedDateRange.flatMapLatest { selectedRange ->
+            selectedDateRange.flatMapLatest { selectedRange ->
                 parentViewModel.refreshTrigger.onStart { emit(RefreshEvent()) }.map {
                     Pair(selectedRange, it.isForced)
                 }
@@ -100,9 +109,13 @@ class DashboardStatsViewModel @AssistedInject constructor(
         appPrefsWrapper.setActiveStatsTab(selectionType.name)
 
         if (selectionType == SelectionType.CUSTOM) {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
-            )
+            if (dateRangeState.value?.customRange == null) {
+                onAddCustomRangeClicked()
+            } else {
+                analyticsTrackerWrapper.track(
+                    AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
+                )
+            }
         }
     }
 
@@ -110,11 +123,11 @@ class DashboardStatsViewModel @AssistedInject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
             mapOf(
-                AnalyticsTracker.KEY_IS_EDITING to (customRange.value != null),
+                AnalyticsTracker.KEY_IS_EDITING to (dateRangeState.value?.customRange != null),
             )
         )
 
-        if (selectedDateRange.value?.selectionType != SelectionType.CUSTOM) {
+        if (dateRangeState.value?.rangeSelection?.selectionType != SelectionType.CUSTOM) {
             onTabSelected(SelectionType.CUSTOM)
         }
         viewModelScope.launch {
@@ -125,12 +138,12 @@ class DashboardStatsViewModel @AssistedInject constructor(
     fun onAddCustomRangeClicked() {
         triggerEvent(
             OpenDatePicker(
-                fromDate = customRange.value?.start ?: Date(),
-                toDate = customRange.value?.end ?: Date()
+                fromDate = dateRangeState.value?.customRange?.start ?: Date(),
+                toDate = dateRangeState.value?.customRange?.end ?: Date()
             )
         )
 
-        val event = if (customRange.value == null) {
+        val event = if (dateRangeState.value?.customRange == null) {
             AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
         } else {
             AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED
@@ -140,9 +153,13 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
     fun onViewAnalyticsClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
-        selectedDateRange.value?.let {
+        dateRangeState.value?.rangeSelection?.let {
             triggerEvent(OpenAnalytics(it))
         }
+    }
+
+    fun onChartDateSelected(date: String?) {
+        selectedChartDate.value = date
     }
 
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) = coroutineScope {
@@ -172,8 +189,6 @@ class DashboardStatsViewModel @AssistedInject constructor(
                     is LoadStatsResult.VisitorsStatsError -> _visitorStatsState.value = VisitorStatsViewState.Error
                     is LoadStatsResult.VisitorStatUnavailable ->
                         _visitorStatsState.value = VisitorStatsViewState.Unavailable
-
-                    is LoadStatsResult.HasOrders -> _hasOrders.value = if (it.hasOrder) AtLeastOne else Empty
                 }
                 dashboardTransactionLauncher.onStoreStatisticsFetched()
             }
@@ -273,6 +288,13 @@ class DashboardStatsViewModel @AssistedInject constructor(
             val totalVisitorCount: Int?
         ) : VisitorStatsViewState()
     }
+
+    data class DateRangeState(
+        val rangeSelection: StatsTimeRangeSelection,
+        val customRange: StatsTimeRange?,
+        val rangeFormatted: String,
+        val selectedDateFormatted: String?
+    )
 
     data class RevenueStatsUiModel(
         val intervalList: List<StatsIntervalUiModel> = emptyList(),
