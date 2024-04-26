@@ -62,13 +62,6 @@
                         android:visibility="gone"
                         tools:visibility="visible" />
 
-                    <!-- Top performer stats -->
-                    <androidx.compose.ui.platform.ComposeView
-                        android:id="@+id/my_store_top_performers"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
-
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
 
