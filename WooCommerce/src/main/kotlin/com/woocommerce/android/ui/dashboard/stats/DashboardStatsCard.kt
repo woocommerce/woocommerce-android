@@ -111,7 +111,9 @@ fun DashboardStatsCard(
                 titleResource = R.string.analytics_section_see_all,
                 action = viewModel::onViewAnalyticsClicked
             )
-        } else null
+        } else {
+            null
+        }
     ) {
         if (revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError) {
             DashboardStatsContent(
@@ -389,7 +391,6 @@ private fun PluginNotAvailableError(onContactSupportClick: () -> Unit) {
         )
     }
 }
-
 
 @Composable
 private fun HandleEvents(
