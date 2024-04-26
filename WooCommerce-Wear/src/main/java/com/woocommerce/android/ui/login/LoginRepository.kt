@@ -21,15 +21,18 @@ class LoginRepository @Inject constructor(
 ) {
     private val gson by lazy { Gson() }
 
-    val currentSite
+    private val storedSiteData
         get() = loginDataStore.data
             .map { it[stringPreferencesKey(CURRENT_SITE_KEY)] }
-            .distinctUntilChanged()
             .map { it?.let { gson.fromJson(it, SiteModel::class.java) } }
+
+    val currentSite
+        get() = storedSiteData
+            .distinctUntilChanged()
             .filterNotNull()
 
     val isUserLoggedIn
-        get() = currentSite.map { it.siteId > 0 }
+        get() = storedSiteData.map { it != null && it.siteId > 0 }
 
     suspend fun receiveStoreData(data: DataMap) {
         val siteJSON = data.getString(SITE_JSON.value)
