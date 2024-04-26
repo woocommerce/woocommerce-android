@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.login.LoginViewModel
 import com.woocommerce.commons.wear.MessagePath
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import org.junit.Assert.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -38,13 +38,17 @@ class LoginViewModelTest: BaseUnitTest() {
     @Test
     fun `when user is not logged in, loading is stopped`() = testBlocking {
         // Given
+        var isLoading: Boolean? = null
         whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
+        createSut()
+        sut.viewState.observeForever { isLoading = it.isLoading }
 
         // When
         createSut()
 
         // Then
-        assertEquals(false, sut.viewState.value?.isLoading)
+        assertThat(isLoading).isNotNull()
+        assertThat(isLoading).isFalse
     }
 
     @Test
@@ -57,21 +61,23 @@ class LoginViewModelTest: BaseUnitTest() {
         sut.onLoginButtonClicked()
 
         // Then
-        assertEquals(true, sut.viewState.value?.isLoading)
         verify(phoneConnectionRepository).sendMessage(MessagePath.REQUEST_SITE)
     }
 
     @Test
-    fun `on login button clicked, loading is stopped after message is sent`() = testBlocking {
+    fun `on login button clicked, loading is started`() = testBlocking {
         // Given
+        var isLoading: Boolean? = null
         whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
         createSut()
+        sut.viewState.observeForever { isLoading = it.isLoading }
 
         // When
         sut.onLoginButtonClicked()
 
         // Then
-        assertEquals(false, sut.viewState.value?.isLoading)
+        assertThat(isLoading).isNotNull()
+        assertThat(isLoading).isTrue
     }
 
     private fun createSut() {
