@@ -51,8 +51,6 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,13 +79,7 @@ class DashboardFragment :
     lateinit var selectedSite: SelectedSite
 
     @Inject
-    lateinit var currencyFormatter: CurrencyFormatter
-
-    @Inject
     lateinit var uiMessageResolver: UIMessageResolver
-
-    @Inject
-    lateinit var dateUtils: DateUtils
 
     @Inject
     lateinit var usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter
@@ -136,9 +128,6 @@ class DashboardFragment :
             setContent {
                 WooThemeWithBackground {
                     DashboardContainer(
-                        dateUtils = dateUtils,
-                        currencyFormatter = currencyFormatter,
-                        usageTracksEventEmitter = usageTracksEventEmitter,
                         dashboardViewModel = dashboardViewModel,
                         blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
                     )

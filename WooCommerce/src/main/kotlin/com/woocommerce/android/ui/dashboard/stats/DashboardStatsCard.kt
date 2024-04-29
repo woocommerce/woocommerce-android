@@ -56,7 +56,6 @@ import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitte
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
-import com.woocommerce.android.ui.dashboard.stats.DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -64,9 +63,6 @@ import java.util.Date
 
 @Composable
 fun DashboardStatsCard(
-    dateUtils: DateUtils,
-    currencyFormatter: CurrencyFormatter,
-    usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     onStatsError: () -> Unit,
     openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
     parentViewModel: DashboardViewModel,
@@ -106,7 +102,7 @@ fun DashboardStatsCard(
                 }
             )
         ),
-        button = if (revenueStatsState !is PluginNotActiveError) {
+        button = if (revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError) {
             DashboardViewModel.DashboardWidgetAction(
                 titleResource = R.string.analytics_section_see_all,
                 action = viewModel::onViewAnalyticsClicked
@@ -121,9 +117,9 @@ fun DashboardStatsCard(
                 revenueStatsState = revenueStatsState,
                 visitorsStatsState = visitorsStatsState,
                 lastUpdateState = lastUpdateState,
-                dateUtils = dateUtils,
-                currencyFormatter = currencyFormatter,
-                usageTracksEventEmitter = usageTracksEventEmitter,
+                dateUtils = viewModel.dateUtils,
+                currencyFormatter = viewModel.currencyFormatter,
+                usageTracksEventEmitter = viewModel.usageTracksEventEmitter,
                 onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
                 onTabSelected = viewModel::onTabSelected,
                 onChartDateSelected = viewModel::onChartDateSelected

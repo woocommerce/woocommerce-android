@@ -85,7 +85,6 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             savedStateHandle = SavedStateHandle(),
             parentViewModel = parentViewModel,
             selectedSite = selectedSite,
-            usageTracksEventEmitter = usageTracksEventEmitter,
             getStats = getStats,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             dashboardTransactionLauncher = dashboardTransactionLauncher,
@@ -96,7 +95,10 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             observeLastUpdate = observeLastUpdate,
             timezoneProvider = timezoneProvider,
             wooCommerceStore = wooCommerceStore,
-            dateRangeFormatter = DashboardStatsRangeFormatter(dateUtils)
+            dateRangeFormatter = DashboardStatsRangeFormatter(dateUtils),
+            usageTracksEventEmitter = usageTracksEventEmitter,
+            dateUtils = dateUtils,
+            currencyFormatter = mock()
         )
     }
 
