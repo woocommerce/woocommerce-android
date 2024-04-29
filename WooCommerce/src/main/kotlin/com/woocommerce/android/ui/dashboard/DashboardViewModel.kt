@@ -225,6 +225,12 @@ class DashboardViewModel @Inject constructor(
         data class ShareStoreWidget(
             val onShareClicked: () -> Unit
         ) : DashboardWidgetUiModel
+
+        data class FeedbackWidget(
+            val onPositiveClick: () -> Unit,
+            val onNegativeClick: () -> Unit,
+            val onDismiss: () -> Unit
+        ) : DashboardWidgetUiModel
     }
 
     data class AppbarState(
