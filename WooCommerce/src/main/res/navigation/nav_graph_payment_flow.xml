@@ -47,6 +47,15 @@
                 app:argType="long" />
         </action>
         <action
+            android:id="@+id/action_selectPaymentMethodFragmentToChangeDueCalculatorScreen"
+            app:destination="@id/nav_graph_orders"
+            app:popUpTo="@+id/tapToPaySummaryFragment"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+        </action>
+        <action
             android:id="@+id/action_selectPaymentMethodFragment_to_tapToPaySummaryFragment"
             app:destination="@id/tapToPaySummaryFragment"
             app:popUpTo="@+id/tapToPaySummaryFragment"
