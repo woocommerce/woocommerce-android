@@ -111,7 +111,7 @@ fun TapToPayAboutScreen(
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_copyright),
                     style = MaterialTheme.typography.caption,
-                    color = colorResource(id = R.color.color_on_surface_medium)
+                    color = colorResource(id = R.color.color_on_surface_disabled)
                 )
             }
         }
