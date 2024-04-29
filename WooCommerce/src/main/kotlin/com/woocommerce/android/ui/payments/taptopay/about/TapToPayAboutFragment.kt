@@ -47,11 +47,6 @@ class TapToPayAboutFragment : BaseFragment() {
                         event.url,
                         ChromeCustomTabUtils.Height.Partial.ThreeQuarters
                     )
-                is NavigateToUrlInBrowser -> ChromeCustomTabUtils.launchUrl(
-                    requireContext(),
-                    event.url,
-                    height = ChromeCustomTabUtils.Height.Partial.ThreeQuarters
-                )
 
                 else -> event.isHandled = false
             }

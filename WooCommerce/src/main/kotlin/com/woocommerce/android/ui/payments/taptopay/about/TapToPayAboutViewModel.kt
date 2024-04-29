@@ -32,7 +32,7 @@ class TapToPayAboutViewModel @Inject constructor(
             importantInfo = navArgs.cardReaderConfig.buildImportantInfoSection(),
             onLearnMoreAboutTapToPay = {
                 triggerEvent(
-                    NavigateToUrlInBrowser(
+                    NavigateToUrlInGenericWebView(
                         AppUrls.LEARN_MORE_ABOUT_TAP_TO_PAY
                     )
                 )
@@ -83,7 +83,3 @@ class TapToPayAboutViewModel @Inject constructor(
 }
 
 data class NavigateToUrlInGenericWebView(val url: String) : MultiLiveEvent.Event()
-
-data class NavigateToUrlInBrowser(val url: String) : MultiLiveEvent.Event()
-
-
