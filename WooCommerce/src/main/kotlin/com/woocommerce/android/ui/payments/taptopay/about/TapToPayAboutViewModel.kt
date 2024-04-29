@@ -29,7 +29,14 @@ class TapToPayAboutViewModel @Inject constructor(
 
     init {
         _viewState.value = UiState(
-            importantInfo = navArgs.cardReaderConfig.buildImportantInfoSection()
+            importantInfo = navArgs.cardReaderConfig.buildImportantInfoSection(),
+            onLearnMoreAboutTapToPay = {
+                triggerEvent(
+                    NavigateToUrlInBrowser(
+                        AppUrls.LEARN_MORE_ABOUT_TAP_TO_PAY
+                    )
+                )
+            }
         )
     }
 
@@ -64,7 +71,10 @@ class TapToPayAboutViewModel @Inject constructor(
         }
     }
 
-    data class UiState(val importantInfo: ImportantInfo?) {
+    data class UiState(
+        val importantInfo: ImportantInfo?,
+        val onLearnMoreAboutTapToPay: () -> Unit
+    ) {
         data class ImportantInfo(
             val pinDescription: String,
             val onLearnMoreAboutCardReaders: () -> Unit,
@@ -73,3 +83,7 @@ class TapToPayAboutViewModel @Inject constructor(
 }
 
 data class NavigateToUrlInGenericWebView(val url: String) : MultiLiveEvent.Event()
+
+data class NavigateToUrlInBrowser(val url: String) : MultiLiveEvent.Event()
+
+

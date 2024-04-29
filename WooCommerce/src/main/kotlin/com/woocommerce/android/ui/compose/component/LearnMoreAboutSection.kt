@@ -24,14 +24,15 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 
 @Composable
 fun LearnMoreAboutSection(
+    modifier: Modifier = Modifier,
     text: TextWithHighlighting,
     onClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(16.dp),
+            .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
