@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Sh
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -190,7 +191,11 @@ class DashboardFragment :
         }
         dashboardViewModel.dashboardWidgets.observe(viewLifecycleOwner) { widgets ->
             // Show banners only if onboarding list is NOT displayed
-            if (widgets.any { it.type == DashboardWidget.Type.ONBOARDING }.not()) {
+            if (
+                widgets.none {
+                    (it as? DashboardWidgetUiModel.ConfigurableWidget)?.widget?.type == DashboardWidget.Type.ONBOARDING
+                }
+            ) {
                 initJitm()
             }
         }

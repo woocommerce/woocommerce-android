@@ -93,7 +93,7 @@ class DashboardViewModel @Inject constructor(
         }.asLiveData()
 
     val dashboardWidgets = dashboardRepository.widgets
-        .map { it.filter { widget -> widget.isVisible } }
+        .map { widgets -> mapWidgetsToUiModels(widgets) }
         .asLiveData()
 
     init {
@@ -166,6 +166,12 @@ class DashboardViewModel @Inject constructor(
         triggerEvent(DashboardEvent.ContactSupport)
     }
 
+    private fun mapWidgetsToUiModels(widgets: List<DashboardWidget>): List<DashboardWidgetUiModel> = buildList {
+        addAll(
+            widgets.map { DashboardWidgetUiModel.ConfigurableWidget(it) }
+        )
+    }
+
     private fun jetpackBenefitsBannerState(
         connectionType: SiteConnectionType
     ): Flow<JetpackBenefitsBannerUiModel?> {
@@ -192,6 +198,19 @@ class DashboardViewModel @Inject constructor(
                     }
                 )
             }
+    }
+
+    sealed interface DashboardWidgetUiModel {
+        val isVisible: Boolean
+            get() = true
+        data class ConfigurableWidget(
+            val widget: DashboardWidget,
+        ) : DashboardWidgetUiModel {
+            override val isVisible: Boolean
+                get() = widget.isVisible
+        }
+
+        data object ShareStoreWidget : DashboardWidgetUiModel
     }
 
     data class AppbarState(

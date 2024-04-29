@@ -12,7 +12,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import com.woocommerce.android.R
-import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.DashboardWidget.Type.BLAZE
 import com.woocommerce.android.model.DashboardWidget.Type.ONBOARDING
 import com.woocommerce.android.model.DashboardWidget.Type.POPULAR_PRODUCTS
@@ -32,8 +31,8 @@ fun DashboardContainer(
 ) {
     dashboardViewModel.dashboardWidgets.observeAsState().value?.let { widgets ->
         WidgetList(
+            widgetUiModels = widgets,
             dashboardViewModel = dashboardViewModel,
-            widgets = widgets,
             blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
         )
     }
@@ -41,8 +40,8 @@ fun DashboardContainer(
 
 @Composable
 private fun WidgetList(
+    widgetUiModels: List<DashboardViewModel.DashboardWidgetUiModel>,
     dashboardViewModel: DashboardViewModel,
-    widgets: List<DashboardWidget>,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 ) {
     Column(
@@ -52,31 +51,50 @@ private fun WidgetList(
             .background(MaterialTheme.colors.surface)
             .padding(vertical = dimensionResource(id = R.dimen.major_100))
     ) {
-        widgets.forEach {
+        widgetUiModels.forEach {
             AnimatedVisibility(it.isVisible) {
-                when (it.type) {
-                    STATS -> {
-                        DashboardStatsCard(
-                            onStatsError = {
-                                dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
-                            },
-                            openDatePicker = { start, end, callback ->
-                                dashboardViewModel.onDashboardWidgetEvent(OpenRangePicker(start, end, callback))
-                            },
-                            parentViewModel = dashboardViewModel
+                when (it) {
+                    is DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget -> {
+                        ConfigurableWidgetContent(
+                            widgetUiModel = it,
+                            dashboardViewModel = dashboardViewModel,
+                            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
                         )
                     }
 
-                    POPULAR_PRODUCTS -> DashboardTopPerformersWidgetCard(dashboardViewModel)
-
-                    BLAZE -> DashboardBlazeCard(
-                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-                        parentViewModel = dashboardViewModel
-                    )
-
-                    ONBOARDING -> DashboardOnboardingCard(parentViewModel = dashboardViewModel)
+                    is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget -> {}
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ConfigurableWidgetContent(
+    widgetUiModel: DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget,
+    dashboardViewModel: DashboardViewModel,
+    blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
+) {
+    when (widgetUiModel.widget.type) {
+        STATS -> {
+            DashboardStatsCard(
+                onStatsError = {
+                    dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
+                },
+                openDatePicker = { start, end, callback ->
+                    dashboardViewModel.onDashboardWidgetEvent(OpenRangePicker(start, end, callback))
+                },
+                parentViewModel = dashboardViewModel
+            )
+        }
+
+        POPULAR_PRODUCTS -> DashboardTopPerformersWidgetCard(dashboardViewModel)
+
+        BLAZE -> DashboardBlazeCard(
+            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+            parentViewModel = dashboardViewModel
+        )
+
+        ONBOARDING -> DashboardOnboardingCard(parentViewModel = dashboardViewModel)
     }
 }
