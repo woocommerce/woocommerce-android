@@ -61,6 +61,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAc
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
+import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.launch
@@ -285,7 +286,7 @@ private fun BlazeCampaignHeader(onDismissBlazeView: () -> Unit) {
             modifier = Modifier.weight(1f)
         )
         WCOverflowMenu(
-            items = arrayOf(stringResource(id = R.string.blaze_overflow_menu_hide_blaze)),
+            items = listOf(stringResource(id = R.string.blaze_overflow_menu_hide_blaze)),
             onSelected = { onDismissBlazeView() },
         )
     }
@@ -427,9 +428,8 @@ fun MyStoreBlazeViewCampaignPreview() {
             onViewAllCampaignsClicked = {},
             menu = DashboardWidgetMenu(
                 items = listOf(
-                    DashboardWidgetAction(
-                        titleResource = R.string.dynamic_dashboard_hide_widget_menu_item,
-                        action = {}
+                    DashboardWidget.Type.BLAZE.defaultHideMenuEntry(
+                        onHideClicked = { }
                     )
                 )
             ),
@@ -454,9 +454,8 @@ fun MyStoreBlazeViewNoCampaignPreview() {
             onProductClicked = {},
             menu = DashboardWidgetMenu(
                 items = listOf(
-                    DashboardWidgetAction(
-                        titleResource = R.string.dynamic_dashboard_hide_widget_menu_item,
-                        action = {}
+                    DashboardWidget.Type.BLAZE.defaultHideMenuEntry(
+                        onHideClicked = { }
                     )
                 )
             ),

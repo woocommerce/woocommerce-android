@@ -19,30 +19,21 @@ import com.woocommerce.android.model.DashboardWidget.Type.POPULAR_PRODUCTS
 import com.woocommerce.android.model.DashboardWidget.Type.STATS
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
-import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
 
 @Composable
 fun DashboardContainer(
     dashboardViewModel: DashboardViewModel,
-    dateUtils: DateUtils,
-    currencyFormatter: CurrencyFormatter,
-    usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 ) {
     dashboardViewModel.dashboardWidgets.observeAsState().value?.let { widgets ->
         WidgetList(
             dashboardViewModel = dashboardViewModel,
             widgets = widgets,
-            dateUtils = dateUtils,
-            currencyFormatter = currencyFormatter,
-            usageTracksEventEmitter = usageTracksEventEmitter,
             blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
         )
     }
@@ -52,9 +43,6 @@ fun DashboardContainer(
 private fun WidgetList(
     dashboardViewModel: DashboardViewModel,
     widgets: List<DashboardWidget>,
-    dateUtils: DateUtils,
-    currencyFormatter: CurrencyFormatter,
-    usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 ) {
     Column(
@@ -69,12 +57,6 @@ private fun WidgetList(
                 when (it.type) {
                     STATS -> {
                         DashboardStatsCard(
-                            dateUtils = dateUtils,
-                            currencyFormatter = currencyFormatter,
-                            usageTracksEventEmitter = usageTracksEventEmitter,
-                            onPluginUnavailableError = {
-                                dashboardViewModel.onDashboardWidgetEvent(ShowPluginUnavailableError)
-                            },
                             onStatsError = {
                                 dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
                             },
