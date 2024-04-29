@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
@@ -25,7 +24,7 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 
 @Composable
 fun LearnMoreAboutSection(
-    text: AnnotatedString,
+    text: TextWithHighlighting,
     onClick: () -> Unit
 ) {
     Row(
@@ -41,8 +40,21 @@ fun LearnMoreAboutSection(
             tint = colorResource(id = R.color.color_icon)
         )
         Spacer(modifier = Modifier.width(16.dp))
+
         Text(
-            text = text,
+            text = buildAnnotatedString {
+                val clickableStyle = SpanStyle(
+                    color = colorResource(id = R.color.color_on_surface_high),
+                    textDecoration = TextDecoration.Underline
+                )
+
+                withStyle(style = clickableStyle) {
+                    withStyle(style = SpanStyle(color = colorResource(id = R.color.color_primary))) {
+                        append(text.text.substring(text.start, text.end))
+                    }
+                }
+                append(text.text.substring(text.end))
+            },
             modifier = Modifier.fillMaxWidth(),
             color = colorResource(id = R.color.color_on_surface_high),
             style = MaterialTheme.typography.caption,
@@ -50,23 +62,13 @@ fun LearnMoreAboutSection(
     }
 }
 
+data class TextWithHighlighting(val text: String, val start: Int, val end: Int)
+
 @LightDarkThemePreviews
 @Composable
 fun LearnMoreComponentPreview() {
     LearnMoreAboutSection(
-        text = buildAnnotatedString {
-            val clickableStyle = SpanStyle(
-                color = colorResource(id = R.color.color_on_surface_high),
-                textDecoration = TextDecoration.Underline
-            )
-
-            withStyle(style = clickableStyle) {
-                withStyle(style = SpanStyle(color = colorResource(id = R.color.color_primary))) {
-                    append("Learn more")
-                }
-            }
-            append(" about accepting payments with Tap To Pay on Android")
-        },
+        text = TextWithHighlighting("Learn more about Something", 0, 10),
         onClick = {}
     )
 }
