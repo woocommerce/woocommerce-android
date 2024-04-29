@@ -52,7 +52,7 @@ class DashboardWidgetEditorViewModel @Inject constructor(
                 } else {
                     editedWidgets.map { dashboardWidget ->
                         val storedWidget = storedWidgets.first { it.type == dashboardWidget.type }
-                        dashboardWidget.copy(isAvailable = storedWidget.isAvailable)
+                        dashboardWidget.copy(status = storedWidget.status)
                     }
                 }
             }
@@ -100,6 +100,6 @@ class DashboardWidgetEditorViewModel @Inject constructor(
     ) : Parcelable {
         @IgnoredOnParcel
         val orderedWidgetList: List<DashboardWidget> =
-            widgetList.filter { it.isAvailable } + widgetList.filterNot { it.isAvailable }
+            widgetList.filter { it.isAvailable } + widgetList.filter { it.status is DashboardWidget.Status.Unavailable }
     }
 }

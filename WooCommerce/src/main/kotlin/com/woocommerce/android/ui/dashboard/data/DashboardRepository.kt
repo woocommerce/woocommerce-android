@@ -1,84 +1,62 @@
 package com.woocommerce.android.ui.dashboard.data
 
+import com.woocommerce.android.R
 import com.woocommerce.android.di.SiteComponentEntryPoint
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
-import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.WooLog
 import dagger.hilt.EntryPoints
 import dagger.hilt.android.scopes.ActivityRetainedScoped
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transform
-import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import javax.inject.Inject
 
 @ActivityRetainedScoped
 class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
     private val dashboardDataStore: DashboardDataStore,
-    orderStore: WCOrderStore,
-    private val dispatchers: CoroutineDispatchers
+    observeStatsWidgetsStatus: ObserveStatsWidgetsStatus,
+    observeBlazeWidgetStatus: ObserveBlazeWidgetStatus
 ) {
     private val siteCoroutineScope = EntryPoints.get(
         selectedSite.siteComponent!!,
         SiteComponentEntryPoint::class.java
     ).siteCoroutineScope()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private val statsWidgetsAvailability = selectedSite.observe()
-        .filterNotNull()
-        .flatMapLatest { orderStore.observeOrderCountForSite(it) }
-        .map { count -> count != 0 }
-        .distinctUntilChanged()
-        .transform { hasOrders ->
-            if (!hasOrders) {
-                val fetchResult = orderStore.fetchHasOrders(selectedSite.get(), null).let {
-                    when (it) {
-                        is HasOrdersResult.Success -> it.hasOrders
-                        // Default to true if we can't determine if there are orders
-                        is HasOrdersResult.Failure -> true
-                    }
-                }
-                emit(fetchResult)
-            } else {
-                emit(true)
-            }
-        }
-        .stateIn(siteCoroutineScope, SharingStarted.Lazily, true)
+    private val statsWidgetsStatus = observeStatsWidgetsStatus()
+        .stateIn(
+            scope = siteCoroutineScope,
+            started = SharingStarted.Lazily,
+            initialValue = DashboardWidget.Status.Unavailable(R.string.my_store_widget_unavailable)
+        )
+
+    private val blazeWidgetStatus = observeBlazeWidgetStatus()
+        .stateIn(
+            scope = siteCoroutineScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = DashboardWidget.Status.Hidden
+        )
 
     val widgets = combine(
         dashboardDataStore.dashboard.map { it.widgetsList },
-        statsWidgetsAvailability
-    ) { widgets, hasOrders ->
-        widgets.toDomainModel(hasOrders)
+        statsWidgetsStatus,
+        blazeWidgetStatus
+    ) { widgets, statsWidgetStatus, blazeWidgetStatus ->
+        widgets.toDomainModel(statsWidgetStatus, blazeWidgetStatus)
     }
 
-    suspend fun updateWidgets(widgets: List<DashboardWidget>) = withContext(dispatchers.io) {
-        runCatching {
-            dashboardDataStore.updateDashboard(
-                DashboardDataModel.newBuilder()
-                    .addAllWidgets(widgets.map { it.toDataModel() })
-                    .build()
-            )
-        }.onFailure { throwable ->
-            WooLog.e(WooLog.T.DASHBOARD, "Failed to update dashboard data", throwable)
-        }
-    }
+    suspend fun updateWidgets(widgets: List<DashboardWidget>) = dashboardDataStore.updateDashboard(
+        DashboardDataModel.newBuilder()
+            .addAllWidgets(widgets.map { it.toDataModel() })
+            .build()
+    )
 
-    suspend fun updateWidgetVisibility(type: DashboardWidget.Type, isVisible: Boolean) = withContext(dispatchers.io) {
+    suspend fun updateWidgetVisibility(type: DashboardWidget.Type, isVisible: Boolean) {
         val dataStoreWidgets = widgets.first()
             .toMutableList()
             .apply {
@@ -91,18 +69,21 @@ class DashboardRepository @Inject constructor(
     }
 
     private fun List<DashboardWidgetDataModel>.toDomainModel(
-        statsWidgetsAvailability: Boolean
+        statsWidgetsStatus: DashboardWidget.Status,
+        blazeWidgetStatus: DashboardWidget.Status
     ): List<DashboardWidget> {
         return map { widget ->
             val type = DashboardWidget.Type.valueOf(widget.type)
             DashboardWidget(
                 type = type,
                 isVisible = widget.isAdded,
-                isAvailable = when (type) {
+                status = when (type) {
                     DashboardWidget.Type.STATS,
-                    DashboardWidget.Type.POPULAR_PRODUCTS -> statsWidgetsAvailability
+                    DashboardWidget.Type.POPULAR_PRODUCTS -> statsWidgetsStatus
 
-                    else -> true
+                    DashboardWidget.Type.BLAZE -> blazeWidgetStatus
+
+                    else -> DashboardWidget.Status.Available
                 }
             )
         }.sortedBy { it.isAvailable }

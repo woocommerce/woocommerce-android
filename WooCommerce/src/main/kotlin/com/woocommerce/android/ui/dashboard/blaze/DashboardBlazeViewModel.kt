@@ -210,20 +210,19 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     }
 
     private fun getProductsFlow(forceRefresh: Boolean): Flow<List<Product>> {
-        fun getCachedProducts() = productListRepository.getProductList(
-            productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
-            sortType = ProductSorting.DATE_DESC,
-        ).filterNot { it.isSampleProduct }
         return flow {
-            val cachedProducts = getCachedProducts()
-            if (!forceRefresh) {
-                emit(cachedProducts)
-            }
+            if (forceRefresh) refreshProducts()
 
-            if (forceRefresh || cachedProducts.isEmpty()) {
-                refreshProducts()
-                emit(getCachedProducts())
-            }
+            emitAll(
+                productListRepository.observeProducts(
+                    filterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
+                    sortType = ProductSorting.DATE_DESC,
+                    excludeSampleProducts = true,
+                    // For optimization, load only 2 products, as we need only the first one, and
+                    // and to check if there are more than 1 product to show the "Create Campaign" button
+                    limit = 2
+                )
+            )
         }
     }
 
@@ -258,6 +257,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         open val menu: DashboardWidgetMenu,
         open val createCampaignButton: DashboardWidgetAction? = null
     ) {
+        // TODO remove this state when enabling [FeatureFlag.DYNAMIC_DASHBOARD] and clean up the code
         data object Hidden : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
         data object Loading : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
         data class NoCampaign(
