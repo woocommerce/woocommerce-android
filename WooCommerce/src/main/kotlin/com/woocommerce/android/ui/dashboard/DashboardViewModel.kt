@@ -118,7 +118,11 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun updateShareStoreButtonVisibility() {
-        _appbarState.value = AppbarState(showShareStoreButton = selectedSite.get().isSitePublic)
+        _appbarState.value = AppbarState(
+            showShareStoreButton = selectedSite.get().let {
+                it.isSitePublic && it.url != null
+            }
+        )
     }
 
     override fun onCleared() {
@@ -170,6 +174,13 @@ class DashboardViewModel @Inject constructor(
         addAll(
             widgets.map { DashboardWidgetUiModel.ConfigurableWidget(it) }
         )
+
+        if (!widgets.first { it.type == DashboardWidget.Type.STATS }.isAvailable &&
+            selectedSite.get().isSitePublic &&
+            selectedSite.get().url != null
+        ) {
+            add(DashboardWidgetUiModel.ShareStoreWidget)
+        }
     }
 
     private fun jetpackBenefitsBannerState(
@@ -203,6 +214,7 @@ class DashboardViewModel @Inject constructor(
     sealed interface DashboardWidgetUiModel {
         val isVisible: Boolean
             get() = true
+
         data class ConfigurableWidget(
             val widget: DashboardWidget,
         ) : DashboardWidgetUiModel {
