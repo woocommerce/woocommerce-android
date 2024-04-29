@@ -85,7 +85,11 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                 .onStart { emit(RefreshEvent()) }
                 .collectLatest {
                     _viewState.value = _viewState.value?.copy(isLoading = true)
-                    onboardingRepository.fetchOnboardingTasks()
+                    if (it.isForced) {
+                        // Fetch only if it's a forced refresh, in the other cases, the DashboardRepository will
+                        // trigger the initial fetch
+                        onboardingRepository.fetchOnboardingTasks()
+                    }
                 }
         }
         launch {

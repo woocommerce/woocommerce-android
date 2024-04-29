@@ -9,14 +9,17 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class DashboardWidget(
     val type: Type,
-    val isVisible: Boolean,
+    val isSelected: Boolean,
     val status: Status,
 ) : Parcelable {
     val title: Int
         get() = type.titleResource
 
     val isAvailable: Boolean
-        get() = status is Status.Available
+        get() = status == Status.Available
+
+    val isVisible: Boolean
+        get() = isSelected && isAvailable
 
     enum class Type(@StringRes val titleResource: Int) {
         ONBOARDING(R.string.my_store_widget_onboarding_title),
@@ -40,5 +43,5 @@ data class DashboardWidget(
 fun DashboardWidget.toDataModel(): DashboardWidgetDataModel =
     DashboardWidgetDataModel.newBuilder()
         .setType(type.name)
-        .setIsAdded(isVisible)
+        .setIsAdded(isSelected)
         .build()

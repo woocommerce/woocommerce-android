@@ -77,7 +77,7 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                             true -> {
                                 DragAndDropSelectableItem(
                                     item = item,
-                                    isSelected = item in state.orderedWidgetList.filter { it.isVisible },
+                                    isSelected = item in state.orderedWidgetList.filter { it.isSelected },
                                     dragDropState = dragDropState,
                                     onSelectionChange = viewModel::onSelectionChange,
                                     itemKey = { it.type },

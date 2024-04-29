@@ -93,7 +93,7 @@ class DashboardViewModel @Inject constructor(
         }.asLiveData()
 
     val dashboardWidgets = dashboardRepository.widgets
-        .map { it.filter { widget -> widget.isVisible && widget.isAvailable } }
+        .map { it.filter { widget -> widget.isVisible } }
         .asLiveData()
 
     init {

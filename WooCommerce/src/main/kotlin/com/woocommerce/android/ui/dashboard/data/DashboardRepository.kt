@@ -21,7 +21,8 @@ class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
     private val dashboardDataStore: DashboardDataStore,
     observeStatsWidgetsStatus: ObserveStatsWidgetsStatus,
-    observeBlazeWidgetStatus: ObserveBlazeWidgetStatus
+    observeBlazeWidgetStatus: ObserveBlazeWidgetStatus,
+    observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus
 ) {
     private val siteCoroutineScope = EntryPoints.get(
         selectedSite.siteComponent!!,
@@ -42,12 +43,20 @@ class DashboardRepository @Inject constructor(
             initialValue = DashboardWidget.Status.Hidden
         )
 
+    private val onboardingWidgetStatus = observeOnboardingWidgetStatus()
+        .stateIn(
+            scope = siteCoroutineScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = DashboardWidget.Status.Hidden
+        )
+
     val widgets = combine(
         dashboardDataStore.dashboard.map { it.widgetsList },
         statsWidgetsStatus,
-        blazeWidgetStatus
-    ) { widgets, statsWidgetStatus, blazeWidgetStatus ->
-        widgets.toDomainModel(statsWidgetStatus, blazeWidgetStatus)
+        blazeWidgetStatus,
+        onboardingWidgetStatus
+    ) { widgets, statsWidgetStatus, blazeWidgetStatus, onboardingWidgetStatus ->
+        widgets.toDomainModel(statsWidgetStatus, blazeWidgetStatus, onboardingWidgetStatus)
     }
 
     suspend fun updateWidgets(widgets: List<DashboardWidget>) = dashboardDataStore.updateDashboard(
@@ -62,7 +71,7 @@ class DashboardRepository @Inject constructor(
             .apply {
                 val index = indexOfFirst { it.type == type }
                 if (index != -1) {
-                    set(index, get(index).copy(isVisible = isVisible))
+                    set(index, get(index).copy(isSelected = isVisible))
                 }
             }
         updateWidgets(dataStoreWidgets)
@@ -70,22 +79,23 @@ class DashboardRepository @Inject constructor(
 
     private fun List<DashboardWidgetDataModel>.toDomainModel(
         statsWidgetsStatus: DashboardWidget.Status,
-        blazeWidgetStatus: DashboardWidget.Status
+        blazeWidgetStatus: DashboardWidget.Status,
+        onboardingWidgetStatus: DashboardWidget.Status
     ): List<DashboardWidget> {
         return map { widget ->
             val type = DashboardWidget.Type.valueOf(widget.type)
             DashboardWidget(
                 type = type,
-                isVisible = widget.isAdded,
+                isSelected = widget.isAdded,
                 status = when (type) {
                     DashboardWidget.Type.STATS,
                     DashboardWidget.Type.POPULAR_PRODUCTS -> statsWidgetsStatus
 
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
 
-                    else -> DashboardWidget.Status.Available
+                    DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
                 }
             )
-        }.sortedBy { it.isAvailable }
+        }
     }
 }
