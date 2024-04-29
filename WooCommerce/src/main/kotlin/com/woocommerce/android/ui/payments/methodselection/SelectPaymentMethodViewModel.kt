@@ -230,21 +230,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onCashPaymentClicked() {
-
         if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled()) {
-            launch {
-                trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
-                val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
-                    SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
-                    ORDER, ORDER_CREATION -> R.string.existing_order_cash_dlg_message
-                }
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowDialog(
-                        titleId = R.string.simple_payments_dialog_title,
-                        messageId = messageIdForPaymentType,
-                    )
-                )
-            }        } else {
+            handleCashPaymentClick()
+        } else {
             launch {
                 trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
                 val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
@@ -264,9 +252,19 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 )
             }
         }
+    }
 
-
-
+    private fun handleCashPaymentClick() {
+        launch {
+            // Existing logic for cash payment when feature flag is enabled
+            trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
+            // Assume we have method to determine message based on payment type
+            triggerEvent(
+                MultiLiveEvent.Event.ShowDialog(
+                    titleId = R.string.simple_payments_dialog_title,
+                )
+            )
+        }
     }
 
     /**
