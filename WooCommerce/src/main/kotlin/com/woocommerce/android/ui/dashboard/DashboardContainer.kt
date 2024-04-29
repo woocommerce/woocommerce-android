@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -61,6 +62,9 @@ private fun WidgetList(
             .background(MaterialTheme.colors.surface)
             .padding(vertical = dimensionResource(id = R.dimen.major_100))
     ) {
+        val widgetModifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
         widgetUiModels.forEach {
             AnimatedVisibility(it.isVisible) {
                 when (it) {
@@ -68,13 +72,15 @@ private fun WidgetList(
                         ConfigurableWidgetCard(
                             widgetUiModel = it,
                             dashboardViewModel = dashboardViewModel,
-                            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                            blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
+                            modifier = widgetModifier
                         )
                     }
 
                     is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget -> {
                         ShareStoreCard(
-                            onShareClicked = dashboardViewModel::onShareStoreClicked
+                            onShareClicked = dashboardViewModel::onShareStoreClicked,
+                            modifier = widgetModifier
                         )
                     }
                 }
@@ -87,7 +93,8 @@ private fun WidgetList(
 private fun ConfigurableWidgetCard(
     widgetUiModel: DashboardViewModel.DashboardWidgetUiModel.ConfigurableWidget,
     dashboardViewModel: DashboardViewModel,
-    blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
+    blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
+    modifier: Modifier
 ) {
     when (widgetUiModel.widget.type) {
         DashboardWidget.Type.STATS -> {
@@ -98,30 +105,37 @@ private fun ConfigurableWidgetCard(
                 openDatePicker = { start, end, callback ->
                     dashboardViewModel.onDashboardWidgetEvent(OpenRangePicker(start, end, callback))
                 },
-                parentViewModel = dashboardViewModel
+                parentViewModel = dashboardViewModel,
+                modifier = modifier
             )
         }
 
-        DashboardWidget.Type.POPULAR_PRODUCTS -> DashboardTopPerformersWidgetCard(dashboardViewModel)
+        DashboardWidget.Type.POPULAR_PRODUCTS -> DashboardTopPerformersWidgetCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
 
         DashboardWidget.Type.BLAZE -> DashboardBlazeCard(
             blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher,
-            parentViewModel = dashboardViewModel
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
         )
 
-        DashboardWidget.Type.ONBOARDING -> DashboardOnboardingCard(parentViewModel = dashboardViewModel)
+        DashboardWidget.Type.ONBOARDING -> DashboardOnboardingCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
     }
 }
 
 @Composable
 private fun ShareStoreCard(
     onShareClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .padding(horizontal = 16.dp)
             .border(
                 width = 1.dp,
                 color = colorResource(id = R.color.woo_gray_5),

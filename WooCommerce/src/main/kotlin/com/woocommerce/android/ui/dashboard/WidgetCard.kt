@@ -42,7 +42,6 @@ fun WidgetCard(
     val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
     Column(
         modifier = modifier
-            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             .border(
                 width = dimensionResource(id = R.dimen.minor_10),
                 color = colorResource(id = R.color.woo_gray_5),

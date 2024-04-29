@@ -68,9 +68,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DashboardBlazeCard(
-    modifier: Modifier = Modifier,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
     parentViewModel: DashboardViewModel,
+    modifier: Modifier = Modifier,
     viewModel: DashboardBlazeViewModel = viewModelWithFactory { factory: DashboardBlazeViewModel.Factory ->
         factory.create(parentViewModel)
     }
@@ -146,7 +146,7 @@ private fun BlazeFrame(
 ) {
     if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
         WidgetCard(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier,
             titleResource = DashboardWidget.Type.BLAZE.titleResource,
             iconResource = R.drawable.ic_blaze,
             menu = state.menu,

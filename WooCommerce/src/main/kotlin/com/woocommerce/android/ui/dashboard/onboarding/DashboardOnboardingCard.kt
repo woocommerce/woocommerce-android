@@ -45,7 +45,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAc
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Companion.MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD
-import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Factory
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.OnboardingDashBoardState
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
@@ -66,18 +65,19 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 @Composable
 fun DashboardOnboardingCard(
     parentViewModel: DashboardViewModel,
-    onboardingViewModel: DashboardOnboardingViewModel =
-        viewModelWithFactory<DashboardOnboardingViewModel, Factory>(
-            creationCallback = {
-                it.create(parentViewModel)
-            }
-        )
+    modifier: Modifier = Modifier,
+    onboardingViewModel: DashboardOnboardingViewModel = viewModelWithFactory(
+        creationCallback = { factory: DashboardOnboardingViewModel.Factory ->
+            factory.create(parentViewModel)
+        }
+    )
 ) {
     onboardingViewModel.viewState.observeAsState().value?.let { onboardingState ->
         WidgetCard(
             titleResource = onboardingState.title,
             menu = onboardingState.menu,
             button = onboardingState.onViewAllTapped,
+            modifier = modifier,
         ) {
             when {
                 onboardingState.isLoading -> StoreOnboardingLoading()

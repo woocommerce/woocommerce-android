@@ -63,7 +63,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAc
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
-import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.Factory
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenAnalytics
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
@@ -77,12 +76,12 @@ import java.util.Locale
 @Composable
 fun DashboardTopPerformersWidgetCard(
     parentViewModel: DashboardViewModel,
-    topPerformersViewModel: DashboardTopPerformersViewModel =
-        viewModelWithFactory<DashboardTopPerformersViewModel, Factory>(
-            creationCallback = {
-                it.create(parentViewModel)
-            }
-        )
+    modifier: Modifier = Modifier,
+    topPerformersViewModel: DashboardTopPerformersViewModel = viewModelWithFactory(
+        creationCallback = { factory: DashboardTopPerformersViewModel.Factory ->
+            factory.create(parentViewModel)
+        }
+    )
 ) {
     topPerformersViewModel.topPerformersState.observeAsState().value?.let { topPerformersState ->
         val lastUpdateState by topPerformersViewModel.lastUpdateTopPerformers.observeAsState()
@@ -91,6 +90,7 @@ fun DashboardTopPerformersWidgetCard(
             titleResource = topPerformersState.titleStringRes,
             menu = topPerformersState.menu,
             button = topPerformersState.onOpenAnalyticsTapped,
+            modifier = modifier
         ) {
             DashboardTopPerformersContent(
                 topPerformersState,
