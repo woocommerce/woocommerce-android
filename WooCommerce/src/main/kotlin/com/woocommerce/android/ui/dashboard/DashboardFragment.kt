@@ -18,7 +18,6 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -60,7 +59,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.NetworkUtils
-import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -88,9 +86,6 @@ class DashboardFragment :
 
     @Inject
     lateinit var appPrefsWrapper: AppPrefsWrapper
-
-    @Inject
-    lateinit var feedbackPrefs: FeedbackPrefs
 
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
@@ -315,10 +310,6 @@ class DashboardFragment :
     }
 
     private fun handleFeedbackRequestPositiveClick() {
-        // set last feedback date to now and hide the card
-        feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-        binding.storeFeedbackRequestCard.visibility = View.GONE
-
         // Request a ReviewInfo object from the Google Reviews API. If this fails
         // we just move on as there isn't anything we can do.
         val manager = ReviewManagerFactory.create(requireContext())

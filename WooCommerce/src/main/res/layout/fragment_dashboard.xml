@@ -45,14 +45,6 @@
                         android:id="@+id/dashboard_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-
-                    <!-- Feedback Request Card -->
-                    <com.woocommerce.android.ui.feedback.FeedbackRequestCard
-                        android:id="@+id/store_feedback_request_card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/minor_100"
-                        android:visibility="gone" />
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
 
