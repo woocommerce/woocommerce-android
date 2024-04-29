@@ -37,6 +37,8 @@ import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackPositiveAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
@@ -180,6 +182,10 @@ class DashboardFragment :
 
                 is ContactSupport -> activity?.startHelpActivity(HelpOrigin.MY_STORE)
 
+                is FeedbackPositiveAction -> handleFeedbackRequestPositiveClick()
+
+                is FeedbackNegativeAction -> mainNavigationRouter?.showFeedbackSurvey()
+
                 else -> event.isHandled = false
             }
         }
@@ -253,7 +259,6 @@ class DashboardFragment :
 
     override fun onResume() {
         super.onResume()
-        handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
         // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
         if (wasPreviouslyStopped) {
@@ -307,31 +312,6 @@ class DashboardFragment :
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
-    }
-
-    /**
-     * This method verifies if the feedback card should be visible.
-     *
-     * If it should but it's not, the feedback card is reconfigured and presented
-     * If should not and it's visible, the card visibility is changed to gone
-     * If should be and it's already visible, nothing happens
-     */
-    private fun handleFeedbackRequestCardState() = with(binding.storeFeedbackRequestCard) {
-        if (feedbackPrefs.userFeedbackIsDue && visibility == View.GONE) {
-            setupFeedbackRequestCard()
-        } else if (feedbackPrefs.userFeedbackIsDue.not() && visibility == View.VISIBLE) {
-            visibility = View.GONE
-        }
-    }
-
-    private fun setupFeedbackRequestCard() {
-        binding.storeFeedbackRequestCard.visibility = View.VISIBLE
-        val negativeCallback = {
-            mainNavigationRouter?.showFeedbackSurvey()
-            binding.storeFeedbackRequestCard.visibility = View.GONE
-            feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-        }
-        binding.storeFeedbackRequestCard.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
     }
 
     private fun handleFeedbackRequestPositiveClick() {
