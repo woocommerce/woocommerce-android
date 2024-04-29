@@ -21,7 +21,7 @@ class TapToPayAvailabilityStatus @Inject constructor(
         when {
             !systemVersionUtilsWrapper.isAtLeastQ() -> Result.NotAvailable.SystemVersionNotSupported
             !deviceFeatures.isGooglePlayServicesAvailable() -> Result.NotAvailable.GooglePlayServicesNotAvailable
-            !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
+//            !deviceFeatures.isNFCAvailable() -> Result.NotAvailable.NfcNotAvailable
             !isTppSupportedInCountry() -> Result.NotAvailable.CountryNotSupported
 
             else -> Result.Available

@@ -67,6 +67,7 @@ fun TapToPayAboutScreen(
                 Text(
                     text = stringResource(id = R.string.card_reader_tap_to_pay_about_header),
                     style = MaterialTheme.typography.h5,
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.size(dimensionResource(id = R.dimen.major_100)))
                 Text(
