@@ -52,7 +52,6 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -107,7 +106,6 @@ class DashboardFragment :
             hasShadow = true,
         )
 
-    private var isEmptyViewVisible: Boolean = false
     private var wasPreviouslyStopped = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -155,12 +153,6 @@ class DashboardFragment :
     private fun setupStateObservers() {
         dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
-        dashboardViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
-            when (newValue) {
-                DashboardViewModel.OrderState.Empty -> showEmptyView(true)
-                DashboardViewModel.OrderState.AtLeastOne -> showEmptyView(false)
-            }
-        }
         dashboardViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowPrivacyBanner ->
@@ -366,21 +358,6 @@ class DashboardFragment :
                 )
             }
         }
-    }
-
-    private fun showEmptyView(show: Boolean) {
-        val dashboardVisibility: Int
-        if (show) {
-            dashboardVisibility = View.GONE
-            binding.emptyView.show(EmptyViewType.DASHBOARD) {
-                dashboardViewModel.onShareStoreClicked()
-            }
-        } else {
-            binding.emptyView.hide()
-            dashboardVisibility = View.VISIBLE
-        }
-        binding.dashboardContainer.visibility = dashboardVisibility
-        isEmptyViewVisible = show
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0

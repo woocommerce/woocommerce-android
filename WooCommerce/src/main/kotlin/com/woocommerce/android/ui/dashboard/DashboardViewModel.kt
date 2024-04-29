@@ -72,9 +72,6 @@ class DashboardViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = dashboardTransactionLauncher
 
-    private var _hasOrders = MutableLiveData<OrderState>()
-    val hasOrders: LiveData<OrderState> = _hasOrders
-
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
 
@@ -195,11 +192,6 @@ class DashboardViewModel @Inject constructor(
                     }
                 )
             }
-    }
-
-    sealed class OrderState {
-        data object Empty : OrderState()
-        data object AtLeastOne : OrderState()
     }
 
     data class AppbarState(

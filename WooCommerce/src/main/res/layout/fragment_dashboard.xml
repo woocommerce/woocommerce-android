@@ -53,15 +53,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/minor_100"
                         android:visibility="gone" />
-
-                    <com.woocommerce.android.widgets.WCEmptyView
-                        android:id="@+id/empty_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="@dimen/major_100"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
 
