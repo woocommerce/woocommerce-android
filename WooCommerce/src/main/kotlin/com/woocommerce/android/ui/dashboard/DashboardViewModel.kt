@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER
@@ -34,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -42,6 +44,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.Calendar
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
@@ -57,7 +60,8 @@ class DashboardViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
-    private val dashboardRepository: DashboardRepository
+    dashboardRepository: DashboardRepository,
+    private val feedbackPrefs: FeedbackPrefs
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -92,8 +96,12 @@ class DashboardViewModel @Inject constructor(
             jetpackBenefitsBannerState(site.connectionType)
         }.asLiveData()
 
-    val dashboardWidgets = dashboardRepository.widgets
-        .map { widgets -> mapWidgetsToUiModels(widgets) }
+    val dashboardWidgets = combine(
+        dashboardRepository.widgets,
+        feedbackPrefs.userFeedbackIsDueObservable
+    ) { widgets, userFeedbackIsDue ->
+        mapWidgetsToUiModels(widgets, userFeedbackIsDue)
+    }
         .asLiveData()
 
     init {
@@ -170,7 +178,10 @@ class DashboardViewModel @Inject constructor(
         triggerEvent(DashboardEvent.ContactSupport)
     }
 
-    private fun mapWidgetsToUiModels(widgets: List<DashboardWidget>): List<DashboardWidgetUiModel> = buildList {
+    private fun mapWidgetsToUiModels(
+        widgets: List<DashboardWidget>,
+        userFeedbackIsDue: Boolean
+    ): List<DashboardWidgetUiModel> = buildList {
         addAll(
             widgets.map { DashboardWidgetUiModel.ConfigurableWidget(it) }
         )
@@ -180,6 +191,23 @@ class DashboardViewModel @Inject constructor(
             selectedSite.get().url != null
         ) {
             add(DashboardWidgetUiModel.ShareStoreWidget(::onShareStoreClicked))
+        }
+
+        if (userFeedbackIsDue) {
+            add(
+                2,
+                DashboardWidgetUiModel.FeedbackWidget(
+                    onPositiveClick = {
+                        feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+                        triggerEvent(DashboardEvent.FeedbackPositiveAction)
+                    },
+                    onNegativeClick = {
+                        feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+                        triggerEvent(DashboardEvent.FeedbackNegativeAction)
+                    },
+                    onDismiss = { feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time }
+                )
+            )
         }
     }
 
@@ -256,6 +284,10 @@ class DashboardViewModel @Inject constructor(
         ) : DashboardEvent()
 
         data object ContactSupport : DashboardEvent()
+
+        data object FeedbackPositiveAction : DashboardEvent()
+
+        data object FeedbackNegativeAction : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)
