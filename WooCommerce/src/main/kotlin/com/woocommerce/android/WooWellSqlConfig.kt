@@ -70,5 +70,6 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context, ADDON_WOOCOMME
      * number of SQLiteBlobTooBigExceptions. Note that this is only called on API 28 and
      * above since earlier versions don't allow adjusting the cursor window size.
      */
+    @Suppress("MagicNumber")
     override fun getCursorWindowSize() = (1024L * 1024L * 10L)
 }
