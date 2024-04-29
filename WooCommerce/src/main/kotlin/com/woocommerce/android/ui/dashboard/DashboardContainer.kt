@@ -79,7 +79,7 @@ private fun WidgetList(
 
                     is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget -> {
                         ShareStoreCard(
-                            onShareClicked = dashboardViewModel::onShareStoreClicked,
+                            onShareClicked = it.onShareClicked,
                             modifier = widgetModifier
                         )
                     }

@@ -179,7 +179,7 @@ class DashboardViewModel @Inject constructor(
             selectedSite.get().isSitePublic &&
             selectedSite.get().url != null
         ) {
-            add(DashboardWidgetUiModel.ShareStoreWidget)
+            add(DashboardWidgetUiModel.ShareStoreWidget(::onShareStoreClicked))
         }
     }
 
@@ -222,7 +222,9 @@ class DashboardViewModel @Inject constructor(
                 get() = widget.isVisible
         }
 
-        data object ShareStoreWidget : DashboardWidgetUiModel
+        data class ShareStoreWidget(
+            val onShareClicked: () -> Unit
+        ) : DashboardWidgetUiModel
     }
 
     data class AppbarState(
