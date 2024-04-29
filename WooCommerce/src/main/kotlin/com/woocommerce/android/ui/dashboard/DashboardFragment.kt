@@ -407,7 +407,6 @@ class DashboardFragment :
             dashboardVisibility = View.VISIBLE
         }
         binding.dashboardContainer.visibility = dashboardVisibility
-        binding.myStoreTopPerformers.visibility = dashboardVisibility
         isEmptyViewVisible = show
     }
 

@@ -5,7 +5,7 @@
     android:id="@+id/dashboardStats_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/empty_state_bg_color"
+    android:background="@color/color_surface"
     tools:context="com.woocommerce.android.ui.dashboard.DashboardFragment">
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -61,13 +61,6 @@
                         android:layout_marginTop="@dimen/major_100"
                         android:visibility="gone"
                         tools:visibility="visible" />
-
-                    <!-- Top performer stats -->
-                    <androidx.compose.ui.platform.ComposeView
-                        android:id="@+id/my_store_top_performers"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" />
 
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>

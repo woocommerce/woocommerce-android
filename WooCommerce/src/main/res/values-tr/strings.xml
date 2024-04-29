@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-16 09:54:03+0000
+Translation-Revision-Date: 2024-04-22 12:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="card_selection_control">Analiz kartı seçimi</string>
     <string name="login_app_password_exit_dialog_cancel">İptal Et</string>
     <string name="login_app_password_exit_dialog_confirmation">Yine de Çık</string>
     <string name="login_app_password_exit_dialog_message">Görünüşe göre henüz uygulama bağlantısını onaylamadınız. Çıkış yapmak istediğinizden emin misiniz?</string>
@@ -458,6 +459,7 @@ Language: tr
     <string name="blaze_campaign_status_active">Etkin</string>
     <string name="blaze_campaign_status_in_moderation">Denetlemede</string>
     <string name="blaze_campaign_show_all_button">Hepsini göster</string>
+    <string name="blaze_campaign_create_campaign_button">Kampanya oluştur</string>
     <string name="blaze_campaign_subtitle">Görünürlüğü artırın ve ürünlerinizin hızla satılmasını sağlayın.</string>
     <string name="blaze_campaign_title">Kampanyayı öne çıkarın</string>
     <string name="card_reader_tap_to_pay_about_copyright">Temassız Simgesi; EMVCo, LLC\'ye ait ve onun izni ile kullanılan bir ticari markadır.</string>

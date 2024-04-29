@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-16 17:54:04+0000
+Translation-Revision-Date: 2024-04-23 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="card_selection_control">分析卡选择</string>
     <string name="login_app_password_exit_dialog_cancel">取消</string>
     <string name="login_app_password_exit_dialog_confirmation">仍要退出</string>
     <string name="login_app_password_exit_dialog_message">您似乎尚未批准应用程序连接。 是否确定要退出？</string>
@@ -458,6 +459,7 @@ Language: zh_CN
     <string name="blaze_campaign_status_active">已启用</string>
     <string name="blaze_campaign_status_in_moderation">审核中</string>
     <string name="blaze_campaign_show_all_button">显示全部</string>
+    <string name="blaze_campaign_create_campaign_button">创建广告活动</string>
     <string name="blaze_campaign_subtitle">提高展示率，让产品更快售出。</string>
     <string name="blaze_campaign_title">Blaze 广告活动</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol（非接触式标志）是 EMVCo, LLC 的商标，经其许可方能使用。</string>

@@ -81,6 +81,28 @@
 
                     </FrameLayout>
 
+                    <FrameLayout
+                        android:id="@+id/imagesUnavailableNotice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/warning_banner_background_color">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            style="@style/Woo.TextView.Subtitle1.OnPrimary.Icon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="0dp"
+                            android:layout_gravity="center"
+                            android:padding="@dimen/major_100"
+                            android:text="@string/images_unavailable_notice"
+                            android:textColor="@color/color_on_surface"
+                            android:drawablePadding="@dimen/major_100"
+                            app:drawableTint="@color/color_on_surface"
+                            app:drawableStartCompat="@drawable/ic_info_outline_20dp" />
+
+                    </FrameLayout>
+
+
                     <View
                         style="@style/Woo.Divider"
                         android:layout_gravity="bottom" />

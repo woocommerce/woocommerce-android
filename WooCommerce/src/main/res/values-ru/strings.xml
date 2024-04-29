@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-17 09:54:02+0000
+Translation-Revision-Date: 2024-04-23 17:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="card_selection_control">Выбор карт аналитики</string>
     <string name="login_app_password_exit_dialog_cancel">Отмена</string>
     <string name="login_app_password_exit_dialog_confirmation">Всё равно выйти</string>
     <string name="login_app_password_exit_dialog_message">Похоже, вы ещё не одобрили соединение с приложением. Вы уверены, что хотите выйти?</string>
@@ -458,6 +459,7 @@ Language: ru
     <string name="blaze_campaign_status_active">Активно</string>
     <string name="blaze_campaign_status_in_moderation">На модерации</string>
     <string name="blaze_campaign_show_all_button">Показать всё</string>
+    <string name="blaze_campaign_create_campaign_button">Создать кампанию</string>
     <string name="blaze_campaign_subtitle">Станьте заметнее и быстрее продавайте товары.</string>
     <string name="blaze_campaign_title">Кампания Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Символ бесконтактной оплаты (Contactless Symbol) — торговая марка, принадлежащая компании EMVCo, LLC и используемая с её разрешения.</string>

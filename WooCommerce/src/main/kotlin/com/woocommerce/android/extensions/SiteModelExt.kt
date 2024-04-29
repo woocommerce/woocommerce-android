@@ -4,6 +4,7 @@ import android.text.TextUtils
 import com.woocommerce.android.ui.plans.domain.FREE_TRIAL_PLAN_ID
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
 import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility.PUBLIC
 import org.wordpress.android.fluxc.utils.SiteUtils.getNormalizedTimezone
 import org.wordpress.android.fluxc.utils.extensions.slashJoin
@@ -66,6 +67,9 @@ val SiteModel?.isFreeTrial: Boolean
 
 val SiteModel?.isSitePublic: Boolean
     get() = this?.publishedStatus == PUBLIC.value()
+
+val SiteModel?.isSitePrivate: Boolean
+    get() = this?.publishedStatus == SiteVisibility.PRIVATE.value()
 
 val SiteModel.isEligibleForAI: Boolean
     get() = isWPComAtomic || planActiveFeatures.orEmpty().contains("ai-assistant")

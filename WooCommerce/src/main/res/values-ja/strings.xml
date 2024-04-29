@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-16 09:54:04+0000
+Translation-Revision-Date: 2024-04-23 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="card_selection_control">分析カードの選択</string>
     <string name="login_app_password_exit_dialog_cancel">キャンセル</string>
     <string name="login_app_password_exit_dialog_confirmation">終了</string>
     <string name="login_app_password_exit_dialog_message">アプリの連携をまだ承認していないようです。 終了してもよろしいですか ?</string>
@@ -458,6 +459,7 @@ Language: ja_JP
     <string name="blaze_campaign_status_active">有効</string>
     <string name="blaze_campaign_status_in_moderation">モデレーション中</string>
     <string name="blaze_campaign_show_all_button">すべて表示</string>
+    <string name="blaze_campaign_create_campaign_button">キャンペーンを作成</string>
     <string name="blaze_campaign_subtitle">認知度を高め、商品を迅速に販売します。</string>
     <string name="blaze_campaign_title">Blaze キャンペーン</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol は EMVCo, LLC が所有し、EMVCo, LLC の許可を得て使用している商標です。</string>
