@@ -44,4 +44,8 @@ data class NavigateBackToOrderList(
     val order: Order
 ) : MultiLiveEvent.Event()
 
+data class NavigateToChangeDueCalculatorScreen(
+    val order: Order
+) : MultiLiveEvent.Event()
+
 data class OpenGenericWebView(val url: String) : MultiLiveEvent.Event()

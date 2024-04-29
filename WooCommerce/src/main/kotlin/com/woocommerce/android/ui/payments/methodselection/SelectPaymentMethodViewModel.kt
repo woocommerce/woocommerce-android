@@ -256,14 +256,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     private fun handleCashPaymentClick() {
         launch {
-            // Existing logic for cash payment when feature flag is enabled
             trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
-            // Assume we have method to determine message based on payment type
-            triggerEvent(
-                MultiLiveEvent.Event.ShowDialog(
-                    titleId = R.string.simple_payments_dialog_title,
-                )
-            )
+            triggerEvent(NavigateToChangeDueCalculatorScreen(order.first()))
         }
     }
 
