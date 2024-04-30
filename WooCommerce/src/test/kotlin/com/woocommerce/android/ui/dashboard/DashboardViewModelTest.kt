@@ -2,17 +2,22 @@ package com.woocommerce.android.ui.dashboard
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -22,7 +27,11 @@ import org.wordpress.android.fluxc.model.SiteModel
 @ExperimentalCoroutinesApi
 class DashboardViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
-    private val selectedSite: SelectedSite = mock()
+    private val selectedSite: SelectedSite = mock {
+        on { get() } doReturn SiteModel().apply {
+            url = "https://example.com"
+        }
+    }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -31,7 +40,18 @@ class DashboardViewModelTest : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
     private val dashboardRepository: DashboardRepository = mock {
-        onBlocking { widgets } doReturn flowOf(emptyList())
+        onBlocking { widgets } doReturn flowOf(
+            DashboardWidget.Type.entries.map {
+                DashboardWidget(
+                    it,
+                    true,
+                    DashboardWidget.Status.Available
+                )
+            }
+        )
+    }
+    private val feedbackPrefs: FeedbackPrefs = mock {
+        onBlocking { userFeedbackIsDueObservable } doReturn flowOf(false)
     }
 
     private lateinit var viewModel: DashboardViewModel
@@ -48,7 +68,8 @@ class DashboardViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
-            dashboardRepository = dashboardRepository
+            dashboardRepository = dashboardRepository,
+            feedbackPrefs = feedbackPrefs
         )
     }
 
@@ -147,5 +168,124 @@ class DashboardViewModelTest : BaseUnitTest() {
         val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
 
         assertThat(jetpackBenefitsBanner!!.show).isFalse()
+    }
+
+    @Test
+    fun `when the stats card is unavailable, then show the share store card`() = testBlocking {
+        setup {
+            whenever(dashboardRepository.widgets).thenReturn(
+                flowOf(
+                    listOf(
+                        DashboardWidget(
+                            type = DashboardWidget.Type.STATS,
+                            isSelected = true,
+                            status = DashboardWidget.Status.Unavailable(0)
+                        )
+                    )
+                )
+            )
+        }
+
+        val widgets = viewModel.dashboardWidgets.captureValues().last()
+
+        val shareStoreCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget }
+        assertThat(shareStoreCard.isVisible).isTrue()
+    }
+
+    @Test
+    fun `when the stats card is available, then hide the share store card`() = testBlocking {
+        setup {
+            whenever(dashboardRepository.widgets).thenReturn(
+                flowOf(
+                    listOf(
+                        DashboardWidget(
+                            type = DashboardWidget.Type.STATS,
+                            isSelected = true,
+                            status = DashboardWidget.Status.Available
+                        )
+                    )
+                )
+            )
+        }
+
+        val widgets = viewModel.dashboardWidgets.captureValues().last()
+
+        val shareStoreCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget }
+        assertThat(shareStoreCard.isVisible).isFalse()
+    }
+
+    @Test
+    fun `when feedback is due, then show the feedback card`() = testBlocking {
+        setup {
+            whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
+        }
+
+        val widgets = viewModel.dashboardWidgets.captureValues().last()
+
+        val feedbackCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget }
+        assertThat(feedbackCard.isVisible).isTrue()
+    }
+
+    @Test
+    fun `when feedback is not due, then hide the feedback card`() = testBlocking {
+        setup {
+            whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(false))
+        }
+
+        val widgets = viewModel.dashboardWidgets.captureValues().last()
+
+        val feedbackCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget }
+        assertThat(feedbackCard.isVisible).isFalse()
+    }
+
+    @Test
+    fun `given feedback card is shown, when positive button is tapped, then handle click`() = testBlocking {
+        setup {
+            whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            val widgets = viewModel.dashboardWidgets.captureValues().last()
+            val feedbackCard = widgets.filterIsInstance(
+                DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget::class.java
+            ).first()
+            feedbackCard.onPositiveClick.invoke()
+        }.last()
+
+        verify(feedbackPrefs).lastFeedbackDate = any()
+        assertThat(event).isEqualTo(DashboardViewModel.DashboardEvent.FeedbackPositiveAction)
+    }
+
+    @Test
+    fun `given feedback card is shown, when negative button is tapped, then handle click`() = testBlocking {
+        setup {
+            whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
+        }
+
+        val event = viewModel.event.runAndCaptureValues {
+            val widgets = viewModel.dashboardWidgets.captureValues().last()
+            val feedbackCard = widgets.filterIsInstance(
+                DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget::class.java
+            ).first()
+            feedbackCard.onNegativeClick.invoke()
+        }.last()
+
+        verify(feedbackPrefs).lastFeedbackDate = any()
+        assertThat(event).isEqualTo(DashboardViewModel.DashboardEvent.FeedbackNegativeAction)
+    }
+
+    @Test
+    fun `given feedback card is shown, when dismiss button is tapped, then handle click`() = testBlocking {
+        setup {
+            whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
+        }
+
+        val widgets = viewModel.dashboardWidgets.captureValues().last()
+        val feedbackCard = widgets.filterIsInstance(
+            DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget::class.java
+        ).first()
+        feedbackCard.onDismiss.invoke()
+
+        verify(feedbackPrefs).lastFeedbackDate = any()
     }
 }
