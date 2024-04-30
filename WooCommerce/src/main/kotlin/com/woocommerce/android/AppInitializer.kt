@@ -179,6 +179,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun init(application: Application) {
         this.application = application
 
+        crashLogging.initialize()
         Thread.setDefaultUncaughtExceptionHandler(
             UncaughtErrorsHandler(
                 context = application,
