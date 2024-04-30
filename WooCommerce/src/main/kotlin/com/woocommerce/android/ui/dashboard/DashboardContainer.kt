@@ -178,7 +178,6 @@ private fun ShareStoreCard(
     }
 }
 
-
 @Composable
 fun FeedbackCard(
     widget: DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget,
