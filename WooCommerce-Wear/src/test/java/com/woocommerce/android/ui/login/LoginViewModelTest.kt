@@ -102,15 +102,19 @@ class LoginViewModelTest : BaseUnitTest() {
     @Test
     fun `on viewModel init, then fail REQUEST_SITE message and cancel loading`() = testBlocking {
         // Given
+        var isLoading: Boolean? = null
         whenever(phoneConnectionRepository.sendMessage(REQUEST_SITE))
             .doReturn(Result.failure(Exception("")))
 
         // When
         createSut()
+        sut.viewState.observeForever { isLoading = it.isLoading }
 
         // Then
         verify(phoneConnectionRepository).sendMessage(REQUEST_SITE)
         verify(loginRepository, never()).isUserLoggedIn
+        assertThat(isLoading).isNotNull()
+        assertThat(isLoading).isFalse
     }
 
     private fun createSut() {
