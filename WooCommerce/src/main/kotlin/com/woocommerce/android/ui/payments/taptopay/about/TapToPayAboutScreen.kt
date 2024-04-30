@@ -94,7 +94,7 @@ fun TapToPayAboutScreen(
                 )
                 Spacer(Modifier.size(dimensionResource(id = R.dimen.minor_100)))
                 Text(
-                    text = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_1),
+                    text = stringResource(id = R.string.card_reader_tap_to_pay_about_how_works_1_updated),
                     style = MaterialTheme.typography.body1,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
