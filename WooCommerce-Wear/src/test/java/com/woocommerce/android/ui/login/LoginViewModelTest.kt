@@ -11,8 +11,11 @@ import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.Mockito.never
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -33,7 +36,10 @@ class LoginViewModelTest : BaseUnitTest() {
         createSut()
 
         // Then
-        verify(navController).navigate(NavRoutes.MY_STORE.route)
+        verify(navController).navigate(
+            eq(NavRoutes.MY_STORE.route),
+            builder = any()
+        )
     }
 
     @Test
@@ -59,7 +65,7 @@ class LoginViewModelTest : BaseUnitTest() {
         sut.onTryAgainClicked()
 
         // Then
-        verify(phoneConnectionRepository).sendMessage(REQUEST_SITE)
+        verify(phoneConnectionRepository, times(2)).sendMessage(REQUEST_SITE)
     }
 
     @Test
