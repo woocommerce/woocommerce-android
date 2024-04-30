@@ -27,11 +27,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
@@ -185,7 +187,15 @@ fun FeedbackCard(
     WidgetCard(
         titleResource = R.string.my_store_widget_feedback_title,
         menu = DashboardWidgetMenu(
-            items = emptyList()
+            items = listOf(
+                DashboardWidgetAction(
+                    title = UiStringRes(
+                        stringRes = R.string.dynamic_dashboard_hide_widget_menu_item,
+                        listOf(UiStringRes(stringRes = R.string.my_store_widget_feedback_title)),
+                    ),
+                    action = widget.onDismiss
+                )
+            ),
         ),
         modifier = modifier
     ) {
