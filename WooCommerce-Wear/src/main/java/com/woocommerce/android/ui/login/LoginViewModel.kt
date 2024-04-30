@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
 import com.woocommerce.android.phone.PhoneConnectionRepository
+import com.woocommerce.android.ui.NavRoutes
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
@@ -37,7 +38,9 @@ class LoginViewModel @AssistedInject constructor(
     private suspend fun observeLoginChanges() {
         loginRepository.isUserLoggedIn.collect { isLoggedIn ->
             if (isLoggedIn) {
-                navController.navigate(MY_STORE.route)
+                navController.navigate(MY_STORE.route) {
+                    popUpTo(NavRoutes.LOGIN.route) { inclusive = true }
+                }
             } else {
                 _viewState.update { it.copy(isLoading = false) }
             }
