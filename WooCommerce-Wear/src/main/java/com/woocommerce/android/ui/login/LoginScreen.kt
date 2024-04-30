@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.login
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -43,18 +42,33 @@ fun LoginScreen(
             contentAlignment = Alignment.Center
         ) {
             if (isLoading) {
-                TimeText()
-                CircularProgressIndicator()
-                Text("Loading")
+                LoadingScreen()
             } else {
-                SyncScreen(onLoginButtonClicked)
+                ErrorScreen(onLoginButtonClicked)
             }
         }
     }
 }
 
 @Composable
-fun SyncScreen(
+private fun LoadingScreen(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TimeText()
+        CircularProgressIndicator()
+        Text("Loading")
+    }
+}
+
+@Composable
+fun ErrorScreen(
     onLoginButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
