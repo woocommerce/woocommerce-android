@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -68,7 +69,7 @@ private fun LoadingScreen(
                 .size(24.dp)
         )
         Text(
-            text = "Loading",
+            text = "Registering",
             modifier = modifier.padding(8.dp)
         )
     }
@@ -88,20 +89,17 @@ fun ErrorScreen(
     ) {
         Text(
             text = "Log in",
-            style = WooTypography.body1
+            style = WooTypography.body1,
+            modifier = modifier.padding(bottom = 16.dp)
         )
         Text(
-            text = "Something went wrong",
-            style = WooTypography.body2
-        )
-        Text(
-            text = "Make sure your phone is nearby with the Woo app installed and Bluetooth is on.",
+            text = "Open the Woo app on your phone and hold your watch nearby",
             textAlign = TextAlign.Center,
-            style = WooTypography.caption2
+            style = WooTypography.caption1
         )
         Button(
             onClick = onTryAgainClicked,
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier.width(150.dp)
         ) {
             Text("Try Again")
         }
