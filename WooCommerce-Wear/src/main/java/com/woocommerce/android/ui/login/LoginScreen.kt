@@ -16,6 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Button
+import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
@@ -43,7 +44,8 @@ fun LoginScreen(
         ) {
             if (isLoading) {
                 TimeText()
-                Text("Loading...")
+                CircularProgressIndicator()
+                Text("Loading")
             } else {
                 SyncScreen(onLoginButtonClicked)
             }
@@ -85,12 +87,22 @@ fun SyncScreen(
     }
 }
 
-@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
-@Preview(device = WearDevices.SQUARE, showSystemUi = true)
+@Preview(name = "Error Round", device = WearDevices.LARGE_ROUND, showSystemUi = true)
+@Preview(name = "Error Square", device = WearDevices.SQUARE, showSystemUi = true)
 @Composable
-fun Preview() {
+fun PreviewError() {
     LoginScreen(
         isLoading = false,
+        onLoginButtonClicked = {}
+    )
+}
+
+@Preview(name = "Loading Round", device = WearDevices.LARGE_ROUND, showSystemUi = true)
+@Preview(name = "Loading Square", device = WearDevices.SQUARE, showSystemUi = true)
+@Composable
+fun PreviewLoading() {
+    LoginScreen(
+        isLoading = true,
         onLoginButtonClicked = {}
     )
 }
