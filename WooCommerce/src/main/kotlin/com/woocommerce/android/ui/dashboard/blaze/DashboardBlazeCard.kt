@@ -343,6 +343,8 @@ fun BlazeProductItem(
                     .weight(1f)
             ) {
                 Text(
+                    modifier = Modifier
+                        .padding(bottom = dimensionResource(id = R.dimen.minor_50)),
                     text = stringResource(id = R.string.blaze_campaign_suggested_product_caption),
                     style = MaterialTheme.typography.caption,
                     color = colorResource(R.color.color_on_surface_medium)
