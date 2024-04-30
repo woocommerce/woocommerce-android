@@ -129,14 +129,11 @@ class DashboardBlazeViewModel @AssistedInject constructor(
             onProductClicked = {
                 launchCampaignCreation(product.remoteId)
             },
+            onCreateCampaignClicked = {
+                launchCampaignCreation(if (products.size == 1) product.remoteId else null)
+            },
             menu = DashboardWidgetMenu(
                 items = listOf(hideWidgetAction)
-            ),
-            createCampaignButton = DashboardWidgetAction(
-                titleResource = string.blaze_campaign_promote_button,
-                action = {
-                    launchCampaignCreation(if (products.size == 1) product.remoteId else null)
-                }
             )
         )
     }
@@ -174,24 +171,14 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                     )
                 )
             },
-            onViewAllCampaignsClicked = {
-                viewAllCampaigns()
+            onCreateCampaignClicked = {
+                launchCampaignCreation(productId = null)
             },
-            menu = DashboardWidgetMenu(
-                items = listOf(
-                    DashboardWidgetAction(
-                        titleResource = string.blaze_campaign_show_all_button,
-                        action = { triggerEvent(ShowAllCampaigns) }
-                    ),
-                    hideWidgetAction
-                )
+            menu = DashboardWidgetMenu(items = listOf(hideWidgetAction)),
+            showAllCampaignsButton = DashboardWidgetAction(
+                titleResource = string.blaze_campaign_show_all_button,
+                action = { viewAllCampaigns() }
             ),
-            createCampaignButton = DashboardWidgetAction(
-                titleResource = string.blaze_campaign_promote_button,
-                action = {
-                    launchCampaignCreation(productId = null)
-                }
-            )
         )
     }
 
@@ -245,7 +232,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
 
     sealed class DashboardBlazeCampaignState(
         open val menu: DashboardWidgetMenu,
-        open val createCampaignButton: DashboardWidgetAction? = null
+        val mainButton: DashboardWidgetAction? = null
     ) {
         // TODO remove this state when enabling [FeatureFlag.DYNAMIC_DASHBOARD] and clean up the code
         data object Hidden : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
@@ -253,17 +240,17 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         data class NoCampaign(
             val product: BlazeProductUi,
             val onProductClicked: () -> Unit,
+            val onCreateCampaignClicked: () -> Unit,
             override val menu: DashboardWidgetMenu,
-            override val createCampaignButton: DashboardWidgetAction
-        ) : DashboardBlazeCampaignState(menu, createCampaignButton)
+        ) : DashboardBlazeCampaignState(menu)
 
         data class Campaign(
             val campaign: BlazeCampaignUi,
             val onCampaignClicked: () -> Unit,
-            val onViewAllCampaignsClicked: () -> Unit,
-            override val menu: DashboardWidgetMenu,
-            override val createCampaignButton: DashboardWidgetAction
-        ) : DashboardBlazeCampaignState(menu, createCampaignButton)
+            val onCreateCampaignClicked: () -> Unit,
+            val showAllCampaignsButton: DashboardWidgetAction,
+            override val menu: DashboardWidgetMenu
+        ) : DashboardBlazeCampaignState(menu, showAllCampaignsButton)
     }
 
     data class LaunchBlazeCampaignCreation(val productId: Long?) : MultiLiveEvent.Event()
