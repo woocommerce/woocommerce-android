@@ -26,7 +26,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.LearnMoreAboutSection
@@ -162,7 +161,6 @@ fun LearnMoreAboutTTP(onLearnMoreClicked: () -> Unit) {
         }
     }
     LearnMoreAboutSection(
-        modifier = Modifier.padding(horizontal = 16.dp),
         text = TextWithHighlighting(
             text = textWithSpans.toString(),
             start = start,

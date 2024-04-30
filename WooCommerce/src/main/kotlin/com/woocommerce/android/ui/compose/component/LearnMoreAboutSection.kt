@@ -35,6 +35,7 @@ fun LearnMoreAboutSection(
             .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Spacer(modifier = Modifier.width(16.dp))
         Icon(
             painter = painterResource(id = R.drawable.ic_info_outline_20dp),
             contentDescription = text.toString(),
@@ -60,6 +61,7 @@ fun LearnMoreAboutSection(
             color = colorResource(id = R.color.color_on_surface_high),
             style = MaterialTheme.typography.caption,
         )
+        Spacer(modifier = Modifier.width(16.dp))
     }
 }
 
@@ -69,7 +71,7 @@ data class TextWithHighlighting(val text: String, val start: Int, val end: Int)
 @Composable
 fun LearnMoreComponentPreview() {
     LearnMoreAboutSection(
-        text = TextWithHighlighting("Learn more about Something", 0, 10),
+        text = TextWithHighlighting("Learn more about Something Something Something Something Something", 0, 10),
         onClick = {}
     )
 }

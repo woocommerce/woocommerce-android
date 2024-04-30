@@ -1483,9 +1483,7 @@
     <string name="card_reader_tap_to_pay_about_important_info_description_3">To accept payments above this limit, consider purchasing a card reader that accepts PIN entry.</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">Learn more about card readers</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">How it works</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s or %2$s</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">Create an order</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">collect a payment</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1">1. Create an order</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Tap “Collect Payment” and choose “Tap to Pay”.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Present your phone to the customer.</string>
     <string name="card_reader_tap_to_pay_about_how_works_4">4. Your customer holds their card horizontally at the top of your phone, over the contactless symbol.</string>
