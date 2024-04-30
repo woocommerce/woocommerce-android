@@ -186,29 +186,29 @@ class DashboardViewModel @Inject constructor(
             widgets.map { DashboardWidgetUiModel.ConfigurableWidget(it) }
         )
 
-        if (!widgets.first { it.type == DashboardWidget.Type.STATS }.isAvailable &&
+        // We add the other cards even if they should not be visible, so that the addition/deletion
+        // of the cards is animated properly
+
+        val shouldShowShareCard = !widgets.first { it.type == DashboardWidget.Type.STATS }.isAvailable &&
             selectedSite.get().isSitePublic &&
             selectedSite.get().url != null
-        ) {
-            add(DashboardWidgetUiModel.ShareStoreWidget(::onShareStoreClicked))
-        }
+        add(DashboardWidgetUiModel.ShareStoreWidget(shouldShowShareCard, ::onShareStoreClicked))
 
-        if (userFeedbackIsDue) {
-            add(
-                1,
-                DashboardWidgetUiModel.FeedbackWidget(
-                    onPositiveClick = {
-                        feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-                        triggerEvent(DashboardEvent.FeedbackPositiveAction)
-                    },
-                    onNegativeClick = {
-                        feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-                        triggerEvent(DashboardEvent.FeedbackNegativeAction)
-                    },
-                    onDismiss = { feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time }
-                )
+        add(
+            1,
+            DashboardWidgetUiModel.FeedbackWidget(
+                isVisible = userFeedbackIsDue,
+                onPositiveClick = {
+                    feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+                    triggerEvent(DashboardEvent.FeedbackPositiveAction)
+                },
+                onNegativeClick = {
+                    feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+                    triggerEvent(DashboardEvent.FeedbackNegativeAction)
+                },
+                onDismiss = { feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time }
             )
-        }
+        )
     }
 
     private fun jetpackBenefitsBannerState(
@@ -241,7 +241,6 @@ class DashboardViewModel @Inject constructor(
 
     sealed interface DashboardWidgetUiModel {
         val isVisible: Boolean
-            get() = true
 
         data class ConfigurableWidget(
             val widget: DashboardWidget,
@@ -251,10 +250,12 @@ class DashboardViewModel @Inject constructor(
         }
 
         data class ShareStoreWidget(
+            override val isVisible: Boolean,
             val onShareClicked: () -> Unit
         ) : DashboardWidgetUiModel
 
         data class FeedbackWidget(
+            override val isVisible: Boolean,
             val onPositiveClick: () -> Unit,
             val onNegativeClick: () -> Unit,
             val onDismiss: () -> Unit
