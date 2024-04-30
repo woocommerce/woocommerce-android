@@ -65,8 +65,14 @@ val SiteModel.clock: Clock
 val SiteModel?.isFreeTrial: Boolean
     get() = this?.planId == FREE_TRIAL_PLAN_ID
 
+/**
+ * Returns true if the site is public, this means:
+ * - Either the site is a WPCom store that's public.
+ * - Or the site is a self-hosted site, self-hosted sites doesn't have a public/private status, so we consider
+ *   them public.
+ */
 val SiteModel?.isSitePublic: Boolean
-    get() = this?.publishedStatus == PUBLIC.value()
+    get() = this?.let { !isWPComAtomic || publishedStatus == PUBLIC.value() } ?: false
 
 val SiteModel?.isSitePrivate: Boolean
     get() = this?.publishedStatus == SiteVisibility.PRIVATE.value()

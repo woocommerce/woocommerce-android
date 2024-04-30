@@ -66,9 +66,10 @@ fun DashboardStatsCard(
     onStatsError: () -> Unit,
     openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
     parentViewModel: DashboardViewModel,
-    viewModel: DashboardStatsViewModel = viewModelWithFactory<DashboardStatsViewModel, DashboardStatsViewModel.Factory>(
-        creationCallback = {
-            it.create(parentViewModel)
+    modifier: Modifier = Modifier,
+    viewModel: DashboardStatsViewModel = viewModelWithFactory(
+        creationCallback = { factory: DashboardStatsViewModel.Factory ->
+            factory.create(parentViewModel)
         }
     )
 ) {
@@ -109,7 +110,8 @@ fun DashboardStatsCard(
             )
         } else {
             null
-        }
+        },
+        modifier = modifier
     ) {
         if (revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError) {
             DashboardStatsContent(

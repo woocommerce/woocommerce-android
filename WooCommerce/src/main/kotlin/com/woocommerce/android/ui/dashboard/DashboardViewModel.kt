@@ -72,9 +72,6 @@ class DashboardViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = dashboardTransactionLauncher
 
-    private var _hasOrders = MutableLiveData<OrderState>()
-    val hasOrders: LiveData<OrderState> = _hasOrders
-
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
 
@@ -96,7 +93,7 @@ class DashboardViewModel @Inject constructor(
         }.asLiveData()
 
     val dashboardWidgets = dashboardRepository.widgets
-        .map { it.filter { widget -> widget.isVisible } }
+        .map { widgets -> mapWidgetsToUiModels(widgets) }
         .asLiveData()
 
     init {
@@ -121,7 +118,11 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun updateShareStoreButtonVisibility() {
-        _appbarState.value = AppbarState(showShareStoreButton = selectedSite.get().isSitePublic)
+        _appbarState.value = AppbarState(
+            showShareStoreButton = selectedSite.get().let {
+                it.isSitePublic && it.url != null
+            }
+        )
     }
 
     override fun onCleared() {
@@ -169,6 +170,19 @@ class DashboardViewModel @Inject constructor(
         triggerEvent(DashboardEvent.ContactSupport)
     }
 
+    private fun mapWidgetsToUiModels(widgets: List<DashboardWidget>): List<DashboardWidgetUiModel> = buildList {
+        addAll(
+            widgets.map { DashboardWidgetUiModel.ConfigurableWidget(it) }
+        )
+
+        if (!widgets.first { it.type == DashboardWidget.Type.STATS }.isAvailable &&
+            selectedSite.get().isSitePublic &&
+            selectedSite.get().url != null
+        ) {
+            add(DashboardWidgetUiModel.ShareStoreWidget(::onShareStoreClicked))
+        }
+    }
+
     private fun jetpackBenefitsBannerState(
         connectionType: SiteConnectionType
     ): Flow<JetpackBenefitsBannerUiModel?> {
@@ -197,9 +211,20 @@ class DashboardViewModel @Inject constructor(
             }
     }
 
-    sealed class OrderState {
-        data object Empty : OrderState()
-        data object AtLeastOne : OrderState()
+    sealed interface DashboardWidgetUiModel {
+        val isVisible: Boolean
+            get() = true
+
+        data class ConfigurableWidget(
+            val widget: DashboardWidget,
+        ) : DashboardWidgetUiModel {
+            override val isVisible: Boolean
+                get() = widget.isVisible
+        }
+
+        data class ShareStoreWidget(
+            val onShareClicked: () -> Unit
+        ) : DashboardWidgetUiModel
     }
 
     data class AppbarState(
