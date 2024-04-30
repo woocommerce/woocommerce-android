@@ -195,7 +195,7 @@ class DashboardViewModel @Inject constructor(
 
         if (userFeedbackIsDue) {
             add(
-                2,
+                1,
                 DashboardWidgetUiModel.FeedbackWidget(
                     onPositiveClick = {
                         feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
