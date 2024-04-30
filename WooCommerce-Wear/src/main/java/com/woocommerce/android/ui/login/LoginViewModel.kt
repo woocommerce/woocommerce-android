@@ -63,8 +63,7 @@ class LoginViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
-        val isLoading: Boolean = true,
-        val isSyncButtonVisible: Boolean = false
+        val isLoading: Boolean = true
     ) : Parcelable
 
     @AssistedFactory
