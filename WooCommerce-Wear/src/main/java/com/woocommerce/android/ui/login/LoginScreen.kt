@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -42,6 +43,7 @@ fun LoginScreen(
             contentAlignment = Alignment.Center
         ) {
             if (isLoading) {
+                TimeText()
                 LoadingScreen()
             } else {
                 ErrorScreen(onTryAgainClicked)
@@ -58,12 +60,17 @@ private fun LoadingScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TimeText()
-        CircularProgressIndicator()
-        Text("Loading")
+        CircularProgressIndicator(
+            modifier = modifier
+                .size(24.dp)
+        )
+        Text(
+            text = "Loading",
+            modifier = modifier.padding(8.dp)
+        )
     }
 }
 
