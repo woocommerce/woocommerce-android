@@ -27,14 +27,14 @@ fun LoginScreen(viewModel: LoginViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     LoginScreen(
         isLoading = viewState?.isLoading ?: false,
-        onLoginButtonClicked = viewModel::onLoginButtonClicked
+        onTryAgainClicked = viewModel::onTryAgainClicked
     )
 }
 
 @Composable
 fun LoginScreen(
     isLoading: Boolean,
-    onLoginButtonClicked: () -> Unit
+    onTryAgainClicked: () -> Unit
 ) {
     WooTheme {
         Box(
@@ -44,7 +44,7 @@ fun LoginScreen(
             if (isLoading) {
                 LoadingScreen()
             } else {
-                ErrorScreen(onLoginButtonClicked)
+                ErrorScreen(onTryAgainClicked)
             }
         }
     }
@@ -69,7 +69,7 @@ private fun LoadingScreen(
 
 @Composable
 fun ErrorScreen(
-    onLoginButtonClicked: () -> Unit,
+    onTryAgainClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -93,7 +93,7 @@ fun ErrorScreen(
             style = WooTypography.caption2
         )
         Button(
-            onClick = onLoginButtonClicked,
+            onClick = onTryAgainClicked,
             modifier = modifier.fillMaxWidth()
         ) {
             Text("Try Again")
@@ -107,7 +107,7 @@ fun ErrorScreen(
 fun PreviewError() {
     LoginScreen(
         isLoading = false,
-        onLoginButtonClicked = {}
+        onTryAgainClicked = {}
     )
 }
 
@@ -117,6 +117,6 @@ fun PreviewError() {
 fun PreviewLoading() {
     LoginScreen(
         isLoading = true,
-        onLoginButtonClicked = {}
+        onTryAgainClicked = {}
     )
 }

@@ -44,7 +44,7 @@ class LoginViewModel @AssistedInject constructor(
         }
     }
 
-    fun onLoginButtonClicked() {
+    fun onTryAgainClicked() {
         _viewState.update { it.copy(isLoading = true) }
         launch {
             phoneConnectionRepository.sendMessage(REQUEST_SITE)

@@ -54,7 +54,7 @@ class LoginViewModelTest : BaseUnitTest() {
         createSut()
 
         // When
-        sut.onLoginButtonClicked()
+        sut.onTryAgainClicked()
 
         // Then
         verify(phoneConnectionRepository).sendMessage(MessagePath.REQUEST_SITE)
@@ -69,7 +69,7 @@ class LoginViewModelTest : BaseUnitTest() {
         sut.viewState.observeForever { isLoading = it.isLoading }
 
         // When
-        sut.onLoginButtonClicked()
+        sut.onTryAgainClicked()
 
         // Then
         assertThat(isLoading).isNotNull()
