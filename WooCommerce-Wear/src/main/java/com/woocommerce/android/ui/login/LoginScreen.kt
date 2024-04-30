@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,6 +22,7 @@ import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.woocommerce.android.R
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
 
@@ -69,7 +71,7 @@ private fun LoadingScreen(
                 .size(24.dp)
         )
         Text(
-            text = "Registering",
+            text = stringResource(id = R.string.login_screen_loading_text),
             modifier = modifier.padding(8.dp)
         )
     }
@@ -88,12 +90,12 @@ fun ErrorScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Log in",
+            text = stringResource(id = R.string.login_screen_error_title),
             style = WooTypography.body1,
             modifier = modifier.padding(bottom = 16.dp)
         )
         Text(
-            text = "Open the Woo app on your phone and hold your watch nearby",
+            text = stringResource(id = R.string.login_screen_error_caption),
             textAlign = TextAlign.Center,
             style = WooTypography.caption1
         )
@@ -101,7 +103,7 @@ fun ErrorScreen(
             onClick = onTryAgainClicked,
             modifier = modifier.width(150.dp)
         ) {
-            Text("Try Again")
+            Text(stringResource(id = R.string.login_screen_error_action_button))
         }
     }
 }

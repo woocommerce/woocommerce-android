@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">WooCommerce</string>
-    <!--
-    This string is used for square devices and overridden by hello_world in
-    values-round/strings.xml for round devices.
-    -->
-    <string name="hello_world">From the Square world,\nHello, %1$s!</string>
+
+    <!-- Login Screen -->
+    <string name="login_screen_loading_text">Registering</string>
+    <string name="login_screen_error_title">Log in</string>
+    <string name="login_screen_error_caption">Open the Woo app on your phone and hold your watch nearby</string>
+    <string name="login_screen_error_action_button">Try Again</string>
+
+    <!-- Tile and Complication -->
     <string name="tile_label">Example tile</string>
     <string name="complication_label">Example complication</string>
 </resources>
