@@ -75,13 +75,15 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                     ) { item, dragDropState ->
                         when (item.isAvailable) {
                             true -> {
+                                val selectedItems = state.orderedWidgetList.filter { it.isVisible }
                                 DragAndDropSelectableItem(
                                     item = item,
-                                    isSelected = item in state.orderedWidgetList.filter { it.isSelected },
+                                    isSelected = item.isSelected,
                                     dragDropState = dragDropState,
                                     onSelectionChange = viewModel::onSelectionChange,
                                     itemKey = { it.type },
-                                    itemFormatter = { stringResource(id = item.title) }
+                                    itemFormatter = { stringResource(id = item.title) },
+                                    isEnabled = !item.isSelected || selectedItems.size > 1
                                 )
                             }
 
