@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.mystore
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -54,14 +56,35 @@ fun MyStoreScreen(
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                 )
-                Text(
-                    text = "Orders",
-                    style = WooTypography.title2,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                Text(text = "$4,321.90")
                 Text(text = "Today")
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    StoreDataItem(
+                        title = "Revenue",
+                        value = "$4,321.90"
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    StoreDataItem(
+                        title = "Visitors",
+                        value = "15"
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    StoreDataItem(
+                        title = "Orders",
+                        value = "5"
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    StoreDataItem(
+                        title = "Conversion",
+                        value = "25%"
+                    )
+                }
                 Button(
                     onClick = { /*TODO*/ },
                     modifier = Modifier.fillMaxWidth()
@@ -70,6 +93,20 @@ fun MyStoreScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun StoreDataItem(
+    title: String,
+    value: String
+) {
+    Column {
+        Text(
+            text = title,
+            style = WooTypography.caption1
+        )
+        Text(text = value)
     }
 }
 
