@@ -268,19 +268,20 @@ class AddProductCategoryViewModel @Inject constructor(
 
     private fun Sequence<ProductCategoryItemUiModel>.filterDescendantsOfCurrent(): List<ProductCategoryItemUiModel> {
         return filterNot {
-            getIneligibleCategories(navArgs.productCategory!!.remoteCategoryId)
-                .contains(it.category.remoteCategoryId)
+            getIneligibleCategories(navArgs.productCategory?.remoteCategoryId).contains(it.category.remoteCategoryId)
         }.toList()
     }
 
-    private fun Sequence<ProductCategoryItemUiModel>.getIneligibleCategories(currentId: Long): Set<Long> {
-        val ineligibleCategories = mutableSetOf(currentId)
-        this.filter { it.category.parentId == currentId }
-            .map { it.category.remoteCategoryId }
-            .forEach {
-                ineligibleCategories += getIneligibleCategories(it)
-            }
-        return ineligibleCategories
+    private fun Sequence<ProductCategoryItemUiModel>.getIneligibleCategories(currentId: Long?): Set<Long> {
+        return currentId?.let {
+            val ineligibleCategories = mutableSetOf(currentId)
+            this.filter { it.category.parentId == currentId }
+                .map { it.category.remoteCategoryId }
+                .forEach {
+                    ineligibleCategories += getIneligibleCategories(it)
+                }
+            ineligibleCategories
+        } ?: emptySet()
     }
 
     /**
