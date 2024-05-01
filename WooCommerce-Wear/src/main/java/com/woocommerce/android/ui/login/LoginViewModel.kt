@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
 import com.woocommerce.android.phone.PhoneConnectionRepository
+import com.woocommerce.android.phone.PhoneConnectionRepository.RequestState.Waiting
 import com.woocommerce.android.ui.NavRoutes
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
 import com.woocommerce.commons.viewmodel.ScopedViewModel
@@ -14,6 +15,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -36,15 +38,22 @@ class LoginViewModel @AssistedInject constructor(
     fun onTryAgainClicked() { requestSiteData() }
 
     private suspend fun observeLoginChanges() {
-        loginRepository.isUserLoggedIn.collect { isLoggedIn ->
-            if (isLoggedIn) {
-                navController.navigate(MY_STORE.route) {
-                    popUpTo(NavRoutes.LOGIN.route) { inclusive = true }
+        loginRepository.isUserLoggedIn
+            .combine(phoneConnectionRepository.stateMachine) { isLoggedIn, currentState ->
+                when {
+                    isLoggedIn -> LoginState.Logged
+                    currentState == Waiting(REQUEST_SITE) -> LoginState.Waiting
+                    else -> LoginState.Failed
                 }
-            } else {
-                _viewState.update { it.copy(isLoading = false) }
+            }.collect { loginState ->
+                when (loginState) {
+                    LoginState.Logged -> navController.navigate(MY_STORE.route) {
+                        popUpTo(NavRoutes.LOGIN.route) { inclusive = true }
+                    }
+                    LoginState.Waiting -> _viewState.update { it.copy(isLoading = true) }
+                    LoginState.Failed -> _viewState.update { it.copy(isLoading = false) }
+                }
             }
-        }
     }
 
     private fun requestSiteData() {
@@ -56,6 +65,12 @@ class LoginViewModel @AssistedInject constructor(
                     onFailure = { _viewState.update { it.copy(isLoading = false) } }
                 )
         }
+    }
+
+    enum class LoginState {
+        Logged,
+        Waiting,
+        Failed
     }
 
     @Parcelize
