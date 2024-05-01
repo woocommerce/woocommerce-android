@@ -14,31 +14,26 @@ class ObserveLoginRequest @Inject constructor(
 ) {
     operator fun invoke() = combine(
         loginRepository.isUserLoggedIn,
-        timeoutFlow
-    ) { isUserLoggedIn, timeoutState ->
+        timeoutWaitingFlow
+    ) { isUserLoggedIn, isWaiting ->
         when {
             isUserLoggedIn -> Logged
-            timeoutState == LoginTimeoutState.Waiting -> Waiting
+            isWaiting -> Waiting
             else -> Failed
         }
     }
 
-    private val timeoutFlow: Flow<LoginTimeoutState>
+    private val timeoutWaitingFlow: Flow<Boolean>
         get() = flow {
-            emit(LoginTimeoutState.Waiting)
+            emit(true)
             delay(TIMEOUT_MILLIS)
-            emit(LoginTimeoutState.Timeout)
+            emit(false)
         }
 
     enum class LoginRequestState {
         Logged,
         Waiting,
         Failed
-    }
-
-    enum class LoginTimeoutState {
-        Waiting,
-        Timeout
     }
 
     companion object {
