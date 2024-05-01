@@ -30,15 +30,15 @@ class PhoneConnectionRepository @Inject constructor(
     private val messageClient: MessageClient,
     private val coroutineScope: CoroutineScope
 ) {
-    private val _stateMachine = MutableStateFlow<RequestState>(Idle)
-    val stateMachine = _stateMachine.asStateFlow()
+    private val _requestState = MutableStateFlow<RequestState>(Idle)
+    val requestState = _requestState.asStateFlow()
 
     init {
         coroutineScope.launch {
-            _stateMachine
+            _requestState
                 .filter { it is Waiting }
-                .debounce(20000)
-                .collect { _stateMachine.update { Idle } }
+                .debounce(REQUEST_TIMEOUT)
+                .collect { _requestState.update { Idle } }
         }
     }
 
@@ -53,13 +53,14 @@ class PhoneConnectionRepository @Inject constructor(
         path: MessagePath,
         data: ByteArray = byteArrayOf()
     ): Result<Unit> {
-        _stateMachine.update { Waiting(path) }
         return fetchReachableNodes()
             .takeIf { it.isNotEmpty() }
             ?.map { coroutineScope.async { messageClient.sendMessage(it.id, path.value, data) } }
             ?.awaitAll()
-            ?.let { Result.success(Unit) }
-            ?: Result.failure(Exception(MESSAGE_FAILURE_EXCEPTION))
+            ?.let {
+                _requestState.update { Waiting(path) }
+                Result.success(Unit)
+            } ?: Result.failure(Exception(MESSAGE_FAILURE_EXCEPTION))
     }
 
     private suspend fun fetchReachableNodes() = capabilityClient
@@ -86,5 +87,6 @@ class PhoneConnectionRepository @Inject constructor(
         const val WOO_MOBILE_CAPABILITY = "woo_mobile"
 
         const val MESSAGE_FAILURE_EXCEPTION = "No reachable nodes found"
+        const val REQUEST_TIMEOUT = 20000L
     }
 }

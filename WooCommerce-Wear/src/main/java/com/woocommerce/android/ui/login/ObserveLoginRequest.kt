@@ -15,7 +15,7 @@ class ObserveLoginRequest @Inject constructor(
 ) {
     operator fun invoke() = combine(
         loginRepository.isUserLoggedIn,
-        phoneRepository.stateMachine
+        phoneRepository.requestState
     ) { isUserLoggedIn, requestState ->
         when {
             isUserLoggedIn -> Logged
