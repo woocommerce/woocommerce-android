@@ -6,8 +6,8 @@ import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Fa
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
 import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
-import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
+import javax.inject.Inject
 
 class ObserveLoginRequest @Inject constructor(
     private val loginRepository: LoginRepository,

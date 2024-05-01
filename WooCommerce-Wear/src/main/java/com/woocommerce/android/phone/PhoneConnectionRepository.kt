@@ -11,17 +11,17 @@ import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.commons.wear.DataPath
 import com.woocommerce.commons.wear.MessagePath
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import javax.inject.Inject
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
 class PhoneConnectionRepository @Inject constructor(
@@ -78,8 +78,8 @@ class PhoneConnectionRepository @Inject constructor(
     }
 
     sealed class RequestState {
-        data object Idle: RequestState()
-        data class Waiting(val currentPath: MessagePath): RequestState()
+        data object Idle : RequestState()
+        data class Waiting(val currentPath: MessagePath) : RequestState()
     }
 
     companion object {

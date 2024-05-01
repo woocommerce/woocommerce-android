@@ -51,14 +51,14 @@ class LoginViewModel @AssistedInject constructor(
 
     private suspend fun observeLoginChanges() {
         observeLoginRequest().collect { loginState ->
-                when (loginState) {
-                    Logged -> navController.navigate(MY_STORE.route) {
-                        popUpTo(NavRoutes.LOGIN.route) { inclusive = true }
-                    }
-                    Waiting -> _viewState.update { it.copy(isLoading = true) }
-                    Failed -> _viewState.update { it.copy(isLoading = false) }
+            when (loginState) {
+                Logged -> navController.navigate(MY_STORE.route) {
+                    popUpTo(NavRoutes.LOGIN.route) { inclusive = true }
                 }
+                Waiting -> _viewState.update { it.copy(isLoading = true) }
+                Failed -> _viewState.update { it.copy(isLoading = false) }
             }
+        }
     }
 
     @Parcelize
