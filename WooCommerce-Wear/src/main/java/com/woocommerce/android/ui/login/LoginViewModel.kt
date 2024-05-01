@@ -31,16 +31,9 @@ class LoginViewModel @AssistedInject constructor(
     )
     val viewState = _viewState.asLiveData()
 
-    init {
-        _viewState.update { it.copy(isLoading = true) }
-        launch {
-            phoneConnectionRepository.sendMessage(REQUEST_SITE)
-                .fold(
-                    onSuccess = { observeLoginChanges() },
-                    onFailure = { _viewState.update { it.copy(isLoading = false) } }
-                )
-        }
-    }
+    init { requestSiteData() }
+
+    fun onTryAgainClicked() { requestSiteData() }
 
     private suspend fun observeLoginChanges() {
         loginRepository.isUserLoggedIn.collect { isLoggedIn ->
@@ -54,10 +47,14 @@ class LoginViewModel @AssistedInject constructor(
         }
     }
 
-    fun onTryAgainClicked() {
+    private fun requestSiteData() {
         _viewState.update { it.copy(isLoading = true) }
         launch {
             phoneConnectionRepository.sendMessage(REQUEST_SITE)
+                .fold(
+                    onSuccess = { observeLoginChanges() },
+                    onFailure = { _viewState.update { it.copy(isLoading = false) } }
+                )
         }
     }
 
