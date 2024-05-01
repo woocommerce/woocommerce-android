@@ -2,7 +2,7 @@
     <string name="app_name">WooCommerce</string>
 
     <!-- Login Screen -->
-    <string name="login_screen_loading_text">Registering</string>
+    <string name="login_screen_loading_text">Loading</string>
     <string name="login_screen_error_title">Log in</string>
     <string name="login_screen_error_caption">Open the Woo app on your phone and hold your watch nearby</string>
     <string name="login_screen_error_action_button">Try Again</string>

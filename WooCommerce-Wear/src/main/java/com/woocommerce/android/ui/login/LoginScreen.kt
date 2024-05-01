@@ -96,7 +96,8 @@ fun ErrorScreen(
         Text(
             text = stringResource(id = R.string.login_screen_error_caption),
             textAlign = TextAlign.Center,
-            style = WooTypography.caption1
+            style = WooTypography.caption1,
+            modifier = modifier.padding(bottom = 8.dp)
         )
         Button(
             onClick = onTryAgainClicked,

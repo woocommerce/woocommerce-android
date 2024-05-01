@@ -52,16 +52,14 @@ class PhoneConnectionRepository @Inject constructor(
     suspend fun sendMessage(
         path: MessagePath,
         data: ByteArray = byteArrayOf()
-    ): Result<Unit> {
-        return fetchReachableNodes()
-            .takeIf { it.isNotEmpty() }
-            ?.map { coroutineScope.async { messageClient.sendMessage(it.id, path.value, data) } }
-            ?.awaitAll()
-            ?.let {
-                _requestState.update { Waiting(path) }
-                Result.success(Unit)
-            } ?: Result.failure(Exception(MESSAGE_FAILURE_EXCEPTION))
-    }
+    ) = fetchReachableNodes()
+        .takeIf { it.isNotEmpty() }
+        ?.map { coroutineScope.async { messageClient.sendMessage(it.id, path.value, data) } }
+        ?.awaitAll()
+        ?.let {
+            _requestState.update { Waiting(path) }
+            Result.success(Unit)
+        } ?: Result.failure(Exception(MESSAGE_FAILURE_EXCEPTION))
 
     private suspend fun fetchReachableNodes() = capabilityClient
         .getAllCapabilities(CapabilityClient.FILTER_REACHABLE)
