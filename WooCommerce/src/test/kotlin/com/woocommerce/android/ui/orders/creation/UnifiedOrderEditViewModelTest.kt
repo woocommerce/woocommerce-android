@@ -2526,6 +2526,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             autoSyncPriceModifier = autoSyncPriceModifier,
             tracker = tracker,
             barcodeScanningTracker = barcodeScanningTracker,
+            productRepository = productListRepository,
             checkDigitRemoverFactory = checkDigitRemoverFactory,
             resourceProvider = resourceProvider,
             productRestrictions = productRestrictions,
