@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-16 09:54:04+0000
+Translation-Revision-Date: 2024-04-23 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="card_selection_control">분석 카드 선택</string>
     <string name="login_app_password_exit_dialog_cancel">취소</string>
     <string name="login_app_password_exit_dialog_confirmation">강제 종료</string>
     <string name="login_app_password_exit_dialog_message">아직 앱 연결을 승인하지 않으신 것 같습니다. 종료하시겠어요?</string>
@@ -458,6 +459,7 @@ Language: ko_KR
     <string name="blaze_campaign_status_active">활성</string>
     <string name="blaze_campaign_status_in_moderation">검토 중</string>
     <string name="blaze_campaign_show_all_button">모두 보기</string>
+    <string name="blaze_campaign_create_campaign_button">캠페인 생성</string>
     <string name="blaze_campaign_subtitle">가시성을 높이고 상품 판매 속도를 높입니다.</string>
     <string name="blaze_campaign_title">Blaze 캠페인</string>
     <string name="card_reader_tap_to_pay_about_copyright">비접촉 기호는 EMVCo, LLC가 소유한 상표이며 해당 회사의 허가 하에 사용됩니다.</string>

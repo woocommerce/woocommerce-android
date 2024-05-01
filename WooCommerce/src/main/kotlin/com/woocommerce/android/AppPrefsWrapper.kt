@@ -326,8 +326,8 @@ class AppPrefsWrapper @Inject constructor() {
         }
     }
 
-    fun markAllOnboardingTasksCompleted(siteId: Int) {
-        AppPrefs.markOnboardingTaskCompletedFor(siteId)
+    fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
+        AppPrefs.updateOnboardingCompletedStatus(siteId, completed)
     }
 
     fun isOnboardingCompleted(siteId: Int): Boolean = AppPrefs.areOnboardingTaskCompletedFor(siteId)

@@ -19,6 +19,8 @@ import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
@@ -184,6 +186,30 @@ class ProductListRepository @Inject constructor(
         }
     }
 
+    fun observeProducts(
+        filterOptions: Map<WCProductStore.ProductFilterOption, String>,
+        sortType: WCProductStore.ProductSorting? = null,
+        excludeSampleProducts: Boolean = false,
+        limit: Int? = null
+    ): Flow<List<Product>> = productStore.observeProducts(
+        selectedSite.get(),
+        filterOptions = filterOptions,
+        sortType = sortType ?: productSortingChoice,
+        excludeSampleProducts = excludeSampleProducts,
+        limit = limit
+    ).map {
+        it.map { product -> product.toAppModel() }
+    }
+
+    fun observeProductsCount(
+        filterOptions: Map<WCProductStore.ProductFilterOption, String>,
+        excludeSampleProducts: Boolean = false
+    ): Flow<Long> = productStore.observeProductsCount(
+        selectedSite.get(),
+        filterOptions = filterOptions,
+        excludeSampleProducts = excludeSampleProducts
+    )
+
     /**
      * Returns a single product
      */
@@ -277,6 +303,7 @@ class ProductListRepository @Inject constructor(
                 RequestResult.SUCCESS
             }
         }
+
     suspend fun fetchStockStatuses(
         productIds: List<Long>
     ): List<UpdateProductStockStatusViewModel.ProductStockStatusInfo> =

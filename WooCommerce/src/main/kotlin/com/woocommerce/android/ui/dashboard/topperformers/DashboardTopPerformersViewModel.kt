@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAc
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
-import com.woocommerce.android.ui.dashboard.data.DashboardRepository
+import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
@@ -74,10 +74,8 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val dateUtils: DateUtils,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val customDateRangeDataStore: TopPerformersCustomDateRangeDataStore,
-    private val dashboardRepository: DashboardRepository,
     getSelectedDateRange: GetSelectedRangeForTopPerformers,
 ) : ScopedViewModel(savedState) {
-
     private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
@@ -103,10 +101,9 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
             titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
             menu = DashboardWidgetMenu(
                 items = listOf(
-                    DashboardWidgetAction(
-                        titleResource = R.string.dashboard_top_performers_overflow_menu_hide_option,
-                        action = ::hideTopPerformers
-                    )
+                    DashboardWidget.Type.POPULAR_PRODUCTS.defaultHideMenuEntry {
+                        parentViewModel.onHideWidgetClicked(DashboardWidget.Type.POPULAR_PRODUCTS)
+                    }
                 )
             ),
             onOpenAnalyticsTapped = DashboardWidgetAction(
@@ -238,12 +235,6 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         selectedDateRange.value?.let {
             triggerEvent(OpenAnalytics(it))
-        }
-    }
-
-    private fun hideTopPerformers() {
-        viewModelScope.launch {
-            dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.POPULAR_PRODUCTS, isVisible = false)
         }
     }
 

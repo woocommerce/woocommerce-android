@@ -98,7 +98,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-e151d6541314453d88cb266af410eab5f3910326'
+    fluxCVersion = '2.77.0'
     glideVersion = '4.16.0'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -119,7 +119,7 @@ ext {
     mediapickerVersion = '0.3.0'
     wordPressLoginVersion = '1.15.0'
     aboutAutomatticVersion = '0.0.6'
-    automatticTracksVersion = '4.0.2'
+    automatticTracksVersion = '5.0.0'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
     stripeTerminalVersion = '3.1.1'

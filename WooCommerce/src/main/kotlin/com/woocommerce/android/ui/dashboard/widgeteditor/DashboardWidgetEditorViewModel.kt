@@ -52,7 +52,7 @@ class DashboardWidgetEditorViewModel @Inject constructor(
                 } else {
                     editedWidgets.map { dashboardWidget ->
                         val storedWidget = storedWidgets.first { it.type == dashboardWidget.type }
-                        dashboardWidget.copy(isAvailable = storedWidget.isAvailable)
+                        dashboardWidget.copy(status = storedWidget.status)
                     }
                 }
             }
@@ -74,7 +74,7 @@ class DashboardWidgetEditorViewModel @Inject constructor(
     }
 
     fun onSelectionChange(dashboardWidget: DashboardWidget, selected: Boolean) {
-        editedWidgets = editedWidgets.map { if (it == dashboardWidget) it.copy(isVisible = selected) else it }
+        editedWidgets = editedWidgets.map { if (it == dashboardWidget) it.copy(isSelected = selected) else it }
     }
 
     fun onOrderChange(fromIndex: Int, toIndex: Int) {
@@ -100,6 +100,6 @@ class DashboardWidgetEditorViewModel @Inject constructor(
     ) : Parcelable {
         @IgnoredOnParcel
         val orderedWidgetList: List<DashboardWidget> =
-            widgetList.filter { it.isAvailable } + widgetList.filterNot { it.isAvailable }
+            widgetList.filter { it.isAvailable } + widgetList.filter { it.status is DashboardWidget.Status.Unavailable }
     }
 }

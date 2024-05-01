@@ -919,10 +919,10 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, true)
     }
 
-    fun markOnboardingTaskCompletedFor(siteId: Int) {
+    fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
         setBoolean(
             key = getStoreOnboardingKeyFor(siteId),
-            value = true
+            value = completed
         )
     }
 

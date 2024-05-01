@@ -1,0 +1,2 @@
+18.3:
+Den här versionen fokuserar på buggkorrigeringar och förbättringar som hjälper dig att komma igång med din verksamhet. Fortsätt att lämna feedback. Det hjälper oss att lista ut vad vi ska hitta på härnäst.

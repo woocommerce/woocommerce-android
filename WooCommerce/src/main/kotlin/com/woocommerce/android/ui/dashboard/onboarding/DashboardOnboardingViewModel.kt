@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
+import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
 import com.woocommerce.android.ui.onboarding.AddProductTaskRes
 import com.woocommerce.android.ui.onboarding.CustomizeDomainTaskRes
@@ -33,7 +34,6 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository
 import com.woocommerce.android.ui.onboarding.toOnboardingTaskState
 import com.woocommerce.android.ui.onboarding.toTrackingKey
 import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -65,10 +65,9 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                         titleResource = R.string.store_onboarding_menu_share_feedback,
                         action = ::onShareFeedbackClicked
                     ),
-                    DashboardWidgetAction(
-                        titleResource = R.string.store_onboarding_menu_hide_store_setup,
-                        action = ::onHideOnboardingClicked
-                    )
+                    DashboardWidget.Type.ONBOARDING.defaultHideMenuEntry {
+                        parentViewModel.onHideWidgetClicked(DashboardWidget.Type.ONBOARDING)
+                    }
                 )
             ),
             onViewAllTapped = DashboardWidgetAction(
@@ -85,7 +84,11 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                 .onStart { emit(RefreshEvent()) }
                 .collectLatest {
                     _viewState.value = _viewState.value?.copy(isLoading = true)
-                    onboardingRepository.fetchOnboardingTasks()
+                    if (it.isForced) {
+                        // Fetch only if it's a forced refresh, in the other cases, the DashboardRepository will
+                        // trigger the initial fetch
+                        onboardingRepository.fetchOnboardingTasks()
+                    }
                 }
         }
         launch {
@@ -105,10 +108,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
 
     private fun onShareFeedbackClicked() {
         triggerEvent(NavigateToSurvey)
-    }
-
-    private fun onHideOnboardingClicked() {
-        triggerEvent(NavigateToDashboardWidgetEditor)
     }
 
     fun onTaskClicked(task: OnboardingTaskUi) {
@@ -134,8 +133,6 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         val onViewAllTapped: DashboardWidgetAction,
         val isLoading: Boolean = false
     )
-
-    object NavigateToDashboardWidgetEditor : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

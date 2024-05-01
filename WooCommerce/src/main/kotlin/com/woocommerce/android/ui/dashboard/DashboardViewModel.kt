@@ -14,6 +14,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSitePublic
+import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.SelectedSite
@@ -69,9 +72,6 @@ class DashboardViewModel @Inject constructor(
 
     val performanceObserver: LifecycleObserver = dashboardTransactionLauncher
 
-    private var _hasOrders = MutableLiveData<OrderState>()
-    val hasOrders: LiveData<OrderState> = _hasOrders
-
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
 
@@ -93,7 +93,7 @@ class DashboardViewModel @Inject constructor(
         }.asLiveData()
 
     val dashboardWidgets = dashboardRepository.widgets
-        .map { it.filter { widget -> widget.isVisible && widget.isAvailable } }
+        .map { widgets -> mapWidgetsToUiModels(widgets) }
         .asLiveData()
 
     init {
@@ -118,7 +118,11 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun updateShareStoreButtonVisibility() {
-        _appbarState.value = AppbarState(showShareStoreButton = selectedSite.get().isSitePublic)
+        _appbarState.value = AppbarState(
+            showShareStoreButton = selectedSite.get().let {
+                it.isSitePublic && it.url != null
+            }
+        )
     }
 
     override fun onCleared() {
@@ -156,6 +160,29 @@ class DashboardViewModel @Inject constructor(
         triggerEvent(event)
     }
 
+    @Suppress("UNUSED_PARAMETER")
+    fun onHideWidgetClicked(type: DashboardWidget.Type) {
+        // TODO ADD TRACKING HERE
+        triggerEvent(OpenEditWidgets)
+    }
+
+    fun onContactSupportClicked() {
+        triggerEvent(DashboardEvent.ContactSupport)
+    }
+
+    private fun mapWidgetsToUiModels(widgets: List<DashboardWidget>): List<DashboardWidgetUiModel> = buildList {
+        addAll(
+            widgets.map { DashboardWidgetUiModel.ConfigurableWidget(it) }
+        )
+
+        if (!widgets.first { it.type == DashboardWidget.Type.STATS }.isAvailable &&
+            selectedSite.get().isSitePublic &&
+            selectedSite.get().url != null
+        ) {
+            add(DashboardWidgetUiModel.ShareStoreWidget(::onShareStoreClicked))
+        }
+    }
+
     private fun jetpackBenefitsBannerState(
         connectionType: SiteConnectionType
     ): Flow<JetpackBenefitsBannerUiModel?> {
@@ -184,9 +211,20 @@ class DashboardViewModel @Inject constructor(
             }
     }
 
-    sealed class OrderState {
-        data object Empty : OrderState()
-        data object AtLeastOne : OrderState()
+    sealed interface DashboardWidgetUiModel {
+        val isVisible: Boolean
+            get() = true
+
+        data class ConfigurableWidget(
+            val widget: DashboardWidget,
+        ) : DashboardWidgetUiModel {
+            override val isVisible: Boolean
+                get() = widget.isVisible
+        }
+
+        data class ShareStoreWidget(
+            val onShareClicked: () -> Unit
+        ) : DashboardWidgetUiModel
     }
 
     data class AppbarState(
@@ -211,7 +249,7 @@ class DashboardViewModel @Inject constructor(
             val callback: (Long, Long) -> Unit
         ) : DashboardEvent()
 
-        data object ShowPluginUnavailableError : DashboardEvent()
+        data object ContactSupport : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)
@@ -226,7 +264,12 @@ class DashboardViewModel @Inject constructor(
     )
 
     data class DashboardWidgetAction(
-        @StringRes val titleResource: Int,
+        val title: UiString,
         val action: () -> Unit
-    )
+    ) {
+        constructor(@StringRes titleResource: Int, action: () -> Unit) : this(
+            title = UiStringRes(titleResource),
+            action = action
+        )
+    }
 }
