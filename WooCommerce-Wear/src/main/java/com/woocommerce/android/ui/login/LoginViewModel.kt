@@ -5,7 +5,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
 import com.woocommerce.android.phone.PhoneConnectionRepository
+import com.woocommerce.android.ui.NavRoutes
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Failed
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
@@ -19,7 +23,7 @@ import kotlinx.parcelize.Parcelize
 
 @HiltViewModel(assistedFactory = LoginViewModel.Factory::class)
 class LoginViewModel @AssistedInject constructor(
-    private val loginRepository: LoginRepository,
+    private val observeLoginRequest: ObserveLoginRequest,
     private val phoneConnectionRepository: PhoneConnectionRepository,
     @Assisted private val navController: NavHostController,
     savedState: SavedStateHandle
@@ -30,31 +34,36 @@ class LoginViewModel @AssistedInject constructor(
     )
     val viewState = _viewState.asLiveData()
 
-    init {
-        launch { observeLoginChanges() }
-    }
+    init { requestSiteData() }
 
-    private suspend fun observeLoginChanges() {
-        loginRepository.isUserLoggedIn.collect { isLoggedIn ->
-            if (isLoggedIn) {
-                navController.navigate(MY_STORE.route)
-            } else {
-                _viewState.update { it.copy(isLoading = false) }
-            }
-        }
-    }
+    fun onTryAgainClicked() { requestSiteData() }
 
-    fun onLoginButtonClicked() {
+    private fun requestSiteData() {
         _viewState.update { it.copy(isLoading = true) }
         launch {
             phoneConnectionRepository.sendMessage(REQUEST_SITE)
+                .fold(
+                    onSuccess = { observeLoginChanges() },
+                    onFailure = { _viewState.update { it.copy(isLoading = false) } }
+                )
+        }
+    }
+
+    private suspend fun observeLoginChanges() {
+        observeLoginRequest().collect { loginState ->
+            when (loginState) {
+                Logged -> navController.navigate(MY_STORE.route) {
+                    popUpTo(NavRoutes.LOGIN.route) { inclusive = true }
+                }
+                Waiting -> _viewState.update { it.copy(isLoading = true) }
+                Failed -> _viewState.update { it.copy(isLoading = false) }
+            }
         }
     }
 
     @Parcelize
     data class ViewState(
-        val isLoading: Boolean = true,
-        val isSyncButtonVisible: Boolean = false
+        val isLoading: Boolean = true
     ) : Parcelable
 
     @AssistedFactory
