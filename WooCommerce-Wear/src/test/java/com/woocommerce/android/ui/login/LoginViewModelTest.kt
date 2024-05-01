@@ -5,6 +5,8 @@ import androidx.navigation.NavHostController
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.ui.NavRoutes
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Failed
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
 import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -23,14 +25,14 @@ import org.mockito.kotlin.whenever
 class LoginViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: LoginViewModel
-    private val loginRepository: LoginRepository = mock()
+    private val observeLoginRequest: ObserveLoginRequest = mock()
     private val phoneConnectionRepository: PhoneConnectionRepository = mock()
     private val navController: NavHostController = mock()
 
     @Test
     fun `when user is logged in, navigate to MY_STORE`() = testBlocking {
         // Given
-        whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(true))
+        whenever(observeLoginRequest.invoke()).thenReturn(flowOf(Logged))
 
         // When
         createSut()
@@ -46,7 +48,7 @@ class LoginViewModelTest : BaseUnitTest() {
     fun `when user is not logged in, loading is stopped`() = testBlocking {
         // Given
         var isLoading: Boolean? = null
-        whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
+        whenever(observeLoginRequest.invoke()).thenReturn(flowOf(Failed))
         createSut()
         sut.viewState.observeForever { isLoading = it.isLoading }
 
@@ -56,9 +58,8 @@ class LoginViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `on login button clicked, loading is started and message is sent`() = testBlocking {
+    fun `on try again button clicked, loading is started and message is sent`() = testBlocking {
         // Given
-        whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
         createSut()
 
         // When
@@ -69,10 +70,11 @@ class LoginViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `on login button clicked, loading is started`() = testBlocking {
+    fun `on try again button clicked, loading is started`() = testBlocking {
         // Given
         val isLoadingEvents = mutableListOf<Boolean>()
-        whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
+        whenever(phoneConnectionRepository.sendMessage(REQUEST_SITE))
+            .doReturn(Result.failure(Exception("")))
         createSut()
         sut.viewState.observeForever { isLoadingEvents.add(it.isLoading) }
 
@@ -89,7 +91,6 @@ class LoginViewModelTest : BaseUnitTest() {
     @Test
     fun `on viewModel init, then send REQUEST_SITE message and observe the logged in status`() = testBlocking {
         // Given
-        whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
         whenever(phoneConnectionRepository.sendMessage(REQUEST_SITE))
             .doReturn(Result.success(Unit))
 
@@ -98,7 +99,7 @@ class LoginViewModelTest : BaseUnitTest() {
 
         // Then
         verify(phoneConnectionRepository).sendMessage(REQUEST_SITE)
-        verify(loginRepository).isUserLoggedIn
+        verify(observeLoginRequest).invoke()
     }
 
     @Test
@@ -114,14 +115,14 @@ class LoginViewModelTest : BaseUnitTest() {
 
         // Then
         verify(phoneConnectionRepository).sendMessage(REQUEST_SITE)
-        verify(loginRepository, never()).isUserLoggedIn
+        verify(observeLoginRequest, never()).invoke()
         assertThat(isLoading).isNotNull()
         assertThat(isLoading).isFalse
     }
 
     private fun createSut() {
         sut = LoginViewModel(
-            loginRepository,
+            observeLoginRequest,
             phoneConnectionRepository,
             navController,
             SavedStateHandle()
