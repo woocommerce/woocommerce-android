@@ -84,6 +84,10 @@ class AddProductCategoryViewModel @Inject constructor(
         }
     }
 
+    fun onClearParentCategoryClicked() {
+        addProductCategoryViewState = addProductCategoryViewState.copy(selectedParentId = 0L)
+    }
+
     fun onCategoryNameChanged(categoryName: String) {
         addProductCategoryViewState = if (categoryName.isEmpty()) {
             addProductCategoryViewState.copy(
