@@ -56,6 +56,5 @@ class PhoneConnectionRepository @Inject constructor(
         const val WOO_MOBILE_CAPABILITY = "woo_mobile"
 
         const val MESSAGE_FAILURE_EXCEPTION = "No reachable nodes found"
-        const val REQUEST_TIMEOUT = 20000L
     }
 }
