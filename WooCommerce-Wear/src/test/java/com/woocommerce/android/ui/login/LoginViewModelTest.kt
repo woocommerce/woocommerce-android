@@ -71,17 +71,19 @@ class LoginViewModelTest : BaseUnitTest() {
     @Test
     fun `on login button clicked, loading is started`() = testBlocking {
         // Given
-        var isLoading: Boolean? = null
+        val isLoadingEvents = mutableListOf<Boolean>()
         whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
         createSut()
-        sut.viewState.observeForever { isLoading = it.isLoading }
+        sut.viewState.observeForever { isLoadingEvents.add(it.isLoading) }
 
         // When
         sut.onTryAgainClicked()
 
         // Then
-        assertThat(isLoading).isNotNull()
-        assertThat(isLoading).isTrue
+        assertThat(isLoadingEvents).hasSize(3)
+        assertThat(isLoadingEvents[0]).isFalse
+        assertThat(isLoadingEvents[1]).isTrue
+        assertThat(isLoadingEvents[2]).isFalse
     }
 
     @Test
