@@ -24,14 +24,12 @@ import com.woocommerce.android.presentation.theme.WooTypography
 fun MyStoreScreen(viewModel: MyStoreViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     MyStoreScreen(
-        currentSiteId = viewState?.currentSiteId.orEmpty(),
         currentSiteName = viewState?.currentSiteName.orEmpty()
     )
 }
 
 @Composable
 fun MyStoreScreen(
-    currentSiteId: String?,
     currentSiteName: String?
 ) {
     WooTheme {
@@ -80,7 +78,6 @@ fun MyStoreScreen(
 @Composable
 fun DefaultPreview() {
     MyStoreScreen(
-        currentSiteId = "1",
         currentSiteName = "My Store"
     )
 }
