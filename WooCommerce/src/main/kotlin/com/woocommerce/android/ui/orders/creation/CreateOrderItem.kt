@@ -36,7 +36,7 @@ class CreateOrderItem @Inject constructor(
 
             variationId?.let {
                 if (product != null) {
-                    variationDetailRepository.getVariation(remoteProductId, it)
+                    variationDetailRepository.getVariationOrNull(remoteProductId, it)
                         ?.createItem(product, configuration)
                 } else {
                     null
