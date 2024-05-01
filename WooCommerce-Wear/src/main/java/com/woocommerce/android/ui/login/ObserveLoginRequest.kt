@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.phone.PhoneConnectionRepository
-import com.woocommerce.android.phone.PhoneConnectionRepository.RequestState.Waiting
-import com.woocommerce.android.ui.login.LoginViewModel.LoginState
+import com.woocommerce.android.phone.PhoneConnectionRepository.RequestState
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Failed
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
 import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
@@ -16,9 +18,9 @@ class ObserveLoginRequest @Inject constructor(
         phoneRepository.stateMachine
     ) { isUserLoggedIn, requestState ->
         when {
-            isUserLoggedIn -> LoginState.Logged
-            requestState == Waiting(REQUEST_SITE) -> LoginState.Waiting
-            else -> LoginState.Failed
+            isUserLoggedIn -> Logged
+            requestState == RequestState.Waiting(REQUEST_SITE) -> Waiting
+            else -> Failed
         }
     }
 
