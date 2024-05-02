@@ -273,19 +273,4 @@ class DashboardViewModelTest : BaseUnitTest() {
         verify(feedbackPrefs).lastFeedbackDate = any()
         assertThat(event).isEqualTo(DashboardViewModel.DashboardEvent.FeedbackNegativeAction)
     }
-
-    @Test
-    fun `given feedback card is shown, when dismiss button is tapped, then handle click`() = testBlocking {
-        setup {
-            whenever(feedbackPrefs.userFeedbackIsDueObservable).thenReturn(flowOf(true))
-        }
-
-        val widgets = viewModel.dashboardWidgets.captureValues().last()
-        val feedbackCard = widgets.filterIsInstance(
-            DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget::class.java
-        ).first()
-        feedbackCard.onDismiss.invoke()
-
-        verify(feedbackPrefs).lastFeedbackDate = any()
-    }
 }

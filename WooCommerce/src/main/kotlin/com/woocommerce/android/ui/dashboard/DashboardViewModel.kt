@@ -205,8 +205,7 @@ class DashboardViewModel @Inject constructor(
                 onNegativeClick = {
                     feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
                     triggerEvent(DashboardEvent.FeedbackNegativeAction)
-                },
-                onDismiss = { feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time }
+                }
             )
         )
     }
@@ -257,8 +256,7 @@ class DashboardViewModel @Inject constructor(
         data class FeedbackWidget(
             override val isVisible: Boolean,
             val onPositiveClick: () -> Unit,
-            val onNegativeClick: () -> Unit,
-            val onDismiss: () -> Unit
+            val onNegativeClick: () -> Unit
         ) : DashboardWidgetUiModel
     }
 
