@@ -23,18 +23,16 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
@@ -179,49 +177,41 @@ private fun ShareStoreCard(
 }
 
 @Composable
-fun FeedbackCard(
+private fun FeedbackCard(
     widget: DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget,
     modifier: Modifier
 ) {
-    WidgetCard(
-        titleResource = R.string.my_store_widget_feedback_title,
-        menu = DashboardWidgetMenu(
-            items = listOf(
-                DashboardWidgetAction(
-                    title = UiStringRes(
-                        stringRes = R.string.dynamic_dashboard_hide_widget_menu_item,
-                        listOf(UiStringRes(stringRes = R.string.my_store_widget_feedback_title)),
-                    ),
-                    action = widget.onDismiss
-                )
-            ),
-        ),
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.feedback_request_title),
-                style = MaterialTheme.typography.body1
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.woo_gray_5),
+                shape = RoundedCornerShape(8.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                WCOutlinedButton(
-                    onClick = widget.onNegativeClick,
-                    text = stringResource(id = R.string.feedback_request_make_better),
-                    modifier = Modifier.weight(1f)
-                )
-                WCColoredButton(
-                    onClick = widget.onPositiveClick,
-                    text = stringResource(id = R.string.feedback_request_like_it),
-                    modifier = Modifier.weight(1f)
-                )
-            }
+            .padding(16.dp)
+    ) {
+        Text(
+            text = stringResource(id = R.string.feedback_request_title),
+            style = MaterialTheme.typography.body1,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            WCOutlinedButton(
+                onClick = widget.onNegativeClick,
+                text = stringResource(id = R.string.feedback_request_make_better),
+                modifier = Modifier.weight(1f)
+            )
+            WCColoredButton(
+                onClick = widget.onPositiveClick,
+                text = stringResource(id = R.string.feedback_request_like_it),
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
