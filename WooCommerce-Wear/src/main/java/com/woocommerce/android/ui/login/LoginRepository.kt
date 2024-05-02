@@ -10,29 +10,35 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.commons.wear.DataParameters.SITE_JSON
 import com.woocommerce.commons.wear.DataParameters.TOKEN
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 
 class LoginRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.LOGIN) private val loginDataStore: DataStore<Preferences>,
+    coroutineScope: CoroutineScope
 ) {
     private val gson by lazy { Gson() }
 
-    private val storedSiteData
-        get() = loginDataStore.data
+    private val siteFlow: MutableStateFlow<SiteModel?> = MutableStateFlow(null)
+    val currentSite: StateFlow<SiteModel?> = siteFlow
+
+    init {
+        loginDataStore.data
             .map { it[stringPreferencesKey(CURRENT_SITE_KEY)] }
             .map { it?.let { gson.fromJson(it, SiteModel::class.java) } }
-
-    val currentSite
-        get() = storedSiteData
-            .distinctUntilChanged()
-            .filterNotNull()
+            .onEach { siteFlow.update { it } }
+            .launchIn(coroutineScope)
+    }
 
     val isUserLoggedIn
-        get() = storedSiteData.map { it != null && it.siteId > 0 }
+        get() = siteFlow.map { it != null && it.siteId > 0 }
 
     suspend fun receiveStoreData(data: DataMap) {
         val siteJSON = data.getString(SITE_JSON.value)
