@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.compose.component
 
+import android.text.style.URLSpan
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,16 +16,47 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 
 @Composable
 fun LearnMoreAboutSection(
+    modifier: Modifier = Modifier,
+    @StringRes textWithUrl: Int,
+    onClick: () -> Unit
+) {
+    val textWithSpans = HtmlCompat.fromHtml(
+        stringResource(textWithUrl),
+        HtmlCompat.FROM_HTML_MODE_LEGACY
+    )
+    val spans = textWithSpans.getSpans(0, textWithSpans.length, URLSpan::class.java)
+    val (urlStart, urlEnd) = spans.let {
+        if (it.isEmpty()) {
+            0 to 0
+        } else {
+            textWithSpans.getSpanStart(it.firstOrNull()) to textWithSpans.getSpanEnd(it.firstOrNull())
+        }
+    }
+    LearnMoreAboutSection(
+        modifier = modifier,
+        text = TextWithHighlighting(
+            text = textWithSpans.toString(),
+            start = urlStart,
+            end = urlEnd,
+        ),
+        onClick = onClick
+    )
+}
+
+@Composable
+private fun LearnMoreAboutSection(
     modifier: Modifier = Modifier,
     text: TextWithHighlighting,
     onClick: () -> Unit
@@ -65,13 +98,22 @@ fun LearnMoreAboutSection(
     }
 }
 
-data class TextWithHighlighting(val text: String, val start: Int, val end: Int)
+private data class TextWithHighlighting(val text: String, val start: Int, val end: Int)
 
 @LightDarkThemePreviews
 @Composable
-fun LearnMoreComponentPreview() {
+fun LearnMoreComponentPreviewWithHtml() {
     LearnMoreAboutSection(
-        text = TextWithHighlighting("Learn more about Something Something Something Something Something", 0, 10),
+        textWithUrl = R.string.card_reader_detail_learn_more,
+        onClick = {}
+    )
+}
+
+@LightDarkThemePreviews
+@Composable
+fun LearnMoreComponentPreviewWithoutHtml() {
+    LearnMoreAboutSection(
+        textWithUrl = R.string.card_reader_connect_missing_bluetooth_permissions_header,
         onClick = {}
     )
 }

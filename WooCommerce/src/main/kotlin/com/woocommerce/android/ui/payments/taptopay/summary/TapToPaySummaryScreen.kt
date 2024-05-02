@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.taptopay.summary
 
-import android.text.style.URLSpan
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
@@ -26,10 +25,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.LearnMoreAboutSection
-import com.woocommerce.android.ui.compose.component.TextWithHighlighting
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -138,36 +135,15 @@ fun TapToPaySummaryScreen(
                     }
                 }
 
-                LearnMoreAboutTTP(onLearnMoreClicked = onLearnMoreClicked)
+                LearnMoreAboutSection(
+                    textWithUrl = R.string.card_reader_tap_to_pay_learn_more,
+                    onClick = onLearnMoreClicked,
+                )
             }
 
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         }
     }
-}
-
-@Composable
-fun LearnMoreAboutTTP(onLearnMoreClicked: () -> Unit) {
-    val textWithSpans = HtmlCompat.fromHtml(
-        stringResource(R.string.card_reader_tap_to_pay_learn_more),
-        HtmlCompat.FROM_HTML_MODE_LEGACY
-    )
-    val spans = textWithSpans.getSpans(0, textWithSpans.length, URLSpan::class.java)
-    val (start, end) = spans.let {
-        if (it.isEmpty()) {
-            0 to 0
-        } else {
-            textWithSpans.getSpanStart(it.firstOrNull()) to textWithSpans.getSpanEnd(it.firstOrNull())
-        }
-    }
-    LearnMoreAboutSection(
-        text = TextWithHighlighting(
-            text = textWithSpans.toString(),
-            start = start,
-            end = end,
-        ),
-        onClick = onLearnMoreClicked
-    )
 }
 
 @PreviewLightDark
