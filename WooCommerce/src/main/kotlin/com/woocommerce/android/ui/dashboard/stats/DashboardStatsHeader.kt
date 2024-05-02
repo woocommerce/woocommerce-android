@@ -88,7 +88,9 @@ fun DashboardStatsHeader(
             IconButton(onClick = { isMenuExpanded = true }) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
-                    contentDescription = stringResource(id = R.string.dashboard_stats_edit_granularity_content_description),
+                    contentDescription = stringResource(
+                        id = R.string.dashboard_stats_edit_granularity_content_description
+                    ),
                     tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
                 )
             }
