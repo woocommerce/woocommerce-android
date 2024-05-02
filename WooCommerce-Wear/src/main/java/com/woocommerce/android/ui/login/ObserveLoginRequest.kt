@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login
 
+import android.util.Log
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
@@ -13,11 +14,11 @@ class ObserveLoginRequest @Inject constructor(
     private val loginRepository: LoginRepository
 ) {
     operator fun invoke() = combine(
-        loginRepository.isUserLoggedIn,
+        loginRepository.isSiteAvailable,
         timeoutWaitingFlow
-    ) { isUserLoggedIn, isWaiting ->
+    ) { isSiteAvailable, isWaiting ->
         when {
-            isUserLoggedIn -> Logged
+            isSiteAvailable -> Logged
             isWaiting -> Waiting
             else -> Timeout
         }
