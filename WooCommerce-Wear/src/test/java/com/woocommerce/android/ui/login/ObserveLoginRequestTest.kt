@@ -2,10 +2,9 @@ package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
-import kotlin.test.Test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -14,6 +13,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
 class ObserveLoginRequestTest : BaseUnitTest() {
