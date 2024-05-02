@@ -27,7 +27,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
             this.siteId = 1
             this.name = "Test Site"
         }
-        whenever(loginRepository.currentSite).thenReturn(MutableStateFlow<SiteModel?>(site))
+        whenever(loginRepository.selectedSiteFlow).thenReturn(MutableStateFlow<SiteModel?>(site))
         createSut()
         sut.viewState.observeForever {
             expectedSiteName = it.currentSiteName
@@ -40,7 +40,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     @Test
     fun `when login changes with no site, view state is not updated`() = testBlocking {
         // Given
-        whenever(loginRepository.currentSite).thenReturn(MutableStateFlow<SiteModel?>(null))
+        whenever(loginRepository.selectedSiteFlow).thenReturn(MutableStateFlow<SiteModel?>(null))
 
         // When
         createSut()

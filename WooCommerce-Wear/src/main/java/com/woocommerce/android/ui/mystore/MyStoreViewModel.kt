@@ -11,6 +11,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -30,10 +31,9 @@ class MyStoreViewModel @AssistedInject constructor(
     )
     val viewState = _viewState.asLiveData()
 
-    init { observeLoginChanges() }
-
-    private fun observeLoginChanges() {
-        loginRepository.currentSite
+    init {
+        loginRepository.selectedSiteFlow
+            .filterNotNull()
             .onEach { updateSiteData(it) }
             .launchIn(this)
     }
@@ -49,6 +49,12 @@ class MyStoreViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val currentSiteName: String? = null
+    ) : Parcelable
+
+    @Parcelize
+    data class StoreData(
+        val title: String,
+        val value: String,
     ) : Parcelable
 
     @AssistedFactory

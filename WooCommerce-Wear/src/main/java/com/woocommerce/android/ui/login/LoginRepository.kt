@@ -30,8 +30,11 @@ class LoginRepository @Inject constructor(
     private val gson by lazy { Gson() }
 
     private val siteFlow: MutableStateFlow<SiteModel?> = MutableStateFlow(null)
-    val currentSite: StateFlow<SiteModel?> = siteFlow
+    val selectedSiteFlow: StateFlow<SiteModel?> = siteFlow
     val isSiteAvailable = siteFlow.map { it != null && it.siteId > 0 }
+
+    val currentSite: SiteModel?
+        get() = siteFlow.value
 
     init {
         loginDataStore.data
