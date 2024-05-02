@@ -32,8 +32,7 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE,
             EOSL_M1 -> PackageUtils.isDebugBuild()
 
-            DYNAMIC_DASHBOARD -> false
-
+            DYNAMIC_DASHBOARD,
             CONNECTIVITY_TOOL,
             CUSTOM_RANGE_ANALYTICS,
             NEW_SHIPPING_SUPPORT,
