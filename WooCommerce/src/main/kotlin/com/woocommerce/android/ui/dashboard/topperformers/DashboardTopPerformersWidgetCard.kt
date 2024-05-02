@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -20,6 +21,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -297,8 +300,8 @@ private fun TopPerformersDateGranularityDropDown(
     Box {
         IconButton(onClick = { showDropDown = !showDropDown }) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_calendar_16),
-                tint = colorResource(id = R.color.color_on_surface_medium_selector),
+                imageVector = Icons.Default.DateRange,
+                tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
                 contentDescription = stringResource(R.string.dashboard_stats_edit_granularity_content_description),
             )
         }
