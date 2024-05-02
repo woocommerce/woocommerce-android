@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder.newUpdateAccessTokenAction
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
@@ -32,17 +31,15 @@ class LoginRepository @Inject constructor(
 
     private val siteFlow: MutableStateFlow<SiteModel?> = MutableStateFlow(null)
     val currentSite: StateFlow<SiteModel?> = siteFlow
+    val isSiteAvailable = siteFlow.map { it != null && it.siteId > 0 }
 
     init {
         loginDataStore.data
             .map { it[stringPreferencesKey(CURRENT_SITE_KEY)] }
             .map { it?.let { gson.fromJson(it, SiteModel::class.java) } }
-            .onEach { siteFlow.update { it } }
+            .onEach { siteFlow.value = it }
             .launchIn(coroutineScope)
     }
-
-    val isUserLoggedIn
-        get() = siteFlow.map { it != null && it.siteId > 0 }
 
     suspend fun receiveStoreData(data: DataMap) {
         val siteJSON = data.getString(SITE_JSON.value)
