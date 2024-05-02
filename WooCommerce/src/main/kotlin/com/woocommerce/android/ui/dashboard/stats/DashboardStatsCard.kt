@@ -105,8 +105,10 @@ fun DashboardStatsCard(
                 }
             )
         ),
-        button = if (revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError
-            && revenueStatsState != DashboardStatsViewModel.RevenueStatsViewState.GenericError) {
+        button = if (
+            revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError &&
+            revenueStatsState != DashboardStatsViewModel.RevenueStatsViewState.GenericError
+        ) {
             DashboardViewModel.DashboardWidgetAction(
                 titleResource = R.string.analytics_section_see_all,
                 action = viewModel::onViewAnalyticsClicked

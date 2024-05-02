@@ -247,7 +247,7 @@ fun DashboardBlazeView(
                     }
                 }
 
-                Error ->  {
+                Error -> {
                     if (DYNAMIC_DASHBOARD.isEnabled()) {
                         WidgetError(
                             onContactSupportClicked = onContactSupportClicked,

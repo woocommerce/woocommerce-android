@@ -92,7 +92,6 @@ fun DashboardTopPerformersWidgetCard(
             button = topPerformersState.onOpenAnalyticsTapped,
             modifier = modifier
         ) {
-
             when {
                 topPerformersState.isError -> TopPerformersErrorView(
                     onContactSupportClicked = parentViewModel::onContactSupportClicked,
