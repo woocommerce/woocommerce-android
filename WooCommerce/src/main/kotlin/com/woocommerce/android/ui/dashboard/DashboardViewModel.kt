@@ -195,7 +195,8 @@ class DashboardViewModel @Inject constructor(
         add(DashboardWidgetUiModel.ShareStoreWidget(shouldShowShareCard, ::onShareStoreClicked))
 
         add(
-            1,
+            // Show at the second row
+            (indexOfFirst { it.isVisible } + 1).coerceIn(0..<size),
             DashboardWidgetUiModel.FeedbackWidget(
                 isVisible = userFeedbackIsDue,
                 onPositiveClick = {

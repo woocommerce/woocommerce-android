@@ -222,7 +222,8 @@ class DashboardViewModelTest : BaseUnitTest() {
 
         val widgets = viewModel.dashboardWidgets.captureValues().last()
 
-        val feedbackCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget }
+        val feedbackCard = widgets.filter { it.isVisible }[1]
+        assertThat(feedbackCard).isInstanceOf(DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget::class.java)
         assertThat(feedbackCard.isVisible).isTrue()
     }
 
