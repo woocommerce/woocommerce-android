@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_DETAIL_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED
 import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_ENTRY_POINT_DISPLAYED
@@ -229,6 +230,12 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     }
 
     fun onRefresh() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.BLAZE.trackingIdentifier
+            )
+        )
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 

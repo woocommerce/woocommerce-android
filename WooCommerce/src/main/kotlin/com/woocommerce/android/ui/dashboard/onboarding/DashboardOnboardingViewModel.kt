@@ -139,6 +139,12 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     }
 
     fun onRefresh() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.BLAZE.trackingIdentifier
+            )
+        )
         refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
