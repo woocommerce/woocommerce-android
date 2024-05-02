@@ -34,7 +34,6 @@ class LoginRepository @Inject constructor(
     val currentSite: StateFlow<SiteModel?> = siteFlow
 
     init {
-        dispatcher.register(this)
         loginDataStore.data
             .map { it[stringPreferencesKey(CURRENT_SITE_KEY)] }
             .map { it?.let { gson.fromJson(it, SiteModel::class.java) } }
