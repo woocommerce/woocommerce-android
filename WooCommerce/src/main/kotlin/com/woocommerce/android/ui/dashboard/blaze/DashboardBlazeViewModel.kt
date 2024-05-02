@@ -40,6 +40,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
@@ -48,6 +49,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
@@ -67,7 +69,8 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     private val networkStatus: NetworkStatus,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    private val refreshTrigger = (parentViewModel?.refreshTrigger ?: emptyFlow())
+    private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+    private val refreshTrigger = merge(_refreshTrigger, (parentViewModel?.refreshTrigger ?: emptyFlow()))
         .onStart { emit(RefreshEvent()) }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -223,6 +226,10 @@ class DashboardBlazeViewModel @AssistedInject constructor(
 
     private fun launchCampaignCreation(productId: Long?) {
         triggerEvent(LaunchBlazeCampaignCreation(productId))
+    }
+
+    fun onRefresh() {
+        _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
     fun onBlazeViewDismissed() {

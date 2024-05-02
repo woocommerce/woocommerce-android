@@ -84,7 +84,7 @@ fun DashboardBlazeCard(
                 onDismissBlazeView = viewModel::onBlazeViewDismissed,
                 modifier = modifier,
                 onContactSupportClicked = parentViewModel::onContactSupportClicked,
-                onRetryOnErrorButtonClicked = parentViewModel::onRetryOnErrorButtonClicked
+                onRetryOnErrorButtonClicked = viewModel::onRefresh
             )
         }
     }
@@ -146,6 +146,8 @@ private fun BlazeFrame(
     modifier: Modifier,
     state: DashboardBlazeCampaignState,
     onDismissBlazeView: () -> Unit,
+    onContactSupportClicked: () -> Unit,
+    onRetryOnErrorButtonClicked: () -> Unit,
     content: @Composable () -> Unit
 ) {
     if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
@@ -157,7 +159,14 @@ private fun BlazeFrame(
             button = state.mainButton,
             isError = state is DashboardBlazeCampaignState.Error
         ) {
-            content()
+            if (state is DashboardBlazeCampaignState.Error) {
+                WidgetError(
+                    onContactSupportClicked = onContactSupportClicked,
+                    onRetryClicked = onRetryOnErrorButtonClicked
+                )
+            } else {
+                content()
+            }
         }
     } else {
         Card(
@@ -183,7 +192,7 @@ fun DashboardBlazeView(
     onContactSupportClicked: () -> Unit = {},
     onRetryOnErrorButtonClicked: () -> Unit = {}
 ) {
-    BlazeFrame(modifier, state, onDismissBlazeView) {
+    BlazeFrame(modifier, state, onDismissBlazeView, onContactSupportClicked, onRetryOnErrorButtonClicked) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -240,15 +249,6 @@ fun DashboardBlazeView(
                         ) {
                             Text(stringResource(string.blaze_campaign_create_campaign_button))
                         }
-                    }
-                }
-
-                is DashboardBlazeCampaignState.Error -> {
-                    if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
-                        WidgetError(
-                            onContactSupportClicked = onContactSupportClicked,
-                            onRetryClicked = onRetryOnErrorButtonClicked
-                        )
                     }
                 }
 

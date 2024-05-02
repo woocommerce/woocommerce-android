@@ -85,7 +85,7 @@ fun DashboardOnboardingCard(
                 onboardingState.isError -> {
                     WidgetError(
                         onContactSupportClicked = parentViewModel::onContactSupportClicked,
-                        onRetryClicked = parentViewModel::onRetryOnErrorButtonClicked
+                        onRetryClicked = onboardingViewModel::onRefresh
                     )
                 }
                 onboardingState.isLoading -> StoreOnboardingLoading()

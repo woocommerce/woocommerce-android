@@ -97,7 +97,7 @@ fun DashboardTopPerformersWidgetCard(
             when {
                 topPerformersState.isError -> TopPerformersErrorView(
                     onContactSupportClicked = parentViewModel::onContactSupportClicked,
-                    onRetryClicked = parentViewModel::onRetryOnErrorButtonClicked
+                    onRetryClicked = topPerformersViewModel::onRefresh
                 )
                 else -> DashboardTopPerformersContent(
                     topPerformersState,

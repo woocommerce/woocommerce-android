@@ -144,10 +144,6 @@ class DashboardViewModel @Inject constructor(
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
-    fun onRetryOnErrorButtonClicked() {
-        _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
-    }
-
     fun onShareStoreClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
         triggerEvent(

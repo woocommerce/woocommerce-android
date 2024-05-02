@@ -36,11 +36,13 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -95,10 +97,12 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private var _lastUpdateStats = MutableLiveData<Long?>()
     val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
 
+    private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+
     init {
         viewModelScope.launch {
             selectedDateRange.flatMapLatest { selectedRange ->
-                parentViewModel.refreshTrigger.onStart { emit(RefreshEvent()) }.map {
+                merge(refreshTrigger, parentViewModel.refreshTrigger).onStart { emit(RefreshEvent()) }.map {
                     Pair(selectedRange, it.isForced)
                 }
             }.collectLatest { (selectedRange, isForceRefresh) ->
@@ -164,6 +168,10 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
     fun onChartDateSelected(date: String?) {
         selectedChartDate.value = date
+    }
+
+    fun onRefresh() {
+        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) = coroutineScope {

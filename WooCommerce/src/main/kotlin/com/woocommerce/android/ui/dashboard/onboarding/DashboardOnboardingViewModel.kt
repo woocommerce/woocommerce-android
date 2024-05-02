@@ -40,7 +40,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
@@ -80,13 +82,15 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     )
     val viewState = _viewState
 
+    private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+
     init {
         launch {
-            parentViewModel.refreshTrigger
+            merge(refreshTrigger, parentViewModel.refreshTrigger)
                 .onStart { emit(RefreshEvent()) }
                 .collectLatest {
                     if (networkStatus.isConnected()) {
-                        _viewState.value = _viewState.value?.copy(isLoading = true)
+                        _viewState.value = _viewState.value?.copy(isLoading = true, isError = false)
                         if (it.isForced) {
                             // Fetch only if it's a forced refresh, in the other cases, the DashboardRepository will
                             // trigger the initial fetch
@@ -97,6 +101,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                     }
                 }
         }
+
         launch {
             onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
@@ -131,6 +136,10 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
             stat = AnalyticsEvent.STORE_ONBOARDING_TASK_TAPPED,
             properties = mapOf(AnalyticsTracker.ONBOARDING_TASK_KEY to task.toTrackingKey())
         )
+    }
+
+    fun onRefresh() {
+        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
     data class OnboardingDashBoardState(

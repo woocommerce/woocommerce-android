@@ -42,10 +42,12 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
@@ -95,6 +97,8 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     private val customRange = customDateRangeDataStore.dateRange.asLiveData()
 
+    private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+
     init {
         _topPerformersState.value = TopPerformersState(
             isLoading = true,
@@ -106,7 +110,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                     }
                 )
             ),
-            onOpenAnalyticsTapped =  DashboardWidgetAction(
+            onOpenAnalyticsTapped = DashboardWidgetAction(
                 titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
                 action = ::onViewAllAnalyticsTapped
             )
@@ -114,7 +118,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
         viewModelScope.launch {
             _selectedDateRange.flatMapLatest { selectedRange ->
-                parentViewModel.refreshTrigger
+                merge(refreshTrigger, parentViewModel.refreshTrigger)
                     .onStart { emit(RefreshEvent()) }
                     .map {
                         Pair(selectedRange, it.isForced)
@@ -158,6 +162,10 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                 toDate = customRange.value?.end ?: Date()
             )
         )
+    }
+
+    fun onRefresh() {
+        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
     private fun onTopPerformerTapped(productId: Long) {
