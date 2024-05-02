@@ -160,9 +160,11 @@ class DashboardViewModel @Inject constructor(
         triggerEvent(event)
     }
 
-    @Suppress("UNUSED_PARAMETER")
     fun onHideWidgetClicked(type: DashboardWidget.Type) {
-        // TODO ADD TRACKING HERE
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_HIDE_CARD_TAPPED,
+            mapOf(AnalyticsTracker.KEY_TYPE to type.trackingIdentifier)
+        )
         triggerEvent(OpenEditWidgets)
     }
 
