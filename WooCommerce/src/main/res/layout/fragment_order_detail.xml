@@ -52,12 +52,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <!-- The FrameLayout is needed to display the skeleton view dynamically -->
-                <FrameLayout
-                    android:id="@+id/skeleton_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
                     <LinearLayout
                         android:id="@+id/orderDetail_container"
                         android:layout_width="match_parent"
