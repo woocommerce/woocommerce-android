@@ -199,11 +199,25 @@ class DashboardViewModel @Inject constructor(
             (indexOfFirst { it.isVisible } + 1).coerceIn(0..<size),
             DashboardWidgetUiModel.FeedbackWidget(
                 isVisible = userFeedbackIsDue,
+                onShown = {
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.APP_FEEDBACK_PROMPT,
+                        mapOf(AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_SHOWN)
+                    )
+                },
                 onPositiveClick = {
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.APP_FEEDBACK_PROMPT,
+                        mapOf(AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_LIKED)
+                    )
                     feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
                     triggerEvent(DashboardEvent.FeedbackPositiveAction)
                 },
                 onNegativeClick = {
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.APP_FEEDBACK_PROMPT,
+                        mapOf(AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_NOT_LIKED)
+                    )
                     feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
                     triggerEvent(DashboardEvent.FeedbackNegativeAction)
                 }
@@ -256,6 +270,7 @@ class DashboardViewModel @Inject constructor(
 
         data class FeedbackWidget(
             override val isVisible: Boolean,
+            val onShown: () -> Unit,
             val onPositiveClick: () -> Unit,
             val onNegativeClick: () -> Unit
         ) : DashboardWidgetUiModel

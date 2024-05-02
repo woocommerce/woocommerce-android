@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.dashboard
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
@@ -255,6 +257,10 @@ class DashboardViewModelTest : BaseUnitTest() {
 
         verify(feedbackPrefs).lastFeedbackDate = any()
         assertThat(event).isEqualTo(DashboardViewModel.DashboardEvent.FeedbackPositiveAction)
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.APP_FEEDBACK_PROMPT,
+            mapOf(AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_LIKED)
+        )
     }
 
     @Test
@@ -273,5 +279,9 @@ class DashboardViewModelTest : BaseUnitTest() {
 
         verify(feedbackPrefs).lastFeedbackDate = any()
         assertThat(event).isEqualTo(DashboardViewModel.DashboardEvent.FeedbackNegativeAction)
+        verify(analyticsTrackerWrapper).track(
+            AnalyticsEvent.APP_FEEDBACK_PROMPT,
+            mapOf(AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_NOT_LIKED)
+        )
     }
 }
