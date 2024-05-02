@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -35,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.paddingBasedOnWindowSize
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper.CustomOrderFieldClickListener
@@ -72,7 +72,10 @@ fun CustomFieldsScreen(
             val listState = rememberLazyListState()
             LazyColumn(
                 state = listState,
-                modifier = Modifier.background(color = MaterialTheme.colors.surface)
+                modifier = Modifier
+                    .paddingBasedOnWindowSize()
+                    .background(color = MaterialTheme.colors.surface)
+
             ) {
                 itemsIndexed(
                     items = metadataList,
@@ -80,7 +83,6 @@ fun CustomFieldsScreen(
                 ) { _, metadata ->
                     CustomFieldListItem(metadata)
                     Divider(
-                        modifier = Modifier.offset(x = dimensionResource(id = R.dimen.major_100)),
                         color = colorResource(id = R.color.divider_color),
                         thickness = dimensionResource(id = R.dimen.minor_10)
                     )
