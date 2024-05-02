@@ -152,7 +152,7 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun onEditWidgetsClicked() {
-        // TODO ADD TRACKING HERE
+        analyticsTrackerWrapper.track(AnalyticsEvent.DYNAMIC_DASHBOARD_EDIT_LAYOUT_BUTTON_TAPPED)
         triggerEvent(OpenEditWidgets)
     }
 
