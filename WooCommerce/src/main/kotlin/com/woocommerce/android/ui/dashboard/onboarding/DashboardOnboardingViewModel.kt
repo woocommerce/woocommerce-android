@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -49,6 +50,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val networkStatus: NetworkStatus,
     val addProductNavigator: AddProductNavigator
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -70,10 +72,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                     }
                 )
             ),
-            onViewAllTapped = DashboardWidgetAction(
-                titleResource = R.string.store_onboarding_task_view_all_tasks,
-                action = ::viewAllClicked
-            )
+            onViewAllClicked = ::viewAllClicked
         )
     )
     val viewState = _viewState
@@ -83,11 +82,15 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
             parentViewModel.refreshTrigger
                 .onStart { emit(RefreshEvent()) }
                 .collectLatest {
-                    _viewState.value = _viewState.value?.copy(isLoading = true)
-                    if (it.isForced) {
-                        // Fetch only if it's a forced refresh, in the other cases, the DashboardRepository will
-                        // trigger the initial fetch
-                        onboardingRepository.fetchOnboardingTasks()
+                    if (networkStatus.isConnected()) {
+                        _viewState.value = _viewState.value?.copy(isLoading = true)
+                        if (it.isForced) {
+                            // Fetch only if it's a forced refresh, in the other cases, the DashboardRepository will
+                            // trigger the initial fetch
+                            onboardingRepository.fetchOnboardingTasks()
+                        }
+                    } else {
+                        _viewState.value = _viewState.value?.copy(isLoading = false, isError = true)
                     }
                 }
         }
@@ -96,7 +99,8 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                 .collectLatest { tasks ->
                     _viewState.value = _viewState.value?.copy(
                         tasks = tasks.map { it.toOnboardingTaskState() },
-                        isLoading = false
+                        isLoading = false,
+                        isError = false
                     )
                 }
         }
@@ -130,9 +134,19 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         @StringRes val title: Int,
         val tasks: List<OnboardingTaskUi>,
         val menu: DashboardWidgetMenu,
-        val onViewAllTapped: DashboardWidgetAction,
-        val isLoading: Boolean = false
-    )
+        val isLoading: Boolean = false,
+        val isError: Boolean = false,
+        val onViewAllClicked: () -> Unit
+    ) {
+        val onViewAllTapped: DashboardWidgetAction? = if (!isError) {
+            DashboardWidgetAction(
+                titleResource = R.string.store_onboarding_task_view_all_tasks,
+                action = onViewAllClicked
+            )
+        } else {
+            null
+        }
+    }
 
     @AssistedFactory
     interface Factory {

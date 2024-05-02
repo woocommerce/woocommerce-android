@@ -41,9 +41,9 @@ import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Companion.MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.OnboardingDashBoardState
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -80,6 +80,12 @@ fun DashboardOnboardingCard(
             modifier = modifier,
         ) {
             when {
+                onboardingState.isError -> {
+                    WidgetError(
+                        onContactSupportClicked = parentViewModel::onContactSupportClicked,
+                        onRetryClicked = parentViewModel::onRetryOnErrorButtonClicked
+                    )
+                }
                 onboardingState.isLoading -> StoreOnboardingLoading()
                 else ->
                     StoreOnboardingCardContent(
@@ -304,10 +310,6 @@ private fun OnboardingPreview() {
         OnboardingDashBoardState(
             title = R.string.store_onboarding_title,
             menu = DashboardWidgetMenu(emptyList()),
-            onViewAllTapped = DashboardWidgetAction(
-                titleResource = R.string.store_onboarding_task_view_all,
-                action = {}
-            ),
             tasks = listOf(
                 OnboardingTaskUi(
                     taskUiResources = AboutYourStoreTaskRes,
@@ -321,7 +323,8 @@ private fun OnboardingPreview() {
                     taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = false,
                 )
-            )
+            ),
+            onViewAllClicked = {},
         ),
         onTaskClicked = {}
     )
