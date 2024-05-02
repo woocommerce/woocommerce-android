@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsRangeFormatter
 import com.woocommerce.android.ui.dashboard.stats.GetSelectedRangeForTopPerformers
 import com.woocommerce.android.ui.mystore.data.TopPerformersCustomDateRangeDataStore
 import com.woocommerce.android.util.CurrencyFormatter
@@ -76,10 +77,16 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val dateUtils: DateUtils,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val customDateRangeDataStore: TopPerformersCustomDateRangeDataStore,
+    private val dateFormatter: DashboardStatsRangeFormatter,
     getSelectedDateRange: GetSelectedRangeForTopPerformers,
 ) : ScopedViewModel(savedState) {
     private val _selectedDateRange = getSelectedDateRange()
-    val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
+    val selectedDateRange: LiveData<TopPerformersDateRange> = _selectedDateRange.map {
+        TopPerformersDateRange(
+            rangeSelection = it,
+            dateFormatted = dateFormatter.formatRangeDate(it)
+        )
+    }.asLiveData()
 
     private var _topPerformersState = MutableLiveData<TopPerformersState>()
     val topPerformersState: LiveData<TopPerformersState> = _topPerformersState
@@ -251,9 +258,14 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private fun onViewAllAnalyticsTapped() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         selectedDateRange.value?.let {
-            triggerEvent(OpenAnalytics(it))
+            triggerEvent(OpenAnalytics(it.rangeSelection))
         }
     }
+
+    data class TopPerformersDateRange(
+        val rangeSelection: StatsTimeRangeSelection,
+        val dateFormatted: String
+    )
 
     data class TopPerformersState(
         val isLoading: Boolean = false,

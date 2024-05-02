@@ -10,12 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -38,7 +35,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
@@ -57,6 +53,7 @@ import com.woocommerce.android.ui.dashboard.stats.DashboardStatsHeader
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenAnalytics
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
+import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersDateRange
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.TopPerformersState
 import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -89,6 +86,7 @@ fun DashboardTopPerformersWidgetCard(
                     onContactSupportClicked = parentViewModel::onContactSupportClicked,
                     onRetryClicked = topPerformersViewModel::onRefresh
                 )
+
                 else -> DashboardTopPerformersContent(
                     topPerformersState,
                     selectedDateRange,
@@ -118,7 +116,7 @@ fun DashboardTopPerformersWidgetCard(
 @Composable
 fun DashboardTopPerformersContent(
     topPerformersState: TopPerformersState?,
-    selectedDateRange: StatsTimeRangeSelection?,
+    selectedDateRange: TopPerformersDateRange?,
     lastUpdateState: String?,
     onGranularityChanged: (SelectionType) -> Unit,
     onEditCustomRangeTapped: () -> Unit,
@@ -174,15 +172,15 @@ private fun HandleEvents(
 private fun TopPerformersContent(
     topPerformersState: TopPerformersState?,
     lastUpdateState: String?,
-    selectedDateRange: StatsTimeRangeSelection?,
+    selectedDateRange: TopPerformersDateRange?,
     onGranularityChanged: (SelectionType) -> Unit,
     onEditCustomRangeTapped: () -> Unit,
 ) {
     Column {
         selectedDateRange?.let {
             DashboardStatsHeader(
-                rangeSelection = it,
-                dateFormatted = it.currentRangeDescription,
+                rangeSelection = it.rangeSelection,
+                dateFormatted = it.dateFormatted,
                 onCustomRangeClick = onEditCustomRangeTapped,
                 onTabSelected = onGranularityChanged
             )
@@ -392,11 +390,14 @@ private fun TopPerformersErrorView(
 @LightDarkThemePreviews
 @Composable
 private fun TopPerformersWidgetCardPreview() {
-    val selectedDateRange = SelectionType.TODAY.generateSelectionData(
-        referenceStartDate = Date(),
-        referenceEndDate = Date(),
-        calendar = Calendar.getInstance(),
-        locale = Locale.getDefault()
+    val selectedDateRange = TopPerformersDateRange(
+        SelectionType.TODAY.generateSelectionData(
+            referenceStartDate = Date(),
+            referenceEndDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault(),
+        ),
+        dateFormatted = "Today"
     )
     val topPerformersState = TopPerformersState(
         topPerformers = listOf(
