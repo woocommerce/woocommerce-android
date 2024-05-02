@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Failed
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
 import kotlin.test.Test
@@ -36,7 +36,7 @@ class ObserveLoginRequestTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user is not logged in and waiting timeout, return Failed state`() = testBlocking {
+    fun `when user is not logged in and waiting timeout, return Timeout state`() = testBlocking {
         // Given
         val events = mutableListOf<LoginRequestState>()
         whenever(loginRepository.isUserLoggedIn).thenReturn(flowOf(false))
@@ -48,7 +48,7 @@ class ObserveLoginRequestTest : BaseUnitTest() {
 
         // Then
         advanceUntilIdle()
-        assertThat(events).isEqualTo(listOf(Waiting, Failed))
+        assertThat(events).isEqualTo(listOf(Waiting, Timeout))
     }
 
     @Test

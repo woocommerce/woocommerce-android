@@ -7,7 +7,7 @@ import androidx.navigation.NavHostController
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.ui.NavRoutes
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Failed
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
 import com.woocommerce.commons.viewmodel.ScopedViewModel
@@ -56,7 +56,7 @@ class LoginViewModel @AssistedInject constructor(
                     popUpTo(NavRoutes.LOGIN.route) { inclusive = true }
                 }
                 Waiting -> _viewState.update { it.copy(isLoading = true) }
-                Failed -> _viewState.update { it.copy(isLoading = false) }
+                Timeout -> _viewState.update { it.copy(isLoading = false) }
             }
         }
     }

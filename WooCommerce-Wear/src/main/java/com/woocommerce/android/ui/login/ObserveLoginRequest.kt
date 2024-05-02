@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.login
 
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Failed
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
 import kotlinx.coroutines.delay
@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.onEach
 
 class ObserveLoginRequest @Inject constructor(
     private val loginRepository: LoginRepository
@@ -19,7 +20,7 @@ class ObserveLoginRequest @Inject constructor(
         when {
             isUserLoggedIn -> Logged
             isWaiting -> Waiting
-            else -> Failed
+            else -> Timeout
         }
     }
 
@@ -33,7 +34,7 @@ class ObserveLoginRequest @Inject constructor(
     enum class LoginRequestState {
         Logged,
         Waiting,
-        Failed
+        Timeout
     }
 
     companion object {
