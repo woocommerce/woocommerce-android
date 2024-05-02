@@ -10,11 +10,12 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
-import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_CORE
 import javax.inject.Inject
 
 class MainSettingsPresenter @Inject constructor(
@@ -26,7 +27,8 @@ class MainSettingsPresenter @Inject constructor(
     private val shouldShowOnboarding: ShouldShowOnboarding,
     private val accountRepository: AccountRepository,
     private val notificationChannelsHandler: NotificationChannelsHandler,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val getWooVersion: GetWooCorePluginCachedVersion,
 ) : MainSettingsContract.Presenter {
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
@@ -78,7 +80,7 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun setupOnboardingListVisibilitySetting() {
-        if (!shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
+        if (!FeatureFlag.DYNAMIC_DASHBOARD.isEnabled() && !shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
             appSettingsFragmentView?.handleStoreSetupListSetting(
                 enabled = shouldShowOnboarding.isOnboardingListSettingVisible(),
                 onToggleChange = { isChecked ->
@@ -111,5 +113,5 @@ class MainSettingsPresenter @Inject constructor(
         get() = selectedSite.get().isWPComAtomic
 
     override val wooPluginVersion: String
-        get() = wooCommerceStore.getSitePlugin(selectedSite.get(), WOO_CORE)?.version ?: ""
+        get() = getWooVersion() ?: ""
 }

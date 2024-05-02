@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
@@ -134,6 +135,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var prefs: AppPrefs
 
+    @Inject lateinit var getWooVersion: GetWooCorePluginCachedVersion
+
     @Inject @AppCoroutineScope
     lateinit var appCoroutineScope: CoroutineScope
 
@@ -176,6 +179,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun init(application: Application) {
         this.application = application
 
+        crashLogging.initialize()
         Thread.setDefaultUncaughtExceptionHandler(
             UncaughtErrorsHandler(
                 context = application,
@@ -350,7 +354,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     private fun initAnalytics() {
-        AnalyticsTracker.init(application, selectedSite, prefs)
+        AnalyticsTracker.init(
+            application,
+            selectedSite,
+            prefs,
+            getWooVersion,
+            appCoroutineScope,
+        )
 
         AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
     }

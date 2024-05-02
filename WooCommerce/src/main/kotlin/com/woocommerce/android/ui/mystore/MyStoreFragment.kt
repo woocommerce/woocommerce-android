@@ -45,11 +45,11 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.MyStoreBlazeView
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeView
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -65,12 +65,21 @@ import com.woocommerce.android.ui.mystore.MyStoreViewModel.MyStoreEvent.ShowPriv
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.OrderState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.VisitorStatsViewState
+import com.woocommerce.android.ui.onboarding.NavigateToAboutYourStore
+import com.woocommerce.android.ui.onboarding.NavigateToAddProduct
+import com.woocommerce.android.ui.onboarding.NavigateToDomains
+import com.woocommerce.android.ui.onboarding.NavigateToLaunchStore
+import com.woocommerce.android.ui.onboarding.NavigateToOnboardingFullScreen
+import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments
+import com.woocommerce.android.ui.onboarding.NavigateToSetupPayments.taskId
+import com.woocommerce.android.ui.onboarding.NavigateToSetupWooPayments
+import com.woocommerce.android.ui.onboarding.NavigateToSurvey
+import com.woocommerce.android.ui.onboarding.ShowNameYourStoreDialog
 import com.woocommerce.android.ui.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.ui.products.ProductDetailFragment
+import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -81,6 +90,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.withCreationCallback
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -104,7 +114,13 @@ class MyStoreFragment :
 
     private val myStoreViewModel: MyStoreViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
+    private val myStoreBlazeViewModel: DashboardBlazeViewModel by viewModels(
+        extrasProducer = {
+            defaultViewModelCreationExtras.withCreationCallback<DashboardBlazeViewModel.Factory> { factory ->
+                factory.create(parentViewModel = null)
+            }
+        }
+    )
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -227,13 +243,13 @@ class MyStoreFragment :
 
     private fun setUpBlazeCampaignView() {
         myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) {
+            if (blazeCampaignState is DashboardBlazeCampaignState.Hidden) {
                 binding.blazeCampaignView.hide()
             } else {
                 binding.blazeCampaignView.apply {
                     setContent {
                         WooThemeWithBackground {
-                            MyStoreBlazeView(
+                            DashboardBlazeView(
                                 state = blazeCampaignState,
                                 onDismissBlazeView = myStoreBlazeViewModel::onBlazeViewDismissed,
                             )
@@ -245,20 +261,15 @@ class MyStoreFragment :
         }
         myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreationUsingWebView -> openBlazeWebView(
-                    url = event.url,
-                    source = event.source
-                )
+                is DashboardBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
 
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
-
-                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
+                is DashboardBlazeViewModel.ShowAllCampaigns -> {
                     findNavController().navigateSafely(
                         MyStoreFragmentDirections.actionMyStoreToBlazeCampaignListFragment()
                     )
                 }
 
-                is MyStoreBlazeViewModel.ShowCampaignDetails -> {
+                is DashboardBlazeViewModel.ShowCampaignDetails -> {
                     findNavController().navigateSafely(
                         NavGraphMainDirections.actionGlobalWPComWebViewFragment(
                             urlToLoad = event.url,
@@ -278,15 +289,6 @@ class MyStoreFragment :
                 productId = productId
             )
         }
-    }
-
-    private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
-                urlToLoad = url,
-                source = source
-            )
-        )
     }
 
     @Suppress("LongMethod")
@@ -323,23 +325,23 @@ class MyStoreFragment :
 
     private fun Event.handle() {
         when (this) {
-            is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
-            is StoreOnboardingViewModel.NavigateToSurvey ->
+            is NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
+            is NavigateToSurvey ->
                 NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
                     findNavController().navigateSafely(this)
                 }
 
-            is StoreOnboardingViewModel.NavigateToLaunchStore ->
+            is NavigateToLaunchStore ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToLaunchStoreFragment()
                 )
 
-            is StoreOnboardingViewModel.NavigateToDomains ->
+            is NavigateToDomains ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToNavGraphDomainChange()
                 )
 
-            is StoreOnboardingViewModel.NavigateToAddProduct ->
+            is NavigateToAddProduct ->
                 with(addProductNavigator) {
                     findNavController().navigateToAddProducts(
                         aiBottomSheetAction = MyStoreFragmentDirections.actionDashboardToAddProductWithAIBottomSheet(),
@@ -347,24 +349,24 @@ class MyStoreFragment :
                     )
                 }
 
-            is StoreOnboardingViewModel.NavigateToSetupPayments ->
+            is NavigateToSetupPayments ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToPaymentsPreSetupFragment(
                         taskId = taskId
                     )
                 )
 
-            is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
+            is NavigateToSetupWooPayments ->
                 findNavController().navigateSafely(
                     directions = MyStoreFragmentDirections.actionMyStoreToWooPaymentsSetupInstructionsFragment()
                 )
 
-            is StoreOnboardingViewModel.NavigateToAboutYourStore ->
+            is NavigateToAboutYourStore ->
                 findNavController().navigateSafely(
                     MyStoreFragmentDirections.actionMyStoreToAboutYourStoreFragment()
                 )
 
-            is StoreOnboardingViewModel.ShowNameYourStoreDialog -> {
+            is ShowNameYourStoreDialog -> {
                 findNavController()
                     .navigateSafely(
                         MyStoreFragmentDirections.actionMyStoreToNameYourStoreDialogFragment(fromOnboarding = true)
@@ -418,14 +420,10 @@ class MyStoreFragment :
             }
         }
         myStoreViewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
-            when (stats) {
-                is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
-                VisitorStatsViewState.Error -> {
-                    binding.jetpackBenefitsBanner.root.isVisible = false
-                    binding.myStoreStats.showVisitorStatsError()
-                }
-
-                is VisitorStatsViewState.Unavailable -> onVisitorStatsUnavailable(stats)
+            binding.jetpackBenefitsBanner.root.isVisible = stats is VisitorStatsViewState.Unavailable
+            binding.myStoreStats.showVisitorStats(stats)
+            if (stats is VisitorStatsViewState.Unavailable) {
+                onVisitorStatsUnavailable(stats)
             }
         }
         myStoreViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
@@ -441,11 +439,25 @@ class MyStoreFragment :
                 OrderState.AtLeastOne -> showEmptyView(false)
             }
         }
+        myStoreViewModel.lastUpdateStats.observe(viewLifecycleOwner) { lastUpdateMillis ->
+            binding.myStoreStats.showLastUpdate(lastUpdateMillis)
+        }
+        myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
+            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
+        }
+        myStoreViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
+            ((activity) as MainActivity).setSubtitle(storeName)
+        }
+
+        observeMyStoreEvents()
+    }
+
+    private fun observeMyStoreEvents() {
         myStoreViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenTopPerformer -> findNavController().navigateSafely(
                     NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
+                        mode = ShowProduct(event.productId),
                         isTrashEnabled = false
                     )
                 )
@@ -476,20 +488,9 @@ class MyStoreFragment :
                 else -> event.isHandled = false
             }
         }
-        myStoreViewModel.lastUpdateStats.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreStats.showLastUpdate(lastUpdateMillis)
-        }
-        myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
-        }
-        myStoreViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
-            ((activity) as MainActivity).setSubtitle(storeName)
-        }
     }
 
     private fun onVisitorStatsUnavailable(state: VisitorStatsViewState.Unavailable) {
-        handleUnavailableVisitorStats()
-
         val jetpackBenefitsBanner = state.benefitsBanner
         if (jetpackBenefitsBanner.show) {
             binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
@@ -510,7 +511,6 @@ class MyStoreFragment :
         binding.myStoreTopPerformers.showSkeleton(true)
     }
 
-    @Suppress("ForbiddenComment")
     private fun prepareJetpackBenefitsBanner() {
         appPrefsWrapper.setJetpackInstallationIsFromBanner(false)
         binding.jetpackBenefitsBanner.root.isVisible = false
@@ -527,10 +527,10 @@ class MyStoreFragment :
             // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
             // we are using `withCreated` here, since if this view doesn't reach the created state,
             // the scope will not get cancelled.
-            // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
+            // TODO revisit this once https://issuetracker.google.com/issues/127528777 is implemented
             // (no update as of Oct 2023)
             val appBarLayout = requireActivity().findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
-            withCreated {
+            viewLifecycleOwner.withCreated {
                 appBarLayout?.verticalOffsetChanges()
                     ?.onEach { verticalOffset ->
                         binding.jetpackBenefitsBanner.root.translationY =
@@ -606,15 +606,6 @@ class MyStoreFragment :
         binding.myStoreTopPerformers.showSkeleton(false)
         binding.myStoreTopPerformers.showErrorView(true)
         showErrorSnack()
-    }
-
-    private fun showVisitorStats(visitorStats: Map<String, Int>) {
-        binding.jetpackBenefitsBanner.root.isVisible = false
-        binding.myStoreStats.showVisitorStats(visitorStats)
-    }
-
-    private fun handleUnavailableVisitorStats() {
-        binding.myStoreStats.handleJetpackUnavailableVisitorStats()
     }
 
     private fun showErrorSnack() {

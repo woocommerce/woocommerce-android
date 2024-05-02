@@ -1,7 +1,25 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-18.1
+18.5
 -----
 
+
+18.4
+-----
+- [internal] Blaze: Change campaign image minimum expected dimensions. [https://github.com/woocommerce/woocommerce-android/pull/11368]
+
+
+18.3
+-----
+
+
+18.2
+-----
+- [**] Payments: We are sunsetting simple payments in favour of the order creation flow with custom amount set [https://github.com/woocommerce/woocommerce-android/pull/11274]
+- [**] Stats: The Analytics Hub now includes analytics for Product Bundles and Gift Cards, when those extensions are active. [https://github.com/woocommerce/woocommerce-android/pull/11290]
+
+18.1
+-----
+- [*] Stats: Improved the accuracy of visitor stats [https://github.com/woocommerce/woocommerce-android/pull/11191]
 
 18.0
 - [*] Products: Fixed a bug that in some cases in 2 panes mode product was not selected [https://github.com/woocommerce/woocommerce-android/pull/11144]

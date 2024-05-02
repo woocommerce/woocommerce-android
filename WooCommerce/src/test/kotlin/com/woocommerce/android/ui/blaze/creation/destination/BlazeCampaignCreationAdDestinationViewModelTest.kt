@@ -5,7 +5,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
 import com.woocommerce.android.ui.blaze.creation.destination.BlazeCampaignCreationAdDestinationViewModel.NavigateToParametersScreen
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
@@ -41,14 +41,14 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
 
     @Before
     fun setupTests() {
-        whenever(product.permalink).thenReturn("https://woo.com")
+        whenever(product.permalink).thenReturn("https://woocommerce.com")
         whenever(selectedSite.get()).thenReturn(SiteModel().apply { url = "https://woo2.com" })
         whenever(productDetailRepository.getProduct(any())).thenReturn(product)
     }
 
     @Test
     fun `given a product id, when back is pressed, then exit with result`() = testBlocking {
-        setup("https://woo.com", productId = 1L)
+        setup("https://woocommerce.com", productId = 1L)
 
         viewModel.onBackPressed()
 
@@ -58,7 +58,7 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when url property is tapped, then url dialog becomes visible`() = testBlocking {
-        setup("https://woo.com", productId = 1L)
+        setup("https://woocommerce.com", productId = 1L)
 
         viewModel.onUrlPropertyTapped()
 
@@ -69,7 +69,7 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when parameter property is tapped, then navigate to parameters screen`() = testBlocking {
-        val url = "https://woo.com"
+        val url = "https://woocommerce.com"
         setup(url, productId = 1L)
 
         viewModel.onParameterPropertyTapped()
@@ -84,7 +84,7 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when target url is updated, then view state is updated`() = testBlocking {
-        val url = "https://woo.com?productId=1"
+        val url = "https://woocommerce.com?productId=1"
         val base = "https://cnn.com"
         val params = mapOf("a" to "b", "c" to "d")
         setup(url, productId = 1L)
@@ -98,7 +98,7 @@ class BlazeCampaignCreationAdDestinationViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when destination url is changed, then view state is updated and url dialog is not visible`() = testBlocking {
-        val url = "https://woo.com"
+        val url = "https://woocommerce.com"
         val url2 = "https://cnn.com"
         setup(url, productId = 1L)
 

@@ -1,7 +1,0 @@
-17.9:
-- [*] ביקורות: תיקנו באג שהציג סרגל כלים כפול בביקורות שבהגדרות [https://github.com/woocommerce/woocommerce-android/pull/11072]
-- [*] [פנימי] הסרנו את האפשרות 'יצירת חנות WooCommerce' מהאפליקציה [https://github.com/woocommerce/woocommerce-android/issues/11115]
-- [*] מוצרים: תיקנו באג שמנע זמינות של פריטי תפריט בעדכון גורף בתצוגה של שני חלונות [https://github.com/woocommerce/woocommerce-android/pull/11127]
-- [*] מוצרים: תיקנו באג שמנע שמירה של הסרת תמונה במוצר [https://github.com/woocommerce/woocommerce-android/pull/11124]
-- [*] ביקורות: מיטבנו את המהירות של תצוגת הביקורות [https://github.com/woocommerce/woocommerce-android/pull/11083]
-

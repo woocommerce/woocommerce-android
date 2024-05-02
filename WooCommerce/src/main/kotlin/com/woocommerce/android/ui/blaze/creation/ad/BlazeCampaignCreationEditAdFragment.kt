@@ -18,6 +18,7 @@ import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -46,6 +47,7 @@ class BlazeCampaignCreationEditAdFragment : BaseFragment(), MediaPickerResultHan
             when (event) {
                 is Exit -> findNavController().popBackStack()
                 is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source)
+                is ShowDialog -> event.showDialog()
                 is ExitWithResult<*> -> {
                     navigateBackWithResult(EDIT_AD_RESULT, event.data as EditAdResult)
                 }

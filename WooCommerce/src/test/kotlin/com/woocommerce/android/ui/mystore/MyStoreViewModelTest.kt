@@ -13,10 +13,11 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.toDashBoardTrackingGranularityString
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.Content
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.GenericError
 import com.woocommerce.android.ui.mystore.MyStoreViewModel.RevenueStatsViewState.PluginNotActiveError
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.mystore.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.ui.mystore.domain.GetStats
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers
 import com.woocommerce.android.ui.mystore.domain.GetTopPerformers.TopPerformerProduct
@@ -69,12 +70,12 @@ class MyStoreViewModelTest : BaseUnitTest() {
     private val currencyFormatter: CurrencyFormatter = mock()
     private val selectedSite: SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock {
-        on { this.getActiveStatsTab() } doReturn DEFAULT_SELECTION_TYPE.identifier
+        on { this.getActiveStoreStatsTab() } doReturn DEFAULT_SELECTION_TYPE.identifier
     }
     private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val myStoreTransactionLauncher: MyStoreTransactionLauncher = mock()
-    private val customDateRangeDataStore: CustomDateRangeDataStore = mock()
+    private val customDateRangeDataStore: StatsCustomDateRangeDataStore = mock()
     private val shouldShowPrivacyBanner: ShouldShowPrivacyBanner = mock {
         onBlocking { invoke() } doReturn true
     }
@@ -216,7 +217,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.DASHBOARD_MAIN_STATS_LOADED,
-                mapOf(AnalyticsTracker.KEY_RANGE to ANY_SELECTION_TYPE.identifier)
+                mapOf(AnalyticsTracker.KEY_RANGE to ANY_SELECTION_TYPE.toDashBoardTrackingGranularityString())
             )
         }
 
@@ -270,13 +271,13 @@ class MyStoreViewModelTest : BaseUnitTest() {
         testBlocking {
             givenObserveTopPerformersEmits(emptyList())
             givenNetworkConnectivity(connected = true)
-            givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap()))
+            givenStatsLoadingResult(GetStats.LoadStatsResult.VisitorsStatsSuccess(emptyMap(), 0))
             whenViewModelIsCreated()
 
             sut.onTabSelected(ANY_SELECTION_TYPE)
 
             assertThat(sut.visitorStatsState.value).isEqualTo(
-                MyStoreViewModel.VisitorStatsViewState.Content(emptyMap())
+                MyStoreViewModel.VisitorStatsViewState.Content(emptyMap(), 0)
             )
         }
 
@@ -371,7 +372,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
 
             verify(analyticsTrackerWrapper).track(
                 AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED,
-                mapOf(AnalyticsTracker.KEY_RANGE to ANY_SELECTION_TYPE.identifier)
+                mapOf(AnalyticsTracker.KEY_RANGE to ANY_SELECTION_TYPE.toDashBoardTrackingGranularityString())
             )
         }
 

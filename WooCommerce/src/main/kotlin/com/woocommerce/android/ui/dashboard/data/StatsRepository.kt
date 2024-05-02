@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.dashboard.data
 
-import com.woocommerce.android.AppConstants
 import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.formatToYYYYmmDD
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
@@ -8,6 +7,7 @@ import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.DASHBOARD
 import kotlinx.coroutines.CompletableDeferred
@@ -15,10 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
@@ -42,7 +40,8 @@ class StatsRepository @Inject constructor(
     private val wcOrderStore: WCOrderStore,
     private val wcLeaderboardsStore: WCLeaderboardsStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val getWooVersion: GetWooCorePluginCachedVersion,
 ) {
     companion object {
         private val TAG = StatsRepository::class.java
@@ -162,6 +161,41 @@ class StatsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchTotalVisitorStats(
+        date: Date,
+        granularity: StatsGranularity,
+        forced: Boolean
+    ): Result<Int> {
+        val result = wcStatsStore.fetchVisitorStatsSummary(
+            site = selectedSite.get(),
+            granularity = granularity,
+            date = date.formatToYYYYmmDD(),
+            forced = forced
+        )
+        return when {
+            !result.isError -> Result.success(result.model!!.visitors)
+            else -> {
+                val errorMessage = result.error?.message ?: "Unknown error"
+                WooLog.e(
+                    DASHBOARD,
+                    "$TAG - Error fetching total visitor stats: $errorMessage"
+                )
+                Result.failure(Exception(errorMessage))
+            }
+        }
+    }
+
+    suspend fun getTotalVisitorStats(
+        date: Date,
+        granularity: StatsGranularity
+    ): Int? {
+        return wcStatsStore.getVisitorStatsSummary(
+            site = selectedSite.get(),
+            granularity = granularity,
+            date = date.formatToYYYYmmDD()
+        )?.visitors
+    }
+
     fun observeTopPerformers(
         range: StatsTimeRange,
     ): Flow<List<TopPerformerProductEntity>> {
@@ -240,27 +274,6 @@ class StatsRepository @Inject constructor(
             System.currentTimeMillis() - topPerformerProductEntity.millisSinceLastUpdated > AN_HOUR_IN_MILLIS
         }
 
-    suspend fun checkIfStoreHasNoOrders(): Flow<Result<Boolean>> = flow {
-        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            wcOrderStore.hasOrders(selectedSite.get())
-        }
-
-        when (result) {
-            is WCOrderStore.HasOrdersResult.Success -> {
-                emit(Result.success(!result.hasOrders))
-            }
-
-            is WCOrderStore.HasOrdersResult.Failure, null -> {
-                val errorMessage = (result as? WCOrderStore.HasOrdersResult.Failure)?.error?.message ?: "Timeout"
-                WooLog.e(
-                    DASHBOARD,
-                    "$TAG - Error fetching whether orders exist: $errorMessage"
-                )
-                emit(Result.failure(Exception(errorMessage)))
-            }
-        }
-    }
-
     data class StatsException(val error: OrderStatsError?) : Exception()
     data class SiteStats(
         val revenue: WCRevenueStatsModel?,
@@ -323,8 +336,7 @@ class StatsRepository @Inject constructor(
     }
 
     private fun supportsProductOnlyLeaderboardAndReportEndpoint(): Boolean {
-        val currentWooCoreVersion =
-            wooCommerceStore.getSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE)?.version ?: "0.0"
+        val currentWooCoreVersion = getWooVersion() ?: return false
         return currentWooCoreVersion.semverCompareTo(PRODUCT_ONLY_LEADERBOARD_REPORT_MIN_WC_VERSION) >= 0
     }
 }

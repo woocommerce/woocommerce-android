@@ -181,6 +181,7 @@
     <string name="date_timeframe_older_month">Older than a month</string>
     <string name="date_at_time">%1$s at %2$s</string>
     <string name="date_compared_to">Compared to</string>
+    <string name="images_unavailable_notice">The images are unavailable because your site is marked Private. You can change this by switching to Coming Soon mode.\n<a href="">Tap to learn more.</a></string>
     <!--
         Error Strings
     -->
@@ -369,6 +370,8 @@
     <string name="dashboard_stats_granularity_weeks">Weeks</string>
     <string name="dashboard_stats_granularity_months">Months</string>
     <string name="dashboard_stats_granularity_years">Years</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Change date range button</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">Item selected</string>
 
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
@@ -378,12 +381,15 @@
     <string name="dashboard_stats_error">Error fetching data</string>
     <string name="dashboard_stats_error_content_description">Error image</string>
     <string name="dashboard_stats_todays_stats">Today\'s Stats</string>
+    <string name="dashboard_stats_custom_range_label">Custom</string>
 
     <string name="dashboard_top_performers_title">Top performers</string>
     <string name="dashboard_top_performers_items_sold">Items Sold</string>
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">Hide top performers</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">View all store analytics</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -402,6 +408,19 @@
     <string name="my_store_custom_range_granularity_year">Yearly</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
+    <string name="my_store_edit_screen_widgets">Edit sections of my store</string>
+    <string name="my_store_edit_screen_widget_stats">Store Stats</string>
+    <string name="my_store_edit_screen_widget_top_performers">Top Performer Products</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze Campaigns</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Store Onboarding</string>
+
+    <string name="my_store_widget_onboarding_title">Onboarding</string>
+    <string name="my_store_widget_stats_title">Performance</string>
+    <string name="my_store_widget_top_products_title">Top products</string>
+    <string name="my_store_widget_blaze_title">Blaze campaigns</string>
+    <string name="my_store_widget_unavailable">Unavailable</string>
+
+    <string name="dynamic_dashboard_hide_widget_menu_item">Hide</string>
 
     <!--
         Sign Up Flow
@@ -444,19 +463,28 @@
     <string name="analytics_revenue_no_data">No revenue this period</string>
     <string name="analytics_orders_no_data">No orders this period</string>
     <string name="analytics_products_no_data">No products this period</string>
+    <string name="analytics_gift_cards_no_data">No gift cards this period</string>
     <string name="analytics_session_no_data">No sessions this period</string>
+    <string name="analytics_session_no_available">Session data unavailable</string>
+    <string name="analytics_session_no_available_description">Session analytics rely on unique visitor counts not available for custom date ranges</string>
     <string name="analytics_total_sales_title">Total sales</string>
+    <string name="analytics_used_title">Used</string>
     <string name="analytics_net_sales_title">Net sales</string>
     <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
     <string name="analytics_orders_card_title">Orders</string>
     <string name="analytics_total_orders_title">Total Orders</string>
     <string name="analytics_avg_orders_title">Average Order Value</string>
     <string name="analytics_products_list_items_sold">Items sold</string>
+    <string name="analytics_bundles_list_items_sold">Bundles sold</string>
     <string name="analytics_products_card_title">Products</string>
     <string name="analytics_products_list_header_title">Products</string>
+    <string name="analytics_bundles_list_header_title">Bundles</string>
     <string name="analytics_products_list_header_subtitle">Items sold</string>
+    <string name="analytics_bundles_list_header_subtitle">Bundles sold</string>
     <string name="analytics_products_list_item_description">Net sales: %1$s</string>
     <string name="analytics_session_card_title">Sessions</string>
+    <string name="analytics_bundles_card_title">Bundles</string>
+    <string name="analytics_gift_cards_card_title">Gift Cards</string>
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
     <string name="analytics_item">item</string>
@@ -497,19 +525,24 @@
     <string name="error_troubleshooting">Troubleshooting</string>
     <string name="orderlist_timeout_error_title">Your site is taking a long time to respond</string>
     <string name="orderlist_timeout_error_message">Please try again later or reach out to us and we\'ll be happy to assist you</string>
-    <string name="orderlist_connectivity_tool_title">Connectivity Test</string>
-    <string name="orderlist_connectivity_tool_internet_check_title">Internet Connection</string>
+    <string name="orderlist_connectivity_tool_title">Troubleshoot Connection</string>
+    <string name="orderlist_connectivity_tool_subtitle">Please wait while we attempt to identify your connection issue.</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Internet connection</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">It looks like you\'re not connected to the internet.\n\nEnsure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com servers</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Oops! It seems we can\'t connect to WordPress.com at the moment.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Your site</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Your site orders</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Connecting to WordPress.com servers</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">We can\'t connect to WordPress.com right now.\n\nTry again in a few minutes, or contact our support team and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Connecting to your site</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Fetching your site orders</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contact Support</string>
     <string name="orderlist_connectivity_tool_read_more_action">Read More</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Oops! Your site seems to be taking too long to respond.\n\nContact your hosting provider for further assistance.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oops! It seems we can\'t work properly with your site\'s response.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oops! There seems to be a problem with your jetpack connection.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Oops! There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_retry_action">Retry connection</string>
+    <string name="orderlist_connectivity_tool_return_action">Return to the previous screen</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Your site seems to be taking too long to respond.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">It seems we can\'t work properly with your site\'s response.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">There seems to be a problem with your jetpack connection.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_summary_title">No connection issues</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">If your data still isn\'t loading, contact our support team for assistance.</string>
     <string name="orderlist_order_trashed">Order trashed</string>
     <string name="orderlist_order_trashed_error">Error trashing order</string>
 
@@ -676,6 +709,10 @@
     <string name="order_creation_recalculate_button">Recalculate</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
     <string name="order_creation_payment_shipping_tax_label">Shipping Tax</string>
+    <string name="order_creation_simple_payment_migration_title">Collect Payment \nhas moved</string>
+    <string name="order_creation_simple_payment_migration_message_one">We’ve combined payment collection with\norder creation, making it more accessible\nand more powerful.</string>
+    <string name="order_creation_simple_payment_migration_message_two">To set a payment amount, add\na custom amount to your new order.</string>
+    <string name="order_creation_simple_payment_migration_button">Add a Custom Amount</string>
     <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
     <string name="customer_picker_guest">Guest</string>
 
@@ -2304,7 +2341,7 @@
     <string name="settings_tracking_analytics_error_update">There was an error updating your privacy settings</string>
     <string name="settings_more_privacy_options_header">More privacy options</string>
     <string name="settings_web_options">Web Options</string>
-    <string name="settings_web_options_description">More privacy options available for woo.com users. Check here to learn more.</string>
+    <string name="settings_web_options_description">More privacy options available for woocommerce.com users. Check here to learn more.</string>
     <string name="settings_usage_tracking">Usage Tracking</string>
     <string name="settings_usage_tracking_description">Learn more about the data we collect about your store and your options to control this data sharing.</string>
     <string name="settings_privacy_header">Privacy</string>
@@ -2534,6 +2571,7 @@
 
     <string name="google_error_timeout">Google took too long to respond. You may need to wait until you have a stronger internet connection.</string>
 
+    <string name="login_invalid_credentials_message">It seems the username or password you entered doesn\'t quite match. Double-check your credentials and try again.</string>
     <string name="username_or_password_incorrect">The username or password you entered is incorrect</string>
     <string name="cannot_add_duplicate_site">This site already exists in the app, you can\'t add it.</string>
     <string name="duplicate_site_detected">A duplicate site has been detected.</string>
@@ -3405,6 +3443,7 @@
     <string name="store_onboarding_task_name_store_description">Customizing your store name can also help your store\'s search engine optimization.</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d of %2$d tasks completed</string>
+    <string name="store_onboarding_task_view_all_tasks">View all tasks</string>
     <string name="store_onboarding_task_view_all">View all (%1$d)</string>
     <string name="store_onboarding_task_product_description_ai_generator_text">AI content generator available</string>
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
@@ -3707,7 +3746,7 @@
     -->
     <string name="blaze_campaign_title">Blaze campaign</string>
     <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
-    <string name="blaze_campaign_create_campaign_button">Create campaign</string>
+    <string name="blaze_campaign_promote_button">Promote</string>
     <string name="blaze_campaign_show_all_button">Show all</string>
     <string name="blaze_campaign_status_in_moderation">In moderation</string>
     <string name="blaze_campaign_status_active">Active</string>
@@ -3797,6 +3836,8 @@
     <string name="blaze_campaign_edit_ad_change_description_title">Description</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Invalid image</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Please select an image with a minimum size of 400x400 pixels</string>
 
     <!--
     Blaze campaign payment
@@ -3975,8 +4016,9 @@
 
     <string name="order_configuration_product_selection">Select product %s</string>
     <string name="order_configuration_product_selection_control">Product selection</string>
+    <string name="card_selection_control">Analytic card selection</string>
     <string name="disabled">Disabled</string>
-    <string name="see_report">See Report</string>
+    <string name="see_report">See report</string>
 
     <string name="product_update_stock_status_title">Update Stock Status</string>
     <string name="product_update_stock_status_done">DONE</string>
@@ -3994,4 +4036,23 @@
     <string name="product_update_stock_status_error">Something went wrong. Please try again.</string>
     <string name="product_update_stock_status_dialog_title">Updating stock statuses</string>
     <string name="product_update_stock_status_dialog_subtitle">Please wait…</string>
+
+    <string name="empty_order_detail_title">No Order Details Yet</string>
+    <string name="empty_order_detail_message">Your order details will show here when you\'ve made an order.</string>
+
+    <!--
+    Application Password Tutorial
+    -->
+    <string name="login_app_password_title">We couldn\'t log in into your store</string>
+    <string name="login_app_password_subtitle">This could because your store has some extra security steps in place.</string>
+    <string name="login_app_password_instructions_title">Follow these steps to connect the Woo app directly to your store using an application password.</string>
+    <string name="login_app_password_instructions_step_1">1. First, log in using your site credentials.</string>
+    <string name="login_app_password_instructions_step_2">2. When prompted, approve the connection by tapping the confirmation button.</string>
+    <string name="login_app_password_instructions_step_3">3. When the connection is complete, you will be logged in to your store.</string>
+    <string name="login_app_password_instructions_footer">If you run into any issues, please contact our support team.</string>
+    <string name="login_app_password_continue_button">Continue</string>
+    <string name="login_app_password_support_button">Contact Support</string>
+    <string name="login_app_password_exit_dialog_message">It seems that you have not approved the app connection yet. Are you sure you want to exit?</string>
+    <string name="login_app_password_exit_dialog_confirmation">Exit Anyway</string>
+    <string name="login_app_password_exit_dialog_cancel">Cancel</string>
 </resources>

@@ -116,7 +116,7 @@ object AIPrompts {
             keywords: "$keywords"
             tone: "$tone"
 
-            Expected json response format:
+            Your response should be in JSON format and don't send anything extra. Don't include the word JSON in your response:
             "{
                "name":"The name of the product, in the ISO language code "$languageISOCode"",
                "description":"Product description of around 100 words long in a "$tone" tone, in the ISO language code "$languageISOCode"",

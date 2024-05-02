@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -29,6 +30,7 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val notificationChannelsHandler: NotificationChannelsHandler = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+    private val getWooVersion: GetWooCorePluginCachedVersion = mock()
 
     private val view: MainSettingsContract.View = mock()
     private lateinit var presenter: MainSettingsPresenter
@@ -44,7 +46,8 @@ class MainSettingsPresenterTest : BaseUnitTest() {
             shouldShowOnboarding = shouldShowOnboarding,
             accountRepository = accountRepository,
             notificationChannelsHandler = notificationChannelsHandler,
-            analyticsTracker = analyticsTracker
+            analyticsTracker = analyticsTracker,
+            getWooVersion = getWooVersion,
         )
         presenter.takeView(view)
     }

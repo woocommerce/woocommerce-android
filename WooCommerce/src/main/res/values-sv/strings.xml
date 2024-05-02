@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 11:54:03+0000
+Translation-Revision-Date: 2024-04-23 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="card_selection_control">Kortval för analys</string>
+    <string name="login_app_password_exit_dialog_cancel">Avbryt</string>
+    <string name="login_app_password_exit_dialog_confirmation">Avsluta ändå</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Ogiltig bild</string>
+    <string name="orderlist_connectivity_tool_summary_title">Inga anslutningsproblem</string>
+    <string name="login_app_password_exit_dialog_message">Det verkar som att du inte har godkänt appanslutningen än. Är du säker på att du vill lämna sidan?</string>
+    <string name="login_invalid_credentials_message">Det verkar som att användarnamnet eller lösenordet som du angav är felaktigt. Dubbelkolla dina autentiseringsuppgifter och försök igen.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Om dina data fortfarande inte laddas, kontakta vårt supportteam för att få hjälp.</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Välj en bild med minsta mått på 500x500 pixlar</string>
+    <string name="orderlist_connectivity_tool_return_action">Gå tillbaka till föregående skärm</string>
+    <string name="orderlist_connectivity_tool_retry_action">Försök ansluta igen</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Ansluter till din webbplats</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Vi kan inte ansluta till WordPress.com för tillfället.\n\nFörsök igen om några minuter, eller kontakta vårt supportteam så hjälper vi dig.</string>
+    <string name="orderlist_connectivity_tool_title">Felsök anslutning</string>
+    <string name="analytics_gift_cards_card_title">Presentkort</string>
+    <string name="analytics_used_title">Använt</string>
+    <string name="orderlist_connectivity_tool_subtitle">Vänta medan vi försöker identifiera ditt anslutningsproblem.</string>
+    <string name="analytics_gift_cards_no_data">Inga presentkort denna period</string>
+    <string name="login_app_password_support_button">Kontakta support</string>
+    <string name="login_app_password_continue_button">Fortsätt</string>
+    <string name="login_app_password_instructions_footer">Om du stöter på problem, kontakta vårt supportteam.</string>
+    <string name="login_app_password_title">Vi kunde inte logga in i din butik</string>
+    <string name="order_creation_simple_payment_migration_button">Lägg till ett anpassat belopp</string>
+    <string name="login_app_password_instructions_step_3">3. När anslutningen är klar kommer du att loggas in i din butik.</string>
+    <string name="login_app_password_instructions_step_2">2. När du uppmanas till det, godkänn anslutningen genom att trycka på bekräftelseknappen.</string>
+    <string name="login_app_password_instructions_step_1">1. Börja med att logga in med dina webbplatsautentiseringsuppgifter.</string>
+    <string name="login_app_password_instructions_title">Följ dessa steg för att ansluta Woo-appen direkt till din butik med ett applikationslösenord.</string>
+    <string name="login_app_password_subtitle">Detta kan bero på att din butik har några extra säkerhetssteg på plats.</string>
+    <string name="empty_order_detail_message">Din beställningsinformation kommer att visas här när du har gjort en beställning.</string>
+    <string name="empty_order_detail_title">Ingen beställningsinformation än</string>
+    <string name="order_creation_simple_payment_migration_message_two">För att ange ett betalningsbelopp, lägg till\nett anpassat belopp till din nya beställning.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Vi har kombinerat betalningsmottagning med\nbeställningsskapande för förbättrad åtkomst\noch mer kraft.</string>
+    <string name="analytics_bundles_card_title">Paket</string>
+    <string name="analytics_bundles_list_header_subtitle">Paket sålda</string>
+    <string name="analytics_bundles_list_header_title">Paket</string>
+    <string name="analytics_bundles_list_items_sold">Paket sålda</string>
+    <string name="my_store_widget_blaze_title">Blaze-kampanjer</string>
+    <string name="my_store_widget_top_products_title">Populäraste produkter</string>
+    <string name="my_store_widget_stats_title">Statistik</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze-kampanjer</string>
+    <string name="my_store_widget_onboarding_title">Onboarding</string>
+    <string name="my_store_edit_screen_widget_stats">Butikstatistik</string>
+    <string name="order_creation_simple_payment_migration_title">Ta emot betalning \nhar flyttat</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Butiksonboarding</string>
+    <string name="my_store_edit_screen_widget_top_performers">Toppresterande produkter</string>
+    <string name="my_store_edit_screen_widgets">Redigera sektioner i min butik</string>
+    <string name="product_list_unsaved_product_unselected_message">Är du säker på att du vill kassera ändringarna som du har gjort för den här produkten?</string>
+    <string name="product_list_unsaved_product_unselected_title">Du är på väg att kassera ändringarna för %s</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">Statistikfunktionen stöder inte visning av besökar- och konverteringsdata för godtyckliga datumintervall.\n\nDu kan dock trycka på ett värde i diagrammet för att se besökare och konverteringar för specifika intervall.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Besökar- och konverteringsdata är inte tillgängliga</string>
     <string name="more_menu_button_subscriptions_description">Hantera din prenumeration</string>
     <string name="more_menu_button_subscriptions">Prenumerationer</string>
     <string name="upgrades_title">Prenumerationer</string>
@@ -56,7 +106,6 @@ Language: sv_SE
     <string name="product_update_stock_status_update_count">Lagerstatus kommer att uppdateras för %1$d produkter.</string>
     <string name="product_update_stock_status_title">Uppdatera lagerstatus</string>
     <string name="product_selection_menu_update_stock_status">Uppdatera lagerstatus</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Hoppsan! Det verkar vara ett problem med din webbplats.\n\nKontakta ditt webbhotell för att få ytterligare hjälp.</string>
     <string name="product_update_stock_status_ignored_count_singular">1 produkt med hanterad lagerkvantitet kommer att ignoreras.</string>
     <string name="product_update_stock_status_variable_ignored_count">%1$d variabla produkter kommer att ignoreras.</string>
     <string name="product_update_stock_status_ignored_count">%1$d produkter med hanterad lagerkvantitet kommer att ignoreras.</string>
@@ -65,20 +114,18 @@ Language: sv_SE
     <string name="order_creation_tablet_mode_fragment_title">Ordersammanfattning</string>
     <string name="orderlist_order_trashed_error">Ett fel uppstod när ordern togs bort</string>
     <string name="orderlist_order_trashed">Ordern borttagen</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Hoppsan! Det verkar ha uppstått ett problem med din Jetpack-anslutning.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Hoppsan! Det verkar som att vi inte kan arbeta korrekt med din webbplats svar.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Hoppsan! Det verkar ta för lång tid för din webbplats att svara.\n\nKontakta ditt webbhotell för att få ytterligare hjälp.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Hoppsan! Det verkar som att vi inte kan ansluta till WordPress.com för tillfället.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Det verkar vara ett problem med din webbplats.\n\nKontakta ditt webbhotell för vidare hjälp.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Det verkar som att du inte är ansluten till internet.\n\nKontrollera att ditt Wi-Fi är på. Se till att mobildata är aktiverat i dina enhetsinställningar om du använder detta.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Din webbplats verkar ta för lång tid att svara.\n\nKontakta ditt webbhotell för ytterligare hjälp.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Det verkar ha uppstått ett problem med din Jetpack-anslutning.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Det verkar som att vi inte kan arbeta korrekt med din webbplats svar.\n\nMen oroa dig inte, vårt supportteam finns här om du behöver hjälp. Kontakta oss så hjälper vi dig.</string>
     <string name="orderlist_connectivity_tool_read_more_action">Läs mer</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Kontakta supporten</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Din webbplats</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Internetanslutning</string>
-    <string name="orderlist_connectivity_tool_title">Anslutningstest</string>
     <string name="product_detail_product_not_selected">Ingen produkt vald</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Dina webbplatsbeställningar</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com-servrar</string>
     <string name="my_store_custom_range_content_description">Lägg till statistik för anpassade datumintervall</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Ansluter till WordPress.com-servrar</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Hämtar dina webbplatsbeställningar</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Ingen plats hittades.\nFörsök igen.</string>
     <string name="order_detail_attribution_campaign">Medium</string>
     <string name="order_detail_attribution_medium">Medium</string>
@@ -558,8 +605,8 @@ Language: sv_SE
     <string name="store_onboarding_task_name_store_title">Namnge din butik</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Aktivera NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Leveranspaket för små kvantiteter (märkningar krävs)</string>
-    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
     <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY-markpaket – Aerosoler, spraydesinfektionsmedel, sprayfärg, hårspray, propan, butan, rengöringsprodukter, osv. - Parfymer, nagellack, nagellackborttagningsmedel, lösningsmedel, handsprit, tvättsprit, etanolbaserade produkter, osv. - Andra ytmaterial i begränsad mängd (kosmetika, rengöringsprodukter, färger, osv.)</string>
+    <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000-konsumentvarupaket – Luftkvalificerade ID8000-konsumentvaror (icke brandfarliga aerosoler, brandfarliga brännbara vätskor, giftiga ämnen, diverse farliga material)</string>
     <string name="shipping_label_hazmat_option_ground_only">Farliga material endast för markleverans (för föremål som inte är listade, men som är begränsade till endast yta)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Undantagna kvantitetsförsörjningspaket (t.ex. små volymer av brandfarliga vätskor och frätande, giftiga eller miljöfarliga material – märkning krävs) </string>
@@ -623,17 +670,10 @@ Language: sv_SE
     <string name="empty_order_test_order_message">Kör en testbeställning för att kontrollera att din WooCommerce-process levererar en sömlös kundupplevelse</string>
     <string name="free_trial_survey_free_text">Annat skäl (vänligen specificera)</string>
     <string name="free_trial_survey_option4">Jag är en del av ett team och vi måste fatta beslutet kollektivt.</string>
-    <string name="local_notification_still_exploring_title">🧭 Utforskar du fortfarande WooCommerce?</string>
     <string name="free_trial_survey_option2">Jag utvärderar och jämför din tjänst med andra på marknaden.</string>
     <string name="free_trial_survey_option1">Jag utforskar och utvärderar fortfarande funktionerna och fördelarna med appen.</string>
     <string name="free_trial_survey_title">Hjälp oss att förstå dina prenumerationsbeslut. Din feedback är viktig.</string>
     <string name="free_trial_survey_option3">Jag anser att priset på tjänsten är en viktig faktor i mitt beslut.</string>
-    <string name="local_notification_still_exploring_description">Det är ingen brådska, ta den tid du behöver! Vi finns alltid här om du har några frågor eller behöver hjälp. Trevligt utforskande!</string>
-    <string name="free_trial_survey_screen_title">Hjälp oss att förstå ditt prenumerationsbeslut.</string>
-    <string name="local_notification_survey_after_24_hours_description">Vi är intresserade av din beslutsresa. Kan du vänligen berätta för oss om din nuvarande status?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Hjälp oss att förstå ditt prenumerationsbeslut.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Upptäck avancerade funktioner och personliga rekommendationer för din butik. Tryck för att välja ett paket som passar dig.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Håll igång din verksamhet!</string>
     <string name="order_creation_customer_search_empty_email">Ingen e-postadress</string>
     <string name="order_creation_customer_search_empty_name">Inget namn</string>
     <string name="last_update_with_frequency">Senast uppdaterat %s (Uppdateras var 30:e minut)</string>
@@ -719,12 +759,6 @@ Language: sv_SE
     <string name="order_creation_barcode_scanning_process_death">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan prova att använda den igen.</string>
     <string name="order_list_barcode_scanning_process_death">Systemet avslutade Woo-appen medan den kördes i bakgrunden. Du kan prova att använda den igen.</string>
     <string name="card_reader_payment_card_removed_too_early">Kortet togs bort för tidigt</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Håll igång ditt företag med vårt paket!</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, vi har pausat din butik, men du kan fortsätta genom att välja ett paket som passar dig bäst.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Din kostnadsfria Woo Express-provperiod löper ut imorgon (%1$s). Det är dags att ta kontroll över din framtid – välj ett paket och gör dig redo att börja växa.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Tiden med din kostnadsfria provperiod håller på att löpa ut.</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Din butik är redo!</string>
-    <string name="local_notification_store_creation_complete_description">Hej %1$s. Välkommen till din kostnadsfria Woo Express-provperiod på 14 dagar – allt du behöver för att starta en framgångsrik onlineverksamhet, på en och samma plats. Är du redo att utforska?</string>
     <string name="settings_policies_privacy_policy">Integritetspolicy</string>
     <string name="privacy_banner_save">Spara</string>
     <string name="privacy_banner_settings">Inställningar</string>
@@ -757,7 +791,7 @@ Language: sv_SE
     <string name="settings_usage_tracking_description">Läs mer om vilka data vi samlar in om din butik och dina möjligheter att styra vilka data som delas.</string>
     <string name="settings_usage_tracking">Användningsspårning</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">Produkten med SKU %s hittades inte. Det gick inte att lägga till i beställningen</string>
-    <string name="settings_web_options_description">Fler integritetsalternativ tillgängliga för woo.com-användare. Kolla in här för att lära dig mer.</string>
+    <string name="settings_web_options_description">Fler integritetsalternativ tillgängliga för WooCommerce.com-användare. Kolla in här för att lära dig mer.</string>
     <string name="scan_barcode">Skanna streckkod</string>
     <string name="order_list_barcode_scanning_scanning_failed">Skanning misslyckades. Försök igen senare</string>
     <string name="shipping_notice_banner_instructions_content">Leverans till länder som följer EU:s tullregler kräver nu att du tydligt beskriver varje vara. Om du till exempel skickar kläder måste du ange vilken typ av kläder det är (t.ex. herrskjortor, flickvästar, pojkjackor) för att beskrivningen ska vara godtagbar. Annars kan leveranser försenas eller avbrytas i tullen.</string>
@@ -1015,11 +1049,7 @@ Language: sv_SE
     <string name="store_onboarding_task_change_domain_description">Få en anpassad URL för din butik.</string>
     <string name="store_onboarding_task_add_product_description">Börja sälja genom att lägga till produkter eller tjänster i din butik.</string>
     <string name="store_onboarding_task_add_product_title">Lägg till din första produkt </string>
-    <string name="store_creation_iap_eligibility_network_error">Ett nätverksfel uppstod. Kontrollera din anslutning och försök igen.</string>
     <string name="store_onboarding_title">Konfigurera din butik</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Du har redan en aktiv eCommerce-prenumeration. Kontakta supporten om du stöter på problem med att din nuvarande prenumeration inte är kopplad till din nya webbplats.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Butiksskapande är inte tillgängligt för tillfället. Försök igen senare.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Du kan bara köpa eCommerce-paketet från mobilappen en gång. Besök vår webbplats om du vill skapa ytterligare webbplatser.</string>
     <string name="domains_select_domain">Välj domän</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Din enhet stöds inte. Kontakta support för mer detaljer</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Något gick fel med appkonfigurationen. Kontakta supporten för mer information</string>
@@ -1068,12 +1098,8 @@ Language: sv_SE
     <string name="login_application_passwords_unavailable">Det verkar som att funktionen Applikationslösenord är inaktiverad på din webbplats %1$s.\n Aktivera den om du vill använda WooCommerce-appen.</string>
     <string name="login_open_installation_page">Öppna installationssida</string>
     <string name="not_a_valid_qr_code">Skannad QR-kod är inte en WooCommerce-kod</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Skapande av butik är inte tillgängligt</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Att skapa butik från mobilappen är för närvarande inte tillgängligt för ditt land.</string>
     <string name="review_reply_success">Svar skickat!</string>
     <string name="review_reply_failure">Det uppstod ett fel när svaret skulle skickas</string>
-    <string name="store_creation_iap_eligibility_loading_title">Vi gör oss redo för att skapa din butik</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Förbli ansluten.</string>
     <string name="wc_reply">Svara</string>
     <string name="product_selection_menu_update_price">Uppdatera pris</string>
     <string name="product_selection_menu_update_status">Uppdatera status</string>

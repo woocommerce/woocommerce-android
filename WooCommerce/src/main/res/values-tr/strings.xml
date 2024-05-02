@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 13:54:03+0000
+Translation-Revision-Date: 2024-04-22 12:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="card_selection_control">Analiz kartı seçimi</string>
+    <string name="login_app_password_exit_dialog_cancel">İptal Et</string>
+    <string name="login_app_password_exit_dialog_confirmation">Yine de Çık</string>
+    <string name="login_app_password_exit_dialog_message">Görünüşe göre henüz uygulama bağlantısını onaylamadınız. Çıkış yapmak istediğinizden emin misiniz?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Lütfen minimum 500x500 piksel boyutunda olan bir görsel seçin.</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Geçersiz görsel</string>
+    <string name="login_invalid_credentials_message">Görünüşe göre girdiğiniz kullanıcı adı ve parola tam olarak eşleşmiyor. Kimlik bilgilerinizi tekrar kontrol edip yeniden deneyin.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Verileriniz hala yüklenmiyorsa lütfen yardım almak için destek ekibimizle iletişime geçin.</string>
+    <string name="orderlist_connectivity_tool_summary_title">Bağlantı sorunu yok</string>
+    <string name="orderlist_connectivity_tool_return_action">Önceki ekrana dön</string>
+    <string name="orderlist_connectivity_tool_retry_action">Bağlantıyı yeniden dene</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Sitenize bağlanma</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Şu anda WordPress.com\'a bağlanılamıyor.\n\nBirkaç dakika sonra yeniden deneyin veya destek ekibimizle iletişime geçin, size yardımcı olmaktan memnuniyet duyarız.</string>
+    <string name="orderlist_connectivity_tool_subtitle">Bağlantı sorununuzu tanımlamaya çalışırken lütfen bekleyin.</string>
+    <string name="orderlist_connectivity_tool_title">Bağlantı Sorununu Giderin</string>
+    <string name="analytics_gift_cards_card_title">Hediye Kartları</string>
+    <string name="analytics_used_title">Kullanıldı</string>
+    <string name="analytics_gift_cards_no_data">Bu dönemde hediye kartı yok</string>
+    <string name="login_app_password_support_button">Desteğe Başvurun</string>
+    <string name="login_app_password_continue_button">Devam</string>
+    <string name="login_app_password_instructions_footer">Herhangi bir sorunla karşılaşırsanız lütfen destek ekibimizle iletişime geçin.</string>
+    <string name="login_app_password_instructions_step_3">3. Bağlantı tamamlandığında mağazanızda oturumunuz açılır.</string>
+    <string name="login_app_password_instructions_step_2">2. Sizden istendiğinde onay düğmesine dokunarak bağlantıyı onaylayın.</string>
+    <string name="login_app_password_instructions_step_1">1. İlk olarak site kimlik bilgilerinizi kullanarak oturum açın.</string>
+    <string name="login_app_password_instructions_title">Bir uygulama şifresi kullanarak Woo uygulamasını doğrudan mağazanıza bağlamak için şu adımları takip edin.</string>
+    <string name="login_app_password_subtitle">Bunun sebebi mağazanızda bazı ekstra güvenlik adımlarının olması olabilir.</string>
+    <string name="login_app_password_title">Sitenizde oturum açamadık</string>
+    <string name="empty_order_detail_message">Sipariş oluşturduğunuzda sipariş bilgileriniz burada görünür.</string>
+    <string name="empty_order_detail_title">Henüz Sipariş Ayrıntısı Yok</string>
+    <string name="order_creation_simple_payment_migration_button">Özel Tutar Ekle</string>
+    <string name="order_creation_simple_payment_migration_message_two">Ödeme tutarı belirlemek için yeni\nsiparişinize özel bir tutar ekleyin.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Ödeme almayı sipariş oluşturmayla birleştirdik\nbu sayede bunu daha erişilebilir\nve daha güçlü hale getirdik.</string>
+    <string name="order_creation_simple_payment_migration_title">Ödeme Alma \ntaşındı</string>
+    <string name="analytics_bundles_card_title">Paketler</string>
+    <string name="analytics_bundles_list_header_subtitle">Satılan paketler</string>
+    <string name="analytics_bundles_list_header_title">Paketler</string>
+    <string name="analytics_bundles_list_items_sold">Satılan paketler</string>
+    <string name="my_store_widget_blaze_title">Kampanyaları öne çıkarın</string>
+    <string name="my_store_widget_top_products_title">En popüler ürünler</string>
+    <string name="my_store_widget_stats_title">İstatistikler</string>
+    <string name="my_store_widget_onboarding_title">İlk Katılım</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Mağaza İlk Katılımı</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze Kampanyaları</string>
+    <string name="my_store_edit_screen_widget_top_performers">En Performanslı Ürünler</string>
+    <string name="my_store_edit_screen_widget_stats">Mağaza İstatistikleri</string>
+    <string name="my_store_edit_screen_widgets">Mağazanızın bölümlerini düzenleyin</string>
+    <string name="product_list_unsaved_product_unselected_message">Bu üründe yaptığınız değişikliklerden vazgeçmek istediğinizden emin misiniz?</string>
+    <string name="product_list_unsaved_product_unselected_title">%s ürününde yapılan değişikliklerden vazgeçmek üzeresiniz.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">İstatistikler özelliği, ziyaretçiler ve dönüşüm verilerinin isteğe bağlı tarih aralıkları için görüntülenmesini desteklemiyor.\n\nAncak bu belirli aralık için ziyaretçileri ve dönüşümleri görmek için grafikte bir değere tıklayabilirsiniz.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Ziyaretçiler ve dönüşüm verileri kullanılamıyor</string>
     <string name="more_menu_button_subscriptions_description">Aboneliğinizi yönetin</string>
     <string name="more_menu_button_subscriptions">Abonelikler</string>
     <string name="upgrades_title">Abonelikler</string>
@@ -64,20 +114,17 @@ Language: tr
     <string name="order_creation_tablet_mode_fragment_title">Sipariş Özeti</string>
     <string name="orderlist_order_trashed_error">Sipariş çöp kutusuna taşınırken hata oluştu</string>
     <string name="orderlist_order_trashed">Sipariş çöp kutusuna taşındı</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Üzgünüz! Görünüşe göre sitenizde bir sorun oluştu.\n\nDaha fazla yardım almak için barındırma sağlayıcınızla iletişime geçin.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Üzgünüz! Görünüşe göre Jetpack bağlantınızda bir sorun oluştu.\n\nAncak endişelenmeyin, destek ekibimiz yardımcı olmak için burada. Bizimle iletişime geçin, size yardımcı olmaktan memnuniyet duyarız.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Üzgünüz! Görünüşe göre sitenizin yanıtında düzgün bir çalışamıyoruz.\n\nAncak endişelenmeyin, destek ekibimiz yardımcı olmak için burada. Bizimle iletişime geçin, size yardımcı olmaktan memnuniyet duyarız.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Üzgünüz! Görünüşe göre sitenizin yanıt vermesi uzun sürüyor.\n\nDaha fazla yardım almak için barındırma sağlayıcınızla iletişime geçin.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Üzgünüz! Görünüşe göre şu anda WordPress.com\'a bağlanamıyoruz.\n\nAncak endişelenmeyin, destek ekibimiz yardımcı olmak için burada. Bizimle iletişime geçin, size yardımcı olmaktan memnuniyet duyarız.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Görünüşe göre sitenizde bir sorun oluştu.\n\nDaha fazla yardım almak için barındırma sağlayıcınızla iletişime geçin.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Görünüşe göre Jetpack bağlantınızda bir sorun oluştu.\n\nAncak endişelenmeyin, destek ekibimiz yardımcı olmak için burada. Bizimle iletişime geçin, size yardımcı olmaktan memnuniyet duyarız.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Görünüşe göre sitenizin yanıtında düzgün bir çalışamıyoruz.\n\nAncak endişelenmeyin, destek ekibimiz yardımcı olmak için burada. Bizimle iletişime geçin, size yardımcı olmaktan memnuniyet duyarız.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Görünüşe göre sitenizin yanıt vermesi uzun sürüyor.\n\nDaha fazla yardım almak için barındırma sağlayıcınızla iletişime geçin.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Görünüşe göre internete bağlı değilsiniz.\n\nWi-Fi ağınızın açık olduğundan emin olun. Mobil veri kullanıyorsanız cihazınızın ayarlarında etkinleştirildiğinden emin olun.</string>
     <string name="product_detail_product_not_selected">Ürün seçilmedi</string>
     <string name="orderlist_connectivity_tool_read_more_action">Tamamını Okuyun</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Desteğe Başvurun</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Site siparişleriniz</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Siteniz</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com sunucuları</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Site siparişleriniz alınıyor</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com sunucularına bağlanma</string>
     <string name="orderlist_connectivity_tool_internet_check_title">İnternet Bağlantısı</string>
-    <string name="orderlist_connectivity_tool_title">Bağlantı Testi</string>
     <string name="my_store_custom_range_content_description">Özel tarih aralığı istatistikleri ekleyin</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Konum bulunamadı.\nLütfen tekrar deneyin.</string>
     <string name="order_detail_attribution_session_page_views">Oturum sayfa görüntülemeleri</string>
@@ -627,13 +674,6 @@ Language: tr
     <string name="free_trial_survey_option2">Hizmetinizi değerlendiriyor ve piyasadaki diğer hizmetlerle karşılaştırıyorum.</string>
     <string name="free_trial_survey_option1">Uygulamanın özelliklerini ve faydalarını araştırmaya ve değerlendirmeye devam ediyorum.</string>
     <string name="free_trial_survey_title">Abonelik kararlarınızı anlamamıza yardımcı olun. Geri bildiriminiz bizim için önemli.</string>
-    <string name="local_notification_still_exploring_description">Acele etmeyin, zamanınızı kullanın! Herhangi bir sorunuz varsa veya yardıma ihtiyacınız varsa, size her zaman yardımcı olmaya hazırız. Keyifli keşifler!</string>
-    <string name="local_notification_still_exploring_title">🧭 WooCommerce\'i Keşfetmeye Devam Mı Ediyorsunuz?</string>
-    <string name="free_trial_survey_screen_title">Abonelik Kararınızı Anlamamıza Yardımcı Olun</string>
-    <string name="local_notification_survey_after_24_hours_description">Karar alma yolculuğunuzu öğrenmeyi amaçlıyoruz. Şu anki durumunuz hakkında bize bilgi verebilir misiniz?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Abonelik Kararınızı Anlamamıza Yardımcı Olun</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Mağazanız için gelişmiş özellikleri ve kişiselleştirilmiş önerileri keşfedin! Size en uygun paketi seçmek için dokunun.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 İşinizi ilerletin!</string>
     <string name="order_creation_customer_search_empty_email">E-posta adresi yok</string>
     <string name="order_creation_customer_search_empty_name">Ad yok</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Mevcut müşteri ara veya</string>
@@ -719,12 +759,6 @@ Language: tr
     <string name="order_creation_barcode_scanning_process_death">Sistem, arka planda çalışan Woo uygulamasını sonlandırdı. Tekrar kullanmayı deneyebilirsiniz.</string>
     <string name="order_list_barcode_scanning_process_death">Sistem, arka planda çalışan Woo uygulamasını sonlandırdı. Tekrar kullanmayı deneyebilirsiniz.</string>
     <string name="card_reader_payment_card_removed_too_early">Kart çok erken kaldırıldı</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, mağazanızı duraklattık, ancak size en uygun paketi seçerek devam edebilirsiniz.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Paketimizle işletmenizin yoluna devam etmesini sağlayın!</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Woo Express ücretsiz deneme sürümünüz yarın (%1$s) sona eriyor. Şimdi kendi geleceğinizi belirleme zamanı; bir paket seçin ve büyümeye hazır olun.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Ücretsiz deneme sürümünüz için zamanınız azalıyor!</string>
-    <string name="local_notification_store_creation_complete_description">Merhaba %1$s! 14 günlük Woo Express ücretsiz deneme sürümüne hoş geldiniz. Başarılı bir çevrimiçi işletme başlatmak ve büyütmek için ihtiyacınız olan her şey tek bir yerde. Keşfetmeye hazır mısınız?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Mağazanız hazır!</string>
     <string name="product_type_variation">Varyasyon ürün</string>
     <string name="settings_policies_cookie_policy_description">Tanımlama bilgisi politikamız, bizim ve başkalarının tanımlama bilgilerini nasıl kullandığını ve bu bilgileri nasıl yönetebileceğinizi açıklar.</string>
     <string name="settings_policies_cookie_policy">Tanımlama Bilgisi Politikası</string>
@@ -745,7 +779,7 @@ Language: tr
     <string name="settings_privacy_header">Gizlilik</string>
     <string name="settings_usage_tracking_description">Mağazanız hakkında topladığımız veriler ve bu verilerin paylaşımını kontrol etme seçenekleriniz hakkında daha fazla bilgi edinin.</string>
     <string name="settings_usage_tracking">Kullanım İzleme</string>
-    <string name="settings_web_options_description">woo.com kullanıcıları için daha fazla gizlilik seçeneği mevcut. Daha fazla bilgi edinmek için burayı kontrol edin.</string>
+    <string name="settings_web_options_description">woocommerce.com kullanıcıları için daha fazla gizlilik seçeneği mevcut. Daha fazla bilgi edinmek için burayı kontrol edin.</string>
     <string name="settings_web_options">Web Seçenekleri</string>
     <string name="settings_more_privacy_options_header">Daha fazla gizlilik seçeneği</string>
     <string name="settings_tracking_analytics_error_update">Gizlilik ayarlarınız güncellenirken bir hata oluştu</string>
@@ -1016,10 +1050,6 @@ Language: tr
     <string name="store_onboarding_task_add_product_description">Mağazanıza ürün veya hizmet ekleyerek satış yapmaya başlayın.</string>
     <string name="store_onboarding_task_add_product_title">İlk ürününüzü ekleyin </string>
     <string name="store_onboarding_title">Mağaza kurulumu</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Etkin bir e-Ticaret aboneliğiniz zaten var, mevcut aboneliğinizle ilgili olarak yeni sitenize bağlı olmayan sorunlar yaşıyorsanız lütfen destekle iletişime geçin.</string>
-    <string name="store_creation_iap_eligibility_network_error">Bir ağ sorunu meydana geldi. Lütfen bağlantınızı kontrol edip tekrar deneyin.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Mağaza oluşturma şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">E-Ticaret paketini mobil uygulamadan yalnızca bir kez satın alabilirsiniz. Ek site oluşturmak için web sitemizi ziyaret edin.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Uygulama kurulumuyla ilgili bir şeyler yanlış gitti. Daha fazla ayrıntı için lütfen destek hizmetleriyle iletişime geçin</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Cihazınız desteklenmiyor. Daha fazla ayrıntı için lütfen destek hizmetleriyle iletişime geçin</string>
     <string name="card_reader_payment_failed_nfc_disabled">NFC çipi devre dışı olduğu için uygulama kart okuyucuyu etkinleştiremedi</string>
@@ -1068,10 +1098,6 @@ Language: tr
     <string name="login_application_passwords_unavailable">Görünüşe göre Uygulama Şifreleri özelliği %1$s sitenizde devre dışı bırakılmış.\n WooCommerce uygulamasını kullanmak için lütfen Uygulama Şifresini etkinleştirin.</string>
     <string name="login_open_installation_page">Kurulum sayfasını açın</string>
     <string name="not_a_valid_qr_code">Taranan Qr kodu bir WooCommerce kodu değil.</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Mobil uygulamadan mağaza oluşturma şu anda ülkenizde kullanılamıyor.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Mağaza Oluşturma Mevcut Değil</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Lütfen bağlantınızı koparmayın</string>
-    <string name="store_creation_iap_eligibility_loading_title">Mağazanızı oluşturmaya hazırlanıyoruz</string>
     <string name="review_reply_failure">Yanıtı gönderirken bir hata oluştu</string>
     <string name="review_reply_success">Yanıt gönderildi!</string>
     <string name="wc_reply">Yanıtla</string>

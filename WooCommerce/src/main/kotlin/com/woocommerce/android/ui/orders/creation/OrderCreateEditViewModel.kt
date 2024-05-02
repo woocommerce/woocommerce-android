@@ -125,10 +125,10 @@ import com.woocommerce.android.ui.payments.customamounts.CustomAmountsFragment.C
 import com.woocommerce.android.ui.payments.customamounts.CustomAmountsViewModel.CustomAmountType
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
@@ -206,6 +206,7 @@ class OrderCreateEditViewModel @Inject constructor(
     companion object {
         val EMPTY_BIG_DECIMAL = -Double.MAX_VALUE.toBigDecimal()
         const val MAX_PRODUCT_QUANTITY = 100_000
+        const val DELAY_BEFORE_SHOWING_SIMPLE_PAYMENTS_MIGRATION_BOTTOM_SHEET = 500L
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
     }
@@ -217,7 +218,7 @@ class OrderCreateEditViewModel @Inject constructor(
     val mode: Mode = args.mode
 
     private val flow = when (mode) {
-        Mode.Creation -> VALUE_FLOW_CREATION
+        is Mode.Creation -> VALUE_FLOW_CREATION
         is Mode.Edit -> VALUE_FLOW_EDITING
     }
 
@@ -357,7 +358,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private val syncStrategy =
         when (mode) {
-            Mode.Creation -> autoSyncPriceModifier
+            is Mode.Creation -> autoSyncPriceModifier
             is Mode.Edit -> autoSyncOrder
         }
 
@@ -373,7 +374,7 @@ class OrderCreateEditViewModel @Inject constructor(
         monitorPluginAvailabilityChanges()
 
         when (mode) {
-            Mode.Creation -> {
+            is Mode.Creation -> {
                 _orderDraft.update {
                     it.copy(
                         currency = parameterRepository.getParameters(
@@ -399,6 +400,13 @@ class OrderCreateEditViewModel @Inject constructor(
                     getAutoTaxRateSetting()?.let {
                         onTaxRateSelected(it)
                     }
+                }
+
+                if (mode.indicateSimplePaymentsMigration) {
+                    triggerEventWithDelay(
+                        OrderCreateEditNavigationTarget.SimplePaymentsMigrationBottomSheet,
+                        delay = DELAY_BEFORE_SHOWING_SIMPLE_PAYMENTS_MIGRATION_BOTTOM_SHEET,
+                    )
                 }
             }
 
@@ -1220,7 +1228,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onCreateOrderClicked(order: Order, isTablet: Boolean = false) {
         when (mode) {
-            Mode.Creation -> {
+            is Mode.Creation -> {
                 trackCreateOrderButtonClick(isTablet)
                 createOrder(order) {
                     triggerEvent(ShowSnackbar(string.order_creation_success_snackbar))
@@ -1255,7 +1263,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     private fun onTotalsSectionPrimaryButtonClicked() {
         when (mode) {
-            Mode.Creation -> {
+            is Mode.Creation -> {
                 launch {
                     tracker.track(
                         AnalyticsEvent.PAYMENTS_FLOW_ORDER_COLLECT_PAYMENT_TAPPED,
@@ -1325,7 +1333,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     fun onBackButtonClicked() {
         when (mode) {
-            Mode.Creation -> {
+            is Mode.Creation -> {
                 if (_orderDraft.value.isEmpty()) {
                     triggerEvent(Exit)
                 } else {
@@ -1964,7 +1972,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     sealed class Mode : Parcelable {
         @Parcelize
-        object Creation : Mode()
+        data class Creation(val indicateSimplePaymentsMigration: Boolean = false) : Mode()
 
         @Parcelize
         data class Edit(val orderId: Long) : Mode()

@@ -200,18 +200,6 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on collect payment, then app navigates to payment collection screen`() {
-        (viewModel.viewStateData.getOrAwaitValue()).rows.find {
-            it.label == UiStringRes(R.string.card_reader_hub_collect_payment)
-        }!!.onClick!!.invoke()
-
-        assertThat(viewModel.event.getOrAwaitValue())
-            .isEqualTo(
-                PaymentsHubViewModel.PaymentsHubEvents.NavigateToPaymentCollectionScreen
-            )
-    }
-
-    @Test
     fun `when user clicks on collect payment, then collect payment event tracked`() {
         (viewModel.viewStateData.getOrAwaitValue()).rows.find {
             it.label == UiStringRes(R.string.card_reader_hub_collect_payment)

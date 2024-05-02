@@ -18,6 +18,11 @@ fun Date.formatToYYYYmm(locale: Locale = Locale.getDefault()): String = SimpleDa
     locale
 ).format(this)
 
+fun Date.formatToMMMMyyyy(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
+    "MMMM yyyy",
+    locale
+).format(this)
+
 fun Date.formatToYYYYmmDD(locale: Locale = Locale.getDefault()): String = SimpleDateFormat(
     "yyyy-MM-dd",
     locale
@@ -157,7 +162,7 @@ fun Date.formatAsRangeWith(other: Date, locale: Locale, calendar: Calendar): Str
         other.formatToMMMddYYYY(locale)
     }
 
-    return "$formattedStartDate - $formattedEndDate"
+    return "$formattedStartDate – $formattedEndDate"
 }
 
 private const val THREE_MONTHS = 3

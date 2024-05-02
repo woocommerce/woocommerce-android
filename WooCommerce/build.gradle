@@ -34,6 +34,13 @@ sentry {
     (if enabled in WCCrashLoggingDataProvider).
     */
     ignoredBuildTypes = ["debug"]
+
+    /* Additional source directories to be included in the source context. For now, manually:
+    https://github.com/getsentry/sentry-android-gradle-plugin/issues/685
+     */
+    additionalSourceDirsForSourceContext = [
+            '../libs/cardreader/src/main/java',
+    ]
 }
 
 repositories {
@@ -47,6 +54,7 @@ repositories {
             includeGroup "org.wordpress.mediapicker"
             includeGroup "com.automattic"
             includeGroup "com.automattic.tracks"
+            includeGroup "com.gravatar"
         }
     }
     maven {
@@ -240,6 +248,7 @@ dependencies {
         exclude group: "org.wordpress", module: "fluxc"
     }
     implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
+    implementation "com.automattic.tracks:crashlogging:$automatticTracksVersion"
 
     implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
@@ -266,6 +275,8 @@ dependencies {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
+
+    implementation("com.gravatar:gravatar:$gravatarVersion")
 
     implementation project(":libs:cardreader")
     debugImplementation project(":libs:iap")
@@ -299,7 +310,7 @@ dependencies {
     implementation "com.google.mlkit:text-recognition:$mlkitTextRecognitionVersion"
     implementation "com.google.mlkit:barcode-scanning:$mlkitBarcodeScanningVersion"
 
-    implementation "com.google.zxing:core:3.5.1"
+    implementation "com.google.zxing:core:3.5.3"
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
@@ -312,7 +323,7 @@ dependencies {
     }
 
     if (isLeakCanaryEnabled()) {
-        debugImplementation 'com.squareup.leakcanary:leakcanary-android-core:2.9.1'
+        debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
     }
 
     // Dependencies for local unit tests

@@ -151,6 +151,9 @@
         <action
             android:id="@+id/action_dashboard_to_blazeCampaignListFragment"
             app:destination="@id/blazeCampaignListFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_editWidgetsFragment"
+            app:destination="@id/dashboardWidgetEditorFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -161,6 +164,10 @@
             android:name="orderId"
             android:defaultValue="-1L"
             app:argType="long" />
+        <argument
+            android:name="mode"
+            android:defaultValue="STANDARD"
+            app:argType="com.woocommerce.android.ui.orders.list.OrderListViewModel$Mode" />
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders">
@@ -218,7 +225,7 @@
         tools:layout="@layout/fragment_barcode_scanning" />
     <fragment
         android:id="@+id/products"
-        android:name="com.woocommerce.android.ui.products.ProductListFragment"
+        android:name="com.woocommerce.android.ui.products.list.ProductListFragment"
         android:label="fragment_product_list"
         tools:layout="@layout/fragment_product_list">
         <action
@@ -273,7 +280,7 @@
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out"></action>
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
     <dialog
         android:id="@+id/updateStockStatusFragment"
@@ -410,17 +417,19 @@
     </fragment>
 
     <action
-        android:id="@+id/action_global_to_ordercreationfragment"
+        android:id="@+id/action_global_to_orderCreationFragment"
         app:destination="@id/nav_graph_order_creations">
         <argument
             android:name="mode"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
         <argument
             android:name="sku"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="barcodeFormat"
+            android:defaultValue="@null"
             app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
             app:nullable="true" />
         <argument
@@ -446,7 +455,7 @@
         app:destination="@id/nav_graph_products">
         <argument
             android:name="mode"
-            app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
+            app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"
@@ -580,7 +589,7 @@
     </action>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
             android:name="remoteProductId"
@@ -751,27 +760,6 @@
         android:id="@+id/aboutYourStoreFragment"
         android:name="com.woocommerce.android.ui.onboarding.aboutyourstore.AboutYourStoreFragment"
         android:label="AboutYourStoreFragment" />
-    <fragment
-        android:id="@+id/blazeCampaignCreationFragment"
-        android:name="com.woocommerce.android.ui.blaze.BlazeCampaignCreationFragment"
-        android:label="BlazeWebViewFragment">
-        <argument
-            android:name="urlToLoad"
-            app:argType="string" />
-        <argument
-            android:name="source"
-            app:argType="com.woocommerce.android.ui.blaze.BlazeUrlsHelper$BlazeFlowSource"
-            app:nullable="false" />
-        <action
-            android:id="@+id/action_blazeCampaignCreationFragment_to_blazeCampaignListFragment"
-            app:destination="@id/blazeCampaignListFragment"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/blazeCampaignCreationFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
-    <action
-        android:id="@+id/action_global_blazeCampaignCreationFragment"
-        app:destination="@id/blazeCampaignCreationFragment" />
     <action
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />
@@ -853,4 +841,8 @@
         android:id="@+id/orderConnectivityToolFragment"
         android:name="com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolFragment"
         android:label="OrderConnectivityToolFragment" />
+    <fragment
+        android:id="@+id/dashboardWidgetEditorFragment"
+        android:name="com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorFragment"
+        android:label="DashboardWidgetEditorFragment" />
 </navigation>

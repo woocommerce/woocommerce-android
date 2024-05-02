@@ -211,8 +211,15 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setActiveStatsTab(selectionName)
     }
 
-    fun getActiveStatsTab() =
+    fun getActiveStoreStatsTab() =
         AppPrefs.getActiveStatsTab()
+
+    fun setActiveTopPerformersGranularity(selectionName: String) {
+        AppPrefs.setActiveTopPerformersGranularity(selectionName)
+    }
+
+    fun getActiveTopPerformersGranularity() =
+        AppPrefs.getActiveTopPerformersGranularity()
 
     fun setCustomDomainsSource(source: DomainFlowSource) {
         AppPrefs.setCustomDomainsSource(source.name)
@@ -319,8 +326,8 @@ class AppPrefsWrapper @Inject constructor() {
         }
     }
 
-    fun markAllOnboardingTasksCompleted(siteId: Int) {
-        AppPrefs.markOnboardingTaskCompletedFor(siteId)
+    fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
+        AppPrefs.updateOnboardingCompletedStatus(siteId, completed)
     }
 
     fun isOnboardingCompleted(siteId: Int): Boolean = AppPrefs.areOnboardingTaskCompletedFor(siteId)

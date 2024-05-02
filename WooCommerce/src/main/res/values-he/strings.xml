@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-27 09:54:04+0000
+Translation-Revision-Date: 2024-04-24 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="card_selection_control">בחירת כרטיס לניתוח אנליטי</string>
+    <string name="login_app_password_exit_dialog_cancel">ביטול</string>
+    <string name="login_app_password_exit_dialog_confirmation">לצאת בכל מקרה</string>
+    <string name="login_app_password_exit_dialog_message">נראה שעדיין לא אישרת את החיבור לאפליקציה. האם ברצונך לצאת?</string>
+    <string name="login_invalid_credentials_message">נראה ששם המשתמש והסיסמה שהזנת לא תואמים. יש לבדוק את פרטי הכניסה ולנסות שוב.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">אם הנתונים עדיין לא נטענים, יש ליצור קשר עם צוות התמיכה שלנו לסיוע.</string>
+    <string name="orderlist_connectivity_tool_summary_title">לא נמצאו בעיות בחיבור</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">יש לבחור תמונה עם ממדים מינמליים של 500 ‏x ‏500 פיקסלים</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">תמונה לא תקינה</string>
+    <string name="orderlist_connectivity_tool_retry_action">לנסות שוב את החיבור</string>
+    <string name="orderlist_connectivity_tool_store_check_title">התחברות לאתר שלך</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">אנחנו לא יכולים להתחבר אל WordPress.com כרגע.\n\nיש לנסות שוב בעוד דקות אחדות או לפנות לצוות התמיכה שלנו כדי שנוכל לעזור.</string>
+    <string name="orderlist_connectivity_tool_return_action">יש לחזור למסך הקודם</string>
+    <string name="orderlist_connectivity_tool_subtitle">רק רגע, אנחנו מנסים לזהות את הבעיה עם החיבור שלך.</string>
+    <string name="orderlist_connectivity_tool_title">פתרון בעיות לחיבור</string>
+    <string name="analytics_gift_cards_card_title">שוברי מתנה</string>
+    <string name="analytics_used_title">נוצל</string>
+    <string name="analytics_gift_cards_no_data">אין שוברי מתנה בפרק זמן זה</string>
+    <string name="login_app_password_support_button">לפנות לתמיכה</string>
+    <string name="login_app_password_continue_button">המשך</string>
+    <string name="login_app_password_instructions_footer">אם נתקלת בבעיות, יש לפנות לצוות התמיכה שלנו.</string>
+    <string name="login_app_password_instructions_step_3">3. כאשר החיבור הושלם, החשבון שלך יחובר לחנות שלך.</string>
+    <string name="login_app_password_instructions_step_2">2. כאשר הבקשה מופיעה, יש לאשר את החיבור באמצעות הקשה על כפתור האישור.</string>
+    <string name="login_app_password_instructions_step_1">1. ראשית, יש להתחבר עם פרטי הכניסה של האתר.</string>
+    <string name="login_app_password_instructions_title">יש לבצע את השלבים הבאים כדי לחבר את אפליקציית Woo ישירות לחנות באמצעות הסיסמה של האפליקציה.</string>
+    <string name="login_app_password_subtitle">ייתכן שבחנות שלך הוגדרו כמה שלבים נוספים לצורך אבטחה.</string>
+    <string name="login_app_password_title">לא הצלחנו לחבר אותך לחנות שלך</string>
+    <string name="empty_order_detail_message">לאחר ביצוע הזמנה, פרטי ההזמנה שלך יוצגו כאן.</string>
+    <string name="empty_order_detail_title">עדיין אין פרטי הזמנה</string>
+    <string name="order_creation_simple_payment_migration_button">להוסיף סכום בהתאמה אישית</string>
+    <string name="order_creation_simple_payment_migration_message_two">כדי להגדיר סכום לתשלום, יש להוסיף\nסכום בהתאמה אישית להזמנה חדשה.</string>
+    <string name="order_creation_simple_payment_migration_message_one">שילבנו את גביית התשלום בתוך\nשלב יצירת ההזמנה, כדי לאפשר שירות נגיש\nועוצמתי יותר.</string>
+    <string name="order_creation_simple_payment_migration_title">האפשרות \'לגבות תשלום\' \nהועברה</string>
+    <string name="analytics_bundles_card_title">חבילות</string>
+    <string name="analytics_bundles_list_header_subtitle">חבילות שנמכרו</string>
+    <string name="analytics_bundles_list_header_title">חבילות</string>
+    <string name="analytics_bundles_list_items_sold">חבילות שנמכרו</string>
+    <string name="my_store_widget_blaze_title">קמפיינים של Blaze</string>
+    <string name="my_store_widget_top_products_title">מוצרים מובילים</string>
+    <string name="my_store_widget_stats_title">סטטיסטיקה</string>
+    <string name="my_store_widget_onboarding_title">הצטרפות</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">הצטרפות לחנות</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">קמפיינים של Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">מוצרים עם ביצועים מובילים</string>
+    <string name="my_store_edit_screen_widget_stats">נתונים סטטיסטיים של החנות</string>
+    <string name="my_store_edit_screen_widgets">לערוך מקטעים בחנות שלי</string>
+    <string name="product_list_unsaved_product_unselected_message">האם ברצונך למחוק את השינויים שביצעת במוצר?</string>
+    <string name="product_list_unsaved_product_unselected_title">הפעולה הזאת תמחק את השינויים שבוצעו ב\'%s\'</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">האפשרות של הנתונים הסטטיסטיים לא תומכת בתצוגת הנתונים של מבקרים והמרות עבור טווחי תאריכים שרירותיים.\n\nעם זאת, אפשר להקיש על ערך בגרף כדי לראות מבקרים והמרות בטווח תאריכים ספציפי.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">הנתונים של המבקרים וההמרות לא זמינים</string>
     <string name="more_menu_button_subscriptions_description">לנהל את המינוי שלך</string>
     <string name="more_menu_button_subscriptions">מינויים</string>
     <string name="upgrades_title">מינויים</string>
@@ -64,21 +114,18 @@ Language: he_IL
     <string name="order_creation_tablet_mode_fragment_title">סיכום הזמנה</string>
     <string name="orderlist_order_trashed_error">שגיאה בהעברת ההזמנה לפח</string>
     <string name="orderlist_order_trashed">ההזמנה הועברה לפח</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">אופס! נראה שיש בעיה באתר שלך.\n\nיש לפנות לספקית האחסון להמשך עזרה.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">אופס! נראה שיש בעיה עם החיבור שלך ל-Jetpack.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">אופס! נראה שאנחנו לא יכולים לאפשר פעילות תקינה עם התגובה של האתר שלך.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">אופס! זמן התגובה של האתר שלך היה ארוך מדי.\n\nיש לפנות לספקית האחסון להמשך עזרה.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">אופס! נראה שאנחנו לא יכולים להתחבר אל WordPress.com כרגע.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">נראה שיש בעיה באתר שלך.\n\nיש לפנות לספקית האחסון להמשך עזרה.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">נראה שהחיבור לאינטרנט לא פעיל אצלך.\n\nיש לוודא שהחיבור ל-Wi-Fi הופעל. אם ברצונך להשתמש בנתונים הניידים, עליך לוודא שהאפשרות הופעלה בהגדרות המכשיר.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">נראה שיש בעיה עם החיבור שלך ל-Jetpack.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">נראה שאנחנו לא יכולים לאפשר פעילות תקינה עם התגובה של האתר שלך.\n\nאל דאגה, צוות התמיכה שלנו כאן לעזור. ניתן ליצור איתנו קשר ונשמח לסייע.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">זמן התגובה של האתר שלך היה ארוך מדי.\n\nיש לפנות לספקית האחסון להמשך עזרה.</string>
     <string name="orderlist_connectivity_tool_read_more_action">להמשיך לקרוא</string>
     <string name="orderlist_connectivity_tool_contact_support_action">לפנות לתמיכה</string>
-    <string name="orderlist_connectivity_tool_store_check_title">האתר שלך</string>
     <string name="orderlist_connectivity_tool_internet_check_title">חיבור לאינטרנט</string>
-    <string name="orderlist_connectivity_tool_title">בדיקת קישוריות</string>
     <string name="product_detail_product_not_selected">המוצר לא נבחר</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">ההזמנות של האתר</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">שרתים של WordPress.com</string>
     <string name="my_store_custom_range_content_description">להוסיף נתונים סטטיסטיים מטווח תאריכים מותאם אישית</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">הבאת הזמנות מהאתר שלך</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">התחברות לשרתי WordPress.com</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">לא נמצא מיקום.\nיש לנסות שוב.</string>
     <string name="order_detail_attribution_session_page_views">צפיות בעמודים במהלך ההפעלה</string>
     <string name="order_detail_attribution_device_type">סוג מכשיר</string>
@@ -286,8 +333,8 @@ Language: he_IL
     <string name="theme_picker_carousel_info_item_title">יש משהו נוסף שמעניין אותך?</string>
     <string name="theme_picker_description">תמיד אפשר להחליף ערכה בהמשך, דרך ההגדרות.</string>
     <string name="theme_picker_title">לבחור ערכת עיצוב</string>
-    <string name="settings_themes">ערכות עיצוב</string>
     <string name="product_filter_explore_plugin">לחקור!</string>
+    <string name="settings_themes">תבניות</string>
     <string name="configuration_required">נדרשת הגדרת תצורה</string>
     <string name="blaze_overflow_menu_hide_blaze">להסתיר את Blaze</string>
     <string name="ai_order_thank_you_note_copy_label">פתק תודות שמופק על ידי בינה מלאכותית</string>
@@ -626,14 +673,7 @@ Language: he_IL
     <string name="free_trial_survey_option3">המחיר של השירות הוא שיקול משמעותי בהחלטה שלי.</string>
     <string name="free_trial_survey_option1">אני רוצה עוד לבדוק ולהעריך את האפשרויות והיתרונות של האפליקציה עבורי.</string>
     <string name="free_trial_survey_title">נשמח להבין את ההחלטות שלך לגבי המינוי. המשוב שלך חשוב לנו.</string>
-    <string name="local_notification_still_exploring_description">אין צורך למהר! אם יש לך שאלות או אם נדרשת לך עזרה, אנחנו תמיד כאן לעזור. שיטוט נעים!</string>
-    <string name="local_notification_still_exploring_title">🧭 עדיין מנסה את WooCommerce?</string>
     <string name="free_trial_survey_option2">אני עדיין בתהליך של בדיקה והשוואה של השירות שלכם לעומת שירותים דומים בשוק.</string>
-    <string name="local_notification_survey_after_24_hours_description">אנחנו רוצים להבין את השיקולים שלך. האם יש לך אפשרות להגיד לנו מה הסטטוס הנוכחי שלך?</string>
-    <string name="free_trial_survey_screen_title">נשמח להבין את ההחלטה שלך לגבי המינוי</string>
-    <string name="local_notification_survey_after_24_hours_title">💡נשמח להבין את ההחלטה שלך לגבי המינוי</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">רוצה לבדוק אפשרויות מתקדמות והמלצות מותאמות אישית עבור החנות שלך? יש להקיש כדי לבחור את התוכנית שמתאימה לך.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 להמשיך לתפעל את העסק!</string>
     <string name="order_creation_customer_search_empty_email">כתובת אימייל לא קיימת</string>
     <string name="order_creation_customer_search_empty_name">ללא שם</string>
     <string name="last_update_with_frequency">העדכון האחרון %s (מתעדכן כל 30 דקות)</string>
@@ -719,12 +759,6 @@ Language: he_IL
     <string name="order_creation_barcode_scanning_process_death">המערכת סגרה את הפעילות של אפליקציית WooCommerce בזמן שהיא הופעלה ברקע. אפשר לנסות להשתמש בה שוב.</string>
     <string name="order_list_barcode_scanning_process_death">המערכת סגרה את הפעילות של אפליקציית WooCommerce בזמן שהיא הופעלה ברקע. אפשר לנסות להשתמש בה שוב.</string>
     <string name="card_reader_payment_card_removed_too_early">הכרטיס הוסר מהר מדי</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">⁦%1$s⁩, השהינו את החנות שלך, אבל באפשרותך להמשיך על ידי בחירת התוכנית שמתאימה לך.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 ניתן להמשיך לתפעל את העסק עם התוכנית שלנו!</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">תקופת הניסיון שלך עם Woo Express מסתיימת מחר (⁦%1$s⁩). זה הזמן המושלם לקבל שליטה על העתיד שלך – כדאי לבחור תוכנית ולהתחיל לצמוח כבר עכשיו.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ תקופת הניסיון בחינם שקיבלת תכף מסתיימת!</string>
-    <string name="local_notification_store_creation_complete_description">שלום ⁦%1$s⁩! שמחים שהצטרפת לתקופת הניסיון של 14 ימים ב-Woo Express – השירות מעניק לך כל מה שנדרש כדי לפתוח ולפתח חנות מקוונת מוצלחת, והכול ממקום מרוכז אחד. רוצה לצאת לסיור?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 החנות שלך מוכנה!</string>
     <string name="product_type_variation">מוצר עם סוגים</string>
     <string name="settings_policies_cookie_policy_description">המדיניות שלנו לקובצי Cookie מסבירה איך אנחנו וגורמים נוספים משתמשים בקובצי Cookie ואיך באפשרותך לנהל אותם.</string>
     <string name="settings_policies_cookie_policy">מדיניות קובצי Cookie</string>
@@ -757,7 +791,7 @@ Language: he_IL
     <string name="order_creation_barcode_scanning_unable_to_add_variable_product">לא ניתן להוסיף ישירות מוצר עם סוגים. יש לבחור סוג ספציפי</string>
     <string name="order_creation_barcode_scanning_scanning_failed">הסריקה נכשלה. יש לנסות שוב מאוחר יותר</string>
     <string name="order_creation_barcode_scanning_unable_to_add_product">לא ניתן למצוא מוצר עם SKU %s. לא ניתן להוסיף להזמנה</string>
-    <string name="settings_web_options_description">אפשרויות פרטיות נוספות עבור משתמשי woo.com. לרשותך כאן מידע נוסף.</string>
+    <string name="settings_web_options_description">למשתמשי WooCommerce.com יש אפשרויות פרטיות נוספות. לרשותך כאן מידע נוסף.</string>
     <string name="order_list_barcode_scanning_scanning_failed">הסריקה נכשלה. יש לנסות שוב מאוחר יותר</string>
     <string name="scan_barcode">לסרוק את הברקוד</string>
     <string name="shipping_notice_banner_instructions_content">במשלוחים למדינות שעונות על כללי המכס של האיחוד האירופי חובה לספק כעת תיאור ברור וספציפי לגבי כל פריט. לדוגמה, אם המשלוח כולל בגדים, יש לציין את סוגי הבגדים במשלוח (למשל, חולצות גברים, אפודות של נשים, ג\'קטים של ילדים) כדי שהתיאור יענה על הדרישות. אחרת, ייתכן שמשלוחים יעוכבו או יחסמו במכס.</string>
@@ -1016,10 +1050,6 @@ Language: he_IL
     <string name="store_onboarding_task_add_product_description">להתחיל למכור על ידי הוספת מוצרים ושירותים לחנות שלך.</string>
     <string name="store_onboarding_task_add_product_title">להוסיף את המוצר הראשון שלך </string>
     <string name="store_onboarding_title">הגדרת חנות</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">כבר יש לך מינוי פעיל למסחר אלקטרוני. אם נתקלת בבעיה שהמינוי הנוכחי שלך לא מקושר לאתר החדש, עליך לפנות לתמיכה.</string>
-    <string name="store_creation_iap_eligibility_network_error">אירעה שגיאת רשת. יש לבדוק את החיבור ולנסות שוב.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">יצירת החנות לא זמינה כרגע. יש לנסות שוב מאוחר יותר.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">ניתן לרכוש את התוכנית למסחר אלקטרוני מהאפליקציה לנייד רק פעם אחת. כדי ליצור אתרים נוספים, יש לעבור אל אתר האינטרנט שלנו.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">משהו השתבש בהגדרת האפליקציה. יש לפנות לתמיכה לפרטים נוספים</string>
     <string name="card_reader_payment_failed_device_is_not_supported">המכשיר שלך לא נתמך. יש לפנות לתמיכה לפרטים נוספים</string>
     <string name="card_reader_payment_failed_nfc_disabled">האפליקציה לא הצליחה להפעיל את קורא הכרטיסים מאחר ששבב ה-NFC מושבת</string>
@@ -1067,14 +1097,10 @@ Language: he_IL
     <string name="login_application_passwords_help">מהן \'סיסמאות אפליקציה\'?</string>
     <string name="login_application_passwords_unavailable">נראה שהאפשרות \'סיסמאות אפליקציה\' מושבתת באתר ⁦%1$s⁩.\n יש להפעיל אותה כדי להשתמש באפליקציית WooCommerce.</string>
     <string name="login_open_installation_page">יש לפתוח את עמוד ההתקנה</string>
-    <string name="store_creation_iap_eligibility_check_error_title">יצירת חנות לא זמינה</string>
     <string name="not_a_valid_qr_code">קוד Qr סרוק אינו קוד WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">האפשרות ליצירת חנות מהאפליקציה לנייד לא זמינה כרגע בארץ שלך.</string>
     <string name="wc_reply">להגיב</string>
     <string name="review_reply_success">התגובה נשלחה!</string>
     <string name="review_reply_failure">אירעה שגיאה בשליחת התגובה</string>
-    <string name="store_creation_iap_eligibility_loading_title">אנחנו מתכוננים לקראת יצירת החנות שלך</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">אין להתנתק מהמערכת.</string>
     <string name="product_selection_menu_select_all">לבחור הכול</string>
     <string name="product_selection_menu_update_price">לעדכן מחיר</string>
     <string name="product_selection_menu_update_status">לעדכן סטטוס</string>

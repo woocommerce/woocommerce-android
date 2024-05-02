@@ -14,10 +14,12 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.error.ApplicationPasswordsDisabledDialogFragment
 import com.woocommerce.android.ui.login.error.notwoo.LoginNotWooDialogFragment
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.LoggedIn
+import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordTutorialScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowApplicationPasswordsUnavailableScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowHelpScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowNonWooErrorScreen
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsViewModel.ShowResetPasswordScreen
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUiStringSnackbar
@@ -47,6 +49,9 @@ class LoginSiteCredentialsFragment : Fragment() {
 
     private val loginListener: LoginListener
         get() = (requireActivity() as LoginListener)
+
+    private val passwordTutorialListener: Listener?
+        get() = (requireActivity() as? Listener)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
@@ -78,6 +83,8 @@ class LoginSiteCredentialsFragment : Fragment() {
                         .show(childFragmentManager, LoginNotWooDialogFragment.TAG)
                 is ShowHelpScreen -> loginListener.helpUsernamePassword(it.siteAddress, it.username, false)
                 is ShowSnackbar -> uiMessageResolver.showSnack(it.message)
+                is ShowApplicationPasswordTutorialScreen ->
+                    passwordTutorialListener?.onApplicationPasswordHelpRequired(it.url, it.errorMessage)
                 is ShowUiStringSnackbar -> uiMessageResolver.showSnack(it.message)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
             }
@@ -98,5 +105,19 @@ class LoginSiteCredentialsFragment : Fragment() {
         ) { _, _ ->
             viewModel.retryApplicationPasswordsCheck()
         }
+
+        parentFragmentManager.setFragmentResultListener(
+            ApplicationPasswordTutorialFragment.WEB_NAVIGATION_RESULT,
+            viewLifecycleOwner
+        ) { _, result ->
+            result.getString(ApplicationPasswordTutorialFragment.URL_KEY)
+                ?.takeIf { it.isNotEmpty() }
+                ?.let { viewModel.onWebAuthorizationUrlLoaded(it) }
+                ?: viewModel.onPasswordTutorialAborted()
+        }
+    }
+
+    interface Listener {
+        fun onApplicationPasswordHelpRequired(url: String, errorMessage: String)
     }
 }

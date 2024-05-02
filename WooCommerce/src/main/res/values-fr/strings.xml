@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 11:54:03+0000
+Translation-Revision-Date: 2024-04-23 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="card_selection_control">Sélection de la carte analytique</string>
+    <string name="login_app_password_exit_dialog_cancel">Annuler</string>
+    <string name="login_app_password_exit_dialog_confirmation">Quitter quand même</string>
+    <string name="login_app_password_exit_dialog_message">Il semble que vous n’ayez pas encore approuvé la connexion à l’application. Voulez-vous vraiment quitter ?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Veuillez sélectionner une image dont les dimensions minimales sont de 500x500 pixels</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Image non valide</string>
+    <string name="login_invalid_credentials_message">Il semble que l’identifiant ou le mot de passe saisi ne corresponde pas. Vérifiez vos identifiants de connexion et réessayez.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Si vos données ne se chargent toujours pas, contactez notre équipe d’assistance pour obtenir de l’aide.</string>
+    <string name="orderlist_connectivity_tool_summary_title">Aucun problème de connexion</string>
+    <string name="orderlist_connectivity_tool_return_action">Retour à l’écran précédent</string>
+    <string name="orderlist_connectivity_tool_retry_action">Réessayer de se connecter</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Connexion à votre site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Nous ne parvenons pas à nous connecter à WordPress.com actuellement.\n\nRéessayez dans quelques minutes ou contactez notre équipe d’assistance, nous serons ravis de vous aider.</string>
+    <string name="orderlist_connectivity_tool_subtitle">Veuillez patienter pendant que nous tentons d’identifier votre problème de connexion.</string>
+    <string name="orderlist_connectivity_tool_title">Connexion à la résolution de problème</string>
+    <string name="analytics_gift_cards_card_title">Cartes-cadeaux</string>
+    <string name="analytics_used_title">Utilisé</string>
+    <string name="analytics_gift_cards_no_data">Aucune carte-cadeau pour cette période</string>
+    <string name="login_app_password_support_button">Contacter l’assistance</string>
+    <string name="login_app_password_continue_button">Continuer</string>
+    <string name="login_app_password_instructions_footer">En cas de problème, contactez notre équipe d’assistance.</string>
+    <string name="login_app_password_instructions_step_3">3. Une fois la connexion établie, vous serez connecté(e) à votre boutique.</string>
+    <string name="login_app_password_instructions_step_2">2. Lorsque vous y serez invité(e), approuvez la connexion en appuyant sur le bouton de confirmation.</string>
+    <string name="login_app_password_instructions_step_1">1. Commencez par vous connecter à l’aide de vos identifiants de connexion.</string>
+    <string name="login_app_password_instructions_title">Veuillez suivre ces étapes pour connecter l’application Woo directement à votre boutique à l’aide d’un mot de passe d’application.</string>
+    <string name="login_app_password_subtitle">Votre boutique dispose probablement de mesures de sécurité supplémentaires.</string>
+    <string name="login_app_password_title">Nous n’avons pas pu nous connecter à votre boutique</string>
+    <string name="empty_order_detail_message">Les détails de votre commande s’affichent ici lorsque vous avez passé une commande.</string>
+    <string name="empty_order_detail_title">Pas encore de détails de commande</string>
+    <string name="order_creation_simple_payment_migration_button">Ajouter un montant personnalisé</string>
+    <string name="order_creation_simple_payment_migration_message_two">Pour définir un montant de paiement, ajoutez\nun montant personnalisé à votre nouvelle commande.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Nous avons combiné la collecte des paiements avec\nla création des commandes, pour un processus plus accessible\net plus puissant.</string>
+    <string name="order_creation_simple_payment_migration_title">Percevoir le paiement \na changé d’emplacement</string>
+    <string name="analytics_bundles_card_title">Formules</string>
+    <string name="analytics_bundles_list_header_subtitle">Formules vendues</string>
+    <string name="analytics_bundles_list_header_title">Formules</string>
+    <string name="analytics_bundles_list_items_sold">Formules vendues</string>
+    <string name="my_store_widget_blaze_title">Campagnes Blaze</string>
+    <string name="my_store_widget_top_products_title">Produits les mieux notés</string>
+    <string name="my_store_widget_stats_title">Statistiques</string>
+    <string name="my_store_widget_onboarding_title">Intégration</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Initiation à la boutique</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Campagnes Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">Produits les plus performants</string>
+    <string name="my_store_edit_screen_widget_stats">Statistique de la boutique</string>
+    <string name="my_store_edit_screen_widgets">Modifier les sections de ma boutique</string>
+    <string name="product_list_unsaved_product_unselected_message">Voulez-vous vraiment annuler les modifications apportées à ce produit ?</string>
+    <string name="product_list_unsaved_product_unselected_title">Vous êtes sur le point d\'annuler les modifications apportées à %s</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">La fonctionnalité de statistiques ne prend pas en charge l’affichage des visites et des données de conversion pour les plages de dates arbitraires.\n\nCependant, vous pouvez appuyer sur une valeur sur le graphique pour voir les visites et les conversions pour cette plage spécifique.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Les visites et les données de conversion ne sont pas disponibles</string>
     <string name="more_menu_button_subscriptions_description">Gérer votre abonnement</string>
     <string name="more_menu_button_subscriptions">Abonnements</string>
     <string name="upgrades_title">Abonnements</string>
@@ -64,20 +114,17 @@ Language: fr
     <string name="order_creation_tablet_mode_fragment_title">Récapitulatif de commande</string>
     <string name="orderlist_order_trashed_error">Erreur lors de l’envoi de la commande dans la corbeille</string>
     <string name="orderlist_order_trashed">Commande mise à la corbeille</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Oups ! Il semble y avoir un problème avec votre site.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oups ! Il semble y avoir un problème avec votre connexion Jetpack.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oups ! Il semble que la réponse de votre site ne nous permette pas de travailler convenablement.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Oups ! Votre site semble mettre du temps à répondre.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Oups ! Il semble que nous ne puissions pas nous connecter à WordPress.com pour l’instant.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Il semble y avoir un problème avec votre site.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Il semble y avoir un problème avec votre connexion Jetpack.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Il semble que la réponse de votre site ne nous permette pas de travailler convenablement.\n\nMais rassurez-vous, nos Happiness Engineers sont là pour vous aider. Contactez-nous et nous nous ferons un plaisir de vous aider.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Votre site semble mettre du temps à répondre.\n\nContactez votre hébergeur pour obtenir une assistance supplémentaire.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Il semble que vous ne soyez pas connecté(e) à Internet.\n\nAssurez-vous que votre Wi-Fi est activé. Si vous utilisez des données mobiles, assurez-vous qu’elles sont activées dans les réglages de votre appareil.</string>
     <string name="product_detail_product_not_selected">Produit non sélectionné</string>
     <string name="orderlist_connectivity_tool_read_more_action">Lire la suite</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contacter l’assistance</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Commandes de votre site</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Votre site</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">Serveurs WordPress.com</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Extraction des commandes de votre site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Connexion aux serveurs WordPress.com</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Connexion Internet</string>
-    <string name="orderlist_connectivity_tool_title">Test de connectivité</string>
     <string name="my_store_custom_range_content_description">Ajouter des statistiques avec une plage de données personnalisée</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Aucun lieu trouvé.\nVeuillez réessayer.</string>
     <string name="order_detail_attribution_session_page_views">Pages vues par session</string>
@@ -627,13 +674,6 @@ Language: fr
     <string name="free_trial_survey_option2">J’évalue et je compare votre service avec d’autres sur le marché.</string>
     <string name="free_trial_survey_option1">Je suis encore en train de découvrir et d’évaluer les fonctionnalités et les avantages de l’application.</string>
     <string name="free_trial_survey_title">Aidez-nous à comprendre vos décisions d’abonnement. Votre avis nous intéresse.</string>
-    <string name="local_notification_still_exploring_description">Pas de précipitation, prenez votre temps ! Si vous avez des questions ou si vous avez besoin d’aide, nous sommes toujours à votre disposition. Bonne découverte !</string>
-    <string name="local_notification_still_exploring_title">🧭 Toujours en train de découvrir WooCommerce ?</string>
-    <string name="free_trial_survey_screen_title">Aidez-nous à comprendre votre décision d’abonnement</string>
-    <string name="local_notification_survey_after_24_hours_description">Nous sommes intéressés par votre processus de prise de décision. Pouvez-vous nous expliquer votre situation actuelle ?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Aidez-nous à comprendre votre décision d’abonnement</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Découvrez des fonctionnalités avancées et des recommandations personnalisées pour votre boutique ! Appuyez sur le plan qui vous convient le mieux pour le choisir.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Faites tourner votre activité !</string>
     <string name="order_creation_customer_search_empty_email">Pas d’adresse e-mail</string>
     <string name="order_creation_customer_search_empty_name">Pas de nom</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Rechercher un client existant ou</string>
@@ -719,12 +759,6 @@ Language: fr
     <string name="order_creation_barcode_scanning_process_death">Le système a fermé l’application Woo alors qu’elle était en cours d’exécution en arrière-plan. Vous pouvez essayer de la rouvrir.</string>
     <string name="order_list_barcode_scanning_process_death">Le système a fermé l’application Woo alors qu’elle était en cours d’exécution en arrière-plan. Vous pouvez essayer de la rouvrir.</string>
     <string name="card_reader_payment_card_removed_too_early">La carte a été retirée trop tôt</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, nous avons suspendu votre boutique, mais vous pouvez la conserver en choisissant le plan qui vous convient le mieux.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Poursuivez vos activités avec notre abonnement !</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Votre période d’essai gratuit de Woo Express se termine demain (%1$s). Le moment est venu de prendre votre avenir en main. Choisissez un plan et préparez-vous à prospérer.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Votre essai gratuit sera bientôt terminé !</string>
-    <string name="local_notification_store_creation_complete_description">Bonjour %1$s ! Bienvenue dans votre essai gratuit de 14 jours du service Woo Express : tout ce dont vous avez besoin pour lancer et développer une activité en ligne prospère, en un seul endroit. Envie de découvrir ?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Votre boutique est prête !</string>
     <string name="product_type_variation">Variante de produit</string>
     <string name="settings_policies_cookie_policy_description">Notre politique relative aux cookies explique comment nous, ainsi que d’autres entités, utilisons les cookies et comment vous pouvez les gérer.</string>
     <string name="settings_policies_cookie_policy">Politique relative aux cookies</string>
@@ -745,7 +779,7 @@ Language: fr
     <string name="settings_privacy_header">Confidentialité</string>
     <string name="settings_usage_tracking_description">Apprenez-en davantage sur les données que nous recueillons à propos de votre boutique et sur les options dont vous disposez pour contrôler le partage de ces informations.</string>
     <string name="settings_usage_tracking">Suivi d’utilisation</string>
-    <string name="settings_web_options_description">Plus d’options de confidentialité disponibles pour les utilisateurs de woo.com. Cliquez ici pour en savoir plus.</string>
+    <string name="settings_web_options_description">Plus d’options de confidentialité disponibles pour les utilisateurs de woocommerce.com. Cliquez ici pour en savoir plus.</string>
     <string name="settings_web_options">Options Web</string>
     <string name="settings_more_privacy_options_header">Plus d’options de confidentialité</string>
     <string name="settings_tracking_analytics_error_update">Une erreur est survenue lors de la mise à jour de vos réglages de confidentialité</string>
@@ -1016,10 +1050,6 @@ Language: fr
     <string name="store_onboarding_task_add_product_description">Commencez à vendre en ajoutant des produits ou services à votre boutique.</string>
     <string name="store_onboarding_task_add_product_title">Ajouter votre premier produit </string>
     <string name="store_onboarding_title">Configuration de la boutique</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Si vous avez déjà un abonnement eCommerce actif, veuillez contacter l’assistance si vous rencontrez des problèmes avec votre abonnement actuel non associé à votre nouveau site.</string>
-    <string name="store_creation_iap_eligibility_network_error">Une erreur réseau est survenue. Veuillez vérifier votre connexion et réessayer.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">La création d’une boutique est actuellement indisponible. Veuillez réessayer ultérieurement.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Vous ne pouvez acheter qu’une seule fois le plan eCommerce via l’application mobile. Pour créer d’autres sites consultez notre site Web.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Un problème est survenu lors de la configuration de l’application. Pour plus d’informations, veuillez contacter l’assistance</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Votre appareil n’est pas pris en charge. Pour plus d’informations, veuillez contacter l’assistance</string>
     <string name="card_reader_payment_failed_nfc_disabled">L’application n’a pas pu activer le lecteur de cartes, car la carte à puce NFC est désactivée</string>
@@ -1068,10 +1098,6 @@ Language: fr
     <string name="login_application_passwords_unavailable">Il semblerait que la fonctionnalité Mots de passe d\'applications s\'affiche sur votre site %1$s.\n Veuillez l’activer pour utiliser l’application WooCommerce.</string>
     <string name="login_open_installation_page">Ouvrir la page d\'installation</string>
     <string name="not_a_valid_qr_code">Le code QR scanné n\'est pas un code WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Pour le moment, il n’est pas possible de créer une boutique depuis l’application mobile dans votre pays.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Création de boutique indisponible</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Veuillez rester connecté∙e.</string>
-    <string name="store_creation_iap_eligibility_loading_title">Nous nous préparons à la création de votre boutique</string>
     <string name="review_reply_failure">Une erreur s\'est produite lors de l\'envoi de la réponse</string>
     <string name="review_reply_success">Réponse envoyée !</string>
     <string name="wc_reply">Répondre</string>

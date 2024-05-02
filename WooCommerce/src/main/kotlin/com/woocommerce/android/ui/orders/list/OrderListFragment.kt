@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
+import com.woocommerce.android.ui.orders.OrderNavigationLogger
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
@@ -70,6 +71,7 @@ import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.TabletLayoutSetupHelper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
@@ -113,6 +115,9 @@ class OrderListFragment :
 
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
+
+    @Inject
+    lateinit var orderNavigationLogger: OrderNavigationLogger
 
     private val viewModel: OrderListViewModel by viewModels()
     private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
@@ -188,26 +193,35 @@ class OrderListFragment :
             this,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
+                    orderNavigationLogger.logBackStack(findNavController(), "Before navigating back from OrderList")
+                    WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Start")
                     selectedOrder.selectOrder(-1L)
                     if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
+                        WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Location #1")
                         if (!binding.detailPaneContainer.findNavController().popBackStack()) {
+                            WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Location #2")
                             findNavController().popBackStack()
                         }
                     } else if (isSearching) {
+                        WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Location #3")
                         handleSearchViewCollapse()
                     } else {
+                        WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Location #4")
                         val result =
                             _binding?.detailPaneContainer?.findNavController()?.navigateUp() ?: false
                         val isCompactScreen = requireContext().windowSizeClass == WindowSizeClass.Compact
                         if (!result && _binding?.listPaneContainer?.isVisible != true && isCompactScreen) {
+                            WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Location #5")
                             // There are no more fragments in the back stack, UI used to be a two pane layout (tablet)
                             // and now it's a single pane layout (phone), e.g. due to a configuration change.
                             // In this case we need to switch panes – show the list pane instead of details pane.
                             adjustUiForDeviceType(savedInstanceState)
                         } else {
+                            WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Location #6")
                             findNavController().popBackStack()
                         }
                     }
+                    WooLog.d(WooLog.T.ORDERS, "After navigating back from OrderList: End")
                 }
             }
         )
@@ -591,6 +605,8 @@ class OrderListFragment :
                     action = event.action
                 )
                 is OrderListViewModel.OrderListEvent.RetryLoadingOrders -> refreshOrders()
+                is OrderListViewModel.OrderListEvent.OpenOrderCreationWithSimplePaymentsMigration ->
+                    openOrderCreationFragment(indicateSimplePaymentsMigration = true)
                 else -> event.isHandled = false
             }
         }
@@ -738,12 +754,16 @@ class OrderListFragment :
         )
     }
 
-    private fun openOrderCreationFragment(code: String? = null, barcodeFormat: BarcodeFormat? = null) {
+    private fun openOrderCreationFragment(
+        code: String? = null,
+        barcodeFormat: BarcodeFormat? = null,
+        indicateSimplePaymentsMigration: Boolean = false,
+    ) {
         OrderDurationRecorder.startRecording()
         AnalyticsTracker.track(AnalyticsEvent.ORDERS_ADD_NEW)
         findNavController().navigateSafely(
             OrderListFragmentDirections.actionOrderListFragmentToOrderCreationFragment(
-                OrderCreateEditViewModel.Mode.Creation,
+                OrderCreateEditViewModel.Mode.Creation(indicateSimplePaymentsMigration),
                 code,
                 barcodeFormat,
             )
@@ -1014,8 +1034,12 @@ class OrderListFragment :
                 show = show,
                 title = getString(R.string.orderlist_timeout_error_title),
                 message = getString(R.string.orderlist_timeout_error_message),
-                supportContactClick = { openSupportRequestScreen() },
+                supportContactClick = {
+                    viewModel.changeTroubleshootingBannerVisibility(show = false)
+                    openSupportRequestScreen()
+                },
                 troubleshootingClick = {
+                    viewModel.changeTroubleshootingBannerVisibility(show = false)
                     viewModel.trackConnectivityTroubleshootClicked()
                     openConnectivityTool()
                 }

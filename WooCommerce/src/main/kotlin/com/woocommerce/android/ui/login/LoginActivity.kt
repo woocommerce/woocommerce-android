@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.ui.login.qrcode.ValidateScannedValue
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -103,6 +104,7 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
+    LoginSiteCredentialsFragment.Listener,
     QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
@@ -847,6 +849,14 @@ class LoginActivity :
         shouldAddToBackStack = true,
         tag = LoginSiteCredentialsFragment.TAG
     )
+
+    override fun onApplicationPasswordHelpRequired(url: String, errorMessage: String) {
+        changeFragment(
+            fragment = ApplicationPasswordTutorialFragment.newInstance(url, errorMessage),
+            shouldAddToBackStack = true,
+            tag = ApplicationPasswordTutorialFragment.TAG
+        )
+    }
 
     override fun startJetpackInstall(siteAddress: String?) {
         siteAddress?.let {

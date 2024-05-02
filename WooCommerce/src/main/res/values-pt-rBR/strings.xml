@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 17:54:06+0000
+Translation-Revision-Date: 2024-04-22 16:54:02+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="card_selection_control">Seleção de cartão analítico</string>
+    <string name="login_app_password_exit_dialog_cancel">Cancelar</string>
+    <string name="login_app_password_exit_dialog_confirmation">Sair mesmo assim</string>
+    <string name="login_app_password_exit_dialog_message">Parece que você ainda não aprovou a conexão do aplicativo. Tem certeza de que deseja sair?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Selecione uma imagem com no mínimo 500 x 500 pixels</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Imagem inválida</string>
+    <string name="login_invalid_credentials_message">Parece que o nome de usuário e a senha que você inseriu não correspondem. Verifique suas credenciais e tente novamente.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">Se os dados ainda não carregam, fale com a nossa equipe de suporte para obter ajuda.</string>
+    <string name="orderlist_connectivity_tool_summary_title">Nenhum problema de conexão</string>
+    <string name="orderlist_connectivity_tool_return_action">Voltar à tela anterior</string>
+    <string name="orderlist_connectivity_tool_retry_action">Tentar conexão novamente</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Conectando ao seu site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Não é possível conectar o WordPress.com no momento.\n\nTente novamente em alguns minutos ou fale com a nossa equipe de suporte. Estamos à disposição para ajudar.</string>
+    <string name="orderlist_connectivity_tool_subtitle">Aguarde enquanto identificamos seu problema de conexão.</string>
+    <string name="orderlist_connectivity_tool_title">Solucionar problema de conexão</string>
+    <string name="analytics_gift_cards_card_title">Vales-presentes</string>
+    <string name="analytics_used_title">Usado</string>
+    <string name="analytics_gift_cards_no_data">Nenhum vale-presente neste período</string>
+    <string name="login_app_password_support_button">Falar com o suporte</string>
+    <string name="login_app_password_continue_button">Continuar</string>
+    <string name="login_app_password_instructions_footer">Se você tiver algum problema, entre em contato com a nossa equipe de suporte.</string>
+    <string name="login_app_password_instructions_step_3">3. Quando a conexão for concluída, você será conectado à sua loja.</string>
+    <string name="login_app_password_instructions_step_2">2. Quando solicitado, toque no botão de confirmação para aprovar a conexão.</string>
+    <string name="login_app_password_instructions_step_1">1. Primeiro, faça login com as suas credenciais do site.</string>
+    <string name="login_app_password_instructions_title">Siga estas etapas para conectar o aplicativo do Woo diretamente à sua loja usando uma senha de aplicativo.</string>
+    <string name="login_app_password_subtitle">Talvez seja porque sua loja tem algumas etapas extras de segurança definidas.</string>
+    <string name="login_app_password_title">Não foi possível fazer login na sua loja</string>
+    <string name="empty_order_detail_message">Quando você fizer um pedido, os detalhes da compra aparecerão aqui.</string>
+    <string name="empty_order_detail_title">Nenhum detalhe do pedido</string>
+    <string name="order_creation_simple_payment_migration_button">Adicionar um valor personalizado</string>
+    <string name="order_creation_simple_payment_migration_message_two">Para configurar um valor de pagamento, adicione\num valor personalizado ao seu novo pedido.</string>
+    <string name="order_creation_simple_payment_migration_message_one">Nós unimos o recebimento de pagamentos com\na criação de pedidos, tornando o processo\nmais acessível e eficiente.</string>
+    <string name="order_creation_simple_payment_migration_title">O recebimento de pagamentos \nmudou de lugar</string>
+    <string name="analytics_bundles_card_title">Pacotes</string>
+    <string name="analytics_bundles_list_header_subtitle">Pacotes vendidos</string>
+    <string name="analytics_bundles_list_header_title">Pacotes</string>
+    <string name="analytics_bundles_list_items_sold">Pacotes vendidos</string>
+    <string name="my_store_widget_blaze_title">Campanhas no Blaze</string>
+    <string name="my_store_widget_top_products_title">Principais produtos</string>
+    <string name="my_store_widget_stats_title">Estatísticas</string>
+    <string name="my_store_widget_onboarding_title">Integração</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">Integração de loja</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Campanhas no Blaze</string>
+    <string name="my_store_edit_screen_widget_top_performers">Produtos de melhor desempenho</string>
+    <string name="my_store_edit_screen_widget_stats">Estatísticas da loja</string>
+    <string name="my_store_edit_screen_widgets">Editar seções da minha loja</string>
+    <string name="product_list_unsaved_product_unselected_message">Tem certeza de que deseja descartar as alterações no produto?</string>
+    <string name="product_list_unsaved_product_unselected_title">Você está prestes a descartar as alterações em %s</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">A funcionalidade de estatísticas não é compatível com a exibição dos dados de conversão e visitantes para intervalos arbitrários.\n\nNo entanto, você pode tocar em um valor no gráfico para ver as conversões e os visitantes daquele intervalo em questão.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Dados de conversão e visitantes indisponíveis</string>
     <string name="more_menu_button_subscriptions_description">Gerencie sua assinatura</string>
     <string name="more_menu_button_subscriptions">Assinaturas</string>
     <string name="upgrades_title">Assinaturas</string>
@@ -64,20 +114,17 @@ Language: pt_BR
     <string name="order_creation_tablet_mode_fragment_title">Resumo do pedido</string>
     <string name="orderlist_order_trashed_error">Erro ao mover o pedido para a lixeira</string>
     <string name="orderlist_order_trashed">Pedido movido para a lixeira</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Ops! Há um problema no seu site.\n\nEntre em contato com o provedor de hospedagem para obter mais ajuda.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Ops! Há um problema na conexão com o Jetpack.\n\nMas não se preocupe, nossa equipe de suporte pode ajudar. Entre em contato e vamos cuidar disso para você.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Ops! Não conseguimos trabalhar com a resposta do seu site.\n\nMas não se preocupe, nossa equipe de suporte pode ajudar. Entre em contato e vamos cuidar disso para você.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Ops! Seu site está demorando muito para responder.\n\nEntre em contato com o provedor de hospedagem para obter mais ajuda.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Ops! Não é possível conectar ao WordPress.com no momento.\n\nMas não se preocupe, nossa equipe de suporte pode ajudar. Entre em contato e vamos cuidar disso para você.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">Há um problema no seu site.\n\nEntre em contato com o provedor de hospedagem para obter mais ajuda.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Há um problema na conexão com o Jetpack.\n\nMas não se preocupe, nossa equipe de suporte pode ajudar. Entre em contato e vamos cuidar disso para você.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Não conseguimos trabalhar de forma adequada com a resposta do seu site.\n\nMas não se preocupe, nossa equipe de suporte pode ajudar. Entre em contato e vamos cuidar disso para você.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Seu site está demorando muito para responder.\n\nEntre em contato com o provedor de hospedagem para obter mais ajuda.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">Você não está conectado à Internet.\n\nVerifique se seu Wi-Fi está ligado. Se você estiver usando dados móveis, verifique se a opção está ativada nas configurações do seu dispositivo.</string>
     <string name="product_detail_product_not_selected">Produto não selecionado</string>
     <string name="orderlist_connectivity_tool_read_more_action">Leia mais</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Falar com o suporte</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Pedidos do seu site</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Seu site</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">Servidores do WordPress.com</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Buscando pedidos do seu site</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Conectando aos servidores do WordPress.com</string>
     <string name="orderlist_connectivity_tool_internet_check_title">Conexão com a Internet</string>
-    <string name="orderlist_connectivity_tool_title">Teste de conectividade</string>
     <string name="my_store_custom_range_content_description">Adicione estatísticas de períodos personalizados</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">Nenhuma localização encontrada.\nTente novamente.</string>
     <string name="order_detail_attribution_session_page_views">Visualizações de página da sessão</string>
@@ -627,13 +674,6 @@ Language: pt_BR
     <string name="free_trial_survey_option2">Estou avaliando e comparando seu serviço com outros no mercado</string>
     <string name="free_trial_survey_option1">Ainda estou conhecendo e avaliando as funcionalidades e benefícios do app.</string>
     <string name="free_trial_survey_title">Ajude-nos a entender sua decisão sobre a assinatura. Seu feedback é importante.</string>
-    <string name="local_notification_still_exploring_description">Sem pressa! Se estiver com dúvidas ou precisar de assistência, estamos sempre aqui para ajudar. Boa jornada!</string>
-    <string name="local_notification_still_exploring_title">🧭 Ainda está conhecendo o WooCommerce?</string>
-    <string name="free_trial_survey_screen_title">Ajude-nos a entender sua decisão sobre a assinatura</string>
-    <string name="local_notification_survey_after_24_hours_description">Estamos interessados na sua jornada de tomada de decisão. Poderia nos contar sobre seu status atual?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Ajude-nos a entender sua decisão sobre a assinatura</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Descubra funcionalidades avançadas e recomendações personalizadas para sua loja. Toque para escolher o plano ideal para você.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Mantenha os negócios fluindo.</string>
     <string name="order_creation_customer_search_empty_email">Sem endereço de e-mail</string>
     <string name="order_creation_customer_search_empty_name">Sem nome</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">Pesquisar cliente existente ou</string>
@@ -719,12 +759,6 @@ Language: pt_BR
     <string name="order_creation_barcode_scanning_process_death">O sistema encerrou o aplicativo do Woo enquanto ele estava sendo executado em segundo plano. Tente usá-lo novamente.</string>
     <string name="order_list_barcode_scanning_process_death">O sistema encerrou o aplicativo do Woo enquanto ele estava sendo executado em segundo plano. Tente usá-lo novamente.</string>
     <string name="card_reader_payment_card_removed_too_early">O cartão foi removido precipitadamente</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, suspendemos sua loja, mas você pode escolher o plano que mais combine com você para prosseguir.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Mantenha o fluxo do seu negócio com o nosso plano.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">O teste gratuito do Woo Express termina amanhã (%1$s). Agora é a hora de assumir o controle do seu futuro: escolha um plano e prepare-se para crescer.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ O tempo para o teste gratuito está acabando.</string>
-    <string name="local_notification_store_creation_complete_description">Olá %1$s! Boas-vindas ao teste gratuito de 14 dias do Woo Express: tudo de que você precisa para iniciar e expandir um negócio online de sucesso em um só lugar. Vamos explorar?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 Sua loja está pronta!</string>
     <string name="product_type_variation">Variação de produto</string>
     <string name="settings_policies_cookie_policy_description">Nossa política de cookies explica como você pode usar e gerenciar os cookies.</string>
     <string name="settings_policies_cookie_policy">Política de cookies</string>
@@ -745,7 +779,7 @@ Language: pt_BR
     <string name="settings_privacy_header">Privacidade</string>
     <string name="settings_usage_tracking_description">Saiba mais sobre os dados que coletamos da sua loja e suas opções para controlar esse compartilhamento.</string>
     <string name="settings_usage_tracking">Rastreamento de uso</string>
-    <string name="settings_web_options_description">Mais opções de privacidade disponíveis para usuários do woo.com. Clique aqui para saber mais.</string>
+    <string name="settings_web_options_description">Mais opções de privacidade disponíveis para usuários do woocommerce.com. Clique aqui para saber mais.</string>
     <string name="settings_web_options">Opções da Web</string>
     <string name="settings_more_privacy_options_header">Mais opções de privacidade</string>
     <string name="settings_tracking_analytics_error_update">Ocorreu um erro ao atualizar suas configurações de privacidade</string>
@@ -1016,10 +1050,6 @@ Language: pt_BR
     <string name="store_onboarding_task_add_product_description">Adicione produtos ou serviços à loja para começar a vender.</string>
     <string name="store_onboarding_task_add_product_title">Adicione seu primeiro produto </string>
     <string name="store_onboarding_title">Configuração da loja</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">Você já tem uma assinatura eCommerce ativa. Se a assinatura atual não estiver vinculada ao seu novo site, fale com o suporte.</string>
-    <string name="store_creation_iap_eligibility_network_error">Ocorreu um erro de rede. Verifique sua conexão e tente novamente.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">A criação de loja está indisponível no momento. Tente novamente mais tarde.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">Você pode adquirir um plano eCommerce no aplicativo móvel apenas uma vez. Para criar mais sites, acesse nosso site.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">Ocorreu um erro na configuração do aplicativo. Fale com o suporte para mais detalhes</string>
     <string name="card_reader_payment_failed_device_is_not_supported">Seu dispositivo não é compatível. Fale com o suporte para mais detalhes</string>
     <string name="card_reader_payment_failed_nfc_disabled">Não foi possível ativar o leitor de cartão pelo aplicativo porque o chip NFC está desativado</string>
@@ -1068,10 +1098,6 @@ Language: pt_BR
     <string name="login_application_passwords_unavailable">Parece que a funcionalidade Senhas do aplicativo está desativada no seu site %1$s.\n Ative-a para usar o aplicativo do WooCommerce.</string>
     <string name="login_open_installation_page">Abrir página de instalação</string>
     <string name="not_a_valid_qr_code">O código QR escaneado não é um código WooCommerce</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">A criação de loja pelo aplicativo móvel está indisponível no momento para o seu país.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Criação de loja indisponível</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Permaneça conectado.</string>
-    <string name="store_creation_iap_eligibility_loading_title">Estamos nos preparando para a criação da sua loja</string>
     <string name="review_reply_failure">Ocorreu um erro ao enviar a resposta</string>
     <string name="review_reply_success">Resposta enviada!</string>
     <string name="wc_reply">Responder</string>

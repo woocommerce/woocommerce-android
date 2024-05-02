@@ -92,7 +92,8 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             analyticsTracker = analyticsTracker,
             appPrefs = appPrefs,
             userAgent = userAgent,
-            applicationPasswordsClientId = clientId
+            applicationPasswordsClientId = clientId,
+            resourceProvider = mock()
         )
     }
 
@@ -224,7 +225,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
     fun `given incorrect credentials, when submitting, then show error`() = testBlocking {
         val expectedError = CookieNonceAuthenticationException(
             errorMessage = UiStringText("Username or password incorrect"),
-            errorType = Nonce.CookieNonceErrorType.NOT_AUTHENTICATED.name,
+            errorType = Nonce.CookieNonceErrorType.INVALID_CREDENTIALS,
             networkStatusCode = null
         )
         setup {
@@ -246,7 +247,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
                 get(AnalyticsTracker.KEY_STEP) == LoginSiteCredentialsViewModel.Step.AUTHENTICATION.name.lowercase()
             },
             errorContext = anyOrNull(),
-            errorType = eq(expectedError.errorType),
+            errorType = eq(expectedError.errorType.name),
             errorDescription = eq((expectedError.errorMessage as UiStringText).text)
         )
         verify(loginAnalyticsListener).trackFailure(anyOrNull())

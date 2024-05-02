@@ -1,6 +1,19 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+
+## 18.4
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
+## 18.3
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
+## 18.2
+In our latest update, we're enhancing your WooCommerce experience! We're transitioning from simple payments to a more customizable order creation flow, enabling you to set the desired amount with ease. Plus, our improved Analytics Hub now provides insights into Product Bundles and Gift Cards, offering a more comprehensive view of your business stats, given those extensions are active. Enjoy the upgrade!
+
+## 18.1
+Introducing refined features in our WooCommerce mobile app! We've enhanced the accuracy of visitor stats to offer you more precise insights. Enjoy a better understanding of your customer interactions, further helping you optimize your strategies. Update now for a superior user experience.
+
 ## 18.0
 Discover a smoother shopping experience in our latest update! We've squashed some pesky bugs in the products section for a flawless selection and viewing, especially in 2-pane mode. Photos now shine brighter with our enhanced screens. Transitioning between panes? We've polished that too, ensuring seamless shifts. Plus, we're introducing a helpful confirmation dialog for unsaved changes. Most excitingly, dive into your store's performance with custom date ranges in the My Store tab. Update now for these improvements and more!
 

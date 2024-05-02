@@ -12,8 +12,8 @@ import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLab
 import com.woocommerce.android.ui.orders.shippinglabels.creation.EditShippingLabelPackagesViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.ShippingLabelHazmatCategory.AIR_ELIGIBLE_ETHANOL
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent

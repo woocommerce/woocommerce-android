@@ -8,8 +8,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.ONBOARDING_T
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.AboutYourStoreTaskRes
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.OnboardingTaskUi
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

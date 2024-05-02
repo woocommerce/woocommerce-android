@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.dashboard
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -15,84 +13,56 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withCreated
-import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.transition.MaterialElevationScale
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentDashboardBinding
-import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
-import com.woocommerce.android.extensions.setClickableText
-import com.woocommerce.android.extensions.show
 import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
-import com.woocommerce.android.ui.blaze.MyStoreBlazeView
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel
-import com.woocommerce.android.ui.blaze.MyStoreBlazeViewModel.MyStoreBlazeCampaignState
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenAnalytics
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenDatePicker
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenTopPerformer
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.OrderState
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.RevenueStatsViewState
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.VisitorStatsViewState
-import com.woocommerce.android.ui.feedback.SurveyType
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.onboarding.StoreOnboardingCollapsed
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel.NavigateToSetupPayments.taskId
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
-import com.woocommerce.android.ui.products.AddProductNavigator
-import com.woocommerce.android.ui.products.ProductDetailFragment
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
-import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
-@OptIn(FlowPreview::class)
 class DashboardFragment :
     TopLevelFragment(R.layout.fragment_dashboard),
     MenuProvider {
@@ -102,21 +72,14 @@ class DashboardFragment :
         private const val JITM_FRAGMENT_TAG = "jitm_fragment"
     }
 
-    private val myStoreViewModel: DashboardViewModel by viewModels()
+    private val dashboardViewModel: DashboardViewModel by viewModels()
     private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
-    private val myStoreBlazeViewModel: MyStoreBlazeViewModel by viewModels()
 
     @Inject
     lateinit var selectedSite: SelectedSite
 
     @Inject
-    lateinit var currencyFormatter: CurrencyFormatter
-
-    @Inject
     lateinit var uiMessageResolver: UIMessageResolver
-
-    @Inject
-    lateinit var dateUtils: DateUtils
 
     @Inject
     lateinit var usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter
@@ -126,9 +89,6 @@ class DashboardFragment :
 
     @Inject
     lateinit var feedbackPrefs: FeedbackPrefs
-
-    @Inject
-    lateinit var addProductNavigator: AddProductNavigator
 
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
@@ -147,26 +107,10 @@ class DashboardFragment :
             hasShadow = true,
         )
 
-    private var isEmptyViewVisible: Boolean = false
     private var wasPreviouslyStopped = false
 
-    private val tabLayout: TabLayout
-        get() = binding.myStoreStats.tabLayout
-
-    private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab) {
-            myStoreViewModel.onTabSelected(tab.tag as? SelectionType ?: SelectionType.TODAY)
-        }
-
-        override fun onTabUnselected(tab: TabLayout.Tab) = Unit
-
-        override fun onTabReselected(tab: TabLayout.Tab) = Unit
-    }
-
-    private val handler = Handler(Looper.getMainLooper())
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        lifecycle.addObserver(myStoreViewModel.performanceObserver)
+        lifecycle.addObserver(dashboardViewModel.performanceObserver)
         lifecycle.addObserver(storeOnboardingViewModel)
         super.onCreate(savedInstanceState)
     }
@@ -177,284 +121,41 @@ class DashboardFragment :
 
         _binding = FragmentDashboardBinding.bind(view)
 
+        binding.dashboardContainer.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+            setContent {
+                WooThemeWithBackground {
+                    DashboardContainer(
+                        dashboardViewModel = dashboardViewModel,
+                        blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
+                    )
+                }
+            }
+        }
+
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
-            myStoreViewModel.onPullToRefresh()
+            dashboardViewModel.onPullToRefresh()
             storeOnboardingViewModel.onPullToRefresh()
-            binding.myStoreStats.clearStatsHeaderValues()
-            binding.myStoreStats.clearChartData()
             refreshJitm()
         }
 
-        binding.myStoreStats.initView(
-            selectedSite,
-            dateUtils,
-            currencyFormatter,
-            usageTracksEventEmitter,
-            viewLifecycleOwner.lifecycleScope
-        ) { myStoreViewModel.onViewAnalyticsClicked() }
-
-        binding.myStoreTopPerformers.initView(selectedSite, dateUtils)
-
-        val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
-        binding.myStoreStatsAvailabilityMessage.setClickableText(
-            content = getString(R.string.my_store_stats_availability_description, contactUsText),
-            clickableContent = contactUsText,
-            clickAction = WooClickableSpan { activity?.startHelpActivity(HelpOrigin.MY_STORE) }
-        )
-
         prepareJetpackBenefitsBanner()
-
-        tabLayout.addOnTabSelectedListener(tabSelectedListener)
-
-        binding.myStoreStats.customRangeButton.setOnClickListener {
-            myStoreViewModel.onAddCustomRangeClicked()
-        }
-        binding.myStoreStats.customRangeLabel.setOnClickListener {
-            myStoreViewModel.onAddCustomRangeClicked()
-        }
 
         binding.statsScrollView.scrollStartEvents()
             .onEach { usageTracksEventEmitter.interacted() }
             .launchIn(viewLifecycleOwner.lifecycleScope)
 
         setupStateObservers()
-        setupOnboardingView()
-        setUpBlazeCampaignView()
-
-        initJitm(savedInstanceState)
-    }
-
-    private fun setUpBlazeCampaignView() {
-        myStoreBlazeViewModel.blazeViewState.observe(viewLifecycleOwner) { blazeCampaignState ->
-            if (blazeCampaignState is MyStoreBlazeCampaignState.Hidden) {
-                binding.blazeCampaignView.hide()
-            } else {
-                binding.blazeCampaignView.apply {
-                    setContent {
-                        WooThemeWithBackground {
-                            MyStoreBlazeView(
-                                state = blazeCampaignState,
-                                onDismissBlazeView = myStoreBlazeViewModel::onBlazeViewDismissed,
-                            )
-                        }
-                    }
-                    show()
-                }
-            }
-        }
-        myStoreBlazeViewModel.event.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreationUsingWebView -> openBlazeWebView(
-                    url = event.url,
-                    source = event.source
-                )
-
-                is MyStoreBlazeViewModel.LaunchBlazeCampaignCreation -> openBlazeCreationFlow(event.productId)
-
-                is MyStoreBlazeViewModel.ShowAllCampaigns -> {
-                    findNavController().navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToBlazeCampaignListFragment()
-                    )
-                }
-
-                is MyStoreBlazeViewModel.ShowCampaignDetails -> {
-                    findNavController().navigateSafely(
-                        NavGraphMainDirections.actionGlobalWPComWebViewFragment(
-                            urlToLoad = event.url,
-                            urlsToTriggerExit = arrayOf(event.urlToTriggerExit),
-                            title = getString(R.string.blaze_campaign_details_title)
-                        )
-                    )
-                }
-            }
-        }
-    }
-
-    private fun openBlazeCreationFlow(productId: Long?) {
-        lifecycleScope.launch {
-            blazeCampaignCreationDispatcher.startCampaignCreation(
-                source = BlazeFlowSource.MY_STORE_SECTION,
-                productId = productId
-            )
-        }
-    }
-
-    private fun openBlazeWebView(url: String, source: BlazeFlowSource) {
-        findNavController().navigateSafely(
-            NavGraphMainDirections.actionGlobalBlazeCampaignCreationFragment(
-                urlToLoad = url,
-                source = source
-            )
-        )
-    }
-
-    @Suppress("LongMethod")
-    private fun setupOnboardingView() {
-        storeOnboardingViewModel.viewState.observe(viewLifecycleOwner) { state ->
-            when (state.show) {
-                false -> binding.storeOnboardingView.hide()
-                else -> {
-                    binding.storeOnboardingView.apply {
-                        show()
-                        AnalyticsTracker.track(stat = AnalyticsEvent.STORE_ONBOARDING_SHOWN)
-                        // Dispose of the Composition when the view's LifecycleOwner is destroyed
-                        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                        setContent {
-                            WooThemeWithBackground {
-                                StoreOnboardingCollapsed(
-                                    onboardingState = state,
-                                    onViewAllClicked = storeOnboardingViewModel::viewAllClicked,
-                                    onShareFeedbackClicked = storeOnboardingViewModel::onShareFeedbackClicked,
-                                    onTaskClicked = storeOnboardingViewModel::onTaskClicked,
-                                    onHideOnboardingClicked = storeOnboardingViewModel::onHideOnboardingClicked
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        storeOnboardingViewModel.event.observe(viewLifecycleOwner) { event ->
-            event.handle()
-        }
-    }
-
-    private fun Event.handle() {
-        when (this) {
-            is StoreOnboardingViewModel.NavigateToOnboardingFullScreen -> openOnboardingInFullScreen()
-            is StoreOnboardingViewModel.NavigateToSurvey ->
-                NavGraphMainDirections.actionGlobalFeedbackSurveyFragment(SurveyType.STORE_ONBOARDING).apply {
-                    findNavController().navigateSafely(this)
-                }
-
-            is StoreOnboardingViewModel.NavigateToLaunchStore ->
-                findNavController().navigateSafely(
-                    directions = DashboardFragmentDirections.actionDashboardToLaunchStoreFragment()
-                )
-
-            is StoreOnboardingViewModel.NavigateToDomains ->
-                findNavController().navigateSafely(
-                    directions = DashboardFragmentDirections.actionDashboardToNavGraphDomainChange()
-                )
-
-            is StoreOnboardingViewModel.NavigateToAddProduct ->
-                with(addProductNavigator) {
-                    findNavController().navigateToAddProducts(
-                        aiBottomSheetAction = DashboardFragmentDirections
-                            .actionDashboardToAddProductWithAIBottomSheet(),
-                        typesBottomSheetAction = DashboardFragmentDirections.actionDashboardToProductTypesBottomSheet()
-                    )
-                }
-
-            is StoreOnboardingViewModel.NavigateToSetupPayments ->
-                findNavController().navigateSafely(
-                    directions = DashboardFragmentDirections.actionDashboardToPaymentsPreSetupFragment(
-                        taskId = taskId
-                    )
-                )
-
-            is StoreOnboardingViewModel.NavigateToSetupWooPayments ->
-                findNavController().navigateSafely(
-                    directions = DashboardFragmentDirections.actionDashboardToWooPaymentsSetupInstructionsFragment()
-                )
-
-            is StoreOnboardingViewModel.NavigateToAboutYourStore ->
-                findNavController().navigateSafely(
-                    DashboardFragmentDirections.actionDashboardToAboutYourStoreFragment()
-                )
-
-            is StoreOnboardingViewModel.ShowNameYourStoreDialog -> {
-                findNavController()
-                    .navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToNameYourStoreDialogFragment(fromOnboarding = true)
-                    )
-            }
-
-            is ShowDialog -> showDialog()
-        }
-    }
-
-    private fun openOnboardingInFullScreen() {
-        exitTransition = MaterialElevationScale(false).apply {
-            duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-        }
-        reenterTransition = MaterialElevationScale(true).apply {
-            duration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-        }
-        val transitionName = getString(R.string.store_onboarding_full_screen_transition_name)
-        val extras = FragmentNavigatorExtras(binding.storeOnboardingView to transitionName)
-        findNavController().navigateSafely(
-            directions = DashboardFragmentDirections.actionDashboardToOnboardingFragment(),
-            extras = extras
-        )
     }
 
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
     private fun setupStateObservers() {
-        myStoreViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
+        dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
-        myStoreViewModel.customRange.observe(viewLifecycleOwner) { customRange ->
-            binding.myStoreStats.handleCustomRangeTab(customRange)
-        }
-        myStoreViewModel.selectedDateRange.observe(viewLifecycleOwner) { statsTimeRangeSelection ->
-            binding.myStoreStats.loadDashboardStats(statsTimeRangeSelection)
-            binding.myStoreTopPerformers.onDateGranularityChanged(statsTimeRangeSelection.selectionType)
-            if (tabLayout.getTabAt(tabLayout.selectedTabPosition)?.tag != statsTimeRangeSelection.selectionType) {
-                val index = (0..tabLayout.tabCount)
-                    .firstOrNull { tabLayout.getTabAt(it)?.tag == statsTimeRangeSelection.selectionType }
-                index?.let {
-                    // Small delay needed to ensure tablayout scrolls to the selected tab if tab is not visible on screen.
-                    handler.postDelayed({ tabLayout.getTabAt(index)?.select() }, 300)
-                }
-            }
-        }
-        myStoreViewModel.revenueStatsState.observe(viewLifecycleOwner) { revenueStats ->
-            when (revenueStats) {
-                is RevenueStatsViewState.Content -> showStats(revenueStats.revenueStats)
-                RevenueStatsViewState.GenericError -> showStatsError()
-                RevenueStatsViewState.Loading -> showChartSkeleton(true)
-                RevenueStatsViewState.PluginNotActiveError -> updateStatsAvailabilityError()
-            }
-        }
-        myStoreViewModel.visitorStatsState.observe(viewLifecycleOwner) { stats ->
-            when (stats) {
-                is VisitorStatsViewState.Content -> showVisitorStats(stats.stats)
-                VisitorStatsViewState.Error -> {
-                    binding.jetpackBenefitsBanner.root.isVisible = false
-                    binding.myStoreStats.showVisitorStatsError()
-                }
-
-                is VisitorStatsViewState.Unavailable -> onVisitorStatsUnavailable(stats)
-            }
-        }
-        myStoreViewModel.topPerformersState.observe(viewLifecycleOwner) { topPerformers ->
-            when {
-                topPerformers.isLoading -> showTopPerformersLoading()
-                topPerformers.isError -> showTopPerformersError()
-                else -> showTopPerformers(topPerformers.topPerformers)
-            }
-        }
-        myStoreViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
-            when (newValue) {
-                OrderState.Empty -> showEmptyView(true)
-                OrderState.AtLeastOne -> showEmptyView(false)
-            }
-        }
-        myStoreViewModel.event.observe(viewLifecycleOwner) { event ->
+        dashboardViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OpenTopPerformer -> findNavController().navigateSafely(
-                    NavGraphMainDirections.actionGlobalProductDetailFragment(
-                        mode = ProductDetailFragment.Mode.ShowProduct(event.productId),
-                        isTrashEnabled = false
-                    )
-                )
-
-                is OpenAnalytics -> {
-                    mainNavigationRouter?.showAnalytics(event.analyticsPeriod)
-                }
-
                 is ShowPrivacyBanner ->
                     findNavController().navigate(
                         PrivacyBannerFragmentDirections.actionGlobalPrivacyBannerFragment()
@@ -467,31 +168,45 @@ class DashboardFragment :
                         DashboardFragmentDirections.actionDashboardToAIProductDescriptionDialogFragment()
                     )
 
-                is OpenDatePicker -> showDateRangePicker(
-                    fromMillis = event.fromDate.time,
-                    toMillis = event.toDate.time
-                ) { start, end ->
-                    myStoreViewModel.onCustomRangeSelected(StatsTimeRange(Date(start), Date(end)))
+                is OpenEditWidgets -> {
+                    findNavController().navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToEditWidgetsFragment()
+                    )
                 }
+
+                is ShowStatsError -> showErrorSnack()
+
+                is OpenRangePicker -> showDateRangePicker(event.start, event.end, event.callback)
+
+                is ContactSupport -> activity?.startHelpActivity(HelpOrigin.MY_STORE)
 
                 else -> event.isHandled = false
             }
         }
-        myStoreViewModel.lastUpdateStats.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreStats.showLastUpdate(lastUpdateMillis)
-        }
-        myStoreViewModel.lastUpdateTopPerformers.observe(viewLifecycleOwner) { lastUpdateMillis ->
-            binding.myStoreTopPerformers.showLastUpdate(lastUpdateMillis)
-        }
-        myStoreViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
+        dashboardViewModel.storeName.observe(viewLifecycleOwner) { storeName ->
             ((activity) as MainActivity).setSubtitle(storeName)
+        }
+        dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
+            onVisitorStatsUnavailable(jetpackBenefitsBanner)
+        }
+        dashboardViewModel.dashboardWidgets.observe(viewLifecycleOwner) { widgets ->
+            // Show banners only if onboarding list is NOT displayed
+            if (
+                widgets.none {
+                    (it as? DashboardWidgetUiModel.ConfigurableWidget)?.widget?.type == DashboardWidget.Type.ONBOARDING
+                }
+            ) {
+                initJitm()
+            }
         }
     }
 
-    private fun onVisitorStatsUnavailable(state: VisitorStatsViewState.Unavailable) {
-        handleUnavailableVisitorStats()
+    private fun onVisitorStatsUnavailable(jetpackBenefitsBanner: DashboardViewModel.JetpackBenefitsBannerUiModel?) {
+        if (jetpackBenefitsBanner == null) {
+            binding.jetpackBenefitsBanner.root.isVisible = false
+            return
+        }
 
-        val jetpackBenefitsBanner = state.benefitsBanner
         if (jetpackBenefitsBanner.show) {
             binding.jetpackBenefitsBanner.dismissButton.setOnClickListener {
                 jetpackBenefitsBanner.onDismiss()
@@ -506,12 +221,6 @@ class DashboardFragment :
         binding.jetpackBenefitsBanner.root.isVisible = jetpackBenefitsBanner.show
     }
 
-    private fun showTopPerformersLoading() {
-        binding.myStoreTopPerformers.showErrorView(false)
-        binding.myStoreTopPerformers.showSkeleton(true)
-    }
-
-    @Suppress("ForbiddenComment")
     private fun prepareJetpackBenefitsBanner() {
         appPrefsWrapper.setJetpackInstallationIsFromBanner(false)
         binding.jetpackBenefitsBanner.root.isVisible = false
@@ -528,10 +237,10 @@ class DashboardFragment :
             // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
             // we are using `withCreated` here, since if this view doesn't reach the created state,
             // the scope will not get cancelled.
-            // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
+            // TODO revisit this once https://issuetracker.google.com/issues/127528777 is implemented
             // (no update as of Oct 2023)
             val appBarLayout = requireActivity().findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
-            withCreated {
+            viewLifecycleOwner.withCreated {
                 appBarLayout?.verticalOffsetChanges()
                     ?.onEach { verticalOffset ->
                         binding.jetpackBenefitsBanner.root.translationY =
@@ -560,8 +269,6 @@ class DashboardFragment :
     }
 
     override fun onDestroyView() {
-        handler.removeCallbacksAndMessages(null)
-        tabLayout.removeOnTabSelectedListener(tabSelectedListener)
         super.onDestroyView()
         _binding = null
     }
@@ -571,53 +278,6 @@ class DashboardFragment :
         super.onDestroy()
     }
 
-    private fun showStats(revenueStatsModel: RevenueStatsUiModel?) {
-        binding.myStoreStats.showErrorView(false)
-        showChartSkeleton(false)
-
-        tabLayout.isVisible = AppPrefs.isV4StatsSupported()
-
-        binding.myStoreStats.updateView(revenueStatsModel)
-
-        // update the stats today widget if we're viewing today's stats
-        if (myStoreViewModel.selectedDateRange.value?.selectionType == SelectionType.TODAY) {
-            (activity as? MainActivity)?.updateStatsWidgets()
-        }
-    }
-
-    private fun showStatsError() {
-        showChartSkeleton(false)
-        binding.myStoreStats.showErrorView(true)
-        showErrorSnack()
-    }
-
-    private fun updateStatsAvailabilityError() {
-        binding.myStoreRefreshLayout.visibility = View.GONE
-        WooAnimUtils.fadeIn(binding.statsErrorScrollView)
-        showChartSkeleton(false)
-    }
-
-    private fun showTopPerformers(topPerformers: List<TopPerformerProductUiModel>) {
-        binding.myStoreTopPerformers.showSkeleton(false)
-        binding.myStoreTopPerformers.showErrorView(false)
-        binding.myStoreTopPerformers.updateView(topPerformers)
-    }
-
-    private fun showTopPerformersError() {
-        binding.myStoreTopPerformers.showSkeleton(false)
-        binding.myStoreTopPerformers.showErrorView(true)
-        showErrorSnack()
-    }
-
-    private fun showVisitorStats(visitorStats: Map<String, Int>) {
-        binding.jetpackBenefitsBanner.root.isVisible = false
-        binding.myStoreStats.showVisitorStats(visitorStats)
-    }
-
-    private fun handleUnavailableVisitorStats() {
-        binding.myStoreStats.handleJetpackUnavailableVisitorStats()
-    }
-
     private fun showErrorSnack() {
         if (errorSnackbar?.isShownOrQueued == false || NetworkUtils.isNetworkAvailable(context)) {
             errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
@@ -625,17 +285,14 @@ class DashboardFragment :
         }
     }
 
-    private fun initJitm(savedInstanceState: Bundle?) {
-        // Show banners only if onboarding list is not displayed
-        if (!binding.storeOnboardingView.isVisible && savedInstanceState == null) {
-            childFragmentManager.beginTransaction()
-                .replace(
-                    R.id.jitmFragment,
-                    JitmFragment.newInstance(JitmMessagePathsProvider.MY_STORE),
-                    JITM_FRAGMENT_TAG
-                )
-                .commit()
-        }
+    private fun initJitm() {
+        childFragmentManager.beginTransaction()
+            .replace(
+                R.id.jitmFragment,
+                JitmFragment.newInstance(JitmMessagePathsProvider.MY_STORE),
+                JITM_FRAGMENT_TAG
+            )
+            .commit()
     }
 
     private fun refreshJitm() {
@@ -646,15 +303,10 @@ class DashboardFragment :
 
     override fun getFragmentTitle() = getString(R.string.my_store)
 
-    override fun getFragmentSubtitle(): String = myStoreViewModel.storeName.value ?: ""
+    override fun getFragmentSubtitle(): String = dashboardViewModel.storeName.value ?: ""
 
     override fun scrollToTop() {
         binding.statsScrollView.smoothScrollTo(0, 0)
-    }
-
-    private fun showChartSkeleton(show: Boolean) {
-        binding.myStoreStats.showErrorView(false)
-        binding.myStoreStats.showSkeleton(show)
     }
 
     /**
@@ -713,33 +365,21 @@ class DashboardFragment :
         }
     }
 
-    private fun showEmptyView(show: Boolean) {
-        val dashboardVisibility: Int
-        if (show) {
-            dashboardVisibility = View.GONE
-            binding.emptyView.show(EmptyViewType.DASHBOARD) {
-                myStoreViewModel.onShareStoreClicked()
-            }
-        } else {
-            binding.emptyView.hide()
-            dashboardVisibility = View.VISIBLE
-        }
-        tabLayout.isVisible = !show && AppPrefs.isV4StatsSupported()
-        binding.myStoreStats.visibility = dashboardVisibility
-        binding.myStoreTopPerformers.visibility = dashboardVisibility
-        isEmptyViewVisible = show
-    }
-
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.menu_my_store_fragment, menu)
+        menuInflater.inflate(R.menu.menu_dashboard_fragment, menu)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
+            R.id.menu_edit_screen_widgets -> {
+                dashboardViewModel.onEditWidgetsClicked()
+                true
+            }
+
             R.id.menu_share_store -> {
-                myStoreViewModel.onShareStoreClicked()
+                dashboardViewModel.onShareStoreClicked()
                 true
             }
 
@@ -749,6 +389,6 @@ class DashboardFragment :
 
     override fun onPrepareMenu(menu: Menu) {
         menu.findItem(R.id.menu_share_store).isVisible =
-            myStoreViewModel.appbarState.value?.showShareStoreButton ?: false
+            dashboardViewModel.appbarState.value?.showShareStoreButton ?: false
     }
 }

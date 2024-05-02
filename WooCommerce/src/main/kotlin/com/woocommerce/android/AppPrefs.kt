@@ -103,6 +103,7 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
+        ACTIVE_TOP_PERFORMERS_GRANULARITY,
         USE_SIMULATED_READER,
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
@@ -865,6 +866,12 @@ object AppPrefs {
 
     fun getActiveStatsTab() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
 
+    fun setActiveTopPerformersGranularity(selectionName: String) {
+        setString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY, selectionName)
+    }
+
+    fun getActiveTopPerformersGranularity() = getString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY)
+
     fun setCustomDomainsSource(source: String) {
         setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)
     }
@@ -912,10 +919,10 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, true)
     }
 
-    fun markOnboardingTaskCompletedFor(siteId: Int) {
+    fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
         setBoolean(
             key = getStoreOnboardingKeyFor(siteId),
-            value = true
+            value = completed
         )
     }
 

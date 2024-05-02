@@ -356,8 +356,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Jul 1, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jan 1 - Jul 1, 2021")
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 – Jul 1, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jan 1 – Jul 1, 2021")
     }
 
     @Test
@@ -376,8 +376,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Dec 31, 2021")
-        assertThat(previousRangeDescription).isEqualTo("Jan 1 - Dec 31, 2020")
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 – Dec 31, 2021")
+        assertThat(previousRangeDescription).isEqualTo("Jan 1 – Dec 31, 2020")
     }
 
     @Test
@@ -396,8 +396,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Feb 15, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Oct 1 - Nov 15, 2021")
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 – Feb 15, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Oct 1 – Nov 15, 2021")
     }
 
     @Test
@@ -416,8 +416,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jan 1 - Mar 31, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Oct 1 - Dec 31, 2021")
+        assertThat(currentRangeDescription).isEqualTo("Jan 1 – Mar 31, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Oct 1 – Dec 31, 2021")
     }
 
     @Test
@@ -436,8 +436,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jul 1 - 31, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jun 1 - 30, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jul 1 – 31, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 1 – 30, 2022")
     }
 
     @Test
@@ -456,8 +456,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jul 1 - 20, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jun 1 - 20, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jul 1 – 20, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 1 – 20, 2022")
     }
 
     @Test
@@ -476,8 +476,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jun 1 - 30, 2022")
-        assertThat(previousRangeDescription).isEqualTo("May 1 - 31, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jun 1 – 30, 2022")
+        assertThat(previousRangeDescription).isEqualTo("May 1 – 31, 2022")
     }
 
     @Test
@@ -496,8 +496,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jul 25 - 29, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jul 18 - 22, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jul 25 – 29, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jul 18 – 22, 2022")
     }
 
     @Test
@@ -516,8 +516,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jun 27 - Jul 2, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jun 20 - 25, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jun 27 – Jul 2, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 20 – 25, 2022")
     }
 
     @Test
@@ -536,8 +536,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jul 18 - 24, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jul 11 - 17, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jul 18 – 24, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jul 11 – 17, 2022")
     }
 
     @Test
@@ -556,8 +556,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Jun 27 - Jul 3, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Jun 20 - 26, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Jun 27 – Jul 3, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Jun 20 – 26, 2022")
     }
 
     @Test
@@ -617,8 +617,8 @@ internal class StatsTimeRangeSelectionTest {
         val previousRangeDescription = sut.previousRangeDescription
 
         // Then
-        assertThat(currentRangeDescription).isEqualTo("Dec 5 - 7, 2022")
-        assertThat(previousRangeDescription).isEqualTo("Dec 2 - 4, 2022")
+        assertThat(currentRangeDescription).isEqualTo("Dec 5 – 7, 2022")
+        assertThat(previousRangeDescription).isEqualTo("Dec 2 – 4, 2022")
     }
 
     private fun midDayFrom(date: String): Date {

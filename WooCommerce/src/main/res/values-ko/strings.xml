@@ -1,11 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-03-26 09:54:04+0000
+Translation-Revision-Date: 2024-04-23 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="card_selection_control">분석 카드 선택</string>
+    <string name="login_app_password_exit_dialog_cancel">취소</string>
+    <string name="login_app_password_exit_dialog_confirmation">강제 종료</string>
+    <string name="login_app_password_exit_dialog_message">아직 앱 연결을 승인하지 않으신 것 같습니다. 종료하시겠어요?</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">크기가 500x500픽셀 이상인 이미지를 선택하세요.</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">유효하지 않은 이미지</string>
+    <string name="login_invalid_credentials_message">입력하신 사용자명 또는 비밀번호가 일치하지 않는 것 같습니다. 자격 증명을 다시 확인하고 다시 시도하세요.</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">데이터가 여전히 로드되지 않으면 지원팀에 도움을 문의하세요.</string>
+    <string name="orderlist_connectivity_tool_summary_title">연결 문제 없음</string>
+    <string name="orderlist_connectivity_tool_return_action">이전 화면으로 돌아가기</string>
+    <string name="orderlist_connectivity_tool_retry_action">연결 재시도</string>
+    <string name="orderlist_connectivity_tool_store_check_title">사이트에 연결하기</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">지금은 워드프레스닷컴에 연결할 수 없습니다.\n\n몇 분 후에 다시 시도하세요. 또는 지원팀에 문의하시면 기꺼이 도와드리겠습니다.</string>
+    <string name="orderlist_connectivity_tool_subtitle">연결 문제를 식별하려고 시도하는 동안 기다려 주세요.</string>
+    <string name="orderlist_connectivity_tool_title">연결 문제 해결</string>
+    <string name="analytics_gift_cards_card_title">상품권</string>
+    <string name="analytics_used_title">사용됨</string>
+    <string name="analytics_gift_cards_no_data">이 기간의 상품권 없음</string>
+    <string name="login_app_password_support_button">지원 문의</string>
+    <string name="login_app_password_continue_button">계속</string>
+    <string name="login_app_password_instructions_footer">문제가 발생하면 지원팀에 문의해 주세요.</string>
+    <string name="login_app_password_instructions_step_3">3. 연결이 완료되면 스토어에 로그인됩니다.</string>
+    <string name="login_app_password_instructions_step_2">2. 메시지가 표시되면 확인 버튼을 눌러 연결을 승인합니다.</string>
+    <string name="login_app_password_instructions_step_1">1. 먼저 사이트 자격 증명을 사용하여 로그인합니다.</string>
+    <string name="login_app_password_instructions_title">애플리케이션 비밀번호를 사용하여 다음과 같은 단계에 따라 Woo 앱을 스토어에 직접 연결하세요.</string>
+    <string name="login_app_password_subtitle">스토어에 몇 가지 추가 보안 단계가 설정되었기 때문일 수 있습니다.</string>
+    <string name="login_app_password_title">사이트에 로그인할 수 없음</string>
+    <string name="empty_order_detail_message">주문하면 여기에 주문 상세 정보가 표시됩니다.</string>
+    <string name="empty_order_detail_title">아직 주문 상세 정보 없음</string>
+    <string name="order_creation_simple_payment_migration_button">사용자 정의 금액 추가</string>
+    <string name="order_creation_simple_payment_migration_message_two">결제 금액을 설정하려면\n새 주문에 사용자 정의 금액을 추가하세요.</string>
+    <string name="order_creation_simple_payment_migration_message_one">더 접근하기 쉽고 더 효과가 있도록\n결제 수령을 주문 생성과\n결합했습니다.</string>
+    <string name="order_creation_simple_payment_migration_title">결제 수령이\n이동했습니다.</string>
+    <string name="analytics_bundles_card_title">번들</string>
+    <string name="analytics_bundles_list_header_subtitle">판매된 번들</string>
+    <string name="analytics_bundles_list_header_title">번들</string>
+    <string name="analytics_bundles_list_items_sold">판매된 번들</string>
+    <string name="my_store_widget_blaze_title">Blaze 캠페인</string>
+    <string name="my_store_widget_top_products_title">상위 상품</string>
+    <string name="my_store_widget_stats_title">통계</string>
+    <string name="my_store_widget_onboarding_title">온보딩</string>
+    <string name="my_store_edit_screen_widget_onboarding_list">스토어 온보딩</string>
+    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze 캠페인</string>
+    <string name="my_store_edit_screen_widget_top_performers">성과 상위 상품</string>
+    <string name="my_store_edit_screen_widget_stats">스토어 통계</string>
+    <string name="my_store_edit_screen_widgets">내 스토어 섹션 편집</string>
+    <string name="product_list_unsaved_product_unselected_message">이 상품에 적용한 변경 사항을 취소하시겠습니까?</string>
+    <string name="product_list_unsaved_product_unselected_title">%s에 대한 변경 사항을 취소하시려는 참입니다.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">이 통계 기능에서는 임의 날짜 범위의 방문자 수와 전환율 데이터 표시가 지원되지 않습니다.\n\n그러나 그래프의 값을 눌러 해당 특정 범위의 방문자 수와 전환율을 참조할 수 있습니다.</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">방문자 수와 전환율 데이터 이용 불가</string>
     <string name="more_menu_button_subscriptions_description">구독 관리</string>
     <string name="more_menu_button_subscriptions">구독</string>
     <string name="upgrades_title">구독</string>
@@ -64,20 +114,17 @@ Language: ko_KR
     <string name="order_creation_tablet_mode_fragment_title">주문 요약</string>
     <string name="orderlist_order_trashed_error">휴지통으로 주문 이동 중 오류 발생</string>
     <string name="orderlist_order_trashed">휴지통으로 주문 이동됨</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">죄송합니다! 사이트에서 문제가 발생한 것 같습니다.\n\n자세한 내용은 호스팅 공급업체에 문의하세요.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">죄송합니다! 젯팩 연결에서 문제가 발생한 것 같습니다.\n\n걱정하지 마세요. 지원팀에서 도와드리겠습니다. 문의해 주시면 기꺼이 도와드리겠습니다.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">죄송합니다! 사이트의 응답이 제대로 작동하지 않는 것 같습니다.\n\n걱정하지 마세요. 지원팀에서 도와드리겠습니다. 문의해 주시면 기꺼이 도와드리겠습니다.</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">죄송합니다! 사이트의 응답이 너무 오래 걸리는 것 같습니다.\n\n자세한 내용은 호스팅 공급업체에 문의하세요.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">죄송합니다! 지금은 워드프레스닷컴에 연결할 수 없는 것 같습니다.\n\n걱정하지 마세요. 지원팀에서 도와드리겠습니다. 문의해 주시면 기꺼이 도와드리겠습니다.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">사이트에서 문제가 발생한 것 같습니다.\n\n자세한 내용은 호스팅 공급업체에 문의하세요.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">젯팩 연결에서 문제가 발생한 것 같습니다.\n\n걱정하지 마세요. 지원팀에서 도와드리겠습니다. 문의해 주시면 기꺼이 도와드리겠습니다.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">사이트의 응답이 제대로 작동하지 않는 것 같습니다.\n\n걱정하지 마세요. 지원팀에서 도와드리겠습니다. 문의해 주시면 기꺼이 도와드리겠습니다.</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">사이트의 응답이 너무 오래 걸리는 것 같습니다.\n\n자세한 내용은 호스팅 공급업체에 문의하세요.</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">인터넷에 연결되지 않은 것 같습니다.\n\n와이파이가 켜졌는지 확인하세요. 모바일 데이터를 사용 중이라면 기기 설정에서 활성화되었는지 확인하세요.</string>
     <string name="product_detail_product_not_selected">상품이 선택되지 않음</string>
     <string name="orderlist_connectivity_tool_read_more_action">더 보기</string>
     <string name="orderlist_connectivity_tool_contact_support_action">지원 문의</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">회원님의 사이트 주문</string>
-    <string name="orderlist_connectivity_tool_store_check_title">회원님의 사이트</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">워드프레스닷컴 서버</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">사이트 주문 가져오기</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">워드프레스닷컴 서버에 연결하기</string>
     <string name="orderlist_connectivity_tool_internet_check_title">인터넷 연결</string>
-    <string name="orderlist_connectivity_tool_title">연결 테스트</string>
     <string name="my_store_custom_range_content_description">사용자 정의 날짜 범위 통계 추가</string>
     <string name="blaze_campaign_creation_location_search_no_results_message">위치를 찾을 수 없습니다.\n다시 시도하세요.</string>
     <string name="order_detail_attribution_session_page_views">세션 페이지 조회수</string>
@@ -627,13 +674,6 @@ Language: ko_KR
     <string name="free_trial_survey_option2">나는 해당 서비스를 평가하며 시중의 다른 서비스와 비교하는 중입니다.</string>
     <string name="free_trial_survey_option1">나는 아직 앱의 기능과 혜택을 둘러보는 중입니다.</string>
     <string name="free_trial_survey_title">회원님의 구독 결정을 이해하도록 도와주세요. 회원님의 피드백이 중요합니다.</string>
-    <string name="local_notification_still_exploring_description">서두르지 말고 천천히 진행하세요. 질문이 있거나 도움이 필요하면 기꺼이 도와드리겠습니다. 천천히 둘러보세요.</string>
-    <string name="local_notification_still_exploring_title">🧭 아직 우커머스를 둘러보시는 중이신가요?</string>
-    <string name="free_trial_survey_screen_title">회원님의 구독 결정을 이해하도록 도와주기</string>
-    <string name="local_notification_survey_after_24_hours_description">회원님의 의사 결정 여정에 관심이 있습니다. 현재 상태를 말씀해 주실 수 있을까요?</string>
-    <string name="local_notification_survey_after_24_hours_title">💡회원님의 구독 결정을 이해하도록 도와주기</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">고급 기능과 개인화된 스토어 추천 사항을 찾아보세요! 가장 알맞은 요금제를 눌러서 선택하세요.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 비즈니스를 계속 발전시키세요!</string>
     <string name="order_creation_customer_search_empty_email">이메일 주소 없음</string>
     <string name="order_creation_customer_search_empty_name">이름 없음</string>
     <string name="order_creation_customer_search_empty_on_old_version_wcpay">기존 고객 검색 또는</string>
@@ -719,12 +759,6 @@ Language: ko_KR
     <string name="order_creation_barcode_scanning_process_death">배경에서 실행되는 시스템에서 Woo 앱을 종료했습니다. 다시 사용해 보실 수 있습니다.</string>
     <string name="order_list_barcode_scanning_process_death">배경에서 실행되는 시스템에서 Woo 앱을 종료했습니다. 다시 사용해 보실 수 있습니다.</string>
     <string name="card_reader_payment_card_removed_too_early">카드가 너무 일찍 제거되었습니다.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s 님, 회원님의 스토어가 일시 중지되었지만, 가장 알맞은 요금제를 선택하여 계속하실 수 있습니다.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 요금제를 이용하여 비즈니스를 계속 운영하세요!</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Woo Express 무료 평가판이 내일(%1$s) 종료됩니다. 지금이 회원님 자신의 미래를 소유할 때입니다. 요금제를 선택하고 성장할 준비를 하세요.</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ 무료 평가판 기간이 끝나가고 있습니다.</string>
-    <string name="local_notification_store_creation_complete_description">%1$s 님, 안녕하세요! Woo Express 14일 무료 평가판에 오신 것을 환영합니다. 성공적인 온라인 비즈니스의 시작과 성장에 필요한 모든 것이 한곳에 다 있습니다. 둘러볼 준비가 되셨나요?</string>
-    <string name="local_notification_store_creation_complete_title">🎉 회원님의 스토어가 준비되어 있습니다!</string>
     <string name="product_type_variation">변형 상품</string>
     <string name="settings_policies_cookie_policy_description">당사와 타사에서 쿠키를 사용하는 방식과 회원님이 관리할 수 있는 방법이 쿠키 정책에 설명되어 있습니다.</string>
     <string name="settings_policies_cookie_policy">쿠키 정책</string>
@@ -745,7 +779,7 @@ Language: ko_KR
     <string name="settings_privacy_header">개인정보</string>
     <string name="settings_usage_tracking_description">이 데이터 공유를 제어하기 위해 당사에서 수집하는 회원님의 스토어와 옵션에 대한 데이터에 대해 자세히 알아보세요.</string>
     <string name="settings_usage_tracking">사용량 추적</string>
-    <string name="settings_web_options_description">Woo.com 사용자는 추가 개인정보 옵션을 사용할 수 있습니다. 여기에서 자세히 알아보세요.</string>
+    <string name="settings_web_options_description">Woocommerce.com 사용자는 추가 개인정보 옵션을 사용할 수 있습니다. 여기에서 자세히 알아보세요.</string>
     <string name="settings_web_options">웹 옵션</string>
     <string name="settings_more_privacy_options_header">추가 개인정보 옵션</string>
     <string name="settings_tracking_analytics_error_update">프라이버시 설정 업데이트 중 오류가 발생했습니다.</string>
@@ -1016,10 +1050,6 @@ Language: ko_KR
     <string name="store_onboarding_task_add_product_description">스토어에 상품 또는 서비스를 추가하여 판매를 시작하세요.</string>
     <string name="store_onboarding_task_add_product_title">첫 번째 상품 추가 </string>
     <string name="store_onboarding_title">스토어 설정</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">이미 활성 전자상거래 구독이 있습니다. 현재 구독이 새 사이트에 연결되지 않는 문제가 발생하면 지원팀에 문의하세요.</string>
-    <string name="store_creation_iap_eligibility_network_error">네트워크 오류가 발생했습니다. 연결을 확인하고 다시 시도하세요.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">스토어 생성을 현재 이용할 수 없습니다. 나중에 다시 시도하세요.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">모바일 앱에서 한 번만 전자상거래 요금제를 구매하실 수 있습니다. 추가 사이트를 생성하려면 웹사이트를 방문하세요.</string>
     <string name="card_reader_payment_failed_app_setup_is_invalid">앱 설정에서 문제가 발생했습니다. 자세한 내용은 지원팀에 문의하세요.</string>
     <string name="card_reader_payment_failed_device_is_not_supported">기기가 지원되지 않습니다. 자세한 내용은 지원팀에 문의하세요.</string>
     <string name="card_reader_payment_failed_nfc_disabled">NFC 칩이 비활성화되어서 카드 리더를 앱에서 활성화할 수 없습니다.</string>
@@ -1068,10 +1098,6 @@ Language: ko_KR
     <string name="login_application_passwords_unavailable">%1$s 사이트에서 애플리케이션 비밀번호가 비활성화된 것 같습니다.\n 우커머스 앱을 사용하려면 활성화하세요.</string>
     <string name="login_open_installation_page">설치 페이지 열기</string>
     <string name="not_a_valid_qr_code">스캔한 QR 코드는 WooCommerce 코드가 아닙니다</string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">해당 국가에서는 현재 모바일 앱의 스토어 생성을 이용할 수 없습니다.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">스토어 생성 불가</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">연결 상태를 유지해주세요.</string>
-    <string name="store_creation_iap_eligibility_loading_title">스토어 생성을 준비하는 중입니다</string>
     <string name="review_reply_failure">답변을 발송하는 도중에 오류가 발생했습니다</string>
     <string name="review_reply_success">답변 발송!</string>
     <string name="wc_reply">답변</string>

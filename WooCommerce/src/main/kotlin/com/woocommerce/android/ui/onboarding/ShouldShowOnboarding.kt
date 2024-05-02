@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.Onboardin
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
+import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,17 +35,21 @@ class ShouldShowOnboarding @Inject constructor(
 
         val siteId = selectedSite.getSelectedSiteId()
         val areAllTaskCompleted = if (tasks.all { it.isComplete }) {
-            appPrefsWrapper.markAllOnboardingTasksCompleted(siteId)
-            if (appPrefsWrapper.getStoreOnboardingShown(siteId)) {
+            if (appPrefsWrapper.getStoreOnboardingShown(siteId) && !appPrefsWrapper.isOnboardingCompleted(siteId)) {
+                appPrefsWrapper.updateOnboardingCompletedStatus(siteId, true)
                 analyticsTrackerWrapper.track(stat = STORE_ONBOARDING_COMPLETED)
             }
             true
         } else {
+            if (appPrefsWrapper.isOnboardingCompleted(siteId)) {
+                // Reset the onboarding completed status if there are still pending tasks
+                appPrefsWrapper.updateOnboardingCompletedStatus(siteId, false)
+            }
             false
         }
 
         return if (!areAllTaskCompleted &&
-            isOnboardingListSettingVisible()
+            (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled() || isOnboardingListSettingVisible())
         ) {
             appPrefsWrapper.setStoreOnboardingShown(siteId)
             true

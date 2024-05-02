@@ -14,7 +14,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -55,7 +55,7 @@ fun JetpackActivationEligibilityErrorScreen(
     Scaffold(
         topBar = {
             ToolbarWithHelpButton(
-                navigationIcon = Icons.Filled.ArrowBack,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onHelpButtonClick = onHelpButtonClick,
                 onNavigationButtonClick = onBackButtonClick
             )

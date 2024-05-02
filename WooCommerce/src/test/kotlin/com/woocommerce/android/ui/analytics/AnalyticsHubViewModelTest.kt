@@ -1114,7 +1114,9 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     private fun configureVisibleCards(configuration: List<AnalyticCardConfiguration> = defaultCardsConfiguration) {
-        whenever(observeAnalyticsCardsConfiguration.invoke()).doReturn(flowOf(configuration))
+        observeAnalyticsCardsConfiguration.stub {
+            onBlocking { observeAnalyticsCardsConfiguration.invoke() } doReturn flowOf(configuration)
+        }
     }
 
     companion object {
