@@ -15,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withCreated
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
@@ -32,7 +31,6 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -77,9 +75,6 @@ class DashboardFragment :
     lateinit var selectedSite: SelectedSite
 
     @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
-
-    @Inject
     lateinit var usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter
 
     @Inject
@@ -93,8 +88,6 @@ class DashboardFragment :
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
-
-    private var errorSnackbar: Snackbar? = null
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
@@ -260,7 +253,6 @@ class DashboardFragment :
 
     override fun onStop() {
         wasPreviouslyStopped = true
-        errorSnackbar?.dismiss()
         super.onStop()
     }
 
