@@ -63,13 +63,8 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMe
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
-import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Campaign
-import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Error
-import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Loading
-import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.NoCampaign
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.util.FeatureFlag
-import com.woocommerce.android.util.FeatureFlag.DYNAMIC_DASHBOARD
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.launch
 
@@ -196,17 +191,17 @@ fun DashboardBlazeView(
                 )
         ) {
             when (state) {
-                is Loading -> BlazeCampaignLoading(
+                is DashboardBlazeCampaignState.Loading -> BlazeCampaignLoading(
                     modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
                 )
 
-                is Campaign -> {
+                is DashboardBlazeCampaignState.Campaign -> {
                     BlazeCampaignItem(
                         campaign = state.campaign,
                         onCampaignClicked = state.onCampaignClicked,
                     )
 
-                    if (DYNAMIC_DASHBOARD.isEnabled()) {
+                    if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
                         WCOutlinedButton(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -218,7 +213,7 @@ fun DashboardBlazeView(
                     }
                 }
 
-                is NoCampaign -> {
+                is DashboardBlazeCampaignState.NoCampaign -> {
                     Text(
                         modifier = Modifier.padding(
                             end = dimensionResource(id = R.dimen.major_300)
@@ -232,7 +227,7 @@ fun DashboardBlazeView(
                         modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                     )
 
-                    if (DYNAMIC_DASHBOARD.isEnabled()) {
+                    if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
                         WCOutlinedButton(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -247,8 +242,8 @@ fun DashboardBlazeView(
                     }
                 }
 
-                Error -> {
-                    if (DYNAMIC_DASHBOARD.isEnabled()) {
+                DashboardBlazeCampaignState.Error -> {
+                    if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
                         WidgetError(
                             onContactSupportClicked = onContactSupportClicked,
                             onRetryClicked = onRetryOnErrorButtonClicked
