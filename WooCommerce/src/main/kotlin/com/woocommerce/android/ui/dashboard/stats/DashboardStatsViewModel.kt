@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.offsetInHours
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
@@ -171,6 +172,12 @@ class DashboardStatsViewModel @AssistedInject constructor(
     }
 
     fun onRefresh() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STATS.trackingIdentifier
+            )
+        )
         refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
 
