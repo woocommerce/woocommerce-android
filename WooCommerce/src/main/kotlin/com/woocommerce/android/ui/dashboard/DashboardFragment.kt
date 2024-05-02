@@ -42,7 +42,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -57,7 +56,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.wordpress.android.util.NetworkUtils
 import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.abs
@@ -174,8 +172,6 @@ class DashboardFragment :
                     )
                 }
 
-                is ShowStatsError -> showErrorSnack()
-
                 is OpenRangePicker -> showDateRangePicker(event.start, event.end, event.callback)
 
                 is ContactSupport -> activity?.startHelpActivity(HelpOrigin.MY_STORE)
@@ -276,13 +272,6 @@ class DashboardFragment :
     override fun onDestroy() {
         lifecycle.removeObserver(storeOnboardingViewModel)
         super.onDestroy()
-    }
-
-    private fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued == false || NetworkUtils.isNetworkAvailable(context)) {
-            errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
-            errorSnackbar?.show()
-        }
     }
 
     private fun initJitm() {

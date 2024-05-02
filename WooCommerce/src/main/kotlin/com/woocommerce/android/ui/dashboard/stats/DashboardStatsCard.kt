@@ -65,7 +65,6 @@ import java.util.Date
 
 @Composable
 fun DashboardStatsCard(
-    onStatsError: () -> Unit,
     openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
@@ -79,13 +78,6 @@ fun DashboardStatsCard(
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
-
-    LaunchedEffect(revenueStatsState) {
-        when (revenueStatsState) {
-            is DashboardStatsViewModel.RevenueStatsViewState.GenericError -> onStatsError()
-            else -> Unit
-        }
-    }
 
     HandleEvents(
         event = viewModel.event,
