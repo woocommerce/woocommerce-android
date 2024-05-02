@@ -106,10 +106,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                     }
                 )
             ),
-            onOpenAnalyticsTapped = DashboardWidgetAction(
-                titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
-                action = ::onViewAllAnalyticsTapped
-            )
+            onViewAllAnalyticsTapped = ::onViewAllAnalyticsTapped
         )
 
         viewModelScope.launch {
@@ -168,7 +165,10 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) =
         coroutineScope {
-            if (!networkStatus.isConnected()) return@coroutineScope
+            if (!networkStatus.isConnected()) {
+                _topPerformersState.value = _topPerformersState.value?.copy(isError = true)
+                return@coroutineScope
+            }
 
             _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
             val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
@@ -244,8 +244,17 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         @StringRes val titleStringRes: Int,
         val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
         val menu: DashboardWidgetMenu,
-        val onOpenAnalyticsTapped: DashboardWidgetAction
-    )
+        val onViewAllAnalyticsTapped: () -> Unit
+    ) {
+        val onOpenAnalyticsTapped = if (!isError) {
+            DashboardWidgetAction(
+                titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
+                action = onViewAllAnalyticsTapped
+            )
+        } else {
+            null
+        }
+    }
 
     data class OpenTopPerformer(
         val productId: Long

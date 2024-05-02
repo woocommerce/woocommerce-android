@@ -59,10 +59,10 @@ import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenAnalytics
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
@@ -92,13 +92,20 @@ fun DashboardTopPerformersWidgetCard(
             button = topPerformersState.onOpenAnalyticsTapped,
             modifier = modifier
         ) {
-            DashboardTopPerformersContent(
-                topPerformersState,
-                selectedDateRange,
-                lastUpdateState,
-                topPerformersViewModel::onGranularityChanged,
-                topPerformersViewModel::onEditCustomRangeTapped
-            )
+
+            when {
+                topPerformersState.isError -> TopPerformersErrorView(
+                    onContactSupportClicked = parentViewModel::onContactSupportClicked,
+                    onRetryClicked = parentViewModel::onRetryOnErrorButtonClicked
+                )
+                else -> DashboardTopPerformersContent(
+                    topPerformersState,
+                    selectedDateRange,
+                    lastUpdateState,
+                    topPerformersViewModel::onGranularityChanged,
+                    topPerformersViewModel::onEditCustomRangeTapped
+                )
+            }
         }
     }
 
@@ -205,7 +212,6 @@ private fun TopPerformersContent(
             )
         }
         when {
-            topPerformersState?.isError == true -> TopPerformersErrorView()
             topPerformersState?.topPerformers.isNullOrEmpty() -> TopPerformersEmptyView()
             else -> TopPerformerProductList(
                 topPerformers = topPerformersState?.topPerformers!!,
@@ -481,22 +487,14 @@ private fun TopPerformersEmptyView(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TopPerformersErrorView() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_top_performers_empty),
-            contentDescription = "",
-        )
-        Text(
-            modifier = Modifier.padding(top = 16.dp),
-            text = stringResource(id = R.string.dashboard_top_performers_empty),
-            style = MaterialTheme.typography.body2,
-        )
-    }
+private fun TopPerformersErrorView(
+    onContactSupportClicked: () -> Unit,
+    onRetryClicked: () -> Unit
+) {
+    WidgetError(
+        onContactSupportClicked = onContactSupportClicked,
+        onRetryClicked = onRetryClicked
+    )
 }
 
 @LightDarkThemePreviews
@@ -539,10 +537,7 @@ private fun TopPerformersWidgetCardPreview() {
         isLoading = false,
         titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
         menu = DashboardWidgetMenu(emptyList()),
-        onOpenAnalyticsTapped = DashboardWidgetAction(
-            titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
-            action = {}
-        )
+        onViewAllAnalyticsTapped = {}
     )
     Column {
         TopPerformersContent(
