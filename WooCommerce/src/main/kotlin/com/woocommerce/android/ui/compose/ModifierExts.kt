@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.compose
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -9,10 +11,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.extensions.WindowSizeClass
+import com.woocommerce.android.extensions.windowSizeClass
+import com.woocommerce.android.util.TabletLayoutSetupHelper
 
 fun Modifier.drawShadow(
     color: Color,
@@ -53,4 +59,18 @@ fun Modifier.autoMirror(): Modifier = composed {
     } else {
         this
     }
+}
+
+@Composable
+fun Modifier.paddingBasedOnWindowSize(): Modifier {
+    val context = LocalContext.current
+    val windowSizeClass = context.windowSizeClass
+    val screenWidthDp = context.resources.configuration.screenWidthDp.dp
+
+    val padding = when (windowSizeClass) {
+        WindowSizeClass.Compact -> 0.dp
+        WindowSizeClass.Medium -> screenWidthDp * TabletLayoutSetupHelper.MARGINS_FOR_SMALL_TABLET_PORTRAIT
+        WindowSizeClass.ExpandedAndBigger -> screenWidthDp * TabletLayoutSetupHelper.MARGINS_FOR_TABLET
+    }
+    return this.padding(horizontal = padding)
 }
