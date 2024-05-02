@@ -38,6 +38,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LiveData
@@ -55,6 +56,7 @@ import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -63,7 +65,6 @@ import java.util.Date
 
 @Composable
 fun DashboardStatsCard(
-    onStatsError: () -> Unit,
     openDatePicker: (Long, Long, (Long, Long) -> Unit) -> Unit,
     parentViewModel: DashboardViewModel,
     modifier: Modifier = Modifier,
@@ -77,13 +78,6 @@ fun DashboardStatsCard(
     val revenueStatsState by viewModel.revenueStatsState.observeAsState()
     val visitorsStatsState by viewModel.visitorStatsState.observeAsState()
     val lastUpdateState by viewModel.lastUpdateStats.observeAsState()
-
-    LaunchedEffect(revenueStatsState) {
-        when (revenueStatsState) {
-            is DashboardStatsViewModel.RevenueStatsViewState.GenericError -> onStatsError()
-            else -> Unit
-        }
-    }
 
     HandleEvents(
         event = viewModel.event,
@@ -103,33 +97,42 @@ fun DashboardStatsCard(
                 }
             )
         ),
-        button = if (revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError) {
-            DashboardViewModel.DashboardWidgetAction(
-                titleResource = R.string.analytics_section_see_all,
-                action = viewModel::onViewAnalyticsClicked
-            )
-        } else {
-            null
-        },
+        button = DashboardViewModel.DashboardWidgetAction(
+            titleResource = R.string.analytics_section_see_all,
+            action = viewModel::onViewAnalyticsClicked
+        ),
+        isError = revenueStatsState is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError ||
+            revenueStatsState == DashboardStatsViewModel.RevenueStatsViewState.GenericError,
         modifier = modifier
     ) {
-        if (revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError) {
-            DashboardStatsContent(
-                dateRange = dateRange,
-                revenueStatsState = revenueStatsState,
-                visitorsStatsState = visitorsStatsState,
-                lastUpdateState = lastUpdateState,
-                dateUtils = viewModel.dateUtils,
-                currencyFormatter = viewModel.currencyFormatter,
-                usageTracksEventEmitter = viewModel.usageTracksEventEmitter,
-                onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
-                onTabSelected = viewModel::onTabSelected,
-                onChartDateSelected = viewModel::onChartDateSelected
-            )
-        } else {
-            PluginNotAvailableError(
-                onContactSupportClick = parentViewModel::onContactSupportClicked
-            )
+        when (revenueStatsState) {
+            is DashboardStatsViewModel.RevenueStatsViewState.GenericError -> {
+                WidgetError(
+                    onContactSupportClicked = parentViewModel::onContactSupportClicked,
+                    onRetryClicked = viewModel::onRefresh
+                )
+            }
+
+            !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError -> {
+                DashboardStatsContent(
+                    dateRange = dateRange,
+                    revenueStatsState = revenueStatsState,
+                    visitorsStatsState = visitorsStatsState,
+                    lastUpdateState = lastUpdateState,
+                    dateUtils = viewModel.dateUtils,
+                    currencyFormatter = viewModel.currencyFormatter,
+                    usageTracksEventEmitter = viewModel.usageTracksEventEmitter,
+                    onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
+                    onTabSelected = viewModel::onTabSelected,
+                    onChartDateSelected = viewModel::onChartDateSelected
+                )
+            }
+
+            else -> {
+                PluginNotAvailableError(
+                    onContactSupportClick = parentViewModel::onContactSupportClicked
+                )
+            }
         }
     }
 }
@@ -431,3 +434,9 @@ private val SelectionType.title: String
         SelectionType.CUSTOM -> stringResource(id = R.string.date_timeframe_custom)
         else -> error("Invalid selection type")
     }
+
+@Composable
+@Preview
+fun PluginNotAvailableErrorPreview() {
+    PluginNotAvailableError(onContactSupportClick = {})
+}

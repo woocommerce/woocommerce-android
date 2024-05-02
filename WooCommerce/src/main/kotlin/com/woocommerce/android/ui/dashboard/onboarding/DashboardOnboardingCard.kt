@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Companion.MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.OnboardingDashBoardState
 import com.woocommerce.android.ui.feedback.SurveyType
@@ -78,8 +79,15 @@ fun DashboardOnboardingCard(
             menu = onboardingState.menu,
             button = onboardingState.onViewAllTapped,
             modifier = modifier,
+            isError = onboardingState.isError
         ) {
             when {
+                onboardingState.isError -> {
+                    WidgetError(
+                        onContactSupportClicked = parentViewModel::onContactSupportClicked,
+                        onRetryClicked = onboardingViewModel::onRefresh
+                    )
+                }
                 onboardingState.isLoading -> StoreOnboardingLoading()
                 else ->
                     StoreOnboardingCardContent(
@@ -304,10 +312,6 @@ private fun OnboardingPreview() {
         OnboardingDashBoardState(
             title = R.string.store_onboarding_title,
             menu = DashboardWidgetMenu(emptyList()),
-            onViewAllTapped = DashboardWidgetAction(
-                titleResource = R.string.store_onboarding_task_view_all,
-                action = {}
-            ),
             tasks = listOf(
                 OnboardingTaskUi(
                     taskUiResources = AboutYourStoreTaskRes,
@@ -321,6 +325,10 @@ private fun OnboardingPreview() {
                     taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = false,
                 )
+            ),
+            onViewAllTapped = DashboardWidgetAction(
+                titleResource = R.string.store_onboarding_task_view_all_tasks,
+                action = {}
             )
         ),
         onTaskClicked = {}

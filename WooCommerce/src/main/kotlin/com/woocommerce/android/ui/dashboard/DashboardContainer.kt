@@ -29,7 +29,6 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
@@ -99,9 +98,6 @@ private fun ConfigurableWidgetCard(
     when (widgetUiModel.widget.type) {
         DashboardWidget.Type.STATS -> {
             DashboardStatsCard(
-                onStatsError = {
-                    dashboardViewModel.onDashboardWidgetEvent(ShowStatsError)
-                },
                 openDatePicker = { start, end, callback ->
                     dashboardViewModel.onDashboardWidgetEvent(OpenRangePicker(start, end, callback))
                 },
