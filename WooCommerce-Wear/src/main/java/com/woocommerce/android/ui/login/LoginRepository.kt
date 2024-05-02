@@ -19,9 +19,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.AccountActionBuilder.newUpdateAccessTokenAction
+import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 
 class LoginRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.LOGIN) private val loginDataStore: DataStore<Preferences>,
+    private val dispatcher: Dispatcher,
     coroutineScope: CoroutineScope
 ) {
     private val gson by lazy { Gson() }
@@ -30,6 +34,7 @@ class LoginRepository @Inject constructor(
     val currentSite: StateFlow<SiteModel?> = siteFlow
 
     init {
+        dispatcher.register(this)
         loginDataStore.data
             .map { it[stringPreferencesKey(CURRENT_SITE_KEY)] }
             .map { it?.let { gson.fromJson(it, SiteModel::class.java) } }
@@ -49,6 +54,7 @@ class LoginRepository @Inject constructor(
         loginDataStore.edit { prefs ->
             prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
             data.getString(TOKEN.value)?.let { token ->
+                dispatcher.dispatch(newUpdateAccessTokenAction(UpdateTokenPayload(token)))
                 prefs[stringPreferencesKey(generateTokenKey(site.siteId))] = token
             }
         }
