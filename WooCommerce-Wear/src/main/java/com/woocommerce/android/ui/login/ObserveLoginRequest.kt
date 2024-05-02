@@ -1,32 +1,42 @@
 package com.woocommerce.android.ui.login
 
-import com.woocommerce.android.phone.PhoneConnectionRepository
-import com.woocommerce.android.phone.PhoneConnectionRepository.RequestState
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Failed
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
-import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class ObserveLoginRequest @Inject constructor(
-    private val loginRepository: LoginRepository,
-    private val phoneRepository: PhoneConnectionRepository,
+    private val loginRepository: LoginRepository
 ) {
     operator fun invoke() = combine(
         loginRepository.isUserLoggedIn,
-        phoneRepository.requestState
-    ) { isUserLoggedIn, requestState ->
+        timeoutWaitingFlow
+    ) { isUserLoggedIn, isWaiting ->
         when {
             isUserLoggedIn -> Logged
-            requestState == RequestState.Waiting(REQUEST_SITE) -> Waiting
-            else -> Failed
+            isWaiting -> Waiting
+            else -> Timeout
         }
     }
+
+    private val timeoutWaitingFlow: Flow<Boolean>
+        get() = flow {
+            emit(true)
+            delay(TIMEOUT_MILLIS)
+            emit(false)
+        }
 
     enum class LoginRequestState {
         Logged,
         Waiting,
-        Failed
+        Timeout
+    }
+
+    companion object {
+        const val TIMEOUT_MILLIS = 20000L
     }
 }
