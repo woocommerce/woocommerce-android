@@ -166,6 +166,12 @@ class OrderListFragment :
             this,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
+                    // We discovered cases where the callback was being invoked multiple times.
+                    // Most likely due to lagging fragment transition, it was not removed from the
+                    // onBackPressedDispatcher before next back press event.
+                    // The check below ensures that the callback is only called once to prevent crashes.
+                    if (findNavController().currentDestination?.id != R.id.orders) return
+
                     orderNavigationLogger.logBackStack(findNavController(), "Before navigating back from OrderList")
                     WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Start")
                     selectedOrder.selectOrder(-1L)
