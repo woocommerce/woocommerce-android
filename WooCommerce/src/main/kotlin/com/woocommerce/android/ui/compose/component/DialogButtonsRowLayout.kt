@@ -107,6 +107,24 @@ fun DialogButtonsRowLayout(
                     measurables.maxOf { it.maxIntrinsicHeight(width) }
                 }
             }
+
+            override fun IntrinsicMeasureScope.maxIntrinsicWidth(
+                measurables: List<IntrinsicMeasurable>,
+                height: Int
+            ): Int {
+                return measurables.sumOf {
+                    it.maxIntrinsicWidth(height)
+                }
+            }
+
+            override fun IntrinsicMeasureScope.minIntrinsicWidth(
+                measurables: List<IntrinsicMeasurable>,
+                height: Int
+            ): Int {
+                return measurables.sumOf {
+                    it.minIntrinsicWidth(height)
+                }
+            }
         }
     }
     Layout(
