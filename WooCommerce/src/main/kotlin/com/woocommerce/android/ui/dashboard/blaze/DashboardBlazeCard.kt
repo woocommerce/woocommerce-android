@@ -61,9 +61,15 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Campaign
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Error
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.Loading
+import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState.NoCampaign
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlag.DYNAMIC_DASHBOARD
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.launch
 
@@ -79,9 +85,11 @@ fun DashboardBlazeCard(
     viewModel.blazeViewState.observeAsState().value?.let { state ->
         if (state !is DashboardBlazeCampaignState.Hidden) {
             DashboardBlazeView(
-                modifier = modifier,
                 state = state,
-                onDismissBlazeView = viewModel::onBlazeViewDismissed
+                onDismissBlazeView = viewModel::onBlazeViewDismissed,
+                modifier = modifier,
+                onContactSupportClicked = parentViewModel::onContactSupportClicked,
+                onRetryOnErrorButtonClicked = parentViewModel::onRetryOnErrorButtonClicked
             )
         }
     }
@@ -175,7 +183,9 @@ private fun BlazeFrame(
 fun DashboardBlazeView(
     state: DashboardBlazeCampaignState,
     onDismissBlazeView: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onContactSupportClicked: () -> Unit = {},
+    onRetryOnErrorButtonClicked: () -> Unit = {}
 ) {
     BlazeFrame(modifier, state, onDismissBlazeView) {
         Column(
@@ -186,34 +196,34 @@ fun DashboardBlazeView(
                 )
         ) {
             when (state) {
-                is DashboardBlazeCampaignState.Loading -> BlazeCampaignLoading(
+                is Loading -> BlazeCampaignLoading(
                     modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.major_100))
                 )
 
-                is DashboardBlazeCampaignState.Campaign -> {
+                is Campaign -> {
                     BlazeCampaignItem(
                         campaign = state.campaign,
                         onCampaignClicked = state.onCampaignClicked,
                     )
 
-                    if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
+                    if (DYNAMIC_DASHBOARD.isEnabled()) {
                         WCOutlinedButton(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = dimensionResource(id = R.dimen.minor_100)),
                             onClick = state.onCreateCampaignClicked,
                         ) {
-                            Text(stringResource(R.string.blaze_campaign_create_campaign_button))
+                            Text(stringResource(string.blaze_campaign_create_campaign_button))
                         }
                     }
                 }
 
-                is DashboardBlazeCampaignState.NoCampaign -> {
+                is NoCampaign -> {
                     Text(
                         modifier = Modifier.padding(
                             end = dimensionResource(id = R.dimen.major_300)
                         ),
-                        text = stringResource(id = R.string.blaze_campaign_subtitle),
+                        text = stringResource(id = string.blaze_campaign_subtitle),
                         style = MaterialTheme.typography.body1,
                     )
                     BlazeProductItem(
@@ -222,7 +232,7 @@ fun DashboardBlazeView(
                         modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                     )
 
-                    if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
+                    if (DYNAMIC_DASHBOARD.isEnabled()) {
                         WCOutlinedButton(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -232,8 +242,17 @@ fun DashboardBlazeView(
                                 ),
                             onClick = state.onCreateCampaignClicked,
                         ) {
-                            Text(stringResource(R.string.blaze_campaign_create_campaign_button))
+                            Text(stringResource(string.blaze_campaign_create_campaign_button))
                         }
+                    }
+                }
+
+                Error ->  {
+                    if (DYNAMIC_DASHBOARD.isEnabled()) {
+                        WidgetError(
+                            onContactSupportClicked = onContactSupportClicked,
+                            onRetryClicked = onRetryOnErrorButtonClicked
+                        )
                     }
                 }
 
@@ -474,7 +493,9 @@ fun MyStoreBlazeViewCampaignPreview() {
                 action = {}
             ),
         ),
-        onDismissBlazeView = {}
+        onDismissBlazeView = {},
+        onContactSupportClicked = {},
+        onRetryOnErrorButtonClicked = {},
     )
 }
 
@@ -497,7 +518,9 @@ fun MyStoreBlazeViewNoCampaignPreview() {
             ),
             onCreateCampaignClicked = {},
         ),
-        onDismissBlazeView = {}
+        onDismissBlazeView = {},
+        onContactSupportClicked = {},
+        onRetryOnErrorButtonClicked = {},
     )
 }
 
@@ -507,7 +530,9 @@ fun DashboardBlazeLoadingPreview() {
     WooThemeWithBackground {
         DashboardBlazeView(
             state = DashboardBlazeCampaignState.Loading,
-            onDismissBlazeView = {}
+            onDismissBlazeView = {},
+            onContactSupportClicked = {},
+            onRetryOnErrorButtonClicked = {},
         )
     }
 }

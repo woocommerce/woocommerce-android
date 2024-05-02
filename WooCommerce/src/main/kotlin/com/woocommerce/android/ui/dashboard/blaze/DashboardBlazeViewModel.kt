@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
@@ -63,6 +64,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val networkStatus: NetworkStatus,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val refreshTrigger = (parentViewModel?.refreshTrigger ?: emptyFlow())
@@ -87,6 +89,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                         getProductsFlow(forceRefresh = refreshEvent.isForced)
                     ) { blazeCampaignModel, products ->
                         when {
+                            !networkStatus.isConnected() -> DashboardBlazeCampaignState.Error
                             products.isEmpty() -> Hidden
                             blazeCampaignModel == null -> showUiForNoCampaign(products)
                             else -> showUiForCampaign(blazeCampaignModel)
@@ -237,6 +240,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         // TODO remove this state when enabling [FeatureFlag.DYNAMIC_DASHBOARD] and clean up the code
         data object Hidden : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
         data object Loading : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
+        data object Error : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
         data class NoCampaign(
             val product: BlazeProductUi,
             val onProductClicked: () -> Unit,
