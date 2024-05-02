@@ -40,6 +40,7 @@ import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.pinFabAboveBottomNavigationBar
+import com.woocommerce.android.extensions.popBackStackSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.windowSizeClass
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -173,7 +174,7 @@ class OrderListFragment :
                         WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Location #1")
                         if (!binding.detailPaneContainer.findNavController().popBackStack()) {
                             WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Location #2")
-                            findNavController().popBackStack()
+                            findNavController().popBackStackSafely()
                         }
                     } else if (isSearching) {
                         WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Location #3")
@@ -189,9 +190,9 @@ class OrderListFragment :
                             // and now it's a single pane layout (phone), e.g. due to a configuration change.
                             // In this case we need to switch panes – show the list pane instead of details pane.
                             adjustUiForDeviceType(savedInstanceState)
-                        } else {
+                        } else if (findNavController().currentDestination?.id == R.id.orders) {
                             WooLog.d(WooLog.T.ORDERS, "Before navigating back from OrderList: Location #6")
-                            findNavController().popBackStack()
+                            findNavController().popBackStackSafely()
                         }
                     }
                     WooLog.d(WooLog.T.ORDERS, "After navigating back from OrderList: End")

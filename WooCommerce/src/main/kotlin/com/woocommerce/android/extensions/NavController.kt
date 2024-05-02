@@ -67,3 +67,11 @@ fun NavController.navigateSafely(
         }
     }
 }
+
+fun NavController.popBackStackSafely() {
+    CallThrottler.throttle {
+        if (popBackStack().not()) {
+            WooLog.w(WooLog.T.UTILS, "No back stack entry found to pop.")
+        }
+    }
+}
