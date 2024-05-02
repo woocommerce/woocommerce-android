@@ -99,6 +99,10 @@ dependencies {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
     }
+    implementation("org.wordpress:utils:$wordPressUtilsVersion") {
+        exclude group: "com.mcxiaoke.volley"
+        exclude group: "com.android.support"
+    }
 
     // WearOS
     implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
