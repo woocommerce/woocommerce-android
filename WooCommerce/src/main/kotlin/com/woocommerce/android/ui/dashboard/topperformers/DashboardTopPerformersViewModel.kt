@@ -168,7 +168,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
             mapOf(
-                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.BLAZE.trackingIdentifier
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier
             )
         )
         refreshTrigger.tryEmit(RefreshEvent(isForced = true))
