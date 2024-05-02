@@ -5,8 +5,8 @@ import androidx.navigation.NavHostController
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.ui.NavRoutes
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Failed
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
+import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
 import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -48,7 +48,7 @@ class LoginViewModelTest : BaseUnitTest() {
     fun `when user is not logged in, loading is stopped`() = testBlocking {
         // Given
         var isLoading: Boolean? = null
-        whenever(observeLoginRequest.invoke()).thenReturn(flowOf(Failed))
+        whenever(observeLoginRequest.invoke()).thenReturn(flowOf(Timeout))
         createSut()
         sut.viewState.observeForever { isLoading = it.isLoading }
 
