@@ -290,8 +290,6 @@ class DashboardViewModel @Inject constructor(
 
         data object OpenEditWidgets : DashboardEvent()
 
-        data object ShowStatsError : DashboardEvent()
-
         data class OpenRangePicker(
             val start: Long,
             val end: Long,

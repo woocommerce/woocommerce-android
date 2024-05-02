@@ -426,6 +426,8 @@
     <string name="my_store_widget_onboarding_completed">Completed</string>
 
     <string name="dynamic_dashboard_hide_widget_menu_item">Hide %s</string>
+    <string name="dynamic_dashboard_widget_error_title">Unable to load data</string>
+    <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
 
     <!--
         Sign Up Flow
@@ -3751,8 +3753,9 @@
     -->
     <string name="blaze_campaign_title">Blaze campaign</string>
     <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
-    <string name="blaze_campaign_promote_button">Promote</string>
-    <string name="blaze_campaign_show_all_button">Show all</string>
+    <string name="blaze_campaign_create_campaign_button">Create campaign</string>
+    <string name="blaze_campaign_suggested_product_caption">Suggested product</string>
+    <string name="blaze_campaign_show_all_button">View all campaigns</string>
     <string name="blaze_campaign_status_in_moderation">In moderation</string>
     <string name="blaze_campaign_status_active">Active</string>
     <string name="blaze_campaign_status_completed">Completed</string>

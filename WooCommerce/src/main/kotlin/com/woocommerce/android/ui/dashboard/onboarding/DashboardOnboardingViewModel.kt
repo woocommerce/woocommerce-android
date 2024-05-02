@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -39,7 +40,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
@@ -49,6 +52,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val networkStatus: NetworkStatus,
     val addProductNavigator: AddProductNavigator
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -78,25 +82,33 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     )
     val viewState = _viewState
 
+    private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+
     init {
         launch {
-            parentViewModel.refreshTrigger
+            merge(refreshTrigger, parentViewModel.refreshTrigger)
                 .onStart { emit(RefreshEvent()) }
                 .collectLatest {
-                    _viewState.value = _viewState.value?.copy(isLoading = true)
-                    if (it.isForced) {
-                        // Fetch only if it's a forced refresh, in the other cases, the DashboardRepository will
-                        // trigger the initial fetch
-                        onboardingRepository.fetchOnboardingTasks()
+                    if (networkStatus.isConnected()) {
+                        _viewState.value = _viewState.value?.copy(isLoading = true, isError = false)
+                        if (it.isForced) {
+                            // Fetch only if it's a forced refresh, in the other cases, the DashboardRepository will
+                            // trigger the initial fetch
+                            onboardingRepository.fetchOnboardingTasks()
+                        }
+                    } else {
+                        _viewState.value = _viewState.value?.copy(isLoading = false, isError = true)
                     }
                 }
         }
+
         launch {
             onboardingRepository.observeOnboardingTasks()
                 .collectLatest { tasks ->
                     _viewState.value = _viewState.value?.copy(
                         tasks = tasks.map { it.toOnboardingTaskState() },
-                        isLoading = false
+                        isLoading = false,
+                        isError = false
                     )
                 }
         }
@@ -126,12 +138,17 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         )
     }
 
+    fun onRefresh() {
+        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
     data class OnboardingDashBoardState(
         @StringRes val title: Int,
         val tasks: List<OnboardingTaskUi>,
         val menu: DashboardWidgetMenu,
-        val onViewAllTapped: DashboardWidgetAction,
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
+        val isError: Boolean = false,
+        val onViewAllTapped: DashboardWidgetAction
     )
 
     @AssistedFactory
