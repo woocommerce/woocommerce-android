@@ -196,9 +196,9 @@ class GetStats @Inject constructor(
             val totalVisitorCount: Int?
         ) : LoadStatsResult()
 
-        object RevenueStatsError : LoadStatsResult()
-        object VisitorsStatsError : LoadStatsResult()
-        object PluginNotActive : LoadStatsResult()
+        data object RevenueStatsError : LoadStatsResult()
+        data object VisitorsStatsError : LoadStatsResult()
+        data object PluginNotActive : LoadStatsResult()
         data object VisitorStatUnavailable : LoadStatsResult()
     }
 }

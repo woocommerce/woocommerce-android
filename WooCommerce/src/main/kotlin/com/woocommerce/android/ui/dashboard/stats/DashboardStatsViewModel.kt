@@ -168,7 +168,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) = coroutineScope {
         if (!networkStatus.isConnected()) {
-            _revenueStatsState.value = RevenueStatsViewState.Content(null, selectedRange)
+            _revenueStatsState.value = RevenueStatsViewState.GenericError
             _visitorStatsState.value = VisitorStatsViewState.NotLoaded
             return@coroutineScope
         }

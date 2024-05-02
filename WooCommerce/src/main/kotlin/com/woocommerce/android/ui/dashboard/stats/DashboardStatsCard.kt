@@ -38,6 +38,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LiveData
@@ -55,6 +56,7 @@ import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
@@ -103,7 +105,8 @@ fun DashboardStatsCard(
                 }
             )
         ),
-        button = if (revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError) {
+        button = if (revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError
+            && revenueStatsState != DashboardStatsViewModel.RevenueStatsViewState.GenericError) {
             DashboardViewModel.DashboardWidgetAction(
                 titleResource = R.string.analytics_section_see_all,
                 action = viewModel::onViewAnalyticsClicked
@@ -113,23 +116,34 @@ fun DashboardStatsCard(
         },
         modifier = modifier
     ) {
-        if (revenueStatsState !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError) {
-            DashboardStatsContent(
-                dateRange = dateRange,
-                revenueStatsState = revenueStatsState,
-                visitorsStatsState = visitorsStatsState,
-                lastUpdateState = lastUpdateState,
-                dateUtils = viewModel.dateUtils,
-                currencyFormatter = viewModel.currencyFormatter,
-                usageTracksEventEmitter = viewModel.usageTracksEventEmitter,
-                onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
-                onTabSelected = viewModel::onTabSelected,
-                onChartDateSelected = viewModel::onChartDateSelected
-            )
-        } else {
-            PluginNotAvailableError(
-                onContactSupportClick = parentViewModel::onContactSupportClicked
-            )
+        when (revenueStatsState) {
+            is DashboardStatsViewModel.RevenueStatsViewState.GenericError -> {
+                WidgetError(
+                    onContactSupportClicked = parentViewModel::onContactSupportClicked,
+                    onRetryClicked = parentViewModel::onRetryOnErrorButtonClicked
+                )
+            }
+
+            !is DashboardStatsViewModel.RevenueStatsViewState.PluginNotActiveError -> {
+                DashboardStatsContent(
+                    dateRange = dateRange,
+                    revenueStatsState = revenueStatsState,
+                    visitorsStatsState = visitorsStatsState,
+                    lastUpdateState = lastUpdateState,
+                    dateUtils = viewModel.dateUtils,
+                    currencyFormatter = viewModel.currencyFormatter,
+                    usageTracksEventEmitter = viewModel.usageTracksEventEmitter,
+                    onAddCustomRangeClick = viewModel::onAddCustomRangeClicked,
+                    onTabSelected = viewModel::onTabSelected,
+                    onChartDateSelected = viewModel::onChartDateSelected
+                )
+            }
+
+            else -> {
+                PluginNotAvailableError(
+                    onContactSupportClick = parentViewModel::onContactSupportClicked
+                )
+            }
         }
     }
 }
@@ -431,3 +445,9 @@ private val SelectionType.title: String
         SelectionType.CUSTOM -> stringResource(id = R.string.date_timeframe_custom)
         else -> error("Invalid selection type")
     }
+
+@Composable
+@Preview
+fun PluginNotAvailableErrorPreview() {
+    PluginNotAvailableError(onContactSupportClick = {})
+}
