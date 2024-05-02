@@ -420,6 +420,7 @@
     <string name="my_store_widget_stats_title">Performance</string>
     <string name="my_store_widget_top_products_title">Top products</string>
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
+    <string name="my_store_widget_feedback_title">Feedback</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>

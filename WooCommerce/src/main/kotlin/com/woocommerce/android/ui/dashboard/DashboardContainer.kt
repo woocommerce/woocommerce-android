@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,12 +24,14 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
@@ -79,6 +83,13 @@ private fun WidgetList(
                     is DashboardViewModel.DashboardWidgetUiModel.ShareStoreWidget -> {
                         ShareStoreCard(
                             onShareClicked = it.onShareClicked,
+                            modifier = widgetModifier
+                        )
+                    }
+
+                    is DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget -> {
+                        FeedbackCard(
+                            widget = it,
                             modifier = widgetModifier
                         )
                     }
@@ -159,5 +170,49 @@ private fun ShareStoreCard(
             onClick = onShareClicked,
             text = stringResource(id = R.string.share_store_button)
         )
+    }
+}
+
+@Composable
+private fun FeedbackCard(
+    widget: DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget,
+    modifier: Modifier
+) {
+    LaunchedEffect(Unit) {
+        widget.onShown()
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.woo_gray_5),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Text(
+            text = stringResource(id = R.string.feedback_request_title),
+            style = MaterialTheme.typography.body1,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            WCOutlinedButton(
+                onClick = widget.onNegativeClick,
+                text = stringResource(id = R.string.feedback_request_make_better),
+                modifier = Modifier.weight(1f)
+            )
+            WCColoredButton(
+                onClick = widget.onPositiveClick,
+                text = stringResource(id = R.string.feedback_request_like_it),
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
