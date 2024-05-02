@@ -59,6 +59,7 @@ import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.Companion.SUPPORTED_RANGES_ON_MY_STORE_TAB
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
@@ -90,7 +91,8 @@ fun DashboardTopPerformersWidgetCard(
             titleResource = topPerformersState.titleStringRes,
             menu = topPerformersState.menu,
             button = topPerformersState.onOpenAnalyticsTapped,
-            modifier = modifier
+            modifier = modifier,
+            isError = topPerformersState.isError
         ) {
             when {
                 topPerformersState.isError -> TopPerformersErrorView(
@@ -536,7 +538,10 @@ private fun TopPerformersWidgetCardPreview() {
         isLoading = false,
         titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
         menu = DashboardWidgetMenu(emptyList()),
-        onViewAllAnalyticsTapped = {}
+        onOpenAnalyticsTapped = DashboardWidgetAction(
+            titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
+            action = {}
+        )
     )
     Column {
         TopPerformersContent(

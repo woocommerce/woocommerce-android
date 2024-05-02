@@ -106,7 +106,10 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                     }
                 )
             ),
-            onViewAllAnalyticsTapped = ::onViewAllAnalyticsTapped
+            onOpenAnalyticsTapped =  DashboardWidgetAction(
+                titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
+                action = ::onViewAllAnalyticsTapped
+            )
         )
 
         viewModelScope.launch {
@@ -244,17 +247,8 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         @StringRes val titleStringRes: Int,
         val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
         val menu: DashboardWidgetMenu,
-        val onViewAllAnalyticsTapped: () -> Unit
-    ) {
-        val onOpenAnalyticsTapped = if (!isError) {
-            DashboardWidgetAction(
-                titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
-                action = onViewAllAnalyticsTapped
-            )
-        } else {
-            null
-        }
-    }
+        val onOpenAnalyticsTapped: DashboardWidgetAction
+    )
 
     data class OpenTopPerformer(
         val productId: Long

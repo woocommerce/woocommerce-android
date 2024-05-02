@@ -72,7 +72,10 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                     }
                 )
             ),
-            onViewAllClicked = ::viewAllClicked
+            onViewAllTapped = DashboardWidgetAction(
+                titleResource = R.string.store_onboarding_task_view_all_tasks,
+                action = ::viewAllClicked
+            )
         )
     )
     val viewState = _viewState
@@ -136,17 +139,8 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         val menu: DashboardWidgetMenu,
         val isLoading: Boolean = false,
         val isError: Boolean = false,
-        val onViewAllClicked: () -> Unit
-    ) {
-        val onViewAllTapped: DashboardWidgetAction? = if (!isError) {
-            DashboardWidgetAction(
-                titleResource = R.string.store_onboarding_task_view_all_tasks,
-                action = onViewAllClicked
-            )
-        } else {
-            null
-        }
-    }
+        val onViewAllTapped: DashboardWidgetAction
+    )
 
     @AssistedFactory
     interface Factory {

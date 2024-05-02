@@ -155,6 +155,7 @@ private fun BlazeFrame(
             iconResource = R.drawable.ic_blaze,
             menu = state.menu,
             button = state.mainButton,
+            isError = state is DashboardBlazeCampaignState.Error
         ) {
             content()
         }
@@ -242,7 +243,7 @@ fun DashboardBlazeView(
                     }
                 }
 
-                DashboardBlazeCampaignState.Error -> {
+                is DashboardBlazeCampaignState.Error -> {
                     if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
                         WidgetError(
                             onContactSupportClicked = onContactSupportClicked,

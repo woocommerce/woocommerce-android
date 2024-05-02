@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ fun WidgetCard(
     menu: DashboardWidgetMenu,
     @DrawableRes iconResource: Int? = null,
     button: DashboardWidgetAction? = null,
+    isError: Boolean,
     content: @Composable () -> Unit
 ) {
     val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
@@ -51,7 +53,16 @@ fun WidgetCard(
             .background(MaterialTheme.colors.surface)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (iconResource != null) {
+            if (isError) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_tintable_info_outline_24dp),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(start = dimensionResource(id = R.dimen.major_100))
+                        .size(dimensionResource(id = R.dimen.major_125)),
+                    tint = colorResource(id = R.color.color_icon)
+                )
+            } else if (iconResource != null) {
                 Image(
                     painter = painterResource(id = iconResource),
                     contentDescription = "",
@@ -80,7 +91,7 @@ fun WidgetCard(
 
         content()
 
-        if (button != null) {
+        if (button != null && !isError) {
             WCTextButton(
                 modifier = Modifier
                     .padding(
@@ -120,7 +131,8 @@ fun PreviewWidgetCard() {
             button = DashboardWidgetAction(
                 titleResource = R.string.blaze_campaign_show_all_button,
                 action = {}
-            )
+            ),
+            isError = false
         ) {
             Text(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),

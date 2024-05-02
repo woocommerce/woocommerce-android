@@ -89,7 +89,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                         getProductsFlow(forceRefresh = refreshEvent.isForced)
                     ) { blazeCampaignModel, products ->
                         when {
-                            !networkStatus.isConnected() -> DashboardBlazeCampaignState.Error
+                            !networkStatus.isConnected() -> DashboardBlazeCampaignState.Error(widgetMenu)
                             products.isEmpty() -> Hidden
                             blazeCampaignModel == null -> showUiForNoCampaign(products)
                             else -> showUiForCampaign(blazeCampaignModel)
@@ -118,9 +118,13 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         if (isBlazeDismissed) Hidden else blazeViewState
     }.asLiveData()
 
-    private val hideWidgetAction = DashboardWidget.Type.BLAZE.defaultHideMenuEntry {
-        parentViewModel?.onHideWidgetClicked(DashboardWidget.Type.BLAZE)
-    }
+    private val widgetMenu = DashboardWidgetMenu(
+        items = listOf(
+            DashboardWidget.Type.BLAZE.defaultHideMenuEntry {
+                parentViewModel?.onHideWidgetClicked(DashboardWidget.Type.BLAZE)
+            }
+        )
+    )
 
     private fun showUiForNoCampaign(products: List<Product>): DashboardBlazeCampaignState {
         val product = products.first()
@@ -135,9 +139,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
             onCreateCampaignClicked = {
                 launchCampaignCreation(if (products.size == 1) product.remoteId else null)
             },
-            menu = DashboardWidgetMenu(
-                items = listOf(hideWidgetAction)
-            )
+            menu = widgetMenu
         )
     }
 
@@ -177,7 +179,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
             onCreateCampaignClicked = {
                 launchCampaignCreation(productId = null)
             },
-            menu = DashboardWidgetMenu(items = listOf(hideWidgetAction)),
+            menu = widgetMenu,
             showAllCampaignsButton = DashboardWidgetAction(
                 titleResource = string.blaze_campaign_show_all_button,
                 action = { viewAllCampaigns() }
@@ -240,7 +242,9 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         // TODO remove this state when enabling [FeatureFlag.DYNAMIC_DASHBOARD] and clean up the code
         data object Hidden : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
         data object Loading : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
-        data object Error : DashboardBlazeCampaignState(DashboardWidgetMenu(emptyList()))
+        data class Error(
+            override val menu: DashboardWidgetMenu
+        ) : DashboardBlazeCampaignState(menu)
         data class NoCampaign(
             val product: BlazeProductUi,
             val onProductClicked: () -> Unit,

@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
@@ -78,6 +79,7 @@ fun DashboardOnboardingCard(
             menu = onboardingState.menu,
             button = onboardingState.onViewAllTapped,
             modifier = modifier,
+            isError = onboardingState.isError
         ) {
             when {
                 onboardingState.isError -> {
@@ -324,7 +326,10 @@ private fun OnboardingPreview() {
                     isCompleted = false,
                 )
             ),
-            onViewAllClicked = {},
+            onViewAllTapped = DashboardWidgetAction(
+                titleResource = R.string.store_onboarding_task_view_all_tasks,
+                action = {}
+            )
         ),
         onTaskClicked = {}
     )
