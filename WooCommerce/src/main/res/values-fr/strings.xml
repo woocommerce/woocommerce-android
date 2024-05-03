@@ -10,7 +10,6 @@ Language: fr
     <string name="store_onboarding_task_view_all_tasks">Voir toutes les tâches</string>
     <string name="analytics_session_no_available_description">Les analyses de session se basent sur le nombre de visites uniques indisponibles pour les plages de dates personnalisées</string>
     <string name="analytics_session_no_available">Données de session indisponibles</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">Masquer</string>
     <string name="my_store_widget_unavailable">Indisponible</string>
     <string name="my_store_widget_stats_title">Performances</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Voir toutes les statistiques de la boutique</string>
