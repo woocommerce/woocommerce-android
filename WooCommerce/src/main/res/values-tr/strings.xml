@@ -10,7 +10,6 @@ Language: tr
     <string name="store_onboarding_task_view_all_tasks">Tüm görevleri görüntüle</string>
     <string name="analytics_session_no_available_description">Oturum analizleri, özel tarih aralıklarında kullanılamayan benzersiz ziyaretçi sayılarına dayanır</string>
     <string name="analytics_session_no_available">Oturum verileri kullanılamıyor</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">Gizle</string>
     <string name="my_store_widget_unavailable">Kullanılamıyor</string>
     <string name="my_store_widget_stats_title">Performans</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Tüm mağaza analizlerini görüntüle</string>

@@ -10,7 +10,6 @@ Language: sv_SE
     <string name="store_onboarding_task_view_all_tasks">Visa alla uppgifter</string>
     <string name="analytics_session_no_available_description">Sessionsanalysen bygger på antalet unika besökare, vilket inte är tillgängligt för anpassade datumintervall</string>
     <string name="analytics_session_no_available">Sessionsdata ej tillgänglig</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">Dölj</string>
     <string name="my_store_widget_unavailable">Inte tillgänglig</string>
     <string name="my_store_widget_stats_title">Prestanda</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Visa alla butiksanalyser</string>

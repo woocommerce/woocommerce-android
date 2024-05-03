@@ -10,7 +10,6 @@ Language: nl
     <string name="store_onboarding_task_view_all_tasks">Alle taken bekijken</string>
     <string name="analytics_session_no_available_description">Sessie-analyses gebruiken tellingen van unieke bezoekers, die niet beschikbaar zijn voor aangepaste datumbereiken</string>
     <string name="analytics_session_no_available">Sessiegegevens niet beschikbaar</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">Verbergen</string>
     <string name="my_store_widget_unavailable">Niet beschikbaar</string>
     <string name="my_store_widget_stats_title">Prestaties</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Alle winkelanalyses bekijken</string>

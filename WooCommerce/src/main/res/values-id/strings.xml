@@ -10,7 +10,6 @@ Language: id
     <string name="store_onboarding_task_view_all_tasks">Lihat semua tugas</string>
     <string name="analytics_session_no_available_description">Analitik sesi bergantung pada jumlah pengunjung unik yang tidak tersedia untuk rentang tanggal kustom</string>
     <string name="analytics_session_no_available">Data sesi tidak tersedia</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">Sembunyikan</string>
     <string name="my_store_widget_unavailable">Tidak tersedia</string>
     <string name="my_store_widget_stats_title">Performa</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Lihat semua analitik toko</string>
