@@ -91,9 +91,12 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                     combine(
                         observeMostRecentBlazeCampaign(forceRefresh = refreshEvent.isForced),
                         getProductsFlow(forceRefresh = refreshEvent.isForced)
-                    ) { blazeCampaignModel, products ->
+                    ) { blazeCampaignModel, productsResult ->
+                        if (productsResult.isFailure) {
+                            return@combine DashboardBlazeCampaignState.Error(widgetMenu)
+                        }
+                        val products = productsResult.getOrThrow()
                         when {
-                            !networkStatus.isConnected() -> DashboardBlazeCampaignState.Error(widgetMenu)
                             products.isEmpty() -> Hidden
                             blazeCampaignModel == null -> showUiForNoCampaign(products)
                             else -> showUiForCampaign(blazeCampaignModel)
@@ -201,9 +204,12 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         triggerEvent(ShowAllCampaigns)
     }
 
-    private fun getProductsFlow(forceRefresh: Boolean): Flow<List<Product>> {
+    private fun getProductsFlow(forceRefresh: Boolean): Flow<Result<List<Product>>> {
         return flow {
-            if (forceRefresh) refreshProducts()
+            if (forceRefresh) refreshProducts().onFailure {
+                emit(Result.failure(it))
+                return@flow
+            }
 
             emitAll(
                 productListRepository.observeProducts(
@@ -213,17 +219,17 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                     // For optimization, load only 2 products, as we need only the first one, and
                     // and to check if there are more than 1 product to show the "Create Campaign" button
                     limit = 2
-                )
+                ).map {
+                    Result.success(it)
+                }
             )
         }
     }
 
-    private suspend fun refreshProducts() {
-        productListRepository.fetchProductList(
+    private suspend fun refreshProducts() = productListRepository.fetchProductList(
             productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
             sortType = ProductSorting.DATE_DESC,
         )
-    }
 
     private fun launchCampaignCreation(productId: Long?) {
         triggerEvent(LaunchBlazeCampaignCreation(productId))
