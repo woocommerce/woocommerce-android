@@ -43,11 +43,13 @@ class MyStoreViewModel @AssistedInject constructor(
     }
 
     private fun requestStoreStats(selectedSite: SiteModel) {
+        _viewState.update { it.copy(isLoading = true) }
         launch {
             getMyStoreStats(selectedSite)
                 .onEach { statsData ->
                     _viewState.update {
                         it.copy(
+                            isLoading = false,
                             revenueTotal = statsData.revenue,
                             ordersCount = statsData.ordersCount,
                             visitorsCount = statsData.visitorsCount,
@@ -59,15 +61,12 @@ class MyStoreViewModel @AssistedInject constructor(
     }
 
     private fun updateSiteData(site: SiteModel) {
-        _viewState.update {
-            it.copy(
-                currentSiteName = site.name
-            )
-        }
+        _viewState.update { it.copy(currentSiteName = site.name) }
     }
 
     @Parcelize
     data class ViewState(
+        val isLoading: Boolean = false,
         val currentSiteName: String? = null,
         val revenueTotal: Double? = null,
         val ordersCount: Int? = null,

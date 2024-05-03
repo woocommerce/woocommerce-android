@@ -22,6 +22,7 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
+import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
 
@@ -51,28 +52,6 @@ fun LoginScreen(
                 ErrorScreen(onTryAgainClicked)
             }
         }
-    }
-}
-
-@Composable
-private fun LoadingScreen(
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        CircularProgressIndicator(
-            modifier = modifier
-                .size(24.dp)
-        )
-        Text(
-            text = stringResource(id = R.string.login_screen_loading_text),
-            modifier = modifier.padding(8.dp)
-        )
     }
 }
 
