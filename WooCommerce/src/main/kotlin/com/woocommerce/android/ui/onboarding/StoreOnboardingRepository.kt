@@ -33,12 +33,14 @@ class StoreOnboardingRepository @Inject constructor(
         .filter { it.siteId == selectedSite.get().id }
         .map { it.tasks }
 
-    suspend fun fetchOnboardingTasks() {
+    suspend fun fetchOnboardingTasks(): Result<Unit> {
         WooLog.d(WooLog.T.ONBOARDING, "Fetching onboarding tasks")
         val result = onboardingStore.fetchOnboardingTasks(selectedSite.get())
-        when {
-            result.isError ->
+        return when {
+            result.isError -> {
                 WooLog.i(WooLog.T.ONBOARDING, "Error fetching onboarding tasks: ${result.error}")
+                Result.failure(WooException(result.error))
+            }
 
             else -> {
                 WooLog.d(WooLog.T.ONBOARDING, "Success fetching onboarding tasks")
@@ -56,6 +58,7 @@ class StoreOnboardingRepository @Inject constructor(
                     ?: emptyList()
 
                 onboardingTasksCacheFlow.emit(OnboardingTasksEvent(selectedSite.get().id, mobileSupportedTasks))
+                Result.success(Unit)
             }
         }
     }
