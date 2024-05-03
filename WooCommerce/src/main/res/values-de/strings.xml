@@ -10,7 +10,6 @@ Language: de
     <string name="store_onboarding_task_view_all_tasks">Alle Aufgaben anzeigen</string>
     <string name="analytics_session_no_available_description">Analysedaten für Sitzungen basieren auf Besucherzahlen, die für individuelle Zeiträume nicht verfügbar sind</string>
     <string name="analytics_session_no_available">Sitzungsdaten nicht verfügbar</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">Ausblenden</string>
     <string name="my_store_widget_unavailable">Nicht verfügbar</string>
     <string name="my_store_widget_stats_title">Performance</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Alle Shop-Analysen anzeigen</string>

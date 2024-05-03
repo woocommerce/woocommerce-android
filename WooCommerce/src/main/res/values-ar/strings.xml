@@ -10,7 +10,6 @@ Language: ar
     <string name="store_onboarding_task_view_all_tasks">عرض جميع المهام</string>
     <string name="analytics_session_no_available_description">تعتمد تحليلات الجلسة على أعداد الزائرين الفريدة غير المتاحة لنطاقات التواريخ المخصصة</string>
     <string name="analytics_session_no_available">بيانات الجلسة غير متاحة</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">إخفاء</string>
     <string name="my_store_widget_unavailable">غير متاح</string>
     <string name="my_store_widget_stats_title">الأداء</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">مشاهدة كل تحليلات المتجر</string>

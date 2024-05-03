@@ -10,7 +10,6 @@ Language: pt_BR
     <string name="store_onboarding_task_view_all_tasks">Visualizar todas as tarefas</string>
     <string name="analytics_session_no_available_description">A análise da sessão depende da contagem de visitantes diferentes, não disponíveis para datas personalizadas</string>
     <string name="analytics_session_no_available">Dados da sessão indisponíveis</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">Ocultar</string>
     <string name="my_store_widget_unavailable">Indisponível</string>
     <string name="my_store_widget_stats_title">Desempenho</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Ver todos os dados analíticos da loja</string>

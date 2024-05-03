@@ -10,7 +10,6 @@ Language: he_IL
     <string name="store_onboarding_task_view_all_tasks">להציג את כל המשימות</string>
     <string name="analytics_session_no_available_description">נתונים אנליטיים של הפעלות מסתמכים על מספר המבקרים הייחודיים, והם לא זמינים בטווח תאריכים מותאם אישית</string>
     <string name="analytics_session_no_available">הנתונים של ההפעלה לא זמינים</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">להסתיר</string>
     <string name="my_store_widget_unavailable">לא זמין</string>
     <string name="my_store_widget_stats_title">ביצועים</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">להציג את כל הנתונים האנליטיים של החנות</string>
