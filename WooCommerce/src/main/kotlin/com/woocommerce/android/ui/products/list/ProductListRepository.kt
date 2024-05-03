@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products.list
 
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
@@ -21,7 +22,6 @@ import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -45,7 +45,6 @@ class ProductListRepository @Inject constructor(
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
     }
 
-    private var loadContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var searchContinuation = ContinuationWrapper<List<Product>>(WooLog.T.PRODUCTS)
     private var trashContinuation = ContinuationWrapper<Boolean>(WooLog.T.PRODUCTS)
     private var offset = 0
@@ -87,23 +86,40 @@ class ProductListRepository @Inject constructor(
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
         excludedProductIds: List<Long>? = null,
         sortType: WCProductStore.ProductSorting? = null
-    ): List<Product> {
-        loadContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
-            lastSearchQuery = null
-            lastIsSkuSearch = WCProductStore.SkuSearchOptions.Disabled
-            val payload = WCProductStore.FetchProductsPayload(
-                site = selectedSite.get(),
-                pageSize = PRODUCT_PAGE_SIZE,
-                offset = offset,
-                sorting = sortType ?: productSortingChoice,
-                filterOptions = productFilterOptions,
-                excludedProductIds = excludedProductIds
-            )
-            dispatcher.dispatch(WCProductActionBuilder.newFetchProductsAction(payload))
-        }
+    ): Result<List<Product>> {
+        offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
+        lastSearchQuery = null
+        lastIsSkuSearch = WCProductStore.SkuSearchOptions.Disabled
 
-        return getProductList(productFilterOptions, excludedProductIds)
+        return productStore.fetchProducts(
+            site = selectedSite.get(),
+            pageSize = PRODUCT_PAGE_SIZE,
+            offset = offset,
+            sortType = sortType ?: productSortingChoice,
+            filterOptions = productFilterOptions,
+            excludedProductIds = excludedProductIds.orEmpty()
+        ).let { result ->
+            if (result.isError) {
+                AnalyticsTracker.track(
+                    AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR,
+                    this.javaClass.simpleName,
+                    result.error.type.toString(),
+                    result.error.message
+                )
+                WooLog.w(
+                    WooLog.T.PRODUCTS,
+                    "Fetching products failed, error: ${result.error.type}: ${result.error.message}"
+                )
+                Result.failure(WooException(result.error))
+            } else {
+                canLoadMoreProducts = result.model!!
+                AnalyticsTracker.track(
+                    AnalyticsEvent.PRODUCT_LIST_LOADED,
+                    mapOf(AnalyticsTracker.KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS to isEligibleForSubscriptions())
+                )
+                Result.success(getProductList(productFilterOptions, excludedProductIds))
+            }
+        }
     }
 
     /**
@@ -118,9 +134,6 @@ class ProductListRepository @Inject constructor(
         excludedProductIds: List<Long>? = null,
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
     ): List<Product>? {
-        // cancel any existing load
-        loadContinuation.cancel()
-
         val result = searchContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
             offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
             lastSearchQuery = searchQuery
@@ -218,26 +231,7 @@ class ProductListRepository @Inject constructor(
     @SuppressWarnings("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onProductChanged(event: WCProductStore.OnProductChanged) {
-        if (event.causeOfChange == WCProductAction.FETCH_PRODUCTS) {
-            if (event.isError) {
-                loadContinuation.continueWith(false)
-                AnalyticsTracker.track(
-                    AnalyticsEvent.PRODUCT_LIST_LOAD_ERROR,
-                    this.javaClass.simpleName,
-                    event.error.type.toString(),
-                    event.error.message
-                )
-            } else {
-                canLoadMoreProducts = event.canLoadMore
-                scope.launch {
-                    AnalyticsTracker.track(
-                        AnalyticsEvent.PRODUCT_LIST_LOADED,
-                        mapOf(AnalyticsTracker.KEY_IS_ELIGIBLE_FOR_SUBSCRIPTIONS to isEligibleForSubscriptions())
-                    )
-                    loadContinuation.continueWith(true)
-                }
-            }
-        } else if (event.causeOfChange == WCProductAction.DELETED_PRODUCT) {
+        if (event.causeOfChange == WCProductAction.DELETED_PRODUCT) {
             if (event.isError) {
                 trashContinuation.continueWith(false)
             } else {

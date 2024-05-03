@@ -1968,6 +1968,7 @@
     <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_list_unsaved_product_unselected_title">You about to discard changes to %s</string>
     <string name="product_list_unsaved_product_unselected_message">Are you sure you want to discard the changes you made to this product?</string>
+    <string name="product_list_fetch_error">Error fetching products!</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_search_hint_active_filters">Search filtered products</string>
     <string name="product_search_all">All products</string>

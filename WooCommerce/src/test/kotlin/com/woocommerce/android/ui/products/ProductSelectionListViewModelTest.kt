@@ -58,7 +58,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
                 this.removeIf { it.remoteId == excludedIds }
             }
         }
-        doReturn(expectedProductList).whenever(productRepository).fetchProductList(
+        doReturn(Result.success(expectedProductList)).whenever(productRepository).fetchProductList(
             excludedProductIds = excludedProductIds
         )
 
@@ -97,7 +97,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
         doReturn(emptyList<Product>()).whenever(productRepository).getProductList(
             excludedProductIds = excludedProductIds
         )
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(
+        doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList(
             excludedProductIds = excludedProductIds
         )
 
@@ -115,7 +115,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
     fun `Shows and hides product list load more progress correctly`() =
         testBlocking {
             doReturn(true).whenever(productRepository).canLoadMoreProducts
-            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList(
+            doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList(
                 excludedProductIds = excludedProductIds
             )
 
@@ -153,7 +153,7 @@ class ProductSelectionListViewModelTest : BaseUnitTest() {
                 }
             }
 
-            doReturn(expectedProductList).whenever(productRepository).fetchProductList(
+            doReturn(Result.success(expectedProductList)).whenever(productRepository).fetchProductList(
                 excludedProductIds = excludedProductIds
             )
 
