@@ -23,9 +23,9 @@ import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 @Suppress("UnusedPrivateProperty")
 @HiltViewModel(assistedFactory = MyStoreViewModel.Factory::class)
 class MyStoreViewModel @AssistedInject constructor(
-    private val loginRepository: LoginRepository,
     private val statsRepository: StatsRepository,
     @Assisted private val navController: NavHostController,
+    loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val _viewState = savedState.getStateFlow(

@@ -26,13 +26,15 @@ import com.woocommerce.android.presentation.theme.WooTypography
 fun MyStoreScreen(viewModel: MyStoreViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     MyStoreScreen(
-        currentSiteName = viewState?.currentSiteName.orEmpty()
+        currentSiteName = viewState?.currentSiteName.orEmpty(),
+        totalRevenue = viewState?.todayRevenueTotal?.toString().orEmpty()
     )
 }
 
 @Composable
 fun MyStoreScreen(
-    currentSiteName: String?
+    currentSiteName: String,
+    totalRevenue: String
 ) {
     WooTheme {
         Box(
@@ -49,7 +51,7 @@ fun MyStoreScreen(
                     )
             ) {
                 Text(
-                    text = currentSiteName ?: "No site selected",
+                    text = currentSiteName,
                     textAlign = TextAlign.Center,
                     style = WooTypography.caption1,
                     modifier = Modifier
@@ -64,7 +66,7 @@ fun MyStoreScreen(
                 ) {
                     StoreDataItem(
                         title = "Revenue",
-                        value = "$4,321.90",
+                        value = totalRevenue,
                         modifier = Modifier.weight(1f)
                     )
                     StoreDataItem(
@@ -120,6 +122,7 @@ fun StoreDataItem(
 @Composable
 fun DefaultPreview() {
     MyStoreScreen(
-        currentSiteName = "My Store"
+        currentSiteName = "My Store",
+        totalRevenue = "$5,321.90"
     )
 }
