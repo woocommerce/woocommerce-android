@@ -10,7 +10,6 @@ Language: ko_KR
     <string name="store_onboarding_task_view_all_tasks">모든 작업 보기</string>
     <string name="analytics_session_no_available_description">세션 분석에서는 사용자 정의 범위에 사용할 수 없는 고유 방문자 수를 이용합니다</string>
     <string name="analytics_session_no_available">세션 데이터 사용 불가</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">숨기기</string>
     <string name="my_store_widget_unavailable">사용할 수 없음</string>
     <string name="my_store_widget_stats_title">성과</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">모든 스토어 분석 보기</string>

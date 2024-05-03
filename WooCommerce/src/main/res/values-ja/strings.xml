@@ -10,7 +10,6 @@ Language: ja_JP
     <string name="store_onboarding_task_view_all_tasks">すべてのタスクを表示</string>
     <string name="analytics_session_no_available_description">セッション分析はカスタムの日付範囲で利用できないユニーク訪問者数に基づいています</string>
     <string name="analytics_session_no_available">セッションデータを利用できません</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">非表示</string>
     <string name="my_store_widget_unavailable">利用できません</string>
     <string name="my_store_widget_stats_title">パフォーマンス</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">すべてのストアアナリティクスを表示</string>

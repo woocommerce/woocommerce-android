@@ -10,7 +10,6 @@ Language: zh_TW
     <string name="store_onboarding_task_view_all_tasks">檢視所有工作項目</string>
     <string name="analytics_session_no_available_description">自訂日期範圍無法提供工作階段分析所仰賴的不重複訪客數</string>
     <string name="analytics_session_no_available">無法提供工作階段資料</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">隱藏</string>
     <string name="my_store_widget_unavailable">無法使用</string>
     <string name="my_store_widget_stats_title">績效</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">檢視所有商店分析資料</string>

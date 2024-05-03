@@ -10,7 +10,6 @@ Language: zh_CN
     <string name="store_onboarding_task_view_all_tasks">查看所有任务</string>
     <string name="analytics_session_no_available_description">会话分析依赖于独立访客数，但不适用于自定义日期范围</string>
     <string name="analytics_session_no_available">会话数据不可用</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">隐藏</string>
     <string name="my_store_widget_unavailable">不可用</string>
     <string name="my_store_widget_stats_title">业绩</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">查看所有商店分析数据</string>

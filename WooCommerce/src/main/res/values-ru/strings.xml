@@ -10,7 +10,6 @@ Language: ru
     <string name="store_onboarding_task_view_all_tasks">Посмотреть все задачи</string>
     <string name="analytics_session_no_available_description">Аналитические данные сеанса основываются на количестве уникальных посетителей, которое невозможно определить для произвольных временных промежутков.</string>
     <string name="analytics_session_no_available">Данные сеанса недоступны</string>
-    <string name="dynamic_dashboard_hide_widget_menu_item">Скрыть</string>
     <string name="my_store_widget_unavailable">Недоступно</string>
     <string name="my_store_widget_stats_title">Производительность</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Просмотреть всю аналитику магазина</string>
