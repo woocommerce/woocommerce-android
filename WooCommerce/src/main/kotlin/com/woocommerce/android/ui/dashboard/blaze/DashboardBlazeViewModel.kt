@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
@@ -67,7 +66,6 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val networkStatus: NetworkStatus,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
@@ -91,11 +89,13 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                     combine(
                         observeMostRecentBlazeCampaign(forceRefresh = refreshEvent.isForced),
                         getProductsFlow(forceRefresh = refreshEvent.isForced)
-                    ) { blazeCampaignModel, productsResult ->
-                        if (productsResult.isFailure) {
+                    ) { blazeCampaignResult, productsResult ->
+                        if (productsResult.isFailure || blazeCampaignResult.isFailure) {
                             return@combine DashboardBlazeCampaignState.Error(widgetMenu)
                         }
                         val products = productsResult.getOrThrow()
+                        val blazeCampaignModel = blazeCampaignResult.getOrThrow()
+
                         when {
                             products.isEmpty() -> Hidden
                             blazeCampaignModel == null -> showUiForNoCampaign(products)
