@@ -1,3 +1,2 @@
-This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
-
+- [***] MyStore: introduce a customizable dashboard that enables the users to tailor its view with different cards [https://github.com/woocommerce/woocommerce-android/issues/11165]
 
