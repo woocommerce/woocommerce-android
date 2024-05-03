@@ -426,6 +426,7 @@
     <string name="my_store_widget_onboarding_completed">Completed</string>
 
     <string name="dynamic_dashboard_hide_widget_menu_item">Hide %s</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">Hide %s</string>
     <string name="dynamic_dashboard_widget_error_title">Unable to load data</string>
     <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
 
