@@ -206,9 +206,11 @@ class DashboardBlazeViewModel @AssistedInject constructor(
 
     private fun getProductsFlow(forceRefresh: Boolean): Flow<Result<List<Product>>> {
         return flow {
-            if (forceRefresh) refreshProducts().onFailure {
-                emit(Result.failure(it))
-                return@flow
+            if (forceRefresh) {
+                refreshProducts().onFailure {
+                    emit(Result.failure(it))
+                    return@flow
+                }
             }
 
             emitAll(
@@ -227,9 +229,9 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     }
 
     private suspend fun refreshProducts() = productListRepository.fetchProductList(
-            productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
-            sortType = ProductSorting.DATE_DESC,
-        )
+        productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
+        sortType = ProductSorting.DATE_DESC,
+    )
 
     private fun launchCampaignCreation(productId: Long?) {
         triggerEvent(LaunchBlazeCampaignCreation(productId))
