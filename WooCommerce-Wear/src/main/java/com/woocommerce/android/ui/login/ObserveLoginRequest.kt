@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login
 
-import android.util.Log
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
