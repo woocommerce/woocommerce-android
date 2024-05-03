@@ -9,7 +9,7 @@ import com.facebook.flipper.plugins.network.NetworkFlipperPlugin
 import com.facebook.flipper.plugins.sharedpreferences.SharedPreferencesFlipperPlugin
 import com.facebook.soloader.SoLoader
 
-class WooCommerceWearDebug: WooCommerceWear() {
+class WooCommerceWearDebug : WooCommerceWear() {
     override fun onCreate() {
         if (FlipperUtils.shouldEnableFlipper(this)) {
             SoLoader.init(this, false)

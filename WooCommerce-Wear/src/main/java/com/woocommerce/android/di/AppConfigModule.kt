@@ -5,8 +5,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import java.util.Locale
 import org.wordpress.android.fluxc.network.UserAgent
+import java.util.Locale
 
 @InstallIn(SingletonComponent::class)
 @Module
