@@ -224,7 +224,7 @@ fun OnboardingCardProgressHeader(
 ) {
     val completedTasks = tasks.count { it.isCompleted }
     val totalTasks = tasks.count()
-    val progress by remember { mutableFloatStateOf(completedTasks / totalTasks.toFloat()) }
+    val progress by remember { mutableFloatStateOf(if (totalTasks == 0) 0f else completedTasks / totalTasks.toFloat()) }
     val animatedProgress = animateFloatAsState(
         targetValue = progress,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
