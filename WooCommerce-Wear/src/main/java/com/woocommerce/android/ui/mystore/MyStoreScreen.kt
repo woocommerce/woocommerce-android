@@ -27,14 +27,20 @@ fun MyStoreScreen(viewModel: MyStoreViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     MyStoreScreen(
         currentSiteName = viewState?.currentSiteName.orEmpty(),
-        totalRevenue = viewState?.todayRevenueTotal?.toString().orEmpty()
+        totalRevenue = viewState?.revenueTotal?.toString().orEmpty(),
+        ordersCount = viewState?.ordersCount?.toString().orEmpty(),
+        visitorsCount = viewState?.visitorsCount?.toString().orEmpty(),
+        conversionRate = viewState?.conversionRate.orEmpty()
     )
 }
 
 @Composable
 fun MyStoreScreen(
     currentSiteName: String,
-    totalRevenue: String
+    totalRevenue: String,
+    ordersCount: String,
+    visitorsCount: String,
+    conversionRate: String
 ) {
     WooTheme {
         Box(
@@ -71,7 +77,7 @@ fun MyStoreScreen(
                     )
                     StoreDataItem(
                         title = "Visitors",
-                        value = "15",
+                        value = visitorsCount,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -81,12 +87,12 @@ fun MyStoreScreen(
                 ) {
                     StoreDataItem(
                         title = "Orders",
-                        value = "5",
+                        value = ordersCount,
                         modifier = Modifier.weight(1f)
                     )
                     StoreDataItem(
                         title = "Conversion",
-                        value = "25%",
+                        value = conversionRate,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -123,6 +129,9 @@ fun StoreDataItem(
 fun DefaultPreview() {
     MyStoreScreen(
         currentSiteName = "My Store",
-        totalRevenue = "$5,321.90"
+        totalRevenue = "$5,321.90",
+        ordersCount = "12",
+        visitorsCount = "123",
+        conversionRate = "10%"
     )
 }

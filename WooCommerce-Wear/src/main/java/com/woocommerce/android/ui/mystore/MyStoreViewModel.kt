@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.mystore.stats.StatsRepository
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.assisted.Assisted
@@ -19,12 +18,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 
 @Suppress("UnusedPrivateProperty")
 @HiltViewModel(assistedFactory = MyStoreViewModel.Factory::class)
 class MyStoreViewModel @AssistedInject constructor(
-    private val statsRepository: StatsRepository,
+    private val getMyStoreStats: GetMyStoreStats,
     @Assisted private val navController: NavHostController,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
@@ -46,17 +44,17 @@ class MyStoreViewModel @AssistedInject constructor(
 
     private fun requestStoreStats(selectedSite: SiteModel) {
         launch {
-            statsRepository.fetchRevenueStats(selectedSite)
-                .fold(
-                    onSuccess = { updateRevenueStats(it) },
-                    onFailure = { /* Handle error */ }
-                )
-        }
-    }
-
-    private fun updateRevenueStats(stats: WCRevenueStatsModel?) {
-        _viewState.update {
-            it.copy(todayRevenueTotal = stats?.parseTotal()?.netRevenue)
+            getMyStoreStats(selectedSite)
+                .onEach { statsData ->
+                    _viewState.update {
+                        it.copy(
+                            revenueTotal = statsData.revenue,
+                            ordersCount = statsData.ordersCount,
+                            visitorsCount = statsData.visitorsCount,
+                            conversionRate = statsData.conversionRate
+                        )
+                    }
+                }.launchIn(this)
         }
     }
 
@@ -71,7 +69,10 @@ class MyStoreViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val currentSiteName: String? = null,
-        val todayRevenueTotal: Double? = null
+        val revenueTotal: Double? = null,
+        val ordersCount: Int? = null,
+        val visitorsCount: Int? = null,
+        val conversionRate: String? = null
     ) : Parcelable
 
     @Parcelize

@@ -61,22 +61,6 @@ class GetMyStoreStats @Inject constructor(
             )
     }
 
-    data class MyStoreStatsData(
-        val revenueData: RevenueStatResult?,
-        val visitorData: VisitorStatResult?
-    ) {
-        val isFinished
-            get() = revenueData != null
-                && visitorData != null
-
-        val conversionRate: String
-            get() {
-                val ordersCount = revenueData?.result?.getOrNull()?.orderCount ?: 0
-                val visitorsCount = visitorData?.result?.getOrNull() ?: 0
-                return ordersCount convertedFrom visitorsCount
-            }
-    }
-
     data class RevenueData(
         val totalRevenue: Double,
         val orderCount: Int
@@ -92,5 +76,29 @@ class GetMyStoreStats @Inject constructor(
         data class VisitorStatResult(
             val visitorStats: Result<Int>
         ) : StatResult<Int>(visitorStats)
+    }
+
+    data class MyStoreStatsData(
+        private val revenueData: RevenueStatResult?,
+        private val visitorData: VisitorStatResult?
+    ) {
+        val isFinished
+            get() = revenueData != null
+                && visitorData != null
+        val revenue
+            get() = revenueData?.result?.getOrNull()?.totalRevenue ?: 0.0
+
+        val ordersCount
+            get() = revenueData?.result?.getOrNull()?.orderCount ?: 0
+
+        val visitorsCount
+            get() = visitorData?.result?.getOrNull() ?: 0
+
+        val conversionRate: String
+            get() {
+                val ordersCount = revenueData?.result?.getOrNull()?.orderCount ?: 0
+                val visitorsCount = visitorData?.result?.getOrNull() ?: 0
+                return ordersCount convertedFrom visitorsCount
+            }
     }
 }
