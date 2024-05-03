@@ -166,6 +166,16 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-core-utils'
     })
+
+    // Debug dependencies
+    debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
+    debugImplementation "com.facebook.soloader:soloader:0.10.4"
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
+        // Force Flipper to use the okhttp version defined in the fluxc module
+        // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
+        // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
+        exclude group: 'com.squareup.okhttp3'
+    }
 }
 
 static def loadPropertiesFromFile(inputFile) {
