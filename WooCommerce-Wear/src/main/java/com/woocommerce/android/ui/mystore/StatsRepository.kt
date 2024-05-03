@@ -12,7 +12,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 class StatsRepository(
     private val wcStatsStore: WCStatsStore,
 ) {
-    suspend fun fetchStoreStats(
+    suspend fun fetchRevenueStats(
         selectedSite: SiteModel
     ): Result<WCRevenueStatsModel?> {
         val todayRange = TodayRangeData(
@@ -32,15 +32,12 @@ class StatsRepository(
 
         return when {
             result.isError -> Result.failure(Exception())
-            else -> {
-                val revenueStatsModel = wcStatsStore.getRawRevenueStats(
-                    selectedSite,
-                    result.granularity,
-                    result.startDate!!,
-                    result.endDate!!
-                )
-                Result.success(revenueStatsModel)
-            }
+            else -> wcStatsStore.getRawRevenueStats(
+                selectedSite,
+                result.granularity,
+                result.startDate.orEmpty(),
+                result.endDate.orEmpty()
+            ).let { Result.success(it) }
         }
     }
 }

@@ -15,13 +15,16 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 
 @Suppress("UnusedPrivateProperty")
 @HiltViewModel(assistedFactory = MyStoreViewModel.Factory::class)
 class MyStoreViewModel @AssistedInject constructor(
     private val loginRepository: LoginRepository,
+    private val statsRepository: StatsRepository,
     @Assisted private val navController: NavHostController,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -34,8 +37,26 @@ class MyStoreViewModel @AssistedInject constructor(
     init {
         loginRepository.selectedSiteFlow
             .filterNotNull()
-            .onEach { updateSiteData(it) }
-            .launchIn(this)
+            .onEach {
+                updateSiteData(it)
+                requestStoreStats(it)
+            }.launchIn(this)
+    }
+
+    private fun requestStoreStats(selectedSite: SiteModel) {
+        launch {
+            statsRepository.fetchRevenueStats(selectedSite)
+                .fold(
+                    onSuccess = { updateRevenueStats(it) },
+                    onFailure = { /* Handle error */ }
+                )
+        }
+    }
+
+    private fun updateRevenueStats(stats: WCRevenueStatsModel?) {
+        _viewState.update {
+            it.copy(todayRevenueTotal = stats?.parseTotal()?.netRevenue)
+        }
     }
 
     private fun updateSiteData(site: SiteModel) {
@@ -48,7 +69,8 @@ class MyStoreViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
-        val currentSiteName: String? = null
+        val currentSiteName: String? = null,
+        val todayRevenueTotal: Double? = null
     ) : Parcelable
 
     @Parcelize
