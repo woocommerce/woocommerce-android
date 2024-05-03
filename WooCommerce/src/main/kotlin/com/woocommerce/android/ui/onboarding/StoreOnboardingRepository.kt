@@ -28,6 +28,9 @@ class StoreOnboardingRepository @Inject constructor(
     private val siteStore: SiteStore
 ) {
     private val onboardingTasksCacheFlow: MutableSharedFlow<OnboardingTasksEvent> = MutableSharedFlow(replay = 1)
+    val hasCachedTasks
+        get() = onboardingTasksCacheFlow.replayCache.firstOrNull()
+            ?.takeIf { it.siteId == selectedSite.getSelectedSiteId() } != null
 
     fun observeOnboardingTasks(): Flow<List<OnboardingTask>> = onboardingTasksCacheFlow
         .filter { it.siteId == selectedSite.get().id }

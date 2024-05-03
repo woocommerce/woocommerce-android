@@ -1,14 +1,13 @@
 package com.woocommerce.android.ui.dashboard.onboarding
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -40,11 +39,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.transformLatest
 
 @HiltViewModel(assistedFactory = DashboardOnboardingViewModel.Factory::class)
 class DashboardOnboardingViewModel @AssistedInject constructor(
@@ -52,67 +53,58 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val onboardingRepository: StoreOnboardingRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val networkStatus: NetworkStatus,
     val addProductNavigator: AddProductNavigator
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD = 3
     }
 
-    private val _viewState = MutableLiveData(
-        OnboardingDashBoardState(
-            title = DashboardWidget.Type.ONBOARDING.titleResource,
-            tasks = emptyList(),
-            menu = DashboardWidgetMenu(
-                items = listOf(
-                    DashboardWidgetAction(
-                        titleResource = R.string.store_onboarding_menu_share_feedback,
-                        action = ::onShareFeedbackClicked
-                    ),
-                    DashboardWidget.Type.ONBOARDING.defaultHideMenuEntry {
-                        parentViewModel.onHideWidgetClicked(DashboardWidget.Type.ONBOARDING)
-                    }
-                )
-            ),
-            onViewAllTapped = DashboardWidgetAction(
-                titleResource = R.string.store_onboarding_task_view_all_tasks,
-                action = ::viewAllClicked
-            )
-        )
-    )
-    val viewState = _viewState
-
     private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
 
-    init {
-        launch {
-            merge(refreshTrigger, parentViewModel.refreshTrigger)
-                .onStart { emit(RefreshEvent()) }
-                .collectLatest {
-                    if (networkStatus.isConnected()) {
-                        _viewState.value = _viewState.value?.copy(isLoading = true, isError = false)
-                        if (it.isForced) {
-                            // Fetch only if it's a forced refresh, in the other cases, the DashboardRepository will
-                            // trigger the initial fetch
-                            onboardingRepository.fetchOnboardingTasks()
-                        }
-                    } else {
-                        _viewState.value = _viewState.value?.copy(isLoading = false, isError = true)
-                    }
+    private val initialState = OnboardingDashBoardState(
+        title = DashboardWidget.Type.ONBOARDING.titleResource,
+        tasks = emptyList(),
+        menu = DashboardWidgetMenu(
+            items = listOf(
+                DashboardWidgetAction(
+                    titleResource = R.string.store_onboarding_menu_share_feedback,
+                    action = ::onShareFeedbackClicked
+                ),
+                DashboardWidget.Type.ONBOARDING.defaultHideMenuEntry {
+                    parentViewModel.onHideWidgetClicked(DashboardWidget.Type.ONBOARDING)
                 }
-        }
+            )
+        ),
+        onViewAllTapped = DashboardWidgetAction(
+            titleResource = R.string.store_onboarding_task_view_all_tasks,
+            action = ::viewAllClicked
+        )
+    )
 
-        launch {
-            onboardingRepository.observeOnboardingTasks()
-                .collectLatest { tasks ->
-                    _viewState.value = _viewState.value?.copy(
-                        tasks = tasks.map { it.toOnboardingTaskState() },
-                        isLoading = false,
-                        isError = false
-                    )
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val viewState = merge(parentViewModel.refreshTrigger, refreshTrigger)
+        .onStart { emit(RefreshEvent()) }
+        .transformLatest { refreshEvent ->
+            emit(initialState.copy(isLoading = true, isError = false))
+
+            val shouldFetch = refreshEvent.isForced || !onboardingRepository.hasCachedTasks
+            if (shouldFetch) {
+                onboardingRepository.fetchOnboardingTasks().onFailure {
+                    emit(initialState.copy(isLoading = false, isError = true))
+                    return@transformLatest
                 }
-        }
-    }
+            }
+
+            emitAll(
+                onboardingRepository.observeOnboardingTasks()
+                    .map { tasks ->
+                        initialState.copy(
+                            isLoading = false,
+                            tasks = tasks.map { it.toOnboardingTaskState() }
+                        )
+                    }
+            )
+        }.asLiveData()
 
     private fun viewAllClicked() {
         triggerEvent(NavigateToOnboardingFullScreen)
