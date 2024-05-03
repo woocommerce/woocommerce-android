@@ -3,6 +3,7 @@
 -----
 - [*] Tap To Pay: Changed navigation from Tap To Pay Summary screen to About Tap To Pay [https://github.com/woocommerce/woocommerce-android/pull/11411]
 - [*] Tap To Pay: Change description of how Tap To Pay works, excluding simple payments [https://github.com/woocommerce/woocommerce-android/pull/11411]
+- [***] MyStore: introduce a customizable dashboard that enables the users to tailor its view with different cards [https://github.com/woocommerce/woocommerce-android/issues/11165]
 
 18.4
 -----

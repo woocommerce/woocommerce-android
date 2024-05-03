@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -20,8 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DashboardWidgetEditorViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val dashboardRepository: DashboardRepository,
-    savedState: SavedStateHandle
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private val widgetEditorState = savedState.getStateFlow(viewModelScope, WidgetEditorState())
     val viewState = combine(widgetEditorState, dashboardRepository.widgets) { state, widgets ->
@@ -52,7 +55,7 @@ class DashboardWidgetEditorViewModel @Inject constructor(
                 } else {
                     editedWidgets.map { dashboardWidget ->
                         val storedWidget = storedWidgets.first { it.type == dashboardWidget.type }
-                        dashboardWidget.copy(isAvailable = storedWidget.isAvailable)
+                        dashboardWidget.copy(status = storedWidget.status)
                     }
                 }
             }
@@ -68,13 +71,17 @@ class DashboardWidgetEditorViewModel @Inject constructor(
 
     fun onSaveClicked() {
         viewModelScope.launch {
+            analyticsTracker.track(
+                AnalyticsEvent.DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED,
+                mapOf("cards" to editedWidgets.filter { it.isVisible }.joinToString(","))
+            )
             dashboardRepository.updateWidgets(editedWidgets)
+            triggerEvent(Exit)
         }
-        triggerEvent(Exit)
     }
 
     fun onSelectionChange(dashboardWidget: DashboardWidget, selected: Boolean) {
-        editedWidgets = editedWidgets.map { if (it == dashboardWidget) it.copy(isVisible = selected) else it }
+        editedWidgets = editedWidgets.map { if (it == dashboardWidget) it.copy(isSelected = selected) else it }
     }
 
     fun onOrderChange(fromIndex: Int, toIndex: Int) {
@@ -100,6 +107,6 @@ class DashboardWidgetEditorViewModel @Inject constructor(
     ) : Parcelable {
         @IgnoredOnParcel
         val orderedWidgetList: List<DashboardWidget> =
-            widgetList.filter { it.isAvailable } + widgetList.filterNot { it.isAvailable }
+            widgetList.filter { it.isAvailable } + widgetList.filter { it.status is DashboardWidget.Status.Unavailable }
     }
 }

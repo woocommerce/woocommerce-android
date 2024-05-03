@@ -388,7 +388,6 @@
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
-    <string name="dashboard_top_performers_overflow_menu_hide_option">Hide top performers</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">View all store analytics</string>
 
     <string name="dashboard_action_view_order">View Order</string>
@@ -399,6 +398,9 @@
     <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
     <string name="my_store_stats_availability_contact_us">Contact us</string>
+    <string name="my_store_stats_plugin_inactive_title">We can\'t display your\n store\'s analytics</string>
+    <string name="my_store_stats_plugin_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">Still need help? Contact us</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
     <string name="my_store_custom_range_granularity_label">%s interval</string>
     <string name="my_store_custom_range_granularity_hour">Hourly</string>
@@ -418,9 +420,14 @@
     <string name="my_store_widget_stats_title">Performance</string>
     <string name="my_store_widget_top_products_title">Top products</string>
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
-    <string name="my_store_widget_unavailable">Unavailable</string>
+    <string name="my_store_widget_feedback_title">Feedback</string>
 
-    <string name="dynamic_dashboard_hide_widget_menu_item">Hide</string>
+    <string name="my_store_widget_unavailable">Unavailable</string>
+    <string name="my_store_widget_onboarding_completed">Completed</string>
+
+    <string name="dynamic_dashboard_hide_widget_menu_item">Hide %s</string>
+    <string name="dynamic_dashboard_widget_error_title">Unable to load data</string>
+    <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
 
     <!--
         Sign Up Flow
@@ -3744,8 +3751,9 @@
     -->
     <string name="blaze_campaign_title">Blaze campaign</string>
     <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
-    <string name="blaze_campaign_promote_button">Promote</string>
-    <string name="blaze_campaign_show_all_button">Show all</string>
+    <string name="blaze_campaign_create_campaign_button">Create campaign</string>
+    <string name="blaze_campaign_suggested_product_caption">Suggested product</string>
+    <string name="blaze_campaign_show_all_button">View all campaigns</string>
     <string name="blaze_campaign_status_in_moderation">In moderation</string>
     <string name="blaze_campaign_status_active">Active</string>
     <string name="blaze_campaign_status_completed">Completed</string>

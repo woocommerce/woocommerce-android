@@ -1,6 +1,7 @@
 package com.woocommerce.android
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -10,6 +11,10 @@ import com.woocommerce.android.extensions.greaterThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.util.PreferenceUtils
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import java.util.Date
 
 class FeedbackPrefs(
@@ -29,6 +34,15 @@ class FeedbackPrefs(
     val userFeedbackIsDue: Boolean
         get() = AppPrefs.installationDate?.pastTimeDeltaFromNowInDays greaterThan THREE_MONTHS_IN_DAYS &&
             lastFeedbackDate?.pastTimeDeltaFromNowInDays greaterThan SIX_MONTHS_IN_DAYS
+
+    val userFeedbackIsDueObservable: Flow<Boolean> = callbackFlow {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+            trySend(userFeedbackIsDue)
+        }
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+        trySend(userFeedbackIsDue)
+        awaitClose { sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener) }
+    }.distinctUntilChanged()
 
     var lastFeedbackDate: Date?
         get() = getString(LAST_FEEDBACK_DATE)

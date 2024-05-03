@@ -75,13 +75,15 @@ fun DashboardWidgetEditorScreen(viewModel: DashboardWidgetEditorViewModel) {
                     ) { item, dragDropState ->
                         when (item.isAvailable) {
                             true -> {
+                                val selectedItems = state.orderedWidgetList.filter { it.isVisible }
                                 DragAndDropSelectableItem(
                                     item = item,
-                                    isSelected = item in state.orderedWidgetList.filter { it.isVisible },
+                                    isSelected = item.isSelected,
                                     dragDropState = dragDropState,
                                     onSelectionChange = viewModel::onSelectionChange,
                                     itemKey = { it.type },
-                                    itemFormatter = { stringResource(id = item.title) }
+                                    itemFormatter = { stringResource(id = item.title) },
+                                    isEnabled = !item.isSelected || selectedItems.size > 1
                                 )
                             }
 
@@ -126,8 +128,10 @@ private fun UnavailableWidget(
                 .background(Color.Gray, RoundedCornerShape(4.dp))
                 .padding(vertical = 4.dp, horizontal = 8.dp)
         ) {
+            val widgetStatus = widget.status as DashboardWidget.Status.Unavailable
+
             Text(
-                text = stringResource(id = R.string.my_store_widget_unavailable),
+                text = stringResource(id = widgetStatus.badgeText),
                 color = Color.White,
                 style = MaterialTheme.typography.caption
             )

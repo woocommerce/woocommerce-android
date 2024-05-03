@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER
@@ -14,6 +15,9 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isSitePublic
+import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.tools.SelectedSite
@@ -31,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -39,6 +44,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import java.util.Calendar
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
@@ -54,7 +60,8 @@ class DashboardViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
-    private val dashboardRepository: DashboardRepository
+    dashboardRepository: DashboardRepository,
+    private val feedbackPrefs: FeedbackPrefs
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
@@ -68,9 +75,6 @@ class DashboardViewModel @Inject constructor(
     }
 
     val performanceObserver: LifecycleObserver = dashboardTransactionLauncher
-
-    private var _hasOrders = MutableLiveData<OrderState>()
-    val hasOrders: LiveData<OrderState> = _hasOrders
 
     private var _appbarState = MutableLiveData<AppbarState>()
     val appbarState: LiveData<AppbarState> = _appbarState
@@ -92,8 +96,12 @@ class DashboardViewModel @Inject constructor(
             jetpackBenefitsBannerState(site.connectionType)
         }.asLiveData()
 
-    val dashboardWidgets = dashboardRepository.widgets
-        .map { it.filter { widget -> widget.isVisible && widget.isAvailable } }
+    val dashboardWidgets = combine(
+        dashboardRepository.widgets,
+        feedbackPrefs.userFeedbackIsDueObservable
+    ) { widgets, userFeedbackIsDue ->
+        mapWidgetsToUiModels(widgets, userFeedbackIsDue)
+    }
         .asLiveData()
 
     init {
@@ -118,7 +126,11 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun updateShareStoreButtonVisibility() {
-        _appbarState.value = AppbarState(showShareStoreButton = selectedSite.get().isSitePublic)
+        _appbarState.value = AppbarState(
+            showShareStoreButton = selectedSite.get().let {
+                it.isSitePublic && it.url != null
+            }
+        )
     }
 
     override fun onCleared() {
@@ -148,12 +160,71 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun onEditWidgetsClicked() {
-        // TODO ADD TRACKING HERE
+        analyticsTrackerWrapper.track(AnalyticsEvent.DYNAMIC_DASHBOARD_EDIT_LAYOUT_BUTTON_TAPPED)
         triggerEvent(OpenEditWidgets)
     }
 
     fun onDashboardWidgetEvent(event: DashboardEvent) {
         triggerEvent(event)
+    }
+
+    fun onHideWidgetClicked(type: DashboardWidget.Type) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_HIDE_CARD_TAPPED,
+            mapOf(AnalyticsTracker.KEY_TYPE to type.trackingIdentifier)
+        )
+        triggerEvent(OpenEditWidgets)
+    }
+
+    fun onContactSupportClicked() {
+        triggerEvent(DashboardEvent.ContactSupport)
+    }
+
+    private fun mapWidgetsToUiModels(
+        widgets: List<DashboardWidget>,
+        userFeedbackIsDue: Boolean
+    ): List<DashboardWidgetUiModel> = buildList {
+        addAll(
+            widgets.map { DashboardWidgetUiModel.ConfigurableWidget(it) }
+        )
+
+        // We add the other cards even if they should not be visible, so that the addition/deletion
+        // of the cards is animated properly
+
+        val shouldShowShareCard = !widgets.first { it.type == DashboardWidget.Type.STATS }.isAvailable &&
+            selectedSite.get().isSitePublic &&
+            selectedSite.get().url != null
+        add(DashboardWidgetUiModel.ShareStoreWidget(shouldShowShareCard, ::onShareStoreClicked))
+
+        add(
+            // Show at the second row
+            (indexOfFirst { it.isVisible } + 1).coerceIn(0..<size),
+            DashboardWidgetUiModel.FeedbackWidget(
+                isVisible = userFeedbackIsDue,
+                onShown = {
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.APP_FEEDBACK_PROMPT,
+                        mapOf(AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_SHOWN)
+                    )
+                },
+                onPositiveClick = {
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.APP_FEEDBACK_PROMPT,
+                        mapOf(AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_LIKED)
+                    )
+                    feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+                    triggerEvent(DashboardEvent.FeedbackPositiveAction)
+                },
+                onNegativeClick = {
+                    analyticsTrackerWrapper.track(
+                        AnalyticsEvent.APP_FEEDBACK_PROMPT,
+                        mapOf(AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_NOT_LIKED)
+                    )
+                    feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
+                    triggerEvent(DashboardEvent.FeedbackNegativeAction)
+                }
+            )
+        )
     }
 
     private fun jetpackBenefitsBannerState(
@@ -184,9 +255,27 @@ class DashboardViewModel @Inject constructor(
             }
     }
 
-    sealed class OrderState {
-        data object Empty : OrderState()
-        data object AtLeastOne : OrderState()
+    sealed interface DashboardWidgetUiModel {
+        val isVisible: Boolean
+
+        data class ConfigurableWidget(
+            val widget: DashboardWidget,
+        ) : DashboardWidgetUiModel {
+            override val isVisible: Boolean
+                get() = widget.isVisible
+        }
+
+        data class ShareStoreWidget(
+            override val isVisible: Boolean,
+            val onShareClicked: () -> Unit
+        ) : DashboardWidgetUiModel
+
+        data class FeedbackWidget(
+            override val isVisible: Boolean,
+            val onShown: () -> Unit,
+            val onPositiveClick: () -> Unit,
+            val onNegativeClick: () -> Unit
+        ) : DashboardWidgetUiModel
     }
 
     data class AppbarState(
@@ -203,15 +292,17 @@ class DashboardViewModel @Inject constructor(
 
         data object OpenEditWidgets : DashboardEvent()
 
-        data object ShowStatsError : DashboardEvent()
-
         data class OpenRangePicker(
             val start: Long,
             val end: Long,
             val callback: (Long, Long) -> Unit
         ) : DashboardEvent()
 
-        data object ShowPluginUnavailableError : DashboardEvent()
+        data object ContactSupport : DashboardEvent()
+
+        data object FeedbackPositiveAction : DashboardEvent()
+
+        data object FeedbackNegativeAction : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)
@@ -226,7 +317,12 @@ class DashboardViewModel @Inject constructor(
     )
 
     data class DashboardWidgetAction(
-        @StringRes val titleResource: Int,
+        val title: UiString,
         val action: () -> Unit
-    )
+    ) {
+        constructor(@StringRes titleResource: Int, action: () -> Unit) : this(
+            title = UiStringRes(titleResource),
+            action = action
+        )
+    }
 }

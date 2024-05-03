@@ -15,17 +15,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withCreated
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentDashboardBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
-import com.woocommerce.android.extensions.setClickableText
 import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
@@ -33,17 +30,18 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
-import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackPositiveAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowAIProductDescriptionDialog
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPluginUnavailableError
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowStatsError
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -52,18 +50,11 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
-import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.DateUtils
-import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
-import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.wordpress.android.util.NetworkUtils
-import java.util.Calendar
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -84,30 +75,16 @@ class DashboardFragment :
     lateinit var selectedSite: SelectedSite
 
     @Inject
-    lateinit var currencyFormatter: CurrencyFormatter
-
-    @Inject
-    lateinit var uiMessageResolver: UIMessageResolver
-
-    @Inject
-    lateinit var dateUtils: DateUtils
-
-    @Inject
     lateinit var usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter
 
     @Inject
     lateinit var appPrefsWrapper: AppPrefsWrapper
 
     @Inject
-    lateinit var feedbackPrefs: FeedbackPrefs
-
-    @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
-
-    private var errorSnackbar: Snackbar? = null
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
@@ -118,7 +95,6 @@ class DashboardFragment :
             hasShadow = true,
         )
 
-    private var isEmptyViewVisible: Boolean = false
     private var wasPreviouslyStopped = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,9 +115,6 @@ class DashboardFragment :
             setContent {
                 WooThemeWithBackground {
                     DashboardContainer(
-                        dateUtils = dateUtils,
-                        currencyFormatter = currencyFormatter,
-                        usageTracksEventEmitter = usageTracksEventEmitter,
                         dashboardViewModel = dashboardViewModel,
                         blazeCampaignCreationDispatcher = blazeCampaignCreationDispatcher
                     )
@@ -156,13 +129,6 @@ class DashboardFragment :
             refreshJitm()
         }
 
-        val contactUsText = getString(R.string.my_store_stats_availability_contact_us)
-        binding.myStoreStatsAvailabilityMessage.setClickableText(
-            content = getString(R.string.my_store_stats_availability_description, contactUsText),
-            clickableContent = contactUsText,
-            clickAction = WooClickableSpan { activity?.startHelpActivity(HelpOrigin.MY_STORE) }
-        )
-
         prepareJetpackBenefitsBanner()
 
         binding.statsScrollView.scrollStartEvents()
@@ -176,12 +142,6 @@ class DashboardFragment :
     private fun setupStateObservers() {
         dashboardViewModel.appbarState.observe(viewLifecycleOwner) { requireActivity().invalidateOptionsMenu() }
 
-        dashboardViewModel.hasOrders.observe(viewLifecycleOwner) { newValue ->
-            when (newValue) {
-                DashboardViewModel.OrderState.Empty -> showEmptyView(true)
-                DashboardViewModel.OrderState.AtLeastOne -> showEmptyView(false)
-            }
-        }
         dashboardViewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is ShowPrivacyBanner ->
@@ -202,11 +162,13 @@ class DashboardFragment :
                     )
                 }
 
-                is ShowStatsError -> showErrorSnack()
-
                 is OpenRangePicker -> showDateRangePicker(event.start, event.end, event.callback)
 
-                is ShowPluginUnavailableError -> showPluginUnavailableError()
+                is ContactSupport -> activity?.startHelpActivity(HelpOrigin.MY_STORE)
+
+                is FeedbackPositiveAction -> handleFeedbackRequestPositiveClick()
+
+                is FeedbackNegativeAction -> mainNavigationRouter?.showFeedbackSurvey()
 
                 else -> event.isHandled = false
             }
@@ -219,7 +181,11 @@ class DashboardFragment :
         }
         dashboardViewModel.dashboardWidgets.observe(viewLifecycleOwner) { widgets ->
             // Show banners only if onboarding list is NOT displayed
-            if (widgets.any { it.type == DashboardWidget.Type.ONBOARDING }.not()) {
+            if (
+                widgets.none {
+                    (it as? DashboardWidgetUiModel.ConfigurableWidget)?.widget?.type == DashboardWidget.Type.ONBOARDING
+                }
+            ) {
                 initJitm()
             }
         }
@@ -245,7 +211,6 @@ class DashboardFragment :
         binding.jetpackBenefitsBanner.root.isVisible = jetpackBenefitsBanner.show
     }
 
-    @Suppress("ForbiddenComment")
     private fun prepareJetpackBenefitsBanner() {
         appPrefsWrapper.setJetpackInstallationIsFromBanner(false)
         binding.jetpackBenefitsBanner.root.isVisible = false
@@ -262,10 +227,10 @@ class DashboardFragment :
             // Due to this issue https://issuetracker.google.com/issues/181325977, we need to make sure
             // we are using `withCreated` here, since if this view doesn't reach the created state,
             // the scope will not get cancelled.
-            // TODO: revisit this once https://issuetracker.google.com/issues/127528777 is implemented
+            // TODO revisit this once https://issuetracker.google.com/issues/127528777 is implemented
             // (no update as of Oct 2023)
             val appBarLayout = requireActivity().findViewById<View>(R.id.app_bar_layout) as? AppBarLayout
-            withCreated {
+            viewLifecycleOwner.withCreated {
                 appBarLayout?.verticalOffsetChanges()
                     ?.onEach { verticalOffset ->
                         binding.jetpackBenefitsBanner.root.translationY =
@@ -278,7 +243,6 @@ class DashboardFragment :
 
     override fun onResume() {
         super.onResume()
-        handleFeedbackRequestCardState()
         AnalyticsTracker.trackViewShown(this)
         // Avoid executing interacted() on first load. Only when the user navigated away from the fragment.
         if (wasPreviouslyStopped) {
@@ -289,7 +253,6 @@ class DashboardFragment :
 
     override fun onStop() {
         wasPreviouslyStopped = true
-        errorSnackbar?.dismiss()
         super.onStop()
     }
 
@@ -301,18 +264,6 @@ class DashboardFragment :
     override fun onDestroy() {
         lifecycle.removeObserver(storeOnboardingViewModel)
         super.onDestroy()
-    }
-
-    private fun showPluginUnavailableError() {
-        binding.myStoreRefreshLayout.visibility = View.GONE
-        WooAnimUtils.fadeIn(binding.pluginUnavailableErrorScrollView)
-    }
-
-    private fun showErrorSnack() {
-        if (errorSnackbar?.isShownOrQueued == false || NetworkUtils.isNetworkAvailable(context)) {
-            errorSnackbar = uiMessageResolver.getSnack(R.string.dashboard_stats_error)
-            errorSnackbar?.show()
-        }
     }
 
     private fun initJitm() {
@@ -339,36 +290,7 @@ class DashboardFragment :
         binding.statsScrollView.smoothScrollTo(0, 0)
     }
 
-    /**
-     * This method verifies if the feedback card should be visible.
-     *
-     * If it should but it's not, the feedback card is reconfigured and presented
-     * If should not and it's visible, the card visibility is changed to gone
-     * If should be and it's already visible, nothing happens
-     */
-    private fun handleFeedbackRequestCardState() = with(binding.storeFeedbackRequestCard) {
-        if (feedbackPrefs.userFeedbackIsDue && visibility == View.GONE) {
-            setupFeedbackRequestCard()
-        } else if (feedbackPrefs.userFeedbackIsDue.not() && visibility == View.VISIBLE) {
-            visibility = View.GONE
-        }
-    }
-
-    private fun setupFeedbackRequestCard() {
-        binding.storeFeedbackRequestCard.visibility = View.VISIBLE
-        val negativeCallback = {
-            mainNavigationRouter?.showFeedbackSurvey()
-            binding.storeFeedbackRequestCard.visibility = View.GONE
-            feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-        }
-        binding.storeFeedbackRequestCard.initView(negativeCallback, ::handleFeedbackRequestPositiveClick)
-    }
-
     private fun handleFeedbackRequestPositiveClick() {
-        // set last feedback date to now and hide the card
-        feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
-        binding.storeFeedbackRequestCard.visibility = View.GONE
-
         // Request a ReviewInfo object from the Google Reviews API. If this fails
         // we just move on as there isn't anything we can do.
         val manager = ReviewManagerFactory.create(requireContext())
@@ -393,21 +315,6 @@ class DashboardFragment :
                 )
             }
         }
-    }
-
-    private fun showEmptyView(show: Boolean) {
-        val dashboardVisibility: Int
-        if (show) {
-            dashboardVisibility = View.GONE
-            binding.emptyView.show(EmptyViewType.DASHBOARD) {
-                dashboardViewModel.onShareStoreClicked()
-            }
-        } else {
-            binding.emptyView.hide()
-            dashboardVisibility = View.VISIBLE
-        }
-        binding.dashboardContainer.visibility = dashboardVisibility
-        isEmptyViewVisible = show
     }
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0

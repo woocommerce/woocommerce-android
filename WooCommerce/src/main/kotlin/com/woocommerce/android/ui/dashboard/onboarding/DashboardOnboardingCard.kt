@@ -44,9 +44,8 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Companion.MAX_NUMBER_OF_TASK_TO_DISPLAY_IN_CARD
-import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.Factory
-import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.NavigateToDashboardWidgetEditor
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingViewModel.OnboardingDashBoardState
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.onboarding.AboutYourStoreTaskRes
@@ -67,20 +66,28 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 @Composable
 fun DashboardOnboardingCard(
     parentViewModel: DashboardViewModel,
-    onboardingViewModel: DashboardOnboardingViewModel =
-        viewModelWithFactory<DashboardOnboardingViewModel, Factory>(
-            creationCallback = {
-                it.create(parentViewModel)
-            }
-        )
+    modifier: Modifier = Modifier,
+    onboardingViewModel: DashboardOnboardingViewModel = viewModelWithFactory(
+        creationCallback = { factory: DashboardOnboardingViewModel.Factory ->
+            factory.create(parentViewModel)
+        }
+    )
 ) {
     onboardingViewModel.viewState.observeAsState().value?.let { onboardingState ->
         WidgetCard(
             titleResource = onboardingState.title,
             menu = onboardingState.menu,
             button = onboardingState.onViewAllTapped,
+            modifier = modifier,
+            isError = onboardingState.isError
         ) {
             when {
+                onboardingState.isError -> {
+                    WidgetError(
+                        onContactSupportClicked = parentViewModel::onContactSupportClicked,
+                        onRetryClicked = onboardingViewModel::onRefresh
+                    )
+                }
                 onboardingState.isLoading -> StoreOnboardingLoading()
                 else ->
                     StoreOnboardingCardContent(
@@ -152,12 +159,6 @@ private fun HandleEvents(
                 is ShowNameYourStoreDialog -> {
                     navController.navigateSafely(
                         DashboardFragmentDirections.actionDashboardToNameYourStoreDialogFragment(fromOnboarding = true)
-                    )
-                }
-
-                is NavigateToDashboardWidgetEditor -> {
-                    navController.navigateSafely(
-                        DashboardFragmentDirections.actionDashboardToEditWidgetsFragment()
                     )
                 }
 
@@ -311,10 +312,6 @@ private fun OnboardingPreview() {
         OnboardingDashBoardState(
             title = R.string.store_onboarding_title,
             menu = DashboardWidgetMenu(emptyList()),
-            onViewAllTapped = DashboardWidgetAction(
-                titleResource = R.string.store_onboarding_task_view_all,
-                action = {}
-            ),
             tasks = listOf(
                 OnboardingTaskUi(
                     taskUiResources = AboutYourStoreTaskRes,
@@ -328,6 +325,10 @@ private fun OnboardingPreview() {
                     taskUiResources = AboutYourStoreTaskRes,
                     isCompleted = false,
                 )
+            ),
+            onViewAllTapped = DashboardWidgetAction(
+                titleResource = R.string.store_onboarding_task_view_all_tasks,
+                action = {}
             )
         ),
         onTaskClicked = {}

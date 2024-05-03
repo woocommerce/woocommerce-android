@@ -25,7 +25,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAc
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
-import com.woocommerce.android.ui.dashboard.data.DashboardRepository
+import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
@@ -42,10 +42,12 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
@@ -74,10 +76,8 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val dateUtils: DateUtils,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val customDateRangeDataStore: TopPerformersCustomDateRangeDataStore,
-    private val dashboardRepository: DashboardRepository,
     getSelectedDateRange: GetSelectedRangeForTopPerformers,
 ) : ScopedViewModel(savedState) {
-
     private val _selectedDateRange = getSelectedDateRange()
     val selectedDateRange: LiveData<StatsTimeRangeSelection> = _selectedDateRange.asLiveData()
 
@@ -97,16 +97,17 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     private val customRange = customDateRangeDataStore.dateRange.asLiveData()
 
+    private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+
     init {
         _topPerformersState.value = TopPerformersState(
             isLoading = true,
             titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
             menu = DashboardWidgetMenu(
                 items = listOf(
-                    DashboardWidgetAction(
-                        titleResource = R.string.dashboard_top_performers_overflow_menu_hide_option,
-                        action = ::hideTopPerformers
-                    )
+                    DashboardWidget.Type.POPULAR_PRODUCTS.defaultHideMenuEntry {
+                        parentViewModel.onHideWidgetClicked(DashboardWidget.Type.POPULAR_PRODUCTS)
+                    }
                 )
             ),
             onOpenAnalyticsTapped = DashboardWidgetAction(
@@ -117,7 +118,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
         viewModelScope.launch {
             _selectedDateRange.flatMapLatest { selectedRange ->
-                parentViewModel.refreshTrigger
+                merge(refreshTrigger, parentViewModel.refreshTrigger)
                     .onStart { emit(RefreshEvent()) }
                     .map {
                         Pair(selectedRange, it.isForced)
@@ -163,6 +164,16 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         )
     }
 
+    fun onRefresh() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier
+            )
+        )
+        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
     private fun onTopPerformerTapped(productId: Long) {
         triggerEvent(OpenTopPerformer(productId))
         analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
@@ -171,7 +182,10 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) =
         coroutineScope {
-            if (!networkStatus.isConnected()) return@coroutineScope
+            if (!networkStatus.isConnected()) {
+                _topPerformersState.value = _topPerformersState.value?.copy(isError = true)
+                return@coroutineScope
+            }
 
             _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
             val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
@@ -238,12 +252,6 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         selectedDateRange.value?.let {
             triggerEvent(OpenAnalytics(it))
-        }
-    }
-
-    private fun hideTopPerformers() {
-        viewModelScope.launch {
-            dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.POPULAR_PRODUCTS, isVisible = false)
         }
     }
 
