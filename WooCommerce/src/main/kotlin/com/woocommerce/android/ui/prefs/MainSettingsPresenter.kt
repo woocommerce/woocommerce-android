@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
@@ -79,7 +80,7 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun setupOnboardingListVisibilitySetting() {
-        if (!shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
+        if (!FeatureFlag.DYNAMIC_DASHBOARD.isEnabled() && !shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
             appSettingsFragmentView?.handleStoreSetupListSetting(
                 enabled = shouldShowOnboarding.isOnboardingListSettingVisible(),
                 onToggleChange = { isChecked ->

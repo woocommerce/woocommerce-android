@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignItem
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -60,16 +61,18 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
+import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeViewModel.DashboardBlazeCampaignState
+import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.launch
 
 @Composable
 fun DashboardBlazeCard(
-    modifier: Modifier = Modifier,
     blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher,
     parentViewModel: DashboardViewModel,
+    modifier: Modifier = Modifier,
     viewModel: DashboardBlazeViewModel = viewModelWithFactory { factory: DashboardBlazeViewModel.Factory ->
         factory.create(parentViewModel)
     }
@@ -77,9 +80,11 @@ fun DashboardBlazeCard(
     viewModel.blazeViewState.observeAsState().value?.let { state ->
         if (state !is DashboardBlazeCampaignState.Hidden) {
             DashboardBlazeView(
-                modifier = modifier,
                 state = state,
-                onDismissBlazeView = viewModel::onBlazeViewDismissed
+                onDismissBlazeView = viewModel::onBlazeViewDismissed,
+                modifier = modifier,
+                onContactSupportClicked = parentViewModel::onContactSupportClicked,
+                onRetryOnErrorButtonClicked = viewModel::onRefresh
             )
         }
     }
@@ -141,17 +146,27 @@ private fun BlazeFrame(
     modifier: Modifier,
     state: DashboardBlazeCampaignState,
     onDismissBlazeView: () -> Unit,
+    onContactSupportClicked: () -> Unit,
+    onRetryOnErrorButtonClicked: () -> Unit,
     content: @Composable () -> Unit
 ) {
     if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
         WidgetCard(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier,
             titleResource = DashboardWidget.Type.BLAZE.titleResource,
             iconResource = R.drawable.ic_blaze,
             menu = state.menu,
-            button = state.createCampaignButton,
+            button = state.mainButton,
+            isError = state is DashboardBlazeCampaignState.Error
         ) {
-            content()
+            if (state is DashboardBlazeCampaignState.Error) {
+                WidgetError(
+                    onContactSupportClicked = onContactSupportClicked,
+                    onRetryClicked = onRetryOnErrorButtonClicked
+                )
+            } else {
+                content()
+            }
         }
     } else {
         Card(
@@ -173,9 +188,11 @@ private fun BlazeFrame(
 fun DashboardBlazeView(
     state: DashboardBlazeCampaignState,
     onDismissBlazeView: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onContactSupportClicked: () -> Unit = {},
+    onRetryOnErrorButtonClicked: () -> Unit = {}
 ) {
-    BlazeFrame(modifier, state, onDismissBlazeView) {
+    BlazeFrame(modifier, state, onDismissBlazeView, onContactSupportClicked, onRetryOnErrorButtonClicked) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -193,6 +210,17 @@ fun DashboardBlazeView(
                         campaign = state.campaign,
                         onCampaignClicked = state.onCampaignClicked,
                     )
+
+                    if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
+                        WCOutlinedButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = dimensionResource(id = R.dimen.minor_100)),
+                            onClick = state.onCreateCampaignClicked,
+                        ) {
+                            Text(stringResource(string.blaze_campaign_create_campaign_button))
+                        }
+                    }
                 }
 
                 is DashboardBlazeCampaignState.NoCampaign -> {
@@ -200,7 +228,7 @@ fun DashboardBlazeView(
                         modifier = Modifier.padding(
                             end = dimensionResource(id = R.dimen.major_300)
                         ),
-                        text = stringResource(id = R.string.blaze_campaign_subtitle),
+                        text = stringResource(id = string.blaze_campaign_subtitle),
                         style = MaterialTheme.typography.body1,
                     )
                     BlazeProductItem(
@@ -208,6 +236,20 @@ fun DashboardBlazeView(
                         onProductSelected = state.onProductClicked,
                         modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_100))
                     )
+
+                    if (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled()) {
+                        WCOutlinedButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    top = dimensionResource(id = R.dimen.minor_100),
+                                    bottom = dimensionResource(id = R.dimen.major_100)
+                                ),
+                            onClick = state.onCreateCampaignClicked,
+                        ) {
+                            Text(stringResource(string.blaze_campaign_create_campaign_button))
+                        }
+                    }
                 }
 
                 else -> error("Invalid state")
@@ -226,20 +268,20 @@ private fun BlazeCampaignFooter(state: DashboardBlazeCampaignState) {
 
             is DashboardBlazeCampaignState.Campaign -> {
                 ShowAllOrCreateCampaignFooter(
-                    onShowAllClicked = state.onViewAllCampaignsClicked,
-                    onCreateCampaignClicked = state.createCampaignButton.action
+                    onShowAllClicked = state.showAllCampaignsButton.action,
+                    onCreateCampaignClicked = state.onCreateCampaignClicked
                 )
             }
 
             is DashboardBlazeCampaignState.NoCampaign -> {
                 WCTextButton(
-                    onClick = state.createCampaignButton.action,
+                    onClick = state.onCreateCampaignClicked,
                     contentPadding = PaddingValues(
                         top = ButtonDefaults.TextButtonContentPadding.calculateTopPadding(),
                         bottom = ButtonDefaults.TextButtonContentPadding.calculateBottomPadding(),
                     )
                 ) {
-                    Text(stringResource(id = R.string.blaze_campaign_promote_button))
+                    Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
                 }
             }
 
@@ -263,7 +305,7 @@ private fun ShowAllOrCreateCampaignFooter(
             modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
             onClick = onCreateCampaignClicked
         ) {
-            Text(stringResource(id = R.string.blaze_campaign_promote_button))
+            Text(stringResource(id = R.string.blaze_campaign_create_campaign_button))
         }
     }
 }
@@ -285,7 +327,7 @@ private fun BlazeCampaignHeader(onDismissBlazeView: () -> Unit) {
             modifier = Modifier.weight(1f)
         )
         WCOverflowMenu(
-            items = arrayOf(stringResource(id = R.string.blaze_overflow_menu_hide_blaze)),
+            items = listOf(stringResource(id = R.string.blaze_overflow_menu_hide_blaze)),
             onSelected = { onDismissBlazeView() },
         )
     }
@@ -310,14 +352,24 @@ fun BlazeProductItem(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ProductThumbnail(imageUrl = product.imgUrl)
-            Text(
+            Column(
                 modifier = Modifier
                     .padding(start = dimensionResource(id = R.dimen.major_100))
-                    .weight(1f),
-                text = product.name,
-                style = MaterialTheme.typography.subtitle1,
-                fontWeight = FontWeight.Bold
-            )
+                    .weight(1f)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(bottom = dimensionResource(id = R.dimen.minor_50)),
+                    text = stringResource(id = R.string.blaze_campaign_suggested_product_caption),
+                    style = MaterialTheme.typography.caption,
+                    color = colorResource(R.color.color_on_surface_medium)
+                )
+                Text(
+                    text = product.name,
+                    style = MaterialTheme.typography.subtitle1,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_right),
                 contentDescription = null
@@ -424,21 +476,22 @@ fun MyStoreBlazeViewCampaignPreview() {
                 ),
             ),
             onCampaignClicked = {},
-            onViewAllCampaignsClicked = {},
+            onCreateCampaignClicked = {},
             menu = DashboardWidgetMenu(
                 items = listOf(
-                    DashboardWidgetAction(
-                        titleResource = R.string.dynamic_dashboard_hide_widget_menu_item,
-                        action = {}
+                    DashboardWidget.Type.BLAZE.defaultHideMenuEntry(
+                        onHideClicked = { }
                     )
                 )
             ),
-            createCampaignButton = DashboardWidgetAction(
-                titleResource = R.string.blaze_campaign_promote_button,
+            showAllCampaignsButton = DashboardWidgetAction(
+                titleResource = R.string.blaze_campaign_show_all_button,
                 action = {}
-            )
+            ),
         ),
-        onDismissBlazeView = {}
+        onDismissBlazeView = {},
+        onContactSupportClicked = {},
+        onRetryOnErrorButtonClicked = {},
     )
 }
 
@@ -454,18 +507,16 @@ fun MyStoreBlazeViewNoCampaignPreview() {
             onProductClicked = {},
             menu = DashboardWidgetMenu(
                 items = listOf(
-                    DashboardWidgetAction(
-                        titleResource = R.string.dynamic_dashboard_hide_widget_menu_item,
-                        action = {}
+                    DashboardWidget.Type.BLAZE.defaultHideMenuEntry(
+                        onHideClicked = { }
                     )
                 )
             ),
-            createCampaignButton = DashboardWidgetAction(
-                titleResource = R.string.blaze_campaign_promote_button,
-                action = {}
-            )
+            onCreateCampaignClicked = {},
         ),
-        onDismissBlazeView = {}
+        onDismissBlazeView = {},
+        onContactSupportClicked = {},
+        onRetryOnErrorButtonClicked = {},
     )
 }
 
@@ -475,7 +526,9 @@ fun DashboardBlazeLoadingPreview() {
     WooThemeWithBackground {
         DashboardBlazeView(
             state = DashboardBlazeCampaignState.Loading,
-            onDismissBlazeView = {}
+            onDismissBlazeView = {},
+            onContactSupportClicked = {},
+            onRetryOnErrorButtonClicked = {},
         )
     }
 }

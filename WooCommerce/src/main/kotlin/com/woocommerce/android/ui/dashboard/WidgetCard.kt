@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -36,12 +38,12 @@ fun WidgetCard(
     menu: DashboardWidgetMenu,
     @DrawableRes iconResource: Int? = null,
     button: DashboardWidgetAction? = null,
+    isError: Boolean,
     content: @Composable () -> Unit
 ) {
     val roundedShape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
     Column(
         modifier = modifier
-            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             .border(
                 width = dimensionResource(id = R.dimen.minor_10),
                 color = colorResource(id = R.color.woo_gray_5),
@@ -51,7 +53,16 @@ fun WidgetCard(
             .background(MaterialTheme.colors.surface)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            if (iconResource != null) {
+            if (isError) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_tintable_info_outline_24dp),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(start = dimensionResource(id = R.dimen.major_100))
+                        .size(dimensionResource(id = R.dimen.major_125)),
+                    tint = colorResource(id = R.color.color_icon)
+                )
+            } else if (iconResource != null) {
                 Image(
                     painter = painterResource(id = iconResource),
                     contentDescription = "",
@@ -71,16 +82,16 @@ fun WidgetCard(
             )
 
             WCOverflowMenu(
-                items = menu.items.toTypedArray(),
+                items = menu.items,
                 onSelected = { item -> item.action() },
-                mapper = { stringResource(id = it.titleResource) },
+                mapper = { it.title.getText() },
                 tint = colorResource(id = R.color.color_on_surface_high)
             )
         }
 
         content()
 
-        if (button != null) {
+        if (button != null && !isError) {
             WCTextButton(
                 modifier = Modifier
                     .padding(
@@ -90,7 +101,7 @@ fun WidgetCard(
                 onClick = button.action
             ) {
                 Text(
-                    text = stringResource(id = button.titleResource),
+                    text = button.title.getText(),
                     style = MaterialTheme.typography.body1
                 )
             }
@@ -120,7 +131,8 @@ fun PreviewWidgetCard() {
             button = DashboardWidgetAction(
                 titleResource = R.string.blaze_campaign_show_all_button,
                 action = {}
-            )
+            ),
+            isError = false
         ) {
             Text(
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),

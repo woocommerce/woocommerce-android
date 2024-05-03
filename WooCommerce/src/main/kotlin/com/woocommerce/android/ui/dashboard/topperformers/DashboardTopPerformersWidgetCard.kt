@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -20,6 +21,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -63,7 +66,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAc
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
-import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.Factory
+import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenAnalytics
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
@@ -77,12 +80,12 @@ import java.util.Locale
 @Composable
 fun DashboardTopPerformersWidgetCard(
     parentViewModel: DashboardViewModel,
-    topPerformersViewModel: DashboardTopPerformersViewModel =
-        viewModelWithFactory<DashboardTopPerformersViewModel, Factory>(
-            creationCallback = {
-                it.create(parentViewModel)
-            }
-        )
+    modifier: Modifier = Modifier,
+    topPerformersViewModel: DashboardTopPerformersViewModel = viewModelWithFactory(
+        creationCallback = { factory: DashboardTopPerformersViewModel.Factory ->
+            factory.create(parentViewModel)
+        }
+    )
 ) {
     topPerformersViewModel.topPerformersState.observeAsState().value?.let { topPerformersState ->
         val lastUpdateState by topPerformersViewModel.lastUpdateTopPerformers.observeAsState()
@@ -91,14 +94,22 @@ fun DashboardTopPerformersWidgetCard(
             titleResource = topPerformersState.titleStringRes,
             menu = topPerformersState.menu,
             button = topPerformersState.onOpenAnalyticsTapped,
+            modifier = modifier,
+            isError = topPerformersState.isError
         ) {
-            DashboardTopPerformersContent(
-                topPerformersState,
-                selectedDateRange,
-                lastUpdateState,
-                topPerformersViewModel::onGranularityChanged,
-                topPerformersViewModel::onEditCustomRangeTapped
-            )
+            when {
+                topPerformersState.isError -> TopPerformersErrorView(
+                    onContactSupportClicked = parentViewModel::onContactSupportClicked,
+                    onRetryClicked = topPerformersViewModel::onRefresh
+                )
+                else -> DashboardTopPerformersContent(
+                    topPerformersState,
+                    selectedDateRange,
+                    lastUpdateState,
+                    topPerformersViewModel::onGranularityChanged,
+                    topPerformersViewModel::onEditCustomRangeTapped
+                )
+            }
         }
     }
 
@@ -205,7 +216,6 @@ private fun TopPerformersContent(
             )
         }
         when {
-            topPerformersState?.isError == true -> TopPerformersErrorView()
             topPerformersState?.topPerformers.isNullOrEmpty() -> TopPerformersEmptyView()
             else -> TopPerformerProductList(
                 topPerformers = topPerformersState?.topPerformers!!,
@@ -290,8 +300,8 @@ private fun TopPerformersDateGranularityDropDown(
     Box {
         IconButton(onClick = { showDropDown = !showDropDown }) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_calendar_16),
-                tint = colorResource(id = R.color.color_on_surface_medium_selector),
+                imageVector = Icons.Default.DateRange,
+                tint = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
                 contentDescription = stringResource(R.string.dashboard_stats_edit_granularity_content_description),
             )
         }
@@ -481,22 +491,14 @@ private fun TopPerformersEmptyView(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TopPerformersErrorView() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_top_performers_empty),
-            contentDescription = "",
-        )
-        Text(
-            modifier = Modifier.padding(top = 16.dp),
-            text = stringResource(id = R.string.dashboard_top_performers_empty),
-            style = MaterialTheme.typography.body2,
-        )
-    }
+private fun TopPerformersErrorView(
+    onContactSupportClicked: () -> Unit,
+    onRetryClicked: () -> Unit
+) {
+    WidgetError(
+        onContactSupportClicked = onContactSupportClicked,
+        onRetryClicked = onRetryClicked
+    )
 }
 
 @LightDarkThemePreviews

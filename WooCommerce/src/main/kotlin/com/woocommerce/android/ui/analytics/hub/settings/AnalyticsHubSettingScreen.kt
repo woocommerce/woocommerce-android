@@ -107,7 +107,8 @@ fun AnalyticsHubSettingScreen(
                                 dragDropState = dragDropState,
                                 onSelectionChange = onSelectionChange,
                                 itemKey = { it.card },
-                                itemFormatter = { title }
+                                itemFormatter = { title },
+                                isEnabled = item.isEnabled
                             )
                         }
 

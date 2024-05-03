@@ -100,7 +100,7 @@ internal class ShouldShowOnboardingTest : BaseUnitTest() {
 
         sut.showForTasks(ONBOARDING_TASK_COMPLETED_LIST)
 
-        verify(appPrefsWrapper).markAllOnboardingTasksCompleted(CURRENT_SITE_ID)
+        verify(appPrefsWrapper).updateOnboardingCompletedStatus(CURRENT_SITE_ID, true)
     }
 
     @Test
