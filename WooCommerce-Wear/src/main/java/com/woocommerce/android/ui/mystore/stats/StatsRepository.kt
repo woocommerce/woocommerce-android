@@ -1,6 +1,5 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.mystore.stats
 
-import com.woocommerce.android.ui.mystore.stats.TodayRangeData
 import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
