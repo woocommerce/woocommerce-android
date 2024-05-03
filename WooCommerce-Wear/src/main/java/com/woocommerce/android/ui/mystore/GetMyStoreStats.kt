@@ -38,7 +38,7 @@ class GetMyStoreStats @Inject constructor(
                 onSuccess = { revenue ->
                     val totals = revenue?.parseTotal()
                     val revenueData = RevenueData(
-                        totalRevenue = totals?.netRevenue ?: 0.0,
+                        totalRevenue = totals?.totalSales ?: 0.0,
                         orderCount = totals?.ordersCount ?: 0
                     )
                     revenueStats.value = RevenueStatResult(Result.success(revenueData))
