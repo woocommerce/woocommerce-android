@@ -35,8 +35,12 @@ class GetMyStoreStats @Inject constructor(
         statsRepository.fetchRevenueStats(selectedSite)
             .fold(
                 onSuccess = { revenue ->
-                    val totals = revenue?.parseTotal()?.netRevenue ?: 0.0
-                    revenueStats.value = RevenueStatResult(Result.success(totals))
+                    val totals = revenue?.parseTotal()
+                    val revenueData = RevenueData(
+                        totalRevenue = totals?.netRevenue ?: 0.0,
+                        orderCount = totals?.ordersCount ?: 0
+                    )
+                    revenueStats.value = RevenueStatResult(Result.success(revenueData))
                 },
                 onFailure = {
                     revenueStats.value = RevenueStatResult(Result.failure(Exception()))
@@ -65,12 +69,17 @@ class GetMyStoreStats @Inject constructor(
                 && visitorData != null
     }
 
+    data class RevenueData(
+        val totalRevenue: Double,
+        val orderCount: Int
+    )
+
     sealed class StatResult<T>(
         val result: Result<T>
     ) {
         data class RevenueStatResult(
-            val revenueStats: Result<Double>
-        ) : StatResult<Double>(revenueStats)
+            val revenueStats: Result<RevenueData>
+        ) : StatResult<RevenueData>(revenueStats)
 
         data class VisitorStatResult(
             val visitorStats: Result<Int>
