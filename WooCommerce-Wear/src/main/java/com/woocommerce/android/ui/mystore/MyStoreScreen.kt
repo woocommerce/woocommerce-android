@@ -19,6 +19,7 @@ import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
 
@@ -26,6 +27,7 @@ import com.woocommerce.android.presentation.theme.WooTypography
 fun MyStoreScreen(viewModel: MyStoreViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     MyStoreScreen(
+        isLoading = viewState?.isLoading ?: false,
         currentSiteName = viewState?.currentSiteName.orEmpty(),
         totalRevenue = viewState?.revenueTotal?.toString().orEmpty(),
         ordersCount = viewState?.ordersCount?.toString().orEmpty(),
@@ -36,6 +38,7 @@ fun MyStoreScreen(viewModel: MyStoreViewModel) {
 
 @Composable
 fun MyStoreScreen(
+    isLoading: Boolean,
     currentSiteName: String,
     totalRevenue: String,
     ordersCount: String,
@@ -64,36 +67,14 @@ fun MyStoreScreen(
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                 )
-                Text(text = "Today")
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    StoreDataItem(
-                        title = "Revenue",
-                        value = totalRevenue,
-                        modifier = Modifier.weight(1f)
-                    )
-                    StoreDataItem(
-                        title = "Visitors",
-                        value = visitorsCount,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    StoreDataItem(
-                        title = "Orders",
-                        value = ordersCount,
-                        modifier = Modifier.weight(1f)
-                    )
-                    StoreDataItem(
-                        title = "Conversion",
-                        value = conversionRate,
-                        modifier = Modifier.weight(1f)
+                if (isLoading) {
+                    LoadingScreen()
+                }else {
+                    MyStoreView(
+                        totalRevenue,
+                        visitorsCount,
+                        ordersCount,
+                        conversionRate
                     )
                 }
                 Button(
@@ -105,6 +86,47 @@ fun MyStoreScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun MyStoreView(
+    totalRevenue: String,
+    visitorsCount: String,
+    ordersCount: String,
+    conversionRate: String
+) {
+    Text(text = "Today")
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        StoreDataItem(
+            title = "Revenue",
+            value = totalRevenue,
+            modifier = Modifier.weight(1f)
+        )
+        StoreDataItem(
+            title = "Visitors",
+            value = visitorsCount,
+            modifier = Modifier.weight(1f)
+        )
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        StoreDataItem(
+            title = "Orders",
+            value = ordersCount,
+            modifier = Modifier.weight(1f)
+        )
+        StoreDataItem(
+            title = "Conversion",
+            value = conversionRate,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
@@ -128,6 +150,7 @@ fun StoreDataItem(
 @Composable
 fun DefaultPreview() {
     MyStoreScreen(
+        isLoading = false,
         currentSiteName = "My Store",
         totalRevenue = "$5,321.90",
         ordersCount = "12",
