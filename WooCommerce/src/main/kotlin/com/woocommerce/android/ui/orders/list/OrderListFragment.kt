@@ -76,10 +76,10 @@ import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 import org.wordpress.android.util.DisplayUtils
 import org.wordpress.android.util.ToastUtils
+import javax.inject.Inject
+import org.wordpress.android.util.ActivityUtils as WPActivityUtils
 
 @AndroidEntryPoint
 @Suppress("LargeClass")
