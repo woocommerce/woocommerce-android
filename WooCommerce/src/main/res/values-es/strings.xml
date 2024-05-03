@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-23 17:54:04+0000
+Translation-Revision-Date: 2024-04-30 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="blaze_campaign_promote_button">Promocionar</string>
+    <string name="store_onboarding_task_view_all_tasks">Ver todas las tareas</string>
+    <string name="analytics_session_no_available_description">Los análisis de sesiones se basan en los recuentos de visitantes únicos, que no están disponibles para rangos de fechas personalizados</string>
+    <string name="analytics_session_no_available">Datos de la sesión no disponibles</string>
+    <string name="dynamic_dashboard_hide_widget_menu_item">Ocultar</string>
+    <string name="my_store_widget_unavailable">No disponible</string>
+    <string name="my_store_widget_stats_title">Rendimiento</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">Ver todos los análisis de la tienda</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">Ocultar mejores rendimientos</string>
+    <string name="dashboard_stats_custom_range_label">Personalizado</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">Elemento elegido</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Botón de cambio de rango de fechas</string>
+    <string name="images_unavailable_notice">Las imágenes no están disponibles porque tu sitio está marcado como privado. Puedes modificar este ajuste cambiando al modo Próximamente.\n</string>
     <string name="card_selection_control">Selección de tarjeta de análisis</string>
     <string name="login_app_password_exit_dialog_cancel">Cancelar</string>
     <string name="login_app_password_exit_dialog_confirmation">Salir igualmente</string>
     <string name="login_app_password_exit_dialog_message">Parece que aún no has aprobado la conexión de la aplicación. ¿Estás seguro que quieres salir?</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">Selecciona una imagen con un tamaño mínimo de 500x500 píxeles</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Selecciona una imagen con un tamaño mínimo de 400x400 píxeles</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Imagen no válida</string>
     <string name="login_invalid_credentials_message">Parece que el nombre de usuario o la contraseña que has introducido no coinciden. Vuelve a comprobar tus credenciales e inténtalo otra vez.</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">Si tus datos aún no se han cargado, pide ayuda al equipo de soporte.</string>
@@ -45,7 +58,6 @@ Language: es
     <string name="analytics_bundles_list_items_sold">Paquetes vendidos</string>
     <string name="my_store_widget_blaze_title">Campañas de Blaze</string>
     <string name="my_store_widget_top_products_title">Productos principales</string>
-    <string name="my_store_widget_stats_title">Estadísticas</string>
     <string name="my_store_widget_onboarding_title">Iniciación</string>
     <string name="my_store_edit_screen_widget_onboarding_list">Iniciación a la tienda</string>
     <string name="my_store_edit_screen_widget_blaze_campaigns">Campañas de Blaze</string>
@@ -459,7 +471,6 @@ Language: es
     <string name="blaze_campaign_status_active">Activa</string>
     <string name="blaze_campaign_status_in_moderation">En moderación</string>
     <string name="blaze_campaign_show_all_button">Mostrar todos</string>
-    <string name="blaze_campaign_create_campaign_button">Crear campaña</string>
     <string name="blaze_campaign_subtitle">Aumenta la visibilidad y vende tus productos rápidamente.</string>
     <string name="blaze_campaign_title">Campaña de Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">El símbolo del pago sin contacto es una marca registrada propiedad de EMVCo, LLC y se utiliza con su autorización.</string>

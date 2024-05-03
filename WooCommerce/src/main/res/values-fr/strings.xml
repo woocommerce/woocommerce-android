@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-23 09:54:04+0000
+Translation-Revision-Date: 2024-04-30 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="blaze_campaign_promote_button">Promouvoir</string>
+    <string name="store_onboarding_task_view_all_tasks">Voir toutes les tâches</string>
+    <string name="analytics_session_no_available_description">Les analyses de session se basent sur le nombre de visites uniques indisponibles pour les plages de dates personnalisées</string>
+    <string name="analytics_session_no_available">Données de session indisponibles</string>
+    <string name="dynamic_dashboard_hide_widget_menu_item">Masquer</string>
+    <string name="my_store_widget_unavailable">Indisponible</string>
+    <string name="my_store_widget_stats_title">Performances</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">Voir toutes les statistiques de la boutique</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">Masquer les produits les plus performants</string>
+    <string name="dashboard_stats_custom_range_label">Personnalisé</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">Élément sélectionné</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Bouton de changement de la plage de dates</string>
+    <string name="images_unavailable_notice">Les images sont indisponibles car votre site est marqué comme Privé. Vous pouvez y remédier en passant en mode Bientôt disponible.\n</string>
     <string name="card_selection_control">Sélection de la carte analytique</string>
     <string name="login_app_password_exit_dialog_cancel">Annuler</string>
     <string name="login_app_password_exit_dialog_confirmation">Quitter quand même</string>
     <string name="login_app_password_exit_dialog_message">Il semble que vous n’ayez pas encore approuvé la connexion à l’application. Voulez-vous vraiment quitter ?</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">Veuillez sélectionner une image dont les dimensions minimales sont de 500x500 pixels</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Veuillez sélectionner une image dont les dimensions minimales sont de 400x400 pixels</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Image non valide</string>
     <string name="login_invalid_credentials_message">Il semble que l’identifiant ou le mot de passe saisi ne corresponde pas. Vérifiez vos identifiants de connexion et réessayez.</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">Si vos données ne se chargent toujours pas, contactez notre équipe d’assistance pour obtenir de l’aide.</string>
@@ -45,7 +58,6 @@ Language: fr
     <string name="analytics_bundles_list_items_sold">Formules vendues</string>
     <string name="my_store_widget_blaze_title">Campagnes Blaze</string>
     <string name="my_store_widget_top_products_title">Produits les mieux notés</string>
-    <string name="my_store_widget_stats_title">Statistiques</string>
     <string name="my_store_widget_onboarding_title">Intégration</string>
     <string name="my_store_edit_screen_widget_onboarding_list">Initiation à la boutique</string>
     <string name="my_store_edit_screen_widget_blaze_campaigns">Campagnes Blaze</string>
@@ -459,7 +471,6 @@ Language: fr
     <string name="blaze_campaign_status_active">Active</string>
     <string name="blaze_campaign_status_in_moderation">En modération</string>
     <string name="blaze_campaign_show_all_button">Afficher tout</string>
-    <string name="blaze_campaign_create_campaign_button">Créer une campagne</string>
     <string name="blaze_campaign_subtitle">Augmentez la visibilité et vendez rapidement vos produits.</string>
     <string name="blaze_campaign_title">Campagne Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Le symbole du sans contact est une marque déposée et utilisée avec l’autorisation de EMVCo, LLC.</string>
