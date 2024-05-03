@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.mystore.stats
 
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.utils.SiteUtils
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -9,9 +12,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.utils.SiteUtils
 
 @Parcelize
 data class StatsTimeRange(
@@ -45,12 +45,8 @@ abstract class StatsTimeRangeData(
     private fun getDateFromFullDateString(
         isoStringDate: String,
         locale: Locale
-    ): Date? {
-        return try {
-            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale)
-            formatter.parse(isoStringDate)
-        } catch (e: Exception) {
-            null
-        }
-    }
+    ) = runCatching {
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale)
+        formatter.parse(isoStringDate)
+    }.getOrNull()
 }

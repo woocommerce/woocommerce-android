@@ -4,12 +4,12 @@ import com.woocommerce.android.ui.mystore.GetMyStoreStats.StatResult.RevenueStat
 import com.woocommerce.android.ui.mystore.GetMyStoreStats.StatResult.VisitorStatResult
 import com.woocommerce.android.ui.mystore.stats.StatsRepository
 import com.woocommerce.commons.extensions.convertedFrom
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import org.wordpress.android.fluxc.model.SiteModel
+import javax.inject.Inject
 
 class GetMyStoreStats @Inject constructor(
     private val statsRepository: StatsRepository,
@@ -44,7 +44,7 @@ class GetMyStoreStats @Inject constructor(
                     revenueStats.value = RevenueStatResult(Result.success(revenueData))
                 },
                 onFailure = {
-                    revenueStats.value = RevenueStatResult(Result.failure(Exception()))
+                    revenueStats.value = RevenueStatResult(Result.failure(Exception(REVENUE_DATA_ERROR)))
                 }
             )
     }
@@ -56,7 +56,7 @@ class GetMyStoreStats @Inject constructor(
                     visitorStats.value = VisitorStatResult(Result.success(visitors ?: 0))
                 },
                 onFailure = {
-                    visitorStats.value = VisitorStatResult(Result.failure(Exception()))
+                    visitorStats.value = VisitorStatResult(Result.failure(Exception(VISITOR_DATA_ERROR)))
                 }
             )
     }
@@ -83,8 +83,8 @@ class GetMyStoreStats @Inject constructor(
         private val visitorData: VisitorStatResult?
     ) {
         val isFinished
-            get() = revenueData != null
-                && visitorData != null
+            get() = revenueData != null &&
+                visitorData != null
         val revenue
             get() = revenueData?.result?.getOrNull()?.totalRevenue ?: 0.0
 
@@ -100,5 +100,10 @@ class GetMyStoreStats @Inject constructor(
                 val visitorsCount = visitorData?.result?.getOrNull() ?: 0
                 return ordersCount convertedFrom visitorsCount
             }
+    }
+
+    companion object {
+        private const val REVENUE_DATA_ERROR = "Error fetching revenue data"
+        private const val VISITOR_DATA_ERROR = "Error fetching visitor data"
     }
 }

@@ -12,7 +12,6 @@ fun Calendar.startOfCurrentDay(): Date =
 fun Calendar.endOfCurrentDay(): Date =
     (clone() as Calendar).apply { setToDayLastSecond() }.time
 
-
 private fun Calendar.setToDayLastSecond() {
     set(Calendar.SECOND, getMaximum(Calendar.SECOND))
     set(Calendar.MINUTE, getMaximum(Calendar.MINUTE))

@@ -22,7 +22,7 @@ class TodayRangeData(
     selectedSite: SiteModel,
     locale: Locale,
     referenceCalendar: Calendar
-): StatsTimeRangeData(referenceCalendar) {
+) : StatsTimeRangeData(referenceCalendar) {
     override val currentRange: StatsTimeRange
     override val previousRange: StatsTimeRange
     override val formattedCurrentRange: String

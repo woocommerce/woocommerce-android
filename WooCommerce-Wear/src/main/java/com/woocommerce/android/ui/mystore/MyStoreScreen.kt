@@ -69,7 +69,7 @@ fun MyStoreScreen(
                 )
                 if (isLoading) {
                     LoadingScreen()
-                }else {
+                } else {
                     MyStoreView(
                         totalRevenue,
                         visitorsCount,
@@ -79,7 +79,8 @@ fun MyStoreScreen(
                 }
                 Button(
                     onClick = { /*TODO*/ },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(top = 8.dp)
                 ) {
                     Text("View all orders")

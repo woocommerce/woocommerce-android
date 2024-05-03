@@ -32,7 +32,7 @@ class StatsRepository @Inject constructor(
         )
 
         return when {
-            result.isError -> Result.failure(Exception())
+            result.isError -> Result.failure(Exception(REVENUE_DATA_ERROR))
             else -> wcStatsStore.getRawRevenueStats(
                 selectedSite,
                 result.granularity,
@@ -61,7 +61,7 @@ class StatsRepository @Inject constructor(
         )
 
         return when {
-            result.isError -> Result.failure(Exception())
+            result.isError -> Result.failure(Exception(VISITOR_DATA_ERROR))
             else -> wcStatsStore.getNewVisitorStats(
                 selectedSite,
                 result.granularity,
@@ -72,5 +72,10 @@ class StatsRepository @Inject constructor(
                 Result.success(it.values.sum())
             }
         }
+    }
+
+    companion object {
+        private const val REVENUE_DATA_ERROR = "Error fetching revenue data"
+        private const val VISITOR_DATA_ERROR = "Error fetching visitor data"
     }
 }
