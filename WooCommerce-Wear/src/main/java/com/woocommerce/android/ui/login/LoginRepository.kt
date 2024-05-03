@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login
 
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -13,6 +14,8 @@ import com.woocommerce.commons.wear.DataParameters.TOKEN
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -21,10 +24,11 @@ import org.wordpress.android.fluxc.generated.AccountActionBuilder.newUpdateAcces
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.AccountStore
 
 class LoginRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.LOGIN) private val loginDataStore: DataStore<Preferences>,
-    private val dispatcher: Dispatcher,
+    private val accountStore: AccountStore,
     coroutineScope: CoroutineScope
 ) {
     private val gson by lazy { Gson() }
@@ -32,9 +36,6 @@ class LoginRepository @Inject constructor(
     private val siteFlow: MutableStateFlow<SiteModel?> = MutableStateFlow(null)
     val selectedSiteFlow: StateFlow<SiteModel?> = siteFlow
     val isSiteAvailable = siteFlow.map { it != null && it.siteId > 0 }
-
-    val currentSite: SiteModel?
-        get() = siteFlow.value
 
     init {
         loginDataStore.data
@@ -53,7 +54,7 @@ class LoginRepository @Inject constructor(
         loginDataStore.edit { prefs ->
             prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
             data.getString(TOKEN.value)?.let { token ->
-                dispatcher.dispatch(newUpdateAccessTokenAction(UpdateTokenPayload(token)))
+                accountStore.updateToken(token)
                 prefs[stringPreferencesKey(generateTokenKey(site.siteId))] = token
             }
         }
