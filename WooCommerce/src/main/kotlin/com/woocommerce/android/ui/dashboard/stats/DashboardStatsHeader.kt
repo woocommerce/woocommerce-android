@@ -60,6 +60,7 @@ fun DashboardStatsHeader(
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .then(if (isCustomRange) Modifier.clickable(onClick = onCustomRangeClick) else Modifier)
                 .padding(dimensionResource(id = dimen.minor_100))
