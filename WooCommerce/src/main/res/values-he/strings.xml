@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-24 13:54:03+0000
+Translation-Revision-Date: 2024-04-30 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="blaze_campaign_promote_button">לקדם</string>
+    <string name="store_onboarding_task_view_all_tasks">להציג את כל המשימות</string>
+    <string name="analytics_session_no_available_description">נתונים אנליטיים של הפעלות מסתמכים על מספר המבקרים הייחודיים, והם לא זמינים בטווח תאריכים מותאם אישית</string>
+    <string name="analytics_session_no_available">הנתונים של ההפעלה לא זמינים</string>
+    <string name="dynamic_dashboard_hide_widget_menu_item">להסתיר</string>
+    <string name="my_store_widget_unavailable">לא זמין</string>
+    <string name="my_store_widget_stats_title">ביצועים</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">להציג את כל הנתונים האנליטיים של החנות</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">להסתיר את \'הביצועים הטובים ביותר\'</string>
+    <string name="dashboard_stats_custom_range_label">התאמה אישית</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">הפריט נבחר</string>
+    <string name="dashboard_stats_edit_granularity_content_description">הכפתור \'לשנות טווח תאריכים\'</string>
+    <string name="images_unavailable_notice">התמונות לא זמינות מאחר שהאתר שלך מסומן כ\'פרטי\'. אפשר לשנות את ההגדרה הזאת על ידי מעבר למצב \'בקרוב\'.\n</string>
     <string name="card_selection_control">בחירת כרטיס לניתוח אנליטי</string>
     <string name="login_app_password_exit_dialog_cancel">ביטול</string>
     <string name="login_app_password_exit_dialog_confirmation">לצאת בכל מקרה</string>
@@ -13,8 +26,8 @@ Language: he_IL
     <string name="login_invalid_credentials_message">נראה ששם המשתמש והסיסמה שהזנת לא תואמים. יש לבדוק את פרטי הכניסה ולנסות שוב.</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">אם הנתונים עדיין לא נטענים, יש ליצור קשר עם צוות התמיכה שלנו לסיוע.</string>
     <string name="orderlist_connectivity_tool_summary_title">לא נמצאו בעיות בחיבור</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">יש לבחור תמונה עם ממדים מינמליים של 500 ‏x ‏500 פיקסלים</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">תמונה לא תקינה</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">יש לבחור תמונה בגודל מינימלי של 400x400 פיקסלים</string>
     <string name="orderlist_connectivity_tool_retry_action">לנסות שוב את החיבור</string>
     <string name="orderlist_connectivity_tool_store_check_title">התחברות לאתר שלך</string>
     <string name="orderlist_connectivity_tool_wordpress_check_suggestion">אנחנו לא יכולים להתחבר אל WordPress.com כרגע.\n\nיש לנסות שוב בעוד דקות אחדות או לפנות לצוות התמיכה שלנו כדי שנוכל לעזור.</string>
@@ -45,7 +58,6 @@ Language: he_IL
     <string name="analytics_bundles_list_items_sold">חבילות שנמכרו</string>
     <string name="my_store_widget_blaze_title">קמפיינים של Blaze</string>
     <string name="my_store_widget_top_products_title">מוצרים מובילים</string>
-    <string name="my_store_widget_stats_title">סטטיסטיקה</string>
     <string name="my_store_widget_onboarding_title">הצטרפות</string>
     <string name="my_store_edit_screen_widget_onboarding_list">הצטרפות לחנות</string>
     <string name="my_store_edit_screen_widget_blaze_campaigns">קמפיינים של Blaze</string>
@@ -459,7 +471,6 @@ Language: he_IL
     <string name="blaze_campaign_status_active">פעיל</string>
     <string name="blaze_campaign_status_in_moderation">בתהליך אישור</string>
     <string name="blaze_campaign_show_all_button">להציג הכל</string>
-    <string name="blaze_campaign_create_campaign_button">ליצור קמפיין</string>
     <string name="blaze_campaign_subtitle">מגדילים את הנראות ומאיצים את מכירת המוצרים.</string>
     <string name="blaze_campaign_title">קמפיין של Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">סמל \'ללא מגע\' הוא סימן מסחרי בבעלות EMVCo, LLC.‎ ובשימוש לפי הרשאתה.</string>

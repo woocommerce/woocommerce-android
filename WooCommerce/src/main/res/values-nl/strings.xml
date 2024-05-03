@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-23 13:54:03+0000
+Translation-Revision-Date: 2024-04-30 15:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="blaze_campaign_promote_button">Promoten</string>
+    <string name="store_onboarding_task_view_all_tasks">Alle taken bekijken</string>
+    <string name="analytics_session_no_available_description">Sessie-analyses gebruiken tellingen van unieke bezoekers, die niet beschikbaar zijn voor aangepaste datumbereiken</string>
+    <string name="analytics_session_no_available">Sessiegegevens niet beschikbaar</string>
+    <string name="dynamic_dashboard_hide_widget_menu_item">Verbergen</string>
+    <string name="my_store_widget_unavailable">Niet beschikbaar</string>
+    <string name="my_store_widget_stats_title">Prestaties</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">Alle winkelanalyses bekijken</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">Toppresteerders verbergen</string>
+    <string name="dashboard_stats_custom_range_label">Aangepast</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">Item geselecteerd</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Knop Datumbereik aanpassen</string>
+    <string name="images_unavailable_notice">De afbeeldingen zijn niet beschikbaar omdat je site als Privé is aangemerkt. Je kan dit wijzigingen door over te schakelen naar de modus Binnenkort beschikbaar.\n</string>
     <string name="card_selection_control">Selectie analysekaarten</string>
     <string name="login_app_password_exit_dialog_cancel">Annuleren</string>
     <string name="login_app_password_exit_dialog_confirmation">Toch afsluiten</string>
     <string name="login_app_password_exit_dialog_message">Het lijkt erop dat je de verbinding met de app nog niet hebt goedgekeurd. Weet je zeker dat je wilt afsluiten?</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">Selecteer een afbeelding met een minimale afmeting van 500 x 500 px</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Selecteer een afbeelding met een minimale afmeting van 400x400 pixels</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Ongeldige afbeelding</string>
     <string name="login_invalid_credentials_message">Het lijkt erop dat de ingevoerde gebruikersnaam en wachtwoord niet overeenkomen. Controleer je inloggegevens en probeer het nogmaals.</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">Als je gegevens nog steeds niet worden geladen, neem dan contact op met ons ondersteuningsteam voor hulp.</string>
@@ -45,7 +58,6 @@ Language: nl
     <string name="analytics_bundles_list_items_sold">Verkochte bundels</string>
     <string name="my_store_widget_blaze_title">Blaze-campagnes</string>
     <string name="my_store_widget_top_products_title">Topproducten</string>
-    <string name="my_store_widget_stats_title">Statistieken</string>
     <string name="my_store_widget_onboarding_title">Onboarding</string>
     <string name="my_store_edit_screen_widget_onboarding_list">Winkel-onboarding</string>
     <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze-campagnes</string>
@@ -459,7 +471,6 @@ Language: nl
     <string name="blaze_campaign_status_active">Actief</string>
     <string name="blaze_campaign_status_in_moderation">Wordt beheerd</string>
     <string name="blaze_campaign_show_all_button">Alles tonen</string>
-    <string name="blaze_campaign_create_campaign_button">Campagne aanmaken</string>
     <string name="blaze_campaign_subtitle">Verhoog de zichtbaarheid en verkoop snel je producten.</string>
     <string name="blaze_campaign_title">Blaze-campagne</string>
     <string name="card_reader_tap_to_pay_about_copyright">Het pictogram voor contactloos betalen is een handelsmerk dat gebruikt wordt met toestemming van en dat eigendom is van EMVCo, LLC.</string>

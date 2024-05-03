@@ -1,2 +1,0 @@
-18.2:
-I vår senaste uppdatering har vi förbättrat din WooCommerce-upplevelse. Vi går över från enkla betalningar till ett mer anpassningsbart flöde för beställningsskapande, vilket gör att du enkelt kan ange önskat belopp. Dessutom tillhandahåller vår förbättrade analyshubb nu insikter om produktpaket och presentkort, vilket ger en mer heltäckande bild av din företagsstatistik, förutsatt att dessa utökningar är aktiva. Njut av uppgraderingen.
