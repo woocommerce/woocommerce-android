@@ -4,28 +4,21 @@ import com.woocommerce.android.ui.mystore.GetMyStoreStats.StatResult.RevenueStat
 import com.woocommerce.android.ui.mystore.GetMyStoreStats.StatResult.VisitorStatResult
 import com.woocommerce.android.ui.mystore.stats.StatsRepository
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 
 class GetMyStoreStats @Inject constructor(
     private val statsRepository: StatsRepository,
-    private val coroutineScope: CoroutineScope
 ) {
     private val revenueStats = MutableStateFlow<RevenueStatResult?>(null)
     private val visitorStats = MutableStateFlow<VisitorStatResult?>(null)
 
     suspend operator fun invoke(selectedSite: SiteModel): Flow<MyStoreStatsData> {
-        listOf(
-            coroutineScope.fetchRevenueStats(selectedSite)
-        ).awaitAll()
+        fetchRevenueStats(selectedSite)
+        fetchVisitorsStats(selectedSite)
 
         return combine(
             revenueStats,
@@ -38,19 +31,30 @@ class GetMyStoreStats @Inject constructor(
         }.filter { it.isFinished }
     }
 
-    private fun CoroutineScope.fetchRevenueStats(selectedSite: SiteModel) =
-        async {
-            statsRepository.fetchRevenueStats(selectedSite)
-                .fold(
-                    onSuccess = { revenue ->
-                        val totals = revenue?.parseTotal()?.netRevenue ?: 0.0
-                        revenueStats.value = RevenueStatResult(Result.success(totals))
-                    },
-                    onFailure = {
-                        revenueStats.value = RevenueStatResult(Result.failure(Exception()))
-                    }
-                )
-        }
+    private suspend fun fetchRevenueStats(selectedSite: SiteModel) {
+        statsRepository.fetchRevenueStats(selectedSite)
+            .fold(
+                onSuccess = { revenue ->
+                    val totals = revenue?.parseTotal()?.netRevenue ?: 0.0
+                    revenueStats.value = RevenueStatResult(Result.success(totals))
+                },
+                onFailure = {
+                    revenueStats.value = RevenueStatResult(Result.failure(Exception()))
+                }
+            )
+    }
+
+    private suspend fun fetchVisitorsStats(selectedSite: SiteModel) {
+        statsRepository.fetchVisitorStats(selectedSite)
+            .fold(
+                onSuccess = { visitors ->
+                    visitorStats.value = VisitorStatResult(Result.success(visitors ?: 0))
+                },
+                onFailure = {
+                    visitorStats.value = VisitorStatResult(Result.failure(Exception()))
+                }
+            )
+    }
 
     data class MyStoreStatsData(
         val revenueData: RevenueStatResult?,

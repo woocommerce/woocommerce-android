@@ -41,4 +41,36 @@ class StatsRepository @Inject constructor(
             ).let { Result.success(it) }
         }
     }
+
+    suspend fun fetchVisitorStats(
+        selectedSite: SiteModel
+    ): Result<Int?> {
+        val todayRange = TodayRangeData(
+            selectedSite = selectedSite,
+            locale = Locale.getDefault(),
+            referenceCalendar = Calendar.getInstance()
+        ).currentRange
+
+        val result = wcStatsStore.fetchNewVisitorStats(
+            WCStatsStore.FetchNewVisitorStatsPayload(
+                site = selectedSite,
+                granularity = StatsGranularity.DAYS,
+                startDate = todayRange.start.formatToYYYYmmDDhhmmss(),
+                endDate = todayRange.end.formatToYYYYmmDDhhmmss()
+            )
+        )
+
+        return when {
+            result.isError -> Result.failure(Exception())
+            else -> wcStatsStore.getNewVisitorStats(
+                selectedSite,
+                result.granularity,
+                result.quantity,
+                result.date,
+                result.isCustomField
+            ).let {
+                Result.success(it.values.sum())
+            }
+        }
+    }
 }
