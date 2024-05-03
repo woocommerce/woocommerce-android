@@ -5,6 +5,9 @@ import com.woocommerce.commons.extensions.endOfCurrentDay
 import com.woocommerce.commons.extensions.formatToMMMddYYYY
 import com.woocommerce.commons.extensions.oneDayAgo
 import com.woocommerce.commons.extensions.startOfCurrentDay
+import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.utils.SiteUtils
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -13,9 +16,6 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.utils.SiteUtils
 
 // Responsible for defining two ranges of data, the current one, starting from the first second of the current day
 // until the same day in the current timezone, and the previous one, starting from the first second of
@@ -64,8 +64,6 @@ class TodayRangeData(
         )
         formattedPreviousRange = yesterday.formatToMMMddYYYY(locale)
     }
-
-
 
     private fun generateCurrentDateInSiteTimeZone(
         selectedSite: SiteModel,
