@@ -1,2 +1,1 @@
-- [***] MyStore: introduce a customizable dashboard that enables the users to tailor its view with different cards [https://github.com/woocommerce/woocommerce-android/issues/11165]
-
+Discover a more personalized shopping experience with the latest update to MyStore! We're excited to introduce a customizable dashboard that lets you tailor your view with a variety of unique cards. Streamline your management tasks and enjoy a dashboard designed just for you. Update now to start customizing your app experience!
