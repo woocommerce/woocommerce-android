@@ -33,39 +33,17 @@ data class StatsTimeRange(
     val end: Date
 ) : Parcelable
 
-class TodayRangeData(
-    selectedSite: SiteModel,
-    locale: Locale,
+abstract class StatsTimeRangeData(
     referenceCalendar: Calendar
 ) {
-    val currentRange: StatsTimeRange
-    val previousRange: StatsTimeRange
-    val formattedCurrentRange: String
-    val formattedPreviousRange: String
+    abstract val currentRange: StatsTimeRange
+    abstract val previousRange: StatsTimeRange
+    abstract val formattedCurrentRange: String
+    abstract val formattedPreviousRange: String
 
-    init {
-        val referenceDate = generateCurrentDateInSiteTimeZone(selectedSite, locale)
-        val calendar = referenceCalendar.clone() as Calendar
-        calendar.time = referenceDate
-        val currentStart = calendar.startOfCurrentDay()
-        val currentEnd = calendar.endOfCurrentDay()
-        currentRange = StatsTimeRange(
-            start = currentStart,
-            end = currentEnd
-        )
-        formattedCurrentRange = referenceDate.formatToMMMddYYYY(locale)
+    protected val calendar = referenceCalendar.clone() as Calendar
 
-        val yesterday = referenceDate.oneDayAgo()
-        calendar.time = yesterday
-        val previousStart = calendar.startOfCurrentDay()
-        previousRange = StatsTimeRange(
-            start = previousStart,
-            end = yesterday
-        )
-        formattedPreviousRange = yesterday.formatToMMMddYYYY(locale)
-    }
-
-    private fun generateCurrentDateInSiteTimeZone(
+    protected fun generateCurrentDateInSiteTimeZone(
         selectedSite: SiteModel,
         locale: Locale
     ): Date {
@@ -88,5 +66,37 @@ class TodayRangeData(
         } catch (e: Exception) {
             null
         }
+    }
+}
+
+class TodayRangeData(
+    selectedSite: SiteModel,
+    locale: Locale,
+    referenceCalendar: Calendar
+): StatsTimeRangeData(referenceCalendar) {
+    override val currentRange: StatsTimeRange
+    override val previousRange: StatsTimeRange
+    override val formattedCurrentRange: String
+    override val formattedPreviousRange: String
+
+    init {
+        val referenceDate = generateCurrentDateInSiteTimeZone(selectedSite, locale)
+        calendar.time = referenceDate
+        val currentStart = calendar.startOfCurrentDay()
+        val currentEnd = calendar.endOfCurrentDay()
+        currentRange = StatsTimeRange(
+            start = currentStart,
+            end = currentEnd
+        )
+        formattedCurrentRange = referenceDate.formatToMMMddYYYY(locale)
+
+        val yesterday = referenceDate.oneDayAgo()
+        calendar.time = yesterday
+        val previousStart = calendar.startOfCurrentDay()
+        previousRange = StatsTimeRange(
+            start = previousStart,
+            end = yesterday
+        )
+        formattedPreviousRange = yesterday.formatToMMMddYYYY(locale)
     }
 }
