@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.mystore
 import com.woocommerce.android.ui.mystore.GetMyStoreStats.StatResult.RevenueStatResult
 import com.woocommerce.android.ui.mystore.GetMyStoreStats.StatResult.VisitorStatResult
 import com.woocommerce.android.ui.mystore.stats.StatsRepository
+import com.woocommerce.commons.extensions.convertedFrom
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,6 +68,13 @@ class GetMyStoreStats @Inject constructor(
         val isFinished
             get() = revenueData != null
                 && visitorData != null
+
+        val conversionRate: String
+            get() {
+                val ordersCount = revenueData?.result?.getOrNull()?.orderCount ?: 0
+                val visitorsCount = visitorData?.result?.getOrNull() ?: 0
+                return ordersCount convertedFrom visitorsCount
+            }
     }
 
     data class RevenueData(
