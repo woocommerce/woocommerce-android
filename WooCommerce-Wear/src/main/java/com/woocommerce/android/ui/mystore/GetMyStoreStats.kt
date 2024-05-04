@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.mystore
 
-import com.woocommerce.android.ui.mystore.GetMyStoreStats.StatResult.RevenueStatResult
-import com.woocommerce.android.ui.mystore.GetMyStoreStats.StatResult.VisitorStatResult
 import com.woocommerce.android.ui.mystore.stats.StatsRepository
 import com.woocommerce.commons.extensions.convertedFrom
 import kotlinx.coroutines.flow.Flow
@@ -14,8 +12,8 @@ import javax.inject.Inject
 class GetMyStoreStats @Inject constructor(
     private val statsRepository: StatsRepository,
 ) {
-    private val revenueStats = MutableStateFlow<RevenueStatResult?>(null)
-    private val visitorStats = MutableStateFlow<VisitorStatResult?>(null)
+    private val revenueStats = MutableStateFlow<RevenueData?>(null)
+    private val visitorStats = MutableStateFlow<Int?>(null)
 
     suspend operator fun invoke(selectedSite: SiteModel): Flow<MyStoreStatsData> {
         fetchRevenueStats(selectedSite)
@@ -41,10 +39,10 @@ class GetMyStoreStats @Inject constructor(
                         totalRevenue = totals?.totalSales ?: 0.0,
                         orderCount = totals?.ordersCount ?: 0
                     )
-                    revenueStats.value = RevenueStatResult(Result.success(revenueData))
+                    revenueStats.value = revenueData
                 },
                 onFailure = {
-                    revenueStats.value = RevenueStatResult(Result.failure(Exception(REVENUE_DATA_ERROR)))
+                    revenueStats.value = null
                 }
             )
     }
@@ -53,10 +51,10 @@ class GetMyStoreStats @Inject constructor(
         statsRepository.fetchVisitorStats(selectedSite)
             .fold(
                 onSuccess = { visitors ->
-                    visitorStats.value = VisitorStatResult(Result.success(visitors ?: 0))
+                    visitorStats.value = visitors ?: 0
                 },
                 onFailure = {
-                    visitorStats.value = VisitorStatResult(Result.failure(Exception(VISITOR_DATA_ERROR)))
+                    visitorStats.value = null
                 }
             )
     }
@@ -66,44 +64,27 @@ class GetMyStoreStats @Inject constructor(
         val orderCount: Int
     )
 
-    sealed class StatResult<T>(
-        val result: Result<T>
-    ) {
-        data class RevenueStatResult(
-            val revenueStats: Result<RevenueData>
-        ) : StatResult<RevenueData>(revenueStats)
-
-        data class VisitorStatResult(
-            val visitorStats: Result<Int>
-        ) : StatResult<Int>(visitorStats)
-    }
-
     data class MyStoreStatsData(
-        private val revenueData: RevenueStatResult?,
-        private val visitorData: VisitorStatResult?
+        private val revenueData: RevenueData?,
+        private val visitorData: Int?
     ) {
         val isFinished
             get() = revenueData != null &&
                 visitorData != null
         val revenue
-            get() = revenueData?.result?.getOrNull()?.totalRevenue ?: 0.0
+            get() = revenueData?.totalRevenue ?: 0.0
 
         val ordersCount
-            get() = revenueData?.result?.getOrNull()?.orderCount ?: 0
+            get() = revenueData?.orderCount ?: 0
 
         val visitorsCount
-            get() = visitorData?.result?.getOrNull() ?: 0
+            get() = visitorData ?: 0
 
         val conversionRate: String
             get() {
-                val ordersCount = revenueData?.result?.getOrNull()?.orderCount ?: 0
-                val visitorsCount = visitorData?.result?.getOrNull() ?: 0
+                val ordersCount = revenueData?.orderCount ?: 0
+                val visitorsCount = visitorData ?: 0
                 return ordersCount convertedFrom visitorsCount
             }
-    }
-
-    companion object {
-        private const val REVENUE_DATA_ERROR = "Error fetching revenue data"
-        private const val VISITOR_DATA_ERROR = "Error fetching visitor data"
     }
 }
