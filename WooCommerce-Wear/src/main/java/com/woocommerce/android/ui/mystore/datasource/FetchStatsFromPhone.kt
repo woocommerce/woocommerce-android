@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 class FetchStatsFromPhone @Inject constructor(
-    @DataStoreQualifier(DataStoreType.STATS) private val statsDataStore: DataStore<Preferences>,
     private val phoneRepository: PhoneConnectionRepository
 ) {
     suspend operator fun invoke(): Flow<MyStoreStatsData> {
