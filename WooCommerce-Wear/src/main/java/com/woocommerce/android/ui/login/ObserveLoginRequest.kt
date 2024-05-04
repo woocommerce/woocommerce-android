@@ -13,11 +13,11 @@ class ObserveLoginRequest @Inject constructor(
     private val loginRepository: LoginRepository
 ) {
     operator fun invoke() = combine(
-        loginRepository.isUserLoggedIn,
+        loginRepository.isSiteAvailable,
         timeoutWaitingFlow
-    ) { isUserLoggedIn, isWaiting ->
+    ) { isSiteAvailable, isWaiting ->
         when {
-            isUserLoggedIn -> Logged
+            isSiteAvailable -> Logged
             isWaiting -> Waiting
             else -> Timeout
         }

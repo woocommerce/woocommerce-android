@@ -57,6 +57,7 @@ android {
         jvmTarget = '1.8'
     }
     buildFeatures {
+        buildConfig true
         compose true
     }
     composeOptions {
@@ -98,6 +99,10 @@ dependencies {
     implementation("${gradle.ext.fluxCWooCommercePluginBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"
+    }
+    implementation("org.wordpress:utils:$wordPressUtilsVersion") {
+        exclude group: "com.mcxiaoke.volley"
+        exclude group: "com.android.support"
     }
 
     // WearOS
@@ -162,6 +167,39 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-core-utils'
     })
+
+    // Debug dependencies
+    debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
+    debugImplementation "com.facebook.soloader:soloader:0.10.4"
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:$flipperVersion") {
+        // Force Flipper to use the okhttp version defined in the fluxc module
+        // okhttp versions higher than 3.9.0 break handling for self-signed SSL sites
+        // See https://github.com/wordpress-mobile/WordPress-FluxC-Android/issues/919
+        exclude group: 'com.squareup.okhttp3'
+    }
+}
+
+def checkGradlePropertiesFile() {
+    def inputFile = file("${rootDir}/gradle.properties")
+    if (!inputFile.exists()) {
+        throw new StopActionException("Build configuration file gradle.properties doesn't exist, follow README instructions")
+    }
+    return inputFile
+}
+
+android.buildTypes.all { buildType ->
+    def inputFile = checkGradlePropertiesFile()
+    def properties = loadPropertiesFromFile(inputFile)
+    properties.any { property ->
+        if (property.key.toLowerCase().startsWith("wc.")) {
+            buildType.buildConfigField "String", property.key.replace("wc.", "").replace(".", "_").toUpperCase(),
+                    "\"${property.value}\""
+        }
+        if (property.key.toLowerCase().startsWith("wc.res.")) {
+            buildType.resValue "string", property.key.replace("wc.res.", "").replace(".", "_").toLowerCase(),
+                    "${property.value}"
+        }
+    }
 }
 
 static def loadPropertiesFromFile(inputFile) {

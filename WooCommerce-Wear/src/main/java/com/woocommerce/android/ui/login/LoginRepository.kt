@@ -10,29 +10,34 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.commons.wear.DataParameters.SITE_JSON
 import com.woocommerce.commons.wear.DataParameters.TOKEN
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.LOGIN) private val loginDataStore: DataStore<Preferences>,
+    private val accountStore: AccountStore,
+    coroutineScope: CoroutineScope
 ) {
     private val gson by lazy { Gson() }
 
-    private val storedSiteData
-        get() = loginDataStore.data
+    private val siteFlow: MutableStateFlow<SiteModel?> = MutableStateFlow(null)
+    val selectedSiteFlow: StateFlow<SiteModel?> = siteFlow
+    val isSiteAvailable = siteFlow.map { it != null && it.siteId > 0 }
+
+    init {
+        loginDataStore.data
             .map { it[stringPreferencesKey(CURRENT_SITE_KEY)] }
             .map { it?.let { gson.fromJson(it, SiteModel::class.java) } }
-
-    val currentSite
-        get() = storedSiteData
-            .distinctUntilChanged()
-            .filterNotNull()
-
-    val isUserLoggedIn
-        get() = storedSiteData.map { it != null && it.siteId > 0 }
+            .onEach { siteFlow.value = it }
+            .launchIn(coroutineScope)
+    }
 
     suspend fun receiveStoreData(data: DataMap) {
         val siteJSON = data.getString(SITE_JSON.value)
@@ -43,6 +48,7 @@ class LoginRepository @Inject constructor(
         loginDataStore.edit { prefs ->
             prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
             data.getString(TOKEN.value)?.let { token ->
+                accountStore.updateToken(token)
                 prefs[stringPreferencesKey(generateTokenKey(site.siteId))] = token
             }
         }
