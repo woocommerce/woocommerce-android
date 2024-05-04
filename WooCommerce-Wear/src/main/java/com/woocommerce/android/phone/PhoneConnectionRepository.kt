@@ -51,8 +51,9 @@ class PhoneConnectionRepository @Inject constructor(
 
     private fun handleAuthenticationData(dataItem: DataItem) {
         val dataMap = DataMapItem.fromDataItem(dataItem).dataMap
-        coroutineScope.launch { loginRepository.receiveStoreData(dataMap) }
+        coroutineScope.launch { loginRepository.receiveStoreDataFromPhone(dataMap) }
     }
+
     companion object {
         const val TAG = "PhoneConnectionRepository"
         const val WOO_MOBILE_CAPABILITY = "woo_mobile"

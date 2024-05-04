@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.mystore.stats
 
+import com.google.android.gms.wearable.DataMap
 import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -72,6 +73,10 @@ class StatsRepository @Inject constructor(
                 Result.success(it.values.sum())
             }
         }
+    }
+
+    suspend fun receiveStatsDataFromPhone(data: DataMap) {
+
     }
 
     companion object {

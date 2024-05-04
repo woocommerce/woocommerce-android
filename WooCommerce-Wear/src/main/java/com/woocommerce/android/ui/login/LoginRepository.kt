@@ -39,7 +39,7 @@ class LoginRepository @Inject constructor(
             .launchIn(coroutineScope)
     }
 
-    suspend fun receiveStoreData(data: DataMap) {
+    suspend fun receiveStoreDataFromPhone(data: DataMap) {
         val siteJSON = data.getString(SITE_JSON.value)
         val site = siteJSON
             ?.let { gson.fromJson(it, SiteModel::class.java) }
