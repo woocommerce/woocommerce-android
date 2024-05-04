@@ -22,7 +22,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 @Suppress("UnusedPrivateProperty")
 @HiltViewModel(assistedFactory = MyStoreViewModel.Factory::class)
 class MyStoreViewModel @AssistedInject constructor(
-    private val getMyStoreStats: GetMyStoreStats,
+    private val fetchStatsFromStore: FetchStatsFromStore,
     @Assisted private val navController: NavHostController,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
@@ -45,7 +45,7 @@ class MyStoreViewModel @AssistedInject constructor(
     private fun requestStoreStats(selectedSite: SiteModel) {
         _viewState.update { it.copy(isLoading = true) }
         launch {
-            getMyStoreStats(selectedSite)
+            fetchStatsFromStore(selectedSite)
                 .onEach { statsData ->
                     _viewState.update {
                         it.copy(
