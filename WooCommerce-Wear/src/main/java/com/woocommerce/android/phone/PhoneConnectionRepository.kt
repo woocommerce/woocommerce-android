@@ -21,6 +21,8 @@ class PhoneConnectionRepository @Inject constructor(
     private val messageClient: MessageClient,
     private val coroutineScope: CoroutineScope
 ) {
+    suspend fun isPhoneConnectionAvailable() = fetchReachableNodes().isNotEmpty()
+
     fun handleReceivedData(dataItem: DataItem) {
         when (dataItem.uri.path) {
             DataPath.SITE_DATA.value -> handleAuthenticationData(dataItem)

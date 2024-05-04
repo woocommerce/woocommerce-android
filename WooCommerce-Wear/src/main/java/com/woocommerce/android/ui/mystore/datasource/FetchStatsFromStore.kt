@@ -1,10 +1,6 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.mystore.datasource
 
-import com.woocommerce.android.phone.PhoneConnectionRepository
-import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.mystore.stats.StatsRepository
-import com.woocommerce.commons.extensions.convertedFrom
-import com.woocommerce.commons.wear.MessagePath.REQUEST_STATS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -14,8 +10,6 @@ import javax.inject.Inject
 
 class FetchStatsFromStore @Inject constructor(
     private val statsRepository: StatsRepository,
-    private val phoneRepository: PhoneConnectionRepository,
-    private val networkStatus: NetworkStatus
 ) {
     private val revenueStats = MutableStateFlow<RevenueData?>(null)
     private val visitorStats = MutableStateFlow<Int?>(null)
@@ -23,15 +17,8 @@ class FetchStatsFromStore @Inject constructor(
     suspend operator fun invoke(
         selectedSite: SiteModel
     ): Flow<MyStoreStatsData> {
-        when {
-            networkStatus.isConnected() -> {
-                fetchRevenueStats(selectedSite)
-                fetchVisitorsStats(selectedSite)
-            }
-            phoneRepository.isPhoneConnectionAvailable() -> {
-                phoneRepository.sendMessage(REQUEST_STATS)
-            }
-        }
+        fetchRevenueStats(selectedSite)
+        fetchVisitorsStats(selectedSite)
 
         return combine(
             revenueStats,
@@ -71,34 +58,5 @@ class FetchStatsFromStore @Inject constructor(
                     visitorStats.value = null
                 }
             )
-    }
-
-    data class RevenueData(
-        val totalRevenue: Double,
-        val orderCount: Int
-    )
-
-    data class MyStoreStatsData(
-        private val revenueData: RevenueData?,
-        private val visitorData: Int?
-    ) {
-        val isFinished
-            get() = revenueData != null &&
-                visitorData != null
-        val revenue
-            get() = revenueData?.totalRevenue ?: 0.0
-
-        val ordersCount
-            get() = revenueData?.orderCount ?: 0
-
-        val visitorsCount
-            get() = visitorData ?: 0
-
-        val conversionRate: String
-            get() {
-                val ordersCount = revenueData?.orderCount ?: 0
-                val visitorsCount = visitorData ?: 0
-                return ordersCount convertedFrom visitorsCount
-            }
     }
 }
