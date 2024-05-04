@@ -3,6 +3,7 @@ package com.woocommerce.android.wear
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.WearableListenerService
 import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
+import com.woocommerce.commons.wear.MessagePath.REQUEST_STATS
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -16,6 +17,7 @@ class WearableConnectionService : WearableListenerService() {
         super.onMessageReceived(message)
         when (message.path) {
             REQUEST_SITE.value -> wearableConnectionRepository.sendSiteData()
+            REQUEST_STATS.value -> wearableConnectionRepository.sendStatsData()
         }
     }
 }
