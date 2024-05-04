@@ -42,10 +42,12 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
@@ -95,6 +97,8 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     private val customRange = customDateRangeDataStore.dateRange.asLiveData()
 
+    private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+
     init {
         _topPerformersState.value = TopPerformersState(
             isLoading = true,
@@ -114,7 +118,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
         viewModelScope.launch {
             _selectedDateRange.flatMapLatest { selectedRange ->
-                parentViewModel.refreshTrigger
+                merge(refreshTrigger, parentViewModel.refreshTrigger)
                     .onStart { emit(RefreshEvent()) }
                     .map {
                         Pair(selectedRange, it.isForced)
@@ -160,6 +164,16 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         )
     }
 
+    fun onRefresh() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier
+            )
+        )
+        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
     private fun onTopPerformerTapped(productId: Long) {
         triggerEvent(OpenTopPerformer(productId))
         analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
@@ -168,7 +182,10 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) =
         coroutineScope {
-            if (!networkStatus.isConnected()) return@coroutineScope
+            if (!networkStatus.isConnected()) {
+                _topPerformersState.value = _topPerformersState.value?.copy(isError = true)
+                return@coroutineScope
+            }
 
             _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
             val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)

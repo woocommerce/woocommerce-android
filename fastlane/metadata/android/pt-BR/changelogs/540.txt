@@ -1,2 +1,0 @@
-18.2:
-Em nossa última atualização, aprimoramos sua experiência no WooCommerce. Estamos trocando os pagamentos simples por um fluxo de criação de pedido mais personalizável para você poder definir facilmente o valor desejado. Além disso, a central de análises agora inclui insights sobre pacotes de produtos e vales-presentes. Assim, você tem uma visão mais abrangente das estatísticas do seu negócio caso essas extensões estejam ativas. Aproveite o upgrade!

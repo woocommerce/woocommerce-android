@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-23 17:54:04+0000
+Translation-Revision-Date: 2024-04-30 17:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="blaze_campaign_promote_button">Продвижение</string>
+    <string name="store_onboarding_task_view_all_tasks">Посмотреть все задачи</string>
+    <string name="analytics_session_no_available_description">Аналитические данные сеанса основываются на количестве уникальных посетителей, которое невозможно определить для произвольных временных промежутков.</string>
+    <string name="analytics_session_no_available">Данные сеанса недоступны</string>
+    <string name="my_store_widget_unavailable">Недоступно</string>
+    <string name="my_store_widget_stats_title">Производительность</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">Просмотреть всю аналитику магазина</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">Скрыть самые продаваемые</string>
+    <string name="dashboard_stats_custom_range_label">Произвольный</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">Выбранный элемент</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Кнопка «Изменить период»</string>
+    <string name="images_unavailable_notice">Изображения недоступны, так как статус вашего сайта — «Закрытый». Вы можете изменить его на «Скоро будет доступно».\n</string>
     <string name="card_selection_control">Выбор карт аналитики</string>
     <string name="login_app_password_exit_dialog_cancel">Отмена</string>
     <string name="login_app_password_exit_dialog_confirmation">Всё равно выйти</string>
     <string name="login_app_password_exit_dialog_message">Похоже, вы ещё не одобрили соединение с приложением. Вы уверены, что хотите выйти?</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">Выберите изображение размером минимум 500x500 пикселей</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Выберите изображение размером минимум 400x400 пикселей</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Недопустимое изображение</string>
     <string name="login_invalid_credentials_message">Судя по всему, введённые вами имя пользователя или пароль неверны. Проверьте учётные данные и повторите попытку.</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">Если ваши данные по-прежнему не загружаются, обратитесь за помощью в службу поддержки.</string>
@@ -45,7 +57,6 @@ Language: ru
     <string name="analytics_bundles_list_items_sold">Продано комплектов</string>
     <string name="my_store_widget_blaze_title">Кампании Blaze</string>
     <string name="my_store_widget_top_products_title">Популярные товары</string>
-    <string name="my_store_widget_stats_title">Статистика</string>
     <string name="my_store_widget_onboarding_title">Вводный курс</string>
     <string name="my_store_edit_screen_widget_onboarding_list">Вводный курс по работе с магазином</string>
     <string name="my_store_edit_screen_widget_blaze_campaigns">Кампании Blaze</string>
@@ -459,7 +470,6 @@ Language: ru
     <string name="blaze_campaign_status_active">Активно</string>
     <string name="blaze_campaign_status_in_moderation">На модерации</string>
     <string name="blaze_campaign_show_all_button">Показать всё</string>
-    <string name="blaze_campaign_create_campaign_button">Создать кампанию</string>
     <string name="blaze_campaign_subtitle">Станьте заметнее и быстрее продавайте товары.</string>
     <string name="blaze_campaign_title">Кампания Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Символ бесконтактной оплаты (Contactless Symbol) — торговая марка, принадлежащая компании EMVCo, LLC и используемая с её разрешения.</string>

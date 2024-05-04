@@ -21,11 +21,14 @@ data class DashboardWidget(
     val isVisible: Boolean
         get() = isSelected && isAvailable
 
-    enum class Type(@StringRes val titleResource: Int) {
-        ONBOARDING(R.string.my_store_widget_onboarding_title),
-        STATS(R.string.my_store_widget_stats_title),
-        POPULAR_PRODUCTS(R.string.my_store_widget_top_products_title),
-        BLAZE(R.string.my_store_widget_blaze_title)
+    enum class Type(
+        @StringRes val titleResource: Int,
+        val trackingIdentifier: String
+    ) {
+        ONBOARDING(R.string.my_store_widget_onboarding_title, "store_setup"),
+        STATS(R.string.my_store_widget_stats_title, "performance"),
+        POPULAR_PRODUCTS(R.string.my_store_widget_top_products_title, "top_performers"),
+        BLAZE(R.string.my_store_widget_blaze_title, "blaze")
     }
 
     sealed interface Status : Parcelable {

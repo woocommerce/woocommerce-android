@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-22 12:54:02+0000
+Translation-Revision-Date: 2024-04-30 15:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="blaze_campaign_promote_button">Tanıt</string>
+    <string name="store_onboarding_task_view_all_tasks">Tüm görevleri görüntüle</string>
+    <string name="analytics_session_no_available_description">Oturum analizleri, özel tarih aralıklarında kullanılamayan benzersiz ziyaretçi sayılarına dayanır</string>
+    <string name="analytics_session_no_available">Oturum verileri kullanılamıyor</string>
+    <string name="my_store_widget_unavailable">Kullanılamıyor</string>
+    <string name="my_store_widget_stats_title">Performans</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">Tüm mağaza analizlerini görüntüle</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">En yüksek performans gösterenleri gizle</string>
+    <string name="dashboard_stats_custom_range_label">Özel</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">Öğe seçildi</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Tarih aralığını değiştirme düğmesi</string>
+    <string name="images_unavailable_notice">Siteniz Özel olarak işaretlendiğinden görseller kullanılamıyor. Çok Yakında moduna geçerek bunu değiştirebilirsiniz.\n</string>
     <string name="card_selection_control">Analiz kartı seçimi</string>
     <string name="login_app_password_exit_dialog_cancel">İptal Et</string>
     <string name="login_app_password_exit_dialog_confirmation">Yine de Çık</string>
     <string name="login_app_password_exit_dialog_message">Görünüşe göre henüz uygulama bağlantısını onaylamadınız. Çıkış yapmak istediğinizden emin misiniz?</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">Lütfen minimum 500x500 piksel boyutunda olan bir görsel seçin.</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Lütfen minimum 400x500 piksel boyutunda olan bir görsel seçin</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Geçersiz görsel</string>
     <string name="login_invalid_credentials_message">Görünüşe göre girdiğiniz kullanıcı adı ve parola tam olarak eşleşmiyor. Kimlik bilgilerinizi tekrar kontrol edip yeniden deneyin.</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">Verileriniz hala yüklenmiyorsa lütfen yardım almak için destek ekibimizle iletişime geçin.</string>
@@ -45,7 +57,6 @@ Language: tr
     <string name="analytics_bundles_list_items_sold">Satılan paketler</string>
     <string name="my_store_widget_blaze_title">Kampanyaları öne çıkarın</string>
     <string name="my_store_widget_top_products_title">En popüler ürünler</string>
-    <string name="my_store_widget_stats_title">İstatistikler</string>
     <string name="my_store_widget_onboarding_title">İlk Katılım</string>
     <string name="my_store_edit_screen_widget_onboarding_list">Mağaza İlk Katılımı</string>
     <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze Kampanyaları</string>
@@ -459,7 +470,6 @@ Language: tr
     <string name="blaze_campaign_status_active">Etkin</string>
     <string name="blaze_campaign_status_in_moderation">Denetlemede</string>
     <string name="blaze_campaign_show_all_button">Hepsini göster</string>
-    <string name="blaze_campaign_create_campaign_button">Kampanya oluştur</string>
     <string name="blaze_campaign_subtitle">Görünürlüğü artırın ve ürünlerinizin hızla satılmasını sağlayın.</string>
     <string name="blaze_campaign_title">Kampanyayı öne çıkarın</string>
     <string name="card_reader_tap_to_pay_about_copyright">Temassız Simgesi; EMVCo, LLC\'ye ait ve onun izni ile kullanılan bir ticari markadır.</string>

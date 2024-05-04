@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-22 20:54:03+0000
+Translation-Revision-Date: 2024-04-30 13:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="blaze_campaign_promote_button">ترويج</string>
+    <string name="store_onboarding_task_view_all_tasks">عرض جميع المهام</string>
+    <string name="analytics_session_no_available_description">تعتمد تحليلات الجلسة على أعداد الزائرين الفريدة غير المتاحة لنطاقات التواريخ المخصصة</string>
+    <string name="analytics_session_no_available">بيانات الجلسة غير متاحة</string>
+    <string name="my_store_widget_unavailable">غير متاح</string>
+    <string name="my_store_widget_stats_title">الأداء</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">مشاهدة كل تحليلات المتجر</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">إخفاء أهم المؤدِّين</string>
+    <string name="dashboard_stats_custom_range_label">مخصص</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">تم تحديد العنصر</string>
+    <string name="dashboard_stats_edit_granularity_content_description">تغيير زر نطاق التاريخ</string>
+    <string name="images_unavailable_notice">الصور غير متاحة نظرًا إلى وسم موقعك بأنه \"خاص\". يمكنك تغيير ذلك عن طريق التبديل إلى وضع \"قريبًا\".\n</string>
     <string name="card_selection_control">تحديد البطاقة التحليلية</string>
     <string name="login_app_password_exit_dialog_cancel">إلغاء</string>
     <string name="login_app_password_exit_dialog_confirmation">الإنهاء على أي حال</string>
     <string name="login_app_password_exit_dialog_message">يبدو أنك لم توافق على ربط التطبيق حتى الآن. هل تريد بالتأكيد الإنهاء؟</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">يرجى تحديد صورة بأبعاد 500×500 بكسل بحد أدنى</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">يرجى تحديد صورة بحجم 400×400 بكسل بحد أدنى</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">صورة غير صالحة</string>
     <string name="login_invalid_credentials_message">يبدو أن اسم المستخدم أو كلمة المرور التي أدخلتها غير متطابقة تمامًا. تحقق مجددًا من بيانات الاعتماد الخاصة بك وحاول مجددًا!</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">إذا لم يتم تحميل بياناتك، فاتصل بفريق الدعم لديك للحصول على المساعدة.</string>
@@ -45,7 +57,6 @@ Language: ar
     <string name="analytics_bundles_list_items_sold">الحزم المبيعة</string>
     <string name="my_store_widget_blaze_title">حملات Blaze</string>
     <string name="my_store_widget_top_products_title">أهم المنتجات</string>
-    <string name="my_store_widget_stats_title">إحصاءات</string>
     <string name="my_store_widget_onboarding_title">الإعداد</string>
     <string name="my_store_edit_screen_widget_onboarding_list">إعداد المتجر</string>
     <string name="my_store_edit_screen_widget_blaze_campaigns">حملات Blaze</string>
@@ -459,7 +470,6 @@ Language: ar
     <string name="blaze_campaign_status_active">نشط</string>
     <string name="blaze_campaign_status_in_moderation">قيد الإشراف</string>
     <string name="blaze_campaign_show_all_button">عرض الكل</string>
-    <string name="blaze_campaign_create_campaign_button">إنشاء حملة</string>
     <string name="blaze_campaign_subtitle">يمكنك زيادة إمكانية الرؤية وبيع منتجاتك بسرعة.</string>
     <string name="blaze_campaign_title">حملة Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol هو علامة تجارية تمتلكها EMVCo, LLC وتُستخدم بصلاحية منها.</string>

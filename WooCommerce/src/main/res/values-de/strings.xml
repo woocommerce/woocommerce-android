@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-23 09:54:04+0000
+Translation-Revision-Date: 2024-04-30 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="blaze_campaign_promote_button">Bewerben</string>
+    <string name="store_onboarding_task_view_all_tasks">Alle Aufgaben anzeigen</string>
+    <string name="analytics_session_no_available_description">Analysedaten für Sitzungen basieren auf Besucherzahlen, die für individuelle Zeiträume nicht verfügbar sind</string>
+    <string name="analytics_session_no_available">Sitzungsdaten nicht verfügbar</string>
+    <string name="my_store_widget_unavailable">Nicht verfügbar</string>
+    <string name="my_store_widget_stats_title">Performance</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">Alle Shop-Analysen anzeigen</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">Topseller ausblenden</string>
+    <string name="dashboard_stats_custom_range_label">Individuell</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">Element ausgewählt</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Button zum Ändern des Zeitraums</string>
+    <string name="images_unavailable_notice">Die Bilder sind nicht verfügbar, weil deine Website als privat markiert ist. Du kannst dies ändern, indem du zum Modus „Demnächst verfügbar“ wechselst.\n</string>
     <string name="card_selection_control">Auswahl von Analysekarten</string>
     <string name="login_app_password_exit_dialog_cancel">Abbrechen</string>
     <string name="login_app_password_exit_dialog_confirmation">Trotzdem beenden</string>
     <string name="login_app_password_exit_dialog_message">Du hast die App-Verbindung anscheinend noch nicht genehmigt. Bist du sicher, dass du den Vorgang beenden möchtest?</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">Bitte wähle ein Bild aus, das mindestens 500 x 500 Pixel groß ist</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Bitte wähle ein Bild aus, das mindestens 400 x 400 Pixel groß ist</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Ungültiges Bild</string>
     <string name="login_invalid_credentials_message">Der eingegebene Benutzername und das eingegebene Passwort stimmen offenbar nicht überein. Überprüfe deine Anmeldedaten und versuche es noch einmal.</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">Wenn deine Daten immer noch nicht geladen werden, wende dich an unser Support-Team, um Unterstützung zu erhalten.</string>
@@ -45,7 +57,6 @@ Language: de
     <string name="analytics_bundles_list_items_sold">Verkaufte Pakete</string>
     <string name="my_store_widget_blaze_title">Blaze-Kampagnen</string>
     <string name="my_store_widget_top_products_title">Beste Produkte</string>
-    <string name="my_store_widget_stats_title">Statistiken</string>
     <string name="my_store_widget_onboarding_title">Einführung</string>
     <string name="my_store_edit_screen_widget_onboarding_list">Shop-Einführung</string>
     <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze-Kampagnen</string>
@@ -459,7 +470,6 @@ Language: de
     <string name="blaze_campaign_status_active">Aktiv</string>
     <string name="blaze_campaign_status_in_moderation">Freischaltung läuft</string>
     <string name="blaze_campaign_show_all_button">Alle zeigen</string>
-    <string name="blaze_campaign_create_campaign_button">Kampagne erstellen</string>
     <string name="blaze_campaign_subtitle">Erhöhe die Sichtbarkeit und verkaufe deine Produkte schnell.</string>
     <string name="blaze_campaign_title">Blaze-Kampagne</string>
     <string name="card_reader_tap_to_pay_about_copyright">Das Kontaktlos-Symbol ist eine Marke von EMVCo, LLC, die mit deren Genehmigung verwendet wird.</string>

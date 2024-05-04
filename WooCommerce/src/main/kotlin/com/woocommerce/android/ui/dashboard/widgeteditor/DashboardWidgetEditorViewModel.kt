@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -20,8 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DashboardWidgetEditorViewModel @Inject constructor(
+    savedState: SavedStateHandle,
     private val dashboardRepository: DashboardRepository,
-    savedState: SavedStateHandle
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
     private val widgetEditorState = savedState.getStateFlow(viewModelScope, WidgetEditorState())
     val viewState = combine(widgetEditorState, dashboardRepository.widgets) { state, widgets ->
@@ -68,9 +71,13 @@ class DashboardWidgetEditorViewModel @Inject constructor(
 
     fun onSaveClicked() {
         viewModelScope.launch {
+            analyticsTracker.track(
+                AnalyticsEvent.DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED,
+                mapOf("cards" to editedWidgets.filter { it.isVisible }.joinToString(","))
+            )
             dashboardRepository.updateWidgets(editedWidgets)
+            triggerEvent(Exit)
         }
-        triggerEvent(Exit)
     }
 
     fun onSelectionChange(dashboardWidget: DashboardWidget, selected: Boolean) {

@@ -1,2 +1,0 @@
-18.2:
-Met onze laatste update verbeteren we je WooCommerce-ervaring! We stappen over van eenvoudige betalingen naar een meer aanpasbare flow voor het aanmaken van bestellingen, waardoor je gemakkelijk het gewenste bedrag kan instellen. Bovendien geeft onze verbeterde Analytics Hub nu inzicht in productbundels en cadeaubonnen, waardoor je een uitgebreider overzicht krijgt van je bedrijfsstatistieken, op voorwaarde dat die extensies actief zijn. Geniet van de upgrade!
