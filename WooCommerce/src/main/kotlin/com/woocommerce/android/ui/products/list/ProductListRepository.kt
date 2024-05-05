@@ -5,7 +5,6 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toAppModel
@@ -19,7 +18,6 @@ import com.woocommerce.android.ui.subscriptions.IsEligibleForSubscriptions
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -38,8 +36,7 @@ class ProductListRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val dispatchers: CoroutineDispatchers,
-    private val isEligibleForSubscriptions: IsEligibleForSubscriptions,
-    @AppCoroutineScope private val scope: CoroutineScope
+    private val isEligibleForSubscriptions: IsEligibleForSubscriptions
 ) {
     companion object {
         private const val PRODUCT_PAGE_SIZE = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE
