@@ -1,9 +1,8 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.dashboard.data
 
 import com.woocommerce.android.network.giftcard.GiftCardRestClient
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -59,7 +58,6 @@ class StatsRepositoryTests : BaseUnitTest() {
         sut = StatsRepository(
             selectedSite = selectedSite,
             wcStatsStore = wcStatsStore,
-            wcOrderStore = wcOrderStore,
             wcLeaderboardsStore = wcLeaderboardsStore,
             wooCommerceStore = wooCommerceStore,
             giftCardRestClient = giftCardRestClient,
