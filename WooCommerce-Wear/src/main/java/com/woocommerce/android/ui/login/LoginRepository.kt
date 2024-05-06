@@ -29,6 +29,7 @@ class LoginRepository @Inject constructor(
 
     private val siteFlow: MutableStateFlow<SiteModel?> = MutableStateFlow(null)
     val selectedSiteFlow: StateFlow<SiteModel?> = siteFlow
+    val selectedSite get() = selectedSiteFlow.value
     val isSiteAvailable = siteFlow.map { it != null && it.siteId > 0 }
 
     init {

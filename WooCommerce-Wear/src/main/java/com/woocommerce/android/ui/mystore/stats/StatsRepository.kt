@@ -2,16 +2,16 @@ package com.woocommerce.android.ui.mystore.stats
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.android.gms.wearable.DataMap
+import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.ui.login.LoginRepository
+import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsData
+import com.woocommerce.android.ui.mystore.datasource.RevenueData
 import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
-import com.woocommerce.commons.wear.DataParameters
-import com.woocommerce.commons.wear.DataParameters.CONVERSION_RATE
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.TOTAL_REVENUE
 import com.woocommerce.commons.wear.DataParameters.VISITORS_TOTAL
@@ -27,7 +27,10 @@ import javax.inject.Inject
 class StatsRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.STATS) private val statsDataStore: DataStore<Preferences>,
     private val wcStatsStore: WCStatsStore,
+    private val loginRepository: LoginRepository
 ) {
+    private val gson by lazy { Gson() }
+
     suspend fun fetchRevenueStats(
         selectedSite: SiteModel
     ): Result<WCRevenueStatsModel?> {
@@ -90,17 +93,22 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun receiveStatsDataFromPhone(data: DataMap) {
-        val totalSales = data.getDouble(TOTAL_REVENUE.value, 0.0)
-        val ordersCount = data.getInt(ORDERS_COUNT.value, 0)
-        val visitorsCount = data.getInt(VISITORS_TOTAL.value, 0 )
-        val conversionRate = data.getString(CONVERSION_RATE.value, "")
+        val statsJson = MyStoreStatsData(
+            revenueData = RevenueData(
+                totalRevenue = data.getDouble(TOTAL_REVENUE.value, 0.0),
+                orderCount = data.getInt(ORDERS_COUNT.value, 0)
+            ),
+            visitorData = data.getInt(VISITORS_TOTAL.value, 0)
+        ).let { gson.toJson(it) }
 
         statsDataStore.edit { prefs ->
-            prefs[doublePreferencesKey(TOTAL_REVENUE.value)] = totalSales
-            prefs[intPreferencesKey(ORDERS_COUNT.value)] = ordersCount
-            prefs[intPreferencesKey(VISITORS_TOTAL.value)] = visitorsCount
-            prefs[stringPreferencesKey(CONVERSION_RATE.value)] = conversionRate
+            prefs[stringPreferencesKey(generateStatsKey())] = statsJson
         }
+    }
+
+    private fun generateStatsKey(): String {
+        val selectedSite = loginRepository.selectedSite?.siteId ?: 0
+        return "store-stats:$selectedSite"
     }
 
     companion object {
