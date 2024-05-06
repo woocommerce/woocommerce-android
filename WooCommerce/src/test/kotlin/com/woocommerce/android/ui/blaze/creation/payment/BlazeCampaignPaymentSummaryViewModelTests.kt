@@ -61,7 +61,7 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
             blazeRepository = blazeRepository,
             currencyFormatter = currencyFormatter,
             analyticsTrackerWrapper = mock(),
-            prefsWrapper = mock()
+            dashboardRepository = mock()
         )
     }
 
