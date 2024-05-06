@@ -442,7 +442,7 @@ class MainActivity :
     override fun isAtNavigationRoot(): Boolean {
         return if (::navController.isInitialized) {
             val currentDestinationId = navController.currentDestination?.id
-            currentDestinationId == DashboardDestination.id ||
+            currentDestinationId == R.id.dashboard ||
                 currentDestinationId == R.id.orders ||
                 currentDestinationId == R.id.products ||
                 currentDestinationId == R.id.moreMenu ||
