@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.test.platform.app.InstrumentationRegistry
 import com.woocommerce.android.AppInitializer
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.di.SiteComponentEntryPoint
 import com.woocommerce.android.tools.SelectedSite
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
@@ -43,8 +44,10 @@ class InitializationRule : TestRule {
                     base.evaluate()
                 } finally {
                     entryPoint.appCoroutineScope().cancel()
-                    // Reset the selected site to make sure its CoroutineScope is cancelled
-                    entryPoint.selectedSite().reset()
+                    // Cancel site coroutine scope
+                    entryPoint.selectedSite().siteComponent?.let {
+                        EntryPoints.get(it, SiteComponentEntryPoint::class.java)
+                    }?.siteCoroutineScope()?.cancel()
                 }
             }
         }
