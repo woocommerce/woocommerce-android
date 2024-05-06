@@ -91,7 +91,7 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
 
         // My Store
         MyStoreScreen()
-            .stats.switchToStatsDashboardMonthTab()
+            .stats.switchToStatsDashboardMonthTab(composeTestRule)
             .thenTakeScreenshot<MyStoreScreen>("order-dashboard")
 
         // Create Orders
