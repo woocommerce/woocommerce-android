@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onChildren
@@ -187,15 +188,16 @@ open class Screen {
         matcher: SemanticsMatcher,
         requireFullVisibility: Boolean = true
     ) {
+        fun SemanticsNodeInteraction.isFullyDisplayed(): Boolean {
+            return onChildren().onLast().isDisplayed() && onChildren().onFirst().isDisplayed()
+        }
+
         val device = UiDevice.getInstance(getInstrumentation())
         var scrollUp = true
         var numberOfScrolls = 0
         while (true) {
             val node = onNode(matcher)
-            if (node.isDisplayed() &&
-                (!requireFullVisibility ||
-                    (node.onChildren().onLast().isDisplayed() && node.onChildren().onFirst().isDisplayed()))
-            ) return
+            if (node.isDisplayed() && (!requireFullVisibility || node.isFullyDisplayed())) return
 
             val parentBounds = node.onParent().fetchSemanticsNode().touchBoundsInRoot
             device.swipe(
