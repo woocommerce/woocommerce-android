@@ -7,6 +7,7 @@ import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
+import com.woocommerce.android.e2e.helpers.util.MocksReader
 import com.woocommerce.android.e2e.helpers.util.StatsSummaryData
 import com.woocommerce.android.e2e.rules.Retry
 import com.woocommerce.android.e2e.rules.RetryTestRule
@@ -85,16 +86,16 @@ class StatsUITest : TestBase() {
             .stats.switchToStatsDashboardYearTab(composeTestRule)
             .assertStatsSummary(yearStats)
     }
-//
-//    @Retry(numberOfTimes = 1)
-//    @Test
-//    fun e2eStatsTopPerformers() {
-//        val topPerformersJSONArray = MocksReader().readStatsTopPerformersToArray()
-//
-//        MyStoreScreen()
-//            .stats.switchToStatsDashboardTodayTab(composeTestRule)
-//            .assertTopPerformers(topPerformersJSONArray)
-//    }
+
+    @Retry(numberOfTimes = 1)
+    @Test
+    fun e2eStatsTopPerformers() {
+        val topPerformersJSONArray = MocksReader().readStatsTopPerformersToArray()
+
+        MyStoreScreen()
+            .topPerformers.switchToStatsDashboardTodayTab(composeTestRule)
+            .assertTopPerformers(topPerformersJSONArray, composeTestRule)
+    }
 
     @Retry(numberOfTimes = 1)
     @Test

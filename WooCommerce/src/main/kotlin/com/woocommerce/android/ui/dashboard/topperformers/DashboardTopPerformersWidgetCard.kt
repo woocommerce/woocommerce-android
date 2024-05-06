@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +51,7 @@ import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsHeader
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenAnalytics
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenTopPerformer
@@ -78,7 +80,7 @@ fun DashboardTopPerformersWidgetCard(
             titleResource = topPerformersState.titleStringRes,
             menu = topPerformersState.menu,
             button = topPerformersState.onOpenAnalyticsTapped,
-            modifier = modifier,
+            modifier = modifier.testTag(DashboardStatsTestTags.DASHBOARD_TOP_PERFORMERS_CARD),
             isError = topPerformersState.isError
         ) {
             when {
