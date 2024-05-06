@@ -10,7 +10,7 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest
-import com.woocommerce.android.ui.mystore.datasource.RevenueData
+import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest.Data.RevenueData
 import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.TOTAL_REVENUE

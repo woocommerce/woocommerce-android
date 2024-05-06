@@ -2,11 +2,6 @@ package com.woocommerce.android.ui.mystore.datasource
 
 import com.woocommerce.commons.extensions.convertedFrom
 
-data class RevenueData(
-    val totalRevenue: Double,
-    val orderCount: Int
-)
-
 sealed class MyStoreStatsRequest {
     data class Data(
         private val revenueData: RevenueData?,
@@ -30,6 +25,11 @@ sealed class MyStoreStatsRequest {
                 val visitorsCount = visitorData ?: 0
                 return ordersCount convertedFrom visitorsCount
             }
+
+        data class RevenueData(
+            val totalRevenue: Double,
+            val orderCount: Int
+        )
     }
 
     data object Error : MyStoreStatsRequest()
