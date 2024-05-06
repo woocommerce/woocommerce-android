@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.onboarding
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_COMPLETED
-import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_HIDE_LIST
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
@@ -16,7 +15,6 @@ import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.Onboardin
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.MOBILE_UNSUPPORTED
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.PAYMENTS
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.WC_PAYMENTS
-import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,9 +46,7 @@ class ShouldShowOnboarding @Inject constructor(
             false
         }
 
-        return if (!areAllTaskCompleted &&
-            (FeatureFlag.DYNAMIC_DASHBOARD.isEnabled() || isOnboardingListSettingVisible())
-        ) {
+        return if (!areAllTaskCompleted) {
             appPrefsWrapper.setStoreOnboardingShown(siteId)
             true
         } else {
@@ -60,22 +56,6 @@ class ShouldShowOnboarding @Inject constructor(
 
     fun isOnboardingMarkedAsCompleted(): Boolean =
         appPrefsWrapper.isOnboardingCompleted(selectedSite.getSelectedSiteId())
-
-    fun updateOnboardingVisibilitySetting(show: Boolean, source: Source) {
-        analyticsTrackerWrapper.track(
-            stat = STORE_ONBOARDING_HIDE_LIST,
-            properties = mapOf(
-                AnalyticsTracker.KEY_HIDE_ONBOARDING_SOURCE to source.name.lowercase(),
-                AnalyticsTracker.KEY_HIDE_ONBOARDING_LIST_VALUE to !show,
-                AnalyticsTracker.KEY_ONBOARDING_PENDING_TASKS to pendingTasks
-                    .map { getTaskTrackingKey(it.type) }.joinToString()
-            )
-        )
-        appPrefsWrapper.setOnboardingSettingVisibility(selectedSite.getSelectedSiteId(), show)
-    }
-
-    fun isOnboardingListSettingVisible() =
-        appPrefsWrapper.getOnboardingSettingVisibility(selectedSite.getSelectedSiteId())
 
     private fun getTaskTrackingKey(type: OnboardingTaskType) =
         when (type) {

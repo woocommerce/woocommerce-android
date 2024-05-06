@@ -336,12 +336,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun getStoreOnboardingShown(siteId: Int): Boolean = AppPrefs.getStoreOnboardingShown(siteId)
 
-    fun getOnboardingSettingVisibility(siteId: Int): Boolean = AppPrefs.getOnboardingSettingVisibility(siteId)
-
-    fun setOnboardingSettingVisibility(siteId: Int, show: Boolean) {
-        AppPrefs.setOnboardingSettingVisibility(siteId, show)
-    }
-
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) = AppPrefs.setStorePhoneNumber(siteId, phoneNumber)
 
     fun getStorePhoneNumber(siteId: Int): String = AppPrefs.getStorePhoneNumber(siteId)
