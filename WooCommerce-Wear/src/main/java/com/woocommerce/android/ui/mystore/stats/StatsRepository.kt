@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsData
+import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest
 import com.woocommerce.android.ui.mystore.datasource.RevenueData
 import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
@@ -23,6 +23,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.flow.map
 
 class StatsRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.STATS) private val statsDataStore: DataStore<Preferences>,
@@ -93,7 +94,7 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun receiveStatsDataFromPhone(data: DataMap) {
-        val statsJson = MyStoreStatsData(
+        val statsJson = MyStoreStatsRequest.Success(
             revenueData = RevenueData(
                 totalRevenue = data.getDouble(TOTAL_REVENUE.value, 0.0),
                 orderCount = data.getInt(ORDERS_COUNT.value, 0)
@@ -106,9 +107,13 @@ class StatsRepository @Inject constructor(
         }
     }
 
+    fun observeStatsDataChanges() = statsDataStore.data
+        .map { it[stringPreferencesKey(generateStatsKey())] }
+        .map { it?.let { gson.fromJson(it, MyStoreStatsRequest.Success::class.java) } }
+
     private fun generateStatsKey(): String {
-        val selectedSite = loginRepository.selectedSite?.siteId ?: 0
-        return "$STATS_KEY_PREFIX:$selectedSite"
+        val siteId = loginRepository.selectedSite?.siteId ?: 0
+        return "$STATS_KEY_PREFIX:$siteId"
     }
 
     companion object {
