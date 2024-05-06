@@ -94,7 +94,7 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun receiveStatsDataFromPhone(data: DataMap) {
-        val statsJson = MyStoreStatsRequest.Success(
+        val statsJson = MyStoreStatsRequest.Data(
             revenueData = RevenueData(
                 totalRevenue = data.getDouble(TOTAL_REVENUE.value, 0.0),
                 orderCount = data.getInt(ORDERS_COUNT.value, 0)
@@ -109,7 +109,7 @@ class StatsRepository @Inject constructor(
 
     fun observeStatsDataChanges() = statsDataStore.data
         .map { it[stringPreferencesKey(generateStatsKey())] }
-        .map { it?.let { gson.fromJson(it, MyStoreStatsRequest.Success::class.java) } }
+        .map { it?.let { gson.fromJson(it, MyStoreStatsRequest.Data::class.java) } }
 
     private fun generateStatsKey(): String {
         val siteId = loginRepository.selectedSite?.siteId ?: 0

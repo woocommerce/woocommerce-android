@@ -8,7 +8,7 @@ data class RevenueData(
 )
 
 sealed class MyStoreStatsRequest {
-    data class Success(
+    data class Data(
         private val revenueData: RevenueData?,
         private val visitorData: Int?
     ) : MyStoreStatsRequest() {
@@ -32,5 +32,5 @@ sealed class MyStoreStatsRequest {
             }
     }
 
-    data object Failure : MyStoreStatsRequest()
+    data object Error : MyStoreStatsRequest()
 }

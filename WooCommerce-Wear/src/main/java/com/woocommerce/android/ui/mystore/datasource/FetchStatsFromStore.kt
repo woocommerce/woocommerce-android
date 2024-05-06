@@ -24,7 +24,7 @@ class FetchStatsFromStore @Inject constructor(
             revenueStats,
             visitorStats
         ) { revenueStats, visitorStats ->
-            MyStoreStatsRequest.Success(
+            MyStoreStatsRequest.Data(
                 revenueData = revenueStats,
                 visitorData = visitorStats
             )

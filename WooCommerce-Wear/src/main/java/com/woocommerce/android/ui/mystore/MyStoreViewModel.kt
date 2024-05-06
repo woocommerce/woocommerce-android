@@ -62,7 +62,7 @@ class MyStoreViewModel @AssistedInject constructor(
             evaluateStatsSource(selectedSite)
                 .onEach { statsData ->
                     when (statsData) {
-                        is MyStoreStatsRequest.Success -> {
+                        is MyStoreStatsRequest.Data -> {
                             _viewState.update {
                                 it.copy(
                                     isLoading = false,
