@@ -13,7 +13,6 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.blaze.BlazeCampaignStat
 import com.woocommerce.android.ui.blaze.BlazeCampaignUi
 import com.woocommerce.android.ui.blaze.BlazeProductUi
@@ -67,7 +66,6 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     private val isBlazeEnabled: IsBlazeEnabled,
     private val blazeUrlsHelper: BlazeUrlsHelper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val networkStatus: NetworkStatus,
     private val prefsWrapper: AppPrefsWrapper
 ) : ScopedViewModel(savedStateHandle) {
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
@@ -91,9 +89,14 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                     combine(
                         observeMostRecentBlazeCampaign(forceRefresh = refreshEvent.isForced),
                         getProductsFlow(forceRefresh = refreshEvent.isForced)
-                    ) { blazeCampaignModel, products ->
+                    ) { blazeCampaignResult, productsResult ->
+                        if (productsResult.isFailure || blazeCampaignResult.isFailure) {
+                            return@combine DashboardBlazeCampaignState.Error(widgetMenu)
+                        }
+                        val products = productsResult.getOrThrow()
+                        val blazeCampaignModel = blazeCampaignResult.getOrThrow()
+
                         when {
-                            !networkStatus.isConnected() -> DashboardBlazeCampaignState.Error(widgetMenu)
                             products.isEmpty() -> Hidden
                             blazeCampaignModel == null -> showUiForNoCampaign(products)
                             else -> showUiForCampaign(blazeCampaignModel)
@@ -201,9 +204,14 @@ class DashboardBlazeViewModel @AssistedInject constructor(
         triggerEvent(ShowAllCampaigns)
     }
 
-    private fun getProductsFlow(forceRefresh: Boolean): Flow<List<Product>> {
+    private fun getProductsFlow(forceRefresh: Boolean): Flow<Result<List<Product>>> {
         return flow {
-            if (forceRefresh) refreshProducts()
+            if (forceRefresh) {
+                refreshProducts().onFailure {
+                    emit(Result.failure(it))
+                    return@flow
+                }
+            }
 
             emitAll(
                 productListRepository.observeProducts(
@@ -213,17 +221,17 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                     // For optimization, load only 2 products, as we need only the first one, and
                     // and to check if there are more than 1 product to show the "Create Campaign" button
                     limit = 2
-                )
+                ).map {
+                    Result.success(it)
+                }
             )
         }
     }
 
-    private suspend fun refreshProducts() {
-        productListRepository.fetchProductList(
-            productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
-            sortType = ProductSorting.DATE_DESC,
-        )
-    }
+    private suspend fun refreshProducts() = productListRepository.fetchProductList(
+        productFilterOptions = mapOf(ProductFilterOption.STATUS to ProductStatus.PUBLISH.value),
+        sortType = ProductSorting.DATE_DESC,
+    )
 
     private fun launchCampaignCreation(productId: Long?) {
         triggerEvent(LaunchBlazeCampaignCreation(productId))

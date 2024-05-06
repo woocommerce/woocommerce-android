@@ -524,12 +524,14 @@ class ProductListViewModel @Inject constructor(
         scrollToTop: Boolean = false
     ) {
         if (!isSearching()) {
-            val products = productRepository.fetchProductList(loadMore, productFilterOptions)
+            val productList = productRepository.fetchProductList(loadMore, productFilterOptions).onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.product_list_fetch_error))
+            }.getOrNull()
             // don't update the product list if a search was initiated while fetching
             if (isSearching()) {
                 WooLog.i(WooLog.T.PRODUCTS, "Search initiated while fetching products")
             } else {
-                _productList.value = products
+                productList?.let { _productList.value = it }
             }
         } else if (searchQuery?.isNotEmpty() == true) {
             productRepository.searchProductList(
