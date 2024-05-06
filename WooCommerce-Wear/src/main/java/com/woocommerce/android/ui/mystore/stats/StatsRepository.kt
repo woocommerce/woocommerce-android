@@ -108,11 +108,12 @@ class StatsRepository @Inject constructor(
 
     private fun generateStatsKey(): String {
         val selectedSite = loginRepository.selectedSite?.siteId ?: 0
-        return "store-stats:$selectedSite"
+        return "$STATS_KEY_PREFIX:$selectedSite"
     }
 
     companion object {
         private const val REVENUE_DATA_ERROR = "Error fetching revenue data"
         private const val VISITOR_DATA_ERROR = "Error fetching visitor data"
+        private const val STATS_KEY_PREFIX = "store-stats"
     }
 }

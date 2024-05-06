@@ -58,6 +58,7 @@ class WearableConnectionRepository @Inject constructor(
                 putInt(ORDERS_COUNT.value, ordersCount)
                 putInt(VISITORS_TOTAL.value, visitorsCount)
                 putString(CONVERSION_RATE.value, conversionRate)
+                putLong(TIMESTAMP.value, Instant.now().epochSecond)
             }
         )
     }
