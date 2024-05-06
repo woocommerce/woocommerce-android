@@ -19,77 +19,10 @@
     <include app:graph="@navigation/nav_graph_order_creations" />
 
     <fragment
-        android:id="@+id/my_store"
-        android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
-        android:label="fragment_my_store"
-        tools:layout="@layout/fragment_my_store">
-        <action
-            android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
-            app:destination="@id/nav_graph_jetpack_install" />
-        <action
-            android:id="@+id/action_myStore_to_analytics"
-            app:destination="@id/analytics"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_myStore_to_onboardingFragment"
-            app:destination="@id/storeOnboardingFragment" />
-        <action
-            android:id="@+id/action_myStore_to_launchStoreFragment"
-            app:destination="@id/launchStoreFragment" />
-        <action
-            android:id="@+id/action_myStore_to_nav_graph_domain_change"
-            app:destination="@id/nav_graph_domain_change">
-            <argument
-                android:name="source"
-                android:defaultValue="STORE_ONBOARDING"
-                app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
-        </action>
-        <action
-            android:id="@+id/action_myStore_to_productTypesBottomSheet"
-            app:destination="@id/productTypesBottomSheetFragment"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out">
-            <argument
-                android:name="isAddProduct"
-                android:defaultValue="true"
-                app:argType="boolean" />
-            <argument
-                android:name="source"
-                android:defaultValue="STORE_ONBOARDING"
-                app:argType="com.woocommerce.android.ui.products.AddProductSource" />
-        </action>
-        <action
-            android:id="@+id/action_myStore_to_paymentsPreSetupFragment"
-            app:destination="@id/paymentsPreSetupFragment" />
-        <action
-            android:id="@+id/action_myStore_to_wooPaymentsSetupInstructionsFragment"
-            app:destination="@id/wooPaymentsSetupInstructionsFragment" />
-        <action
-            android:id="@+id/action_myStore_to_aboutYourStoreFragment"
-            app:destination="@id/aboutYourStoreFragment" />
-        <action
-            android:id="@+id/action_dashboard_to_AIProductDescriptionDialogFragment"
-            app:destination="@id/AIProductDescriptionDialogFragment" />
-        <action
-            android:id="@+id/action_myStore_to_nameYourStoreDialogFragment"
-            app:destination="@id/nameYourStoreDialogFragment" />
-        <action
-            android:id="@+id/action_dashboard_to_addProductWithAIBottomSheet"
-            app:destination="@id/addProductWithAIBottomSheet" />
-        <action
-            android:id="@+id/action_myStore_to_blazeCampaignListFragment"
-            app:destination="@id/blazeCampaignListFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/dashboard"
         android:name="com.woocommerce.android.ui.dashboard.DashboardFragment"
         android:label="fragment_dashboard"
-        tools:layout="@layout/fragment_my_store">
+        tools:layout="@layout/fragment_dashboard">
         <action
             android:id="@+id/action_dashboard_to_jetpackBenefitsDialog"
             app:destination="@id/nav_graph_jetpack_install" />
