@@ -33,7 +33,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 
 @Composable
@@ -56,7 +55,7 @@ fun DashboardStatsHeader(
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.onSurface
         )
-        val isCustomRange = rangeSelection.selectionType == CUSTOM
+        val isCustomRange = rangeSelection.selectionType == SelectionType.CUSTOM
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
@@ -135,10 +134,10 @@ fun DashboardStatsHeader(
 private val SelectionType.title: String
     @Composable
     get() = when (this) {
-        SelectionType.TODAY -> stringResource(id = com.woocommerce.android.R.string.today)
-        SelectionType.WEEK_TO_DATE -> stringResource(id = com.woocommerce.android.R.string.this_week)
-        SelectionType.MONTH_TO_DATE -> stringResource(id = com.woocommerce.android.R.string.this_month)
-        SelectionType.YEAR_TO_DATE -> stringResource(id = com.woocommerce.android.R.string.this_year)
-        SelectionType.CUSTOM -> stringResource(id = com.woocommerce.android.R.string.date_timeframe_custom)
+        SelectionType.TODAY -> stringResource(id = R.string.today)
+        SelectionType.WEEK_TO_DATE -> stringResource(id = R.string.this_week)
+        SelectionType.MONTH_TO_DATE -> stringResource(id = R.string.this_month)
+        SelectionType.YEAR_TO_DATE -> stringResource(id = R.string.this_year)
+        SelectionType.CUSTOM -> stringResource(id = R.string.date_timeframe_custom)
         else -> error("Invalid selection type")
     }
