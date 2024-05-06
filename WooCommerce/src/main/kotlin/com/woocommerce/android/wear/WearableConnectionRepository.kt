@@ -38,7 +38,6 @@ class WearableConnectionRepository @Inject constructor(
                 val siteJSON = gson.toJson(selectedSite.get())
                 putString(SITE_JSON.value, siteJSON)
                 putString(TOKEN.value, accountStore.accessToken.orEmpty())
-                putLong(TIMESTAMP.value, Instant.now().epochSecond)
             }
         )
     }
@@ -58,7 +57,6 @@ class WearableConnectionRepository @Inject constructor(
                 putInt(ORDERS_COUNT.value, ordersCount)
                 putInt(VISITORS_TOTAL.value, visitorsCount)
                 putString(CONVERSION_RATE.value, conversionRate)
-                putLong(TIMESTAMP.value, Instant.now().epochSecond)
             }
         )
     }
@@ -69,8 +67,10 @@ class WearableConnectionRepository @Inject constructor(
     ) {
         PutDataMapRequest
             .create(dataPath.value)
-            .apply { dataMap.putAll(data) }
-            .asPutDataRequest().setUrgent()
+            .apply {
+                dataMap.putAll(data)
+                dataMap.putLong(TIMESTAMP.value, Instant.now().epochSecond)
+            }.asPutDataRequest().setUrgent()
             .let { dataClient.putDataItem(it) }
     }
 }
