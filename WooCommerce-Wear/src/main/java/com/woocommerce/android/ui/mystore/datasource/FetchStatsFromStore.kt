@@ -16,7 +16,7 @@ class FetchStatsFromStore @Inject constructor(
 
     suspend operator fun invoke(
         selectedSite: SiteModel
-    ): Flow<MyStoreStatsData> {
+    ): Flow<MyStoreStatsRequest> {
         fetchRevenueStats(selectedSite)
         fetchVisitorsStats(selectedSite)
 
@@ -24,7 +24,7 @@ class FetchStatsFromStore @Inject constructor(
             revenueStats,
             visitorStats
         ) { revenueStats, visitorStats ->
-            MyStoreStatsData(
+            MyStoreStatsRequest.Success(
                 revenueData = revenueStats,
                 visitorData = visitorStats
             )

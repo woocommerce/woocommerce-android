@@ -9,6 +9,7 @@ import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.mystore.datasource.FetchStatsFromPhone
 import com.woocommerce.android.ui.mystore.datasource.FetchStatsFromStore
+import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.assisted.Assisted
@@ -60,14 +61,19 @@ class MyStoreViewModel @AssistedInject constructor(
         launch {
             evaluateStatsSource(selectedSite)
                 .onEach { statsData ->
-                    _viewState.update {
-                        it.copy(
-                            isLoading = false,
-                            revenueTotal = statsData.revenue,
-                            ordersCount = statsData.ordersCount,
-                            visitorsCount = statsData.visitorsCount,
-                            conversionRate = statsData.conversionRate
-                        )
+                    when (statsData) {
+                        is MyStoreStatsRequest.Success -> {
+                            _viewState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    revenueTotal = statsData.revenue,
+                                    ordersCount = statsData.ordersCount,
+                                    visitorsCount = statsData.visitorsCount,
+                                    conversionRate = statsData.conversionRate
+                                )
+                            }
+                        }
+                        else -> _viewState.update { it.copy(isLoading = false) }
                     }
                 }.launchIn(this)
         }
