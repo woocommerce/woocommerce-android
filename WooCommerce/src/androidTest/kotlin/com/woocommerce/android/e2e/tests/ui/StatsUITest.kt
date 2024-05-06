@@ -13,7 +13,7 @@ import com.woocommerce.android.e2e.rules.Retry
 import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
-import com.woocommerce.android.e2e.screens.mystore.MyStoreScreen
+import com.woocommerce.android.e2e.screens.mystore.DashboardScreen
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -78,7 +78,7 @@ class StatsUITest : TestBase() {
     @Retry(numberOfTimes = 1)
     @Test
     fun e2eStatsSummary() {
-        MyStoreScreen()
+        DashboardScreen()
             .stats.switchToStatsDashboardTodayTab(composeTestRule)
             .assertStatsSummary(todayStats)
             .stats.switchToStatsDashboardWeekTab(composeTestRule)
@@ -92,7 +92,7 @@ class StatsUITest : TestBase() {
     fun e2eStatsTopPerformers() {
         val topPerformersJSONArray = MocksReader().readStatsTopPerformersToArray()
 
-        MyStoreScreen()
+        DashboardScreen()
             .topPerformers.switchToStatsDashboardTodayTab(composeTestRule)
             .assertTopPerformers(topPerformersJSONArray, composeTestRule)
     }
@@ -100,7 +100,7 @@ class StatsUITest : TestBase() {
     @Retry(numberOfTimes = 1)
     @Test
     fun e2eStatsTapChart() {
-        MyStoreScreen()
+        DashboardScreen()
             .stats.switchToStatsDashboardWeekTab(composeTestRule)
             .assertStatsSummary(weekStats)
             .tapChartMiddle()

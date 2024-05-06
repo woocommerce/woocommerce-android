@@ -12,7 +12,7 @@ class TopPerformersComponent : Screen(R.id.dashboardStats_root) {
         clickOn(R.id.dashboard)
     }
 
-    fun switchToStatsDashboardTodayTab(composeTestRule: ComposeTestRule): MyStoreScreen {
+    fun switchToStatsDashboardTodayTab(composeTestRule: ComposeTestRule): DashboardScreen {
         composeTestRule.scrollToNodeThatMatches(
             hasTestTag(DashboardStatsTestTags.DASHBOARD_TOP_PERFORMERS_CARD)
         )
@@ -23,6 +23,6 @@ class TopPerformersComponent : Screen(R.id.dashboardStats_root) {
             composeTestRule = composeTestRule
         )
 
-        return MyStoreScreen()
+        return DashboardScreen()
     }
 }

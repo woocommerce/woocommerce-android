@@ -14,17 +14,17 @@ import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 import org.hamcrest.Matchers
 import org.json.JSONArray
 
-class MyStoreScreen : Screen(R.id.my_store_refresh_layout) {
+class DashboardScreen : Screen(R.id.my_store_refresh_layout) {
     val stats = StatsComponent()
     val topPerformers = TopPerformersComponent()
 
-    fun tapChartMiddle(): MyStoreScreen {
+    fun tapChartMiddle(): DashboardScreen {
         scrollTo(R.id.chart)
         clickOn(R.id.chart)
         return this
     }
 
-    fun assertStatsSummary(summary: StatsSummaryData): MyStoreScreen {
+    fun assertStatsSummary(summary: StatsSummaryData): DashboardScreen {
         Espresso.onView(
             Matchers.allOf(
                 // Assert there's a Stats container element
@@ -96,7 +96,7 @@ class MyStoreScreen : Screen(R.id.my_store_refresh_layout) {
     fun assertTopPerformers(
         topPerformersJSONArray: JSONArray,
         composeTestRule: ComposeTestRule
-    ): MyStoreScreen {
+    ): DashboardScreen {
         composeTestRule.onNodeWithTag(DashboardStatsTestTags.DASHBOARD_TOP_PERFORMERS_CARD)
             .assertIsDisplayed()
 

@@ -31,23 +31,23 @@ class StatsComponent : Screen(R.id.dashboardStats_root) {
         }
     }
 
-    fun switchToStatsDashboardTodayTab(composeTestRule: ComposeTestRule): MyStoreScreen {
+    fun switchToStatsDashboardTodayTab(composeTestRule: ComposeTestRule): DashboardScreen {
         return switchToStatsDashboardTab(R.string.today, composeTestRule)
     }
 
-    fun switchToStatsDashboardWeekTab(composeTestRule: ComposeTestRule): MyStoreScreen {
+    fun switchToStatsDashboardWeekTab(composeTestRule: ComposeTestRule): DashboardScreen {
         return switchToStatsDashboardTab(R.string.this_week, composeTestRule)
     }
 
-    fun switchToStatsDashboardMonthTab(composeTestRule: ComposeTestRule): MyStoreScreen {
+    fun switchToStatsDashboardMonthTab(composeTestRule: ComposeTestRule): DashboardScreen {
         return switchToStatsDashboardTab(R.string.this_month, composeTestRule)
     }
 
-    fun switchToStatsDashboardYearTab(composeTestRule: ComposeTestRule): MyStoreScreen {
+    fun switchToStatsDashboardYearTab(composeTestRule: ComposeTestRule): DashboardScreen {
         return switchToStatsDashboardTab(R.string.this_year, composeTestRule)
     }
 
-    private fun switchToStatsDashboardTab(tabName: Int, composeTestRule: ComposeTestRule): MyStoreScreen {
+    private fun switchToStatsDashboardTab(tabName: Int, composeTestRule: ComposeTestRule): DashboardScreen {
         composeTestRule.scrollToNodeThatMatches(
             hasTestTag(DashboardStatsTestTags.DASHBOARD_STATS_CARD)
         )
@@ -60,6 +60,6 @@ class StatsComponent : Screen(R.id.dashboardStats_root) {
 
         waitForGraphToLoad()
 
-        return MyStoreScreen()
+        return DashboardScreen()
     }
 }
