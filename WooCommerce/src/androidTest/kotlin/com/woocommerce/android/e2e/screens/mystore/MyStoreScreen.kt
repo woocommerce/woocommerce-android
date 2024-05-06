@@ -86,8 +86,7 @@ class MyStoreScreen : Screen(R.id.my_store_refresh_layout) {
                         )
                     )
                 ),
-
-                )
+            )
         )
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
 
@@ -110,7 +109,6 @@ class MyStoreScreen : Screen(R.id.my_store_refresh_layout) {
                 .assertIsDisplayed()
             composeTestRule.onNodeWithText("Net sales: $$topPerformerSales.00")
                 .assertIsDisplayed()
-
         }
 
         return this

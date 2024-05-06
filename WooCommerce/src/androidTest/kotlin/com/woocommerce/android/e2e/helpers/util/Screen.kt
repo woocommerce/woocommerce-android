@@ -215,7 +215,7 @@ open class Screen {
                     scrollUp = false
                 } else {
                     // We scrolled up and down and still didn't find the node
-                    throw IllegalStateException("Couldn't find the node that matches the given matcher.")
+                    error("Couldn't find the node that matches the given matcher.")
                 }
             }
         }
