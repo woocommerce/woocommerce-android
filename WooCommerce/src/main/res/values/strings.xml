@@ -592,6 +592,7 @@
     <string name="custom_amounts_bottom_sheet_percentage_amount_option">A percentage of the order total</string>
     <string name="custom_amounts_percentage_hint">0</string>
     <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_invalid_value">Invalid value</string>
 
     <!--
          Taxes

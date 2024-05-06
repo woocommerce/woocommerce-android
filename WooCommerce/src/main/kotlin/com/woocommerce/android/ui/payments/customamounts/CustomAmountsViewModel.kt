@@ -50,6 +50,7 @@ class CustomAmountsViewModel @Inject constructor(
         }
         set(value) {
             val totalAmount = BigDecimal(args.orderTotal ?: "0")
+
             if (totalAmount > BigDecimal.ZERO) {
                 val percentage = value.toString().toDouble().roundToInt()
                 val updatedAmount = (
