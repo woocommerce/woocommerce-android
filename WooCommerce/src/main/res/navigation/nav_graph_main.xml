@@ -698,7 +698,7 @@
         app:destination="@id/privacyBannerFragment" />
     <dialog
         android:id="@+id/AIProductDescriptionDialogFragment"
-        android:name="com.woocommerce.android.ui.mystore.AIProductDescriptionDialogFragment"
+        android:name="com.woocommerce.android.ui.dashboard.AIProductDescriptionDialogFragment"
         android:label="AIProductDescriptionDialogFragment" />
     <dialog
         android:id="@+id/createTestOrderDialogFragment"
