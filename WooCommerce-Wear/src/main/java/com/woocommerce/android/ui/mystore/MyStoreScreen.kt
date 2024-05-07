@@ -1,25 +1,42 @@
 package com.woocommerce.android.ui.mystore
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Accessible
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Article
+import androidx.compose.material.icons.automirrored.filled.Backspace
+import androidx.compose.material.icons.automirrored.filled.ContactSupport
+import androidx.compose.material.icons.automirrored.filled.Feed
+import androidx.compose.material.icons.automirrored.filled.Input
+import androidx.compose.material.icons.automirrored.filled.Subject
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Button
+import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.presentation.component.LoadingScreen
+import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
 
@@ -50,6 +67,14 @@ fun MyStoreScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
+            val brush = Brush.verticalGradient(listOf(
+                WooColors.md_theme_dark_primary_variant, Color.Black))
+            Canvas(
+                modifier = Modifier.fillMaxSize(),
+                onDraw = {
+                    drawRect(brush)
+                }
+            )
             TimeText()
             Column(
                 modifier = Modifier
@@ -62,7 +87,7 @@ fun MyStoreScreen(
                 Text(
                     text = currentSiteName,
                     textAlign = TextAlign.Center,
-                    style = WooTypography.caption1,
+                    style = WooTypography.body1,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp)
@@ -77,14 +102,6 @@ fun MyStoreScreen(
                         conversionRate
                     )
                 }
-                Button(
-                    onClick = { /*TODO*/ },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                ) {
-                    Text("View all orders")
-                }
             }
         }
     }
@@ -97,36 +114,42 @@ private fun MyStoreView(
     ordersCount: String,
     conversionRate: String
 ) {
-    Text(text = "Today")
+    Text(
+        text = "Revenue",
+        textAlign = TextAlign.Center,
+        style = WooTypography.body2,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+    )
+    Text(
+        text = totalRevenue,
+        textAlign = TextAlign.Center,
+        style = WooTypography.display3,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+    )
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier.fillMaxWidth()
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp)
     ) {
         StoreDataItem(
-            title = "Revenue",
-            value = totalRevenue,
-            modifier = Modifier.weight(1f)
-        )
-        StoreDataItem(
-            title = "Visitors",
+            icon = Icons.AutoMirrored.Filled.Article,
             value = visitorsCount,
-            modifier = Modifier.weight(1f)
         )
-    }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
+        Spacer(modifier = Modifier.size(24.dp))
         StoreDataItem(
-            title = "Orders",
+            icon = Icons.AutoMirrored.Filled.Feed,
             value = ordersCount,
-            modifier = Modifier.weight(1f)
         )
+        Spacer(modifier = Modifier.size(24.dp))
         StoreDataItem(
-            title = "Conversion",
+            icon = Icons.AutoMirrored.Filled.Input,
             value = conversionRate,
-            modifier = Modifier.weight(1f)
         )
     }
 }
@@ -134,13 +157,14 @@ private fun MyStoreView(
 @Composable
 fun StoreDataItem(
     modifier: Modifier = Modifier,
-    title: String,
+    icon: ImageVector,
     value: String
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = title,
-            style = WooTypography.caption1
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp)
         )
         Text(text = value)
     }
