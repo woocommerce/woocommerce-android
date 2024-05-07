@@ -143,14 +143,12 @@ private fun MyStoreView(
             ) {
                 StoreDataItem(
                     icon = Icons.Filled.Description,
-                    value = visitorsCount,
-                )
-                Spacer(modifier = Modifier.size(24.dp))
-                StoreDataItem(
-                    icon = Icons.Filled.Group,
                     value = ordersCount,
                 )
-                Spacer(modifier = Modifier.size(24.dp))
+                StoreDataItem(
+                    icon = Icons.Filled.Group,
+                    value = visitorsCount,
+                )
                 StoreDataItem(
                     icon = Icons.Filled.Timeline,
                     value = conversionRate,
@@ -176,7 +174,8 @@ fun StoreDataItem(
     icon: ImageVector,
     value: String
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier
+        .size(50.dp)) {
         Icon(
             imageVector = icon,
             contentDescription = null,
@@ -202,9 +201,9 @@ fun DefaultPreview() {
         isLoading = false,
         currentSiteName = "My Store",
         totalRevenue = "$5,321.90",
-        ordersCount = "0",
-        visitorsCount = "123",
-        conversionRate = "10%",
+        ordersCount = "5",
+        visitorsCount = "12",
+        conversionRate = "100%",
         timestamp = "02:19"
     )
 }
