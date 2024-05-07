@@ -184,7 +184,11 @@ fun StoreDataItem(
                 .align(Alignment.CenterHorizontally)
                 .size(18.dp)
         )
-        Text(text = value)
+        Text(
+            text = value,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        )
     }
 }
 
@@ -198,7 +202,7 @@ fun DefaultPreview() {
         isLoading = false,
         currentSiteName = "My Store",
         totalRevenue = "$5,321.90",
-        ordersCount = "12",
+        ordersCount = "0",
         visitorsCount = "123",
         conversionRate = "10%",
         timestamp = "02:19"

@@ -16,6 +16,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -40,6 +43,10 @@ class MyStoreViewModel @AssistedInject constructor(
         initialValue = ViewState()
     )
     val viewState = _viewState.asLiveData()
+
+    private val friendlyTimeFormat: SimpleDateFormat by lazy {
+        SimpleDateFormat("h:mm a", Locale.getDefault())
+    }
 
     init {
         loginRepository.selectedSiteFlow
@@ -74,7 +81,8 @@ class MyStoreViewModel @AssistedInject constructor(
                         revenueTotal = statsData.revenue,
                         ordersCount = statsData.ordersCount,
                         visitorsCount = statsData.visitorsCount,
-                        conversionRate = statsData.conversionRate
+                        conversionRate = statsData.conversionRate,
+                        timestamp = friendlyTimeFormat.format(Date())
                     )
                 }
             }
