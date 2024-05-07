@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.filterNotNull
 
 class FetchStatsFromPhone @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
@@ -22,7 +23,7 @@ class FetchStatsFromPhone @Inject constructor(
                 isTimeout -> MyStoreStatsRequest.Error
                 else -> null
             }
-        }
+        }.filterNotNull()
     }
 
     private val timeoutFlow: Flow<Boolean>
