@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +30,7 @@ import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.woocommerce.android.R
 import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
@@ -43,7 +45,8 @@ fun MyStoreScreen(viewModel: MyStoreViewModel) {
         totalRevenue = viewState?.revenueTotal?.toString().orEmpty(),
         ordersCount = viewState?.ordersCount?.toString().orEmpty(),
         visitorsCount = viewState?.visitorsCount?.toString().orEmpty(),
-        conversionRate = viewState?.conversionRate.orEmpty()
+        conversionRate = viewState?.conversionRate.orEmpty(),
+        timestamp = viewState?.timestamp.orEmpty()
     )
 }
 
@@ -54,7 +57,8 @@ fun MyStoreScreen(
     totalRevenue: String,
     ordersCount: String,
     visitorsCount: String,
-    conversionRate: String
+    conversionRate: String,
+    timestamp: String
 ) {
     WooTheme {
         Box(
@@ -95,7 +99,8 @@ fun MyStoreScreen(
                         totalRevenue,
                         visitorsCount,
                         ordersCount,
-                        conversionRate
+                        conversionRate,
+                        timestamp
                     )
                 }
             }
@@ -108,12 +113,13 @@ private fun MyStoreView(
     totalRevenue: String,
     visitorsCount: String,
     ordersCount: String,
-    conversionRate: String
+    conversionRate: String,
+    timestamp: String
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column {
             Text(
-                text = "Revenue",
+                text = stringResource(id = R.string.my_store_screen_revenue_title),
                 textAlign = TextAlign.Center,
                 style = WooTypography.body2,
                 modifier = Modifier
@@ -153,7 +159,7 @@ private fun MyStoreView(
         }
 
         Text(
-            text = "Today • As of 02:19",
+            text = stringResource(id = R.string.my_store_screen_time_description, timestamp),
             style = WooTypography.caption2,
             textAlign = TextAlign.Center,
             modifier = Modifier
@@ -194,6 +200,7 @@ fun DefaultPreview() {
         totalRevenue = "$5,321.90",
         ordersCount = "12",
         visitorsCount = "123",
-        conversionRate = "10%"
+        conversionRate = "10%",
+        timestamp = "02:19"
     )
 }
