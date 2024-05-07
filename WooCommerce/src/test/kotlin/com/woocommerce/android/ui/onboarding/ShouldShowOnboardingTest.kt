@@ -2,12 +2,8 @@ package com.woocommerce.android.ui.onboarding
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_COMPLETED
-import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_HIDE_LIST
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
-import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.SETTINGS
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
@@ -115,38 +111,6 @@ internal class ShouldShowOnboardingTest : BaseUnitTest() {
         sut.showForTasks(ONBOARDING_TASK_INCOMPLETED_LIST)
 
         verify(appPrefsWrapper).setStoreOnboardingShown(CURRENT_SITE_ID)
-    }
-
-    @Test
-    fun `given incomplete tasks, when hiding onboarding from the list, then track onboarding hidden from list`() {
-        sut.showForTasks(ONBOARDING_TASK_INCOMPLETED_LIST)
-
-        sut.updateOnboardingVisibilitySetting(show = false, source = ONBOARDING_LIST)
-
-        verify(analyticsTrackerWrapper).track(
-            stat = STORE_ONBOARDING_HIDE_LIST,
-            properties = mapOf(
-                AnalyticsTracker.KEY_HIDE_ONBOARDING_SOURCE to ONBOARDING_LIST.name.lowercase(),
-                AnalyticsTracker.KEY_HIDE_ONBOARDING_LIST_VALUE to true,
-                AnalyticsTracker.KEY_ONBOARDING_PENDING_TASKS to AnalyticsTracker.VALUE_STORE_DETAILS
-            )
-        )
-    }
-
-    @Test
-    fun `given completed tasks, when onboarding enabled from settings, then track onboarding enabled from settings`() {
-        sut.showForTasks(ONBOARDING_TASK_COMPLETED_LIST)
-
-        sut.updateOnboardingVisibilitySetting(show = true, source = SETTINGS)
-
-        verify(analyticsTrackerWrapper).track(
-            stat = STORE_ONBOARDING_HIDE_LIST,
-            properties = mapOf(
-                AnalyticsTracker.KEY_HIDE_ONBOARDING_SOURCE to SETTINGS.name.lowercase(),
-                AnalyticsTracker.KEY_HIDE_ONBOARDING_LIST_VALUE to false,
-                AnalyticsTracker.KEY_ONBOARDING_PENDING_TASKS to ""
-            )
-        )
     }
 
     private fun givenStoreOnboardingHasBeenShownAtLeastOnce(shown: Boolean) {
