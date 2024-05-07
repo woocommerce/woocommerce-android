@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import org.wordpress.android.fluxc.model.SiteModel
-import javax.inject.Inject
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import javax.inject.Inject
 
 class FetchStatsFromStore @Inject constructor(
     private val statsRepository: StatsRepository,

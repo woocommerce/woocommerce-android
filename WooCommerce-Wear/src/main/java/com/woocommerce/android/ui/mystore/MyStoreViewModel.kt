@@ -60,22 +60,26 @@ class MyStoreViewModel @AssistedInject constructor(
         _viewState.update { it.copy(isLoading = true) }
         launch {
             evaluateStatsSource(selectedSite)
-                .onEach { statsData ->
-                    when (statsData) {
-                        is MyStoreStatsRequest.Data -> {
-                            _viewState.update {
-                                it.copy(
-                                    isLoading = false,
-                                    revenueTotal = statsData.revenue,
-                                    ordersCount = statsData.ordersCount,
-                                    visitorsCount = statsData.visitorsCount,
-                                    conversionRate = statsData.conversionRate
-                                )
-                            }
-                        }
-                        else -> _viewState.update { it.copy(isLoading = false) }
-                    }
-                }.launchIn(this)
+                .onEach { handleStatsDataChange(it) }
+                .launchIn(this)
+        }
+    }
+
+    private fun handleStatsDataChange(statsData: MyStoreStatsRequest?) {
+        when (statsData) {
+            is MyStoreStatsRequest.Data -> {
+                _viewState.update {
+                    it.copy(
+                        isLoading = false,
+                        revenueTotal = statsData.revenue,
+                        ordersCount = statsData.ordersCount,
+                        visitorsCount = statsData.visitorsCount,
+                        conversionRate = statsData.conversionRate
+                    )
+                }
+            }
+
+            else -> _viewState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -87,10 +91,11 @@ class MyStoreViewModel @AssistedInject constructor(
     data class ViewState(
         val isLoading: Boolean = false,
         val currentSiteName: String? = null,
-        val revenueTotal: Double? = null,
+        val revenueTotal: String? = null,
         val ordersCount: Int? = null,
         val visitorsCount: Int? = null,
-        val conversionRate: String? = null
+        val conversionRate: String? = null,
+        val timestamp: String? = null
     ) : Parcelable
 
     @Parcelize
