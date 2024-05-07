@@ -121,16 +121,28 @@ fun DashboardTopPerformersContent(
     onGranularityChanged: (SelectionType) -> Unit,
     onEditCustomRangeTapped: () -> Unit,
 ) {
-    when {
-        topPerformersState?.isLoading == true -> TopPerformersLoading(modifier = Modifier.padding(16.dp))
-        else -> {
-            TopPerformersContent(
-                topPerformersState,
-                lastUpdateState,
-                selectedDateRange,
-                onGranularityChanged,
-                onEditCustomRangeTapped
+    Column {
+        selectedDateRange?.let {
+            DashboardStatsHeader(
+                rangeSelection = it.rangeSelection,
+                dateFormatted = it.dateFormatted,
+                onCustomRangeClick = onEditCustomRangeTapped,
+                onTabSelected = onGranularityChanged
             )
+        }
+        Divider(modifier = Modifier.padding(bottom = 16.dp))
+
+        when {
+            topPerformersState?.isLoading == true -> TopPerformersLoading(
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
+            else -> {
+                TopPerformersContent(
+                    topPerformersState = topPerformersState,
+                    lastUpdateState = lastUpdateState
+                )
+            }
         }
     }
 }
@@ -172,20 +184,8 @@ private fun HandleEvents(
 private fun TopPerformersContent(
     topPerformersState: TopPerformersState?,
     lastUpdateState: String?,
-    selectedDateRange: TopPerformersDateRange?,
-    onGranularityChanged: (SelectionType) -> Unit,
-    onEditCustomRangeTapped: () -> Unit,
 ) {
     Column {
-        selectedDateRange?.let {
-            DashboardStatsHeader(
-                rangeSelection = it.rangeSelection,
-                dateFormatted = it.dateFormatted,
-                onCustomRangeClick = onEditCustomRangeTapped,
-                onTabSelected = onGranularityChanged
-            )
-        }
-        Divider(modifier = Modifier.padding(bottom = 16.dp))
         Row(
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
@@ -245,28 +245,6 @@ private fun TopPerformerProductList(
 @Composable
 private fun TopPerformersLoading(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth()) {
-        SkeletonView(
-            modifier = Modifier
-                .height(18.dp)
-                .width(200.dp)
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 16.dp)
-        ) {
-            SkeletonView(
-                modifier = Modifier
-                    .height(16.dp)
-                    .width(80.dp)
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            SkeletonView(
-                modifier = Modifier
-                    .height(16.dp)
-                    .width(50.dp)
-            )
-        }
         repeat(5) {
             TopPerformerSkeletonItem()
             Divider()
@@ -436,28 +414,28 @@ private fun TopPerformersWidgetCardPreview() {
         )
     )
     Column {
-        TopPerformersContent(
+        DashboardTopPerformersContent(
             topPerformersState = topPerformersState,
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
             onGranularityChanged = {},
             onEditCustomRangeTapped = {}
         )
-        TopPerformersContent(
+        DashboardTopPerformersContent(
             topPerformersState = topPerformersState.copy(isLoading = true),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
             onGranularityChanged = {},
             onEditCustomRangeTapped = {}
         )
-        TopPerformersContent(
+        DashboardTopPerformersContent(
             topPerformersState = topPerformersState.copy(isError = true),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
             onGranularityChanged = {},
             onEditCustomRangeTapped = {}
         )
-        TopPerformersContent(
+        DashboardTopPerformersContent(
             topPerformersState = topPerformersState.copy(topPerformers = emptyList()),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
