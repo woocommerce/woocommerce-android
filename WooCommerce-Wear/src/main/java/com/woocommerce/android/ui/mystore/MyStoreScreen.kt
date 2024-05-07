@@ -11,14 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Accessible
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Article
-import androidx.compose.material.icons.automirrored.filled.Backspace
-import androidx.compose.material.icons.automirrored.filled.ContactSupport
-import androidx.compose.material.icons.automirrored.filled.Feed
-import androidx.compose.material.icons.automirrored.filled.Input
-import androidx.compose.material.icons.automirrored.filled.Subject
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -30,7 +25,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
@@ -68,7 +62,7 @@ fun MyStoreScreen(
             contentAlignment = Alignment.Center
         ) {
             val brush = Brush.verticalGradient(listOf(
-                WooColors.md_theme_dark_primary_variant, Color.Black))
+                WooColors.purple_surface, Color.Black))
             Canvas(
                 modifier = Modifier.fillMaxSize(),
                 onDraw = {
@@ -79,10 +73,8 @@ fun MyStoreScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(
-                        horizontal = 12.dp,
-                        vertical = 16.dp
-                    )
+                    .padding(horizontal = 12.dp)
+                    .padding(top = 12.dp)
             ) {
                 Text(
                     text = currentSiteName,
@@ -114,44 +106,57 @@ private fun MyStoreView(
     ordersCount: String,
     conversionRate: String
 ) {
-    Text(
-        text = "Revenue",
-        textAlign = TextAlign.Center,
-        style = WooTypography.body2,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-    )
-    Text(
-        text = totalRevenue,
-        textAlign = TextAlign.Center,
-        style = WooTypography.display3,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-    )
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 10.dp)
-    ) {
-        StoreDataItem(
-            icon = Icons.AutoMirrored.Filled.Article,
-            value = visitorsCount,
-        )
-        Spacer(modifier = Modifier.size(24.dp))
-        StoreDataItem(
-            icon = Icons.AutoMirrored.Filled.Feed,
-            value = ordersCount,
-        )
-        Spacer(modifier = Modifier.size(24.dp))
-        StoreDataItem(
-            icon = Icons.AutoMirrored.Filled.Input,
-            value = conversionRate,
+    Box {
+        Column {
+            Text(
+                text = "Revenue",
+                textAlign = TextAlign.Center,
+                style = WooTypography.body2,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp)
+            )
+            Text(
+                text = totalRevenue,
+                textAlign = TextAlign.Center,
+                style = WooTypography.display3,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp)
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp)
+            ) {
+                StoreDataItem(
+                    icon = Icons.Filled.Description,
+                    value = visitorsCount,
+                )
+                Spacer(modifier = Modifier.size(24.dp))
+                StoreDataItem(
+                    icon = Icons.Filled.Group,
+                    value = ordersCount,
+                )
+                Spacer(modifier = Modifier.size(24.dp))
+                StoreDataItem(
+                    icon = Icons.Filled.Timeline,
+                    value = conversionRate,
+                )
+            }
+        }
+        Text(
+            text = "Today • As of 02:19",
+            style = WooTypography.caption2,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
         )
     }
+
 }
 
 @Composable
@@ -164,7 +169,7 @@ fun StoreDataItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(18.dp)
         )
         Text(text = value)
     }

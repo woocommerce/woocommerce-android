@@ -17,6 +17,7 @@ object WooColors {
     val md_theme_dark_onBackground = Color(0xFFFFFFFF)
     val md_theme_dark_surface = Color(0xFF121212)
     val md_theme_dark_onSurface = Color(0xFFFFFFFF)
+    val purple_surface = Color(0xBB533582)
 }
 
 val WooWearColors = Colors(
