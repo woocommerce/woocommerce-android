@@ -61,8 +61,12 @@ fun MyStoreScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            val brush = Brush.verticalGradient(listOf(
-                WooColors.purple_surface, Color.Black))
+            val brush = Brush.verticalGradient(
+                listOf(
+                    WooColors.purple_surface,
+                    Color.Black
+                )
+            )
             Canvas(
                 modifier = Modifier.fillMaxSize(),
                 onDraw = {
