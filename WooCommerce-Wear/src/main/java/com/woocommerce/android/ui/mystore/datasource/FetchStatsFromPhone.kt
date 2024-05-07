@@ -7,9 +7,9 @@ import com.woocommerce.commons.wear.MessagePath.REQUEST_STATS
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
-import kotlinx.coroutines.flow.filterNotNull
 
 class FetchStatsFromPhone @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
