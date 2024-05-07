@@ -8,9 +8,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class FetchStatsFromStore @Inject constructor(
     private val statsRepository: StatsRepository,
+    private val wooCommerceStore: WooCommerceStore
 ) {
     private val revenueStats = MutableStateFlow<RevenueData?>(null)
     private val visitorStats = MutableStateFlow<Int?>(null)
@@ -27,7 +29,8 @@ class FetchStatsFromStore @Inject constructor(
         ) { revenueStats, visitorStats ->
             MyStoreStatsRequest.Data(
                 revenueData = revenueStats,
-                visitorData = visitorStats
+                visitorData = visitorStats,
+                currencyCode = ""
             )
         }.filter { it.isFinished }
     }
@@ -37,10 +40,19 @@ class FetchStatsFromStore @Inject constructor(
             .fold(
                 onSuccess = { revenue ->
                     val totals = revenue?.parseTotal()
+
+                    val formattedRevenue = wooCommerceStore.formatCurrencyForDisplay(
+                        amount = totals?.totalSales ?: 0.0,
+                        site = selectedSite,
+                        currencyCode = null,
+                        applyDecimalFormatting = true
+                    )
+
                     val revenueData = RevenueData(
-                        totalRevenue = totals?.totalSales ?: 0.0,
+                        totalRevenue = formattedRevenue,
                         orderCount = totals?.ordersCount ?: 0
                     )
+
                     revenueStats.value = revenueData
                 },
                 onFailure = {

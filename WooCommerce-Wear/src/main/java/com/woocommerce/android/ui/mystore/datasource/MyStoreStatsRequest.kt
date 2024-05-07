@@ -28,7 +28,7 @@ sealed class MyStoreStatsRequest {
             }
 
         data class RevenueData(
-            val totalRevenue: Double,
+            val totalRevenue: String,
             val orderCount: Int
         )
     }
