@@ -19,11 +19,14 @@ import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import javax.inject.Inject
+import kotlinx.coroutines.async
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class LoginRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.LOGIN) private val loginDataStore: DataStore<Preferences>,
     private val accountStore: AccountStore,
-    coroutineScope: CoroutineScope
+    private val wooCommerceStore: WooCommerceStore,
+    private val coroutineScope: CoroutineScope
 ) {
     private val gson by lazy { Gson() }
 
@@ -45,6 +48,10 @@ class LoginRepository @Inject constructor(
         val site = siteJSON
             ?.let { gson.fromJson(it, SiteModel::class.java) }
             ?: return
+
+        coroutineScope.async {
+            wooCommerceStore.fetchSiteGeneralSettings(site)
+        }.await()
 
         loginDataStore.edit { prefs ->
             prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
