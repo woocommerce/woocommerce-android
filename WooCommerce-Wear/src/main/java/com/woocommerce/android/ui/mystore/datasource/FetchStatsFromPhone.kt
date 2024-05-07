@@ -8,11 +8,11 @@ import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.ui.login.ObserveLoginRequest.Companion.TIMEOUT_MILLIS
 import com.woocommerce.android.ui.mystore.stats.StatsRepository
 import com.woocommerce.commons.wear.MessagePath.REQUEST_STATS
-import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
 class FetchStatsFromPhone @Inject constructor(
     @DataStoreQualifier(DataStoreType.STATS) private val statsDataStore: DataStore<Preferences>,

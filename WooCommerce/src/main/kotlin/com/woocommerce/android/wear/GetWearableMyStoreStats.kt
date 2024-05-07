@@ -7,11 +7,11 @@ import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.ui.mystore.data.StatsRepository.SiteStats
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
+import org.wordpress.android.fluxc.model.SiteModel
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import org.wordpress.android.fluxc.model.SiteModel
 
 class GetWearableMyStoreStats @Inject constructor(
     private val statsRepository: StatsRepository,

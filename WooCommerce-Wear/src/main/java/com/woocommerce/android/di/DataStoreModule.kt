@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.woocommerce.android.datastore.DataStoreQualifier
-import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.datastore.DataStoreType.LOGIN
 import com.woocommerce.android.datastore.DataStoreType.STATS
 import dagger.Module

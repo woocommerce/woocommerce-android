@@ -16,11 +16,11 @@ import com.woocommerce.commons.wear.DataParameters.VISITORS_TOTAL
 import com.woocommerce.commons.wear.DataPath
 import com.woocommerce.commons.wear.DataPath.SITE_DATA
 import com.woocommerce.commons.wear.DataPath.STATS_DATA
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import java.time.Instant
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 class WearableConnectionRepository @Inject constructor(
     private val dataClient: DataClient,
