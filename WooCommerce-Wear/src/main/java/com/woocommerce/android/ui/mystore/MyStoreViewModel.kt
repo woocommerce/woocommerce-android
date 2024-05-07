@@ -24,14 +24,14 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 
-@Suppress("UnusedPrivateProperty")
+@Suppress("UnusedPrivateProperty", "LongParameterList")
 @HiltViewModel(assistedFactory = MyStoreViewModel.Factory::class)
 class MyStoreViewModel @AssistedInject constructor(
+    @Assisted private val navController: NavHostController,
     private val phoneRepository: PhoneConnectionRepository,
     private val fetchStatsFromStore: FetchStatsFromStore,
     private val fetchStatsFromPhone: FetchStatsFromPhone,
     private val networkStatus: NetworkStatus,
-    @Assisted private val navController: NavHostController,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -53,7 +53,7 @@ class MyStoreViewModel @AssistedInject constructor(
     private suspend fun evaluateStatsSource(selectedSite: SiteModel) = when {
         networkStatus.isConnected() -> fetchStatsFromStore(selectedSite)
         phoneRepository.isPhoneConnectionAvailable() -> fetchStatsFromPhone()
-        else -> throw IllegalStateException("No connection available")
+        else -> error("No connection available")
     }
 
     private fun requestStoreStats(selectedSite: SiteModel) {
