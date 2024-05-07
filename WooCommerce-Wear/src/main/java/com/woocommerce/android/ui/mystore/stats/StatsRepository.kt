@@ -96,10 +96,10 @@ class StatsRepository @Inject constructor(
     suspend fun receiveStatsDataFromPhone(data: DataMap) {
         val statsJson = MyStoreStatsRequest.Data(
             revenueData = RevenueData(
-                totalRevenue = data.getDouble(TOTAL_REVENUE.value, 0.0),
+                totalRevenue = data.getString(TOTAL_REVENUE.value, ""),
                 orderCount = data.getInt(ORDERS_COUNT.value, 0)
             ),
-            visitorData = data.getInt(VISITORS_TOTAL.value, 0)
+            visitorData = data.getInt(VISITORS_TOTAL.value, 0),
         ).let { gson.toJson(it) }
 
         statsDataStore.edit { prefs ->

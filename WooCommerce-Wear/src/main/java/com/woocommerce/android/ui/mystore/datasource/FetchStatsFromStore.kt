@@ -30,7 +30,6 @@ class FetchStatsFromStore @Inject constructor(
             MyStoreStatsRequest.Data(
                 revenueData = revenueStats,
                 visitorData = visitorStats,
-                currencyCode = ""
             )
         }.filter { it.isFinished }
     }

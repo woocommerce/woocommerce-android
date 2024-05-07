@@ -21,11 +21,13 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import java.time.Instant
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 class WearableConnectionRepository @Inject constructor(
     private val dataClient: DataClient,
     private val selectedSite: SelectedSite,
     private val accountStore: AccountStore,
+    private val wooCommerceStore: WooCommerceStore,
     private val getStats: GetWearableMyStoreStats,
     private val coroutineScope: CoroutineScope
 ) {
@@ -45,15 +47,20 @@ class WearableConnectionRepository @Inject constructor(
     fun sendStatsData() = coroutineScope.launch {
         val stats = getStats(selectedSite.get())
         val revenueTotals = stats?.revenue?.parseTotal()
-        val totalSales = revenueTotals?.totalSales ?: 0.0
         val ordersCount = revenueTotals?.ordersCount ?: 0
         val visitorsCount = stats?.visitors?.values?.sum() ?: 0
         val conversionRate = ordersCount convertedFrom visitorsCount
+        val formattedTotalSales = wooCommerceStore.formatCurrencyForDisplay(
+            amount = revenueTotals?.totalSales ?: 0.0,
+            site = selectedSite.get(),
+            currencyCode = null,
+            applyDecimalFormatting = true
+        )
 
         sendData(
             STATS_DATA,
             DataMap().apply {
-                putDouble(TOTAL_REVENUE.value, totalSales)
+                putString(TOTAL_REVENUE.value, formattedTotalSales)
                 putInt(ORDERS_COUNT.value, ordersCount)
                 putInt(VISITORS_TOTAL.value, visitorsCount)
                 putString(CONVERSION_RATE.value, conversionRate)
