@@ -28,8 +28,8 @@ import java.util.Date
 import java.util.Locale
 
 @Suppress("UnusedPrivateProperty", "LongParameterList")
-@HiltViewModel(assistedFactory = MyStoreViewModel.Factory::class)
-class MyStoreViewModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = StoreStatsViewModel.Factory::class)
+class StoreStatsViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
     private val phoneRepository: PhoneConnectionRepository,
     private val fetchStatsFromStore: FetchStatsFromStore,
@@ -114,6 +114,6 @@ class MyStoreViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(navController: NavHostController): MyStoreViewModel
+        fun create(navController: NavHostController): StoreStatsViewModel
     }
 }

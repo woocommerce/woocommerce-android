@@ -13,9 +13,9 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
-class MyStoreViewModelTest : BaseUnitTest() {
+class StoreStatsViewModelTest : BaseUnitTest() {
 
-    private lateinit var sut: MyStoreViewModel
+    private lateinit var sut: StoreStatsViewModel
     private val loginRepository: LoginRepository = mock()
     private val navController: NavHostController = mock()
 
@@ -50,7 +50,7 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     private fun createSut() {
-        sut = MyStoreViewModel(
+        sut = StoreStatsViewModel(
             loginRepository,
             navController,
             SavedStateHandle()

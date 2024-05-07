@@ -10,8 +10,8 @@ import com.woocommerce.android.ui.NavRoutes.LOGIN
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
 import com.woocommerce.android.ui.login.LoginScreen
 import com.woocommerce.android.ui.login.LoginViewModel
-import com.woocommerce.android.ui.mystore.MyStoreScreen
-import com.woocommerce.android.ui.mystore.MyStoreViewModel
+import com.woocommerce.android.ui.mystore.StoreStatsScreen
+import com.woocommerce.android.ui.mystore.StoreStatsViewModel
 
 @Composable
 fun WooWearNavHost(
@@ -29,10 +29,10 @@ fun WooWearNavHost(
             LoginScreen(viewModel)
         }
         composable(MY_STORE.route) {
-            val viewModel: MyStoreViewModel = hiltViewModel<MyStoreViewModel, MyStoreViewModel.Factory> {
+            val viewModel: StoreStatsViewModel = hiltViewModel<StoreStatsViewModel, StoreStatsViewModel.Factory> {
                 it.create(navController)
             }
-            MyStoreScreen(viewModel)
+            StoreStatsScreen(viewModel)
         }
     }
 }

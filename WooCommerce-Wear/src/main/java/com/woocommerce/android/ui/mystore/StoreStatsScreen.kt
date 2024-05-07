@@ -36,9 +36,9 @@ import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
 
 @Composable
-fun MyStoreScreen(viewModel: MyStoreViewModel) {
+fun StoreStatsScreen(viewModel: StoreStatsViewModel) {
     val viewState by viewModel.viewState.observeAsState()
-    MyStoreScreen(
+    StoreStatsScreen(
         isLoading = viewState?.isLoading ?: false,
         currentSiteName = viewState?.currentSiteName.orEmpty(),
         totalRevenue = viewState?.revenueTotal?.toString().orEmpty(),
@@ -50,7 +50,7 @@ fun MyStoreScreen(viewModel: MyStoreViewModel) {
 }
 
 @Composable
-fun MyStoreScreen(
+fun StoreStatsScreen(
     isLoading: Boolean,
     currentSiteName: String,
     totalRevenue: String,
@@ -198,7 +198,7 @@ fun StoreDataItem(
 @Preview(device = WearDevices.RECT, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    MyStoreScreen(
+    StoreStatsScreen(
         isLoading = false,
         currentSiteName = "My Store",
         totalRevenue = "$5,321.90",
