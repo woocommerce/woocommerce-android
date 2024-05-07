@@ -74,7 +74,7 @@ fun MyStoreScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 12.dp)
-                    .padding(top = 12.dp)
+                    .padding(top = 24.dp)
             ) {
                 Text(
                     text = currentSiteName,
@@ -106,7 +106,7 @@ private fun MyStoreView(
     ordersCount: String,
     conversionRate: String
 ) {
-    Box {
+    Box(modifier = Modifier.fillMaxSize()) {
         Column {
             Text(
                 text = "Revenue",
@@ -147,16 +147,17 @@ private fun MyStoreView(
                 )
             }
         }
+
         Text(
             text = "Today • As of 02:19",
             style = WooTypography.caption2,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .fillMaxWidth()
                 .align(Alignment.BottomCenter)
+                .padding(bottom = 10.dp)
+                .fillMaxWidth()
         )
     }
-
 }
 
 @Composable
@@ -169,14 +170,18 @@ fun StoreDataItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .size(18.dp)
         )
         Text(text = value)
     }
 }
 
 @Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Preview(device = WearDevices.SQUARE, showSystemUi = true)
+@Preview(device = WearDevices.RECT, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
     MyStoreScreen(
