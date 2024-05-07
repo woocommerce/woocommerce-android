@@ -105,8 +105,6 @@ internal class ShouldShowOnboardingTest : BaseUnitTest() {
 
     @Test
     fun `given onboarding is enabled from settings, when at least one task is incomplete, then return true`() {
-        givenOnboardingIsEnabledFromSettings(enabled = true)
-
         val show = sut.showForTasks(ONBOARDING_TASK_INCOMPLETED_LIST)
 
         assertTrue(show)
@@ -114,8 +112,6 @@ internal class ShouldShowOnboardingTest : BaseUnitTest() {
 
     @Test
     fun `given onboarding is enabled from settings, when at least one task is incomplete, then mark onboarding shown`() {
-        givenOnboardingIsEnabledFromSettings(enabled = true)
-
         sut.showForTasks(ONBOARDING_TASK_INCOMPLETED_LIST)
 
         verify(appPrefsWrapper).setStoreOnboardingShown(CURRENT_SITE_ID)
@@ -155,9 +151,5 @@ internal class ShouldShowOnboardingTest : BaseUnitTest() {
 
     private fun givenStoreOnboardingHasBeenShownAtLeastOnce(shown: Boolean) {
         whenever(appPrefsWrapper.getStoreOnboardingShown(CURRENT_SITE_ID)).thenReturn(shown)
-    }
-
-    private fun givenOnboardingIsEnabledFromSettings(enabled: Boolean) {
-        whenever(appPrefsWrapper.getOnboardingSettingVisibility(CURRENT_SITE_ID)).thenReturn(enabled)
     }
 }

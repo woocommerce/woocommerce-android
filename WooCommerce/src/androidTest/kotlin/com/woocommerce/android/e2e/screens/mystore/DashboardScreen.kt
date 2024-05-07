@@ -1,24 +1,30 @@
 package com.woocommerce.android.e2e.screens.mystore
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.helpers.util.StatsSummaryData
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 import org.hamcrest.Matchers
 import org.json.JSONArray
 
-class MyStoreScreen : Screen(R.id.my_store_refresh_layout) {
+class DashboardScreen : Screen(R.id.my_store_refresh_layout) {
     val stats = StatsComponent()
+    val topPerformers = TopPerformersComponent()
 
-    fun tapChartMiddle(): MyStoreScreen {
+    fun tapChartMiddle(): DashboardScreen {
         scrollTo(R.id.chart)
         clickOn(R.id.chart)
         return this
     }
 
-    fun assertStatsSummary(summary: StatsSummaryData): MyStoreScreen {
+    fun assertStatsSummary(summary: StatsSummaryData): DashboardScreen {
         Espresso.onView(
             Matchers.allOf(
                 // Assert there's a Stats container element
@@ -80,7 +86,6 @@ class MyStoreScreen : Screen(R.id.my_store_refresh_layout) {
                         )
                     )
                 ),
-
             )
         )
             .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
@@ -88,45 +93,24 @@ class MyStoreScreen : Screen(R.id.my_store_refresh_layout) {
         return this
     }
 
-    fun assertTopPerformers(topPerformersJSONArray: JSONArray): MyStoreScreen {
-        scrollTo(R.id.topPerformers_recycler)
+    fun assertTopPerformers(
+        topPerformersJSONArray: JSONArray,
+        composeTestRule: ComposeTestRule
+    ): DashboardScreen {
+        composeTestRule.onNodeWithTag(DashboardStatsTestTags.DASHBOARD_TOP_PERFORMERS_CARD)
+            .assertIsDisplayed()
 
         for (i in 0 until topPerformersJSONArray.length()) {
             val innerArray = topPerformersJSONArray.getJSONArray(i)
             val topPerformerName = innerArray.getJSONObject(0).getString("value")
             val topPerformerSales = innerArray.getJSONObject(2).getString("value")
 
-            Espresso.onView(
-                Matchers.allOf(
-                    // Assert there's a Top Performers container element
-                    ViewMatchers.withId(R.id.topPerformers_recycler),
-
-                    ViewMatchers.hasDescendant(
-                        Matchers.allOf(
-                            // Which has a product container
-                            ViewMatchers.withId(R.id.product_container),
-                            ViewMatchers.withChild(
-                                Matchers.allOf(
-                                    // With expected product name value as a child
-                                    ViewMatchers.withId(R.id.text_ProductName),
-                                    ViewMatchers.withText(topPerformerName)
-                                )
-                            ),
-                            ViewMatchers.withChild(
-                                Matchers.allOf(
-                                    // And with expected product net sales value as a child
-                                    ViewMatchers.withId(R.id.netSalesTextView),
-                                    ViewMatchers.withText("Net sales: $$topPerformerSales.00")
-                                )
-                            )
-                        )
-                    ),
-                )
-            )
-                .check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+            composeTestRule.onNodeWithText(topPerformerName)
+                .assertIsDisplayed()
+            composeTestRule.onNodeWithText("Net sales: $$topPerformerSales.00")
+                .assertIsDisplayed()
         }
 
-        scrollTo(R.id.stats_view_row)
         return this
     }
 }

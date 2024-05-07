@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -87,7 +88,10 @@ fun DashboardStatsHeader(
 
         Box {
             var isMenuExpanded by remember { mutableStateOf(false) }
-            IconButton(onClick = { isMenuExpanded = true }) {
+            IconButton(
+                onClick = { isMenuExpanded = true },
+                modifier = Modifier.testTag(DashboardStatsTestTags.STATS_RANGE_DROPDOWN_BUTTON)
+            ) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
                     contentDescription = stringResource(
@@ -101,6 +105,7 @@ fun DashboardStatsHeader(
                 expanded = isMenuExpanded,
                 onDismissRequest = { isMenuExpanded = false },
                 modifier = Modifier.defaultMinSize(minWidth = 250.dp)
+                    .testTag(DashboardStatsTestTags.STATS_RANGE_DROPDOWN_MENU)
             ) {
                 DashboardViewModel.SUPPORTED_RANGES_ON_MY_STORE_TAB.forEach {
                     DropdownMenuItem(
