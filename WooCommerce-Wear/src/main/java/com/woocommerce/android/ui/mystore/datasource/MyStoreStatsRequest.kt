@@ -5,7 +5,8 @@ import com.woocommerce.commons.extensions.convertedFrom
 sealed class MyStoreStatsRequest {
     data class Data(
         private val revenueData: RevenueData?,
-        private val visitorData: Int?
+        private val visitorData: Int?,
+        val currencyCode: String
     ) : MyStoreStatsRequest() {
         val isFinished
             get() = revenueData != null &&
