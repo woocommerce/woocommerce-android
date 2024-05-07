@@ -8,7 +8,6 @@ import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -47,7 +46,6 @@ import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.main.MainNavigationRouter
-import com.woocommerce.android.ui.onboarding.StoreOnboardingViewModel
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooLog
@@ -69,7 +67,6 @@ class DashboardFragment :
     }
 
     private val dashboardViewModel: DashboardViewModel by viewModels()
-    private val storeOnboardingViewModel: StoreOnboardingViewModel by activityViewModels()
 
     @Inject
     lateinit var selectedSite: SelectedSite
@@ -99,7 +96,6 @@ class DashboardFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         lifecycle.addObserver(dashboardViewModel.performanceObserver)
-        lifecycle.addObserver(storeOnboardingViewModel)
         super.onCreate(savedInstanceState)
     }
 
@@ -125,7 +121,6 @@ class DashboardFragment :
         binding.myStoreRefreshLayout.setOnRefreshListener {
             binding.myStoreRefreshLayout.isRefreshing = false
             dashboardViewModel.onPullToRefresh()
-            storeOnboardingViewModel.onPullToRefresh()
             refreshJitm()
         }
 
@@ -259,11 +254,6 @@ class DashboardFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onDestroy() {
-        lifecycle.removeObserver(storeOnboardingViewModel)
-        super.onDestroy()
     }
 
     private fun initJitm() {

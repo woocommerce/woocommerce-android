@@ -424,7 +424,7 @@
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>
 
-    <string name="dynamic_dashboard_hide_widget_menu_item">Hide %s</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">Hide %s</string>
     <string name="dynamic_dashboard_widget_error_title">Unable to load data</string>
     <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
 
@@ -1967,6 +1967,7 @@
     <string name="product_list_filters_list_item">Selected filter option</string>
     <string name="product_list_unsaved_product_unselected_title">You about to discard changes to %s</string>
     <string name="product_list_unsaved_product_unselected_message">Are you sure you want to discard the changes you made to this product?</string>
+    <string name="product_list_fetch_error">Error fetching products!</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_search_hint_active_filters">Search filtered products</string>
     <string name="product_search_all">All products</string>

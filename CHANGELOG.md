@@ -1,6 +1,8 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 18.5
+Discover a more personalized shopping experience with the latest update to MyStore! We're excited to introduce a customizable dashboard that lets you tailor your view with a variety of unique cards. Streamline your management tasks and enjoy a dashboard designed just for you. Update now to start customizing your app experience!
 
 ## 18.4
 This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
