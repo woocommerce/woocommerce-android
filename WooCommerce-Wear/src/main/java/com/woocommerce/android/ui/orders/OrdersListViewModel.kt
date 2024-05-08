@@ -40,32 +40,34 @@ class OrdersListViewModel @AssistedInject constructor(
     }
 
     private fun requestOrdersData(selectedSite: SiteModel) {
-        selectedSite.apply {  }
-        // TODO: Introduce actual request
+        selectedSite.apply { }
+        // Introduce actual request
         _viewState.update {
-            it.copy(orders = listOf(
-                OrderItem(
-                    date = "25 Feb",
-                    number = "#125",
-                    customerName = "John Doe",
-                    total = "$100.00",
-                    status = "Processing"
-                ),
-                OrderItem(
-                    date = "31 Dec",
-                    number = "#124",
-                    customerName = "Jane Doe",
-                    total = "$200.00",
-                    status = "Completed"
-                ),
-                OrderItem(
-                    date = "4 Oct",
-                    number = "#123",
-                    customerName = "John Smith",
-                    total = "$300.00",
-                    status = "Pending"
+            it.copy(
+                orders = listOf(
+                    OrderItem(
+                        date = "25 Feb",
+                        number = "#125",
+                        customerName = "John Doe",
+                        total = "$100.00",
+                        status = "Processing"
+                    ),
+                    OrderItem(
+                        date = "31 Dec",
+                        number = "#124",
+                        customerName = "Jane Doe",
+                        total = "$200.00",
+                        status = "Completed"
+                    ),
+                    OrderItem(
+                        date = "4 Oct",
+                        number = "#123",
+                        customerName = "John Smith",
+                        total = "$300.00",
+                        status = "Pending"
+                    )
                 )
-            ))
+            )
         }
     }
 
