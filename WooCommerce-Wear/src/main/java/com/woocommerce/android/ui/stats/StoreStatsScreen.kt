@@ -67,7 +67,7 @@ fun StoreStatsScreen(
         ) {
             val brush = Brush.verticalGradient(
                 listOf(
-                    WooColors.purple_surface,
+                    WooColors.woo_purple_surface,
                     Color.Black
                 )
             )
