@@ -25,7 +25,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
-import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Calendar
@@ -37,7 +36,6 @@ class StatsRepositoryTests : BaseUnitTest() {
 
     private val selectedSite: SelectedSite = mock()
     private val wcStatsStore: WCStatsStore = mock()
-    private val wcOrderStore: WCOrderStore = mock()
     private val wcLeaderboardsStore: WCLeaderboardsStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()

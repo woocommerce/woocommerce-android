@@ -320,25 +320,6 @@ private fun BlazeCampaignLoading(
     }
 }
 
-@Composable
-private fun CampaignFooterLoading(
-    modifier: Modifier = Modifier
-) {
-    Row(modifier) {
-        SkeletonView(
-            width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
-            height = dimensionResource(id = R.dimen.skeleton_text_button_height)
-        )
-
-        Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.major_100)))
-
-        SkeletonView(
-            width = dimensionResource(id = R.dimen.skeleton_text_medium_width),
-            height = dimensionResource(id = R.dimen.skeleton_text_button_height)
-        )
-    }
-}
-
 @LightDarkThemePreviews
 @Composable
 fun MyStoreBlazeViewCampaignPreview() {
