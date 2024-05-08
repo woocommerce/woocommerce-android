@@ -47,6 +47,14 @@
                     android:pathPrefix="/stats-data"
                     android:scheme="wear" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/orders-data"
+                    android:scheme="wear" />
+            </intent-filter>
         </service>
 
         <service
