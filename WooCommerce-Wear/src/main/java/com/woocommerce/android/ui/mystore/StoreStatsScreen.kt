@@ -41,7 +41,7 @@ fun StoreStatsScreen(viewModel: StoreStatsViewModel) {
     StoreStatsScreen(
         isLoading = viewState?.isLoading ?: false,
         currentSiteName = viewState?.currentSiteName.orEmpty(),
-        totalRevenue = viewState?.revenueTotal?.toString().orEmpty(),
+        totalRevenue = viewState?.revenueTotal.orEmpty(),
         ordersCount = viewState?.ordersCount?.toString().orEmpty(),
         visitorsCount = viewState?.visitorsCount?.toString().orEmpty(),
         conversionRate = viewState?.conversionRate.orEmpty(),
@@ -57,11 +57,12 @@ fun StoreStatsScreen(
     ordersCount: String,
     visitorsCount: String,
     conversionRate: String,
-    timestamp: String
+    timestamp: String,
+    modifier: Modifier = Modifier
 ) {
     WooTheme {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             val brush = Brush.verticalGradient(
@@ -71,14 +72,14 @@ fun StoreStatsScreen(
                 )
             )
             Canvas(
-                modifier = Modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize(),
                 onDraw = {
                     drawRect(brush)
                 }
             )
             TimeText()
             Column(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxSize()
                     .padding(horizontal = 12.dp)
                     .padding(top = 24.dp)
@@ -87,7 +88,7 @@ fun StoreStatsScreen(
                     text = currentSiteName,
                     textAlign = TextAlign.Center,
                     style = WooTypography.body1,
-                    modifier = Modifier
+                    modifier = modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                 )
@@ -95,6 +96,7 @@ fun StoreStatsScreen(
                     LoadingScreen()
                 } else {
                     MyStoreView(
+                        modifier,
                         totalRevenue,
                         visitorsCount,
                         ordersCount,
@@ -109,19 +111,20 @@ fun StoreStatsScreen(
 
 @Composable
 private fun MyStoreView(
+    modifier: Modifier,
     totalRevenue: String,
     visitorsCount: String,
     ordersCount: String,
     conversionRate: String,
     timestamp: String
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         Column {
             Text(
                 text = stringResource(id = R.string.my_store_screen_revenue_title),
                 textAlign = TextAlign.Center,
                 style = WooTypography.body2,
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .padding(top = 6.dp)
             )
@@ -129,14 +132,14 @@ private fun MyStoreView(
                 text = totalRevenue,
                 textAlign = TextAlign.Center,
                 style = WooTypography.display3,
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .padding(top = 6.dp)
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .padding(top = 6.dp)
             ) {
@@ -159,7 +162,7 @@ private fun MyStoreView(
             text = stringResource(id = R.string.my_store_screen_time_description, timestamp),
             style = WooTypography.caption2,
             textAlign = TextAlign.Center,
-            modifier = Modifier
+            modifier = modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 10.dp)
                 .fillMaxWidth()
@@ -180,13 +183,13 @@ fun StoreDataItem(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            modifier = Modifier
+            modifier = modifier
                 .align(Alignment.CenterHorizontally)
                 .size(18.dp)
         )
         Text(
             text = value,
-            modifier = Modifier
+            modifier = modifier
                 .align(Alignment.CenterHorizontally)
         )
     }
