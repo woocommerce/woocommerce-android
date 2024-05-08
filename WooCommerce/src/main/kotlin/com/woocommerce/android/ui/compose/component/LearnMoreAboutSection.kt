@@ -12,6 +12,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -32,10 +33,13 @@ fun LearnMoreAboutSection(
     @StringRes textWithUrl: Int,
     onClick: () -> Unit
 ) {
-    val textWithSpans = HtmlCompat.fromHtml(
-        stringResource(textWithUrl),
-        HtmlCompat.FROM_HTML_MODE_LEGACY
-    )
+    val textValue = stringResource(textWithUrl)
+    val textWithSpans = remember(textWithUrl) {
+        HtmlCompat.fromHtml(
+            textValue,
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        )
+    }
     val spans = textWithSpans.getSpans(0, textWithSpans.length, URLSpan::class.java)
     val (urlStart, urlEnd) = spans.let {
         if (it.isEmpty()) {
@@ -76,22 +80,29 @@ private fun LearnMoreAboutSection(
         )
         Spacer(modifier = Modifier.width(16.dp))
 
-        Text(
-            text = buildAnnotatedString {
+        val colorHigh = colorResource(id = R.color.color_on_surface_high)
+        val colorPrimary = colorResource(id = R.color.color_primary)
+
+        val annotatedText = remember(text) {
+            buildAnnotatedString {
                 val clickableStyle = SpanStyle(
-                    color = colorResource(id = R.color.color_on_surface_high),
+                    color = colorHigh,
                     textDecoration = TextDecoration.Underline
                 )
 
                 withStyle(style = clickableStyle) {
-                    withStyle(style = SpanStyle(color = colorResource(id = R.color.color_primary))) {
+                    withStyle(style = SpanStyle(color = colorPrimary)) {
                         append(text.text.substring(text.start, text.end))
                     }
                 }
                 append(text.text.substring(text.end))
-            },
+            }
+        }
+
+        Text(
+            text = annotatedText,
             modifier = Modifier.fillMaxWidth(),
-            color = colorResource(id = R.color.color_on_surface_high),
+            color = colorHigh,
             style = MaterialTheme.typography.caption,
         )
         Spacer(modifier = Modifier.width(16.dp))
