@@ -121,7 +121,7 @@ private fun StatsContentScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Column {
             Text(
-                text = stringResource(id = R.string.my_store_screen_revenue_title),
+                text = stringResource(id = R.string.stats_screen_revenue_title),
                 textAlign = TextAlign.Center,
                 color = WooColors.woo_purple_5,
                 style = WooTypography.body2,
@@ -160,7 +160,7 @@ private fun StatsContentScreen(
         }
 
         Text(
-            text = stringResource(id = R.string.my_store_screen_time_description, timestamp),
+            text = stringResource(id = R.string.stats_screen_time_description, timestamp),
             style = WooTypography.caption2,
             textAlign = TextAlign.Center,
             modifier = modifier

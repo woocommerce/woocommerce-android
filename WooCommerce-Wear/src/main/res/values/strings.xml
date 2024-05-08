@@ -7,9 +7,12 @@
     <string name="login_screen_error_caption">Open the Woo app on your phone and hold your watch nearby</string>
     <string name="login_screen_error_action_button">Try Again</string>
 
-    <!-- My Store Screen -->
-    <string name="my_store_screen_revenue_title">Revenue</string>
-    <string name="my_store_screen_time_description">Today • As of %1$s</string>
+    <!-- Stats Screen -->
+    <string name="stats_screen_revenue_title">Revenue</string>
+    <string name="stats_screen_time_description">Today • As of %1$s</string>
+
+    <!-- Orders List Screen -->
+    <string name="orders_list_screen_title">Orders</string>
 
     <!-- Tile and Complication -->
     <string name="tile_label">Example tile</string>
