@@ -95,7 +95,7 @@ fun StoreStatsScreen(
                 if (isLoading) {
                     LoadingScreen()
                 } else {
-                    MyStoreView(
+                    StatsContentScreen(
                         modifier,
                         totalRevenue,
                         visitorsCount,
@@ -110,7 +110,7 @@ fun StoreStatsScreen(
 }
 
 @Composable
-private fun MyStoreView(
+private fun StatsContentScreen(
     modifier: Modifier,
     totalRevenue: String,
     visitorsCount: String,
@@ -144,15 +144,15 @@ private fun MyStoreView(
                     .fillMaxWidth()
                     .padding(top = 4.dp)
             ) {
-                StoreDataItem(
+                IconStats(
                     icon = Icons.Filled.Description,
                     value = ordersCount,
                 )
-                StoreDataItem(
+                IconStats(
                     icon = Icons.Filled.Group,
                     value = visitorsCount,
                 )
-                StoreDataItem(
+                IconStats(
                     icon = Icons.Filled.Timeline,
                     value = conversionRate,
                 )
@@ -172,7 +172,7 @@ private fun MyStoreView(
 }
 
 @Composable
-fun StoreDataItem(
+private fun IconStats(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     value: String
