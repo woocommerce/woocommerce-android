@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.mystore.pager
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.google.android.horologist.compose.pager.PagerScreen
 import com.woocommerce.android.ui.mystore.StoreStatsScreen
 import com.woocommerce.android.ui.mystore.StoreStatsViewModel
 import com.woocommerce.android.ui.orders.OrdersListScreen
@@ -16,7 +16,7 @@ fun MyStoreScreen(
     ordersListViewModel: OrdersListViewModel
 ) {
     val pageState = rememberPagerState(pageCount = { 2 })
-    HorizontalPager(
+    PagerScreen(
         state = pageState,
         modifier = Modifier.fillMaxSize()
     ) { page ->
