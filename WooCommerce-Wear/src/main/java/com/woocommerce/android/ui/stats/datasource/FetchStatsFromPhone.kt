@@ -14,12 +14,12 @@ class FetchStatsFromPhone @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
     private val statsRepository: StatsRepository
 ) {
-    suspend operator fun invoke(): Flow<MyStoreStatsRequest?> {
+    suspend operator fun invoke(): Flow<StoreStatsRequest?> {
         phoneRepository.sendMessage(REQUEST_STATS)
         return combine(statsRepository.observeStatsDataChanges(), timeoutFlow) { statsData, isTimeout ->
             when {
                 statsData?.isFinished == true -> statsData
-                isTimeout -> MyStoreStatsRequest.Error
+                isTimeout -> StoreStatsRequest.Error
                 else -> null
             }
         }.filterNotNull()

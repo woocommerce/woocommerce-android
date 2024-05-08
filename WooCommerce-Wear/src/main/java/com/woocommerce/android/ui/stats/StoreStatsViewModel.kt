@@ -8,7 +8,7 @@ import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.stats.datasource.FetchStatsFromPhone
 import com.woocommerce.android.ui.stats.datasource.FetchStatsFromStore
-import com.woocommerce.android.ui.stats.datasource.MyStoreStatsRequest
+import com.woocommerce.android.ui.stats.datasource.StoreStatsRequest
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -67,9 +67,9 @@ class StoreStatsViewModel @Inject constructor(
         }
     }
 
-    private fun handleStatsDataChange(statsData: MyStoreStatsRequest?) {
+    private fun handleStatsDataChange(statsData: StoreStatsRequest?) {
         when (statsData) {
-            is MyStoreStatsRequest.Data -> {
+            is StoreStatsRequest.Data -> {
                 _viewState.update {
                     it.copy(
                         isLoading = false,

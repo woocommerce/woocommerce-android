@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.stats.datasource.MyStoreStatsRequest.Data.RevenueData
+import com.woocommerce.android.ui.stats.datasource.StoreStatsRequest.Data.RevenueData
 import com.woocommerce.android.ui.stats.range.TodayRangeData
 import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
@@ -94,7 +94,7 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun receiveStatsDataFromPhone(data: DataMap) {
-        val statsJson = MyStoreStatsRequest.Data(
+        val statsJson = StoreStatsRequest.Data(
             revenueData = RevenueData(
                 totalRevenue = data.getString(TOTAL_REVENUE.value, ""),
                 orderCount = data.getInt(ORDERS_COUNT.value, 0)
@@ -109,7 +109,7 @@ class StatsRepository @Inject constructor(
 
     fun observeStatsDataChanges() = statsDataStore.data
         .map { it[stringPreferencesKey(generateStatsKey())] }
-        .map { it?.let { gson.fromJson(it, MyStoreStatsRequest.Data::class.java) } }
+        .map { it?.let { gson.fromJson(it, StoreStatsRequest.Data::class.java) } }
 
     private fun generateStatsKey(): String {
         val siteId = loginRepository.selectedSite?.siteId ?: 0
