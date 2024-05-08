@@ -10,8 +10,8 @@ import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitte
 import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
+import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
-import com.woocommerce.android.ui.mystore.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest

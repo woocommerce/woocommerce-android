@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.dashboard.stats
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.mystore.data.TopPerformersCustomDateRangeDataStore
+import com.woocommerce.android.ui.dashboard.data.TopPerformersCustomDateRangeDataStore
 import com.woocommerce.android.util.DateUtils
 import javax.inject.Inject
 

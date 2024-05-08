@@ -4,14 +4,15 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.BlazeRepository.PaymentMethodsData
+import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -28,7 +29,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
     private val blazeRepository: BlazeRepository,
     currencyFormatter: CurrencyFormatter,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val prefsWrapper: AppPrefsWrapper
+    private val dashboardRepository: DashboardRepository
 ) : ScopedViewModel(savedStateHandle) {
     private val navArgs = BlazeCampaignPaymentSummaryFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val budgetFormatted = currencyFormatter.formatCurrency(
@@ -124,7 +125,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
                 onSuccess = {
                     campaignCreationState.value = null
                     analyticsTrackerWrapper.track(stat = AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
-                    prefsWrapper.isMyStoreBlazeViewDismissed = false
+                    dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.ONBOARDING, isVisible = true)
                     triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
                 },
                 onFailure = {

@@ -38,9 +38,9 @@ import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
+import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.feedback.FeedbackRepository
-import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
-import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
@@ -74,7 +74,7 @@ class AnalyticsHubViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
-    private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
+    private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     private val updateStats: UpdateAnalyticsHubStats,
     private val observeLastUpdate: ObserveLastUpdate,
     private val localeProvider: LocaleProvider,

@@ -1,7 +1,8 @@
-package com.woocommerce.android.ui.mystore.data
+package com.woocommerce.android.ui.dashboard.data
 
 import androidx.datastore.core.DataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
+import com.woocommerce.android.ui.mystore.data.CustomDateRange
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

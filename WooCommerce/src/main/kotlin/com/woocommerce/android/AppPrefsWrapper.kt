@@ -24,8 +24,6 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
 
-    var isMyStoreBlazeViewDismissed by AppPrefs::isMyStoreBlazeViewDismissed
-
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
 
     var chaChingSoundIssueDialogDismissed by AppPrefs::chaChingSoundIssueDialogDismissed
@@ -337,12 +335,6 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun getStoreOnboardingShown(siteId: Int): Boolean = AppPrefs.getStoreOnboardingShown(siteId)
-
-    fun getOnboardingSettingVisibility(siteId: Int): Boolean = AppPrefs.getOnboardingSettingVisibility(siteId)
-
-    fun setOnboardingSettingVisibility(siteId: Int, show: Boolean) {
-        AppPrefs.setOnboardingSettingVisibility(siteId, show)
-    }
 
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) = AppPrefs.setStorePhoneNumber(siteId, phoneNumber)
 

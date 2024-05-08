@@ -9,7 +9,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -60,30 +59,6 @@ class StoreOnboardingViewModel @Inject constructor(
 
     fun onBackPressed() {
         triggerEvent(MultiLiveEvent.Event.Exit)
-    }
-
-    fun onShareFeedbackClicked() {
-        triggerEvent(NavigateToSurvey)
-    }
-
-    fun onHideOnboardingClicked() {
-        triggerEvent(
-            MultiLiveEvent.Event.ShowDialog(
-                titleId = R.string.store_onboarding_dialog_title,
-                messageId = R.string.store_onboarding_dialog_description,
-                positiveButtonId = R.string.remove,
-                positiveBtnAction = { dialog, _ ->
-                    _viewState.value = _viewState.value?.copy(show = false)
-                    shouldShowOnboarding.updateOnboardingVisibilitySetting(
-                        show = false,
-                        source = ONBOARDING_LIST
-                    )
-                    dialog.dismiss()
-                },
-                negativeBtnAction = { dialog, _ -> dialog.dismiss() },
-                negativeButtonId = R.string.cancel,
-            )
-        )
     }
 
     fun onTaskClicked(task: OnboardingTaskUi) {
