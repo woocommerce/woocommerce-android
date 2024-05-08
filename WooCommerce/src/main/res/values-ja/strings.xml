@@ -86,7 +86,6 @@ Language: ja_JP
     <string name="domain_picker_suggestions_title">提案</string>
     <string name="domain_picker_hint">ドメインを入力</string>
     <string name="domain_picker_title">ドメインを選択</string>
-    <string name="analytics_section_see_all">すべてのストアアナリティクスを表示</string>
     <string name="my_store_custom_range_granularity_year">毎年</string>
     <string name="my_store_custom_range_granularity_month">毎月</string>
     <string name="my_store_custom_range_granularity_week">毎週</string>

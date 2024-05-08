@@ -86,7 +86,6 @@ Language: tr
     <string name="domain_picker_suggestions_title">Öneriler</string>
     <string name="domain_picker_hint">Bir alan adı yazın</string>
     <string name="domain_picker_title">Bir alan adı seçin</string>
-    <string name="analytics_section_see_all">Tüm mağaza analizlerini görün</string>
     <string name="my_store_custom_range_granularity_year">Yıllık</string>
     <string name="my_store_custom_range_granularity_month">Aylık</string>
     <string name="my_store_custom_range_granularity_week">Haftalık</string>

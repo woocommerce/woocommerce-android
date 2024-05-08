@@ -86,7 +86,6 @@ Language: sv_SE
     <string name="domain_picker_suggestions_title">Förslag</string>
     <string name="domain_picker_hint">Skriv en domän</string>
     <string name="domain_picker_title">Välj en domän</string>
-    <string name="analytics_section_see_all">Se alla butiksanalyser</string>
     <string name="my_store_custom_range_granularity_year">En gång om året</string>
     <string name="my_store_custom_range_granularity_month">En gång i månaden</string>
     <string name="my_store_custom_range_granularity_week">En gång i veckan</string>

@@ -118,7 +118,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                 )
             ),
             onOpenAnalyticsTapped = DashboardWidgetAction(
-                titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
+                titleResource = R.string.analytics_section_see_all,
                 action = ::onViewAllAnalyticsTapped
             )
         )

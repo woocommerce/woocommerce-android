@@ -387,7 +387,6 @@
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">View all store analytics</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -447,7 +446,7 @@
     <!--
         Analytics View
     -->
-    <string name="analytics_section_see_all">See all store analytics</string>
+    <string name="analytics_section_see_all">View all store analytics</string>
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
