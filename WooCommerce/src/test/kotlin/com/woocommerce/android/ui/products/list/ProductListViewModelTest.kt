@@ -74,7 +74,8 @@ class ProductListViewModelTest : BaseUnitTest() {
 
     @Test
     fun `Displays the product list view correctly`() = testBlocking {
-        doReturn(productList).whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
+        doReturn(Result.success(productList))
+            .whenever(productRepository).fetchProductList(productFilterOptions = emptyMap())
 
         createViewModel()
 
@@ -106,7 +107,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     @Test
     fun `Shows and hides product list skeleton correctly`() = testBlocking {
         doReturn(emptyList<Product>()).whenever(productRepository).getProductList()
-        doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+        doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList()
 
         createViewModel()
 
@@ -124,7 +125,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun `Shows and hides product list load more progress correctly`() =
         testBlocking {
             doReturn(true).whenever(productRepository).canLoadMoreProducts
-            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+            doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList()
 
             createViewModel()
 
@@ -141,7 +142,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun `Shows and hides add product button correctly when loading list of products`() =
         testBlocking {
             // when
-            doReturn(productList).whenever(productRepository).fetchProductList()
+            doReturn(Result.success(productList)).whenever(productRepository).fetchProductList()
 
             createViewModel()
 
@@ -162,7 +163,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun `Hides add product button when list of products is empty`() =
         testBlocking {
             // when
-            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+            doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList()
 
             createViewModel()
 
@@ -183,7 +184,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun `Hides add product button when searching`() =
         testBlocking {
             // when
-            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+            doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList()
 
             createViewModel()
 
@@ -206,7 +207,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun `Shows add product button after opening and closing search`() =
         testBlocking {
             // when
-            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+            doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList()
 
             createViewModel()
 
@@ -230,7 +231,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun `Hides filters buttons when searching`() =
         testBlocking {
             // when
-            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+            doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList()
 
             createViewModel()
 
@@ -252,7 +253,7 @@ class ProductListViewModelTest : BaseUnitTest() {
     fun `Shows filters buttons after opening and closing search`() =
         testBlocking {
             // when
-            doReturn(emptyList<Product>()).whenever(productRepository).fetchProductList()
+            doReturn(Result.success(emptyList<Product>())).whenever(productRepository).fetchProductList()
 
             createViewModel()
 

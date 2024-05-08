@@ -1,2 +1,0 @@
-18.2:
-Con nuestra última actualización, mejoramos tu experiencia en WooCommerce. Pasamos de los pagos simples a un flujo de creación de pedidos más personalizado para que puedas establecer fácilmente las cantidades deseadas. Además, la mejora de nuestro Analytics Hub permite ahora ofrecer detalles de los paquetes de productos y tarjetas regalo, ofreciendo una visión más completa de las estadísticas de tu negocio, siempre y cuando tengas activadas estas extensiones. ¡Disfruta de las novedades!

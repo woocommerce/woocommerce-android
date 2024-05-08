@@ -32,9 +32,7 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE,
             EOSL_M1 -> PackageUtils.isDebugBuild()
 
-            // Keep dynamic dashboard disabled when running in tests until we update the UI tests
-            DYNAMIC_DASHBOARD -> !PackageUtils.isTesting()
-
+            DYNAMIC_DASHBOARD,
             CONNECTIVITY_TOOL,
             CUSTOM_RANGE_ANALYTICS,
             NEW_SHIPPING_SUPPORT,
