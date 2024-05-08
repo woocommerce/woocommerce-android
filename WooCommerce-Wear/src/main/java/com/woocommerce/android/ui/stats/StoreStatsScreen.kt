@@ -67,7 +67,7 @@ fun StoreStatsScreen(
         ) {
             val brush = Brush.verticalGradient(
                 listOf(
-                    WooColors.purple_surface,
+                    WooColors.woo_purple_surface,
                     Color.Black
                 )
             )
@@ -95,7 +95,7 @@ fun StoreStatsScreen(
                 if (isLoading) {
                     LoadingScreen()
                 } else {
-                    MyStoreView(
+                    StatsContentScreen(
                         modifier,
                         totalRevenue,
                         visitorsCount,
@@ -110,7 +110,7 @@ fun StoreStatsScreen(
 }
 
 @Composable
-private fun MyStoreView(
+private fun StatsContentScreen(
     modifier: Modifier,
     totalRevenue: String,
     visitorsCount: String,
@@ -121,7 +121,7 @@ private fun MyStoreView(
     Box(modifier = modifier.fillMaxSize()) {
         Column {
             Text(
-                text = stringResource(id = R.string.my_store_screen_revenue_title),
+                text = stringResource(id = R.string.stats_screen_revenue_title),
                 textAlign = TextAlign.Center,
                 color = WooColors.woo_purple_5,
                 style = WooTypography.body2,
@@ -144,15 +144,15 @@ private fun MyStoreView(
                     .fillMaxWidth()
                     .padding(top = 4.dp)
             ) {
-                StoreDataItem(
+                IconStats(
                     icon = Icons.Filled.Description,
                     value = ordersCount,
                 )
-                StoreDataItem(
+                IconStats(
                     icon = Icons.Filled.Group,
                     value = visitorsCount,
                 )
-                StoreDataItem(
+                IconStats(
                     icon = Icons.Filled.Timeline,
                     value = conversionRate,
                 )
@@ -160,7 +160,7 @@ private fun MyStoreView(
         }
 
         Text(
-            text = stringResource(id = R.string.my_store_screen_time_description, timestamp),
+            text = stringResource(id = R.string.stats_screen_time_description, timestamp),
             style = WooTypography.caption2,
             textAlign = TextAlign.Center,
             modifier = modifier
@@ -172,7 +172,7 @@ private fun MyStoreView(
 }
 
 @Composable
-fun StoreDataItem(
+private fun IconStats(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     value: String

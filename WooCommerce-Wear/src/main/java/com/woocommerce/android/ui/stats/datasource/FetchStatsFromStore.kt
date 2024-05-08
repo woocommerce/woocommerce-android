@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.stats.datasource
 
-import com.woocommerce.android.ui.stats.datasource.MyStoreStatsRequest.Data.RevenueData
+import com.woocommerce.android.ui.stats.datasource.StoreStatsRequest.Data.RevenueData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -18,7 +18,7 @@ class FetchStatsFromStore @Inject constructor(
 
     suspend operator fun invoke(
         selectedSite: SiteModel
-    ): Flow<MyStoreStatsRequest> {
+    ): Flow<StoreStatsRequest> {
         fetchRevenueStats(selectedSite)
         fetchVisitorsStats(selectedSite)
 
@@ -26,7 +26,7 @@ class FetchStatsFromStore @Inject constructor(
             revenueStats,
             visitorStats
         ) { revenueStats, visitorStats ->
-            MyStoreStatsRequest.Data(
+            StoreStatsRequest.Data(
                 revenueData = revenueStats,
                 visitorData = visitorStats,
             )

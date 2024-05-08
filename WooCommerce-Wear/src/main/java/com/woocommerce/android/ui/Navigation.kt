@@ -30,9 +30,7 @@ fun WooWearNavHost(
             LoginScreen(viewModel)
         }
         composable(MY_STORE.route) {
-            val storeStatsViewModel = hiltViewModel<StoreStatsViewModel, StoreStatsViewModel.Factory> {
-                it.create(navController)
-            }
+            val storeStatsViewModel = hiltViewModel<StoreStatsViewModel>()
             val ordersListViewModel = hiltViewModel<OrdersListViewModel, OrdersListViewModel.Factory> {
                 it.create(navController)
             }

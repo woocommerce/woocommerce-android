@@ -3,18 +3,14 @@ package com.woocommerce.android.ui.stats
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import androidx.navigation.NavHostController
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.stats.datasource.FetchStatsFromPhone
 import com.woocommerce.android.ui.stats.datasource.FetchStatsFromStore
-import com.woocommerce.android.ui.stats.datasource.MyStoreStatsRequest
+import com.woocommerce.android.ui.stats.datasource.StoreStatsRequest
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -26,11 +22,10 @@ import org.wordpress.android.fluxc.model.SiteModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-@Suppress("UnusedPrivateProperty", "LongParameterList")
-@HiltViewModel(assistedFactory = StoreStatsViewModel.Factory::class)
-class StoreStatsViewModel @AssistedInject constructor(
-    @Assisted private val navController: NavHostController,
+@HiltViewModel
+class StoreStatsViewModel @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
     private val fetchStatsFromStore: FetchStatsFromStore,
     private val fetchStatsFromPhone: FetchStatsFromPhone,
@@ -72,9 +67,9 @@ class StoreStatsViewModel @AssistedInject constructor(
         }
     }
 
-    private fun handleStatsDataChange(statsData: MyStoreStatsRequest?) {
+    private fun handleStatsDataChange(statsData: StoreStatsRequest?) {
         when (statsData) {
-            is MyStoreStatsRequest.Data -> {
+            is StoreStatsRequest.Data -> {
                 _viewState.update {
                     it.copy(
                         isLoading = false,
@@ -111,9 +106,4 @@ class StoreStatsViewModel @AssistedInject constructor(
         val title: String,
         val value: String,
     ) : Parcelable
-
-    @AssistedFactory
-    interface Factory {
-        fun create(navController: NavHostController): StoreStatsViewModel
-    }
 }
