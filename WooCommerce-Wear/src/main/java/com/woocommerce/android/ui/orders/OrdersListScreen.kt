@@ -1,15 +1,23 @@
 package com.woocommerce.android.ui.orders
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
@@ -53,12 +61,40 @@ fun OrderListItem(
     modifier: Modifier,
     order: OrderItem
 ) {
-    Box(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = order.customerName,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(15.dp))
+            .background(Color.White)
+            .fillMaxWidth()
+    ) {
+        Column {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = order.date,
+                )
+                Text(
+                    text = order.number
+                )
+            }
+            Text(
+                text = order.customerName,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = order.total,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = order.status,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
@@ -71,22 +107,22 @@ fun Preview() {
     OrdersListScreen(
         orders = listOf(
             OrderItem(
-                date = "2021-09-01",
-                number = "123",
+                date = "25 Feb",
+                number = "#125",
                 customerName = "John Doe",
                 total = "$100.00",
                 status = "Processing"
             ),
             OrderItem(
-                date = "2021-09-02",
-                number = "124",
+                date = "31 Dec",
+                number = "#124",
                 customerName = "Jane Doe",
                 total = "$200.00",
                 status = "Completed"
             ),
             OrderItem(
-                date = "2021-09-03",
-                number = "125",
+                date = "4 Oct",
+                number = "#123",
                 customerName = "John Smith",
                 total = "$300.00",
                 status = "Pending"
