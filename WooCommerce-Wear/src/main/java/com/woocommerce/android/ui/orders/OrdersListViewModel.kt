@@ -40,6 +40,7 @@ class OrdersListViewModel @AssistedInject constructor(
     }
 
     private fun requestOrdersData(selectedSite: SiteModel) {
+        selectedSite.apply {  }
         // TODO: Introduce actual request
         _viewState.update {
             it.copy(orders = listOf("Order 1", "Order 2", "Order 3"))
