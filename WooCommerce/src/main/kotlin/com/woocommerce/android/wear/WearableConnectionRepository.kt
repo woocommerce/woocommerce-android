@@ -5,9 +5,12 @@ import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.gson.Gson
 import com.woocommerce.android.extensions.convertedFrom
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.commons.wear.DataParameters
 import com.woocommerce.commons.wear.DataParameters.CONVERSION_RATE
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
+import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
 import com.woocommerce.commons.wear.DataParameters.SITE_JSON
 import com.woocommerce.commons.wear.DataParameters.TIMESTAMP
 import com.woocommerce.commons.wear.DataParameters.TOKEN
@@ -64,6 +67,18 @@ class WearableConnectionRepository @Inject constructor(
                 putInt(ORDERS_COUNT.value, ordersCount)
                 putInt(VISITORS_TOTAL.value, visitorsCount)
                 putString(CONVERSION_RATE.value, conversionRate)
+            }
+        )
+    }
+
+    fun sendOrdersData() = coroutineScope.launch {
+        val orders = emptyList<Order>()
+        val ordersJson = gson.toJson(orders)
+
+        sendData(
+            DataPath.ORDERS_DATA,
+            DataMap().apply {
+                putString(ORDERS_JSON.value, ordersJson)
             }
         )
     }
