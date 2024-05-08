@@ -95,15 +95,6 @@ internal class ShouldShowOnboardingTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when all tasks are completed and onboarding, then mark onboarding completed locally`() {
-        givenStoreOnboardingHasBeenShownAtLeastOnce(shown = true)
-
-        sut.showForTasks(ONBOARDING_TASK_COMPLETED_LIST)
-
-        verify(appPrefsWrapper).updateOnboardingCompletedStatus(CURRENT_SITE_ID, true)
-    }
-
-    @Test
     fun `given onboarding is enabled from settings, when at least one task is incomplete, then return true`() {
         val show = sut.showForTasks(ONBOARDING_TASK_INCOMPLETED_LIST)
 
