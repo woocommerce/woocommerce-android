@@ -382,7 +382,6 @@
     <string name="dashboard_stats_todays_stats">Today\'s Stats</string>
     <string name="dashboard_stats_custom_range_label">Custom</string>
 
-    <string name="dashboard_top_performers_title">Top performers</string>
     <string name="dashboard_top_performers_items_sold">Items Sold</string>
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
