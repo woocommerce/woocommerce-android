@@ -7,14 +7,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,8 +25,11 @@ import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
+import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
+import com.woocommerce.android.presentation.theme.WooTypography
 import com.woocommerce.android.ui.orders.OrdersListViewModel.OrderItem
 
 @Composable
@@ -40,17 +46,23 @@ fun OrdersListScreen(
     modifier: Modifier = Modifier
 ) {
     WooTheme {
-        val listState = rememberScalingLazyListState()
-        ScalingLazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            autoCentering = AutoCenteringParams(itemIndex = 0),
-            state = listState
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            items(orders) {
-                OrderListItem(
-                    modifier = modifier,
-                    order = it
-                )
+            TimeText()
+            val listState = rememberScalingLazyListState()
+            ScalingLazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                autoCentering = AutoCenteringParams(itemIndex = 0),
+                state = listState
+            ) {
+                items(orders) {
+                    OrderListItem(
+                        modifier = modifier,
+                        order = it
+                    )
+                }
             }
         }
     }
@@ -64,33 +76,43 @@ fun OrderListItem(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(15.dp))
-            .background(Color.White)
+            .background(Color.DarkGray)
+            .padding(10.dp)
             .fillMaxWidth()
     ) {
-        Column {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = order.date,
+                    color = WooColors.woo_purple_20
                 )
                 Text(
-                    text = order.number
+                    text = order.number,
+                    color = WooColors.woo_gray_alpha
                 )
             }
             Text(
                 text = order.customerName,
+                style = WooTypography.body1,
+                color = Color.White,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
                 text = order.total,
+                style = WooTypography.body1,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
                 text = order.status,
+                style = WooTypography.caption1,
+                color = WooColors.woo_gray_alpha,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
