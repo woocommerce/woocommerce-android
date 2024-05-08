@@ -43,13 +43,44 @@ class OrdersListViewModel @AssistedInject constructor(
         selectedSite.apply {  }
         // TODO: Introduce actual request
         _viewState.update {
-            it.copy(orders = listOf("Order 1", "Order 2", "Order 3"))
+            it.copy(orders = listOf(
+                OrderListItem(
+                    date = "2021-09-01",
+                    number = "123",
+                    customerName = "John Doe",
+                    total = "$100.00",
+                    status = "Processing"
+                ),
+                OrderListItem(
+                    date = "2021-09-02",
+                    number = "124",
+                    customerName = "Jane Doe",
+                    total = "$200.00",
+                    status = "Completed"
+                ),
+                OrderListItem(
+                    date = "2021-09-03",
+                    number = "125",
+                    customerName = "John Smith",
+                    total = "$300.00",
+                    status = "Pending"
+                )
+            ))
         }
     }
 
     @Parcelize
     data class ViewState(
-        val orders: List<String> = emptyList()
+        val orders: List<OrderListItem> = emptyList()
+    ) : Parcelable
+
+    @Parcelize
+    data class OrderListItem(
+        val date: String,
+        val number: String,
+        val customerName: String,
+        val total: String,
+        val status: String
     ) : Parcelable
 
     @AssistedFactory

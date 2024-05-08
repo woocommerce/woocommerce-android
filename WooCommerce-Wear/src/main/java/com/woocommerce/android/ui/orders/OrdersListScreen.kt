@@ -15,6 +15,7 @@ import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.presentation.theme.WooTheme
+import com.woocommerce.android.ui.orders.OrdersListViewModel.OrderListItem
 
 @Composable
 fun OrdersListScreen(viewModel: OrdersListViewModel) {
@@ -26,7 +27,7 @@ fun OrdersListScreen(viewModel: OrdersListViewModel) {
 
 @Composable
 fun OrdersListScreen(
-    orders: List<String>
+    orders: List<OrderListItem>
 ) {
     WooTheme {
         val listState = rememberScalingLazyListState()
@@ -37,7 +38,7 @@ fun OrdersListScreen(
         ) {
             items(orders) { order ->
                 Text(
-                    text = order,
+                    text = order.customerName,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -52,5 +53,29 @@ fun OrdersListScreen(
 @Preview(device = WearDevices.RECT, showSystemUi = true)
 @Composable
 fun Preview() {
-    OrdersListScreen(orders = listOf("Order 1", "Order 2", "Order 3"))
+    OrdersListScreen(
+        orders = listOf(
+            OrderListItem(
+                date = "2021-09-01",
+                number = "123",
+                customerName = "John Doe",
+                total = "$100.00",
+                status = "Processing"
+            ),
+            OrderListItem(
+                date = "2021-09-02",
+                number = "124",
+                customerName = "Jane Doe",
+                total = "$200.00",
+                status = "Completed"
+            ),
+            OrderListItem(
+                date = "2021-09-03",
+                number = "125",
+                customerName = "John Smith",
+                total = "$300.00",
+                status = "Pending"
+            )
+        )
+    )
 }
