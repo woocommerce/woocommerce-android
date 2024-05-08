@@ -50,18 +50,32 @@ fun OrdersListScreen(
             modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            TimeText()
-            val listState = rememberScalingLazyListState()
-            ScalingLazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                autoCentering = AutoCenteringParams(itemIndex = 0),
-                state = listState
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
             ) {
-                items(orders) {
-                    OrderListItem(
-                        modifier = modifier,
-                        order = it
+                Text(
+                    text = "Orders",
+                    style = WooTypography.body1,
+                    color = WooColors.woo_gray_alpha,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 6.dp)
+                )
+                ScalingLazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    autoCentering = AutoCenteringParams(itemIndex = 0),
+                    state = rememberScalingLazyListState(
+                        initialCenterItemIndex = 0
                     )
+                ) {
+                    items(orders) {
+                        OrderListItem(
+                            modifier = modifier,
+                            order = it
+                        )
+                    }
                 }
             }
         }

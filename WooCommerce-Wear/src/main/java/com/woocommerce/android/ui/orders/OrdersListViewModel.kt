@@ -45,22 +45,22 @@ class OrdersListViewModel @AssistedInject constructor(
         _viewState.update {
             it.copy(orders = listOf(
                 OrderItem(
-                    date = "2021-09-01",
-                    number = "123",
+                    date = "25 Feb",
+                    number = "#125",
                     customerName = "John Doe",
                     total = "$100.00",
                     status = "Processing"
                 ),
                 OrderItem(
-                    date = "2021-09-02",
-                    number = "124",
+                    date = "31 Dec",
+                    number = "#124",
                     customerName = "Jane Doe",
                     total = "$200.00",
                     status = "Completed"
                 ),
                 OrderItem(
-                    date = "2021-09-03",
-                    number = "125",
+                    date = "4 Oct",
+                    number = "#123",
                     customerName = "John Smith",
                     total = "$300.00",
                     status = "Pending"
