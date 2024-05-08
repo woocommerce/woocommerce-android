@@ -44,21 +44,21 @@ class OrdersListViewModel @AssistedInject constructor(
         // TODO: Introduce actual request
         _viewState.update {
             it.copy(orders = listOf(
-                OrderListItem(
+                OrderItem(
                     date = "2021-09-01",
                     number = "123",
                     customerName = "John Doe",
                     total = "$100.00",
                     status = "Processing"
                 ),
-                OrderListItem(
+                OrderItem(
                     date = "2021-09-02",
                     number = "124",
                     customerName = "Jane Doe",
                     total = "$200.00",
                     status = "Completed"
                 ),
-                OrderListItem(
+                OrderItem(
                     date = "2021-09-03",
                     number = "125",
                     customerName = "John Smith",
@@ -71,11 +71,11 @@ class OrdersListViewModel @AssistedInject constructor(
 
     @Parcelize
     data class ViewState(
-        val orders: List<OrderListItem> = emptyList()
+        val orders: List<OrderItem> = emptyList()
     ) : Parcelable
 
     @Parcelize
-    data class OrderListItem(
+    data class OrderItem(
         val date: String,
         val number: String,
         val customerName: String,

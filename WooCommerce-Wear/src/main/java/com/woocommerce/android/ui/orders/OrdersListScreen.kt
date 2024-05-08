@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
@@ -15,7 +16,7 @@ import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.presentation.theme.WooTheme
-import com.woocommerce.android.ui.orders.OrdersListViewModel.OrderListItem
+import com.woocommerce.android.ui.orders.OrdersListViewModel.OrderItem
 
 @Composable
 fun OrdersListScreen(viewModel: OrdersListViewModel) {
@@ -27,7 +28,8 @@ fun OrdersListScreen(viewModel: OrdersListViewModel) {
 
 @Composable
 fun OrdersListScreen(
-    orders: List<OrderListItem>
+    orders: List<OrderItem>,
+    modifier: Modifier = Modifier
 ) {
     WooTheme {
         val listState = rememberScalingLazyListState()
@@ -36,14 +38,27 @@ fun OrdersListScreen(
             autoCentering = AutoCenteringParams(itemIndex = 0),
             state = listState
         ) {
-            items(orders) { order ->
-                Text(
-                    text = order.customerName,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+            items(orders) {
+                OrderListItem(
+                    modifier = modifier,
+                    order = it
                 )
             }
         }
+    }
+}
+
+@Composable
+fun OrderListItem(
+    modifier: Modifier,
+    order: OrderItem
+) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = order.customerName,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -55,21 +70,21 @@ fun OrdersListScreen(
 fun Preview() {
     OrdersListScreen(
         orders = listOf(
-            OrderListItem(
+            OrderItem(
                 date = "2021-09-01",
                 number = "123",
                 customerName = "John Doe",
                 total = "$100.00",
                 status = "Processing"
             ),
-            OrderListItem(
+            OrderItem(
                 date = "2021-09-02",
                 number = "124",
                 customerName = "Jane Doe",
                 total = "$200.00",
                 status = "Completed"
             ),
-            OrderListItem(
+            OrderItem(
                 date = "2021-09-03",
                 number = "125",
                 customerName = "John Smith",
