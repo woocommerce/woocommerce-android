@@ -1,14 +1,14 @@
-package com.woocommerce.android.ui.mystore.pager
+package com.woocommerce.android.ui.mystore
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.google.android.horologist.compose.pager.PagerScreen
-import com.woocommerce.android.ui.mystore.StoreStatsScreen
-import com.woocommerce.android.ui.mystore.StoreStatsViewModel
 import com.woocommerce.android.ui.orders.OrdersListScreen
 import com.woocommerce.android.ui.orders.OrdersListViewModel
+import com.woocommerce.android.ui.stats.StoreStatsScreen
+import com.woocommerce.android.ui.stats.StoreStatsViewModel
 
 @Composable
 fun MyStoreScreen(

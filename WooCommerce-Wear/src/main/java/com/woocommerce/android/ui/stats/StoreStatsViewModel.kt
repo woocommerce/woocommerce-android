@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.stats
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
@@ -7,9 +7,9 @@ import androidx.navigation.NavHostController
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.mystore.datasource.FetchStatsFromPhone
-import com.woocommerce.android.ui.mystore.datasource.FetchStatsFromStore
-import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest
+import com.woocommerce.android.ui.stats.datasource.FetchStatsFromPhone
+import com.woocommerce.android.ui.stats.datasource.FetchStatsFromStore
+import com.woocommerce.android.ui.stats.datasource.MyStoreStatsRequest
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.assisted.Assisted

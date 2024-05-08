@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore.stats
+package com.woocommerce.android.ui.stats.range
 
 import com.woocommerce.commons.extensions.endOfCurrentDay
 import com.woocommerce.commons.extensions.formatToMMMddYYYY

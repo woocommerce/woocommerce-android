@@ -10,8 +10,8 @@ import com.woocommerce.android.ui.NavRoutes.LOGIN
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
 import com.woocommerce.android.ui.login.LoginScreen
 import com.woocommerce.android.ui.login.LoginViewModel
-import com.woocommerce.android.ui.mystore.StoreStatsViewModel
-import com.woocommerce.android.ui.mystore.pager.MyStoreScreen
+import com.woocommerce.android.ui.stats.StoreStatsViewModel
+import com.woocommerce.android.ui.mystore.MyStoreScreen
 import com.woocommerce.android.ui.orders.OrdersListViewModel
 
 @Composable

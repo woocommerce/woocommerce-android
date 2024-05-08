@@ -1,8 +1,7 @@
-package com.woocommerce.android.ui.mystore.datasource
+package com.woocommerce.android.ui.stats.datasource
 
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.ui.login.ObserveLoginRequest.Companion.TIMEOUT_MILLIS
-import com.woocommerce.android.ui.mystore.stats.StatsRepository
 import com.woocommerce.commons.wear.MessagePath.REQUEST_STATS
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

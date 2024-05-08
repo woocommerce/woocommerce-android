@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.stats
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement

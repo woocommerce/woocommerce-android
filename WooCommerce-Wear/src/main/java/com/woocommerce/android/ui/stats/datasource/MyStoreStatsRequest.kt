@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore.datasource
+package com.woocommerce.android.ui.stats.datasource
 
 import com.woocommerce.commons.extensions.convertedFrom
 

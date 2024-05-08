@@ -1,7 +1,6 @@
-package com.woocommerce.android.ui.mystore.datasource
+package com.woocommerce.android.ui.stats.datasource
 
-import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest.Data.RevenueData
-import com.woocommerce.android.ui.mystore.stats.StatsRepository
+import com.woocommerce.android.ui.stats.datasource.MyStoreStatsRequest.Data.RevenueData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
