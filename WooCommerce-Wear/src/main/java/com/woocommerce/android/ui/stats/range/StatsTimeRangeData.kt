@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore.stats
+package com.woocommerce.android.ui.stats.range
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

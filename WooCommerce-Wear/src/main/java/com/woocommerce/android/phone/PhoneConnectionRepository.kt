@@ -6,7 +6,7 @@ import com.google.android.gms.wearable.DataItem
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.mystore.stats.StatsRepository
+import com.woocommerce.android.ui.stats.datasource.StatsRepository
 import com.woocommerce.commons.wear.DataPath
 import com.woocommerce.commons.wear.MessagePath
 import kotlinx.coroutines.CoroutineScope

@@ -3,7 +3,12 @@ package com.woocommerce.android.ui.mystore
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.woocommerce.android.BaseUnitTest
+import com.woocommerce.android.phone.PhoneConnectionRepository
+import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.login.LoginRepository
+import com.woocommerce.android.ui.stats.StoreStatsViewModel
+import com.woocommerce.android.ui.stats.datasource.FetchStatsFromPhone
+import com.woocommerce.android.ui.stats.datasource.FetchStatsFromStore
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat
@@ -13,10 +18,14 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @ExperimentalCoroutinesApi
-class MyStoreViewModelTest : BaseUnitTest() {
+class StoreStatsViewModelTest : BaseUnitTest() {
 
-    private lateinit var sut: MyStoreViewModel
+    private lateinit var sut: StoreStatsViewModel
     private val loginRepository: LoginRepository = mock()
+    private val phoneRepository: PhoneConnectionRepository = mock()
+    private val fetchStatsFromStore: FetchStatsFromStore = mock()
+    private val fetchStatsFromPhone: FetchStatsFromPhone = mock()
+    private val networkStatus: NetworkStatus = mock()
     private val navController: NavHostController = mock()
 
     @Test
@@ -50,9 +59,13 @@ class MyStoreViewModelTest : BaseUnitTest() {
     }
 
     private fun createSut() {
-        sut = MyStoreViewModel(
-            loginRepository,
+        sut = StoreStatsViewModel(
             navController,
+            phoneRepository,
+            fetchStatsFromStore,
+            fetchStatsFromPhone,
+            networkStatus,
+            loginRepository,
             SavedStateHandle()
         )
     }

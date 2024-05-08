@@ -11,6 +11,7 @@ import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.commons.wear.DataParameters.SITE_JSON
 import com.woocommerce.commons.wear.DataParameters.TOKEN
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -18,12 +19,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.LOGIN) private val loginDataStore: DataStore<Preferences>,
     private val accountStore: AccountStore,
-    coroutineScope: CoroutineScope
+    private val wooCommerceStore: WooCommerceStore,
+    private val coroutineScope: CoroutineScope
 ) {
     private val gson by lazy { Gson() }
 
@@ -45,6 +48,10 @@ class LoginRepository @Inject constructor(
         val site = siteJSON
             ?.let { gson.fromJson(it, SiteModel::class.java) }
             ?: return
+
+        coroutineScope.async {
+            wooCommerceStore.fetchSiteGeneralSettings(site)
+        }.await()
 
         loginDataStore.edit { prefs ->
             prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON

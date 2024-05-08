@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore.datasource
+package com.woocommerce.android.ui.stats.datasource
 
 import com.woocommerce.commons.extensions.convertedFrom
 
@@ -11,7 +11,7 @@ sealed class MyStoreStatsRequest {
             get() = revenueData != null &&
                 visitorData != null
         val revenue
-            get() = revenueData?.totalRevenue ?: 0.0
+            get() = revenueData?.totalRevenue.orEmpty()
 
         val ordersCount
             get() = revenueData?.orderCount ?: 0
@@ -27,7 +27,7 @@ sealed class MyStoreStatsRequest {
             }
 
         data class RevenueData(
-            val totalRevenue: Double,
+            val totalRevenue: String,
             val orderCount: Int
         )
     }

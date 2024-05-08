@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.mystore.stats
+package com.woocommerce.android.ui.stats.datasource
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -9,8 +9,8 @@ import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest
-import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest.Data.RevenueData
+import com.woocommerce.android.ui.stats.datasource.MyStoreStatsRequest.Data.RevenueData
+import com.woocommerce.android.ui.stats.range.TodayRangeData
 import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.TOTAL_REVENUE
@@ -96,10 +96,10 @@ class StatsRepository @Inject constructor(
     suspend fun receiveStatsDataFromPhone(data: DataMap) {
         val statsJson = MyStoreStatsRequest.Data(
             revenueData = RevenueData(
-                totalRevenue = data.getDouble(TOTAL_REVENUE.value, 0.0),
+                totalRevenue = data.getString(TOTAL_REVENUE.value, ""),
                 orderCount = data.getInt(ORDERS_COUNT.value, 0)
             ),
-            visitorData = data.getInt(VISITORS_TOTAL.value, 0)
+            visitorData = data.getInt(VISITORS_TOTAL.value, 0),
         ).let { gson.toJson(it) }
 
         statsDataStore.edit { prefs ->
