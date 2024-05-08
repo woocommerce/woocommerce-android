@@ -21,13 +21,11 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.action.AccountAction
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.WCOrderActionBuilder
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.AccountStore.OnAuthenticationChanged
 import org.wordpress.android.fluxc.store.AccountStore.UpdateTokenPayload
-import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrderStatusOptionsPayload
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -82,11 +80,6 @@ class MainPresenter @Inject constructor(
     override fun selectedSiteChanged(site: SiteModel) {
         productImageMap.reset()
 
-        // Fetch a fresh list of order status options
-        dispatcher.dispatch(
-            WCOrderActionBuilder
-                .newFetchOrderStatusOptionsAction(FetchOrderStatusOptionsPayload(site))
-        )
         coroutineScope.launch { clearCardReaderDataAction() }
 
         updateStatsWidgets()
