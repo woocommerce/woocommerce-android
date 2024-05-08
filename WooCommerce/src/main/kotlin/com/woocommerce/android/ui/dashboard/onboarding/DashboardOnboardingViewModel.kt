@@ -75,10 +75,7 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
                 }
             )
         ),
-        onViewAllTapped = DashboardWidgetAction(
-            titleResource = R.string.store_onboarding_task_view_all_tasks,
-            action = ::viewAllClicked
-        )
+        onViewAllTapped = ::viewAllClicked
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -146,8 +143,17 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         val menu: DashboardWidgetMenu,
         val isLoading: Boolean = false,
         val isError: Boolean = false,
-        val onViewAllTapped: DashboardWidgetAction
-    )
+        private val onViewAllTapped: () -> Unit
+    ) {
+        val cardButton = if (!isLoading) {
+            DashboardWidgetAction(
+                titleResource = R.string.store_onboarding_task_view_all_tasks,
+                action = onViewAllTapped
+            )
+        } else {
+            null
+        }
+    }
 
     @AssistedFactory
     interface Factory {
