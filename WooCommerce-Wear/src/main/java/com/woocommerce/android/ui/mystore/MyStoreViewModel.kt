@@ -4,7 +4,12 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
+import com.woocommerce.android.phone.PhoneConnectionRepository
+import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.login.LoginRepository
+import com.woocommerce.android.ui.mystore.datasource.FetchStatsFromPhone
+import com.woocommerce.android.ui.mystore.datasource.FetchStatsFromStore
+import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.assisted.Assisted
@@ -19,11 +24,14 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 
-@Suppress("UnusedPrivateProperty")
+@Suppress("UnusedPrivateProperty", "LongParameterList")
 @HiltViewModel(assistedFactory = MyStoreViewModel.Factory::class)
 class MyStoreViewModel @AssistedInject constructor(
-    private val getMyStoreStats: GetMyStoreStats,
     @Assisted private val navController: NavHostController,
+    private val phoneRepository: PhoneConnectionRepository,
+    private val fetchStatsFromStore: FetchStatsFromStore,
+    private val fetchStatsFromPhone: FetchStatsFromPhone,
+    private val networkStatus: NetworkStatus,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -42,19 +50,30 @@ class MyStoreViewModel @AssistedInject constructor(
             }.launchIn(this)
     }
 
+    private suspend fun evaluateStatsSource(selectedSite: SiteModel) = when {
+        networkStatus.isConnected() -> fetchStatsFromStore(selectedSite)
+        phoneRepository.isPhoneConnectionAvailable() -> fetchStatsFromPhone()
+        else -> error("No connection available")
+    }
+
     private fun requestStoreStats(selectedSite: SiteModel) {
         _viewState.update { it.copy(isLoading = true) }
         launch {
-            getMyStoreStats(selectedSite)
+            evaluateStatsSource(selectedSite)
                 .onEach { statsData ->
-                    _viewState.update {
-                        it.copy(
-                            isLoading = false,
-                            revenueTotal = statsData.revenue,
-                            ordersCount = statsData.ordersCount,
-                            visitorsCount = statsData.visitorsCount,
-                            conversionRate = statsData.conversionRate
-                        )
+                    when (statsData) {
+                        is MyStoreStatsRequest.Data -> {
+                            _viewState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    revenueTotal = statsData.revenue,
+                                    ordersCount = statsData.ordersCount,
+                                    visitorsCount = statsData.visitorsCount,
+                                    conversionRate = statsData.conversionRate
+                                )
+                            }
+                        }
+                        else -> _viewState.update { it.copy(isLoading = false) }
                     }
                 }.launchIn(this)
         }

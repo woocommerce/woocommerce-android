@@ -2,6 +2,7 @@ package com.woocommerce.android.di
 
 import android.content.Context
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.system.NetworkStatus
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -9,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AppSecrets
 import java.util.Locale
+import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
@@ -22,6 +24,10 @@ class AppConfigModule {
 
     @Provides
     fun provideUserAgent(appContext: Context) = UserAgent(appContext, USER_AGENT_APPNAME)
+
+    @Provides
+    @Singleton
+    fun provideNetworkStatus(appContext: Context) = NetworkStatus(appContext)
 
     @Provides
     fun provideDefaultLocale(): Locale = Locale.getDefault()

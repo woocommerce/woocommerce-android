@@ -1,6 +1,21 @@
 package com.woocommerce.android.ui.mystore.stats
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.google.android.gms.wearable.DataMap
+import com.google.gson.Gson
+import com.woocommerce.android.datastore.DataStoreQualifier
+import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.ui.login.LoginRepository
+import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest
+import com.woocommerce.android.ui.mystore.datasource.MyStoreStatsRequest.Data.RevenueData
 import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
+import com.woocommerce.commons.wear.DataParameters.TOTAL_REVENUE
+import com.woocommerce.commons.wear.DataParameters.VISITORS_TOTAL
+import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -11,8 +26,12 @@ import java.util.Locale
 import javax.inject.Inject
 
 class StatsRepository @Inject constructor(
+    @DataStoreQualifier(DataStoreType.STATS) private val statsDataStore: DataStore<Preferences>,
     private val wcStatsStore: WCStatsStore,
+    private val loginRepository: LoginRepository
 ) {
+    private val gson by lazy { Gson() }
+
     suspend fun fetchRevenueStats(
         selectedSite: SiteModel
     ): Result<WCRevenueStatsModel?> {
@@ -74,8 +93,32 @@ class StatsRepository @Inject constructor(
         }
     }
 
+    suspend fun receiveStatsDataFromPhone(data: DataMap) {
+        val statsJson = MyStoreStatsRequest.Data(
+            revenueData = RevenueData(
+                totalRevenue = data.getDouble(TOTAL_REVENUE.value, 0.0),
+                orderCount = data.getInt(ORDERS_COUNT.value, 0)
+            ),
+            visitorData = data.getInt(VISITORS_TOTAL.value, 0)
+        ).let { gson.toJson(it) }
+
+        statsDataStore.edit { prefs ->
+            prefs[stringPreferencesKey(generateStatsKey())] = statsJson
+        }
+    }
+
+    fun observeStatsDataChanges() = statsDataStore.data
+        .map { it[stringPreferencesKey(generateStatsKey())] }
+        .map { it?.let { gson.fromJson(it, MyStoreStatsRequest.Data::class.java) } }
+
+    private fun generateStatsKey(): String {
+        val siteId = loginRepository.selectedSite?.siteId ?: 0
+        return "$STATS_KEY_PREFIX:$siteId"
+    }
+
     companion object {
         private const val REVENUE_DATA_ERROR = "Error fetching revenue data"
         private const val VISITOR_DATA_ERROR = "Error fetching visitor data"
+        private const val STATS_KEY_PREFIX = "store-stats"
     }
 }

@@ -29,6 +29,7 @@ class LoginRepository @Inject constructor(
 
     private val siteFlow: MutableStateFlow<SiteModel?> = MutableStateFlow(null)
     val selectedSiteFlow: StateFlow<SiteModel?> = siteFlow
+    val selectedSite get() = selectedSiteFlow.value
     val isSiteAvailable = siteFlow.map { it != null && it.siteId > 0 }
 
     init {
@@ -39,7 +40,7 @@ class LoginRepository @Inject constructor(
             .launchIn(coroutineScope)
     }
 
-    suspend fun receiveStoreData(data: DataMap) {
+    suspend fun receiveStoreDataFromPhone(data: DataMap) {
         val siteJSON = data.getString(SITE_JSON.value)
         val site = siteJSON
             ?.let { gson.fromJson(it, SiteModel::class.java) }

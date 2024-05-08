@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.LOGIN
+import com.woocommerce.android.datastore.DataStoreType.STATS
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +28,19 @@ class DataStoreModule {
     ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
         produceFile = {
             appContext.preferencesDataStoreFile(LOGIN.typeName)
+        },
+        scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
+    )
+
+    @Provides
+    @Singleton
+    @DataStoreQualifier(STATS)
+    fun provideStatsDataStore(
+        appContext: Context,
+        @AppCoroutineScope appCoroutineScope: CoroutineScope
+    ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
+        produceFile = {
+            appContext.preferencesDataStoreFile(STATS.typeName)
         },
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
     )
