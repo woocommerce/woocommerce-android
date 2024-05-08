@@ -123,6 +123,7 @@ private fun MyStoreView(
             Text(
                 text = stringResource(id = R.string.my_store_screen_revenue_title),
                 textAlign = TextAlign.Center,
+                color = WooColors.woo_purple_5,
                 style = WooTypography.body2,
                 modifier = modifier
                     .fillMaxWidth()
@@ -141,7 +142,7 @@ private fun MyStoreView(
                 horizontalArrangement = Arrangement.Center,
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(top = 6.dp)
+                    .padding(top = 4.dp)
             ) {
                 StoreDataItem(
                     icon = Icons.Filled.Description,
@@ -164,7 +165,7 @@ private fun MyStoreView(
             textAlign = TextAlign.Center,
             modifier = modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 10.dp)
+                .padding(bottom = 14.dp)
                 .fillMaxWidth()
         )
     }
@@ -182,6 +183,7 @@ fun StoreDataItem(
     ) {
         Icon(
             imageVector = icon,
+            tint = WooColors.woo_purple_10,
             contentDescription = null,
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
