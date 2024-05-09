@@ -24,7 +24,7 @@ class OrderShippingViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
 
     private val navArgs: OrderShippingFragmentArgs by savedState.navArgs()
-    var viewState: MutableStateFlow<ViewState>
+    val viewState: MutableStateFlow<ViewState>
 
     init {
         val state = if (navArgs.currentShippingLine == null) {
