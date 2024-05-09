@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation.shipping
 
-
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,6 +34,7 @@ class OrderShippingMethodsViewModelTest : BaseUnitTest() {
             .methods.filter { it.isSelected }
         assertThat(selectedItems.size).isEqualTo(0)
     }
+
     @Test
     fun `given there is a shipping method selected, make sure the item is marked as selected`() = testBlocking {
         setup(selectedArgs)
@@ -51,7 +51,7 @@ class OrderShippingMethodsViewModelTest : BaseUnitTest() {
     fun `given there is no shipping method selected, if the selection changes, the the item is marked as selected`() = testBlocking {
         setup(noSelectedArgs)
         val selected = OrderShippingMethodsViewModel.ShippingMethodUI(
-            ShippingMethod("other","Other"),
+            ShippingMethod("other", "Other"),
             isSelected = false
         )
 
@@ -61,7 +61,7 @@ class OrderShippingMethodsViewModelTest : BaseUnitTest() {
         assertThat(viewState).isNotNull
         assertThat(viewState).isInstanceOf(OrderShippingMethodsViewModel.ViewState.ShippingMethodsState::class.java)
         val selectedItem = (viewState as OrderShippingMethodsViewModel.ViewState.ShippingMethodsState)
-            .methods.firstOrNull { it.method.id ==  selected.method.id && it.isSelected}
+            .methods.firstOrNull { it.method.id == selected.method.id && it.isSelected }
         assertThat(selectedItem).isNotNull
     }
 }
