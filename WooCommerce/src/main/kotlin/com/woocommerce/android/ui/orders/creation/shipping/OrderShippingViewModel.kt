@@ -161,3 +161,4 @@ data class ShippingUpdateResult(
 
 data class UpdateShipping(val shippingUpdate: ShippingUpdateResult) : MultiLiveEvent.Event()
 data class RemoveShipping(val id: Long) : MultiLiveEvent.Event()
+data class SelectShippingMethod(val currentMethodId: String?) : MultiLiveEvent.Event()
