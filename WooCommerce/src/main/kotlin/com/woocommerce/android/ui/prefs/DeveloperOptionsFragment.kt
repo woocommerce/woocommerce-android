@@ -40,6 +40,14 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
         binding.posButton.setOnClickListener {
             startActivity(Intent(requireContext(), PosActivity::class.java))
         }
+        binding.posButtonInternal.setOnClickListener {
+            startActivity(Intent(requireContext(), PosActivity::class.java))
+            val intent = Intent(requireContext(), PosActivity::class.java).apply {
+                putExtra("screen_key", "pos_screen_two")
+                putExtra("id", "12")
+            }
+            startActivity(intent)
+        }
     }
 
     private fun observeEvents() {

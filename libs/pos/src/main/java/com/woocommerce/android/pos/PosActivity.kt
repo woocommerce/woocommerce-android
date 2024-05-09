@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -23,19 +24,28 @@ import com.woocommerce.android.util.AddressUtils
 class PosActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val screenKey = intent.getStringExtra("screen_key") ?: "default"
+        val data = intent.getStringExtra("id") ?: ""
+        val startDestination = when (screenKey) {
+            "pos_screen_two" -> {
+                Routing.PosScreenTwo.route.replace("{id}", data)
+            }
+            else -> Routing.PosScreenOne.route
+        }
+
         setContent {
             WCAndroidTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val navController = rememberNavController()
-                    NavHost(navController, startDestination = Routing.PosScreenOne.route) {
+                    NavHost(navController, startDestination = startDestination) {
                         composable(Routing.PosScreenOne.route) {
                             PosScreenOne(modifier = Modifier.padding(innerPadding)) {
-                                navController.navigate(Routing.PosScreenTwo.route.replace("{data}", "100"))
+                                navController.navigate(Routing.PosScreenTwo.route.replace("{id}", "100"))
                             }
                         }
                         composable(Routing.PosScreenTwo.route) { backStackEntry ->
                             PosScreenTwo(
-                                backStackEntry.arguments?.getString("data"),
+                                backStackEntry.arguments?.getString("id") ?: data,
                                 onClick = { finish() },
                                 modifier = Modifier.padding(innerPadding)
                             )
@@ -61,7 +71,10 @@ fun PosScreenOne(modifier: Modifier = Modifier, onClick: () -> Unit) {
         Text(
             text = "Uses util from core - ${AddressUtils.getCountryLabelByCountryCode("US")}",
         )
-        Button(onClick = onClick) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onClick
+        ) {
             Text("Go to screen #2")
         }
     }
@@ -82,7 +95,9 @@ fun PosScreenTwo(data: String?, onClick: () -> Unit, modifier: Modifier = Modifi
             text = "Received data: $data",
         )
 
-        Button(onClick = { onClick() }) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { onClick() }) {
             Text("Go Back to the main app")
         }
     }

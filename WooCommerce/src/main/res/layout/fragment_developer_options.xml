@@ -26,7 +26,7 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
-        android:id="@+id/posButtonInterna"
+        android:id="@+id/pos_button_internal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="POS Internal"
