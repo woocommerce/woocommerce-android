@@ -1,4 +1,4 @@
-package com.woocommerce.android.network.shipping_methods
+package com.woocommerce.android.network.shippingmethods
 
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel

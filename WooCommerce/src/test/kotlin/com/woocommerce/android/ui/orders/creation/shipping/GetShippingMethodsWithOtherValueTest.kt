@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.shipping
 
-import com.woocommerce.android.network.shipping_methods.ShippingMethodsRestClient
+import com.woocommerce.android.network.shippingmethods.ShippingMethodsRestClient
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
