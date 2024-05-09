@@ -93,6 +93,8 @@ class DashboardRepository @Inject constructor(
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
 
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
+
+                    else -> DashboardWidget.Status.Available
                 }
             )
         }
