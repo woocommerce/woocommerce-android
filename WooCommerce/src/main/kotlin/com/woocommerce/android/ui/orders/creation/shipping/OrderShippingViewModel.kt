@@ -101,8 +101,17 @@ class OrderShippingViewModel @Inject constructor(
         return canEditValues
     }
 
-    fun onMethodSelected() {
-        /*TODO*/
+    fun onSelectMethod() {
+        triggerEvent(SelectShippingMethod((viewState.value as? ViewState.ShippingState)?.method?.id))
+    }
+
+    fun onMethodSelected(selected: ShippingMethod) {
+        (viewState.value as? ViewState.ShippingState)?.let {
+            viewState.value = it.copy(
+                method = selected,
+                isSaveChangesEnabled = isSaveChangesEnabled(newMethodId = selected.id)
+            )
+        }
     }
 
     fun onSaveChanges() {

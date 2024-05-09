@@ -59,7 +59,7 @@ fun UpdateShippingScreen(
                 isSaveChangesEnabled = currentState.isSaveChangesEnabled,
                 onNameChanged = { name -> viewModel.onNameChanged(name) },
                 onAmountChanged = { amount -> viewModel.onAmountChanged(amount) },
-                onMethodSelected = { viewModel.onMethodSelected() },
+                onSelectMethod = { viewModel.onSelectMethod() },
                 onRemove = { viewModel.onRemove() },
                 onSaveChanges = { viewModel.onSaveChanges() },
                 modifier = modifier
@@ -81,7 +81,7 @@ fun UpdateShippingScreen(
     amount: BigDecimal,
     onAmountChanged: (BigDecimal) -> Unit,
     method: String?,
-    onMethodSelected: () -> Unit,
+    onSelectMethod: () -> Unit,
     isSaveChangesEnabled: Boolean,
     onSaveChanges: () -> Unit,
     isEditFlow: Boolean,
@@ -101,7 +101,7 @@ fun UpdateShippingScreen(
             FieldSelectValue(
                 text = method,
                 hint = stringResource(id = R.string.order_creation_add_shipping_method_select_hint),
-                onSelect = onMethodSelected,
+                onSelect = onSelectMethod,
                 modifier = Modifier.fillMaxWidth()
             )
             Divider(modifier = Modifier.padding(horizontal = 16.dp))
@@ -247,7 +247,7 @@ fun UpdateShippingScreenPreview() {
             isEditFlow = false,
             onAmountChanged = {},
             onNameChanged = {},
-            onMethodSelected = {},
+            onSelectMethod = {},
             onSaveChanges = {},
             onRemove = {}
         )
