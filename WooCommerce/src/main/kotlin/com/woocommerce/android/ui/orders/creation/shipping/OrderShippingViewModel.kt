@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.capitalize
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -53,16 +54,14 @@ class OrderShippingViewModel @Inject constructor(
     }
 
     @Suppress("MagicNumber")
-    private suspend fun getShippingMethod(shippingLine: Order.ShippingLine): Order.ShippingMethod? {
+    private suspend fun getShippingMethod(shippingLine: Order.ShippingLine): ShippingMethod? {
         return if (shippingLine.methodId == null) {
             null
         } else {
             delay(1000)
-            Order.ShippingMethod(
+            ShippingMethod(
                 id = shippingLine.methodId,
-                title = shippingLine.methodId.capitalize(),
-                total = BigDecimal.ZERO,
-                tax = BigDecimal.ZERO
+                title = shippingLine.methodId.capitalize()
             )
         }
     }
@@ -134,7 +133,7 @@ class OrderShippingViewModel @Inject constructor(
     sealed class ViewState {
         data object Loading : ViewState()
         data class ShippingState(
-            val method: Order.ShippingMethod?,
+            val method: ShippingMethod?,
             val name: String?,
             val amount: BigDecimal,
             val isEditFlow: Boolean,
