@@ -82,7 +82,7 @@ class GetShippingMethodByIdTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when fetching ship´ping methods fail, then return other`() = testBlocking {
+    fun `when fetching shipping methods fail, then return other`() = testBlocking {
         val fetchResult = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
         whenever(shippingMethodsRestClient.fetchShippingMethods(siteModel)).doReturn(WooPayload(fetchResult))
         whenever(resourceProvider.getString(any())).doReturn("Other")
