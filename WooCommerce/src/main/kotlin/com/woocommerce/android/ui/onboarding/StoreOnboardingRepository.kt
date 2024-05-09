@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.onboarding
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
@@ -25,7 +26,8 @@ import javax.inject.Singleton
 class StoreOnboardingRepository @Inject constructor(
     private val onboardingStore: OnboardingStore,
     private val selectedSite: SelectedSite,
-    private val siteStore: SiteStore
+    private val siteStore: SiteStore,
+    private val appPrefs: AppPrefsWrapper
 ) {
     private val onboardingTasksCacheFlow: MutableSharedFlow<OnboardingTasksEvent> = MutableSharedFlow(replay = 1)
     val hasCachedTasks
@@ -59,6 +61,13 @@ class StoreOnboardingRepository @Inject constructor(
                     ?.sortedBy { it.type.order }
                     ?.sortedBy { it.isComplete }
                     ?: emptyList()
+
+                // Update onboarding completed status based on the tasks completion status
+                if (mobileSupportedTasks.all { it.isComplete }) {
+                    appPrefs.updateOnboardingCompletedStatus(selectedSite.getSelectedSiteId(), true)
+                } else if (appPrefs.isOnboardingCompleted(selectedSite.getSelectedSiteId())) {
+                    appPrefs.updateOnboardingCompletedStatus(selectedSite.getSelectedSiteId(), false)
+                }
 
                 onboardingTasksCacheFlow.emit(OnboardingTasksEvent(selectedSite.get().id, mobileSupportedTasks))
                 Result.success(Unit)
