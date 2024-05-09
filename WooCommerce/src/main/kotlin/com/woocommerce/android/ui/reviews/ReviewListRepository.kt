@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.reviews
 
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.getCommentId
@@ -16,6 +17,7 @@ import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Succe
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -103,6 +105,48 @@ class ReviewListRepository @Inject constructor(
                 send(FetchReviewsResult.NothingFetched)
             }
         }
+
+    /**
+     * Fetch the most recent product reviews from the API and notifications. this fetches only the first page
+     * from the API, and doesn't delete previously cached reviews.
+     *
+     * @param [status] the status of the reviews to fetch
+     * @return the result of the fetch as a [Result]
+     */
+    suspend fun fetchMostRecentReviews(
+        status: ProductReviewStatus
+    ): Result<Unit> = coroutineScope {
+        val reviewsTask = async {
+            val payload = WCProductStore.FetchProductReviewsPayload(
+                site = selectedSite.get(),
+                filterByStatus = status.takeIf { it != ProductReviewStatus.ALL }?.let { listOf(it.toString()) }
+            )
+
+            productStore.fetchProductReviews(
+                payload = payload,
+                deletePreviouslyCachedReviews = false
+            ).let { result ->
+                if (result.isError) {
+                    Result.failure(OnChangedException(result.error))
+                } else {
+                    Result.success(Unit)
+                }
+            }
+        }
+
+        val notificationsTask = async {
+            fetchNotifications().let {
+                if (it) Result.success(Unit) else Result.failure(Exception())
+            }
+        }
+
+        reviewsTask.await()
+            .onFailure { return@coroutineScope Result.failure(it) }
+        notificationsTask.await()
+            .onFailure { return@coroutineScope Result.failure(it) }
+
+        Result.success(Unit)
+    }
 
     /**
      * Fires the request to mark all product review notifications as read to the API. If there are
