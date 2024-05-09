@@ -31,6 +31,7 @@ class OrderShippingMethodsViewModel @Inject constructor(
         }
     }
 
+    @Suppress("MagicNumber")
     private suspend fun getShippingMethods() {
         viewState.value = ViewState.Loading
         delay(1000)
