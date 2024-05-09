@@ -11,6 +11,7 @@ import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.stats.datasource.StoreStatsRequest.Data.RevenueData
 import com.woocommerce.android.ui.stats.range.TodayRangeData
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.TOTAL_REVENUE
@@ -28,7 +29,9 @@ import javax.inject.Inject
 class StatsRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.STATS) private val statsDataStore: DataStore<Preferences>,
     private val wcStatsStore: WCStatsStore,
-    private val loginRepository: LoginRepository
+    private val loginRepository: LoginRepository,
+    private val dateUtils: DateUtils,
+    private val locale: Locale
 ) {
     private val gson by lazy { Gson() }
 
@@ -36,8 +39,8 @@ class StatsRepository @Inject constructor(
         selectedSite: SiteModel
     ): Result<WCRevenueStatsModel?> {
         val todayRange = TodayRangeData(
-            selectedSite = selectedSite,
-            locale = Locale.getDefault(),
+            dateUtils = dateUtils,
+            locale = locale,
             referenceCalendar = Calendar.getInstance()
         ).currentRange
 
@@ -65,8 +68,8 @@ class StatsRepository @Inject constructor(
         selectedSite: SiteModel
     ): Result<Int?> {
         val todayRange = TodayRangeData(
-            selectedSite = selectedSite,
-            locale = Locale.getDefault(),
+            dateUtils = dateUtils,
+            locale = locale,
             referenceCalendar = Calendar.getInstance()
         ).currentRange
 
