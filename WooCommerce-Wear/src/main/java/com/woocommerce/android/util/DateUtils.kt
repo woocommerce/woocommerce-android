@@ -18,9 +18,9 @@ class DateUtils @Inject constructor(
     private val locale: Locale
 ) {
     private val selectedSite get() = loginRepository.selectedSiteFlow.value
-    private val yyyyMMddFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-    private val friendlyMonthDayFormat: SimpleDateFormat = SimpleDateFormat("MMM d", locale)
-    private val friendlyMonthDayYearFormat: SimpleDateFormat = SimpleDateFormat("MMM d, yyyy", locale)
+    private val yyyyMMddFormat = SimpleDateFormat("yyyy-MM-dd", locale)
+    private val friendlyMonthDayFormat = SimpleDateFormat("MMM d", locale)
+    private val friendlyMonthDayYearFormat = SimpleDateFormat("MMM d, yyyy", locale)
 
     fun getFormattedDateWithSiteTimeZone(dateCreated: String): String? {
         val currentSiteDate = getCurrentDateInSiteTimeZone() ?: Date()
@@ -32,6 +32,17 @@ class DateUtils @Inject constructor(
         } else {
             getShortMonthDayAndYearString(iso8601DateString)
         }
+    }
+
+    fun generateCurrentDateInSiteTimeZone(): Date {
+        val site = selectedSite ?: return Date()
+        val targetTimezone = SiteUtils.getNormalizedTimezone(site.timezone).toZoneId()
+        val currentDateTime = LocalDateTime.now()
+        val zonedDateTime = ZonedDateTime.of(currentDateTime, ZoneId.systemDefault())
+            .withZoneSameInstant(targetTimezone)
+        // Format the result as a string
+        val currentDateString = zonedDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        return getDateFromFullDateString(currentDateString) ?: Date()
     }
 
     fun getCurrentDateInSiteTimeZone(): Date? {
