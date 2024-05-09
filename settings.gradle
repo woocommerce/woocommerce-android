@@ -42,10 +42,6 @@ pluginManagement {
         id 'com.google.dagger.hilt.android' version gradle.ext.daggerVersion
         id 'com.google.devtools.ksp' version gradle.ext.kspVersion
         id "com.google.protobuf" version gradle.ext.protobufVersion
-        id 'com.android.application' version '8.1.0'
-        id 'org.jetbrains.kotlin.android' version '1.9.0'
-        id 'com.android.library' version '8.1.0'
-        id 'org.jetbrains.kotlin.android' version '1.9.22'
     }
 }
 

@@ -279,6 +279,7 @@ dependencies {
     implementation("com.gravatar:gravatar:$gravatarVersion")
 
     implementation project(":libs:cardreader")
+    implementation project(":libs:core")
     debugImplementation project(":libs:iap")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
