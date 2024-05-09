@@ -16,4 +16,22 @@
         tools:itemCount="1"
         tools:listitem="@layout/developer_options_list_item" />
 
+    <Button
+        android:id="@+id/posButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="POS"
+        app:layout_constraintTop_toBottomOf="@id/developerOptionsRv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/posButtonInterna"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="POS Internal"
+        app:layout_constraintTop_toBottomOf="@id/posButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
