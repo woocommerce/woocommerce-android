@@ -243,21 +243,8 @@ dependencies {
         exclude group: "com.mcxiaoke.volley"
         exclude group: "com.android.support"
     }
-
-    implementation("com.automattic.tracks:experimentation:$automatticTracksVersion") {
-        exclude group: "org.wordpress", module: "fluxc"
-    }
     implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
     implementation "com.automattic.tracks:crashlogging:$automatticTracksVersion"
-
-    implementation("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
-        exclude group: "com.android.support"
-        exclude group: "org.wordpress", module: "utils"
-    }
-    implementation("${gradle.ext.fluxCWooCommercePluginBinaryPath}:$fluxCVersion") {
-        exclude group: "com.android.support"
-        exclude group: "org.wordpress", module: "utils"
-    }
 
     implementation("$gradle.ext.loginFlowBinaryPath:$wordPressLoginVersion") {
         exclude group: "org.wordpress", module: "utils"
@@ -278,8 +265,6 @@ dependencies {
 
     implementation("com.gravatar:gravatar:$gravatarVersion")
 
-    implementation project(":libs:cardreader")
-    implementation project(":libs:core")
     implementation project(":libs:pos")
     debugImplementation project(":libs:iap")
 
