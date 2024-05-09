@@ -86,7 +86,6 @@ Language: ar
     <string name="domain_picker_suggestions_title">اقتراحات</string>
     <string name="domain_picker_hint">كتابة نطاق</string>
     <string name="domain_picker_title">اختيار نطاق</string>
-    <string name="analytics_section_see_all">رؤية كل تحليلات المتجر</string>
     <string name="my_store_custom_range_granularity_year">سنويًا</string>
     <string name="my_store_custom_range_granularity_month">شهريًا</string>
     <string name="my_store_custom_range_granularity_week">أسبوعيًا</string>

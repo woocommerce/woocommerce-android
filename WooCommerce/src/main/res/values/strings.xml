@@ -386,7 +386,6 @@
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">View all store analytics</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -403,11 +402,11 @@
     <string name="my_store_custom_range_granularity_year">Yearly</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
-    <string name="my_store_edit_screen_widgets">Edit sections of my store</string>
+    <string name="my_store_edit_screen_widgets">Customize</string>
 
-    <string name="my_store_widget_onboarding_title">Onboarding</string>
+    <string name="my_store_widget_onboarding_title">Store setup</string>
     <string name="my_store_widget_stats_title">Performance</string>
-    <string name="my_store_widget_top_products_title">Top products</string>
+    <string name="my_store_widget_top_products_title">Top performers</string>
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
 
@@ -437,7 +436,7 @@
     <!--
         Analytics View
     -->
-    <string name="analytics_section_see_all">See all store analytics</string>
+    <string name="analytics_section_see_all">View all store analytics</string>
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>

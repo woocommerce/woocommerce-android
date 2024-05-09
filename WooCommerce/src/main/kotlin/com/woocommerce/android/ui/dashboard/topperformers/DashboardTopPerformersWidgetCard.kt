@@ -411,7 +411,7 @@ private fun TopPerformersWidgetCardPreview() {
         titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
         menu = DashboardWidgetMenu(emptyList()),
         onOpenAnalyticsTapped = DashboardWidgetAction(
-            titleResource = R.string.dashboard_top_performers_main_cta_view_all_analytics,
+            titleResource = R.string.analytics_section_see_all,
             action = {}
         )
     )
