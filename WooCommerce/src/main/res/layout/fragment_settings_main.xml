@@ -139,18 +139,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:optionTitle="@string/settings_themes" />
-
-            <!--
-                Store onboarding list visibility
-            -->
-            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-                android:id="@+id/option_store_onboarding_list_visibility"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:toggleOptionDesc="@string/store_onboarding_setting_description"
-                app:toggleOptionTitle="@string/store_onboarding_setting_title" />
-
         </LinearLayout>
 
         <View style="@style/Woo.Divider" />

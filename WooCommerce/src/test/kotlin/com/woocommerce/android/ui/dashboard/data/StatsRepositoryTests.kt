@@ -1,9 +1,8 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.dashboard.data
 
 import com.woocommerce.android.network.giftcard.GiftCardRestClient
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,7 +25,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
-import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Calendar
@@ -38,7 +36,6 @@ class StatsRepositoryTests : BaseUnitTest() {
 
     private val selectedSite: SelectedSite = mock()
     private val wcStatsStore: WCStatsStore = mock()
-    private val wcOrderStore: WCOrderStore = mock()
     private val wcLeaderboardsStore: WCLeaderboardsStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
@@ -59,7 +56,6 @@ class StatsRepositoryTests : BaseUnitTest() {
         sut = StatsRepository(
             selectedSite = selectedSite,
             wcStatsStore = wcStatsStore,
-            wcOrderStore = wcOrderStore,
             wcLeaderboardsStore = wcLeaderboardsStore,
             wooCommerceStore = wooCommerceStore,
             giftCardRestClient = giftCardRestClient,

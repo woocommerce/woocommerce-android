@@ -204,11 +204,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupAnnouncementOption()
         presenter.setupJetpackInstallOption()
         presenter.setupApplicationPasswordsSettings()
-        presenter.setupOnboardingListVisibilitySetting()
 
         binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
             binding.optionDomain.isVisible ||
-            binding.optionStoreOnboardingListVisibility.isVisible ||
             binding.optionStoreName.isVisible
 
         binding.optionStoreName.setOnClickListener {
@@ -304,14 +302,6 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
 
     override fun handleApplicationPasswordsSettings() {
         binding.optionNotifications.hide()
-    }
-
-    override fun handleStoreSetupListSetting(enabled: Boolean, onToggleChange: (Boolean) -> Unit) {
-        binding.optionStoreOnboardingListVisibility.show()
-        binding.optionStoreOnboardingListVisibility.isChecked = enabled
-        binding.optionStoreOnboardingListVisibility.setOnCheckedChangeListener { _, isChecked ->
-            onToggleChange(isChecked)
-        }
     }
 
     private fun updateStoreSettings() {

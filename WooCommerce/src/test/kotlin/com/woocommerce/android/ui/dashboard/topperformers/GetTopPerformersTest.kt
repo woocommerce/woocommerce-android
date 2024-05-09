@@ -1,9 +1,10 @@
-package com.woocommerce.android.ui.mystore.domain
+package com.woocommerce.android.ui.dashboard.topperformers
 
 import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
-import com.woocommerce.android.ui.mystore.data.StatsRepository
+import com.woocommerce.android.ui.dashboard.data.StatsRepository
+import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

@@ -4,8 +4,8 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.mystore.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat

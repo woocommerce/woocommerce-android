@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp">
 
-                <com.woocommerce.android.ui.mystore.DashboardStatsLineChart
+                <com.woocommerce.android.ui.dashboard.DashboardStatsLineChart
                     android:id="@+id/chart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

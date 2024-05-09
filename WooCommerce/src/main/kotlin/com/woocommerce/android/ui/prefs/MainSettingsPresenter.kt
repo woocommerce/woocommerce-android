@@ -7,10 +7,8 @@ import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrde
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
@@ -24,7 +22,6 @@ class MainSettingsPresenter @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
     private val buildConfigWrapper: BuildConfigWrapper,
-    private val shouldShowOnboarding: ShouldShowOnboarding,
     private val accountRepository: AccountRepository,
     private val notificationChannelsHandler: NotificationChannelsHandler,
     private val analyticsTracker: AnalyticsTrackerWrapper,
@@ -76,20 +73,6 @@ class MainSettingsPresenter @Inject constructor(
     override fun setupApplicationPasswordsSettings() {
         if (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords) {
             appSettingsFragmentView?.handleApplicationPasswordsSettings()
-        }
-    }
-
-    override fun setupOnboardingListVisibilitySetting() {
-        if (!FeatureFlag.DYNAMIC_DASHBOARD.isEnabled() && !shouldShowOnboarding.isOnboardingMarkedAsCompleted()) {
-            appSettingsFragmentView?.handleStoreSetupListSetting(
-                enabled = shouldShowOnboarding.isOnboardingListSettingVisible(),
-                onToggleChange = { isChecked ->
-                    shouldShowOnboarding.updateOnboardingVisibilitySetting(
-                        show = isChecked,
-                        source = ShouldShowOnboarding.Source.SETTINGS
-                    )
-                }
-            )
         }
     }
 

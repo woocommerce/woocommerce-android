@@ -1,8 +1,9 @@
-package com.woocommerce.android.ui.mystore.data
+package com.woocommerce.android.ui.dashboard.data
 
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.google.protobuf.InvalidProtocolBufferException
+import com.woocommerce.android.ui.mystore.data.CustomDateRange
 import java.io.InputStream
 import java.io.OutputStream
 

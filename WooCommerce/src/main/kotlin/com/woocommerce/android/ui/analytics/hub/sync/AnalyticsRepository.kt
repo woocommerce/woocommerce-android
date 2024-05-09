@@ -23,8 +23,8 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorSummaryStatsGranularity
-import com.woocommerce.android.ui.mystore.data.StatsRepository
-import com.woocommerce.android.ui.mystore.data.asRevenueRangeId
+import com.woocommerce.android.ui.dashboard.data.StatsRepository
+import com.woocommerce.android.ui.dashboard.data.asRevenueRangeId
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
