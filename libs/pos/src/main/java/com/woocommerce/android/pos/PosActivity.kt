@@ -18,7 +18,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.pos.ui.Routing
-import com.woocommerce.android.pos.ui.theme.WCAndroidTheme
 import com.woocommerce.android.util.AddressUtils
 
 class PosActivity : ComponentActivity() {
@@ -30,26 +29,25 @@ class PosActivity : ComponentActivity() {
             "pos_screen_two" -> {
                 Routing.PosScreenTwo.route.replace("{id}", data)
             }
+
             else -> Routing.PosScreenOne.route
         }
 
         setContent {
-            WCAndroidTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val navController = rememberNavController()
-                    NavHost(navController, startDestination = startDestination) {
-                        composable(Routing.PosScreenOne.route) {
-                            PosScreenOne(modifier = Modifier.padding(innerPadding)) {
-                                navController.navigate(Routing.PosScreenTwo.route.replace("{id}", "100"))
-                            }
+            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                val navController = rememberNavController()
+                NavHost(navController, startDestination = startDestination) {
+                    composable(Routing.PosScreenOne.route) {
+                        PosScreenOne(modifier = Modifier.padding(innerPadding)) {
+                            navController.navigate(Routing.PosScreenTwo.route.replace("{id}", "100"))
                         }
-                        composable(Routing.PosScreenTwo.route) { backStackEntry ->
-                            PosScreenTwo(
-                                backStackEntry.arguments?.getString("id") ?: data,
-                                onClick = { finish() },
-                                modifier = Modifier.padding(innerPadding)
-                            )
-                        }
+                    }
+                    composable(Routing.PosScreenTwo.route) { backStackEntry ->
+                        PosScreenTwo(
+                            backStackEntry.arguments?.getString("id") ?: data,
+                            onClick = { finish() },
+                            modifier = Modifier.padding(innerPadding)
+                        )
                     }
                 }
             }
