@@ -280,6 +280,7 @@ dependencies {
 
     implementation project(":libs:cardreader")
     implementation project(":libs:core")
+    implementation project(":libs:pos")
     debugImplementation project(":libs:iap")
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'

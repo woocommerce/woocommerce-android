@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.ContextThemeWrapper
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentDeveloperOptionsBinding
+import com.woocommerce.android.pos.PosActivity
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +36,10 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
             DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         )
         binding.developerOptionsRv.adapter = DeveloperOptionsAdapter()
+
+        binding.posButton.setOnClickListener {
+            startActivity(Intent(requireContext(), PosActivity::class.java))
+        }
     }
 
     private fun observeEvents() {
@@ -44,6 +50,7 @@ class DeveloperOptionsFragment : BaseFragment(R.layout.fragment_developer_option
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowToastString -> {
                     ToastUtils.showToast(context, event.message)
                 }
+
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowUpdateOptionsDialog -> {
                     showUpdateOptionsDialog(
                         values = event.options,
