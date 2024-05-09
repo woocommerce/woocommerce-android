@@ -86,7 +86,6 @@ Language: ru
     <string name="domain_picker_suggestions_title">Варианты</string>
     <string name="domain_picker_hint">Укажите домен</string>
     <string name="domain_picker_title">Выберите домен</string>
-    <string name="analytics_section_see_all">Просмотреть всю аналитику магазина</string>
     <string name="my_store_custom_range_granularity_year">По годам</string>
     <string name="my_store_custom_range_granularity_month">По месяцам</string>
     <string name="my_store_custom_range_granularity_week">По неделям</string>

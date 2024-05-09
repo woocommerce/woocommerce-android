@@ -86,7 +86,6 @@ Language: es
     <string name="domain_picker_suggestions_title">Sugerencias</string>
     <string name="domain_picker_hint">Introduce un dominio</string>
     <string name="domain_picker_title">Elige un dominio</string>
-    <string name="analytics_section_see_all">Consultar todos los análisis de la tienda</string>
     <string name="my_store_custom_range_granularity_year">Anual</string>
     <string name="my_store_custom_range_granularity_month">Mensual</string>
     <string name="my_store_custom_range_granularity_week">Semanal</string>

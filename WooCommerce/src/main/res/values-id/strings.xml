@@ -86,7 +86,6 @@ Language: id
     <string name="domain_picker_suggestions_title">Saran</string>
     <string name="domain_picker_hint">Ketik domain</string>
     <string name="domain_picker_title">Pilih domain</string>
-    <string name="analytics_section_see_all">Lihat semua analitik toko</string>
     <string name="my_store_custom_range_granularity_year">Tahunan</string>
     <string name="my_store_custom_range_granularity_month">Bulanan</string>
     <string name="my_store_custom_range_granularity_week">Mingguan</string>

@@ -86,7 +86,6 @@ Language: ko_KR
     <string name="domain_picker_suggestions_title">추천</string>
     <string name="domain_picker_hint">도메인 입력</string>
     <string name="domain_picker_title">도메인 선택</string>
-    <string name="analytics_section_see_all">모든 도메인 분석 표시</string>
     <string name="my_store_custom_range_granularity_year">매년</string>
     <string name="my_store_custom_range_granularity_month">매월</string>
     <string name="my_store_custom_range_granularity_week">매주</string>

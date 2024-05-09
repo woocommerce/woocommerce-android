@@ -86,7 +86,6 @@ Language: zh_TW
     <string name="domain_picker_suggestions_title">建議</string>
     <string name="domain_picker_hint">輸入網域</string>
     <string name="domain_picker_title">選擇網域</string>
-    <string name="analytics_section_see_all">查看所有商店分析資料</string>
     <string name="my_store_custom_range_granularity_year">每年</string>
     <string name="my_store_custom_range_granularity_month">每月</string>
     <string name="my_store_custom_range_granularity_week">每週</string>

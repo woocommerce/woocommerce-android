@@ -86,7 +86,6 @@ Language: nl
     <string name="domain_picker_suggestions_title">Suggesties</string>
     <string name="domain_picker_hint">Typ een domein</string>
     <string name="domain_picker_title">Kies een domein</string>
-    <string name="analytics_section_see_all">Alle winkelanalyses bekijken</string>
     <string name="my_store_custom_range_granularity_year">Jaarlijks</string>
     <string name="my_store_custom_range_granularity_month">Maandelijks</string>
     <string name="my_store_custom_range_granularity_week">Wekelijks</string>

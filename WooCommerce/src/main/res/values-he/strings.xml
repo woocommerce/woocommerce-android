@@ -87,7 +87,6 @@ Language: he_IL
     <string name="domain_picker_hint">יש להקליד דומיין</string>
     <string name="domain_picker_title">לבחור דומיין</string>
     <string name="store_name_default">שם החנות</string>
-    <string name="analytics_section_see_all">להציג את כל הנתונים האנליטיים של החנות</string>
     <string name="my_store_custom_range_granularity_year">שנתית</string>
     <string name="my_store_custom_range_granularity_month">חודשית</string>
     <string name="my_store_custom_range_granularity_week">שבועית</string>

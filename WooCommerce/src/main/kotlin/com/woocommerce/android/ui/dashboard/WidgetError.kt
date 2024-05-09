@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -52,7 +53,8 @@ fun WidgetError(
             text = errorMessage,
             style = TextStyle(
                 textAlign = TextAlign.Center,
-                fontSize = 18.sp
+                fontSize = 18.sp,
+                color = LocalContentColor.current
             ),
             onClick = { offset ->
                 errorMessage.getStringAnnotations(tag = URL_ANNOTATION_TAG, start = offset, end = offset)
