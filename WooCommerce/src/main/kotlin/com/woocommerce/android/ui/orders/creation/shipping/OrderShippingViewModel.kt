@@ -103,7 +103,7 @@ class OrderShippingViewModel @Inject constructor(
     }
 
     fun onMethodSelected() {
-        triggerEvent(MultiLiveEvent.Event.Exit)
+        /*TODO*/
     }
 
     fun onSaveChanges() {
