@@ -107,6 +107,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -1498,6 +1499,36 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
+    fun onUpdatedShipping(shippingUpdateResult: ShippingUpdateResult) {
+        tracker.track(
+            ORDER_SHIPPING_METHOD_ADD,
+            mapOf(KEY_FLOW to flow)
+        )
+        _orderDraft.update { draft ->
+            val shipping: List<ShippingLine> = draft.shippingLines.map { shippingLine ->
+                if (shippingLine.itemId == shippingUpdateResult.id) {
+                    shippingLine.copy(
+                        methodId = shippingUpdateResult.methodId ?: "other",
+                        total = shippingUpdateResult.amount,
+                        methodTitle = shippingUpdateResult.name
+                    )
+                } else {
+                    shippingLine
+                }
+            }.ifEmpty {
+                listOf(
+                    ShippingLine(
+                        methodId = shippingUpdateResult.methodId ?: "other",
+                        total = shippingUpdateResult.amount,
+                        methodTitle = shippingUpdateResult.name
+                    )
+                )
+            }
+
+            draft.copy(shippingLines = shipping)
+        }
+    }
+
     fun onShippingEdited(amount: BigDecimal, name: String) {
         tracker.track(
             ORDER_SHIPPING_METHOD_ADD,
@@ -1516,6 +1547,28 @@ class OrderCreateEditViewModel @Inject constructor(
             }
 
             draft.copy(shippingLines = shipping)
+        }
+    }
+
+    fun onRemoveShipping(itemId: Long) {
+        tracker.track(
+            ORDER_SHIPPING_METHOD_REMOVE,
+            mapOf(
+                KEY_FLOW to flow,
+                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(viewState.windowSizeClass)
+            )
+        )
+        _orderDraft.update { draft ->
+            draft.copy(
+                shippingLines = draft.shippingLines.map { shippingLine ->
+                    if (itemId == shippingLine.itemId) {
+                        // Setting methodId to null will remove the shipping line in core
+                        shippingLine.copy(methodId = null)
+                    } else {
+                        shippingLine
+                    }
+                }
+            )
         }
     }
 
