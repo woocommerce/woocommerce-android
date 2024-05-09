@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 @HiltViewModel(assistedFactory = OrdersListViewModel.Factory::class)
 class OrdersListViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
+    private val ordersRepository: OrdersRepository,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -39,40 +40,20 @@ class OrdersListViewModel @AssistedInject constructor(
             }.launchIn(this)
     }
 
-    private fun requestOrdersData(selectedSite: SiteModel) {
-        selectedSite.apply { }
-        // Introduce actual request
+    private suspend fun requestOrdersData(selectedSite: SiteModel) {
+        _viewState.update { it.copy(isLoading = true) }
+        val orders = ordersRepository.fetchOrders(selectedSite)
         _viewState.update {
             it.copy(
-                orders = listOf(
-                    OrderItem(
-                        date = "25 Feb",
-                        number = "#125",
-                        customerName = "John Doe",
-                        total = "$100.00",
-                        status = "Processing"
-                    ),
-                    OrderItem(
-                        date = "31 Dec",
-                        number = "#124",
-                        customerName = "Jane Doe",
-                        total = "$200.00",
-                        status = "Completed"
-                    ),
-                    OrderItem(
-                        date = "4 Oct",
-                        number = "#123",
-                        customerName = "John Smith",
-                        total = "$300.00",
-                        status = "Pending"
-                    )
-                )
+                orders = orders,
+                isLoading = false
             )
         }
     }
 
     @Parcelize
     data class ViewState(
+        val isLoading: Boolean = false,
         val orders: List<OrderItem> = emptyList()
     ) : Parcelable
 
