@@ -28,6 +28,7 @@ import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
+import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
@@ -37,12 +38,14 @@ import com.woocommerce.android.ui.orders.OrdersListViewModel.OrderItem
 fun OrdersListScreen(viewModel: OrdersListViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     OrdersListScreen(
+        isLoading = viewState?.isLoading ?: false,
         orders = viewState?.orders.orEmpty()
     )
 }
 
 @Composable
 fun OrdersListScreen(
+    isLoading: Boolean,
     orders: List<OrderItem>,
     modifier: Modifier = Modifier
 ) {
@@ -64,21 +67,33 @@ fun OrdersListScreen(
                         .fillMaxWidth()
                         .padding(top = 6.dp)
                 )
-                ScalingLazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    autoCentering = AutoCenteringParams(itemIndex = 0),
-                    state = rememberScalingLazyListState(
-                        initialCenterItemIndex = 0
-                    )
-                ) {
-                    items(orders) {
-                        OrderListItem(
-                            modifier = modifier,
-                            order = it
-                        )
-                    }
+                if (isLoading) {
+                    LoadingScreen()
+                } else {
+                    OrdersLazyColumn(orders, modifier)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun OrdersLazyColumn(
+    orders: List<OrderItem>,
+    modifier: Modifier
+) {
+    ScalingLazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        autoCentering = AutoCenteringParams(itemIndex = 0),
+        state = rememberScalingLazyListState(
+            initialCenterItemIndex = 0
+        )
+    ) {
+        items(orders) {
+            OrderListItem(
+                modifier = modifier,
+                order = it
+            )
         }
     }
 }
@@ -142,6 +157,7 @@ fun OrderListItem(
 @Composable
 fun Preview() {
     OrdersListScreen(
+        isLoading = false,
         orders = listOf(
             OrderItem(
                 date = "25 Feb",
