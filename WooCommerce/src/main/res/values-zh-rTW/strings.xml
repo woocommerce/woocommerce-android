@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-23 13:54:03+0000
+Translation-Revision-Date: 2024-04-30 15:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="blaze_campaign_promote_button">宣傳</string>
+    <string name="store_onboarding_task_view_all_tasks">檢視所有工作項目</string>
+    <string name="analytics_session_no_available_description">自訂日期範圍無法提供工作階段分析所仰賴的不重複訪客數</string>
+    <string name="analytics_session_no_available">無法提供工作階段資料</string>
+    <string name="my_store_widget_unavailable">無法使用</string>
+    <string name="my_store_widget_stats_title">績效</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">檢視所有商店分析資料</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">隱藏成效最佳者</string>
+    <string name="dashboard_stats_custom_range_label">自訂</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">已選取項目</string>
+    <string name="dashboard_stats_edit_granularity_content_description">變更日期範圍按鈕</string>
+    <string name="images_unavailable_notice">由於你的網站已標記為私人網站，故無法使用圖片。 若要使用，可切換至「即將推出」模式。\n</string>
     <string name="card_selection_control">所選分析卡片</string>
     <string name="login_app_password_exit_dialog_cancel">取消</string>
     <string name="login_app_password_exit_dialog_confirmation">仍要結束</string>
     <string name="login_app_password_exit_dialog_message">看來你尚未核准應用程式連結。 你確定要結束嗎？</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">請選取並使用最小尺寸為 500x500 像素的圖片</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">請選取並使用最小尺寸為 400x400 像素的圖片</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">無效圖片</string>
     <string name="login_invalid_credentials_message">看來你輸入的使用者名稱或密碼並不相符。 請再次檢查你的憑證，然後再試一次。</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">如果仍無法載入資料，請聯絡我們的支援團隊取得協助。</string>
@@ -45,7 +57,6 @@ Language: zh_TW
     <string name="analytics_bundles_list_items_sold">售出的搭售方案</string>
     <string name="my_store_widget_blaze_title">Blaze 行銷活動</string>
     <string name="my_store_widget_top_products_title">熱門商品</string>
-    <string name="my_store_widget_stats_title">統計資料</string>
     <string name="my_store_widget_onboarding_title">申請</string>
     <string name="my_store_edit_screen_widget_onboarding_list">商店申請</string>
     <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze 行銷活動</string>
@@ -75,7 +86,6 @@ Language: zh_TW
     <string name="domain_picker_suggestions_title">建議</string>
     <string name="domain_picker_hint">輸入網域</string>
     <string name="domain_picker_title">選擇網域</string>
-    <string name="analytics_section_see_all">查看所有商店分析資料</string>
     <string name="my_store_custom_range_granularity_year">每年</string>
     <string name="my_store_custom_range_granularity_month">每月</string>
     <string name="my_store_custom_range_granularity_week">每週</string>
@@ -459,7 +469,6 @@ Language: zh_TW
     <string name="blaze_campaign_status_active">已啟用</string>
     <string name="blaze_campaign_status_in_moderation">審核中</string>
     <string name="blaze_campaign_show_all_button">顯示全部</string>
-    <string name="blaze_campaign_create_campaign_button">建立行銷活動</string>
     <string name="blaze_campaign_subtitle">提升能見度，加速產品銷售。</string>
     <string name="blaze_campaign_title">Blaze 行銷活動</string>
     <string name="card_reader_tap_to_pay_about_copyright">「感應支付符號」為 EMVCo, LLC 所擁有，並經其許可所使用的商標。</string>

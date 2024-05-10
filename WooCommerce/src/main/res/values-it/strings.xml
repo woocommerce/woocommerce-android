@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-23 11:54:05+0000
+Translation-Revision-Date: 2024-04-30 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="blaze_campaign_promote_button">Promuovi</string>
+    <string name="store_onboarding_task_view_all_tasks">Visualizza tutte le attività</string>
+    <string name="analytics_session_no_available_description">L\'analisi delle sessioni si basa su un numero unico di visitatori non disponibile per intervalli di date personalizzati</string>
+    <string name="analytics_session_no_available">Dati della sessione non disponibili</string>
+    <string name="my_store_widget_unavailable">Non disponibile</string>
+    <string name="my_store_widget_stats_title">Prestazioni</string>
+    <string name="dashboard_top_performers_main_cta_view_all_analytics">Visualizza tutte le analisi del negozio</string>
+    <string name="dashboard_top_performers_overflow_menu_hide_option">Nascondi prodotti più venduti</string>
+    <string name="dashboard_stats_custom_range_label">Personalizza</string>
+    <string name="dashboard_stats_edit_granularity_selected_content_description">Elemento selezionato</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Pulsante Cambia intervalli di date</string>
+    <string name="images_unavailable_notice">Le immagini non sono disponibili perché il tuo sito è contrassegnato come Privato. Puoi modificarlo passando alla modalità Presto disponibile.\n</string>
     <string name="card_selection_control">Selezione carta analisi</string>
     <string name="login_app_password_exit_dialog_cancel">Annulla</string>
     <string name="login_app_password_exit_dialog_confirmation">Esci comunque</string>
     <string name="login_app_password_exit_dialog_message">Sembra che tu non abbia ancora approvato la connessione dell\'app. Desideri uscire?</string>
-    <string name="blaze_campaign_edit_ad_invalid_image_description">Seleziona un\'immagine con una dimensione minima di 500x500 pixel</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Seleziona un\'immagine con una dimensione minima di 400x400 pixel</string>
     <string name="blaze_campaign_edit_ad_invalid_image_title">Immagine non valida</string>
     <string name="login_invalid_credentials_message">Sembra che il nome utente o la password inseriti non corrispondano. Controlla di nuovo le credenziali e riprova.</string>
     <string name="orderlist_connectivity_tool_summary_suggestion">Se i dati non vengono ancora caricati, contatta il nostro team di supporto.</string>
@@ -45,7 +57,6 @@ Language: it
     <string name="analytics_bundles_list_items_sold">Pacchetti venduti</string>
     <string name="my_store_widget_blaze_title">Campagne Blaze</string>
     <string name="my_store_widget_top_products_title">Migliori prodotti</string>
-    <string name="my_store_widget_stats_title">Statistiche</string>
     <string name="my_store_widget_onboarding_title">Avviamento</string>
     <string name="my_store_edit_screen_widget_onboarding_list">Avviamento del negozio</string>
     <string name="my_store_edit_screen_widget_blaze_campaigns">Campagne Blaze</string>
@@ -75,7 +86,6 @@ Language: it
     <string name="domain_picker_suggestions_title">Suggerimenti</string>
     <string name="domain_picker_hint">Inserisci un dominio</string>
     <string name="domain_picker_title">Scegli un dominio</string>
-    <string name="analytics_section_see_all">Vedi tutte le analisi del negozio</string>
     <string name="my_store_custom_range_granularity_year">Annuale</string>
     <string name="my_store_custom_range_granularity_month">Mensile</string>
     <string name="my_store_custom_range_granularity_week">Settimanale</string>
@@ -459,7 +469,6 @@ Language: it
     <string name="blaze_campaign_status_active">Attiva</string>
     <string name="blaze_campaign_status_in_moderation">In moderazione</string>
     <string name="blaze_campaign_show_all_button">Mostra tutte</string>
-    <string name="blaze_campaign_create_campaign_button">Crea la campagna</string>
     <string name="blaze_campaign_subtitle">Aumenta la visibilità e vendi i tuoi prodotti rapidamente.</string>
     <string name="blaze_campaign_title">Campagna Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Il simbolo del contactless è un marchio registrato di proprietà e utilizzato su concessione di EMVCo, LLC.</string>

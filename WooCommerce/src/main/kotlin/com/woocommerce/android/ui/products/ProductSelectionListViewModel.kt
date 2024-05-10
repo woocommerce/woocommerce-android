@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppConstants
+import com.woocommerce.android.R
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.NetworkStatus
@@ -190,10 +191,14 @@ class ProductSelectionListViewModel @Inject constructor(
     ) {
         if (networkStatus.isConnected()) {
             if (searchQuery.isNullOrEmpty()) {
-                _productList.value = productRepository.fetchProductList(
+                productRepository.fetchProductList(
                     loadMore,
                     excludedProductIds = excludedProductIds
-                )
+                ).onFailure {
+                    triggerEvent(ShowSnackbar(R.string.product_list_fetch_error))
+                }.getOrNull()?.let {
+                    _productList.value = it
+                }
             } else {
                 productRepository.searchProductList(
                     searchQuery = searchQuery,

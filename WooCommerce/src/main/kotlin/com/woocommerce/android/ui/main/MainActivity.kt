@@ -59,7 +59,6 @@ import com.woocommerce.android.model.Notification
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -94,7 +93,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewZendeskTickets
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
-import com.woocommerce.android.ui.mystore.MyStoreFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
@@ -444,7 +442,7 @@ class MainActivity :
     override fun isAtNavigationRoot(): Boolean {
         return if (::navController.isInitialized) {
             val currentDestinationId = navController.currentDestination?.id
-            currentDestinationId == DashboardDestination.id ||
+            currentDestinationId == R.id.dashboard ||
                 currentDestinationId == R.id.orders ||
                 currentDestinationId == R.id.products ||
                 currentDestinationId == R.id.moreMenu ||
@@ -659,11 +657,6 @@ class MainActivity :
             )
         }
         startActivityForResult(intent, RequestCodes.SETTINGS)
-    }
-
-    override fun showAnalytics(targetPeriod: StatsTimeRangeSelection) {
-        val action = MyStoreFragmentDirections.actionMyStoreToAnalytics(targetPeriod)
-        navController.navigateSafely(action)
     }
 
     override fun updateSelectedSite() {

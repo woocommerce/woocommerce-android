@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAc
 fun DashboardWidget.Type.defaultHideMenuEntry(onHideClicked: () -> Unit): DashboardWidgetAction {
     return DashboardWidgetAction(
         title = UiStringRes(
-            R.string.dynamic_dashboard_hide_widget_menu_item,
+            R.string.dynamic_dashboard_widget_menu_item_hide,
             params = listOf(UiStringRes(titleResource))
         ),
         action = onHideClicked

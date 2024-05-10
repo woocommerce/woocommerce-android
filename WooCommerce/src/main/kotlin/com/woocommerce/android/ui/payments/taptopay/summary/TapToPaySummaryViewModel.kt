@@ -5,7 +5,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -107,7 +106,7 @@ class TapToPaySummaryViewModel @Inject constructor(
     }
 
     fun onLearnMoreClicked() {
-        triggerEvent(NavigateToUrlInGenericWebView(AppUrls.LEARN_MORE_ABOUT_TAP_TO_PAY))
+        triggerEvent(NavigateTTPAboutScreen(countryConfig))
     }
 
     private suspend fun autoRefundTestPayment(order: Order) {
@@ -177,5 +176,7 @@ class TapToPaySummaryViewModel @Inject constructor(
         val action: () -> Unit
     ) : Event()
 
-    data class NavigateToUrlInGenericWebView(val url: String) : Event()
+    data class NavigateTTPAboutScreen(
+        val cardReaderConfigForSupportedCountry: CardReaderConfigForSupportedCountry
+    ) : Event()
 }

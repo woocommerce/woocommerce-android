@@ -252,7 +252,14 @@ class CustomAmountsFragment : BaseFragment(R.layout.dialog_custom_amounts) {
             binding.editPercentage.addTextChangedListener {
                 if (it != null && it.toString().isNotEmpty()) {
                     if (it.toString() != viewModel.currentPercentage.toString()) {
-                        viewModel.currentPercentage = BigDecimal(it.toString())
+                        try {
+                            val newPercentage = BigDecimal(it.toString())
+                            viewModel.currentPercentage = newPercentage
+                            binding.editPercentage.error = null
+                        } catch (e: NumberFormatException) {
+                            binding.editPercentage.error =
+                                getString(R.string.custom_amounts_percentage_invalid_value)
+                        }
                     }
                     binding.updatedAmount.show()
                 } else {

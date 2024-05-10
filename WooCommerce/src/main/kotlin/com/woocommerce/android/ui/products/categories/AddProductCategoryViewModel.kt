@@ -84,6 +84,10 @@ class AddProductCategoryViewModel @Inject constructor(
         }
     }
 
+    fun onClearParentCategoryClicked() {
+        addProductCategoryViewState = addProductCategoryViewState.copy(selectedParentId = 0L)
+    }
+
     fun onCategoryNameChanged(categoryName: String) {
         addProductCategoryViewState = if (categoryName.isEmpty()) {
             addProductCategoryViewState.copy(
@@ -251,7 +255,8 @@ class AddProductCategoryViewModel @Inject constructor(
                 } else {
                     _parentCategories.value = productsInDb
                         .sortCategories(resourceProvider)
-                        .filter { parentCategoryIsElegible(it) }
+                        .asSequence()
+                        .filterDescendantsOfCurrent()
                     showSkeleton = false
                 }
             }
@@ -265,9 +270,23 @@ class AddProductCategoryViewModel @Inject constructor(
         }
     }
 
-    private fun parentCategoryIsElegible(it: ProductCategoryItemUiModel) =
-        it.category.remoteCategoryId != navArgs.productCategory?.remoteCategoryId &&
-            it.category.parentId != navArgs.productCategory?.remoteCategoryId
+    private fun Sequence<ProductCategoryItemUiModel>.filterDescendantsOfCurrent(): List<ProductCategoryItemUiModel> {
+        return filterNot {
+            getIneligibleCategories(navArgs.productCategory?.remoteCategoryId).contains(it.category.remoteCategoryId)
+        }.toList()
+    }
+
+    private fun Sequence<ProductCategoryItemUiModel>.getIneligibleCategories(currentId: Long?): Set<Long> {
+        return currentId?.let {
+            val ineligibleCategories = mutableSetOf(currentId)
+            this.filter { it.category.parentId == currentId }
+                .map { it.category.remoteCategoryId }
+                .forEach {
+                    ineligibleCategories += getIneligibleCategories(it)
+                }
+            ineligibleCategories
+        } ?: emptySet()
+    }
 
     /**
      * Triggered when the user scrolls past the point of loaded categories
@@ -292,7 +311,8 @@ class AddProductCategoryViewModel @Inject constructor(
                     productCategoriesRepository.getProductCategoriesList()
                 }
                 .sortCategories(resourceProvider)
-                .filter { parentCategoryIsElegible(it) }
+                .asSequence()
+                .filterDescendantsOfCurrent()
 
             parentCategoryListViewState = parentCategoryListViewState.copy(
                 isLoading = true,

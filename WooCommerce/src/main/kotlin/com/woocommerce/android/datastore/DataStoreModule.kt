@@ -12,8 +12,8 @@ import com.woocommerce.android.datastore.DataStoreType.DASHBOARD_STATS
 import com.woocommerce.android.datastore.DataStoreType.TOP_PERFORMER_PRODUCTS
 import com.woocommerce.android.datastore.DataStoreType.TRACKER
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.ui.dashboard.data.CustomDateRangeSerializer
 import com.woocommerce.android.ui.mystore.data.CustomDateRange
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

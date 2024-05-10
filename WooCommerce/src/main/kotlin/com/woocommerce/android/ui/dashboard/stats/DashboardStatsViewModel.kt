@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.offsetInHours
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsUpdateDataStore
@@ -22,9 +23,9 @@ import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitte
 import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
+import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
-import com.woocommerce.android.ui.mystore.data.StatsCustomDateRangeDataStore
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
@@ -36,11 +37,13 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
@@ -95,10 +98,12 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private var _lastUpdateStats = MutableLiveData<Long?>()
     val lastUpdateStats: LiveData<Long?> = _lastUpdateStats
 
+    private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+
     init {
         viewModelScope.launch {
             selectedDateRange.flatMapLatest { selectedRange ->
-                parentViewModel.refreshTrigger.onStart { emit(RefreshEvent()) }.map {
+                merge(refreshTrigger, parentViewModel.refreshTrigger).onStart { emit(RefreshEvent()) }.map {
                     Pair(selectedRange, it.isForced)
                 }
             }.collectLatest { (selectedRange, isForceRefresh) ->
@@ -166,9 +171,19 @@ class DashboardStatsViewModel @AssistedInject constructor(
         selectedChartDate.value = date
     }
 
+    fun onRefresh() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STATS.trackingIdentifier
+            )
+        )
+        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
     private suspend fun loadStoreStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) = coroutineScope {
         if (!networkStatus.isConnected()) {
-            _revenueStatsState.value = RevenueStatsViewState.Content(null, selectedRange)
+            _revenueStatsState.value = RevenueStatsViewState.GenericError
             _visitorStatsState.value = VisitorStatsViewState.NotLoaded
             return@coroutineScope
         }

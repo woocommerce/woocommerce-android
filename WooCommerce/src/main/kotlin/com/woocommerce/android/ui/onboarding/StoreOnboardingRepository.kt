@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.onboarding
 
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.isFreeTrial
 import com.woocommerce.android.tools.SelectedSite
@@ -25,20 +26,26 @@ import javax.inject.Singleton
 class StoreOnboardingRepository @Inject constructor(
     private val onboardingStore: OnboardingStore,
     private val selectedSite: SelectedSite,
-    private val siteStore: SiteStore
+    private val siteStore: SiteStore,
+    private val appPrefs: AppPrefsWrapper
 ) {
     private val onboardingTasksCacheFlow: MutableSharedFlow<OnboardingTasksEvent> = MutableSharedFlow(replay = 1)
+    val hasCachedTasks
+        get() = onboardingTasksCacheFlow.replayCache.firstOrNull()
+            ?.takeIf { it.siteId == selectedSite.getSelectedSiteId() } != null
 
     fun observeOnboardingTasks(): Flow<List<OnboardingTask>> = onboardingTasksCacheFlow
         .filter { it.siteId == selectedSite.get().id }
         .map { it.tasks }
 
-    suspend fun fetchOnboardingTasks() {
+    suspend fun fetchOnboardingTasks(): Result<Unit> {
         WooLog.d(WooLog.T.ONBOARDING, "Fetching onboarding tasks")
         val result = onboardingStore.fetchOnboardingTasks(selectedSite.get())
-        when {
-            result.isError ->
+        return when {
+            result.isError -> {
                 WooLog.i(WooLog.T.ONBOARDING, "Error fetching onboarding tasks: ${result.error}")
+                Result.failure(WooException(result.error))
+            }
 
             else -> {
                 WooLog.d(WooLog.T.ONBOARDING, "Success fetching onboarding tasks")
@@ -55,7 +62,15 @@ class StoreOnboardingRepository @Inject constructor(
                     ?.sortedBy { it.isComplete }
                     ?: emptyList()
 
+                // Update onboarding completed status based on the tasks completion status
+                if (mobileSupportedTasks.all { it.isComplete }) {
+                    appPrefs.updateOnboardingCompletedStatus(selectedSite.getSelectedSiteId(), true)
+                } else if (appPrefs.isOnboardingCompleted(selectedSite.getSelectedSiteId())) {
+                    appPrefs.updateOnboardingCompletedStatus(selectedSite.getSelectedSiteId(), false)
+                }
+
                 onboardingTasksCacheFlow.emit(OnboardingTasksEvent(selectedSite.get().id, mobileSupportedTasks))
+                Result.success(Unit)
             }
         }
     }

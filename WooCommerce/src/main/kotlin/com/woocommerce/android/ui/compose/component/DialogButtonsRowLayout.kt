@@ -58,18 +58,24 @@ fun DialogButtonsRowLayout(
                     placeables.maxOf { it.height }
                 }
 
-                return layout(constraints.maxWidth, height) {
+                val width = if (constraints.maxWidth != Constraints.Infinity) {
+                    constraints.maxWidth
+                } else {
+                    placeables.sumOf { it.width }
+                }
+
+                return layout(width, height) {
                     if (!shouldStackItems) {
                         neutralPlaceable?.placeRelative(
                             x = 0,
                             y = (height - neutralPlaceable.height) / 2
                         )
                         confirmPlaceable.placeRelative(
-                            x = constraints.maxWidth - confirmPlaceable.width,
+                            x = width - confirmPlaceable.width,
                             y = (height - confirmPlaceable.height) / 2
                         )
                         dismissPlaceable.placeRelative(
-                            x = constraints.maxWidth - confirmPlaceable.width - dismissPlaceable.width,
+                            x = width - confirmPlaceable.width - dismissPlaceable.width,
                             y = (height - dismissPlaceable.height) / 2
                         )
                     } else {
@@ -77,7 +83,7 @@ fun DialogButtonsRowLayout(
 
                         placeables.forEach { placeable ->
                             placeable.placeRelative(
-                                x = constraints.maxWidth - placeable.width,
+                                x = width - placeable.width,
                                 y = yPosition
                             )
                             yPosition += placeable.height
@@ -105,6 +111,24 @@ fun DialogButtonsRowLayout(
                     measurables.sumOf { it.maxIntrinsicHeight(width) }
                 } else {
                     measurables.maxOf { it.maxIntrinsicHeight(width) }
+                }
+            }
+
+            override fun IntrinsicMeasureScope.maxIntrinsicWidth(
+                measurables: List<IntrinsicMeasurable>,
+                height: Int
+            ): Int {
+                return measurables.sumOf {
+                    it.maxIntrinsicWidth(height)
+                }
+            }
+
+            override fun IntrinsicMeasureScope.minIntrinsicWidth(
+                measurables: List<IntrinsicMeasurable>,
+                height: Int
+            ): Int {
+                return measurables.sumOf {
+                    it.minIntrinsicWidth(height)
                 }
             }
         }

@@ -35,6 +35,7 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -295,7 +296,7 @@ fun OnboardingTaskCollapsedProgressHeader(
 ) {
     val completedTasks = tasks.count { it.isCompleted }
     val totalTasks = tasks.count()
-    val progress by remember { mutableStateOf(completedTasks / totalTasks.toFloat()) }
+    val progress by remember { mutableFloatStateOf(if (totalTasks == 0) 0f else completedTasks / totalTasks.toFloat()) }
     val animatedProgress = animateFloatAsState(
         targetValue = progress,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
@@ -324,7 +325,7 @@ fun OnboardingTaskProgressHeader(
 ) {
     val completedTasks = tasks.count { it.isCompleted }
     val totalTasks = tasks.count()
-    val progress by remember { mutableStateOf(completedTasks / totalTasks.toFloat()) }
+    val progress by remember { mutableFloatStateOf(if (totalTasks == 0) 0f else completedTasks / totalTasks.toFloat()) }
     val animatedProgress = animateFloatAsState(
         targetValue = progress,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec
