@@ -86,7 +86,7 @@ class ProductListToolbarHelper @Inject constructor(
         this.viewModel = productListViewModel
         this.binding = binding
 
-        fragment.lifecycle.addObserver(this)
+        fragment.viewLifecycleOwner.lifecycle.addObserver(this)
 
         if (productListViewModel.isSearching()) {
             binding.productsSearchTabView.isVisible = true
