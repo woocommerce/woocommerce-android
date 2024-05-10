@@ -34,13 +34,13 @@ class DashboardReviewsViewModel @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = combine(refreshTrigger, status) { refresh, status -> Pair(refresh, status) }
         .transformLatest { (refresh, status) ->
-            emit(ViewState.Loading)
+            emit(ViewState.Loading(status))
             emitAll(
                 observeMostRecentReviews(forceRefresh = refresh.isForced, status = status)
                     .map { result ->
                         result.fold(
                             onSuccess = { reviews ->
-                                ViewState.Success(reviews)
+                                ViewState.Success(reviews, status)
                             },
                             onFailure = { ViewState.Error }
                         )
@@ -48,6 +48,10 @@ class DashboardReviewsViewModel @AssistedInject constructor(
             )
         }
         .asLiveData()
+
+    fun onFilterSelected(status: ProductReviewStatus) {
+        this.status.value = status
+    }
 
     private fun observeMostRecentReviews(
         forceRefresh: Boolean,
@@ -79,8 +83,12 @@ class DashboardReviewsViewModel @AssistedInject constructor(
             .take(3)
 
     sealed interface ViewState {
-        data object Loading : ViewState
-        data class Success(val reviews: List<ProductReview>) : ViewState
+        data class Loading(val selectedFilter: ProductReviewStatus) : ViewState
+        data class Success(
+            val reviews: List<ProductReview>,
+            val selectedFilter: ProductReviewStatus
+        ) : ViewState
+
         data object Error : ViewState
     }
 
