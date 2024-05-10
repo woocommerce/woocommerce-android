@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -80,9 +79,9 @@ class ProductTypesBottomSheetViewModel @Inject constructor(
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun saveUserSelection(productTypeUiItem: ProductTypesBottomSheetUiItem) {
-        AppPrefs.setSelectedProductType(productTypeUiItem.type)
-        AppPrefs.setSelectedProductIsVirtual(productTypeUiItem.isVirtual)
+        throw NotImplementedError("Removed for testing")
     }
 
     @Parcelize

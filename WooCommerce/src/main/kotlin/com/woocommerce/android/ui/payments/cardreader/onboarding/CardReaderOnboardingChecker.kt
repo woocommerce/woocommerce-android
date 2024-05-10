@@ -423,12 +423,6 @@ class CardReaderOnboardingChecker @Inject constructor(
     }
 }
 
-data class PersistentOnboardingData(
-    val status: CardReaderOnboardingStatus,
-    val preferredPlugin: PluginType?,
-    val version: String?,
-)
-
 fun PluginType.toInPersonPaymentsPluginType(): InPersonPaymentsPluginType = when (this) {
     WOOCOMMERCE_PAYMENTS -> InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
     STRIPE_EXTENSION_GATEWAY -> InPersonPaymentsPluginType.STRIPE
@@ -438,11 +432,6 @@ private data class PluginWrapper(
     val type: PluginType,
     val info: SitePluginModel?
 )
-
-enum class PluginType(val pluginName: String) {
-    WOOCOMMERCE_PAYMENTS("woocommerce-payments"),
-    STRIPE_EXTENSION_GATEWAY("woocommerce-gateway-stripe")
-}
 
 fun PluginType.getPluginInfo(wcPayPluginInfo: SitePluginModel?, stripePluginInfo: SitePluginModel?) =
     when (this) {

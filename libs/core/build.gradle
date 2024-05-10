@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.parcelize'
+    id 'com.google.devtools.ksp'
 }
 
 repositories {
@@ -53,9 +55,37 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    buildFeatures {
+        buildConfig = true
+        resValues = false
+    }
 }
 
 dependencies {
+    implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
+
+    implementation "androidx.preference:preference:1.2.0"
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation "androidx.datastore:datastore:1.0.0"
+
+    implementation platform('com.google.firebase:firebase-bom:32.7.1')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-config'
+    implementation 'com.google.firebase:firebase-analytics'
+
+    implementation("org.wordpress:utils:$wordPressUtilsVersion") {
+        exclude group: "com.mcxiaoke.volley"
+        exclude group: "com.android.support"
+    }
+
+    implementation "org.apache.commons:commons-text:$commonsText"
+    implementation "commons-io:commons-io:$commonsIO"
+
+    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+    ksp "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
+    ksp "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
+
     api("${gradle.ext.fluxCBinaryPath}:$fluxCVersion") {
         exclude group: "com.android.support"
         exclude group: "org.wordpress", module: "utils"

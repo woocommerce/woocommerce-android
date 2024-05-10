@@ -1,6 +1,6 @@
 package com.woocommerce.android.tools
 
-import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.core.BuildConfig
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
 

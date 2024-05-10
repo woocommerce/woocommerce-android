@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.pos.ui.Routing
 import com.woocommerce.android.util.AddressUtils
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +33,7 @@ class PosActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         crashLogging.recordEvent("Testing crash logging injection")
+        AnalyticsTracker.trackViewShown(this)
 
         val screenKey = intent.getStringExtra("screen_key") ?: "default"
         val data = intent.getStringExtra("id") ?: ""

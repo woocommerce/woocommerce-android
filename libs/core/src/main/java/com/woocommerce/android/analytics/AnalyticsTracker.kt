@@ -5,14 +5,13 @@ import android.content.Context
 import androidx.preference.PreferenceManager
 import com.automattic.android.tracks.TracksClient
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
+import com.woocommerce.android.core.BuildConfig
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
@@ -105,9 +104,9 @@ class AnalyticsTracker private constructor(
         tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
 
         if (propertiesJson.length() > 0) {
-            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
+            WooLog.i(WooLog.T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
         } else {
-            WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
+            WooLog.i(WooLog.T.UTILS, "\uD83D\uDD35 Tracked: $eventName")
         }
     }
 

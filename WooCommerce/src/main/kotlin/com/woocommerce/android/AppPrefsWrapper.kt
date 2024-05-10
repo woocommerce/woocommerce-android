@@ -5,6 +5,7 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
+import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel
 import com.woocommerce.android.ui.promobanner.PromoBannerType
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +19,11 @@ class AppPrefsWrapper @Inject constructor() {
 
     var isAIProductDescriptionTooltipDismissed by AppPrefs::isAIProductDescriptionTooltipDismissed
 
-    var aiContentGenerationTone by AppPrefs::aiContentGenerationTone
+    var aiContentGenerationTone: AboutProductSubViewModel.AiTone
+        get() = throw UnsupportedOperationException("removed for testing")
+        set(_) {
+            // removed for testing
+        }
 
     var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
 
@@ -283,10 +288,12 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun isSelectedProductVirtual() = AppPrefs.isSelectedProductVirtual()
 
-    fun isPromoBannerShown(bannerType: PromoBannerType) = AppPrefs.isPromoBannerShown(bannerType)
+    @Suppress("UNUSED_PARAMETER", "FunctionOnlyReturningConstant")
+    fun isPromoBannerShown(bannerType: PromoBannerType) = false
 
+    @Suppress("UNUSED_PARAMETER")
     fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
-        AppPrefs.setPromoBannerShown(bannerType, shown)
+        throw UnsupportedOperationException("removed for testing")
     }
 
     fun isV4StatsSupported() = AppPrefs.isV4StatsSupported()

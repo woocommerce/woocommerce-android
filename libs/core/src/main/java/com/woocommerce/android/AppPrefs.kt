@@ -32,20 +32,15 @@ import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_D
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_PHONE_NUMBER
+import com.woocommerce.android.core.BuildConfig
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PersistentOnboardingData
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
-import com.woocommerce.android.ui.prefs.DeveloperOptionsViewModel.DeveloperOptionsViewState.UpdateOptions
 import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
-import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
-import com.woocommerce.android.ui.promobanner.PromoBannerType
 import com.woocommerce.android.util.PreferenceUtils
-import com.woocommerce.android.util.ThemeOption
-import com.woocommerce.android.util.ThemeOption.DEFAULT
 import java.util.Calendar
 import java.util.Date
 
@@ -252,7 +247,7 @@ object AppPrefs {
         set(value) = setBoolean(DeletablePrefKey.ENABLE_SIMULATED_INTERAC, value)
 
     var updateReaderOptionSelected: String
-        get() = getString(UPDATE_SIMULATED_READER_OPTION, UpdateOptions.RANDOM.toString())
+        get() = getString(UPDATE_SIMULATED_READER_OPTION, "")
         set(option) = setString(UPDATE_SIMULATED_READER_OPTION, option)
 
     var isEUShippingNoticeDismissed: Boolean
@@ -428,17 +423,6 @@ object AppPrefs {
     private fun getReceiptKey(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =
         PrefKeyString("$RECEIPT_PREFIX:$localSiteId:$remoteSiteId:$selfHostedSiteId:$orderId")
 
-    private fun getPromoBannerKey(bannerType: PromoBannerType) =
-        PrefKeyString("PROMO_BANNER_SHOWN_${bannerType.name}")
-
-    fun isPromoBannerShown(bannerType: PromoBannerType): Boolean {
-        return getBoolean(getPromoBannerKey(bannerType), false)
-    }
-
-    fun setPromoBannerShown(bannerType: PromoBannerType, shown: Boolean) {
-        setBoolean(getPromoBannerKey(bannerType), shown)
-    }
-
     fun setLastConnectedCardReaderId(readerId: String) =
         setString(UndeletablePrefKey.LAST_CONNECTED_CARD_READER_ID, readerId)
 
@@ -504,8 +488,6 @@ object AppPrefs {
         setBoolean(DATABASE_DOWNGRADED, value)
     }
 
-    fun setSelectedProductType(type: ProductType) = setString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, type.value)
-
     fun getSelectedProductType(): String = getString(DeletablePrefKey.SELECTED_PRODUCT_TYPE, "")
 
     fun setSelectedProductIsVirtual(isVirtual: Boolean) =
@@ -517,13 +499,6 @@ object AppPrefs {
 
     fun setImageOptimizationEnabled(enabled: Boolean) {
         setBoolean(IMAGE_OPTIMIZE_ENABLED, enabled)
-    }
-
-    fun getAppTheme(): ThemeOption =
-        ThemeOption.valueOf(getString(DeletablePrefKey.SELECTED_APP_THEME, DEFAULT.toString()))
-
-    fun setAppTheme(theme: ThemeOption) {
-        setString(DeletablePrefKey.SELECTED_APP_THEME, theme.toString())
     }
 
     /**
@@ -977,13 +952,6 @@ object AppPrefs {
         set(value) = setBoolean(
             key = DeletablePrefKey.IS_AI_DESCRIPTION_TOOLTIP_DISMISSED,
             value = value
-        )
-
-    var aiContentGenerationTone: AiTone
-        get() = AiTone.fromString(getString(key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE))
-        set(value) = setString(
-            key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE,
-            value = value.slug
         )
 
     var aiProductCreationIsFirstAttempt: Boolean

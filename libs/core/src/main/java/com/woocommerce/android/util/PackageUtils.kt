@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.core.content.pm.PackageInfoCompat
-import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.core.BuildConfig
 import com.woocommerce.android.extensions.packageInfo
 import java.util.Locale
 

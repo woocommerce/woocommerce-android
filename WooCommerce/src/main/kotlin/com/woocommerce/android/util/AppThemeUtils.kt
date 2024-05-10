@@ -3,8 +3,6 @@ package com.woocommerce.android.util
 import android.annotation.SuppressLint
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatDelegate
-import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.R
 
 /**
  * Helper class for working with Android Dark and Light Themes
@@ -12,10 +10,11 @@ import com.woocommerce.android.R
 object AppThemeUtils {
     @SuppressLint("WrongConstant")
     fun setAppTheme(newTheme: ThemeOption? = null) {
-        val theme = newTheme?.let {
-            AppPrefs.setAppTheme(it)
-            it
-        } ?: AppPrefs.getAppTheme()
+//        val theme = newTheme?.let {
+//            AppPrefs.setAppTheme(it)
+//            it
+//        } ?: AppPrefs.getAppTheme()
+        val theme = newTheme ?: ThemeOption.DEFAULT
 
         when (theme) {
             ThemeOption.LIGHT ->
@@ -34,7 +33,7 @@ object AppThemeUtils {
 }
 
 enum class ThemeOption(@StringRes val label: Int) {
-    LIGHT(R.string.settings_app_theme_option_light),
-    DARK(R.string.settings_app_theme_option_dark),
-    DEFAULT(R.string.settings_app_theme_option_default)
+    LIGHT(0),
+    DARK(1),
+    DEFAULT(2)
 }

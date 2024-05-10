@@ -181,7 +181,7 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_licensesFragment)
         }
 
-        binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)
+//        binding.optionTheme.optionValue = getString(AppPrefs.getAppTheme().label)
         binding.optionTheme.setOnClickListener {
             showThemeChooser()
         }
@@ -317,7 +317,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
     private fun showThemeChooser() {
-        val currentTheme = AppPrefs.getAppTheme()
+//        val currentTheme = AppPrefs.getAppTheme()
+        val currentTheme = ThemeOption.LIGHT
         val valuesArray = ThemeOption.values().map { getString(it.label) }.toTypedArray()
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(getString(R.string.settings_app_theme_title))
