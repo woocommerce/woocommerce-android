@@ -145,7 +145,8 @@ class OrderListRepository @Inject constructor(
         val result = orderStore.fetchOrders(
             site = selectedSite.get(),
             count = count,
-            statusFilter = statusFilter?.value
+            statusFilter = statusFilter?.value,
+            deleteOldData = false
         )
 
         if (result.isError) {
