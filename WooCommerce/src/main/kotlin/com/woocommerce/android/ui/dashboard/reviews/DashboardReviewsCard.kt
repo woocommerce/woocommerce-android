@@ -1,14 +1,24 @@
 package com.woocommerce.android.ui.dashboard.reviews
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.DashboardWidget
@@ -90,8 +100,12 @@ private fun ProductReviewsCardContent(
     Column(modifier) {
         Header(viewState.selectedFilter, onFilterSelected)
 
-        viewState.reviews.forEach { review ->
-            Text(text = review.review.fastStripHtml())
+        if (viewState.reviews.isEmpty()) {
+            EmptyView(selectedFilter = viewState.selectedFilter)
+        } else {
+            viewState.reviews.forEach { review ->
+                Text(text = review.review.fastStripHtml())
+            }
         }
     }
 }
@@ -124,6 +138,50 @@ private fun Header(
         )
 
         Divider()
+    }
+}
+
+@Composable
+fun EmptyView(
+    selectedFilter: ProductReviewStatus,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_reviews),
+            contentDescription = null,
+            modifier = Modifier.sizeIn(maxWidth = 160.dp, maxHeight = 160.dp)
+        )
+
+        Text(
+            text = stringResource(
+                id = if (selectedFilter == ProductReviewStatus.ALL) {
+                    R.string.empty_review_list_title
+                } else {
+                    R.string.dashboard_reviews_card_empty_title_filtered
+                }
+            ),
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = stringResource(
+                id = if (selectedFilter == ProductReviewStatus.ALL) {
+                    R.string.empty_review_list_message
+                } else {
+                    R.string.dashboard_reviews_card_empty_message_filtered
+                }
+            ),
+            style = MaterialTheme.typography.body1,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
