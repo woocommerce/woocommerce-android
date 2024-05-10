@@ -55,7 +55,8 @@ fun DashboardReviewsCard(
                 is DashboardReviewsViewModel.ViewState.Error -> {
                     WidgetError(
                         onContactSupportClicked = { /*TODO*/ },
-                        onRetryClicked = { /*TODO*/ })
+                        onRetryClicked = { /*TODO*/ }
+                    )
                 }
             }
         }

@@ -72,6 +72,7 @@ class DashboardReviewsViewModel @AssistedInject constructor(
         }
     }
 
+    @Suppress("MagicNumber")
     private suspend fun getCachedReviews(status: ProductReviewStatus) =
         reviewListRepository.getCachedProductReviews()
             .filter { status == ProductReviewStatus.ALL || it.status == status.toString() }
