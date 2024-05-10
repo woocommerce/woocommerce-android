@@ -27,10 +27,13 @@ class OrderShippingViewModelTest : BaseUnitTest() {
             )
         )
 
+    private val getShippingMethodById: GetShippingMethodById = mock()
+
     fun setup(args: OrderShippingFragmentArgs) {
         viewModel = OrderShippingViewModel(
             savedStateHandle = args.toSavedStateHandle(),
-            resourceProvider = mock()
+            resourceProvider = mock(),
+            getShippingMethodById = getShippingMethodById
         )
     }
 
