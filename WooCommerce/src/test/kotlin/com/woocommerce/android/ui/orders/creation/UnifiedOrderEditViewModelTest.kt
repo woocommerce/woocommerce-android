@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigura
 import com.woocommerce.android.ui.orders.creation.configuration.ProductRules
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRateLabel
@@ -306,6 +307,25 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         verify(tracker).track(
             AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD,
             mapOf(AnalyticsTracker.KEY_FLOW to tracksFlow),
+        )
+    }
+
+    @Test
+    fun `when shipping line added or edited, send tracks event`() {
+        val result = ShippingUpdateResult(
+            id = 1L,
+            amount = BigDecimal.TEN,
+            name = "Other",
+            methodId = "other"
+        )
+        sut.onUpdatedShipping(result)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD,
+            mapOf(
+                AnalyticsTracker.KEY_FLOW to tracksFlow,
+                AnalyticsTracker.KEY_SHIPPING_METHOD to result.methodId
+            )
         )
     }
 
@@ -2477,6 +2497,13 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
+    }
+
+    @Test
+    fun `when shipping button tapped, send tracks event`() {
+        sut.onShippingButtonClicked()
+
+        verify(tracker).track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
     }
     //endregion
 

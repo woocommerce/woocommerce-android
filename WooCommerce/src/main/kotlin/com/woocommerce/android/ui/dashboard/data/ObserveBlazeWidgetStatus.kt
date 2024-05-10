@@ -37,8 +37,7 @@ class ObserveBlazeWidgetStatus @Inject constructor(
         .withIndex()
         .map { (index, productsCount) ->
             if (productsCount == 0L && index == 0) {
-                productListRepository.fetchProductList()
-                false
+                productListRepository.fetchProductList().getOrNull()?.size != 0
             } else {
                 productsCount > 0
             }

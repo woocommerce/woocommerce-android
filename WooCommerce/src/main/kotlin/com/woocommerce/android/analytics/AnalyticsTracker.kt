@@ -295,6 +295,7 @@ class AnalyticsTracker private constructor(
         const val KEY_CUSTOM_AMOUNTS_COUNT = "custom_amounts_Count"
         const val KEY_CUSTOM_AMOUNT_TAX_STATUS = "tax_status"
         const val KEY_EXPANDED = "expanded"
+        const val KEY_SHIPPING_METHOD = "shipping_method"
 
         const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE = "taxable"
         const val VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE = "none"

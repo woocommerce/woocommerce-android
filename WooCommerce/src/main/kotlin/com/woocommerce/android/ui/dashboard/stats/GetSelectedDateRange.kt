@@ -4,7 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
-import com.woocommerce.android.ui.mystore.data.CustomDateRangeDataStore
+import com.woocommerce.android.ui.dashboard.data.CustomDateRangeDataStore
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine

@@ -17,7 +17,8 @@ enum class FeatureFlag {
     NEW_SHIPPING_SUPPORT,
     DYNAMIC_DASHBOARD,
     APP_PASSWORD_TUTORIAL,
-    EOSL_M1;
+    EOSL_M1,
+    DYNAMIC_DASHBOARD_M2;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -30,15 +31,14 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            EOSL_M1 -> PackageUtils.isDebugBuild()
+            DYNAMIC_DASHBOARD_M2 -> PackageUtils.isDebugBuild()
 
-            // Keep dynamic dashboard disabled when running in tests until we update the UI tests
-            DYNAMIC_DASHBOARD -> !PackageUtils.isTesting()
-
+            DYNAMIC_DASHBOARD,
             CONNECTIVITY_TOOL,
             CUSTOM_RANGE_ANALYTICS,
             NEW_SHIPPING_SUPPORT,
-            APP_PASSWORD_TUTORIAL -> true
+            APP_PASSWORD_TUTORIAL,
+            EOSL_M1 -> true
         }
     }
 }

@@ -106,6 +106,10 @@ class AddProductCategoryFragment :
             }
         }
 
+        binding.clearParentCategory.setOnClickListener {
+            viewModel.onClearParentCategoryClicked()
+        }
+
         with(binding.productCategoryParent) {
             viewModel.getSelectedParentCategoryName()?.let { setText(it) }
             setClickListener {
@@ -160,10 +164,17 @@ class AddProductCategoryFragment :
             }
             new.selectedParentId.takeIfNotEqualTo(old?.selectedParentId) {
                 val parentCategoryName = viewModel.getSelectedParentCategoryName()
-                parentCategoryName?.let { binding.productCategoryParent.setHtmlText(it) }
+                if (parentCategoryName != null) {
+                    binding.productCategoryParent.setHtmlText(parentCategoryName)
+                } else {
+                    binding.productCategoryParent.setHtmlText("")
+                }
             }
             new.isEditingMode.takeIfNotEqualTo(old?.isEditingMode) {
                 deleteMenuItem?.isVisible = it
+            }
+            new.selectedParentId.takeIfNotEqualTo(old?.selectedParentId) {
+                binding.clearParentCategory.isEnabled = it != 0L && it != null
             }
         }
 

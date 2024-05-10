@@ -27,7 +27,7 @@ class ShouldShowCreateTestOrderScreen @Inject constructor(
 
         val productList = localProductList.ifEmpty {
             withContext(Dispatchers.IO) {
-                productListRepository.fetchProductList()
+                productListRepository.fetchProductList().getOrNull() ?: productListRepository.getProductList()
             }
         }
 

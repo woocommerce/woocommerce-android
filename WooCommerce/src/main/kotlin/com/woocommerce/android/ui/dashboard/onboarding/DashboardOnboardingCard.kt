@@ -41,7 +41,6 @@ import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
@@ -77,7 +76,7 @@ fun DashboardOnboardingCard(
         WidgetCard(
             titleResource = onboardingState.title,
             menu = onboardingState.menu,
-            button = onboardingState.onViewAllTapped,
+            button = onboardingState.cardButton,
             modifier = modifier,
             isError = onboardingState.isError
         ) {
@@ -224,7 +223,7 @@ fun OnboardingCardProgressHeader(
 ) {
     val completedTasks = tasks.count { it.isCompleted }
     val totalTasks = tasks.count()
-    val progress by remember { mutableFloatStateOf(completedTasks / totalTasks.toFloat()) }
+    val progress by remember { mutableFloatStateOf(if (totalTasks == 0) 0f else completedTasks / totalTasks.toFloat()) }
     val animatedProgress = animateFloatAsState(
         targetValue = progress,
         animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
@@ -326,10 +325,7 @@ private fun OnboardingPreview() {
                     isCompleted = false,
                 )
             ),
-            onViewAllTapped = DashboardWidgetAction(
-                titleResource = R.string.store_onboarding_task_view_all_tasks,
-                action = {}
-            )
+            onViewAllTapped = {}
         ),
         onTaskClicked = {}
     )

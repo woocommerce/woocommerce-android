@@ -10,7 +10,7 @@ import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
-import com.woocommerce.android.e2e.screens.mystore.MyStoreScreen
+import com.woocommerce.android.e2e.screens.mystore.DashboardScreen
 import com.woocommerce.android.e2e.screens.notifications.NotificationsScreen
 import com.woocommerce.android.e2e.screens.orders.CardReaderPaymentScreen
 import com.woocommerce.android.e2e.screens.orders.UnifiedOrderScreen
@@ -90,9 +90,9 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         }
 
         // My Store
-        MyStoreScreen()
-            .stats.switchToStatsDashboardMonthTab()
-            .thenTakeScreenshot<MyStoreScreen>("order-dashboard")
+        DashboardScreen()
+            .stats.switchToStatsDashboardMonthTab(composeTestRule)
+            .thenTakeScreenshot<DashboardScreen>("order-dashboard")
 
         // Create Orders
         TabNavComponent()

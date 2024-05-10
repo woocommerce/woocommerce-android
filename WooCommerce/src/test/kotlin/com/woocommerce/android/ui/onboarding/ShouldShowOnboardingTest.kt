@@ -2,12 +2,8 @@ package com.woocommerce.android.ui.onboarding
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_COMPLETED
-import com.woocommerce.android.analytics.AnalyticsEvent.STORE_ONBOARDING_HIDE_LIST
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.ONBOARDING_LIST
-import com.woocommerce.android.ui.onboarding.ShouldShowOnboarding.Source.SETTINGS
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTask
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ABOUT_YOUR_STORE
 import com.woocommerce.android.ui.onboarding.StoreOnboardingRepository.OnboardingTaskType.ADD_FIRST_PRODUCT
@@ -95,18 +91,7 @@ internal class ShouldShowOnboardingTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when all tasks are completed and onboarding, then mark onboarding completed locally`() {
-        givenStoreOnboardingHasBeenShownAtLeastOnce(shown = true)
-
-        sut.showForTasks(ONBOARDING_TASK_COMPLETED_LIST)
-
-        verify(appPrefsWrapper).updateOnboardingCompletedStatus(CURRENT_SITE_ID, true)
-    }
-
-    @Test
     fun `given onboarding is enabled from settings, when at least one task is incomplete, then return true`() {
-        givenOnboardingIsEnabledFromSettings(enabled = true)
-
         val show = sut.showForTasks(ONBOARDING_TASK_INCOMPLETED_LIST)
 
         assertTrue(show)
@@ -114,50 +99,12 @@ internal class ShouldShowOnboardingTest : BaseUnitTest() {
 
     @Test
     fun `given onboarding is enabled from settings, when at least one task is incomplete, then mark onboarding shown`() {
-        givenOnboardingIsEnabledFromSettings(enabled = true)
-
         sut.showForTasks(ONBOARDING_TASK_INCOMPLETED_LIST)
 
         verify(appPrefsWrapper).setStoreOnboardingShown(CURRENT_SITE_ID)
     }
 
-    @Test
-    fun `given incomplete tasks, when hiding onboarding from the list, then track onboarding hidden from list`() {
-        sut.showForTasks(ONBOARDING_TASK_INCOMPLETED_LIST)
-
-        sut.updateOnboardingVisibilitySetting(show = false, source = ONBOARDING_LIST)
-
-        verify(analyticsTrackerWrapper).track(
-            stat = STORE_ONBOARDING_HIDE_LIST,
-            properties = mapOf(
-                AnalyticsTracker.KEY_HIDE_ONBOARDING_SOURCE to ONBOARDING_LIST.name.lowercase(),
-                AnalyticsTracker.KEY_HIDE_ONBOARDING_LIST_VALUE to true,
-                AnalyticsTracker.KEY_ONBOARDING_PENDING_TASKS to AnalyticsTracker.VALUE_STORE_DETAILS
-            )
-        )
-    }
-
-    @Test
-    fun `given completed tasks, when onboarding enabled from settings, then track onboarding enabled from settings`() {
-        sut.showForTasks(ONBOARDING_TASK_COMPLETED_LIST)
-
-        sut.updateOnboardingVisibilitySetting(show = true, source = SETTINGS)
-
-        verify(analyticsTrackerWrapper).track(
-            stat = STORE_ONBOARDING_HIDE_LIST,
-            properties = mapOf(
-                AnalyticsTracker.KEY_HIDE_ONBOARDING_SOURCE to SETTINGS.name.lowercase(),
-                AnalyticsTracker.KEY_HIDE_ONBOARDING_LIST_VALUE to false,
-                AnalyticsTracker.KEY_ONBOARDING_PENDING_TASKS to ""
-            )
-        )
-    }
-
     private fun givenStoreOnboardingHasBeenShownAtLeastOnce(shown: Boolean) {
         whenever(appPrefsWrapper.getStoreOnboardingShown(CURRENT_SITE_ID)).thenReturn(shown)
-    }
-
-    private fun givenOnboardingIsEnabledFromSettings(enabled: Boolean) {
-        whenever(appPrefsWrapper.getOnboardingSettingVisibility(CURRENT_SITE_ID)).thenReturn(enabled)
     }
 }
