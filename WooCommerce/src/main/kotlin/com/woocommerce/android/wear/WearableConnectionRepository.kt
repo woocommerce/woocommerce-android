@@ -20,11 +20,11 @@ import com.woocommerce.commons.wear.DataPath.STATS_DATA
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.Success
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.time.Instant
 import javax.inject.Inject
-import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.Success
 
 class WearableConnectionRepository @Inject constructor(
     private val dataClient: DataClient,

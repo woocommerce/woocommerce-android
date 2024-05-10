@@ -1,6 +1,8 @@
 package com.woocommerce.android.util
 
 import com.woocommerce.android.ui.login.LoginRepository
+import org.wordpress.android.fluxc.utils.SiteUtils
+import org.wordpress.android.util.DateTimeUtils
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -10,8 +12,6 @@ import java.util.Date
 import java.util.GregorianCalendar
 import java.util.Locale
 import javax.inject.Inject
-import org.wordpress.android.fluxc.utils.SiteUtils
-import org.wordpress.android.util.DateTimeUtils
 
 class DateUtils @Inject constructor(
     private val loginRepository: LoginRepository,

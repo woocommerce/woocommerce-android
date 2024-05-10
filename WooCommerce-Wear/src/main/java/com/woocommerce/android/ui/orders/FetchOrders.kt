@@ -4,7 +4,6 @@ import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.login.ObserveLoginRequest.Companion.TIMEOUT_MILLIS
 import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDERS
-import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -13,6 +12,7 @@ import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.Success
+import javax.inject.Inject
 
 class FetchOrders @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,

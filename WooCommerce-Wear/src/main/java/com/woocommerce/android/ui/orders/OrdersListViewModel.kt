@@ -12,7 +12,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.Locale
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -21,8 +20,9 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Locale
 
-@Suppress("UnusedPrivateProperty")
+@Suppress("UnusedPrivateProperty", "LongParameterList")
 @HiltViewModel(assistedFactory = OrdersListViewModel.Factory::class)
 class OrdersListViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
