@@ -18,6 +18,16 @@ class ShippingMethodsRestClient @Inject constructor(private val wooNetwork: WooN
         ).toWooPayload { methods -> methods.toList() }
     }
 
+    suspend fun fetchShippingMethodsById(site: SiteModel, methodId: String): WooPayload<ShippingMethodDto> {
+        val url = WOOCOMMERCE.shipping_methods.id(methodId).pathV3
+
+        return wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = ShippingMethodDto::class.java,
+        ).toWooPayload()
+    }
+
     data class ShippingMethodDto(
         val id: String? = null,
         val title: String? = null,

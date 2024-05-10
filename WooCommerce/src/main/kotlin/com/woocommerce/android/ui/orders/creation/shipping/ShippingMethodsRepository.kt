@@ -43,6 +43,26 @@ class ShippingMethodsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchShippingMethodById(
+        methodId: String,
+        site: SiteModel = selectedSite.get()
+    ): WooResult<ShippingMethod> {
+        return withContext(dispatchers.io) {
+            val response = shippingMethodsRestClient.fetchShippingMethodsById(site, methodId)
+            when {
+                response.isError -> {
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    WooResult(response.result!!.toAppModel())
+                }
+
+                else -> WooResult(WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN))
+            }
+        }
+    }
+
     fun getOtherShippingMethod(): ShippingMethod {
         return ShippingMethod(
             id = OTHER_ID,
