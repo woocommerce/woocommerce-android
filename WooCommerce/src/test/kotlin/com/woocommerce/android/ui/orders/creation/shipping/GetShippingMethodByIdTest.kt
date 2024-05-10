@@ -39,18 +39,20 @@ class GetShippingMethodByIdTest : BaseUnitTest() {
 
     @Test
     fun `when the method is in the result, then return is the expected`() = testBlocking {
-        val fetchResult = List(3) { i ->
-            ShippingMethodsRestClient.ShippingMethodDto(
-                id = "id$i",
-                title = "title$i",
-            )
-        }
-        whenever(shippingMethodsRestClient.fetchShippingMethods(siteModel)).doReturn(WooPayload(fetchResult))
+        val methodId = "id1"
+        val fetchResult = ShippingMethodsRestClient.ShippingMethodDto(
+            id = methodId,
+            title = "title1",
+        )
+
+        whenever(shippingMethodsRestClient.fetchShippingMethodsById(siteModel, methodId)).doReturn(
+            WooPayload(fetchResult)
+        )
         whenever(resourceProvider.getString(any())).doReturn("Other")
 
-        val result = sut.invoke("id1")
+        val result = sut.invoke(methodId)
         assertThat(result).isNotNull
-        assertThat(result.id).isEqualTo("id1")
+        assertThat(result.id).isEqualTo(methodId)
     }
 
     @Test
@@ -60,34 +62,23 @@ class GetShippingMethodByIdTest : BaseUnitTest() {
         val result = sut.invoke(ShippingMethodsRepository.OTHER_ID)
 
         // If is other doesn't need to fetch the values from the API
-        verify(shippingMethodsRestClient, never()).fetchShippingMethods(siteModel)
-        assertThat(result).isNotNull
-        assertThat(result.id).isEqualTo(ShippingMethodsRepository.OTHER_ID)
-    }
-
-    @Test
-    fun `when the method is NOT in the result, then return other`() = testBlocking {
-        val fetchResult = List(3) { i ->
-            ShippingMethodsRestClient.ShippingMethodDto(
-                id = "id$i",
-                title = "title$i",
-            )
-        }
-        whenever(shippingMethodsRestClient.fetchShippingMethods(siteModel)).doReturn(WooPayload(fetchResult))
-        whenever(resourceProvider.getString(any())).doReturn("Other")
-
-        val result = sut.invoke("id8")
+        verify(shippingMethodsRestClient, never()).fetchShippingMethodsById(
+            siteModel,
+            ShippingMethodsRepository.OTHER_ID
+        )
         assertThat(result).isNotNull
         assertThat(result.id).isEqualTo(ShippingMethodsRepository.OTHER_ID)
     }
 
     @Test
     fun `when fetching shipping methods fail, then return other`() = testBlocking {
+        val methodId = "id8"
         val fetchResult = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
-        whenever(shippingMethodsRestClient.fetchShippingMethods(siteModel)).doReturn(WooPayload(fetchResult))
+        whenever(shippingMethodsRestClient.fetchShippingMethodsById(siteModel, methodId))
+            .doReturn(WooPayload(fetchResult))
         whenever(resourceProvider.getString(any())).doReturn("Other")
 
-        val result = sut.invoke("id8")
+        val result = sut.invoke(methodId)
         assertThat(result).isNotNull
         assertThat(result.id).isEqualTo(ShippingMethodsRepository.OTHER_ID)
     }
