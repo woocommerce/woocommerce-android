@@ -95,10 +95,9 @@ fun PosScreenTwo(data: String?, onClick: () -> Unit, modifier: Modifier = Modifi
 
         Button(
             modifier = Modifier.fillMaxWidth(),
-            onClick = { onClick() }) {
+            onClick = { onClick() }
+        ) {
             Text("Go Back to the main app")
         }
     }
 }
-
-
