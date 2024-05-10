@@ -14,7 +14,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -25,6 +24,7 @@ import javax.inject.Inject
 class OrderShippingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
+    private val getShippingMethodById: GetShippingMethodById
     private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -47,26 +47,13 @@ class OrderShippingViewModel @Inject constructor(
         navArgs.currentShippingLine?.let { shippingLine: Order.ShippingLine ->
             launch {
                 viewState.value = ViewState.ShippingState(
-                    method = getShippingMethod(shippingLine),
+                    method = getShippingMethodById(shippingLine.methodId),
                     name = shippingLine.methodTitle,
                     amount = shippingLine.total,
                     isEditFlow = true,
                     isSaveChangesEnabled = false
                 )
             }
-        }
-    }
-
-    @Suppress("MagicNumber")
-    private suspend fun getShippingMethod(shippingLine: Order.ShippingLine): ShippingMethod? {
-        return if (shippingLine.methodId == null) {
-            null
-        } else {
-            delay(1000)
-            ShippingMethod(
-                id = shippingLine.methodId,
-                title = shippingLine.methodId.capitalize()
-            )
         }
     }
 

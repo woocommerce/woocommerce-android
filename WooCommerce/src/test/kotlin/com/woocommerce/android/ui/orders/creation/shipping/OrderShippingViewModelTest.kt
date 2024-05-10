@@ -32,12 +32,15 @@ class OrderShippingViewModelTest : BaseUnitTest() {
             )
         )
 
+    private val getShippingMethodById: GetShippingMethodById = mock()
+
     private val tracker: AnalyticsTrackerWrapper = mock()
 
     fun setup(args: OrderShippingFragmentArgs) {
         viewModel = OrderShippingViewModel(
             savedStateHandle = args.toSavedStateHandle(),
             resourceProvider = mock(),
+            getShippingMethodById = getShippingMethodById,
             tracker = tracker
         )
     }
@@ -55,21 +58,20 @@ class OrderShippingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given this is edit flow, when the screen loads, make sure data matches the current shipping line`() =
-        testBlocking {
-            setup(editArgs)
+    fun `given this is edit flow, when the screen loads, make sure data matches the current shipping line`() = testBlocking {
+        setup(editArgs)
 
-            advanceTimeBy(1001)
-            // When the screen load and
-            val viewState = viewModel.viewState.value
+        advanceTimeBy(1001)
+        // When the screen load and
+        val viewState = viewModel.viewState.value
 
-            assertThat(viewState).isNotNull
-            assertThat(viewState).isInstanceOf(OrderShippingViewModel.ViewState.ShippingState::class.java)
-            assertThat((viewState as OrderShippingViewModel.ViewState.ShippingState).name)
-                .isEqualTo(editArgs.currentShippingLine?.methodTitle)
-            assertThat(viewState.amount).isEqualByComparingTo(editArgs.currentShippingLine?.total)
-            assertThat(viewState.isEditFlow).isTrue
-        }
+        assertThat(viewState).isNotNull
+        assertThat(viewState).isInstanceOf(OrderShippingViewModel.ViewState.ShippingState::class.java)
+        assertThat((viewState as OrderShippingViewModel.ViewState.ShippingState).name)
+            .isEqualTo(editArgs.currentShippingLine?.methodTitle)
+        assertThat(viewState.amount).isEqualByComparingTo(editArgs.currentShippingLine?.total)
+        assertThat(viewState.isEditFlow).isTrue
+    }
 
     @Test
     fun `when editing the amount, then update the state`() {
