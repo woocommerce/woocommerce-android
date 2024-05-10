@@ -120,12 +120,12 @@ fun OrderListItem(
                     color = WooColors.woo_purple_20
                 )
                 Text(
-                    text = order.number,
+                    text = "#${order.number}",
                     color = WooColors.woo_gray_alpha
                 )
             }
             Text(
-                text = order.customerName,
+                text = order.customerName ?: stringResource(id = R.string.orders_list_guest_customer),
                 style = WooTypography.body1,
                 color = Color.White,
                 textAlign = TextAlign.Start,
