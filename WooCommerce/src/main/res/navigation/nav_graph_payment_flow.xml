@@ -48,9 +48,7 @@
         </action>
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_changeDueCalculatorFragment"
-            app:destination="@+id/changeDueCalculatorFragment"
-            app:popUpTo="@+id/changeDueCalculatorFragment"
-            app:popUpToInclusive="true">
+            app:destination="@+id/changeDueCalculatorFragment">
             <argument
                 android:name="orderId"
                 app:argType="long" />
