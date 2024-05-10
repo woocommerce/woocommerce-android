@@ -6,8 +6,11 @@ import com.google.android.gms.wearable.DataItem
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.woocommerce.android.ui.login.LoginRepository
+import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.stats.datasource.StatsRepository
-import com.woocommerce.commons.wear.DataPath
+import com.woocommerce.commons.wear.DataPath.ORDERS_DATA
+import com.woocommerce.commons.wear.DataPath.SITE_DATA
+import com.woocommerce.commons.wear.DataPath.STATS_DATA
 import com.woocommerce.commons.wear.MessagePath
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -19,6 +22,7 @@ import javax.inject.Inject
 class PhoneConnectionRepository @Inject constructor(
     private val loginRepository: LoginRepository,
     private val statsRepository: StatsRepository,
+    private val ordersRepository: OrdersRepository,
     private val capabilityClient: CapabilityClient,
     private val messageClient: MessageClient,
     private val coroutineScope: CoroutineScope
@@ -26,10 +30,16 @@ class PhoneConnectionRepository @Inject constructor(
     suspend fun isPhoneConnectionAvailable() = fetchReachableNodes().isNotEmpty()
 
     fun handleReceivedData(dataItem: DataItem) {
-        when (dataItem.uri.path) {
-            DataPath.SITE_DATA.value -> handleAuthenticationData(dataItem)
-            DataPath.STATS_DATA.value -> handleStoreStatsData(dataItem)
-            else -> Log.d(TAG, "Unknown path data received")
+        val dataPath = dataItem.uri.path
+        val dataMap = DataMapItem.fromDataItem(dataItem).dataMap
+
+        coroutineScope.launch {
+            when (dataPath) {
+                SITE_DATA.value -> loginRepository.receiveStoreDataFromPhone(dataMap)
+                STATS_DATA.value -> statsRepository.receiveStatsDataFromPhone(dataMap)
+                ORDERS_DATA.value -> ordersRepository.receiveOrdersDataFromPhone(dataMap)
+                else -> Log.d(TAG, "Unknown path data received")
+            }
         }
     }
 
@@ -51,16 +61,6 @@ class PhoneConnectionRepository @Inject constructor(
         }.filter { (_, capabilityInfo) ->
             WOO_MOBILE_CAPABILITY in capabilityInfo
         }.map { (node, _) -> node }
-
-    private fun handleAuthenticationData(dataItem: DataItem) {
-        val dataMap = DataMapItem.fromDataItem(dataItem).dataMap
-        coroutineScope.launch { loginRepository.receiveStoreDataFromPhone(dataMap) }
-    }
-
-    private fun handleStoreStatsData(dataItem: DataItem) {
-        val dataMap = DataMapItem.fromDataItem(dataItem).dataMap
-        coroutineScope.launch { statsRepository.receiveStatsDataFromPhone(dataMap) }
-    }
 
     companion object {
         const val TAG = "PhoneConnectionRepository"

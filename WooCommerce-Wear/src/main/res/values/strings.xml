@@ -13,6 +13,7 @@
 
     <!-- Orders List Screen -->
     <string name="orders_list_screen_title">Orders</string>
+    <string name="orders_list_guest_customer">Guest</string>
 
     <!-- Tile and Complication -->
     <string name="tile_label">Example tile</string>

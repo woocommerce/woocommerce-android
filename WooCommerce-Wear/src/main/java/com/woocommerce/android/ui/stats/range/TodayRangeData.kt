@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.stats.range
 
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.commons.extensions.endOfCurrentDay
 import com.woocommerce.commons.extensions.formatToMMMddYYYY
 import com.woocommerce.commons.extensions.oneDayAgo
 import com.woocommerce.commons.extensions.startOfCurrentDay
-import org.wordpress.android.fluxc.model.SiteModel
 import java.util.Calendar
 import java.util.Locale
 
@@ -19,7 +19,7 @@ import java.util.Locale
 //
 
 class TodayRangeData(
-    selectedSite: SiteModel,
+    dateUtils: DateUtils,
     locale: Locale,
     referenceCalendar: Calendar
 ) : StatsTimeRangeData(referenceCalendar) {
@@ -29,7 +29,7 @@ class TodayRangeData(
     override val formattedPreviousRange: String
 
     init {
-        val referenceDate = generateCurrentDateInSiteTimeZone(selectedSite, locale)
+        val referenceDate = dateUtils.generateCurrentDateInSiteTimeZone()
         calendar.time = referenceDate
         val currentStart = calendar.startOfCurrentDay()
         val currentEnd = calendar.endOfCurrentDay()

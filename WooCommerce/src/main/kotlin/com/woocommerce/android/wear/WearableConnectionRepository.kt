@@ -8,6 +8,7 @@ import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.commons.wear.DataParameters.CONVERSION_RATE
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
+import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
 import com.woocommerce.commons.wear.DataParameters.SITE_JSON
 import com.woocommerce.commons.wear.DataParameters.TIMESTAMP
 import com.woocommerce.commons.wear.DataParameters.TOKEN
@@ -19,6 +20,8 @@ import com.woocommerce.commons.wear.DataPath.STATS_DATA
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.Success
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.time.Instant
 import javax.inject.Inject
@@ -28,6 +31,7 @@ class WearableConnectionRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore,
+    private val orderStore: WCOrderStore,
     private val getStats: GetWearableMyStoreStats,
     private val coroutineScope: CoroutineScope
 ) {
@@ -64,6 +68,20 @@ class WearableConnectionRepository @Inject constructor(
                 putInt(ORDERS_COUNT.value, ordersCount)
                 putInt(VISITORS_TOTAL.value, visitorsCount)
                 putString(CONVERSION_RATE.value, conversionRate)
+            }
+        )
+    }
+
+    fun sendOrdersData() = coroutineScope.launch {
+        val orders = orderStore.fetchOrdersForWearables(
+            site = selectedSite.get(),
+            shouldStoreData = false
+        ).run { this as? Success }?.orders ?: emptyList()
+
+        sendData(
+            DataPath.ORDERS_DATA,
+            DataMap().apply {
+                putString(ORDERS_JSON.value, gson.toJson(orders))
             }
         )
     }

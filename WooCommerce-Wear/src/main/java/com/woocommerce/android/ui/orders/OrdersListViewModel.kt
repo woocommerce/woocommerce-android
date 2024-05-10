@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.login.LoginRepository
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.assisted.Assisted
@@ -16,12 +17,19 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Locale
 
-@Suppress("UnusedPrivateProperty")
+@Suppress("UnusedPrivateProperty", "LongParameterList")
 @HiltViewModel(assistedFactory = OrdersListViewModel.Factory::class)
 class OrdersListViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
+    private val fetchOrders: FetchOrders,
+    private val wooCommerceStore: WooCommerceStore,
+    private val dateUtils: DateUtils,
+    private val locale: Locale,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -34,45 +42,59 @@ class OrdersListViewModel @AssistedInject constructor(
     init {
         loginRepository.selectedSiteFlow
             .filterNotNull()
-            .onEach {
-                requestOrdersData(it)
+            .onEach { requestOrdersData(it) }
+            .launchIn(this)
+    }
+
+    private suspend fun requestOrdersData(selectedSite: SiteModel) {
+        _viewState.update { it.copy(isLoading = true) }
+        fetchOrders(selectedSite)
+            .onEach { orders ->
+                _viewState.update { viewState ->
+                    viewState.copy(
+                        orders = orders.map {
+                            it.toOrderItem(selectedSite)
+                        },
+                        isLoading = false
+                    )
+                }
             }.launchIn(this)
     }
 
-    private fun requestOrdersData(selectedSite: SiteModel) {
-        selectedSite.apply { }
-        // Introduce actual request
-        _viewState.update {
-            it.copy(
-                orders = listOf(
-                    OrderItem(
-                        date = "25 Feb",
-                        number = "#125",
-                        customerName = "John Doe",
-                        total = "$100.00",
-                        status = "Processing"
-                    ),
-                    OrderItem(
-                        date = "31 Dec",
-                        number = "#124",
-                        customerName = "Jane Doe",
-                        total = "$200.00",
-                        status = "Completed"
-                    ),
-                    OrderItem(
-                        date = "4 Oct",
-                        number = "#123",
-                        customerName = "John Smith",
-                        total = "$300.00",
-                        status = "Pending"
-                    )
-                )
-            )
+    private fun OrderEntity.toOrderItem(
+        selectedSite: SiteModel
+    ): OrderItem {
+        val formattedOrderTotals = wooCommerceStore.formatCurrencyForDisplay(
+            amount = total.toDoubleOrNull() ?: 0.0,
+            site = selectedSite,
+            currencyCode = null,
+            applyDecimalFormatting = true
+        )
+
+        val formattedCreationDate = dateUtils.getFormattedDateWithSiteTimeZone(
+            dateCreated
+        ) ?: dateCreated
+
+        val formattedBillingName = takeUnless {
+            billingFirstName.isEmpty() && billingLastName.isEmpty()
+        }?.let { "$billingFirstName $billingLastName" }
+
+        val formattedStatus = status.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(locale) else it.toString()
         }
+
+        return OrderItem(
+            date = formattedCreationDate,
+            number = number,
+            customerName = formattedBillingName,
+            total = formattedOrderTotals,
+            status = formattedStatus
+        )
     }
 
     @Parcelize
     data class ViewState(
+        val isLoading: Boolean = false,
         val orders: List<OrderItem> = emptyList()
     ) : Parcelable
 
@@ -80,7 +102,7 @@ class OrdersListViewModel @AssistedInject constructor(
     data class OrderItem(
         val date: String,
         val number: String,
-        val customerName: String,
+        val customerName: String?,
         val total: String,
         val status: String
     ) : Parcelable
