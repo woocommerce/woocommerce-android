@@ -180,6 +180,10 @@ class DashboardViewModel @Inject constructor(
         triggerEvent(DashboardEvent.ContactSupport)
     }
 
+    fun onNavigateToOrders() {
+        triggerEvent(DashboardEvent.NavigateToOrders)
+    }
+
     private fun mapWidgetsToUiModels(
         widgets: List<DashboardWidget>,
         userFeedbackIsDue: Boolean
@@ -303,6 +307,8 @@ class DashboardViewModel @Inject constructor(
         data object FeedbackPositiveAction : DashboardEvent()
 
         data object FeedbackNegativeAction : DashboardEvent()
+
+        object NavigateToOrders : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)
