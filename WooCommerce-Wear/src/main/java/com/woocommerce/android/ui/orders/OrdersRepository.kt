@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
+import kotlinx.coroutines.flow.mapNotNull
 
 class OrdersRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.ORDERS) private val ordersDataStore: DataStore<Preferences>,
@@ -28,7 +29,7 @@ class OrdersRepository @Inject constructor(
     ) = orderStore.fetchOrdersForWearables(selectedSite)
 
     fun observeOrdersDataChanges() = ordersDataStore.data
-        .map { it[stringPreferencesKey(generateOrdersKey())] }
+        .mapNotNull { it[stringPreferencesKey(generateOrdersKey())] }
         .map { gson.fromJson(it, Array<OrderEntity>::class.java).toList() }
 
     suspend fun receiveOrdersDataFromPhone(data: DataMap) {

@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.flow.mapNotNull
 
 class StatsRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.STATS) private val statsDataStore: DataStore<Preferences>,
@@ -111,8 +112,8 @@ class StatsRepository @Inject constructor(
     }
 
     fun observeStatsDataChanges() = statsDataStore.data
-        .map { it[stringPreferencesKey(generateStatsKey())] }
-        .map { it?.let { gson.fromJson(it, StoreStatsRequest.Data::class.java) } }
+        .mapNotNull { it[stringPreferencesKey(generateStatsKey())] }
+        .map { gson.fromJson(it, StoreStatsRequest.Data::class.java) }
 
     private fun generateStatsKey(): String {
         val siteId = loginRepository.selectedSite?.siteId ?: 0
