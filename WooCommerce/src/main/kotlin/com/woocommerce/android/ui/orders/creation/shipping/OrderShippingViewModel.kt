@@ -6,7 +6,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.capitalize
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -24,7 +23,7 @@ import javax.inject.Inject
 class OrderShippingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
-    private val getShippingMethodById: GetShippingMethodById
+    private val getShippingMethodById: GetShippingMethodById,
     private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
