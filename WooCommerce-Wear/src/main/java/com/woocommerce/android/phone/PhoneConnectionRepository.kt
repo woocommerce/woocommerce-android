@@ -6,6 +6,7 @@ import com.google.android.gms.wearable.DataItem
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.woocommerce.android.ui.login.LoginRepository
+import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.stats.datasource.StatsRepository
 import com.woocommerce.commons.wear.DataPath
 import com.woocommerce.commons.wear.MessagePath
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class PhoneConnectionRepository @Inject constructor(
     private val loginRepository: LoginRepository,
     private val statsRepository: StatsRepository,
+    private val ordersRepository: OrdersRepository,
     private val capabilityClient: CapabilityClient,
     private val messageClient: MessageClient,
     private val coroutineScope: CoroutineScope
@@ -29,6 +31,7 @@ class PhoneConnectionRepository @Inject constructor(
         when (dataItem.uri.path) {
             DataPath.SITE_DATA.value -> handleAuthenticationData(dataItem)
             DataPath.STATS_DATA.value -> handleStoreStatsData(dataItem)
+            DataPath.ORDERS_DATA.value -> handleOrdersData(dataItem)
             else -> Log.d(TAG, "Unknown path data received")
         }
     }
@@ -60,6 +63,11 @@ class PhoneConnectionRepository @Inject constructor(
     private fun handleStoreStatsData(dataItem: DataItem) {
         val dataMap = DataMapItem.fromDataItem(dataItem).dataMap
         coroutineScope.launch { statsRepository.receiveStatsDataFromPhone(dataMap) }
+    }
+
+    private fun handleOrdersData(dataItem: DataItem) {
+        val dataMap = DataMapItem.fromDataItem(dataItem).dataMap
+        coroutineScope.launch { ordersRepository.receiveOrdersDataFromPhone(dataMap) }
     }
 
     companion object {
