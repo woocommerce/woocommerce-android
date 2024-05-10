@@ -17,12 +17,22 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.pos.ui.Routing
 import com.woocommerce.android.util.AddressUtils
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PosActivity : ComponentActivity() {
+    @Inject
+    lateinit var crashLogging: CrashLogging
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        crashLogging.recordEvent("Testing crash logging injection")
+
         val screenKey = intent.getStringExtra("screen_key") ?: "default"
         val data = intent.getStringExtra("id") ?: ""
         val startDestination = when (screenKey) {

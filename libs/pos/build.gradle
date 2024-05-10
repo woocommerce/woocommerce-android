@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'dagger.hilt.android.plugin'
+    id 'com.google.devtools.ksp'
 }
 
 repositories {
@@ -82,6 +84,13 @@ dependencies {
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.compose.material3:material3'
     implementation 'androidx.navigation:navigation-compose:2.7.7'
+
+    implementation "com.automattic:Automattic-Tracks-Android:$automatticTracksVersion"
+    implementation "com.automattic.tracks:crashlogging:$automatticTracksVersion"
+
+    implementation "com.google.dagger:hilt-android:$gradle.ext.daggerVersion"
+    ksp "com.google.dagger:hilt-compiler:$gradle.ext.daggerVersion"
+    ksp "androidx.hilt:hilt-compiler:$hiltJetpackVersion"
 
     testImplementation 'junit:junit:4.13.2'
 }
