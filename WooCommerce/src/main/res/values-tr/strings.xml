@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-30 15:54:03+0000
+Translation-Revision-Date: 2024-05-07 12:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
-    <string name="blaze_campaign_promote_button">Tanıt</string>
+    <string name="blaze_campaign_show_all_button">Tüm kampanyaları görüntüle</string>
+    <string name="blaze_campaign_suggested_product_caption">Önerilen ürün</string>
+    <string name="dynamic_dashboard_widget_error_description">Bu kartı yeniden yüklemeyi deneyin. Sorun devam ederse lütfen &lt;a href=\"support\"&gt;desteğe başvurun&lt;/a&gt;.</string>
+    <string name="dynamic_dashboard_widget_error_title">Veriler yüklenemiyor</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">Şunu Gizle: %s</string>
+    <string name="my_store_widget_onboarding_completed">Tamamlandı</string>
+    <string name="my_store_widget_feedback_title">Geri bildirim</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">Hâlâ yardıma ihtiyacınız mı var? Bizimle iletişim kurun</string>
+    <string name="my_store_stats_plugin_inactive_description">Sitenizde en son WooCommerce sürümünü çalıştırdığınızdan ve WooCommerce Admin\'i etkinleştirdiğinizden emin olun.</string>
+    <string name="my_store_stats_plugin_inactive_title">Mağazanızın analizlerini\n gösteremiyoruz</string>
     <string name="store_onboarding_task_view_all_tasks">Tüm görevleri görüntüle</string>
     <string name="analytics_session_no_available_description">Oturum analizleri, özel tarih aralıklarında kullanılamayan benzersiz ziyaretçi sayılarına dayanır</string>
     <string name="analytics_session_no_available">Oturum verileri kullanılamıyor</string>
     <string name="my_store_widget_unavailable">Kullanılamıyor</string>
     <string name="my_store_widget_stats_title">Performans</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Tüm mağaza analizlerini görüntüle</string>
-    <string name="dashboard_top_performers_overflow_menu_hide_option">En yüksek performans gösterenleri gizle</string>
     <string name="dashboard_stats_custom_range_label">Özel</string>
     <string name="dashboard_stats_edit_granularity_selected_content_description">Öğe seçildi</string>
     <string name="dashboard_stats_edit_granularity_content_description">Tarih aralığını değiştirme düğmesi</string>
@@ -468,7 +476,7 @@ Language: tr
     <string name="blaze_campaign_status_completed">Tamamlandı</string>
     <string name="blaze_campaign_status_active">Etkin</string>
     <string name="blaze_campaign_status_in_moderation">Denetlemede</string>
-    <string name="blaze_campaign_show_all_button">Hepsini göster</string>
+    <string name="blaze_campaign_create_campaign_button">Kampanya oluştur</string>
     <string name="blaze_campaign_subtitle">Görünürlüğü artırın ve ürünlerinizin hızla satılmasını sağlayın.</string>
     <string name="blaze_campaign_title">Kampanyayı öne çıkarın</string>
     <string name="card_reader_tap_to_pay_about_copyright">Temassız Simgesi; EMVCo, LLC\'ye ait ve onun izni ile kullanılan bir ticari markadır.</string>

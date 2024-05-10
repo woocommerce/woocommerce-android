@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-30 09:54:04+0000
+Translation-Revision-Date: 2024-05-08 09:54:06+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
-    <string name="blaze_campaign_promote_button">推广</string>
+    <string name="blaze_campaign_show_all_button">查看所有广告活动</string>
+    <string name="blaze_campaign_suggested_product_caption">建议产品</string>
+    <string name="dynamic_dashboard_widget_error_description">尝试重新加载此卡。 如果问题仍然存在，请&lt;a href=\"support\"&gt;联系支持人员&lt;/a&gt;。</string>
+    <string name="dynamic_dashboard_widget_error_title">无法加载数据</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">隐藏 %s</string>
+    <string name="my_store_widget_onboarding_completed">已完成</string>
+    <string name="my_store_widget_feedback_title">反馈</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">仍需帮助？ 联系我们</string>
+    <string name="my_store_stats_plugin_inactive_description">确保您的站点上运行的是最新版本的 WooCommerce，并且已激活 WooCommerce Admin。</string>
+    <string name="my_store_stats_plugin_inactive_title">我们无法显示您的\n 商店分析</string>
     <string name="store_onboarding_task_view_all_tasks">查看所有任务</string>
     <string name="analytics_session_no_available_description">会话分析依赖于独立访客数，但不适用于自定义日期范围</string>
     <string name="analytics_session_no_available">会话数据不可用</string>
     <string name="my_store_widget_unavailable">不可用</string>
     <string name="my_store_widget_stats_title">业绩</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">查看所有商店分析数据</string>
-    <string name="dashboard_top_performers_overflow_menu_hide_option">隐藏热销产品</string>
     <string name="dashboard_stats_custom_range_label">自定义</string>
     <string name="dashboard_stats_edit_granularity_selected_content_description">已选择项目</string>
     <string name="dashboard_stats_edit_granularity_content_description">更改日期范围按钮</string>
@@ -468,7 +476,7 @@ Language: zh_CN
     <string name="blaze_campaign_status_completed">已完成</string>
     <string name="blaze_campaign_status_active">已启用</string>
     <string name="blaze_campaign_status_in_moderation">审核中</string>
-    <string name="blaze_campaign_show_all_button">显示全部</string>
+    <string name="blaze_campaign_create_campaign_button">创建广告活动</string>
     <string name="blaze_campaign_subtitle">提高展示率，让产品更快售出。</string>
     <string name="blaze_campaign_title">Blaze 广告活动</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol（非接触式标志）是 EMVCo, LLC 的商标，经其许可方能使用。</string>

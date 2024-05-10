@@ -69,6 +69,9 @@ import com.woocommerce.android.ui.orders.creation.giftcards.OrderCreateEditGiftC
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigator
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
+import com.woocommerce.android.ui.orders.creation.shipping.OrderShippingFragment.Companion.REMOVE_SHIPPING_RESULT
+import com.woocommerce.android.ui.orders.creation.shipping.OrderShippingFragment.Companion.UPDATE_SHIPPING_RESULT
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
 import com.woocommerce.android.ui.orders.creation.simplepaymentsmigration.OrderCreateEditSimplePaymentsMigrationBottomSheetFragment
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragment.Companion.KEY_SELECTED_TAX_RATE
@@ -1078,6 +1081,12 @@ class OrderCreateEditFormFragment :
         }
         handleResult<Order.Customer>(CustomerListFragment.KEY_CUSTOMER_RESULT) {
             viewModel.onCustomerEdited(it)
+        }
+        handleResult<ShippingUpdateResult>(UPDATE_SHIPPING_RESULT) { result ->
+            viewModel.onUpdatedShipping(result)
+        }
+        handleResult<Long>(REMOVE_SHIPPING_RESULT) { result ->
+            viewModel.onRemoveShipping(result)
         }
     }
 

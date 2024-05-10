@@ -31,14 +31,14 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            EOSL_M1,
             DYNAMIC_DASHBOARD_M2 -> PackageUtils.isDebugBuild()
 
             DYNAMIC_DASHBOARD,
             CONNECTIVITY_TOOL,
             CUSTOM_RANGE_ANALYTICS,
             NEW_SHIPPING_SUPPORT,
-            APP_PASSWORD_TUTORIAL -> true
+            APP_PASSWORD_TUTORIAL,
+            EOSL_M1 -> true
         }
     }
 }
