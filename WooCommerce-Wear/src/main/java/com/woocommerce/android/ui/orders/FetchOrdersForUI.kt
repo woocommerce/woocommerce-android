@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.Success
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
-class FetchOrdersFromStore @Inject constructor(
+class FetchOrdersForUI @Inject constructor(
     private val ordersRepository: OrdersRepository,
     private val wooCommerceStore: WooCommerceStore,
     private val dateUtils: DateUtils,
@@ -18,19 +18,19 @@ class FetchOrdersFromStore @Inject constructor(
     suspend operator fun invoke(
         selectedSite: SiteModel
     ) = when (val result = ordersRepository.fetchOrders(selectedSite)) {
-        is Success -> {
-            result.orders.map {
-                OrderItem(
-                    date = it.formattedCreationDate,
-                    number = it.number,
-                    customerName = it.billingName,
-                    total = it.formattedCurrencyTotal(selectedSite),
-                    status = it.capitalizedStatus
-                )
-            }
-        }
+        is Success -> result.orders.map { it.toOrderItem(selectedSite) }
         else -> emptyList()
     }
+
+    private fun OrderEntity.toOrderItem(
+        selectedSite: SiteModel
+    ) = OrderItem(
+        date = formattedCreationDate,
+        number = number,
+        customerName = billingName,
+        total = formattedCurrencyTotal(selectedSite),
+        status = capitalizedStatus
+    )
 
     private fun OrderEntity.formattedCurrencyTotal(site: SiteModel): String {
         return wooCommerceStore.formatCurrencyForDisplay(
