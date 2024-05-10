@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-30 15:54:03+0000
+Translation-Revision-Date: 2024-05-08 09:54:09+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
-    <string name="blaze_campaign_promote_button">לקדם</string>
+    <string name="blaze_campaign_show_all_button">להציג את כל הקמפיינים</string>
+    <string name="blaze_campaign_suggested_product_caption">מוצר מומלץ</string>
+    <string name="dynamic_dashboard_widget_error_description">יש לנסות לטעון את הכרטיס שוב. אם הבעיה נמשכת, ניתן &lt;a href=\"support\"&gt;ליצור קשר עם התמיכה&lt;/a&gt;.</string>
+    <string name="dynamic_dashboard_widget_error_title">אין אפשרות לטעון את הנתונים</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">להסתיר את %s</string>
+    <string name="my_store_widget_onboarding_completed">הושלם</string>
+    <string name="my_store_widget_feedback_title">משוב</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">עדיין דרושה לך עזרה? ליצירת קשר</string>
+    <string name="my_store_stats_plugin_inactive_description">עליך לוודא שמותקנת באתר שלך הגרסה האחרונה של WooCommerce ושהתוסף של WooCommerce Admin מופעל.</string>
+    <string name="my_store_stats_plugin_inactive_title">אנחנו לא יכולים להציג את \n הנתונים האנליטיים של החנות</string>
     <string name="store_onboarding_task_view_all_tasks">להציג את כל המשימות</string>
     <string name="analytics_session_no_available_description">נתונים אנליטיים של הפעלות מסתמכים על מספר המבקרים הייחודיים, והם לא זמינים בטווח תאריכים מותאם אישית</string>
     <string name="analytics_session_no_available">הנתונים של ההפעלה לא זמינים</string>
     <string name="my_store_widget_unavailable">לא זמין</string>
     <string name="my_store_widget_stats_title">ביצועים</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">להציג את כל הנתונים האנליטיים של החנות</string>
-    <string name="dashboard_top_performers_overflow_menu_hide_option">להסתיר את \'הביצועים הטובים ביותר\'</string>
     <string name="dashboard_stats_custom_range_label">התאמה אישית</string>
     <string name="dashboard_stats_edit_granularity_selected_content_description">הפריט נבחר</string>
     <string name="dashboard_stats_edit_granularity_content_description">הכפתור \'לשנות טווח תאריכים\'</string>
@@ -468,7 +476,7 @@ Language: he_IL
     <string name="blaze_campaign_status_completed">הושלם</string>
     <string name="blaze_campaign_status_active">פעיל</string>
     <string name="blaze_campaign_status_in_moderation">בתהליך אישור</string>
-    <string name="blaze_campaign_show_all_button">להציג הכל</string>
+    <string name="blaze_campaign_create_campaign_button">ליצור קמפיין</string>
     <string name="blaze_campaign_subtitle">מגדילים את הנראות ומאיצים את מכירת המוצרים.</string>
     <string name="blaze_campaign_title">קמפיין של Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">סמל \'ללא מגע\' הוא סימן מסחרי בבעלות EMVCo, LLC.‎ ובשימוש לפי הרשאתה.</string>
