@@ -5,9 +5,9 @@ import com.woocommerce.android.ui.common.environment.EnvironmentRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.UTILS
 import com.woocommerce.android.util.dispatchAndAwait
+import com.woocommerce.android.wear.WearableConnectionRepository
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
-import com.woocommerce.android.wear.WearableConnectionRepository
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
