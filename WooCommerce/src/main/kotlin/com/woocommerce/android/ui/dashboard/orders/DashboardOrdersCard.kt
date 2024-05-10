@@ -91,6 +91,7 @@ private fun Loading() {
     }
 }
 
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
 private fun LoadingItem() {
     ConstraintLayout(
@@ -154,6 +155,7 @@ private fun LoadingItem() {
     }
 }
 
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
 private fun OrderListItem(order: OrderItem) {
     ConstraintLayout(

@@ -68,7 +68,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = merge(parentViewModel.refreshTrigger, refreshTrigger)
-        .onStart { emit(RefreshEvent())}
+        .onStart { emit(RefreshEvent()) }
         .flatMapLatest {
             orderListRepository.observeTopOrders(
                 MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD
