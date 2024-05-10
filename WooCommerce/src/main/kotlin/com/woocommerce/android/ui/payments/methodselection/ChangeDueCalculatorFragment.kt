@@ -46,7 +46,7 @@ class ChangeDueCalculatorFragment : Fragment() {
         ) {
             // Title
             Text(
-                text = stringResource(R.string.payments_hub_title) + " " + orderId,
+                text = stringResource(R.string.cash_payments_take_payment_title, orderId),
                 style = MaterialTheme.typography.h5,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
