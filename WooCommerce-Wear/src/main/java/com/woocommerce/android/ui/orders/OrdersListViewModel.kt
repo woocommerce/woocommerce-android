@@ -22,7 +22,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 @HiltViewModel(assistedFactory = OrdersListViewModel.Factory::class)
 class OrdersListViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
-    private val fetchOrdersForUI: FetchOrdersForUI,
+    private val fetchOrders: FetchOrders,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -41,13 +41,16 @@ class OrdersListViewModel @AssistedInject constructor(
 
     private suspend fun requestOrdersData(selectedSite: SiteModel) {
         _viewState.update { it.copy(isLoading = true) }
-        val orders = fetchOrdersForUI(selectedSite)
-        _viewState.update {
-            it.copy(
-                orders = orders,
-                isLoading = false
-            )
-        }
+        fetchOrders(selectedSite)
+            .onEach { orders ->
+                _viewState.update {
+                    it.copy(
+                        orders = orders,
+                        isLoading = false
+                    )
+                }
+            }.launchIn(this)
+
     }
 
     @Parcelize

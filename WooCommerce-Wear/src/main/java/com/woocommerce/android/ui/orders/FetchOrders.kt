@@ -14,7 +14,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.Success
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
-class FetchOrdersForUI @Inject constructor(
+class FetchOrders @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
     private val ordersRepository: OrdersRepository,
     private val wooCommerceStore: WooCommerceStore,
