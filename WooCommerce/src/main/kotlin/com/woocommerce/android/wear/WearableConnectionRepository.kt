@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.S
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.time.Instant
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.SiteModel
 
 class WearableConnectionRepository @Inject constructor(
     private val dataClient: DataClient,
@@ -37,11 +38,14 @@ class WearableConnectionRepository @Inject constructor(
 ) {
     private val gson by lazy { Gson() }
 
-    fun sendSiteData() {
+    fun sendSiteData(
+        currentSite: SiteModel? = null
+    ) {
+        val site = currentSite ?: selectedSite.get()
         sendData(
             SITE_DATA,
             DataMap().apply {
-                val siteJSON = gson.toJson(selectedSite.get())
+                val siteJSON = gson.toJson(site)
                 putString(SITE_JSON.value, siteJSON)
                 putString(TOKEN.value, accountStore.accessToken.orEmpty())
             }

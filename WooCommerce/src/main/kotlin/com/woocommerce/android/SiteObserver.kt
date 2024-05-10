@@ -45,7 +45,7 @@ class SiteObserver @Inject constructor(
 
                     launch { fetchOrderStatusOptions(site) }
 
-                    wearableConnectionRepository.sendSiteData()
+                    launch { sendSiteDataToWearable(site) }
                 }
             }
     }
@@ -71,5 +71,10 @@ class SiteObserver @Inject constructor(
                 FetchOrderStatusOptionsPayload(site)
             )
         )
+    }
+
+    private fun sendSiteDataToWearable(site: SiteModel) {
+        WooLog.d(WooLog.T.UTILS, "Sending site ${site.name} to connected Wearables")
+        wearableConnectionRepository.sendSiteData(site)
     }
 }
