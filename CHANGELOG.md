@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 18.6
+Enjoy enhanced functionality in our latest app update! We've improved the 'Tap To Pay' feature, introducing a new navigation path from the summary to the 'About Tap To Pay' screen, and revised its description for better clarity. Additionally, selecting shipping methods has been made more flexible, allowing you to choose specific options directly when adding or editing shipping details on an order. Update your app today for a smoother and more efficient experience!
+
 ## 18.5
 Discover a more personalized shopping experience with the latest update to MyStore! We're excited to introduce a customizable dashboard that lets you tailor your view with a variety of unique cards. Streamline your management tasks and enjoy a dashboard designed just for you. Update now to start customizing your app experience!
 
