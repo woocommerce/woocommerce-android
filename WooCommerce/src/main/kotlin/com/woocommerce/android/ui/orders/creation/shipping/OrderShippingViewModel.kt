@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.orders.creation.shipping
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -20,7 +23,8 @@ import javax.inject.Inject
 class OrderShippingViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
-    private val getShippingMethodById: GetShippingMethodById
+    private val getShippingMethodById: GetShippingMethodById,
+    private val tracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
     private val navArgs: OrderShippingFragmentArgs by savedState.navArgs()
@@ -93,6 +97,10 @@ class OrderShippingViewModel @Inject constructor(
 
     fun onMethodSelected(selected: ShippingMethod) {
         (viewState.value as? ViewState.ShippingState)?.let {
+            tracker.track(
+                AnalyticsEvent.ORDER_SHIPPING_METHOD_SELECTED,
+                mapOf(AnalyticsTracker.KEY_SHIPPING_METHOD to selected.id)
+            )
             viewState.value = it.copy(
                 method = selected,
                 isSaveChangesEnabled = isSaveChangesEnabled(newMethodId = selected.id)
