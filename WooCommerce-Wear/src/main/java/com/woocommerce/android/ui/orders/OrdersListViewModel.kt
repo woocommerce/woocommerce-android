@@ -5,24 +5,31 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.login.LoginRepository
+import com.woocommerce.android.util.DateUtils
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Locale
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @Suppress("UnusedPrivateProperty")
 @HiltViewModel(assistedFactory = OrdersListViewModel.Factory::class)
 class OrdersListViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
     private val fetchOrders: FetchOrders,
+    private val wooCommerceStore: WooCommerceStore,
+    private val dateUtils: DateUtils,
+    private val locale: Locale,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -43,14 +50,46 @@ class OrdersListViewModel @AssistedInject constructor(
         _viewState.update { it.copy(isLoading = true) }
         fetchOrders(selectedSite)
             .onEach { orders ->
-                _viewState.update {
-                    it.copy(
-                        orders = orders,
+                _viewState.update { viewState ->
+                    viewState.copy(
+                        orders = orders.map {
+                            it.toOrderItem(selectedSite)
+                        },
                         isLoading = false
                     )
                 }
             }.launchIn(this)
+    }
 
+    private fun OrderEntity.toOrderItem(
+        selectedSite: SiteModel
+    ): OrderItem {
+        val formattedOrderTotals = wooCommerceStore.formatCurrencyForDisplay(
+            amount = total.toDoubleOrNull() ?: 0.0,
+            site = selectedSite,
+            currencyCode = null,
+            applyDecimalFormatting = true
+        )
+
+        val formattedCreationDate = dateUtils.getFormattedDateWithSiteTimeZone(
+            dateCreated
+        ) ?: dateCreated
+
+        val formattedBillingName = takeIf {
+            billingFirstName.isEmpty() && billingLastName.isEmpty()
+        }?.let { "$billingFirstName $billingLastName" }
+
+        val formattedStatus = status.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(locale) else it.toString()
+        }
+
+        return OrderItem(
+            date = formattedCreationDate,
+            number = number,
+            customerName = formattedBillingName,
+            total = formattedOrderTotals,
+            status = formattedStatus
+        )
     }
 
     @Parcelize
