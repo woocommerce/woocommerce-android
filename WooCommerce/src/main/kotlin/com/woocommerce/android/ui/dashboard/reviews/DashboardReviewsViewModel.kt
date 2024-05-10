@@ -14,8 +14,8 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -32,7 +32,10 @@ class DashboardReviewsViewModel @AssistedInject constructor(
     private val status = savedStateHandle.getStateFlow(viewModelScope, ProductReviewStatus.ALL)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val viewState = combine(refreshTrigger, status) { refresh, status -> Pair(refresh, status) }
+    val viewState = status
+        .flatMapLatest {
+            refreshTrigger.map { refresh -> Pair(refresh, it) }
+        }
         .transformLatest { (refresh, status) ->
             emit(ViewState.Loading(status))
             emitAll(
