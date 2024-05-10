@@ -88,10 +88,9 @@ class DashboardRepository @Inject constructor(
                 isSelected = widget.isAdded,
                 status = when (type) {
                     DashboardWidget.Type.STATS,
+                    DashboardWidget.Type.ORDERS,
                     DashboardWidget.Type.POPULAR_PRODUCTS -> statsWidgetsStatus
-
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
-
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
                 }
             )
