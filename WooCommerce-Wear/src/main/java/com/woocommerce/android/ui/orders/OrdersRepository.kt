@@ -11,11 +11,11 @@ import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
-import kotlinx.coroutines.flow.mapNotNull
 
 class OrdersRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.ORDERS) private val ordersDataStore: DataStore<Preferences>,

@@ -17,6 +17,7 @@ import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.TOTAL_REVENUE
 import com.woocommerce.commons.wear.DataParameters.VISITORS_TOTAL
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WCStatsStore
@@ -25,7 +26,6 @@ import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
-import kotlinx.coroutines.flow.mapNotNull
 
 class StatsRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.STATS) private val statsDataStore: DataStore<Preferences>,
