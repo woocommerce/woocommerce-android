@@ -16,13 +16,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 
 @Suppress("UnusedPrivateProperty")
 @HiltViewModel(assistedFactory = OrdersListViewModel.Factory::class)
 class OrdersListViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
-    private val ordersRepository: OrdersRepository,
+    private val fetchOrdersFromStore: FetchOrdersFromStore,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -35,14 +36,13 @@ class OrdersListViewModel @AssistedInject constructor(
     init {
         loginRepository.selectedSiteFlow
             .filterNotNull()
-            .onEach {
-                requestOrdersData(it)
-            }.launchIn(this)
+            .onEach { requestOrdersData(it) }
+            .launchIn(this)
     }
 
     private suspend fun requestOrdersData(selectedSite: SiteModel) {
         _viewState.update { it.copy(isLoading = true) }
-        val orders = ordersRepository.fetchOrders(selectedSite)
+        val orders = fetchOrdersFromStore(selectedSite)
         _viewState.update {
             it.copy(
                 orders = orders,
@@ -61,7 +61,7 @@ class OrdersListViewModel @AssistedInject constructor(
     data class OrderItem(
         val date: String,
         val number: String,
-        val customerName: String,
+        val customerName: String?,
         val total: String,
         val status: String
     ) : Parcelable
