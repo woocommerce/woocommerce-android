@@ -1,10 +1,13 @@
 package com.woocommerce.android.model
 
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.CASH_PAYMENTS
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.getBillingName
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
@@ -22,7 +25,8 @@ import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
 class OrderMapper @Inject constructor(
     private val getLocations: GetLocations,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
+    private val resourceProvider: ResourceProvider
 ) {
     fun toAppModel(databaseEntity: OrderEntity): Order {
         val metaDataList = databaseEntity.getMetaDataList()
@@ -66,6 +70,9 @@ class OrderMapper @Inject constructor(
             giftCardDiscountedAmount = databaseEntity.giftCardAmount
                 .toBigDecimalOrNull() ?: BigDecimal.ZERO,
             shippingTax = databaseEntity.shippingTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            billingName = databaseEntity.getBillingName(
+                resourceProvider.getString(R.string.orderdetail_customer_name_default)
+            )
         )
     }
 

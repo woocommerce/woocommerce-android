@@ -52,6 +52,7 @@ data class Order(
     val selectedGiftCard: String?,
     val giftCardDiscountedAmount: BigDecimal?,
     val shippingTax: BigDecimal,
+    val billingName: String = ""
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
