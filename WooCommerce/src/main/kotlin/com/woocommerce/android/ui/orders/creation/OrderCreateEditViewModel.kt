@@ -1224,6 +1224,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onShippingButtonClicked() {
+        tracker.track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
 
