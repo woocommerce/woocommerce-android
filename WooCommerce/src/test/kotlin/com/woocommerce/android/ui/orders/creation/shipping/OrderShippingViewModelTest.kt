@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.orders.creation.shipping
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,6 +13,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -27,10 +32,13 @@ class OrderShippingViewModelTest : BaseUnitTest() {
             )
         )
 
+    private val tracker: AnalyticsTrackerWrapper = mock()
+
     fun setup(args: OrderShippingFragmentArgs) {
         viewModel = OrderShippingViewModel(
             savedStateHandle = args.toSavedStateHandle(),
-            resourceProvider = mock()
+            resourceProvider = mock(),
+            tracker = tracker
         )
     }
 
@@ -47,20 +55,21 @@ class OrderShippingViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given this is edit flow, when the screen loads, make sure data matches the current shipping line`() = testBlocking {
-        setup(editArgs)
+    fun `given this is edit flow, when the screen loads, make sure data matches the current shipping line`() =
+        testBlocking {
+            setup(editArgs)
 
-        advanceTimeBy(1001)
-        // When the screen load and
-        val viewState = viewModel.viewState.value
+            advanceTimeBy(1001)
+            // When the screen load and
+            val viewState = viewModel.viewState.value
 
-        assertThat(viewState).isNotNull
-        assertThat(viewState).isInstanceOf(OrderShippingViewModel.ViewState.ShippingState::class.java)
-        assertThat((viewState as OrderShippingViewModel.ViewState.ShippingState).name)
-            .isEqualTo(editArgs.currentShippingLine?.methodTitle)
-        assertThat(viewState.amount).isEqualByComparingTo(editArgs.currentShippingLine?.total)
-        assertThat(viewState.isEditFlow).isTrue
-    }
+            assertThat(viewState).isNotNull
+            assertThat(viewState).isInstanceOf(OrderShippingViewModel.ViewState.ShippingState::class.java)
+            assertThat((viewState as OrderShippingViewModel.ViewState.ShippingState).name)
+                .isEqualTo(editArgs.currentShippingLine?.methodTitle)
+            assertThat(viewState.amount).isEqualByComparingTo(editArgs.currentShippingLine?.total)
+            assertThat(viewState.isEditFlow).isTrue
+        }
 
     @Test
     fun `when editing the amount, then update the state`() {
@@ -82,6 +91,37 @@ class OrderShippingViewModelTest : BaseUnitTest() {
         val viewState = viewModel.viewState.value
         assertThat((viewState as OrderShippingViewModel.ViewState.ShippingState).name)
             .isEqualTo(name)
+    }
+
+    @Test
+    fun `when editing method, then update the state`() {
+        setup(creationArgs)
+        val selected = ShippingMethod(
+            id = "other",
+            title = "Other"
+        )
+
+        viewModel.onMethodSelected(selected)
+
+        val viewState = viewModel.viewState.value
+        assertThat((viewState as OrderShippingViewModel.ViewState.ShippingState).method)
+            .isEqualTo(selected)
+    }
+
+    @Test
+    fun `when editing method, then track the method selected`() {
+        setup(creationArgs)
+        val selected = ShippingMethod(
+            id = "other",
+            title = "Other"
+        )
+
+        viewModel.onMethodSelected(selected)
+
+        verify(tracker).track(
+            AnalyticsEvent.ORDER_SHIPPING_METHOD_SELECTED,
+            mapOf(AnalyticsTracker.KEY_SHIPPING_METHOD to selected.id)
+        )
     }
 
     @Test
