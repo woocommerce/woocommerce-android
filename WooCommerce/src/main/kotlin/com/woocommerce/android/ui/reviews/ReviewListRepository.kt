@@ -12,10 +12,9 @@ import com.woocommerce.android.model.RequestResult.*
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.REVIEWS
+import com.woocommerce.android.util.dispatchAndAwait
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -26,7 +25,6 @@ import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.action.NotificationAction.FETCH_NOTIFICATIONS
 import org.wordpress.android.fluxc.action.WCProductAction.FETCH_PRODUCTS
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.WCProductActionBuilder
@@ -50,7 +48,6 @@ class ReviewListRepository @Inject constructor(
     }
 
     private var continuationProduct = ContinuationWrapper<Boolean>(REVIEWS)
-    private var continuationNotification = ContinuationWrapper<Boolean>(REVIEWS)
 
     private var offset = 0
     private var unreadReviewsOffset = 0
@@ -85,7 +82,11 @@ class ReviewListRepository @Inject constructor(
                 coroutineScope {
                     launch {
                         val fetchNotificationsResult = fetchNotifications()
-                        send(FetchReviewsResult.NotificationsFetched(if (fetchNotificationsResult) SUCCESS else ERROR))
+                        send(
+                            FetchReviewsResult.NotificationsFetched(
+                                if (fetchNotificationsResult.isSuccess) SUCCESS else ERROR
+                            )
+                        )
                     }
 
                     launch {
@@ -135,9 +136,7 @@ class ReviewListRepository @Inject constructor(
         }
 
         val notificationsTask = async {
-            fetchNotifications().let {
-                if (it) Result.success(Unit) else Result.failure(Exception())
-            }
+            fetchNotifications()
         }
 
         reviewsTask.await()
@@ -303,14 +302,35 @@ class ReviewListRepository @Inject constructor(
     /**
      * Fetches notifications from the API. We use these results to populate [ProductReview.read].
      */
-    private suspend fun fetchNotifications(): Boolean {
-        val result = continuationNotification.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val payload = FetchNotificationsPayload()
-            dispatcher.dispatch(NotificationActionBuilder.newFetchNotificationsAction(payload))
-        }
-        return when (result) {
-            is Cancellation -> false
-            is Success -> result.value
+    private suspend fun fetchNotifications(): Result<Unit> {
+        val payload = FetchNotificationsPayload()
+        val event = dispatcher.dispatchAndAwait<FetchNotificationsPayload, OnNotificationChanged>(
+            NotificationActionBuilder.newFetchNotificationsAction(payload)
+        )
+
+        return when {
+            event.isError -> {
+                AnalyticsTracker.track(
+                    AnalyticsEvent.NOTIFICATIONS_LOAD_FAILED,
+                    mapOf(
+                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
+                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
+                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
+                    )
+                )
+
+                WooLog.e(
+                    REVIEWS,
+                    "Error fetching product review notifications: " +
+                        "${event.error?.type} - ${event.error?.message}"
+                )
+                Result.failure(OnChangedException(event.error))
+            }
+
+            else -> {
+                AnalyticsTracker.track(AnalyticsEvent.NOTIFICATIONS_LOADED)
+                Result.success(Unit)
+            }
         }
     }
 
@@ -424,34 +444,6 @@ class ReviewListRepository @Inject constructor(
             } else {
                 AnalyticsTracker.track(AnalyticsEvent.REVIEWS_PRODUCTS_LOADED)
                 continuationProduct.continueWith(true)
-            }
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @Subscribe(threadMode = MAIN)
-    fun onNotificationChanged(event: OnNotificationChanged) {
-        if (event.causeOfChange == FETCH_NOTIFICATIONS) {
-            if (event.isError) {
-                AnalyticsTracker.track(
-                    AnalyticsEvent.NOTIFICATIONS_LOAD_FAILED,
-                    mapOf(
-                        AnalyticsTracker.KEY_ERROR_CONTEXT to this::class.java.simpleName,
-                        AnalyticsTracker.KEY_ERROR_TYPE to event.error?.type?.toString(),
-                        AnalyticsTracker.KEY_ERROR_DESC to event.error?.message
-                    )
-                )
-
-                WooLog.e(
-                    REVIEWS,
-                    "Error fetching product review notifications: " +
-                        "${event.error?.type} - ${event.error?.message}"
-                )
-                continuationNotification.continueWith(false)
-            } else {
-                AnalyticsTracker.track(AnalyticsEvent.NOTIFICATIONS_LOADED)
-
-                continuationNotification.continueWith(true)
             }
         }
     }
