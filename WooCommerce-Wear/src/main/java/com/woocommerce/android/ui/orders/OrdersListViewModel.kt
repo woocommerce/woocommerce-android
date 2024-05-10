@@ -75,7 +75,7 @@ class OrdersListViewModel @AssistedInject constructor(
             dateCreated
         ) ?: dateCreated
 
-        val formattedBillingName = takeIf {
+        val formattedBillingName = takeUnless {
             billingFirstName.isEmpty() && billingLastName.isEmpty()
         }?.let { "$billingFirstName $billingLastName" }
 

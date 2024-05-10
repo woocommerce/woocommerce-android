@@ -125,7 +125,9 @@ fun OrderListItem(
                 )
             }
             Text(
-                text = order.customerName ?: stringResource(id = R.string.orders_list_guest_customer),
+                text = order.customerName
+                    ?.takeIf { it.isNotEmpty() }
+                    ?: stringResource(id = R.string.orders_list_guest_customer),
                 style = WooTypography.body1,
                 color = Color.White,
                 textAlign = TextAlign.Start,
