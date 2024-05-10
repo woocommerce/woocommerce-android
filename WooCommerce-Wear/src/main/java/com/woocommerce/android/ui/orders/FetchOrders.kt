@@ -50,8 +50,8 @@ class FetchOrders @Inject constructor(
 
     private val timeoutFlow: Flow<Boolean>
         get() = flow {
-            emit(true)
-            delay(TIMEOUT_MILLIS)
             emit(false)
+            delay(TIMEOUT_MILLIS)
+            emit(true)
         }
 }
