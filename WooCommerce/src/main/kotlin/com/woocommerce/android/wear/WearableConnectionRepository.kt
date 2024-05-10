@@ -5,9 +5,7 @@ import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.gson.Gson
 import com.woocommerce.android.extensions.convertedFrom
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.commons.wear.DataParameters
 import com.woocommerce.commons.wear.DataParameters.CONVERSION_RATE
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
@@ -25,12 +23,15 @@ import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.time.Instant
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.Success
 
 class WearableConnectionRepository @Inject constructor(
     private val dataClient: DataClient,
     private val selectedSite: SelectedSite,
     private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore,
+    private val orderStore: WCOrderStore,
     private val getStats: GetWearableMyStoreStats,
     private val coroutineScope: CoroutineScope
 ) {
@@ -72,13 +73,15 @@ class WearableConnectionRepository @Inject constructor(
     }
 
     fun sendOrdersData() = coroutineScope.launch {
-        val orders = emptyList<Order>()
-        val ordersJson = gson.toJson(orders)
+        val orders = orderStore.fetchOrdersForWearables(
+            site = selectedSite.get(),
+            shouldStoreData = false
+        ).run { this as? Success }?.orders ?: emptyList()
 
         sendData(
             DataPath.ORDERS_DATA,
             DataMap().apply {
-                putString(ORDERS_JSON.value, ordersJson)
+                putString(ORDERS_JSON.value, gson.toJson(orders))
             }
         )
     }
