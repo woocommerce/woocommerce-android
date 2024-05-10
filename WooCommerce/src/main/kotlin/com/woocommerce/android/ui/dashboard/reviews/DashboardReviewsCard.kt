@@ -3,10 +3,11 @@ package com.woocommerce.android.ui.dashboard.reviews
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -116,9 +118,27 @@ private fun ReviewsLoading(
     onFilterSelected: (ProductReviewStatus) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(modifier) {
         Header(selectedFilter, onFilterSelected)
-        CircularProgressIndicator(modifier = modifier)
+        repeat(3) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                SkeletonView(width = 24.dp, height = 24.dp)
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier
+                ) {
+                    SkeletonView(width = 260.dp, height = 16.dp)
+                    SkeletonView(width = 120.dp, height = 16.dp)
+                    SkeletonView(width = 60.dp, height = 16.dp)
+                    Spacer(modifier = Modifier)
+                    Divider()
+                }
+            }
+        }
     }
 }
 
