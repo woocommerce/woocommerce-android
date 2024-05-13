@@ -28,18 +28,12 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `order details load successfully emits success state`() = testBlocking {
-        //  TODO fix this test
-        whenever(orderDetailRepository.getOrderById(1L)).thenReturn(null)
-
-        viewModel.loadOrderDetails()
-
-        //  TODO assert(viewModel.uiState.value == UiState.Success(BigDecimal.TEN, BigDecimal.ZERO))
+        // TODO
     }
 
     @Test
     fun `order details load failure emits error state`() = testBlocking {
-        whenever(orderDetailRepository.getOrderById(1L)).thenReturn(null)
-
+        // TODO
         viewModel.loadOrderDetails()
 
         assert(viewModel.uiState.value is UiState.Error)

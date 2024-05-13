@@ -36,7 +36,6 @@ class ChangeDueCalculatorFragment : DialogFragment() {
         }
     }
 
-
     @Composable
     fun ChangeDueCalculatorScreen() {
         val uiState by viewModel.uiState.collectAsState()
@@ -61,7 +60,6 @@ class ChangeDueCalculatorFragment : DialogFragment() {
                         style = MaterialTheme.typography.h5,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
-
                 }
 
                 is ChangeDueCalculatorViewModel.UiState.Error -> {
@@ -71,9 +69,3 @@ class ChangeDueCalculatorFragment : DialogFragment() {
         }
     }
 }
-
-
-
-
-
-
