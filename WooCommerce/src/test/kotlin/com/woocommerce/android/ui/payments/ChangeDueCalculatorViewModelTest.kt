@@ -5,10 +5,12 @@ import com.woocommerce.android.ui.payments.methodselection.ChangeDueCalculatorVi
 import com.woocommerce.android.ui.payments.methodselection.ChangeDueCalculatorViewModel.UiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.junit.Before
 import org.junit.Rule
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.whenever
+import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
 class ChangeDueCalculatorViewModelTest {
@@ -24,19 +26,19 @@ class ChangeDueCalculatorViewModelTest {
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
-    // TODO: @Before
+    @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
         whenever(savedStateHandle.get<Long>("orderId")).thenReturn(1L)
         viewModel = ChangeDueCalculatorViewModel(savedStateHandle, orderDetailRepository)
     }
 
-    // TODO: @Test
+    @Test
     fun `order details load successfully emits success state`() = runBlockingTest {
         // TODO: Fix this test
     }
 
-    // TODO: @Test
+    @Test
     fun `order details load failure emits error state`() = runBlockingTest {
         whenever(orderDetailRepository.getOrderById(1L)).thenReturn(null)
 
