@@ -37,7 +37,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         loadOrderDetails()
     }
 
-    private fun loadOrderDetails() {
+    fun loadOrderDetails() {
         viewModelScope.launch {
             try {
                 val order = orderDetailRepository.getOrderById(orderId)
