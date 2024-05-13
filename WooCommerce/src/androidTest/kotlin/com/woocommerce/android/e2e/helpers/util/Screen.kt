@@ -199,12 +199,17 @@ open class Screen {
             val node = onNode(matcher)
             if (node.isDisplayed() && (!requireFullVisibility || node.isFullyDisplayed())) return
 
-            val parentBounds = node.onParent().fetchSemanticsNode().touchBoundsInRoot
+            val bounds = node.onParent().fetchSemanticsNode().boundsInWindow.let {
+                it.copy(
+                    top = it.top.coerceIn(0f, device.displayHeight.toFloat()),
+                    bottom = it.bottom.coerceIn(0f, device.displayHeight.toFloat())
+                )
+            }
             device.swipe(
-                parentBounds.center.x.toInt(),
-                parentBounds.center.y.toInt(),
-                parentBounds.center.x.toInt(),
-                parentBounds.center.y.toInt() + if (scrollUp) -100 else 100,
+                bounds.center.x.toInt(),
+                bounds.center.y.toInt(),
+                bounds.center.x.toInt(),
+                bounds.center.y.toInt() + if (scrollUp) -100 else 100,
                 10
             )
             numberOfScrolls++
