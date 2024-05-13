@@ -1,14 +1,17 @@
 package com.woocommerce.android.ui.payments.methodselection
-import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import java.math.BigDecimal
+
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.IOException
+import java.math.BigDecimal
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import android.util.Log
 
 @HiltViewModel
 class ChangeDueCalculatorViewModel @Inject constructor(
@@ -20,9 +23,9 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         ?: throw IllegalArgumentException("OrderId is required")
 
     sealed class UiState {
-        data object Loading : UiState()
+        object Loading : UiState()
         data class Success(val amountDue: BigDecimal, val change: BigDecimal) : UiState()
-        data object Error : UiState()
+        object Error : UiState()
     }
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
@@ -41,7 +44,11 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 } else {
                     _uiState.value = UiState.Error
                 }
-            } catch (e: NullPointerException) {
+            } catch (e: IOException) {
+                Log.e("ChangeCalculatorVM", "Error loading order details", e)
+                _uiState.value = UiState.Error
+            } catch (e: Exception) {
+                Log.e("ChangeCalculatorVM", "Unexpected error", e)
                 _uiState.value = UiState.Error
             }
         }
