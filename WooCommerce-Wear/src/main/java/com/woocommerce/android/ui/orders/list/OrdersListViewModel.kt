@@ -23,7 +23,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Locale
 
-@Suppress("UnusedPrivateProperty", "LongParameterList")
+@Suppress("LongParameterList")
 @HiltViewModel(assistedFactory = OrdersListViewModel.Factory::class)
 class OrdersListViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,

@@ -57,7 +57,7 @@ enum class NavRoutes(val route: String) {
     ORDER_DETAILS("orderDetails");
 
     fun withArgs(args: Any): String {
-        return "$route/{${args}}"
+        return "$route/{$args}"
     }
 }
 

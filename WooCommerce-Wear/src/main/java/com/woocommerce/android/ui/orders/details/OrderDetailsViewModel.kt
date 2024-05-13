@@ -6,13 +6,13 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
+import javax.inject.Inject
 
 @HiltViewModel
 class OrderDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle
-): ScopedViewModel(savedState) {
+) : ScopedViewModel(savedState) {
     private val _viewState = savedState.getStateFlow(
         scope = this,
         initialValue = ViewState()
