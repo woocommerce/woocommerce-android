@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.payments.methodselection
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOException
 import java.math.BigDecimal
@@ -45,7 +45,10 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                     _uiState.value = UiState.Error
                 }
             } catch (e: IOException) {
-                Log.e("ChangeCalculatorVM", "Error loading order details", e)
+                WooLog.e(
+                    tag = WooLog.T.ORDERS,
+                    message = "Error loading order details"
+                )
                 _uiState.value = UiState.Error
             }
         }
