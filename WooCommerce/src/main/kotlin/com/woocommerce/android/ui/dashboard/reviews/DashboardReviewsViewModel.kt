@@ -40,8 +40,7 @@ class DashboardReviewsViewModel @AssistedInject constructor(
         val supportedFilters = listOf(
             ProductReviewStatus.ALL,
             ProductReviewStatus.APPROVED,
-            ProductReviewStatus.HOLD,
-            ProductReviewStatus.SPAM
+            ProductReviewStatus.HOLD
         )
     }
 
