@@ -5,7 +5,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import com.woocommerce.android.presentation.component.LoadingScreen
-import com.woocommerce.android.ui.orders.ParseOrderData
 import com.woocommerce.android.ui.orders.ParseOrderData.OrderItem
 
 @Composable

@@ -2,12 +2,12 @@ package com.woocommerce.android.ui.orders
 
 import android.os.Parcelable
 import com.woocommerce.android.util.DateUtils
-import java.util.Locale
-import javax.inject.Inject
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.util.Locale
+import javax.inject.Inject
 
 class ParseOrderData @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
