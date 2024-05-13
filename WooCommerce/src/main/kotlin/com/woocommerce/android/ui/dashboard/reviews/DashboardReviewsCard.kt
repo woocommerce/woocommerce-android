@@ -118,7 +118,7 @@ private fun DashboardReviewsCard(
             titleResource = R.string.dashboard_reviews_card_view_all_button,
             action = onViewAllClicked
         ),
-        isError = false,
+        isError = viewState is DashboardReviewsViewModel.ViewState.Error,
         modifier = modifier
     ) {
         when (viewState) {
