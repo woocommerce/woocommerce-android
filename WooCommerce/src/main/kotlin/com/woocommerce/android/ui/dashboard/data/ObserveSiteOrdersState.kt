@@ -16,7 +16,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ObserveStatsWidgetsStatus @Inject constructor(
+class ObserveSiteOrdersState @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
     private val coroutineDispatchers: CoroutineDispatchers
