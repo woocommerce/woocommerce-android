@@ -31,13 +31,13 @@ class OrdersRepository @Inject constructor(
         shouldStoreData = true
     )
 
-    suspend fun getOrderFromId(orderId: Long): OrderEntity? {
-        val site = loginRepository.selectedSite ?: return null
-        return orderStore.getOrderByIdAndSite(
-            orderId = orderId,
-            site = site
-        )
-    }
+    suspend fun getOrderFromId(
+        selectedSite: SiteModel,
+        orderId: Long
+    ) = orderStore.getOrderByIdAndSite(
+        site = selectedSite,
+        orderId = orderId
+    )
 
     fun observeOrdersDataChanges() = ordersDataStore.data
         .mapNotNull { it[stringPreferencesKey(generateOrdersKey())] }

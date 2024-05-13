@@ -12,9 +12,11 @@ import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @HiltViewModel
 class OrderDetailsViewModel @Inject constructor(
@@ -31,14 +33,14 @@ class OrderDetailsViewModel @Inject constructor(
 
     init {
         _viewState.update { it.copy(isLoading = true) }
-        launch {
-            savedState.get<Long>(ORDER_ID.key)
-                ?.let { ordersRepository.getOrderFromId(it) }
-                ?.let {
-                    val site = loginRepository.selectedSite ?: return@let null
-                    parseOrder(site, it)
-                }.let { presentOrderData(it) }
-        }
+        loginRepository.selectedSiteFlow
+            .filterNotNull()
+            .onEach { site ->
+                savedState.get<Long>(ORDER_ID.key)
+                    ?.let { ordersRepository.getOrderFromId(site, it) }
+                    ?.let { parseOrder(site, it) }
+                    .let { presentOrderData(it) }
+            }.launchIn(this)
     }
 
     private fun presentOrderData(order: OrderItem?) {
