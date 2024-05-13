@@ -7,6 +7,8 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.reviews.ProductReviewStatus
 import com.woocommerce.android.ui.reviews.ReviewListRepository
+import com.woocommerce.android.ui.reviews.ReviewModerationHandler
+import com.woocommerce.android.ui.reviews.ReviewModerationStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -15,20 +17,24 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
 
 @HiltViewModel(assistedFactory = DashboardReviewsViewModel.Factory::class)
 class DashboardReviewsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     @Assisted private val parentViewModel: DashboardViewModel,
-    private val reviewListRepository: ReviewListRepository
+    private val reviewListRepository: ReviewListRepository,
+    private val reviewModerationHandler: ReviewModerationHandler
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         val supportedFilters = listOf(
@@ -38,6 +44,7 @@ class DashboardReviewsViewModel @AssistedInject constructor(
             ProductReviewStatus.SPAM
         )
     }
+
     private val _refreshTrigger = MutableSharedFlow<DashboardViewModel.RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
         .onStart { emit(DashboardViewModel.RefreshEvent()) }
@@ -83,33 +90,62 @@ class DashboardReviewsViewModel @AssistedInject constructor(
     private fun observeMostRecentReviews(
         forceRefresh: Boolean,
         status: ProductReviewStatus
-    ) = flow<Result<List<ProductReview>>> {
-        val fetchBeforeEmit = forceRefresh || getCachedReviews(status).isEmpty()
+    ) = channelFlow<Result<List<ProductReview>>> {
+        val fetchBeforeEmit = forceRefresh || observeCachedReviews(status).first().isEmpty()
 
         if (fetchBeforeEmit) {
             reviewListRepository.fetchMostRecentReviews(status)
                 .onFailure {
-                    emit(Result.failure(it))
-                    return@flow
+                    send(Result.failure(it))
+                    return@channelFlow
                 }
         }
 
-        emit(Result.success(getCachedReviews(status)))
+        coroutineScope {
+            val cacheJob = launch {
+                observeCachedReviews(status)
+                    .collect { cachedReviews ->
+                        send(Result.success(cachedReviews))
+                    }
+            }
 
-        if (!fetchBeforeEmit) {
-            reviewListRepository.fetchMostRecentReviews(status)
-                .onFailure {
-                    emit(Result.failure(it))
-                }
-            emit(Result.success(getCachedReviews(status)))
+            if (!fetchBeforeEmit) {
+                reviewListRepository.fetchMostRecentReviews(status)
+                    .onFailure {
+                        cacheJob.cancel()
+                        send(Result.failure(it))
+                    }
+            }
         }
     }
 
     @Suppress("MagicNumber")
-    private suspend fun getCachedReviews(status: ProductReviewStatus) =
-        reviewListRepository.getCachedProductReviews()
-            .filter { status == ProductReviewStatus.ALL || it.status == status.toString() }
-            .take(3)
+    private suspend fun observeCachedReviews(status: ProductReviewStatus) =
+        reviewModerationHandler.pendingModerationStatus.map { moderationStatus ->
+            val cachedReviews = reviewListRepository.getCachedProductReviews()
+                .filter { status == ProductReviewStatus.ALL || it.status == status.toString() }
+                // We need just 3 review, but we will take an additional review to account for
+                // any pending moderation requests
+                .take(4)
+
+            cachedReviews.applyModerationStatus(moderationStatus)
+                .take(3)
+        }
+
+    private fun List<ProductReview>.applyModerationStatus(
+        moderationStatus: List<ReviewModerationStatus>
+    ): List<ProductReview> {
+        return map { review ->
+            val status = moderationStatus.firstOrNull { it.review.remoteId == review.remoteId }
+            if (status != null) {
+                review.copy(status = status.newStatus.toString())
+            } else {
+                review
+            }
+        }.filter {
+            it.status != ProductReviewStatus.TRASH.toString() && it.status != ProductReviewStatus.SPAM.toString()
+        }
+    }
 
     sealed interface ViewState {
         data class Loading(val selectedFilter: ProductReviewStatus) : ViewState
