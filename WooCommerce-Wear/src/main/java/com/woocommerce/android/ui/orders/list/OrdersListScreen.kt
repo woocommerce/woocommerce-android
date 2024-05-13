@@ -33,7 +33,7 @@ import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
-import com.woocommerce.android.ui.orders.list.OrdersListViewModel.OrderItem
+import com.woocommerce.android.ui.orders.ParseOrderData.OrderItem
 
 @Composable
 fun OrdersListScreen(viewModel: OrdersListViewModel) {
