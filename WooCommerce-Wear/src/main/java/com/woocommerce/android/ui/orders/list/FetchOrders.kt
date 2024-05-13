@@ -1,8 +1,9 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.login.ObserveLoginRequest.Companion.TIMEOUT_MILLIS
+import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDERS
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

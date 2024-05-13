@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +32,7 @@ import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
-import com.woocommerce.android.ui.orders.OrdersListViewModel.OrderItem
+import com.woocommerce.android.ui.orders.list.OrdersListViewModel.OrderItem
 
 @Composable
 fun OrdersListScreen(viewModel: OrdersListViewModel) {

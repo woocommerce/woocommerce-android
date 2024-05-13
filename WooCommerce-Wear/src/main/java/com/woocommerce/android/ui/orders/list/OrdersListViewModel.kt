@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders
+package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
