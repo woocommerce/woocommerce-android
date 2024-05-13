@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.methodselection
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +12,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import android.util.Log
 
 @HiltViewModel
 class ChangeDueCalculatorViewModel @Inject constructor(
@@ -46,9 +46,6 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 }
             } catch (e: IOException) {
                 Log.e("ChangeCalculatorVM", "Error loading order details", e)
-                _uiState.value = UiState.Error
-            } catch (e: Exception) {
-                Log.e("ChangeCalculatorVM", "Unexpected error", e)
                 _uiState.value = UiState.Error
             }
         }
