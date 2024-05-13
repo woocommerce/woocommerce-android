@@ -7,6 +7,7 @@ import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.reviews.ProductReviewStatus
 import com.woocommerce.android.ui.reviews.ReviewListRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.assisted.Assisted
@@ -56,6 +57,10 @@ class DashboardReviewsViewModel @AssistedInject constructor(
         this.status.value = status
     }
 
+    fun onViewAllClicked() {
+        triggerEvent(OpenReviewsList)
+    }
+
     private fun observeMostRecentReviews(
         forceRefresh: Boolean,
         status: ProductReviewStatus
@@ -94,6 +99,8 @@ class DashboardReviewsViewModel @AssistedInject constructor(
 
         data object Error : ViewState
     }
+
+    data object OpenReviewsList : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {

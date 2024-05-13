@@ -15,10 +15,12 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,20 +30,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.fastStripHtml
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
+import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsViewModel.OpenReviewsList
 import com.woocommerce.android.ui.reviews.ProductReviewStatus
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 @Composable
 fun DashboardReviewsCard(
@@ -51,13 +60,38 @@ fun DashboardReviewsCard(
         factory.create(parentViewModel = parentViewModel)
     }
 ) {
+    HandleEvents(viewModel.event)
+
     viewModel.viewState.observeAsState().value?.let { viewState ->
         DashboardReviewsCard(
             viewState = viewState,
             onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.REVIEWS) },
             onFilterSelected = viewModel::onFilterSelected,
+            onViewAllClicked = viewModel::onViewAllClicked,
             modifier = modifier
         )
+    }
+}
+
+@Composable
+fun HandleEvents(event: LiveData<MultiLiveEvent.Event>) {
+    val navController = rememberNavController()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(event, navController, lifecycleOwner) {
+        val observer = Observer { event: MultiLiveEvent.Event ->
+            when (event) {
+                OpenReviewsList -> navController.navigateSafely(
+                    DashboardFragmentDirections.actionDashboardToReviews()
+                )
+            }
+        }
+
+        event.observe(lifecycleOwner, observer)
+
+        onDispose {
+            event.removeObserver(observer)
+        }
     }
 }
 
@@ -66,6 +100,7 @@ private fun DashboardReviewsCard(
     viewState: DashboardReviewsViewModel.ViewState,
     onHideClicked: () -> Unit,
     onFilterSelected: (ProductReviewStatus) -> Unit,
+    onViewAllClicked: () -> Unit,
     modifier: Modifier
 ) {
     WidgetCard(
@@ -74,6 +109,10 @@ private fun DashboardReviewsCard(
             listOf(
                 DashboardWidget.Type.REVIEWS.defaultHideMenuEntry(onHideClicked)
             )
+        ),
+        button = DashboardViewModel.DashboardWidgetAction(
+            titleResource = R.string.dashboard_reviews_card_view_all_button,
+            action = onViewAllClicked
         ),
         isError = false,
         modifier = modifier
