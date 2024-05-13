@@ -31,6 +31,14 @@ class OrdersRepository @Inject constructor(
         shouldStoreData = true
     )
 
+    suspend fun getOrderFromId(orderId: Long): OrderEntity? {
+        val site = loginRepository.selectedSite ?: return null
+        return orderStore.getOrderByIdAndSite(
+            orderId = orderId,
+            site = site
+        )
+    }
+
     fun observeOrdersDataChanges() = ordersDataStore.data
         .mapNotNull { it[stringPreferencesKey(generateOrdersKey())] }
         .map { gson.fromJson(it, Array<OrderEntity>::class.java).toList() }
