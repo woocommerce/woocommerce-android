@@ -74,7 +74,7 @@ fun DashboardReviewsCard(
 }
 
 @Composable
-fun HandleEvents(event: LiveData<MultiLiveEvent.Event>) {
+private fun HandleEvents(event: LiveData<MultiLiveEvent.Event>) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
 
