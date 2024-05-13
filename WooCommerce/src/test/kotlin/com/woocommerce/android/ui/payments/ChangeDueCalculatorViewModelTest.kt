@@ -7,9 +7,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
