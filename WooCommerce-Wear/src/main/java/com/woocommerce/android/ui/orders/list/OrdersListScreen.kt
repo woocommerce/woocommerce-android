@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,7 +40,8 @@ fun OrdersListScreen(viewModel: OrdersListViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     OrdersListScreen(
         isLoading = viewState?.isLoading ?: false,
-        orders = viewState?.orders.orEmpty()
+        orders = viewState?.orders.orEmpty(),
+        onOrderClicked = viewModel::onOrderItemClick
     )
 }
 
@@ -47,6 +49,7 @@ fun OrdersListScreen(viewModel: OrdersListViewModel) {
 fun OrdersListScreen(
     isLoading: Boolean,
     orders: List<OrderItem>,
+    onOrderClicked: (orderId: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     WooTheme {
@@ -70,7 +73,7 @@ fun OrdersListScreen(
                 if (isLoading) {
                     LoadingScreen()
                 } else {
-                    OrdersLazyColumn(orders, modifier)
+                    OrdersLazyColumn(orders, onOrderClicked, modifier)
                 }
             }
         }
@@ -80,6 +83,7 @@ fun OrdersListScreen(
 @Composable
 private fun OrdersLazyColumn(
     orders: List<OrderItem>,
+    onOrderClicked: (orderId: Long) -> Unit,
     modifier: Modifier
 ) {
     ScalingLazyColumn(
@@ -91,8 +95,9 @@ private fun OrdersLazyColumn(
     ) {
         items(orders) {
             OrderListItem(
-                modifier = modifier,
-                order = it
+                order = it,
+                onOrderClicked = onOrderClicked,
+                modifier = modifier
             )
         }
     }
@@ -100,8 +105,9 @@ private fun OrdersLazyColumn(
 
 @Composable
 fun OrderListItem(
-    modifier: Modifier,
-    order: OrderItem
+    order: OrderItem,
+    onOrderClicked: (orderId: Long) -> Unit,
+    modifier: Modifier
 ) {
     Box(
         modifier = modifier
@@ -109,6 +115,7 @@ fun OrderListItem(
             .background(Color.DarkGray)
             .padding(10.dp)
             .fillMaxWidth()
+            .clickable { onOrderClicked(order.id) }
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(
@@ -160,8 +167,10 @@ fun OrderListItem(
 fun Preview() {
     OrdersListScreen(
         isLoading = false,
+        onOrderClicked = {},
         orders = listOf(
             OrderItem(
+                id = 0L,
                 date = "25 Feb",
                 number = "#125",
                 customerName = "John Doe",
@@ -169,6 +178,7 @@ fun Preview() {
                 status = "Processing"
             ),
             OrderItem(
+                id = 1L,
                 date = "31 Dec",
                 number = "#124",
                 customerName = "Jane Doe",
@@ -176,6 +186,7 @@ fun Preview() {
                 status = "Completed"
             ),
             OrderItem(
+                id = 2L,
                 date = "4 Oct",
                 number = "#123",
                 customerName = "John Smith",
