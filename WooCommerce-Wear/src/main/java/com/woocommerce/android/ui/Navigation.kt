@@ -46,7 +46,7 @@ fun WooWearNavHost(
             )
         }
         composable(
-            route = ORDER_DETAILS.withArgs("{${ORDER_ID.key}}"),
+            route = ORDER_DETAILS.withArgs(ORDER_ID),
             arguments = listOf(navArgument(ORDER_ID.key) { type = NavType.LongType })
         ) {
             val viewModel: OrderDetailsViewModel = hiltViewModel()
@@ -62,6 +62,10 @@ enum class NavRoutes(val route: String) {
 
     fun withArgs(args: Any): String {
         return "$route/$args"
+    }
+
+    fun withArgs(navArgs: NavArgs): String {
+        return "$route/{${navArgs.key}}"
     }
 }
 
