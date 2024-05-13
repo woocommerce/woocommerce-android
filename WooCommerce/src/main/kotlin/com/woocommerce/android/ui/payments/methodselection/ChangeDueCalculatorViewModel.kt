@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChangeDueCalculatorViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val orderDetailRepository: OrderDetailRepository
 ) : ViewModel() {
 
@@ -24,18 +24,11 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private val orderId: Long = savedStateHandle.get<Long>("orderId")
         ?: throw IllegalArgumentException("OrderId is required")
 
-    // Rest of your ViewModel logic...
-
-
-    // Sealed class to represent different UI states
     sealed class UiState {
         data object Loading : UiState()
         data class Success(val amountDue: BigDecimal, val change: BigDecimal) : UiState()
         data object Error : UiState()
     }
-
-
-
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
@@ -58,9 +51,6 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             }
         }
     }
-
-
-
 
 
 }
