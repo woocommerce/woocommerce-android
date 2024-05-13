@@ -142,6 +142,7 @@ class MoreMenuViewModel @Inject constructor(
             icon = R.drawable.ic_more_menu_payments,
             isEnabled = isWooPosEnabled(),
             onClick = {
+                triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
             }
         )
     )
@@ -326,5 +327,6 @@ class MoreMenuViewModel @Inject constructor(
         object ViewReviewsEvent : MoreMenuEvent()
         object ViewInboxEvent : MoreMenuEvent()
         object ViewCouponsEvent : MoreMenuEvent()
+        object NavigateToWooPosEvent : MoreMenuEvent()
     }
 }
