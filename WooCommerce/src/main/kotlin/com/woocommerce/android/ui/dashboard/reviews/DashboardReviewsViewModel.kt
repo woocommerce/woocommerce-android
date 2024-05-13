@@ -15,10 +15,12 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
 
@@ -36,7 +38,8 @@ class DashboardReviewsViewModel @AssistedInject constructor(
             ProductReviewStatus.SPAM
         )
     }
-    private val refreshTrigger = parentViewModel.refreshTrigger
+    private val _refreshTrigger = MutableSharedFlow<DashboardViewModel.RefreshEvent>(extraBufferCapacity = 1)
+    private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
         .onStart { emit(DashboardViewModel.RefreshEvent()) }
     private val status = savedStateHandle.getStateFlow(viewModelScope, ProductReviewStatus.ALL)
 
@@ -67,6 +70,10 @@ class DashboardReviewsViewModel @AssistedInject constructor(
 
     fun onViewAllClicked() {
         triggerEvent(OpenReviewsList)
+    }
+
+    fun onRetryClicked() {
+        _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
     }
 
     private fun observeMostRecentReviews(

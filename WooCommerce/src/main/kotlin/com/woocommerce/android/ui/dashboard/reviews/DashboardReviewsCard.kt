@@ -68,6 +68,8 @@ fun DashboardReviewsCard(
             onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.REVIEWS) },
             onFilterSelected = viewModel::onFilterSelected,
             onViewAllClicked = viewModel::onViewAllClicked,
+            onContactSupportClicked = parentViewModel::onContactSupportClicked,
+            onRetryClicked = viewModel::onRetryClicked,
             modifier = modifier
         )
     }
@@ -101,6 +103,8 @@ private fun DashboardReviewsCard(
     onHideClicked: () -> Unit,
     onFilterSelected: (ProductReviewStatus) -> Unit,
     onViewAllClicked: () -> Unit,
+    onContactSupportClicked: () -> Unit,
+    onRetryClicked: () -> Unit,
     modifier: Modifier
 ) {
     WidgetCard(
@@ -134,8 +138,8 @@ private fun DashboardReviewsCard(
 
             is DashboardReviewsViewModel.ViewState.Error -> {
                 WidgetError(
-                    onContactSupportClicked = { /*TODO*/ },
-                    onRetryClicked = { /*TODO*/ }
+                    onContactSupportClicked = onContactSupportClicked,
+                    onRetryClicked = onRetryClicked
                 )
             }
         }
