@@ -189,9 +189,7 @@ private fun ReviewListItem(
         ) {
             Text(
                 text = if (review.product == null) {
-                    stringResource(
-                        R.string.product_review_list_item_title, review.reviewerName
-                    )
+                    stringResource(R.string.product_review_list_item_title, review.reviewerName)
                 } else {
                     stringResource(
                         R.string.review_list_item_title,
