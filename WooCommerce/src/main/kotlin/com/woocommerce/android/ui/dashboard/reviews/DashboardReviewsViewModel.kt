@@ -73,7 +73,9 @@ class DashboardReviewsViewModel @AssistedInject constructor(
         forceRefresh: Boolean,
         status: ProductReviewStatus
     ) = flow<Result<List<ProductReview>>> {
-        if (forceRefresh) {
+        val fetchBeforeEmit = forceRefresh || getCachedReviews(status).isEmpty()
+
+        if (fetchBeforeEmit) {
             reviewListRepository.fetchMostRecentReviews(status)
                 .onFailure {
                     emit(Result.failure(it))
@@ -83,7 +85,7 @@ class DashboardReviewsViewModel @AssistedInject constructor(
 
         emit(Result.success(getCachedReviews(status)))
 
-        if (!forceRefresh) {
+        if (!fetchBeforeEmit) {
             reviewListRepository.fetchMostRecentReviews(status)
                 .onFailure {
                     emit(Result.failure(it))
