@@ -52,7 +52,6 @@ data class Order(
     val selectedGiftCard: String?,
     val giftCardDiscountedAmount: BigDecimal?,
     val shippingTax: BigDecimal,
-    val billingName: String = ""
 ) : Parcelable {
     @IgnoredOnParcel
     val isOrderPaid = datePaid != null
@@ -66,6 +65,10 @@ data class Order(
 
     @IgnoredOnParcel
     val isRefundAvailable = !isOrderFullyRefunded && quantityOfItemsWhichPossibleToRefund > 0 && isOrderPaid
+
+    @IgnoredOnParcel
+    val billingName
+        get() = getBillingName("")
 
     val hasMultipleShippingLines: Boolean
         get() = shippingLines.size > 1

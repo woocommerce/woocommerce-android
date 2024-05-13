@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.Fact
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Content
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -44,7 +45,8 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val orderListRepository: OrderListRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val resourceProvider: ResourceProvider
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD = 3
@@ -88,7 +90,9 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                                 ViewState.OrderItem(
                                     number = "#${it.number}",
                                     date = it.dateCreated.formatToMMMdd(),
-                                    customerName = it.billingName,
+                                    customerName = it.billingName.ifEmpty {
+                                        resourceProvider.getString(R.string.orderdetail_customer_name_default)
+                                    },
                                     status = status,
                                     statusColor = it.status.color,
                                     totalPrice = currencyFormatter.formatCurrency(it.total, it.currency)

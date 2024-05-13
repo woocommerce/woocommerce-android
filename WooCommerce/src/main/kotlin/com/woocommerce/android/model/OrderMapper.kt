@@ -1,9 +1,7 @@
 package com.woocommerce.android.model
 
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.CASH_PAYMENTS
 import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.getBillingName
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.StringUtils
@@ -70,9 +68,6 @@ class OrderMapper @Inject constructor(
             giftCardDiscountedAmount = databaseEntity.giftCardAmount
                 .toBigDecimalOrNull() ?: BigDecimal.ZERO,
             shippingTax = databaseEntity.shippingTax.toBigDecimalOrNull() ?: BigDecimal.ZERO,
-            billingName = databaseEntity.getBillingName(
-                resourceProvider.getString(R.string.orderdetail_customer_name_default)
-            )
         )
     }
 
