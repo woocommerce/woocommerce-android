@@ -72,6 +72,10 @@ class DashboardReviewsViewModel @AssistedInject constructor(
         triggerEvent(OpenReviewsList)
     }
 
+    fun onReviewClicked(review: ProductReview) {
+        triggerEvent(OpenReviewDetail(review))
+    }
+
     fun onRetryClicked() {
         _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
     }
@@ -118,6 +122,7 @@ class DashboardReviewsViewModel @AssistedInject constructor(
     }
 
     data object OpenReviewsList : MultiLiveEvent.Event()
+    data class OpenReviewDetail(val review: ProductReview) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {
