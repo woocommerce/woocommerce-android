@@ -26,7 +26,10 @@ class OrdersRepository @Inject constructor(
 
     suspend fun fetchOrders(
         selectedSite: SiteModel
-    ) = orderStore.fetchOrdersForWearables(selectedSite)
+    ) = orderStore.fetchOrdersForWearables(
+        site = selectedSite,
+        shouldStoreData = true
+    )
 
     fun observeOrdersDataChanges() = ordersDataStore.data
         .mapNotNull { it[stringPreferencesKey(generateOrdersKey())] }
