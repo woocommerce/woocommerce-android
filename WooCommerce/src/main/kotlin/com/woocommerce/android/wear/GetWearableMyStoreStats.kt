@@ -3,8 +3,8 @@ package com.woocommerce.android.wear
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.revenueStatsGranularity
 import com.woocommerce.android.ui.analytics.ranges.visitorStatsGranularity
-import com.woocommerce.android.ui.mystore.data.StatsRepository
-import com.woocommerce.android.ui.mystore.data.StatsRepository.SiteStats
+import com.woocommerce.android.ui.dashboard.data.StatsRepository
+import com.woocommerce.android.ui.dashboard.data.StatsRepository.SiteStats
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
 import org.wordpress.android.fluxc.model.SiteModel
