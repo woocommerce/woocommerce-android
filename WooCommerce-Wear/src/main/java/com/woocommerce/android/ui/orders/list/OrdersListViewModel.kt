@@ -46,6 +46,10 @@ class OrdersListViewModel @AssistedInject constructor(
             .launchIn(this)
     }
 
+    fun onOrderItemClick(orderId: Long) {
+        navController.navigate("order_details/${orderId}")
+    }
+
     private suspend fun requestOrdersData(selectedSite: SiteModel) {
         _viewState.update { it.copy(isLoading = true) }
         fetchOrders(selectedSite)
@@ -84,6 +88,7 @@ class OrdersListViewModel @AssistedInject constructor(
         }
 
         return OrderItem(
+            id = orderId,
             date = formattedCreationDate,
             number = number,
             customerName = formattedBillingName,
@@ -100,6 +105,7 @@ class OrdersListViewModel @AssistedInject constructor(
 
     @Parcelize
     data class OrderItem(
+        val id: Long,
         val date: String,
         val number: String,
         val customerName: String?,
