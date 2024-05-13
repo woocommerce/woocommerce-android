@@ -82,6 +82,12 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                     val products = productsResult.getOrThrow()
                     val blazeCampaignModel = blazeCampaignResult.getOrThrow()
 
+                    if (products.isEmpty()) {
+                        // When the products is empty, the card will be hidden by the parent view model
+                        // so we don't need to show any UI
+                        return@combine null
+                    }
+
                     when {
                         blazeCampaignModel == null -> showUiForNoCampaign(products)
                         else -> showUiForCampaign(blazeCampaignModel)
