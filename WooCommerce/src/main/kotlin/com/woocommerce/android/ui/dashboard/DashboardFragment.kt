@@ -35,7 +35,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackPositiveAction
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.NavigateToOrders
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
@@ -165,8 +164,6 @@ class DashboardFragment :
                 is FeedbackPositiveAction -> handleFeedbackRequestPositiveClick()
 
                 is FeedbackNegativeAction -> mainNavigationRouter?.showFeedbackSurvey()
-
-                is NavigateToOrders -> mainNavigationRouter?.showOrders()
 
                 else -> event.isHandled = false
             }

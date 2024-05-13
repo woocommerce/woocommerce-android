@@ -9,24 +9,32 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCTag
+import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
+import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.NavigateToOrders
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Content
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Error
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Loading
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.OrderItem
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 @Composable
 fun DashboardOrdersCard(
@@ -56,6 +64,34 @@ fun DashboardOrdersCard(
                 )
                 is Loading -> Loading()
             }
+        }
+    }
+
+    HandleEvents(viewModel.event)
+}
+
+
+
+@Composable
+private fun HandleEvents(
+    event: LiveData<Event>
+) {
+    val navController = rememberNavController()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(event, navController, lifecycleOwner) {
+        val observer = Observer { event: Event ->
+            when (event) {
+                is NavigateToOrders -> {
+                    navController.navigateSafely(R.id.orders)
+                }
+            }
+        }
+
+        event.observe(lifecycleOwner, observer)
+
+        onDispose {
+            event.removeObserver(observer)
         }
     }
 }

@@ -1167,11 +1167,6 @@ class MainActivity :
         crashLogging.recordEvent("Opening order $orderId")
     }
 
-    override fun showOrders() {
-        binding.bottomNav.currentPosition = ORDERS
-        binding.bottomNav.active(ORDERS.position)
-    }
-
     override fun showOrderDetailWithSharedTransition(
         orderId: Long,
         allOrderIds: List<Long>,

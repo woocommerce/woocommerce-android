@@ -23,8 +23,6 @@ interface MainNavigationRouter {
         startPaymentsFlow: Boolean = false,
     )
 
-    fun showOrders()
-
     fun showOrderDetailWithSharedTransition(
         orderId: Long,
         allOrderIds: List<Long>,

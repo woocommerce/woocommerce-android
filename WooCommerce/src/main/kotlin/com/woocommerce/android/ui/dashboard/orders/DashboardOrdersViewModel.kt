@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.Fact
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Content
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
@@ -65,7 +66,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
 
     val button = DashboardWidgetAction(
         titleResource = R.string.dashboard_action_view_all_orders,
-        action = parentViewModel::onNavigateToOrders
+        action = ::onNavigateToOrders
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -129,6 +130,10 @@ class DashboardOrdersViewModel @AssistedInject constructor(
             }
         }
 
+    private fun onNavigateToOrders() {
+        triggerEvent(NavigateToOrders)
+    }
+
     fun onRefresh() {
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
@@ -160,4 +165,6 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     interface Factory {
         fun create(parentViewModel: DashboardViewModel): DashboardOrdersViewModel
     }
+
+    data object NavigateToOrders : MultiLiveEvent.Event()
 }
