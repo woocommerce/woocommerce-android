@@ -58,7 +58,7 @@ class MoreMenuViewModel @Inject constructor(
     private val moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     private val tapToPayAvailabilityStatus: TapToPayAvailabilityStatus,
     private val isBlazeEnabled: IsBlazeEnabled,
-    private val isWooPosAvailable: IsWooPosEnabled,
+    private val isWooPosEnabled: IsWooPosEnabled,
 ) : ScopedViewModel(savedState) {
     val moreMenuViewState =
         combine(
@@ -140,7 +140,7 @@ class MoreMenuViewModel @Inject constructor(
             title = R.string.more_menu_button_woo_pos,
             description = R.string.more_menu_button_woo_pos_description,
             icon = R.drawable.ic_more_menu_payments,
-            isEnabled = isWooPosAvailable(),
+            isEnabled = isWooPosEnabled(),
             onClick = {
             }
         )
