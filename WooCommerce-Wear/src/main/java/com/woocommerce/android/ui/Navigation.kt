@@ -15,6 +15,8 @@ import com.woocommerce.android.ui.NavRoutes.ORDER_DETAILS
 import com.woocommerce.android.ui.login.LoginScreen
 import com.woocommerce.android.ui.login.LoginViewModel
 import com.woocommerce.android.ui.mystore.MyStoreScreen
+import com.woocommerce.android.ui.orders.details.OrderDetailsScreen
+import com.woocommerce.android.ui.orders.details.OrderDetailsViewModel
 import com.woocommerce.android.ui.orders.list.OrdersListViewModel
 import com.woocommerce.android.ui.stats.StoreStatsViewModel
 
@@ -44,9 +46,11 @@ fun WooWearNavHost(
             )
         }
         composable(
-            route = ORDER_DETAILS.withArgs(ORDER_ID.key),
+            route = ORDER_DETAILS.withArgs("{${ORDER_ID.key}}"),
             arguments = listOf(navArgument(ORDER_ID.key) { type = NavType.LongType })
         ) {
+            val viewModel: OrderDetailsViewModel = hiltViewModel()
+            OrderDetailsScreen(viewModel)
         }
     }
 }
@@ -57,7 +61,7 @@ enum class NavRoutes(val route: String) {
     ORDER_DETAILS("orderDetails");
 
     fun withArgs(args: Any): String {
-        return "$route/{$args}"
+        return "$route/$args"
     }
 }
 
