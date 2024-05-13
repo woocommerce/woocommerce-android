@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
+import com.woocommerce.android.ui.NavRoutes.ORDER_DETAILS
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.commons.viewmodel.ScopedViewModel
@@ -47,7 +48,7 @@ class OrdersListViewModel @AssistedInject constructor(
     }
 
     fun onOrderItemClick(orderId: Long) {
-        navController.navigate("order_details/${orderId}")
+        navController.navigate(ORDER_DETAILS.withArgs(orderId))
     }
 
     private suspend fun requestOrdersData(selectedSite: SiteModel) {
