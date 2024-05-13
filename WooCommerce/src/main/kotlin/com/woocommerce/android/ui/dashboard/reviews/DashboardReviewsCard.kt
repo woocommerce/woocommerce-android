@@ -281,7 +281,7 @@ private fun Header(
         DashboardFilterableCardHeader(
             title = stringResource(id = R.string.dashboard_reviews_card_header_title),
             currentFilter = selectedFilter,
-            filterList = supportedFilters,
+            filterList = DashboardReviewsViewModel.supportedFilters,
             onFilterSelected = onFilterSelected,
             mapper = { ProductReviewStatus.getLocalizedLabel(LocalContext.current, it) }
         )
@@ -333,10 +333,3 @@ fun EmptyView(
         )
     }
 }
-
-private val supportedFilters = listOf(
-    ProductReviewStatus.ALL,
-    ProductReviewStatus.APPROVED,
-    ProductReviewStatus.HOLD,
-    ProductReviewStatus.SPAM
-)

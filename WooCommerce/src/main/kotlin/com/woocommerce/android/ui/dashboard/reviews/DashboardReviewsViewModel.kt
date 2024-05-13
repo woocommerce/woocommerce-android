@@ -28,6 +28,14 @@ class DashboardReviewsViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val reviewListRepository: ReviewListRepository
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        val supportedFilters = listOf(
+            ProductReviewStatus.ALL,
+            ProductReviewStatus.APPROVED,
+            ProductReviewStatus.HOLD,
+            ProductReviewStatus.SPAM
+        )
+    }
     private val refreshTrigger = parentViewModel.refreshTrigger
         .onStart { emit(DashboardViewModel.RefreshEvent()) }
     private val status = savedStateHandle.getStateFlow(viewModelScope, ProductReviewStatus.ALL)
