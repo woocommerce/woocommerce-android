@@ -6,9 +6,15 @@ import androidx.navigation.compose.composable
 
 internal const val CART_ROUTE = "cart"
 
-internal fun NavGraphBuilder.cartScreen() {
+internal fun NavGraphBuilder.cartScreen(
+    onCheckoutClick: () -> Unit
+) {
     composable(CART_ROUTE) {
         val viewModel: WooPosCartViewModel = hiltViewModel()
-        WooPosCartScreen(viewModel)
+
+        WooPosCartScreen(
+            viewModel = viewModel,
+            onCheckoutClick = onCheckoutClick
+        )
     }
 }
