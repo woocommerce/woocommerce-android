@@ -35,6 +35,7 @@ class IsWooPosEnabledTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(SiteModel())
         whenever(getActivePaymentsPlugin()).thenReturn(WOOCOMMERCE_PAYMENTS)
         whenever(isWindowSizeExpandedAndBigger()).thenReturn(true)
+        whenever(ippStore.loadAccount(any(), any())).thenReturn(buildPaymentAccountResult())
 
         sut = IsWooPosEnabled(
             selectedSite = selectedSite,
