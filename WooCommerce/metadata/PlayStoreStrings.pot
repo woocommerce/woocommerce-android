@@ -11,18 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_186"
+msgid ""
+"18.6:\n"
+"Enjoy enhanced functionality in our latest app update! We've improved the 'Tap To Pay' feature, introducing a new navigation path from the summary to the 'About Tap To Pay' screen, and revised its description for better clarity. Additionally, selecting shipping methods has been made more flexible, allowing you to choose specific options directly when adding or editing shipping details on an order. Update your app today for a smoother and more efficient experience!\n"
+msgstr ""
+
 msgctxt "release_note_185"
 msgid ""
 "18.5:\n"
 "Discover a more personalized shopping experience with the latest update to MyStore! We're excited to introduce a customizable dashboard that lets you tailor your view with a variety of unique cards. Streamline your management tasks and enjoy a dashboard designed just for you. Update now to start customizing your app experience!\n"
-msgstr ""
-
-msgctxt "release_note_184"
-msgid ""
-"18.4:\n"
-"This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.\n"
-"\n"
-"\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

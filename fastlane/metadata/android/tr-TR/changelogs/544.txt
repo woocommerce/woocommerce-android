@@ -1,4 +1,0 @@
-18.4:
-Bu sürüm, işletmenizi kurmanıza yardımcı olmayı amaçlayan hata düzeltmelerini ve iyileştirmeleri içerir. Geri bildirimleriniz devam etsin; üzerinde çalışacağımız bir sonraki özelliği bulmamıza yardımcı oluyor.
-
-

@@ -61,6 +61,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SHIPPING_METHOD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_TO
@@ -1224,6 +1225,7 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onShippingButtonClicked() {
+        tracker.track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
         triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
     }
 
@@ -1502,7 +1504,10 @@ class OrderCreateEditViewModel @Inject constructor(
     fun onUpdatedShipping(shippingUpdateResult: ShippingUpdateResult) {
         tracker.track(
             ORDER_SHIPPING_METHOD_ADD,
-            mapOf(KEY_FLOW to flow)
+            buildMap {
+                put(KEY_FLOW, flow)
+                putIfNotNull(KEY_SHIPPING_METHOD to shippingUpdateResult.methodId)
+            }
         )
         _orderDraft.update { draft ->
             val shipping: List<ShippingLine> = draft.shippingLines.map { shippingLine ->

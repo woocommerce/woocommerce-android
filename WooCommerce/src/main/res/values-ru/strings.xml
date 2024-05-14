@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-30 17:54:04+0000
+Translation-Revision-Date: 2024-05-08 09:54:07+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
-    <string name="blaze_campaign_promote_button">Продвижение</string>
+    <string name="blaze_campaign_show_all_button">Показать все кампании</string>
+    <string name="blaze_campaign_suggested_product_caption">Рекомендуемый товар</string>
+    <string name="dynamic_dashboard_widget_error_description">Попробуйте перезагрузить карточку. Если устранить проблему не удалось, &lt;a href=\"support\"&gt;обратитесь в службу поддержки&lt;/a&gt;.</string>
+    <string name="dynamic_dashboard_widget_error_title">Не удалось загрузить данные</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">Скрыть %s</string>
+    <string name="my_store_widget_onboarding_completed">Завершено</string>
+    <string name="my_store_widget_feedback_title">Обратная связь</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">Вам по-прежнему требуется помощь? Свяжитесь с нами</string>
+    <string name="my_store_stats_plugin_inactive_description">Убедитесь, что на сайте используется последняя версия WooCommerce и вы активировали WooCommerce Admin.</string>
+    <string name="my_store_stats_plugin_inactive_title">Не удалось отобразить\n аналитику вашего магазина</string>
     <string name="store_onboarding_task_view_all_tasks">Посмотреть все задачи</string>
     <string name="analytics_session_no_available_description">Аналитические данные сеанса основываются на количестве уникальных посетителей, которое невозможно определить для произвольных временных промежутков.</string>
     <string name="analytics_session_no_available">Данные сеанса недоступны</string>
     <string name="my_store_widget_unavailable">Недоступно</string>
     <string name="my_store_widget_stats_title">Производительность</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Просмотреть всю аналитику магазина</string>
-    <string name="dashboard_top_performers_overflow_menu_hide_option">Скрыть самые продаваемые</string>
     <string name="dashboard_stats_custom_range_label">Произвольный</string>
     <string name="dashboard_stats_edit_granularity_selected_content_description">Выбранный элемент</string>
     <string name="dashboard_stats_edit_granularity_content_description">Кнопка «Изменить период»</string>
@@ -468,7 +476,7 @@ Language: ru
     <string name="blaze_campaign_status_completed">Завершено</string>
     <string name="blaze_campaign_status_active">Активно</string>
     <string name="blaze_campaign_status_in_moderation">На модерации</string>
-    <string name="blaze_campaign_show_all_button">Показать всё</string>
+    <string name="blaze_campaign_create_campaign_button">Создать кампанию</string>
     <string name="blaze_campaign_subtitle">Станьте заметнее и быстрее продавайте товары.</string>
     <string name="blaze_campaign_title">Кампания Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Символ бесконтактной оплаты (Contactless Symbol) — торговая марка, принадлежащая компании EMVCo, LLC и используемая с её разрешения.</string>

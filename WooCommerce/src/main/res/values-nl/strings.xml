@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-30 15:54:03+0000
+Translation-Revision-Date: 2024-05-08 09:54:12+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
-    <string name="blaze_campaign_promote_button">Promoten</string>
+    <string name="blaze_campaign_show_all_button">Alle campagnes weergeven</string>
+    <string name="blaze_campaign_suggested_product_caption">Voorgesteld product</string>
+    <string name="dynamic_dashboard_widget_error_description">Probeer deze kaart opnieuw te laden. &lt;a href=\"support\"&gt;Neem contact op met de klantenservice&lt;/a&gt; als het probleem nog niet is opgelost.</string>
+    <string name="dynamic_dashboard_widget_error_title">Kan gegevens niet laden</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">Verbergen %s</string>
+    <string name="my_store_widget_onboarding_completed">Voltooid</string>
+    <string name="my_store_widget_feedback_title">Feedback</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">Meer hulp nodig? Neem contact met ons op</string>
+    <string name="my_store_stats_plugin_inactive_description">Zorg dat je de nieuwste versie van WooCommerce gebruikt op je site en dat WooCommerce Admin geactiveerd is.</string>
+    <string name="my_store_stats_plugin_inactive_title">We kunnen de\n analyses van je winkel niet weergeven</string>
     <string name="store_onboarding_task_view_all_tasks">Alle taken bekijken</string>
     <string name="analytics_session_no_available_description">Sessie-analyses gebruiken tellingen van unieke bezoekers, die niet beschikbaar zijn voor aangepaste datumbereiken</string>
     <string name="analytics_session_no_available">Sessiegegevens niet beschikbaar</string>
     <string name="my_store_widget_unavailable">Niet beschikbaar</string>
     <string name="my_store_widget_stats_title">Prestaties</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Alle winkelanalyses bekijken</string>
-    <string name="dashboard_top_performers_overflow_menu_hide_option">Toppresteerders verbergen</string>
     <string name="dashboard_stats_custom_range_label">Aangepast</string>
     <string name="dashboard_stats_edit_granularity_selected_content_description">Item geselecteerd</string>
     <string name="dashboard_stats_edit_granularity_content_description">Knop Datumbereik aanpassen</string>
@@ -468,7 +476,7 @@ Language: nl
     <string name="blaze_campaign_status_completed">Voltooid</string>
     <string name="blaze_campaign_status_active">Actief</string>
     <string name="blaze_campaign_status_in_moderation">Wordt beheerd</string>
-    <string name="blaze_campaign_show_all_button">Alles tonen</string>
+    <string name="blaze_campaign_create_campaign_button">Campagne aanmaken</string>
     <string name="blaze_campaign_subtitle">Verhoog de zichtbaarheid en verkoop snel je producten.</string>
     <string name="blaze_campaign_title">Blaze-campagne</string>
     <string name="card_reader_tap_to_pay_about_copyright">Het pictogram voor contactloos betalen is een handelsmerk dat gebruikt wordt met toestemming van en dat eigendom is van EMVCo, LLC.</string>

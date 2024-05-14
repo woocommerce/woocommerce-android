@@ -14,8 +14,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACTION_OPEN_DOCUMENT" />
     <uses-permission android:name="android.permission.NFC" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <queries>
@@ -47,16 +49,17 @@
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.Woo.Splash"
-            android:windowSoftInputMode="adjustResize"
-            android:launchMode="singleTop">
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <meta-data android:name="android.app.shortcuts"
+            <meta-data
+                android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
 
             <intent-filter android:autoVerify="true">
@@ -65,19 +68,20 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:scheme="https"/>
+                <data android:scheme="https" />
 
-                <data android:host="woocommerce.com"/>
+                <data android:host="woocommerce.com" />
 
-                <data android:path="/mobile/orders/details"/>
-                <data android:path="/mobile/payments"/>
-                <data android:path="/mobile/payments/tap-to-pay"/>
-                <data android:pathPrefix="/products/hardware/"/>
+                <data android:path="/mobile/orders/details" />
+                <data android:path="/mobile/payments" />
+                <data android:path="/mobile/payments/tap-to-pay" />
+                <data android:pathPrefix="/products/hardware/" />
             </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
-                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="image/*" />
             </intent-filter>
@@ -94,15 +98,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="woocommerce"/>
-                <data android:host="jetpack-connected"/>
+                <data android:scheme="woocommerce" />
+                <data android:host="jetpack-connected" />
                 <data android:host="app-login" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.login.MagicLinkInterceptActivity"
-            android:theme="@style/LoginTheme"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/LoginTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -155,7 +159,10 @@
         <activity
             android:name="com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity"
             android:screenOrientation="unspecified"
-            tools:replace="android:screenOrientation"/>
+            tools:replace="android:screenOrientation" />
+        <activity
+            android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
+            android:exported="false" />
 
         <!-- Stats today app widget -->
         <meta-data
@@ -201,8 +208,8 @@
 
         <service
             android:name=".media.ProductImagesJobService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="false" />
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <!-- Provider for exposing file URIs on Android 7+ (required for camera) -->
         <provider
@@ -229,17 +236,22 @@
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode_ui,ocr" />
 
-        <meta-data android:name="io.sentry.traces.activity.enable" android:value="false" />
+        <meta-data
+            android:name="io.sentry.traces.activity.enable"
+            android:value="false" />
 
         <!-- Trigger Google Play services to install the backported photo picker module. -->
-        <service android:name="com.google.android.gms.metadata.ModuleDependencies"
+        <service
+            android:name="com.google.android.gms.metadata.ModuleDependencies"
             android:enabled="false"
             android:exported="false"
             tools:ignore="MissingClass">
             <intent-filter>
                 <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
             </intent-filter>
-            <meta-data android:name="photopicker_activity:0:required" android:value="" />
+            <meta-data
+                android:name="photopicker_activity:0:required"
+                android:value="" />
         </service>
 
     </application>

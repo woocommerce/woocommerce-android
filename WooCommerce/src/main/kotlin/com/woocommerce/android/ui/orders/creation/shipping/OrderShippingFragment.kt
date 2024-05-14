@@ -12,9 +12,12 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
+import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.creation.shipping.OrderShippingMethodsFragment.Companion.SELECTED_METHOD_RESULT
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,7 +45,15 @@ class OrderShippingFragment : BaseFragment() {
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 is UpdateShipping -> navigateBackWithResult(UPDATE_SHIPPING_RESULT, event.shippingUpdate)
                 is RemoveShipping -> navigateBackWithResult(REMOVE_SHIPPING_RESULT, event.id)
+                is SelectShippingMethod -> {
+                    val action = OrderShippingFragmentDirections
+                        .actionOrderShippingFragmentToOrderShippingMethodsFragment(event.currentMethodId)
+                    findNavController().navigate(action)
+                }
             }
+        }
+        handleResult<ShippingMethod>(SELECTED_METHOD_RESULT) { selected ->
+            viewModel.onMethodSelected(selected)
         }
     }
 

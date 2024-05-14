@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-30 15:54:03+0000
+Translation-Revision-Date: 2024-05-08 11:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
-    <string name="blaze_campaign_promote_button">宣傳</string>
+    <string name="blaze_campaign_show_all_button">檢視所有行銷活動</string>
+    <string name="blaze_campaign_suggested_product_caption">建議的商品</string>
+    <string name="dynamic_dashboard_widget_error_description">請嘗試重新載入這張卡片。 如果問題持續發生，請&lt;a href=\"support\"&gt;聯絡支援人員&lt;/a&gt;。</string>
+    <string name="dynamic_dashboard_widget_error_title">無法載入資料</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">隱藏「%s」</string>
+    <string name="my_store_widget_onboarding_completed">已完成</string>
+    <string name="my_store_widget_feedback_title">意見回饋</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">仍然需要幫助嗎？ 聯絡我們</string>
+    <string name="my_store_stats_plugin_inactive_description">請確認你的網站執行最新版本的 WooCommerce，並已啟用 WooCommerce Admin。</string>
+    <string name="my_store_stats_plugin_inactive_title">我們無法顯示你的\n 商店分析</string>
     <string name="store_onboarding_task_view_all_tasks">檢視所有工作項目</string>
     <string name="analytics_session_no_available_description">自訂日期範圍無法提供工作階段分析所仰賴的不重複訪客數</string>
     <string name="analytics_session_no_available">無法提供工作階段資料</string>
     <string name="my_store_widget_unavailable">無法使用</string>
     <string name="my_store_widget_stats_title">績效</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">檢視所有商店分析資料</string>
-    <string name="dashboard_top_performers_overflow_menu_hide_option">隱藏成效最佳者</string>
     <string name="dashboard_stats_custom_range_label">自訂</string>
     <string name="dashboard_stats_edit_granularity_selected_content_description">已選取項目</string>
     <string name="dashboard_stats_edit_granularity_content_description">變更日期範圍按鈕</string>
@@ -468,7 +476,7 @@ Language: zh_TW
     <string name="blaze_campaign_status_completed">已完成</string>
     <string name="blaze_campaign_status_active">已啟用</string>
     <string name="blaze_campaign_status_in_moderation">審核中</string>
-    <string name="blaze_campaign_show_all_button">顯示全部</string>
+    <string name="blaze_campaign_create_campaign_button">建立行銷活動</string>
     <string name="blaze_campaign_subtitle">提升能見度，加速產品銷售。</string>
     <string name="blaze_campaign_title">Blaze 行銷活動</string>
     <string name="card_reader_tap_to_pay_about_copyright">「感應支付符號」為 EMVCo, LLC 所擁有，並經其許可所使用的商標。</string>

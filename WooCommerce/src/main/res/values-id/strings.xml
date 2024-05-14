@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-30 09:54:04+0000
+Translation-Revision-Date: 2024-05-08 09:54:13+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
-    <string name="blaze_campaign_promote_button">Promosikan</string>
+    <string name="blaze_campaign_show_all_button">Lihat semua kampanye</string>
+    <string name="blaze_campaign_suggested_product_caption">Saran produk</string>
+    <string name="dynamic_dashboard_widget_error_description">Coba muat ulang kartu ini. Jika masalah berlanjut, &lt;a href=\"support\"&gt;hubungi tim dukungan kami&lt;/a&gt;.</string>
+    <string name="dynamic_dashboard_widget_error_title">Tidak dapat memuat data</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">Sembunyikan %s</string>
+    <string name="my_store_widget_onboarding_completed">Selesai</string>
+    <string name="my_store_widget_feedback_title">Feedback</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">Masih butuh bantuan? Hubungi kami</string>
+    <string name="my_store_stats_plugin_inactive_description">Pastikan Anda mengoperasikan WooCommerce versi terbaru di situs Anda dan telah mengaktifkan WooCommerce Admin.</string>
+    <string name="my_store_stats_plugin_inactive_title">Kami tidak dapat menampilkan \n Anda analitik toko</string>
     <string name="store_onboarding_task_view_all_tasks">Lihat semua tugas</string>
     <string name="analytics_session_no_available_description">Analitik sesi bergantung pada jumlah pengunjung unik yang tidak tersedia untuk rentang tanggal kustom</string>
     <string name="analytics_session_no_available">Data sesi tidak tersedia</string>
     <string name="my_store_widget_unavailable">Tidak tersedia</string>
     <string name="my_store_widget_stats_title">Performa</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Lihat semua analitik toko</string>
-    <string name="dashboard_top_performers_overflow_menu_hide_option">Sembunyikan produk dengan performa tertinggi</string>
     <string name="dashboard_stats_custom_range_label">Kustom</string>
     <string name="dashboard_stats_edit_granularity_selected_content_description">Item terpilih</string>
     <string name="dashboard_stats_edit_granularity_content_description">Ubah tombol rentang tanggal</string>
@@ -468,7 +476,7 @@ Language: id
     <string name="blaze_campaign_status_completed">Selesai</string>
     <string name="blaze_campaign_status_active">Aktif</string>
     <string name="blaze_campaign_status_in_moderation">Dalam moderasi</string>
-    <string name="blaze_campaign_show_all_button">Tampilkan semua</string>
+    <string name="blaze_campaign_create_campaign_button">Buat kampanye</string>
     <string name="blaze_campaign_subtitle">Tingkatkan visibilitas dan jual produk Anda segera.</string>
     <string name="blaze_campaign_title">Kampanye Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol adalah merek dagang yang dimiliki oleh dan digunakan dengan izin EMVCo, LLC.</string>

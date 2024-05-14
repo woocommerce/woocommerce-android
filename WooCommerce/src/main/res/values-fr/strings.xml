@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-30 13:54:03+0000
+Translation-Revision-Date: 2024-05-07 16:54:07+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
-    <string name="blaze_campaign_promote_button">Promouvoir</string>
+    <string name="blaze_campaign_show_all_button">Afficher toutes les campagnes</string>
+    <string name="blaze_campaign_suggested_product_caption">Produit suggéré</string>
+    <string name="dynamic_dashboard_widget_error_description">Essayez de recharger cette carte. Si le problème persiste, veuillez &lt;a href=\"support\"&gt;contacter l’assistance&lt;/a&gt;.</string>
+    <string name="dynamic_dashboard_widget_error_title">Chargement des données impossible</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">Masquer %s</string>
+    <string name="my_store_widget_onboarding_completed">Terminé</string>
+    <string name="my_store_widget_feedback_title">Commentaire</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">Besoin d’une aide supplémentaire ? Nous contacter</string>
+    <string name="my_store_stats_plugin_inactive_description">Veillez à exécuter la dernière version de WooCommerce sur votre site et à ce que WooCommerce Admin soit activé.</string>
+    <string name="my_store_stats_plugin_inactive_title">Nous ne sommes pas en mesure d’afficher\n les statistiques de votre boutique</string>
     <string name="store_onboarding_task_view_all_tasks">Voir toutes les tâches</string>
     <string name="analytics_session_no_available_description">Les analyses de session se basent sur le nombre de visites uniques indisponibles pour les plages de dates personnalisées</string>
     <string name="analytics_session_no_available">Données de session indisponibles</string>
     <string name="my_store_widget_unavailable">Indisponible</string>
     <string name="my_store_widget_stats_title">Performances</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">Voir toutes les statistiques de la boutique</string>
-    <string name="dashboard_top_performers_overflow_menu_hide_option">Masquer les produits les plus performants</string>
     <string name="dashboard_stats_custom_range_label">Personnalisé</string>
     <string name="dashboard_stats_edit_granularity_selected_content_description">Élément sélectionné</string>
     <string name="dashboard_stats_edit_granularity_content_description">Bouton de changement de la plage de dates</string>
@@ -468,7 +476,7 @@ Language: fr
     <string name="blaze_campaign_status_completed">Terminée</string>
     <string name="blaze_campaign_status_active">Active</string>
     <string name="blaze_campaign_status_in_moderation">En modération</string>
-    <string name="blaze_campaign_show_all_button">Afficher tout</string>
+    <string name="blaze_campaign_create_campaign_button">Créer une campagne</string>
     <string name="blaze_campaign_subtitle">Augmentez la visibilité et vendez rapidement vos produits.</string>
     <string name="blaze_campaign_title">Campagne Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Le symbole du sans contact est une marque déposée et utilisée avec l’autorisation de EMVCo, LLC.</string>

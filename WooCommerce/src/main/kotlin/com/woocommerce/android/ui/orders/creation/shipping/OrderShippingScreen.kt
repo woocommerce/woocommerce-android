@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -59,7 +60,7 @@ fun UpdateShippingScreen(
                 isSaveChangesEnabled = currentState.isSaveChangesEnabled,
                 onNameChanged = { name -> viewModel.onNameChanged(name) },
                 onAmountChanged = { amount -> viewModel.onAmountChanged(amount) },
-                onMethodSelected = { viewModel.onMethodSelected() },
+                onSelectMethod = { viewModel.onSelectMethod() },
                 onRemove = { viewModel.onRemove() },
                 onSaveChanges = { viewModel.onSaveChanges() },
                 modifier = modifier
@@ -68,7 +69,11 @@ fun UpdateShippingScreen(
 
         is OrderShippingViewModel.ViewState.Loading -> {
             Box(modifier = Modifier.fillMaxSize()) {
-                Text(text = "loading", modifier = Modifier.align(Alignment.Center))
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .align(Alignment.Center),
+                )
             }
         }
     }
@@ -81,7 +86,7 @@ fun UpdateShippingScreen(
     amount: BigDecimal,
     onAmountChanged: (BigDecimal) -> Unit,
     method: String?,
-    onMethodSelected: () -> Unit,
+    onSelectMethod: () -> Unit,
     isSaveChangesEnabled: Boolean,
     onSaveChanges: () -> Unit,
     isEditFlow: Boolean,
@@ -101,7 +106,7 @@ fun UpdateShippingScreen(
             FieldSelectValue(
                 text = method,
                 hint = stringResource(id = R.string.order_creation_add_shipping_method_select_hint),
-                onSelect = onMethodSelected,
+                onSelect = onSelectMethod,
                 modifier = Modifier.fillMaxWidth()
             )
             Divider(modifier = Modifier.padding(horizontal = 16.dp))
@@ -247,7 +252,7 @@ fun UpdateShippingScreenPreview() {
             isEditFlow = false,
             onAmountChanged = {},
             onNameChanged = {},
-            onMethodSelected = {},
+            onSelectMethod = {},
             onSaveChanges = {},
             onRemove = {}
         )

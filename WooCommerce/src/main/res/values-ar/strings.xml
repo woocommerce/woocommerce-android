@@ -1,19 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-04-30 13:54:03+0000
+Translation-Revision-Date: 2024-05-07 16:54:07+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
-    <string name="blaze_campaign_promote_button">ترويج</string>
+    <string name="blaze_campaign_show_all_button">مشاهدة كل الحملات</string>
+    <string name="blaze_campaign_suggested_product_caption">المنتج المقترح</string>
+    <string name="dynamic_dashboard_widget_error_description">جرِّب إعادة تحميل هذه البطاقة. إذا استمرت المشكلة، فيرجى &lt;a href=\"support\"&gt;الاتصال بالدعم&lt;/a&gt;.</string>
+    <string name="dynamic_dashboard_widget_error_title">يتعذر تحميل البيانات</string>
+    <string name="dynamic_dashboard_widget_menu_item_hide">إخفاء %s</string>
+    <string name="my_store_widget_onboarding_completed">مكتمل</string>
+    <string name="my_store_widget_feedback_title">ملاحظات</string>
+    <string name="my_store_stats_plugin_inactive_contact_us">هل لا تزال تحتاج إلى مساعدة؟ اتصل بنا</string>
+    <string name="my_store_stats_plugin_inactive_description">تأكد من أنك تقوم بتشغيل أحدث إصدار من WooCommerce على موقعك وأنك قمت بتفعيل مسؤول WooCommerce.</string>
+    <string name="my_store_stats_plugin_inactive_title">يتعذر علينا عرض\n تحليلات متجرك</string>
     <string name="store_onboarding_task_view_all_tasks">عرض جميع المهام</string>
     <string name="analytics_session_no_available_description">تعتمد تحليلات الجلسة على أعداد الزائرين الفريدة غير المتاحة لنطاقات التواريخ المخصصة</string>
     <string name="analytics_session_no_available">بيانات الجلسة غير متاحة</string>
     <string name="my_store_widget_unavailable">غير متاح</string>
     <string name="my_store_widget_stats_title">الأداء</string>
     <string name="dashboard_top_performers_main_cta_view_all_analytics">مشاهدة كل تحليلات المتجر</string>
-    <string name="dashboard_top_performers_overflow_menu_hide_option">إخفاء أهم المؤدِّين</string>
     <string name="dashboard_stats_custom_range_label">مخصص</string>
     <string name="dashboard_stats_edit_granularity_selected_content_description">تم تحديد العنصر</string>
     <string name="dashboard_stats_edit_granularity_content_description">تغيير زر نطاق التاريخ</string>
@@ -468,7 +476,7 @@ Language: ar
     <string name="blaze_campaign_status_completed">مكتمل</string>
     <string name="blaze_campaign_status_active">نشط</string>
     <string name="blaze_campaign_status_in_moderation">قيد الإشراف</string>
-    <string name="blaze_campaign_show_all_button">عرض الكل</string>
+    <string name="blaze_campaign_create_campaign_button">إنشاء حملة</string>
     <string name="blaze_campaign_subtitle">يمكنك زيادة إمكانية الرؤية وبيع منتجاتك بسرعة.</string>
     <string name="blaze_campaign_title">حملة Blaze</string>
     <string name="card_reader_tap_to_pay_about_copyright">Contactless Symbol هو علامة تجارية تمتلكها EMVCo, LLC وتُستخدم بصلاحية منها.</string>

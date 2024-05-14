@@ -1,4 +1,0 @@
-18.4:
-Met deze release hebben we een aantal bugs verholpen en verbeteringen doorgevoerd om je te helpen bij het opstarten van je bedrijf. Blijf maar komen met jullie feedback, dat helpt ons kiezen waar we aan moeten werken.
-
-
