@@ -69,11 +69,19 @@ class DashboardDataStore @Inject constructor(
         }
     }
 
-    private fun getDefaultWidgets() = supportedWidgets.map {
-        DashboardWidgetDataModel.newBuilder()
-            .setType(it.name)
-            .setIsAdded(true)
-            .build()
+    private fun getDefaultWidgets(): List<DashboardWidgetDataModel> {
+        fun DashboardWidget.Type.shouldBeEnabledByDefault() =
+            this == DashboardWidget.Type.STATS ||
+                this == DashboardWidget.Type.POPULAR_PRODUCTS ||
+                this == DashboardWidget.Type.ONBOARDING ||
+                this == DashboardWidget.Type.BLAZE
+
+        return supportedWidgets.map {
+            DashboardWidgetDataModel.newBuilder()
+                .setType(it.name)
+                .setIsAdded(it.shouldBeEnabledByDefault())
+                .build()
+        }
     }
 
     // Use the feature flag [DYNAMIC_DASHBOARD_M2] to filter out unsupported widgets during development
