@@ -8,5 +8,4 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosCartViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-) : ScopedViewModel(savedStateHandle) {
-}
+) : ScopedViewModel(savedStateHandle)

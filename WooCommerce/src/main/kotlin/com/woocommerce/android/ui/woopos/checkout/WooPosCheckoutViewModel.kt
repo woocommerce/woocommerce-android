@@ -8,5 +8,4 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosCheckoutViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-) : ScopedViewModel(savedStateHandle) {
-}
+) : ScopedViewModel(savedStateHandle)
