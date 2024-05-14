@@ -4,39 +4,41 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.payments.methodselection.ChangeDueCalculatorViewModel.UiState
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlin.test.DefaultAsserter.assertEquals
 
 @ExperimentalCoroutinesApi
 class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
-    private lateinit var orderDetailRepository: OrderDetailRepository
-    private lateinit var savedStateHandle: SavedStateHandle
-
-    private lateinit var viewModel: ChangeDueCalculatorViewModel
-
-    @Before
-    fun setup() {
-        orderDetailRepository = mock()
-        savedStateHandle = mock()
-
-        whenever(savedStateHandle.get<Long>("orderId")).thenReturn(1L)
-        viewModel = ChangeDueCalculatorViewModel(savedStateHandle, orderDetailRepository)
-    }
+    private val viewModel: ChangeDueCalculatorViewModel = mock()
 
     @Test
-    fun `order details load successfully emits success state`() = testBlocking {
+    fun `given valid order id, when order details are requested, then success state is emitted`() = testBlocking {
+        // GIVEN
         // TODO
-    }
 
-    @Test
-    fun `order details load failure emits error state`() = testBlocking {
-        // TODO
+        // WHEN
         viewModel.loadOrderDetails()
 
-        assert(viewModel.uiState.value is UiState.Error)
+        // THEN
+        // TODO
+    }
+
+    @Test
+    fun `given order details retrieval failure, when order details are loaded, then error state is emitted`() = testBlocking {
+        // GIVEN
+        // TODO
+
+        // WHEN
+        viewModel.loadOrderDetails()
+
+        // THEN
+        // TODO
     }
 }
+
