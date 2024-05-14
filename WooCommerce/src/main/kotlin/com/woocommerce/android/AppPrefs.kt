@@ -861,11 +861,11 @@ object AppPrefs {
 
     fun getActiveStatsTab() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
 
-    fun setActiveTopPerformersGranularity(selectionName: String) {
+    fun setActiveTopPerformersTab(selectionName: String) {
         setString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY, selectionName)
     }
 
-    fun getActiveTopPerformersGranularity() = getString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY)
+    fun getActiveTopPerformersTab() = getString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY)
 
     fun setCustomDomainsSource(source: String) {
         setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)

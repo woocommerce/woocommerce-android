@@ -158,12 +158,12 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     fun onTabSelected(selectionType: SelectionType) {
         usageTracksEventEmitter.interacted()
         if (selectionType != SelectionType.CUSTOM) {
-            appPrefsWrapper.setActiveTopPerformersGranularity(selectionType.name)
+            appPrefsWrapper.setActiveTopPerformersTab(selectionType.name)
         } else {
             if (selectedDateRange.value?.customRange == null) {
                 onEditCustomRangeTapped()
             } else {
-                appPrefsWrapper.setActiveTopPerformersGranularity(SelectionType.CUSTOM.name)
+                appPrefsWrapper.setActiveTopPerformersTab(SelectionType.CUSTOM.name)
                 analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED)
             }
         }
