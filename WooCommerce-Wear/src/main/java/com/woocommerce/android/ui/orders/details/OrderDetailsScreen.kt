@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.orders.details
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,15 +13,16 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.woocommerce.android.R
 import com.woocommerce.android.presentation.component.LoadingScreen
+import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
+import com.woocommerce.android.presentation.theme.WooTypography
 import com.woocommerce.android.ui.orders.ParseOrderData.OrderItem
 
 @Composable
@@ -39,8 +42,8 @@ fun OrderDetailsScreen(
 ) {
     WooTheme {
         TimeText()
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        Box(
+            contentAlignment = Alignment.TopCenter,
             modifier = modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
@@ -80,9 +83,11 @@ fun OrderDetailsContent(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = order.customerName ?: stringResource(id = R.string.orders_list_guest_customer),
-                textAlign = TextAlign.Center,
-                color = Color.White
+                text = order.customerName,
+                style = WooTypography.title3,
+                color = Color.White,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
             )
             Text( /* Needs proper handling */
                 text = "3 Products",
@@ -91,11 +96,18 @@ fun OrderDetailsContent(
             )
             Text(
                 text = order.total,
-                color = Color.White
+                style = WooTypography.body1,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
             )
             Text(
                 text = order.status,
-                color = Color.White
+                style = WooTypography.caption1,
+                color = WooColors.woo_gray_alpha,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
