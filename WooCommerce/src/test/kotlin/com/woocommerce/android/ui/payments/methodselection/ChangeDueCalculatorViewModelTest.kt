@@ -31,7 +31,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel.loadOrderDetails()
 
         // THEN
-        // TODO
+        // TODO assertThat(viewModel.uiState.value).isEqualTo(ChangeDueCalculatorViewModel.UiState.Error)
     }
 }
-
