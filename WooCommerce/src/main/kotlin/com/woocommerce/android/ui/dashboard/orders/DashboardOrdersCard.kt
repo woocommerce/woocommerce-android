@@ -72,8 +72,6 @@ fun DashboardOrdersCard(
     HandleEvents(viewModel.event)
 }
 
-
-
 @Composable
 private fun HandleEvents(
     event: LiveData<Event>

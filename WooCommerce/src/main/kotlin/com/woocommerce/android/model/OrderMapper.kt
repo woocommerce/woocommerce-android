@@ -5,7 +5,6 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.model.Order.Item
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.StringUtils
-import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.WCMetaData
 import org.wordpress.android.fluxc.model.order.FeeLineTaxStatus
@@ -24,7 +23,6 @@ import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 class OrderMapper @Inject constructor(
     private val getLocations: GetLocations,
     private val dateUtils: DateUtils,
-    private val resourceProvider: ResourceProvider
 ) {
     fun toAppModel(databaseEntity: OrderEntity): Order {
         val metaDataList = databaseEntity.getMetaDataList()
