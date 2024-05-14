@@ -11,9 +11,15 @@ fun NavController.navigateToCheckoutScreen() {
     navigate(CHECKOUT_ROUTE)
 }
 
-fun NavGraphBuilder.checkoutScreen() {
+fun NavGraphBuilder.checkoutScreen(
+    onBackClick: () -> Unit
+) {
     composable(CHECKOUT_ROUTE) {
         val viewModel: WooPosCheckoutViewModel = hiltViewModel()
-        WooPosCheckoutScreen(viewModel)
+
+        WooPosCheckoutScreen(
+            viewModel = viewModel,
+            onBackClick = onBackClick
+        )
     }
 }

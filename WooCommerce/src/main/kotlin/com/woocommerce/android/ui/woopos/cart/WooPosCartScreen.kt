@@ -30,7 +30,7 @@ private fun WooPosCartScreen(onButtonClicked: () -> Unit) {
     ) {
         Column {
             Text(
-                text = "Woo POS Cart",
+                text = "Cart",
                 style = MaterialTheme.typography.h3,
                 color = MaterialTheme.colors.primary,
             )

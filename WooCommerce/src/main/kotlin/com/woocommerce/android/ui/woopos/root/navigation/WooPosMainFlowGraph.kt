@@ -10,10 +10,6 @@ import com.woocommerce.android.ui.woopos.checkout.navigateToCheckoutScreen
 
 const val MAIN_GRAPH_ROUTE = "main-graph"
 
-fun NavController.navigateToCheckoutGraph() {
-    navigate(MAIN_GRAPH_ROUTE)
-}
-
 fun NavGraphBuilder.checkoutGraph(
     navController: NavController
 ) {
@@ -22,10 +18,10 @@ fun NavGraphBuilder.checkoutGraph(
         route = MAIN_GRAPH_ROUTE,
     ) {
         cartScreen(
-            onCheckoutClick = {
-                navController.navigateToCheckoutScreen()
-            }
+            onCheckoutClick = navController::navigateToCheckoutScreen
         )
-        checkoutScreen()
+        checkoutScreen(
+            onBackClick = navController::popBackStack
+        )
     }
 }
