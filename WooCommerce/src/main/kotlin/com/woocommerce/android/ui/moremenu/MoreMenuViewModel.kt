@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.ui.woopos.IsWooPosEnabled
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -140,7 +141,7 @@ class MoreMenuViewModel @Inject constructor(
             title = R.string.more_menu_button_woo_pos,
             description = R.string.more_menu_button_woo_pos_description,
             icon = R.drawable.ic_more_menu_payments,
-            isEnabled = isWooPosEnabled(),
+            isEnabled = isWooPosEnabled() && FeatureFlag.WOO_POS.isEnabled(),
             onClick = {
                 triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
             }
