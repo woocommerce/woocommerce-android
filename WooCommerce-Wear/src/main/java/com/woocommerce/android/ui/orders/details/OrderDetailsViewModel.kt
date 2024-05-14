@@ -5,9 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.NavArgs.ORDER_ID
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.orders.FormatOrderData
 import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
+import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
