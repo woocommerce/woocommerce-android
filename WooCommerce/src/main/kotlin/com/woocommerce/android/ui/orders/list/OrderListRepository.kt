@@ -126,21 +126,18 @@ class OrderListRepository @Inject constructor(
         }
     }
 
-    fun observeTopOrders(count: Int, statusFilter: Order.Status? = null) = flow {
-        emit(Result.success(emptyList()))
-
-        orderStore.getOrdersForSite(selectedSite.get())
-            .asSequence()
-            .filter { statusFilter == null || it.status == statusFilter.value }
-            .sortedByDescending { it.dateCreated }
-            .take(count)
-            .map { orderMapper.toAppModel(it) }
-            .let { orders ->
-                orders
-                    .toList()
-                    .takeIf { it.isNotEmpty() }
-                    ?.let { emit(Result.success(it)) }
-            }
+    fun observeTopOrders(count: Int, isForced: Boolean, statusFilter: Order.Status? = null) = flow {
+        if (!isForced) {
+            orderStore.getOrdersForSite(selectedSite.get())
+                .asSequence()
+                .filter { statusFilter == null || it.status == statusFilter.value }
+                .sortedByDescending { it.dateCreated }
+                .take(count)
+                .map { orderMapper.toAppModel(it) }
+                .let { orders ->
+                    emit(Result.success(orders.toList()))
+                }
+        }
 
         val result = orderStore.fetchOrders(
             site = selectedSite.get(),
