@@ -212,12 +212,12 @@ class AppPrefsWrapper @Inject constructor() {
     fun getActiveStoreStatsTab() =
         AppPrefs.getActiveStatsTab()
 
-    fun setActiveTopPerformersGranularity(selectionName: String) {
-        AppPrefs.setActiveTopPerformersGranularity(selectionName)
+    fun setActiveTopPerformersTab(selectionName: String) {
+        AppPrefs.setActiveTopPerformersTab(selectionName)
     }
 
-    fun getActiveTopPerformersGranularity() =
-        AppPrefs.getActiveTopPerformersGranularity()
+    fun getActiveTopPerformersTab() =
+        AppPrefs.getActiveTopPerformersTab()
 
     fun setCustomDomainsSource(source: DomainFlowSource) {
         AppPrefs.setCustomDomainsSource(source.name)
