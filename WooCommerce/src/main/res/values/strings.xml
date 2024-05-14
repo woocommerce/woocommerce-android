@@ -371,7 +371,6 @@
     <string name="dashboard_stats_granularity_months">Months</string>
     <string name="dashboard_stats_granularity_years">Years</string>
     <string name="dashboard_stats_edit_granularity_content_description">Change date range button</string>
-    <string name="dashboard_filter_menu_content_description">Open filter dropdown</string>
 
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
@@ -418,7 +417,6 @@
     <string name="dynamic_dashboard_widget_error_title">Unable to load data</string>
     <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
 
-    <string name="dashboard_reviews_card_header_title">Status</string>
     <!--
         Sign Up Flow
     -->
@@ -3659,9 +3657,6 @@
 
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
-
-    <string name="more_menu_button_woo_pos">Woo Pos</string>
-    <string name="more_menu_button_woo_pos_description">Temporary entry point to POS mode</string>
 
     <!--
     Composite products

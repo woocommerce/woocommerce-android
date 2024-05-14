@@ -23,7 +23,7 @@ class DashboardDataStore @Inject constructor(
         SiteComponentEntryPoint::class.java
     ).dashboardDataStore()
 
-    val widgets: Flow<List<DashboardWidgetDataModel>> = dataStore.data
+    val dashboard: Flow<DashboardDataModel> = dataStore.data
         .catch { exception ->
             // dataStore.data throws an IOException when an error is encountered when reading data
             if (exception is IOException) {
@@ -40,25 +40,6 @@ class DashboardDataStore @Inject constructor(
                 it
             }
         }
-        .map {
-            val widgets = it.widgetsList.toMutableList()
-
-            // Add any new widgets that are not present in the saved configuration
-            if (supportedWidgets.size != widgets.size) {
-                supportedWidgets.filter { type ->
-                    widgets.none { widget -> widget.type == type.name }
-                }.forEach { type ->
-                    widgets.add(
-                        DashboardWidgetDataModel.newBuilder()
-                            .setType(type.name)
-                            .setIsAdded(false)
-                            .build()
-                    )
-                }
-            }
-
-            return@map widgets
-        }
 
     suspend fun updateDashboard(dashboard: DashboardDataModel) {
         runCatching {
@@ -68,13 +49,10 @@ class DashboardDataStore @Inject constructor(
         }
     }
 
-    private fun getDefaultWidgets() = supportedWidgets.map {
+    private fun getDefaultWidgets() = DashboardWidget.Type.entries.map {
         DashboardWidgetDataModel.newBuilder()
             .setType(it.name)
             .setIsAdded(true)
             .build()
     }
-
-    // Use the feature flag [DYNAMIC_DASHBOARD_M2] to filter out unsupported widgets during development
-    private val supportedWidgets: List<DashboardWidget.Type> = DashboardWidget.Type.entries
 }
