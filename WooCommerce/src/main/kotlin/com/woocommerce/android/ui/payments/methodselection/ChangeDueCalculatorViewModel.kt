@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.methodselection
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,9 +24,9 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         ?: throw IllegalArgumentException("OrderId is required")
 
     sealed class UiState {
-        object Loading : UiState()
+        data object Loading : UiState()
         data class Success(val amountDue: BigDecimal, val change: BigDecimal) : UiState()
-        object Error : UiState()
+        data object Error : UiState()
     }
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
@@ -35,7 +36,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         loadOrderDetails()
     }
 
-    fun loadOrderDetails() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun loadOrderDetails() {
         viewModelScope.launch {
             try {
                 val order = orderDetailRepository.getOrderById(orderId)
