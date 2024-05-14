@@ -23,7 +23,7 @@ import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
-import com.woocommerce.android.ui.orders.ParseOrderData.OrderItem
+import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 
 @Composable
 fun OrderDetailsScreen(viewModel: OrderDetailsViewModel) {

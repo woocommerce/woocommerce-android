@@ -6,8 +6,8 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.NavArgs.ORDER_ID
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.orders.OrdersRepository
-import com.woocommerce.android.ui.orders.ParseOrderData
-import com.woocommerce.android.ui.orders.ParseOrderData.OrderItem
+import com.woocommerce.android.ui.orders.FormatOrderData
+import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderDetailsViewModel @Inject constructor(
     ordersRepository: OrdersRepository,
-    parseOrder: ParseOrderData,
+    formatOrder: FormatOrderData,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -38,7 +38,7 @@ class OrderDetailsViewModel @Inject constructor(
             .onEach { site ->
                 savedState.get<Long>(ORDER_ID.key)
                     ?.let { ordersRepository.getOrderFromId(site, it) }
-                    ?.let { parseOrder(site, it) }
+                    ?.let { formatOrder(site, it) }
                     .let { presentOrderData(it) }
             }.launchIn(this)
     }

@@ -6,8 +6,8 @@ import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.NavRoutes.ORDER_DETAILS
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.orders.ParseOrderData
-import com.woocommerce.android.ui.orders.ParseOrderData.OrderItem
+import com.woocommerce.android.ui.orders.FormatOrderData
+import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.assisted.Assisted
@@ -25,7 +25,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 class OrdersListViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
     private val fetchOrders: FetchOrders,
-    private val parseOrders: ParseOrderData,
+    private val formatOrders: FormatOrderData,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -52,7 +52,7 @@ class OrdersListViewModel @AssistedInject constructor(
             .onEach { orders ->
                 _viewState.update { viewState ->
                     viewState.copy(
-                        orders = parseOrders(selectedSite, orders),
+                        orders = formatOrders(selectedSite, orders),
                         isLoading = false
                     )
                 }

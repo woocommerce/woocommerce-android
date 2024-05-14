@@ -11,7 +11,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Locale
 import javax.inject.Inject
 
-class ParseOrderData @Inject constructor(
+class FormatOrderData @Inject constructor(
     private val context: Context,
     private val wooCommerceStore: WooCommerceStore,
     private val dateUtils: DateUtils,
