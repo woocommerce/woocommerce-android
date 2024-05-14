@@ -6,12 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.IOException
-import java.math.BigDecimal
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.io.IOException
+import java.math.BigDecimal
+import javax.inject.Inject
 
 @HiltViewModel
 class ChangeDueCalculatorViewModel @Inject constructor(
