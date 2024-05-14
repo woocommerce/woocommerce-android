@@ -1,16 +1,25 @@
 package com.woocommerce.android.ui.orders.details
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.woocommerce.android.R
 import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.ui.orders.ParseOrderData.OrderItem
@@ -31,26 +40,55 @@ fun OrderDetailsScreen(
     order: OrderItem?
 ) {
     WooTheme {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = modifier.fillMaxSize()
+        Box(
+            contentAlignment = Alignment.TopCenter,
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp)
         ) {
             when {
                 isLoading -> LoadingScreen()
                 order == null -> OrderLoadingFailed()
-                else -> OrderDetailsContent(order)
+                else -> OrderDetailsContent(order, modifier)
             }
         }
     }
 }
 
 @Composable
-fun OrderDetailsContent(order: OrderItem) {
-    Text(
-        text = order.number,
-        color = Color.White
-    )
+fun OrderDetailsContent(
+    order: OrderItem,
+    modifier: Modifier
+) {
+    Column {
+        Text(
+            text = order.date,
+            color = Color.White
+        )
+        Text(
+            text = order.number,
+            color = Color.White
+        )
+        Text(
+            text = order.customerName ?: stringResource(id = R.string.orders_list_guest_customer),
+            textAlign = TextAlign.Center,
+            color = Color.White
+        )
+        Text( /* Needs proper handling */
+            text = "3 Products",
+            textAlign = TextAlign.Center,
+            color = Color.White
+        )
+        Text(
+            text = order.total,
+            color = Color.White
+        )
+        Text(
+            text = order.status,
+            color = Color.White
+        )
+    }
 }
 
 @Composable
