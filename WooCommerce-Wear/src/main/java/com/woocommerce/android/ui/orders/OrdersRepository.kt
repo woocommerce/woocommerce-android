@@ -16,11 +16,13 @@ import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.WCRefundStore
 
 class OrdersRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.ORDERS) private val ordersDataStore: DataStore<Preferences>,
     private val loginRepository: LoginRepository,
-    private val orderStore: WCOrderStore
+    private val orderStore: WCOrderStore,
+    private val refundStore: WCRefundStore,
 ) {
     private val gson by lazy { Gson() }
 
@@ -38,6 +40,14 @@ class OrdersRepository @Inject constructor(
         site = selectedSite,
         orderId = orderId
     )
+
+    suspend fun fetchOrderRefunds(
+        selectedSite: SiteModel,
+        orderId: Long
+    ) = refundStore.fetchAllRefunds(
+        site = selectedSite,
+        orderId = orderId
+    ).takeIf { it.isError.not() }?.model
 
     fun observeOrdersDataChanges() = ordersDataStore.data
         .mapNotNull { it[stringPreferencesKey(generateOrdersKey())] }
