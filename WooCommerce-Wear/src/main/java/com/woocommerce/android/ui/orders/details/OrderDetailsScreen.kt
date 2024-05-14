@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.orders.details
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -40,12 +38,14 @@ fun OrderDetailsScreen(
     order: OrderItem?
 ) {
     WooTheme {
-        Box(
-            contentAlignment = Alignment.TopCenter,
+        TimeText()
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp)
+                .padding(top = 32.dp)
+                .padding(horizontal = 20.dp)
         ) {
             when {
                 isLoading -> LoadingScreen()
@@ -61,33 +61,43 @@ fun OrderDetailsContent(
     order: OrderItem,
     modifier: Modifier
 ) {
-    Column {
-        Text(
-            text = order.date,
-            color = Color.White
-        )
-        Text(
-            text = order.number,
-            color = Color.White
-        )
-        Text(
-            text = order.customerName ?: stringResource(id = R.string.orders_list_guest_customer),
-            textAlign = TextAlign.Center,
-            color = Color.White
-        )
-        Text( /* Needs proper handling */
-            text = "3 Products",
-            textAlign = TextAlign.Center,
-            color = Color.White
-        )
-        Text(
-            text = order.total,
-            color = Color.White
-        )
-        Text(
-            text = order.status,
-            color = Color.White
-        )
+    Column(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = order.date,
+                color = Color.White
+            )
+            Text(
+                text = order.number,
+                color = Color.White
+            )
+        }
+        Column(
+            modifier = modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = order.customerName ?: stringResource(id = R.string.orders_list_guest_customer),
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
+            Text( /* Needs proper handling */
+                text = "3 Products",
+                textAlign = TextAlign.Center,
+                color = Color.White
+            )
+            Text(
+                text = order.total,
+                color = Color.White
+            )
+            Text(
+                text = order.status,
+                color = Color.White
+            )
+        }
     }
 }
 
