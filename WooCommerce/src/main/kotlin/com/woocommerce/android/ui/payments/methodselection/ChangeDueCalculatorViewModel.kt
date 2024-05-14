@@ -36,12 +36,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun loadOrderDetails() {
         launch {
-            val order = orderDetailRepository.getOrderById(orderId)
-            if (order != null) {
-                _uiState.value = UiState.Success(amountDue = order.total, 0.00.toBigDecimal())
-            } else {
-                _uiState.value = UiState.Error
-            }
+            val order = orderDetailRepository.getOrderById(orderId)!!
+            _uiState.value = UiState.Success(amountDue = order.total, 0.00.toBigDecimal())
         }
     }
 }
