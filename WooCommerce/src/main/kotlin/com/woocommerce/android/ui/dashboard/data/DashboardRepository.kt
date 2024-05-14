@@ -12,7 +12,6 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -51,7 +50,7 @@ class DashboardRepository @Inject constructor(
         )
 
     val widgets = combine(
-        dashboardDataStore.dashboard.map { it.widgetsList },
+        dashboardDataStore.widgets,
         statsWidgetsStatus,
         blazeWidgetStatus,
         onboardingWidgetStatus
