@@ -34,9 +34,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -53,7 +54,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
         const val MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD = 3
     }
 
-    private val orderStatusMap = MutableSharedFlow<Map<String, Order.OrderStatus>>(extraBufferCapacity = 1)
+    private val orderStatusMap = MutableSharedFlow<Map<String, Order.OrderStatus>>(replay = 1)
     private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
 
     val menu = DashboardWidgetMenu(
@@ -72,42 +73,40 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = merge(parentViewModel.refreshTrigger, refreshTrigger)
         .onStart { emit(RefreshEvent()) }
-        .flatMapLatest {
-            orderListRepository.observeTopOrders(
-                MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD
-            )
-        }
-        .combine(orderStatusMap) { result, statusMap ->
-            result.fold(
-                onSuccess = { orders ->
-                    if (orders.isEmpty()) {
-                        ViewState.Loading
-                    } else {
-                        Content(
-                            orders.map {
-                                val status = statusMap[it.status.value]?.label
-                                    ?: it.status.value.capitalize(Locale.getDefault())
+        .transformLatest {
+            emit(ViewState.Loading)
+            emitAll(
+                orderListRepository.observeTopOrders(
+                    count = MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD,
+                    isForced = it.isForced
+                ).combine(orderStatusMap) { result, statusMap ->
+                    result.fold(
+                        onSuccess = { orders ->
+                            Content(
+                                orders.map { order ->
+                                    val status = statusMap[order.status.value]?.label
+                                        ?: order.status.value.capitalize(Locale.getDefault())
 
-                                ViewState.OrderItem(
-                                    number = "#${it.number}",
-                                    date = it.dateCreated.formatToMMMdd(),
-                                    customerName = it.billingName.ifEmpty {
-                                        resourceProvider.getString(R.string.orderdetail_customer_name_default)
-                                    },
-                                    status = status,
-                                    statusColor = it.status.color,
-                                    totalPrice = currencyFormatter.formatCurrency(it.total, it.currency)
-                                )
-                            }
-                        )
-                    }
-                },
-                onFailure = {
-                    ViewState.Error(it.message ?: "")
+                                    ViewState.OrderItem(
+                                        number = "#${order.number}",
+                                        date = order.dateCreated.formatToMMMdd(),
+                                        customerName = order.billingName.ifEmpty {
+                                            resourceProvider.getString(R.string.orderdetail_customer_name_default)
+                                        },
+                                        status = status,
+                                        statusColor = order.status.color,
+                                        totalPrice = currencyFormatter.formatCurrency(order.total, order.currency)
+                                    )
+                                }
+                            )
+                        },
+                        onFailure = { error ->
+                            ViewState.Error(error.message ?: "")
+                        }
+                    )
                 }
             )
-        }
-        .asLiveData()
+        }.asLiveData()
 
     init {
         viewModelScope.launch {
