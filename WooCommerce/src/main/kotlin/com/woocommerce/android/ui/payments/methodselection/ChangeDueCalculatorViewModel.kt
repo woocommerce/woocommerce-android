@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.payments.methodselection
 
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class ChangeDueCalculatorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val orderDetailRepository: OrderDetailRepository
-) : ViewModel() {
+) : ScopedViewModel(savedStateHandle) {
 
     private val orderId: Long = savedStateHandle.get<Long>("orderId")
         ?: throw IllegalArgumentException("OrderId is required")
@@ -38,7 +38,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     internal fun loadOrderDetails() {
-        viewModelScope.launch {
+        launch {
             try {
                 val order = orderDetailRepository.getOrderById(orderId)
                 if (order != null) {
