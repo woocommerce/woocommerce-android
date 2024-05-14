@@ -90,11 +90,11 @@ fun DashboardTopPerformersWidgetCard(
                 )
 
                 else -> DashboardTopPerformersContent(
-                    topPerformersState,
-                    selectedDateRange,
-                    lastUpdateState,
-                    topPerformersViewModel::onGranularityChanged,
-                    topPerformersViewModel::onEditCustomRangeTapped
+                    topPerformersState = topPerformersState,
+                    selectedDateRange = selectedDateRange,
+                    lastUpdateState = lastUpdateState,
+                    onTabSelected = topPerformersViewModel::onTabSelected,
+                    onEditCustomRangeTapped = topPerformersViewModel::onEditCustomRangeTapped
                 )
             }
         }
@@ -120,7 +120,7 @@ fun DashboardTopPerformersContent(
     topPerformersState: TopPerformersState?,
     selectedDateRange: TopPerformersDateRange?,
     lastUpdateState: String?,
-    onGranularityChanged: (SelectionType) -> Unit,
+    onTabSelected: (SelectionType) -> Unit,
     onEditCustomRangeTapped: () -> Unit,
 ) {
     Column {
@@ -129,7 +129,7 @@ fun DashboardTopPerformersContent(
                 rangeSelection = it.rangeSelection,
                 dateFormatted = it.dateFormatted,
                 onCustomRangeClick = onEditCustomRangeTapped,
-                onTabSelected = onGranularityChanged
+                onTabSelected = onTabSelected
             )
         }
         Divider(modifier = Modifier.padding(bottom = 16.dp))
@@ -377,6 +377,7 @@ private fun TopPerformersWidgetCardPreview() {
             calendar = Calendar.getInstance(),
             locale = Locale.getDefault(),
         ),
+        customRange = null,
         dateFormatted = "Today"
     )
     val topPerformersState = TopPerformersState(
@@ -420,28 +421,28 @@ private fun TopPerformersWidgetCardPreview() {
             topPerformersState = topPerformersState,
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
-            onGranularityChanged = {},
+            onTabSelected = {},
             onEditCustomRangeTapped = {}
         )
         DashboardTopPerformersContent(
             topPerformersState = topPerformersState.copy(isLoading = true),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
-            onGranularityChanged = {},
+            onTabSelected = {},
             onEditCustomRangeTapped = {}
         )
         DashboardTopPerformersContent(
             topPerformersState = topPerformersState.copy(isError = true),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
-            onGranularityChanged = {},
+            onTabSelected = {},
             onEditCustomRangeTapped = {}
         )
         DashboardTopPerformersContent(
             topPerformersState = topPerformersState.copy(topPerformers = emptyList()),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
-            onGranularityChanged = {},
+            onTabSelected = {},
             onEditCustomRangeTapped = {}
         )
     }

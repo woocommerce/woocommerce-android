@@ -46,6 +46,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -81,10 +82,14 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     getSelectedDateRange: GetSelectedRangeForTopPerformers,
 ) : ScopedViewModel(savedState) {
     private val _selectedDateRange = getSelectedDateRange()
-    val selectedDateRange: LiveData<TopPerformersDateRange> = _selectedDateRange.map {
+    val selectedDateRange: LiveData<TopPerformersDateRange> = combine(
+        _selectedDateRange,
+        customDateRangeDataStore.dateRange
+    ) { selectedRange, customRange ->
         TopPerformersDateRange(
-            rangeSelection = it,
-            dateFormatted = dateFormatter.formatRangeDate(it)
+            rangeSelection = selectedRange,
+            customRange = customRange,
+            dateFormatted = dateFormatter.formatRangeDate(selectedRange)
         )
     }.asLiveData()
 
@@ -101,8 +106,6 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                 dateUtils.getDateOrTimeFromMillis(lastUpdateMillis)
             )
         }.asLiveData()
-
-    private val customRange = customDateRangeDataStore.dateRange.asLiveData()
 
     private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
 
@@ -152,21 +155,32 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         }
     }
 
-    fun onGranularityChanged(selectionType: SelectionType) {
+    fun onTabSelected(selectionType: SelectionType) {
         usageTracksEventEmitter.interacted()
-        appPrefsWrapper.setActiveTopPerformersGranularity(selectionType.name)
-        if (selectionType == SelectionType.CUSTOM) {
-            analyticsTrackerWrapper.track(
-                AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
-            )
+        if (selectionType != SelectionType.CUSTOM) {
+            appPrefsWrapper.setActiveTopPerformersGranularity(selectionType.name)
+        } else {
+            if (selectedDateRange.value?.customRange == null) {
+                onEditCustomRangeTapped()
+            } else {
+                appPrefsWrapper.setActiveTopPerformersGranularity(SelectionType.CUSTOM.name)
+                analyticsTrackerWrapper.track(AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED)
+            }
         }
     }
 
     fun onEditCustomRangeTapped() {
+        val event = if (selectedDateRange.value?.customRange == null) {
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
+        } else {
+            AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_EDIT_BUTTON_TAPPED
+        }
+        analyticsTrackerWrapper.track(event)
+
         triggerEvent(
             OpenDatePicker(
-                fromDate = customRange.value?.start ?: Date(),
-                toDate = customRange.value?.end ?: Date()
+                fromDate = selectedDateRange.value?.customRange?.start ?: Date(),
+                toDate = selectedDateRange.value?.customRange?.end ?: Date()
             )
         )
     }
@@ -247,11 +261,14 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
         analyticsTrackerWrapper.track(
             AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_CONFIRMED,
             mapOf(
-                AnalyticsTracker.KEY_IS_EDITING to (customRange.value != null),
+                AnalyticsTracker.KEY_IS_EDITING to (selectedDateRange.value?.customRange != null),
             )
         )
         viewModelScope.launch {
             customDateRangeDataStore.updateDateRange(statsTimeRange)
+            if (selectedDateRange.value?.rangeSelection?.selectionType != SelectionType.CUSTOM) {
+                onTabSelected(SelectionType.CUSTOM)
+            }
         }
     }
 
@@ -264,6 +281,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     data class TopPerformersDateRange(
         val rangeSelection: StatsTimeRangeSelection,
+        val customRange: StatsTimeRange?,
         val dateFormatted: String
     )
 
