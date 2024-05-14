@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.payments.methodselection
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.methodselection.ChangeDueCalculatorViewModel
 import com.woocommerce.android.ui.payments.methodselection.ChangeDueCalculatorViewModel.UiState
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
