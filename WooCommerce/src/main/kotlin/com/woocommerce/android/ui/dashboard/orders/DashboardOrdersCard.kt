@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.navOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -83,7 +85,14 @@ private fun HandleEvents(
         val observer = Observer { event: Event ->
             when (event) {
                 is NavigateToOrders -> {
-                    navController.navigateSafely(R.id.orders)
+                    navController.navigateSafely(
+                        resId = R.id.orders,
+                        navOptions = navOptions {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                        }
+                    )
                 }
             }
         }
