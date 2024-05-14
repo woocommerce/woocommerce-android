@@ -10,7 +10,7 @@ fun WooPosRootHost() {
 
     NavHost(
         navController = rootController,
-        startDestination = CHECKOUT_GRAPH_ROUTE,
+        startDestination = MAIN_GRAPH_ROUTE,
         enterTransition = { screenSlideIn() },
         exitTransition = { screenFadeOut() },
         popEnterTransition = { screenFadeIn() },

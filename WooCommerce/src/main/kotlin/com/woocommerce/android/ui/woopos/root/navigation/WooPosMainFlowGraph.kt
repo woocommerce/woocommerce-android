@@ -7,10 +7,10 @@ import com.woocommerce.android.ui.woopos.cart.CART_ROUTE
 import com.woocommerce.android.ui.woopos.cart.cartScreen
 import com.woocommerce.android.ui.woopos.checkout.checkoutScreen
 
-const val CHECKOUT_GRAPH_ROUTE = "checkout-graph"
+const val MAIN_GRAPH_ROUTE = "main-graph"
 
 fun NavController.navigateToCheckoutGraph() {
-    navigate(CHECKOUT_GRAPH_ROUTE)
+    navigate(MAIN_GRAPH_ROUTE)
 }
 
 fun NavGraphBuilder.checkoutGraph(
@@ -18,7 +18,7 @@ fun NavGraphBuilder.checkoutGraph(
 ) {
     navigation(
         startDestination = CART_ROUTE,
-        route = CHECKOUT_GRAPH_ROUTE,
+        route = MAIN_GRAPH_ROUTE,
     ) {
         cartScreen()
         checkoutScreen()
