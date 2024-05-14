@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders
 
+import android.content.Context
 import android.os.Parcelable
+import com.woocommerce.android.R
 import com.woocommerce.android.util.DateUtils
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.OrderEntity
@@ -10,6 +12,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 class ParseOrderData @Inject constructor(
+    private val context: Context,
     private val wooCommerceStore: WooCommerceStore,
     private val dateUtils: DateUtils,
     private val locale: Locale,
@@ -40,16 +43,18 @@ class ParseOrderData @Inject constructor(
 
         val formattedBillingName = takeUnless {
             billingFirstName.isEmpty() && billingLastName.isEmpty()
-        }?.let { "$billingFirstName $billingLastName" }
+        }?.let { "$billingFirstName $billingLastName" } ?: context.getString(R.string.orders_list_guest_customer)
 
         val formattedStatus = status.replaceFirstChar {
             if (it.isLowerCase()) it.titlecase(locale) else it.toString()
         }
 
+        val formattedNumber = "#$number"
+
         return OrderItem(
             id = orderId,
             date = formattedCreationDate,
-            number = number,
+            number = formattedNumber,
             customerName = formattedBillingName,
             total = formattedOrderTotals,
             status = formattedStatus
@@ -61,7 +66,7 @@ class ParseOrderData @Inject constructor(
         val id: Long,
         val date: String,
         val number: String,
-        val customerName: String?,
+        val customerName: String,
         val total: String,
         val status: String
     ) : Parcelable
