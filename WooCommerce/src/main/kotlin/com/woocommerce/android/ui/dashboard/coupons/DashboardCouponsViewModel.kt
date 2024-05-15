@@ -12,6 +12,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
@@ -20,7 +21,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.flow.transformLatest
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -38,16 +39,19 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val viewState = refreshTrigger
         .onStart { emit(RefreshEvent()) }
-        .transform {
+        .transformLatest {
             emit(State.Loading)
-            emitAll(observeMostActiveCoupons(it.isForced).map { result ->
-                result.fold(
-                    onSuccess = { coupons -> State.Loaded(coupons) },
-                    onFailure = { State.Error.Generic }
-                )
-            })
+            emitAll(
+                observeMostActiveCoupons(it.isForced).map { result ->
+                    result.fold(
+                        onSuccess = { coupons -> State.Loaded(coupons) },
+                        onFailure = { State.Error.Generic }
+                    )
+                }
+            )
         }
         .asLiveData()
 
