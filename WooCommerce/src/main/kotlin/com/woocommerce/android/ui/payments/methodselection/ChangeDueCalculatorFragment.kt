@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -44,26 +46,30 @@ class ChangeDueCalculatorFragment : DialogFragment() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Display dynamic content based on UI state
             when (uiState) {
                 is ChangeDueCalculatorViewModel.UiState.Loading -> {
-                    Text(text = stringResource(R.string.loading), style = MaterialTheme.typography.h5)
+                    Text(text = stringResource(R.string.loading), style = MaterialTheme.typography.h6)
                 }
-
                 is ChangeDueCalculatorViewModel.UiState.Success -> {
                     val state = uiState as ChangeDueCalculatorViewModel.UiState.Success
                     Text(
                         text = stringResource(R.string.cash_payments_take_payment_title, state.amountDue),
-                        style = MaterialTheme.typography.h5,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        style = MaterialTheme.typography.h4,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = "TODO...",
+                        style = MaterialTheme.typography.body1
                     )
                 }
-
                 is ChangeDueCalculatorViewModel.UiState.Error -> {
-                    Text(text = stringResource(R.string.error_generic), style = MaterialTheme.typography.h5)
+                    Text(text = stringResource(R.string.error_generic), style = MaterialTheme.typography.h6)
                 }
             }
         }
