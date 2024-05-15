@@ -8,6 +8,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -54,14 +55,15 @@ class OrderShippingMethodsViewModel @Inject constructor(
 
     private suspend fun getShippingMethods() {
         getShippingMethodsWithOtherValue()
-            .filter { fetchedShippingMethods ->
-                fetchedShippingMethods.isEmpty().not()
+            .withIndex()
+            .filter { indexedFetchedShippingMethods ->
+                indexedFetchedShippingMethods.index != 0 || indexedFetchedShippingMethods.value.size != 1
             }
             .collect { fetchedShippingMethods ->
-                var methodsUIList = fetchedShippingMethods.map { ShippingMethodUI(it) }
+                var methodsUIList = fetchedShippingMethods.value.map { ShippingMethodUI(it) }
 
                 methodsUIList = navArgs.selectedMethodId?.let { selectedId ->
-                    updateSelection(selectedId, fetchedShippingMethods.map { ShippingMethodUI(it) })
+                    updateSelection(selectedId, fetchedShippingMethods.value.map { ShippingMethodUI(it) })
                 } ?: methodsUIList
 
                 viewState.value = ViewState.ShippingMethodsState(methods = methodsUIList, isRefreshing = false)
