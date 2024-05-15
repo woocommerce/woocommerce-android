@@ -88,7 +88,8 @@ class DashboardDataStore @Inject constructor(
     private val supportedWidgets: List<DashboardWidget.Type> = DashboardWidget.Type.entries
         .filter {
             FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled() ||
-                it != DashboardWidget.Type.ORDERS &&
-                it != DashboardWidget.Type.REVIEWS
+                (it != DashboardWidget.Type.ORDERS &&
+                    it != DashboardWidget.Type.REVIEWS &&
+                    it != DashboardWidget.Type.COUPONS)
         }
 }
