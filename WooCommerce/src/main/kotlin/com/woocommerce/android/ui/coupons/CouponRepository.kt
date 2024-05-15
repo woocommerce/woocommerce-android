@@ -26,9 +26,10 @@ class CouponRepository @Inject constructor(
 ) {
     suspend fun fetchCoupons(
         page: Int,
-        pageSize: Int
+        pageSize: Int,
+        couponIds: List<Long> = emptyList()
     ): Result<Boolean> {
-        return store.fetchCoupons(selectedSite.get(), page, pageSize)
+        return store.fetchCoupons(selectedSite.get(), page, pageSize, couponIds)
             .let { result ->
                 if (result.isError) {
                     analyticsTrackerWrapper.track(
@@ -168,6 +169,10 @@ class CouponRepository @Inject constructor(
             result.isError -> Result.failure(WooException(result.error))
             else -> Result.success(Unit)
         }
+    }
+
+    suspend fun getCoupons(couponIds: List<Long>): List<Coupon> {
+        return store.getCoupons(selectedSite.get(), couponIds).map { it.toAppModel() }
     }
 
     private fun Coupon.createUpdateCouponRequest() =
