@@ -27,6 +27,7 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     private val ippStore: WCInPersonPaymentsStore = mock()
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin = mock()
     private val isWindowSizeExpandedAndBigger: IsWindowClassExpandedAndBigger = mock()
+    private val isWooPosFFEnabled: IsWooPosFFEnabled = mock()
 
     private lateinit var sut: IsWooPosEnabled
 
@@ -36,12 +37,14 @@ class IsWooPosEnabledTest : BaseUnitTest() {
         whenever(getActivePaymentsPlugin()).thenReturn(WOOCOMMERCE_PAYMENTS)
         whenever(isWindowSizeExpandedAndBigger()).thenReturn(true)
         whenever(ippStore.loadAccount(any(), any())).thenReturn(buildPaymentAccountResult())
+        whenever(isWooPosFFEnabled()).thenReturn(true)
 
         sut = IsWooPosEnabled(
             selectedSite = selectedSite,
             ippStore = ippStore,
             getActivePaymentsPlugin = getActivePaymentsPlugin,
-            isWindowSizeExpandedAndBigger = isWindowSizeExpandedAndBigger
+            isWindowSizeExpandedAndBigger = isWindowSizeExpandedAndBigger,
+            isWooPosFFEnabled = isWooPosFFEnabled,
         )
     }
 
@@ -81,6 +84,12 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     fun `given woo payments setup not completed, then return false`() = testBlocking {
         val result = buildPaymentAccountResult(status = WCPaymentAccountResult.WCPaymentAccountStatus.NO_ACCOUNT)
         whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given feature flag disabled, then return false`() = testBlocking {
+        whenever(isWooPosFFEnabled.invoke()).thenReturn(false)
         assertFalse(sut())
     }
 
