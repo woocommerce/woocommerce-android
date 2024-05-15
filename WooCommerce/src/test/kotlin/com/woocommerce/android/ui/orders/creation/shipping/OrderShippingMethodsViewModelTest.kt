@@ -4,6 +4,7 @@ import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -21,6 +22,8 @@ class OrderShippingMethodsViewModelTest : BaseUnitTest() {
 
     private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue = mock()
 
+    private val refreshShippingMethods: RefreshShippingMethods = mock()
+
     private val defaultShippingMethods = listOf(
         ShippingMethod(id = "free_shipping", "Free Shipping"),
         ShippingMethod(id = ShippingMethodsRepository.OTHER_ID, "Other"),
@@ -30,13 +33,14 @@ class OrderShippingMethodsViewModelTest : BaseUnitTest() {
     fun setup(args: OrderShippingMethodsFragmentArgs) {
         viewModel = OrderShippingMethodsViewModel(
             savedStateHandle = args.toSavedStateHandle(),
-            getShippingMethodsWithOtherValue = getShippingMethodsWithOtherValue
+            getShippingMethodsWithOtherValue = getShippingMethodsWithOtherValue,
+            refreshShippingMethods = refreshShippingMethods
         )
     }
 
     @Test
     fun `given there is no shipping method selected, make sure selection is empty`() = testBlocking {
-        whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(Result.success(defaultShippingMethods))
+        whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(flowOf(defaultShippingMethods))
         setup(noSelectedArgs)
         val viewState = viewModel.viewState.first()
         assertThat(viewState).isNotNull
@@ -48,7 +52,7 @@ class OrderShippingMethodsViewModelTest : BaseUnitTest() {
 
     @Test
     fun `given there is a shipping method selected, make sure the item is marked as selected`() = testBlocking {
-        whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(Result.success(defaultShippingMethods))
+        whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(flowOf(defaultShippingMethods))
         setup(selectedArgs)
         val viewState = viewModel.viewState.first()
         assertThat(viewState).isNotNull
@@ -61,7 +65,7 @@ class OrderShippingMethodsViewModelTest : BaseUnitTest() {
     @Test
     fun `given there is no shipping method selected, if the selection changes, the the item is marked as selected`() =
         testBlocking {
-            whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(Result.success(defaultShippingMethods))
+            whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(flowOf(defaultShippingMethods))
 
             setup(noSelectedArgs)
 
