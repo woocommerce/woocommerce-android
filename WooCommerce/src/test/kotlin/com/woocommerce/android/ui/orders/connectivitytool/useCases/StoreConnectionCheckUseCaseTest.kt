@@ -62,7 +62,7 @@ class StoreConnectionCheckUseCaseTest : BaseUnitTest() {
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         val response = WooResult<WCSSRModel>(
             WooError(
-                type = WooErrorType.PLUGIN_NOT_ACTIVE,
+                type = WooErrorType.API_NOT_FOUND,
                 original = BaseRequest.GenericErrorType.NETWORK_ERROR
             )
         )
