@@ -120,7 +120,9 @@ class ProductListScreen : Screen {
                 ViewMatchers.withChild(
                     Matchers.allOf(
                         ViewMatchers.withId(R.id.productStockAndStatus),
-                        ViewMatchers.withText(Matchers.containsString("${product.stockStatus}${product.variations} • ")),
+                        ViewMatchers.withText(
+                            Matchers.containsString("${product.stockStatus}${product.variations} • ")
+                        ),
                         ViewMatchers.withText(Matchers.containsString(product.priceDiscountedRaw))
                     )
                 ),
