@@ -7,7 +7,9 @@ import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResul
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class IsWooPosEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
     private val ippStore: WCInPersonPaymentsStore,
@@ -15,8 +17,12 @@ class IsWooPosEnabled @Inject constructor(
     private val isWindowSizeExpandedAndBigger: IsWindowClassExpandedAndBigger,
     private val isWooPosFFEnabled: IsWooPosFFEnabled,
 ) {
+    private var cachedResult : Boolean? = null
+
     @Suppress("ReturnCount")
     suspend operator fun invoke(): Boolean {
+        cachedResult?.let { return it }
+
         if (!isWooPosFFEnabled()) return false
 
         val ippPlugin = getActivePaymentsPlugin() ?: return false
@@ -24,11 +30,11 @@ class IsWooPosEnabled @Inject constructor(
         val paymentAccount = ippStore.loadAccount(ippPlugin, selectedSite).model ?: return false
         val countryCode = paymentAccount.country
 
-        return countryCode.lowercase() == "us" &&
-            ippPlugin == WOOCOMMERCE_PAYMENTS &&
-            paymentAccount.storeCurrencies.default.lowercase() == "usd" &&
-            isPluginSetupCompleted(paymentAccount) &&
-            isWindowSizeExpandedAndBigger()
+        return (countryCode.lowercase() == "us" &&
+                ippPlugin == WOOCOMMERCE_PAYMENTS &&
+                paymentAccount.storeCurrencies.default.lowercase() == "usd" &&
+                isPluginSetupCompleted(paymentAccount) &&
+                isWindowSizeExpandedAndBigger()).also { cachedResult = it }
     }
 
     private fun isPluginSetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
