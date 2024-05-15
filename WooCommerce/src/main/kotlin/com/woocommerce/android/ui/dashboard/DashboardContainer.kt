@@ -138,6 +138,11 @@ private fun ConfigurableWidgetCard(
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )
+
+        DashboardWidget.Type.REVIEWS -> DashboardReviewsCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
     }
 }
 

@@ -92,6 +92,8 @@ class DashboardRepository @Inject constructor(
                     DashboardWidget.Type.POPULAR_PRODUCTS -> siteOrdersState
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
+
+                    else -> DashboardWidget.Status.Available
                 }
             )
         }

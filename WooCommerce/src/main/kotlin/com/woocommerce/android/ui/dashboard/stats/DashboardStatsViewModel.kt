@@ -115,12 +115,13 @@ class DashboardStatsViewModel @AssistedInject constructor(
 
     fun onTabSelected(selectionType: SelectionType) {
         usageTracksEventEmitter.interacted()
-        appPrefsWrapper.setActiveStatsTab(selectionType.name)
-
-        if (selectionType == SelectionType.CUSTOM) {
+        if (selectionType != SelectionType.CUSTOM) {
+            appPrefsWrapper.setActiveStatsTab(selectionType.name)
+        } else {
             if (dateRangeState.value?.customRange == null) {
                 onAddCustomRangeClicked()
             } else {
+                appPrefsWrapper.setActiveStatsTab(SelectionType.CUSTOM.name)
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_TAB_SELECTED
                 )
@@ -136,11 +137,11 @@ class DashboardStatsViewModel @AssistedInject constructor(
             )
         )
 
-        if (dateRangeState.value?.rangeSelection?.selectionType != SelectionType.CUSTOM) {
-            onTabSelected(SelectionType.CUSTOM)
-        }
         viewModelScope.launch {
             customDateRangeDataStore.updateDateRange(range)
+            if (dateRangeState.value?.rangeSelection?.selectionType != SelectionType.CUSTOM) {
+                onTabSelected(SelectionType.CUSTOM)
+            }
         }
     }
 

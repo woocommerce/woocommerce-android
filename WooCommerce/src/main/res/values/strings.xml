@@ -371,6 +371,7 @@
     <string name="dashboard_stats_granularity_months">Months</string>
     <string name="dashboard_stats_granularity_years">Years</string>
     <string name="dashboard_stats_edit_granularity_content_description">Change date range button</string>
+    <string name="dashboard_filter_menu_content_description">Open filter dropdown</string>
 
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
@@ -411,6 +412,7 @@
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
     <string name="my_store_widget_orders_title">Most recent orders</string>
+    <string name="my_store_widget_reviews_title">Most recent reviews</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>
@@ -419,6 +421,10 @@
     <string name="dynamic_dashboard_widget_error_title">Unable to load data</string>
     <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
 
+    <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">No reviews found</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">No reviews match the selected filter, please try changing the filter</string>
+    <string name="dashboard_reviews_card_view_all_button">View all reviews</string>
     <!--
         Sign Up Flow
     -->
@@ -564,6 +570,11 @@
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <string name="simple_payments_share_payment_link">Share Payment Link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
+
+    <!--
+     Cash Payments
+-->
+    <string name="cash_payments_take_payment_title">Take payment (%s)</string>
 
     <!--
          Custom Amounts
@@ -3659,6 +3670,9 @@
 
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
+
+    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="more_menu_button_woo_pos_description">Temporary entry point to POS mode</string>
 
     <!--
     Composite products

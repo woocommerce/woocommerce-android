@@ -13,6 +13,6 @@ class GetSelectedRangeForTopPerformers @Inject constructor(
 ) : GetSelectedDateRange(appPrefs, customDateRangeDataStore, dateUtils) {
     override fun getSelectedRange(): SelectionType =
         runCatching {
-            SelectionType.valueOf(appPrefs.getActiveTopPerformersGranularity())
+            SelectionType.valueOf(appPrefs.getActiveTopPerformersTab())
         }.getOrDefault(SelectionType.TODAY)
 }
