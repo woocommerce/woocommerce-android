@@ -566,6 +566,11 @@
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
 
     <!--
+     Cash Payments
+-->
+    <string name="cash_payments_take_payment_title">Take payment (%s)</string>
+
+    <!--
          Custom Amounts
     -->
     <string name="custom_amounts_dialog_title">Custom Amount</string>
