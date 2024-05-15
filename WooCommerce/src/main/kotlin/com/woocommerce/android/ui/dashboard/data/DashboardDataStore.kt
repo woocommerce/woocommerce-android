@@ -6,6 +6,7 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.EntryPoints
@@ -77,4 +78,8 @@ class DashboardDataStore @Inject constructor(
 
     // Use the feature flag [DYNAMIC_DASHBOARD_M2] to filter out unsupported widgets during development
     private val supportedWidgets: List<DashboardWidget.Type> = DashboardWidget.Type.entries
+        .filter {
+            FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled() ||
+                it != DashboardWidget.Type.REVIEWS
+        }
 }

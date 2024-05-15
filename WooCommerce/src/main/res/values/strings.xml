@@ -410,6 +410,7 @@
     <string name="my_store_widget_top_products_title">Top performers</string>
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
+    <string name="my_store_widget_reviews_title">Most recent reviews</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>
