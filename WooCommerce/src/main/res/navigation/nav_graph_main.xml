@@ -87,6 +87,9 @@
         <action
             android:id="@+id/action_dashboard_to_editWidgetsFragment"
             app:destination="@id/dashboardWidgetEditorFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_reviews"
+            app:destination="@id/reviews" />
     </fragment>
     <fragment
         android:id="@+id/orders"

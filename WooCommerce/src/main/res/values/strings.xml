@@ -420,6 +420,9 @@
     <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
 
     <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">No reviews found</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">No reviews match the selected filter, please try changing the filter</string>
+    <string name="dashboard_reviews_card_view_all_button">View all reviews</string>
     <!--
         Sign Up Flow
     -->
