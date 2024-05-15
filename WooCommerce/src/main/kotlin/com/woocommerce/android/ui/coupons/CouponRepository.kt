@@ -8,9 +8,9 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.WooLog
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
@@ -84,8 +84,10 @@ class CouponRepository @Inject constructor(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    fun observeCoupons(): Flow<List<Coupon>> = store.observeCoupons(selectedSite.get()).map {
+    fun observeCoupons(couponIds: List<Long> = emptyList()): Flow<List<Coupon>> = store.observeCoupons(
+        site = selectedSite.get(),
+        couponIds = couponIds
+    ).map {
         it.map { couponDataModel -> couponDataModel.toAppModel() }
     }
 
@@ -107,6 +109,22 @@ class CouponRepository @Inject constructor(
         return when {
             result.isError -> Result.failure(WooException(result.error))
             else -> Result.success(result.model!!.toAppModel())
+        }
+    }
+
+    suspend fun fetchMostActiveCoupons(
+        dateRange: StatsTimeRange,
+        limit: Int
+    ): Result<List<CouponPerformanceReport>> {
+        val result = store.fetchMostActiveCoupons(
+            site = selectedSite.get(),
+            dateRange = dateRange.start..dateRange.end,
+            limit = limit
+        )
+
+        return when {
+            result.isError -> Result.failure(WooException(result.error))
+            else -> Result.success(result.model!!.map { it.toAppModel() })
         }
     }
 
