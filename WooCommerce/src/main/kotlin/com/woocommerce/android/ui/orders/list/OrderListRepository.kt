@@ -134,8 +134,10 @@ class OrderListRepository @Inject constructor(
                 .sortedByDescending { it.dateCreated }
                 .take(count)
                 .map { orderMapper.toAppModel(it) }
-                .let { orders ->
-                    emit(Result.success(orders.toList()))
+                .toList()
+                .takeIf { it.isNotEmpty() }
+                ?.let { orders ->
+                    emit(Result.success(orders))
                 }
         }
 
