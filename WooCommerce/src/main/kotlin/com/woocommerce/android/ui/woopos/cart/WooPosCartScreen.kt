@@ -9,7 +9,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.woocommerce.android.ui.woopos.util.WooPosPreview
 
 @Composable
 @Suppress("UNUSED_PARAMETER")
@@ -42,7 +42,7 @@ private fun WooPosCartScreen(onButtonClicked: () -> Unit) {
 }
 
 @Composable
-@PreviewLightDark
+@WooPosPreview
 fun WooPosCartScreenPreview() {
     WooPosCartScreen(onButtonClicked = {})
 }
