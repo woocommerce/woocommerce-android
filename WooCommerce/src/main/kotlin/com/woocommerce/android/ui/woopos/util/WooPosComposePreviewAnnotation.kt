@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName", "Filename")
+
 package com.woocommerce.android.ui.woopos.util
 
 import android.content.res.Configuration

@@ -40,6 +40,6 @@ private fun WooPosCheckoutScreen(onBackClick: () -> Unit) {
 
 @Composable
 @WooPosPreview
-private fun WooPosCheckoutScreenPreview() {
+fun WooPosCheckoutScreenPreview() {
     WooPosCheckoutScreen(onBackClick = {})
 }
