@@ -13,6 +13,7 @@ class IsWooPosEnabled @Inject constructor(
     private val ippStore: WCInPersonPaymentsStore,
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin,
     private val isWindowSizeExpandedAndBigger: IsWindowClassExpandedAndBigger,
+    private val isWooPosFFEnabled: IsWooPosFFEnabled,
 ) {
     @Suppress("ReturnCount")
     suspend operator fun invoke(): Boolean {
@@ -25,7 +26,8 @@ class IsWooPosEnabled @Inject constructor(
             ippPlugin == WOOCOMMERCE_PAYMENTS &&
             paymentAccount.storeCurrencies.default.lowercase() == "usd" &&
             isPluginSetupCompleted(paymentAccount) &&
-            isWindowSizeExpandedAndBigger()
+            isWindowSizeExpandedAndBigger() &&
+            isWooPosFFEnabled()
     }
 
     private fun isPluginSetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =

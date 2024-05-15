@@ -141,7 +141,7 @@ class MoreMenuViewModel @Inject constructor(
             title = R.string.more_menu_button_woo_pos,
             description = R.string.more_menu_button_woo_pos_description,
             icon = R.drawable.ic_more_menu_payments,
-            isEnabled = isWooPosEnabled() && FeatureFlag.WOO_POS.isEnabled(),
+            isEnabled = isWooPosEnabled(),
             onClick = {
                 triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
             }
