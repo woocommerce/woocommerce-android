@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.methodselection
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.ScopedViewModel
