@@ -89,7 +89,7 @@ fun OrderDetailsContent(
                 textAlign = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth()
             )
-            Text( /* Needs proper handling */
+            Text( // Needs proper handling
                 text = "3 Products",
                 textAlign = TextAlign.Center,
                 color = Color.White

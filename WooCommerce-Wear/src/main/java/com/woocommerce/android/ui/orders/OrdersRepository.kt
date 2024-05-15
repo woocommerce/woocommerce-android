@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
-import javax.inject.Inject
 import org.wordpress.android.fluxc.store.WCRefundStore
+import javax.inject.Inject
 
 class OrdersRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.ORDERS) private val ordersDataStore: DataStore<Preferences>,
