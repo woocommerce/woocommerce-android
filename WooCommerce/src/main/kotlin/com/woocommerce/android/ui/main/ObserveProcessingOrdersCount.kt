@@ -13,6 +13,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
@@ -57,7 +58,8 @@ class ObserveProcessingOrdersCount @Inject constructor(
         // Observe value changes
         coroutineScope {
             merge(
-                wcOrderStore.observeOrderCountForSite(site),
+                wcOrderStore.observeOrderCountForSite(site)
+                    .distinctUntilChanged(),
                 dispatcher.observeEvents<OnOrderChanged>()
                     .filter {
                         @Suppress("DEPRECATION")
