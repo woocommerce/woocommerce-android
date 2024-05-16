@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -56,7 +56,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given valid order details, when order details are requested, then success state is emitted`() = runBlockingTest {
+    fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
         // GIVEN
         val expectedAmountDue = "100.00"
         val expectedChange = BigDecimal("20.00")
@@ -75,7 +75,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order details retrieval failure, when order details are loaded, then error state is emitted`() = runBlockingTest {
+    fun `given order details retrieval failure, when order details are loaded, then error state is emitted`() = runTest {
         // GIVEN
         // whenever(repository.getOrderDetails()).thenThrow(RuntimeException("Error fetching order details"))
 
