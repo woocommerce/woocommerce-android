@@ -6,9 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -23,11 +21,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -65,24 +61,14 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                         if (uiState is ChangeDueCalculatorViewModel.UiState.Success) {
                             val successState = uiState as ChangeDueCalculatorViewModel.UiState.Success
                             Text(
-                                text = stringResource(
-                                    R.string.cash_payments_take_payment_title,
-                                    successState.amountDue
-                                ),
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center
+                                text = stringResource(R.string.cash_payments_take_payment_title, successState.amountDue),
+                                modifier = Modifier.padding(start = 16.dp)
                             )
                         } else {
                             Text(
                                 text = stringResource(id = R.string.cash_payments_take_payment_title),
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center
+                                modifier = Modifier.padding(start = 16.dp)
                             )
-                        }
-                    },
-                    actions = {
-                        if (uiState !is ChangeDueCalculatorViewModel.UiState.Success) {
-                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 )
