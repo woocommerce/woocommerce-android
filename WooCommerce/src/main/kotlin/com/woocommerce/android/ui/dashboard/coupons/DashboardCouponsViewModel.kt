@@ -42,6 +42,7 @@ import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = DashboardCouponsViewModel.Factory::class)
+@Suppress("LongParameterList")
 class DashboardCouponsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     @Assisted private val parentViewModel: DashboardViewModel,
@@ -96,7 +97,6 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                 )
             }
     }.asLiveData()
-
 
     fun onTabSelected(selectionType: SelectionType) {
         if (selectionType != SelectionType.CUSTOM) {
