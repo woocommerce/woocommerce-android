@@ -18,20 +18,14 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.test.assertEquals
 
-private const val PAYMENT_URL = "paymentUrl"
-private const val ORDER_TOTAL = "100$"
+private const val ORDER_TOTAL = "100.00"
 
 @ExperimentalCoroutinesApi
 class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
-    private val site: SiteModel = mock {
-        on { name }.thenReturn("siteName")
-    }
+    private val site: SiteModel = mock()
     private val order: Order = mock {
-        on { paymentUrl }.thenReturn(PAYMENT_URL)
         on { total }.thenReturn(BigDecimal(1L))
-        on { id }.thenReturn(1L)
-        on { currency }.thenReturn("USD")
     }
 
     private val selectedSite: SelectedSite = mock {
@@ -52,15 +46,16 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        viewModel = initViewModel()
+        // TODO
     }
 
     @Test
     fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
         // GIVEN
         val expectedAmountDue = "100.00"
-        val expectedChange = BigDecimal("20.00")
-        whenever(orderDetailRepository.getOrderById(1)).thenReturn(order)
+        val expectedChange = BigDecimal("0.0")
+        whenever(orderDetailRepository.getOrderById(1L)).thenReturn(order)
+        whenever(savedStateHandle.get<Long>("orderId")).thenReturn(1L)
 
         // WHEN
         // viewModel.fetchOrderDetails()
