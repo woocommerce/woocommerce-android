@@ -4,6 +4,9 @@ import com.woocommerce.android.extensions.combineWithTimeout
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.orders.OrdersRepository
+import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Error
+import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
+import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
 import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDERS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
@@ -20,12 +23,12 @@ class FetchOrders @Inject constructor(
 ) {
     suspend operator fun invoke(
         selectedSite: SiteModel
-    ): Flow<List<OrderEntity>> = selectOrdersDataSource(selectedSite)
+    ): Flow<OrdersRequest> = selectOrdersDataSource(selectedSite)
         .combineWithTimeout { orders, isTimeout ->
             when {
-                orders.isNotEmpty() -> orders
-                isTimeout -> emptyList()
-                else -> null
+                orders.isNotEmpty() -> Finished(orders)
+                isTimeout.not() -> Waiting
+                else -> Error
             }
         }.filterNotNull()
 
@@ -43,5 +46,11 @@ class FetchOrders @Inject constructor(
             phoneRepository.sendMessage(REQUEST_ORDERS)
             return ordersRepository.observeOrdersDataChanges()
         }
+    }
+
+    sealed class OrdersRequest {
+        data object Error : OrdersRequest()
+        data object Waiting : OrdersRequest()
+        data class Finished(val orders: List<OrderEntity>) : OrdersRequest()
     }
 }
