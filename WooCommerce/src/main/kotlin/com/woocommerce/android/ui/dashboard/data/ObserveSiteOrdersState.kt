@@ -48,8 +48,7 @@ class ObserveSiteOrdersState @Inject constructor(
         orderStore.getOrderStatusOptionsForSite(selectedSite.get())
             .filter { it.statusKey != "checkout-draft" }
             .takeIf { it.isNotEmpty() }
-            ?.sumOf { it.statusCount }
-            ?.let { it != 0 }
+            ?.any { it.statusCount > 0 }
     }
 
     private suspend fun fetchHasOrdersFromApi(): Boolean {
