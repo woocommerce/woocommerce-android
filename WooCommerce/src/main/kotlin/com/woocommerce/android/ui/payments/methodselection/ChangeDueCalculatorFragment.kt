@@ -56,13 +56,11 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                 TopAppBar(
                     backgroundColor = Color.White,
                     navigationIcon = {
-                        // Back button
                         IconButton(onClick = { findNavController().navigateUp() }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     },
                     title = {
-                        // Adjust text based on state within the AppBar directly
                         if (uiState is ChangeDueCalculatorViewModel.UiState.Success) {
                             val successState = uiState as ChangeDueCalculatorViewModel.UiState.Success
                             Text(
@@ -82,7 +80,6 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                         }
                     },
                     actions = {
-                        // This is required to center the title when there are no actual actions
                         if (uiState !is ChangeDueCalculatorViewModel.UiState.Success) {
                             Spacer(modifier = Modifier.weight(1f))
                         }
