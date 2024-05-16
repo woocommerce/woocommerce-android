@@ -13,6 +13,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -30,6 +31,12 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
+import java.math.BigDecimal
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.TextField
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.input.KeyboardType
 
 @AndroidEntryPoint
 class ChangeDueCalculatorFragment : BaseFragment() {
@@ -90,7 +97,27 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                         Text(text = stringResource(R.string.loading), style = MaterialTheme.typography.h6)
                     }
                     is ChangeDueCalculatorViewModel.UiState.Success -> {
-                        Text("TODO...", style = MaterialTheme.typography.body1)
+                        val successState = uiState as ChangeDueCalculatorViewModel.UiState.Success
+
+                        OutlinedTextField(
+                            value = "cashReceived",
+                            onValueChange = { newValue ->
+                                if (newValue.isBigDecimalFormat()) {
+                                    BigDecimal.ZERO
+                                }
+                            },
+                            label = { Text("Cash Received") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+
+                        TextField(
+                            value = "changeDue",
+                            onValueChange = {},
+                            label = { Text("Change Due") },
+                            enabled = false,
+                            readOnly = true
+                        )
+                        Text("Amount Due: ${successState.amountDue}", style = MaterialTheme.typography.body1)
                     }
                     is ChangeDueCalculatorViewModel.UiState.Error -> {
                         Text(text = stringResource(R.string.error_generic), style = MaterialTheme.typography.h6)
@@ -99,4 +126,14 @@ class ChangeDueCalculatorFragment : BaseFragment() {
             }
         }
     }
+
+    fun String.isBigDecimalFormat(): Boolean {
+        return try {
+            BigDecimal(this)
+            true
+        } catch (ex: NumberFormatException) {
+            false
+        }
+    }
+
 }
