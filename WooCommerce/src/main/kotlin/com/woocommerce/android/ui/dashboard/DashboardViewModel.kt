@@ -65,7 +65,7 @@ class DashboardViewModel @Inject constructor(
     dashboardRepository: DashboardRepository,
     private val feedbackPrefs: FeedbackPrefs,
     isWooPosEnabled: IsWooPosEnabled,
-    ) : ScopedViewModel(savedState) {
+) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
         val SUPPORTED_RANGES_ON_MY_STORE_TAB = listOf(
