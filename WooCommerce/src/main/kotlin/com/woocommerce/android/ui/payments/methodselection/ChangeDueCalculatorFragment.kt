@@ -61,7 +61,10 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                         if (uiState is ChangeDueCalculatorViewModel.UiState.Success) {
                             val successState = uiState as ChangeDueCalculatorViewModel.UiState.Success
                             Text(
-                                text = stringResource(R.string.cash_payments_take_payment_title, successState.amountDue),
+                                text = stringResource(
+                                    R.string.cash_payments_take_payment_title,
+                                    successState.amountDue
+                                ),
                                 modifier = Modifier.padding(start = 16.dp)
                             )
                         } else {
