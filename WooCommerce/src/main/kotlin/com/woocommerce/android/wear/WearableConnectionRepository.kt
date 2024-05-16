@@ -11,6 +11,7 @@ import com.woocommerce.commons.wear.DataParameters
 import com.woocommerce.commons.wear.DataParameters.CONVERSION_RATE
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
+import com.woocommerce.commons.wear.DataParameters.ORDER_ID
 import com.woocommerce.commons.wear.DataParameters.ORDER_PRODUCTS_JSON
 import com.woocommerce.commons.wear.DataParameters.SITE_JSON
 import com.woocommerce.commons.wear.DataParameters.TIMESTAMP
@@ -97,8 +98,9 @@ class WearableConnectionRepository @Inject constructor(
     }
 
     fun sendOrderProductsData(message: MessageEvent) = coroutineScope.launch {
-        val orderProductsJson = runCatching { message.data.toString().toLong() }
-            .getOrNull()
+        val orderId = runCatching { message.data.toString().toLong() }.getOrNull()
+
+        val orderProductsJson = orderId
             ?.let { getWearableOrderProducts(it) }
             ?.let { gson.toJson(it) }
             .orEmpty()
@@ -106,6 +108,7 @@ class WearableConnectionRepository @Inject constructor(
         sendData(
             ORDER_PRODUCTS_DATA,
             DataMap().apply {
+                putString(ORDER_ID.value, orderId?.toString().orEmpty())
                 putString(ORDER_PRODUCTS_JSON.value, orderProductsJson)
             }
         )
