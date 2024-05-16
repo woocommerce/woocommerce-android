@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -25,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -32,11 +35,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextField
-import androidx.compose.runtime.remember
-import androidx.compose.ui.text.input.KeyboardType
 
 @AndroidEntryPoint
 class ChangeDueCalculatorFragment : BaseFragment() {
@@ -135,5 +133,4 @@ class ChangeDueCalculatorFragment : BaseFragment() {
             false
         }
     }
-
 }
