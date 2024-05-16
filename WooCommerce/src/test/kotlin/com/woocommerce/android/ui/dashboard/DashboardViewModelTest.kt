@@ -71,7 +71,8 @@ class DashboardViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
             dashboardRepository = dashboardRepository,
-            feedbackPrefs = feedbackPrefs
+            feedbackPrefs = feedbackPrefs,
+            isWooPosEnabled = mock(),
         )
     }
 

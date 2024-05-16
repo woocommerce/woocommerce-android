@@ -27,10 +27,12 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
+import com.woocommerce.android.ui.woopos.IsWooPosEnabled
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -61,8 +63,9 @@ class DashboardViewModel @Inject constructor(
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
     dashboardRepository: DashboardRepository,
-    private val feedbackPrefs: FeedbackPrefs
-) : ScopedViewModel(savedState) {
+    private val feedbackPrefs: FeedbackPrefs,
+    isWooPosEnabled: IsWooPosEnabled,
+    ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5
         val SUPPORTED_RANGES_ON_MY_STORE_TAB = listOf(
@@ -123,6 +126,11 @@ class DashboardViewModel @Inject constructor(
         }
 
         updateShareStoreButtonVisibility()
+
+        launch(Dispatchers.IO) {
+            // Cache the condition for WooPOS feature being enabled
+            isWooPosEnabled()
+        }
     }
 
     private fun updateShareStoreButtonVisibility() {

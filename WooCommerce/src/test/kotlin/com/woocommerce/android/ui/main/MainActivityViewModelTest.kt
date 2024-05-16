@@ -584,7 +584,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 determineTrialStatusBarState = mock {
                     onBlocking { invoke(any()) } doReturn emptyFlow()
                 },
-                mock()
             )
         )
     }
