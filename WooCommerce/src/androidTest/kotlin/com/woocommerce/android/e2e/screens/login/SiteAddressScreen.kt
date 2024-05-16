@@ -7,6 +7,7 @@ class SiteAddressScreen : Screen {
     constructor() : super(org.wordpress.android.login.R.id.input)
 
     fun proceedWith(siteAddress: String): EmailAddressScreen {
+        clickOn(org.wordpress.android.login.R.id.input)
         typeTextInto(org.wordpress.android.login.R.id.input, siteAddress)
         clickOn(R.id.bottom_button)
 
