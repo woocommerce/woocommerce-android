@@ -1,6 +1,13 @@
 package com.woocommerce.android.ui.stats.datasource
 
-import com.woocommerce.android.ui.stats.datasource.StoreStatsRequest.Data.RevenueData
+import com.woocommerce.android.extensions.combineWithTimeout
+import com.woocommerce.android.phone.PhoneConnectionRepository
+import com.woocommerce.android.system.NetworkStatus
+import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Error
+import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
+import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
+import com.woocommerce.android.ui.stats.datasource.StoreStatsData.RevenueData
+import com.woocommerce.commons.wear.MessagePath
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -8,29 +15,47 @@ import kotlinx.coroutines.flow.filter
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 
-class FetchStatsFromStore @Inject constructor(
+class FetchStats @Inject constructor(
     private val statsRepository: StatsRepository,
-    private val wooCommerceStore: WooCommerceStore
+    private val phoneRepository: PhoneConnectionRepository,
+    private val wooCommerceStore: WooCommerceStore,
+    private val networkStatus: NetworkStatus
 ) {
     private val revenueStats = MutableStateFlow<RevenueData?>(null)
     private val visitorStats = MutableStateFlow<Int?>(null)
 
     suspend operator fun invoke(
         selectedSite: SiteModel
+    ) = when {
+        networkStatus.isConnected() -> fetchStatsFromStore(selectedSite)
+        phoneRepository.isPhoneConnectionAvailable() -> fetchStatsFromPhone()
+        else -> error("No connection available")
+    }
+
+    private suspend fun fetchStatsFromPhone(): Flow<StoreStatsRequest> {
+        phoneRepository.sendMessage(MessagePath.REQUEST_STATS)
+        return statsRepository.observeStatsDataChanges()
+            .combineWithTimeout { statsData, isTimeout ->
+                when {
+                    statsData?.isFinished == true -> Finished(statsData)
+                    isTimeout.not() -> Waiting
+                    else -> Error
+                }
+            }.filterNotNull()
+    }
+
+    private suspend fun fetchStatsFromStore(
+        selectedSite: SiteModel
     ): Flow<StoreStatsRequest> {
         fetchRevenueStats(selectedSite)
         fetchVisitorsStats(selectedSite)
 
-        return combine(
-            revenueStats,
-            visitorStats
-        ) { revenueStats, visitorStats ->
-            StoreStatsRequest.Data(
-                revenueData = revenueStats,
-                visitorData = visitorStats,
-            )
-        }.filter { it.isFinished }
+        return combine(revenueStats, visitorStats) { revenue, visitors ->
+            StoreStatsData(revenue, visitors)
+        }.filter { it.isFinished }.map { Finished(it) }
     }
 
     private suspend fun fetchRevenueStats(selectedSite: SiteModel) {
@@ -69,5 +94,11 @@ class FetchStatsFromStore @Inject constructor(
                     visitorStats.value = null
                 }
             )
+    }
+
+    sealed class StoreStatsRequest {
+        data object Error : StoreStatsRequest()
+        data object Waiting : StoreStatsRequest()
+        data class Finished(val data: StoreStatsData) : StoreStatsRequest()
     }
 }

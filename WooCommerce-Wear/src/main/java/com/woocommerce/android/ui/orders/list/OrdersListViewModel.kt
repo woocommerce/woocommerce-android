@@ -8,6 +8,8 @@ import com.woocommerce.android.ui.NavRoutes.ORDER_DETAILS
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.orders.FormatOrderData
 import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
+import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
+import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.assisted.Assisted
@@ -49,13 +51,18 @@ class OrdersListViewModel @AssistedInject constructor(
     private suspend fun requestOrdersData(selectedSite: SiteModel) {
         _viewState.update { it.copy(isLoading = true) }
         fetchOrders(selectedSite)
-            .onEach { orders ->
-                _viewState.update { viewState ->
-                    viewState.copy(
-                        orders = formatOrders(selectedSite, orders),
-                        isLoading = false
-                    )
+            .onEach { request ->
+                when (request) {
+                    is Finished -> _viewState.update { viewState ->
+                        viewState.copy(
+                            orders = formatOrders(selectedSite, request.orders),
+                            isLoading = false
+                        )
+                    }
+                    is Waiting -> _viewState.update { it.copy(isLoading = true) }
+                    else -> _viewState.update { it.copy(isLoading = false) }
                 }
+
             }.launchIn(this)
     }
 
