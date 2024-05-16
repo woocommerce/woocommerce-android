@@ -1,4 +1,4 @@
-package com.woocommerce.android.util
+package com.woocommerce.android.extensions
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

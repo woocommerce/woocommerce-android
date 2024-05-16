@@ -43,14 +43,6 @@ class OrdersRepository @Inject constructor(
         orderId = orderId
     )
 
-    suspend fun fetchOrderRefunds(
-        selectedSite: SiteModel,
-        orderId: Long
-    ) = refundStore.fetchAllRefunds(
-        site = selectedSite,
-        orderId = orderId
-    ).takeIf { it.isError.not() }?.model
-
     fun observeOrdersDataChanges() = ordersDataStore.data
         .mapNotNull { it[stringPreferencesKey(generateOrdersKey())] }
         .map { gson.fromJson(it, Array<OrderEntity>::class.java).toList() }

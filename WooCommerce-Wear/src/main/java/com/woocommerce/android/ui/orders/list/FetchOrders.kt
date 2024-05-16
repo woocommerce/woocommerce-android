@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders.list
 
+import com.woocommerce.android.extensions.combineWithTimeout
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.orders.OrdersRepository
-import com.woocommerce.android.util.combineWithTimeout
 import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDERS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
