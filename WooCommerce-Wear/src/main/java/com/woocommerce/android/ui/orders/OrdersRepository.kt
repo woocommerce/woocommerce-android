@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
 import com.woocommerce.commons.wear.DataParameters.ORDER_ID
 import com.woocommerce.commons.wear.DataParameters.ORDER_PRODUCTS_JSON
+import com.woocommerce.commons.wear.DataParameters.SITE_ID
 import com.woocommerce.commons.wear.orders.WearOrderProduct
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -42,41 +43,45 @@ class OrdersRepository @Inject constructor(
         orderId = orderId
     )
 
-    fun observeOrdersDataChanges() = ordersDataStore.data
-        .mapNotNull { it[stringPreferencesKey(generateOrdersKey())] }
+    fun observeOrdersDataChanges(
+        siteId: Long
+    ) = ordersDataStore.data
+        .mapNotNull { it[stringPreferencesKey(generateOrdersKey(siteId))] }
         .map { gson.fromJson(it, Array<OrderEntity>::class.java).toList() }
 
     suspend fun receiveOrdersDataFromPhone(data: DataMap) {
         val ordersJson = data.getString(ORDERS_JSON.value, "")
+        val siteId = data.getLong(SITE_ID.value, loginRepository.selectedSite?.siteId ?: 0)
 
         ordersDataStore.edit { prefs ->
-            prefs[stringPreferencesKey(generateOrdersKey())] = ordersJson
+            prefs[stringPreferencesKey(generateOrdersKey(siteId))] = ordersJson
         }
     }
 
-    private fun generateOrdersKey(): String {
-        val siteId = loginRepository.selectedSite?.siteId ?: 0
-        return "${ORDERS_KEY_PREFIX}:$siteId"
-    }
+    private fun generateOrdersKey(siteId: Long) = "${ORDERS_KEY_PREFIX}:$siteId"
 
-    fun observeOrderProductsDataChanges(orderId: Long) = ordersDataStore.data
-        .mapNotNull { it[stringPreferencesKey(generateProductsKey(orderId))] }
+    fun observeOrderProductsDataChanges(
+        orderId: Long,
+        siteId: Long
+    ) = ordersDataStore.data
+        .mapNotNull { it[stringPreferencesKey(generateProductsKey(orderId, siteId))] }
         .map { gson.fromJson(it, Array<WearOrderProduct>::class.java).toList() }
 
     suspend fun receiveOrderProductsDataFromPhone(data: DataMap) {
         val orderId = data.getLong(ORDER_ID.value, 0)
+        val siteId = data.getLong(SITE_ID.value, loginRepository.selectedSite?.siteId ?: 0)
         val productsJson = data.getString(ORDER_PRODUCTS_JSON.value, "")
 
         ordersDataStore.edit { prefs ->
-            prefs[stringPreferencesKey(generateProductsKey(orderId))] = productsJson
+            val key = generateProductsKey(orderId, siteId)
+            prefs[stringPreferencesKey(key)] = productsJson
         }
     }
 
-    private fun generateProductsKey(orderId: Long): String {
-        val siteId = loginRepository.selectedSite?.siteId ?: 0
-        return "${ORDERS_KEY_PREFIX}:$siteId:$orderId"
-    }
-
+    private fun generateProductsKey(
+        orderId: Long,
+        siteId: Long
+    ) = "${ORDERS_KEY_PREFIX}:$siteId:$orderId"
     companion object {
         private const val ORDERS_KEY_PREFIX = "store-orders"
     }
