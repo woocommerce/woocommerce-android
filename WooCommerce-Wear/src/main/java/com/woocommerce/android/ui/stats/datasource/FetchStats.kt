@@ -11,11 +11,11 @@ import com.woocommerce.commons.wear.MessagePath
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOf
 
 class FetchStats @Inject constructor(
     private val statsRepository: StatsRepository,
@@ -30,13 +30,15 @@ class FetchStats @Inject constructor(
         selectedSite: SiteModel
     ) = when {
         networkStatus.isConnected() -> fetchStatsFromStore(selectedSite)
-        phoneRepository.isPhoneConnectionAvailable() -> fetchStatsFromPhone()
+        phoneRepository.isPhoneConnectionAvailable() -> fetchStatsFromPhone(selectedSite)
         else -> flowOf(Error)
     }
 
-    private suspend fun fetchStatsFromPhone(): Flow<StoreStatsRequest> {
+    private suspend fun fetchStatsFromPhone(
+        selectedSite: SiteModel
+    ): Flow<StoreStatsRequest> {
         phoneRepository.sendMessage(MessagePath.REQUEST_STATS)
-        return statsRepository.observeStatsDataChanges()
+        return statsRepository.observeStatsDataChanges(selectedSite)
             .combineWithTimeout { statsData, isTimeout ->
                 when {
                     statsData?.isComplete == true -> Finished(statsData)

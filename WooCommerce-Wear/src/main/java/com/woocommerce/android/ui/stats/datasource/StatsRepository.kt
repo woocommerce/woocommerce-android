@@ -107,16 +107,18 @@ class StatsRepository @Inject constructor(
         ).let { gson.toJson(it) }
 
         statsDataStore.edit { prefs ->
-            prefs[stringPreferencesKey(generateStatsKey())] = statsJson
+            val siteId = loginRepository.selectedSite?.siteId ?: 0
+            prefs[stringPreferencesKey(generateStatsKey(siteId))] = statsJson
         }
     }
 
-    fun observeStatsDataChanges() = statsDataStore.data
-        .mapNotNull { it[stringPreferencesKey(generateStatsKey())] }
+    fun observeStatsDataChanges(
+        selectedSite: SiteModel
+    ) = statsDataStore.data
+        .mapNotNull { it[stringPreferencesKey(generateStatsKey(selectedSite.siteId))] }
         .map { gson.fromJson(it, StoreStatsData::class.java) }
 
-    private fun generateStatsKey(): String {
-        val siteId = loginRepository.selectedSite?.siteId ?: 0
+    private fun generateStatsKey(siteId: Long): String {
         return "$STATS_KEY_PREFIX:$siteId"
     }
 

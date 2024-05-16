@@ -62,7 +62,6 @@ class OrdersListViewModel @AssistedInject constructor(
                     is Waiting -> _viewState.update { it.copy(isLoading = true) }
                     else -> _viewState.update { it.copy(isLoading = false) }
                 }
-
             }.launchIn(this)
     }
 

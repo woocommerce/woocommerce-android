@@ -5,7 +5,6 @@ import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.stats.StoreStatsViewModel
 import com.woocommerce.android.ui.stats.datasource.FetchStats
-import java.util.Locale
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat
@@ -13,6 +12,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import java.util.Locale
 
 @ExperimentalCoroutinesApi
 class StoreStatsViewModelTest : BaseUnitTest() {
