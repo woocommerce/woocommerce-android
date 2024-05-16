@@ -18,15 +18,15 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.SiteModel
 
 @HiltViewModel
 class OrderDetailsViewModel @Inject constructor(
-    fetchOrderProducts: FetchOrderProducts,
-    formatOrderData: FormatOrderData,
-    ordersRepository: OrdersRepository,
+    private val fetchOrderProducts: FetchOrderProducts,
+    private val ordersRepository: OrdersRepository,
+    private val formatOrderData: FormatOrderData,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -38,15 +38,22 @@ class OrderDetailsViewModel @Inject constructor(
 
     init {
         _viewState.update { it.copy(isLoading = true) }
-        val orderId = savedState.get<Long>(ORDER_ID.key) ?: 0
+        loginRepository.selectedSiteFlow
+            .filterNotNull()
+            .onEach { site ->
+                requestProductsData(
+                    site = site,
+                    orderId = savedState.get<Long>(ORDER_ID.key) ?: 0
+                )
+            }.launchIn(this)
+    }
 
-        launch {
-            combine(
-                loginRepository.selectedSiteFlow,
-                fetchOrderProducts(orderId)
-            ) { site, productsRequest ->
-                if (site == null) return@combine null
-
+    private suspend fun requestProductsData(
+        site: SiteModel,
+        orderId: Long,
+    ) {
+        fetchOrderProducts(site, orderId)
+            .map { productsRequest ->
                 when (productsRequest) {
                     is Finished -> Pair(site, productsRequest.products)
                     is Error -> Pair(site, null)
@@ -55,8 +62,9 @@ class OrderDetailsViewModel @Inject constructor(
             }.filterNotNull().map { (site, products) ->
                 ordersRepository.getOrderFromId(site, orderId)
                     ?.let { formatOrderData(site, it, products) }
-            }.onEach { presentOrderData(it) }
-        }
+            }.onEach {
+                presentOrderData(it)
+            }.launchIn(this)
     }
 
     private fun presentOrderData(order: OrderItem?) {

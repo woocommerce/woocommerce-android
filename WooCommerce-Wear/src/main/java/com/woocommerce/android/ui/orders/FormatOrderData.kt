@@ -86,7 +86,7 @@ class FormatOrderData @Inject constructor(
         val customerName: String,
         val total: String,
         val status: String,
-        val products: List<ProductItem>?
+        val products: List<ProductItem>? = null
     ) : Parcelable
 
     @Parcelize
