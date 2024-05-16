@@ -2,19 +2,24 @@ package com.woocommerce.android.wear
 
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataMap
+import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.gson.Gson
 import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.commons.wear.DataParameters
 import com.woocommerce.commons.wear.DataParameters.CONVERSION_RATE
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
+import com.woocommerce.commons.wear.DataParameters.ORDER_PRODUCTS_JSON
 import com.woocommerce.commons.wear.DataParameters.SITE_JSON
 import com.woocommerce.commons.wear.DataParameters.TIMESTAMP
 import com.woocommerce.commons.wear.DataParameters.TOKEN
 import com.woocommerce.commons.wear.DataParameters.TOTAL_REVENUE
 import com.woocommerce.commons.wear.DataParameters.VISITORS_TOTAL
 import com.woocommerce.commons.wear.DataPath
+import com.woocommerce.commons.wear.DataPath.ORDERS_DATA
+import com.woocommerce.commons.wear.DataPath.ORDER_PRODUCTS_DATA
 import com.woocommerce.commons.wear.DataPath.SITE_DATA
 import com.woocommerce.commons.wear.DataPath.STATS_DATA
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +39,7 @@ class WearableConnectionRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val orderStore: WCOrderStore,
     private val getStats: GetWearableMyStoreStats,
+    private val getWearableOrderProducts: GetWearableOrderProducts,
     private val coroutineScope: CoroutineScope
 ) {
     private val gson by lazy { Gson() }
@@ -83,9 +89,24 @@ class WearableConnectionRepository @Inject constructor(
         ).run { this as? Success }?.orders ?: emptyList()
 
         sendData(
-            DataPath.ORDERS_DATA,
+            ORDERS_DATA,
             DataMap().apply {
                 putString(ORDERS_JSON.value, gson.toJson(orders))
+            }
+        )
+    }
+
+    fun sendOrderProductsData(message: MessageEvent) = coroutineScope.launch {
+        val orderProductsJson = runCatching { message.data.toString().toLong() }
+            .getOrNull()
+            ?.let { getWearableOrderProducts(it) }
+            ?.let { gson.toJson(it) }
+            .orEmpty()
+
+        sendData(
+            ORDER_PRODUCTS_DATA,
+            DataMap().apply {
+                putString(ORDER_PRODUCTS_JSON.value, orderProductsJson)
             }
         )
     }
