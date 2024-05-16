@@ -9,12 +9,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.capitalize
 import com.woocommerce.android.extensions.formatToMMMdd
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.DashboardWidget.Type.ORDERS
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.toOrderStatus
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
@@ -22,11 +20,14 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.Factory
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Content
+import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
+import com.woocommerce.android.ui.orders.filters.domain.GetOrderStatusFilterOptions
 import com.woocommerce.android.ui.orders.list.OrderListRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -35,11 +36,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 @HiltViewModel(assistedFactory = Factory::class)
 class DashboardOrdersViewModel @AssistedInject constructor(
@@ -48,14 +50,19 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     private val orderListRepository: OrderListRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val currencyFormatter: CurrencyFormatter,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val getOrderStatusFilterOptions: GetOrderStatusFilterOptions
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD = 3
+        const val DEFAULT_FILTER_OPTION = "all"
     }
 
-    private val orderStatusMap = MutableSharedFlow<Map<String, Order.OrderStatus>>(replay = 1)
-    private val refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+    private val statusOptions = MutableSharedFlow<List<OrderStatusOption>>(replay = 1)
+    private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
+    private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
+        .onStart { emit(RefreshEvent()) }
+    private val selectedFilter = savedStateHandle.getStateFlow(viewModelScope, DEFAULT_FILTER_OPTION)
 
     val menu = DashboardWidgetMenu(
         items = listOf(
@@ -71,49 +78,67 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val viewState = merge(parentViewModel.refreshTrigger, refreshTrigger)
-        .onStart { emit(RefreshEvent()) }
-        .transformLatest {
-            emit(ViewState.Loading)
-            emitAll(
+    val viewState = selectedFilter.flatMapLatest { status ->
+        refreshTrigger.map { Pair(status, it) }
+    }.transformLatest { triggerPair ->
+        emit(ViewState.Loading)
+        emitAll(
+            combine(
                 orderListRepository.observeTopOrders(
                     count = MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD,
-                    isForced = it.isForced
-                ).combine(orderStatusMap) { result, statusMap ->
-                    result.fold(
-                        onSuccess = { orders ->
-                            Content(
-                                orders.map { order ->
-                                    val status = statusMap[order.status.value]?.label
-                                        ?: order.status.value.capitalize(Locale.getDefault())
+                    isForced = triggerPair.second.isForced,
+                    statusFilter = triggerPair.first
+                        .takeIf { it != DEFAULT_FILTER_OPTION }
+                        ?.let { Order.Status.fromValue(it) }
+                ),
+                statusOptions
+            ) { result, statusOptions ->
+                result.fold(
+                    onSuccess = { orders ->
+                        Content(
+                            orders = orders.map { order ->
+                                val status = statusOptions
+                                    .first { option -> option.key == order.status.value }.label
 
-                                    ViewState.OrderItem(
-                                        number = "#${order.number}",
-                                        date = order.dateCreated.formatToMMMdd(),
-                                        customerName = order.billingName.ifEmpty {
-                                            resourceProvider.getString(R.string.orderdetail_customer_name_default)
-                                        },
-                                        status = status,
-                                        statusColor = order.status.color,
-                                        totalPrice = currencyFormatter.formatCurrency(order.total, order.currency)
-                                    )
-                                }
-                            )
-                        },
-                        onFailure = { error ->
-                            ViewState.Error(error.message ?: "")
-                        }
-                    )
-                }
-            )
-        }.asLiveData()
+                                ViewState.OrderItem(
+                                    number = "#${order.number}",
+                                    date = order.dateCreated.formatToMMMdd(),
+                                    customerName = order.billingName.ifEmpty {
+                                        resourceProvider.getString(R.string.orderdetail_customer_name_default)
+                                    },
+                                    status = status,
+                                    statusColor = order.status.color,
+                                    totalPrice = currencyFormatter.formatCurrency(order.total, order.currency)
+                                )
+                            },
+                            filterOptions = statusOptions,
+                            selectedFilter = statusOptions.first { it.key == triggerPair.first }
+                        )
+                    },
+                    onFailure = { error ->
+                        ViewState.Error(error.message ?: "")
+                    }
+                )
+            }
+        )
+    }.asLiveData()
 
     init {
         viewModelScope.launch {
-            orderStatusMap.tryEmit(
-                orderListRepository.getCachedOrderStatusOptions().mapValues { (_, value) ->
-                    value.toOrderStatus()
-                }
+            statusOptions.tryEmit(
+                getOrderStatusFilterOptions()
+                    .toMutableList()
+                    .apply {
+                        this.add(
+                            index = 0,
+                            element = OrderStatusOption(
+                                key = DEFAULT_FILTER_OPTION,
+                                label = resourceProvider.getString(R.string.orderfilters_default_filter_value),
+                                statusCount = 0,
+                                isSelected = true
+                            )
+                        )
+                    }
             )
         }
     }
@@ -140,13 +165,21 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                 AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.ORDERS.trackingIdentifier
             )
         )
-        refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+        _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
+    }
+
+    fun onFilterSelected(filter: OrderStatusOption) {
+        selectedFilter.value = filter.key
     }
 
     sealed class ViewState {
         data object Loading : ViewState()
         data class Error(val message: String) : ViewState()
-        data class Content(val orders: List<OrderItem>) : ViewState()
+        data class Content(
+            val orders: List<OrderItem>,
+            val filterOptions: List<OrderStatusOption>,
+            val selectedFilter: OrderStatusOption
+        ) : ViewState()
 
         @StringRes val title: Int = ORDERS.titleResource
 
