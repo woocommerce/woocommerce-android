@@ -54,9 +54,6 @@ class ObserveProcessingOrdersCount @Inject constructor(
         // Start with the cached value
         emit(getCachedValue(site))
 
-        // Fetch value from API
-        fetchOrderStatusOptions(site)
-
         // Observe value changes
         coroutineScope {
             merge(
