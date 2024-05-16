@@ -2,11 +2,14 @@ package com.woocommerce.android.ui.dashboard.coupons
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -17,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -26,6 +30,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = DashboardCouponsViewModel.Factory::class)
 class DashboardCouponsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
@@ -39,13 +44,14 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    private val couponsReportCache: Pair<StatsTimeRange, List<CouponPerformanceReport>>? = null
+
     val viewState = refreshTrigger
         .onStart { emit(RefreshEvent()) }
         .transformLatest {
             emit(State.Loading)
             emitAll(
-                observeMostActiveCoupons(it.isForced).map { result ->
+                observeCouponUiModels(it.isForced).map { result ->
                     result.fold(
                         onSuccess = { coupons -> State.Loaded(coupons) },
                         onFailure = { State.Error.Generic }
@@ -55,26 +61,77 @@ class DashboardCouponsViewModel @AssistedInject constructor(
         }
         .asLiveData()
 
-    private fun observeMostActiveCoupons(forceRefresh: Boolean): Flow<Result<List<CouponUiModel>>> = flow {
-        val mostActiveCoupons = fetchMostActiveCoupons(
+    private fun observeCouponUiModels(forceRefresh: Boolean): Flow<Result<List<CouponUiModel>>> =
+        observeMostActiveCoupons(
             dateRange = SelectionType.MONTH_TO_DATE.generateSelectionData( // TODO pass date range
                 referenceStartDate = Date(),
                 referenceEndDate = Date(),
                 calendar = Calendar.getInstance(),
                 locale = Locale.getDefault()
-            ).currentRange
-        ).getOrElse {
+            ).currentRange,
+            forceRefresh = forceRefresh
+        ).flatMapLatest { mostActiveCouponsResult ->
+            val mostActiveCoupons = mostActiveCouponsResult.getOrThrow()
+
+            observeCoupons(
+                mostActiveCoupons.map { it.couponId },
+                forceRefresh
+            ).map { couponsResult ->
+                couponsResult.fold(
+                    onSuccess = { coupons ->
+                        // Map performance reports to coupons and preserve the order of mostActiveCoupons
+                        val models = mostActiveCoupons.map { performanceReport ->
+                            val coupon = coupons.firstOrNull { coupon -> coupon.id == performanceReport.couponId }
+                                ?: error("Coupon not found for id: ${performanceReport.couponId}")
+
+                            CouponUiModel(
+                                coupon = coupon,
+                                performanceReport = performanceReport
+                            )
+                        }
+
+                        Result.success(models)
+                    },
+                    onFailure = { Result.failure(it) }
+                )
+            }
+        }.catch {
+            WooLog.e(WooLog.T.DASHBOARD, "Failure while observing coupons", it)
             emit(Result.failure(it))
-            return@flow
         }
 
-        val couponIds = mostActiveCoupons.map { it.couponId }
+    private fun observeMostActiveCoupons(
+        dateRange: StatsTimeRange,
+        forceRefresh: Boolean
+    ) = flow {
+        if (!forceRefresh && couponsReportCache?.first == dateRange) {
+            val (_, cachedCoupons) = couponsReportCache
+            emit(Result.success(cachedCoupons))
+        } else {
+            emit(
+                couponRepository.fetchMostActiveCoupons(
+                    dateRange = dateRange,
+                    limit = COUPONS_LIMIT
+                )
+            )
+        }
+    }
+
+    private fun observeCoupons(
+        couponIds: List<Long>,
+        forceRefresh: Boolean
+    ) = flow {
+        suspend fun fetchCoupons() = couponRepository.fetchCoupons(
+            page = 1,
+            pageSize = COUPONS_LIMIT,
+            couponIds = couponIds
+        )
 
         val fetchCouponsBeforeEmitting = forceRefresh ||
-            couponRepository.getCoupons(couponIds).size != mostActiveCoupons.size
+            couponRepository.getCoupons(couponIds).size != couponIds.size
 
         if (fetchCouponsBeforeEmitting) {
-            fetchCoupons(couponIds).onFailure {
+            fetchCoupons().onFailure {
                 emit(Result.failure(it))
                 return@flow
             }
@@ -82,37 +139,10 @@ class DashboardCouponsViewModel @AssistedInject constructor(
 
         emitAll(
             couponRepository.observeCoupons(couponIds)
-                .map { coupons ->
-                    Result.success(
-                        mostActiveCoupons.map { performanceReport ->
-                            val coupon = coupons.firstOrNull { coupon -> coupon.id == performanceReport.couponId }
-                                ?: error("Coupon not found for id: ${performanceReport.couponId}")
-
-                            CouponUiModel(
-                                code = coupon.code.orEmpty()
-                            )
-                        }
-                    )
-                }
-                .catch { emit(Result.failure(it)) }
-                .onStart {
-                    if (!fetchCouponsBeforeEmitting) {
-                        fetchCoupons(couponIds)
-                    }
-                }
+                .map { Result.success(it) }
+                .onStart { if (!fetchCouponsBeforeEmitting) fetchCoupons() }
         )
     }
-
-    private suspend fun fetchMostActiveCoupons(dateRange: StatsTimeRange) = couponRepository.fetchMostActiveCoupons(
-        dateRange = dateRange,
-        limit = COUPONS_LIMIT
-    )
-
-    private suspend fun fetchCoupons(couponIds: List<Long>) = couponRepository.fetchCoupons(
-        page = 1,
-        pageSize = COUPONS_LIMIT,
-        couponIds = couponIds
-    )
 
     sealed interface State {
         data object Loading : State
@@ -124,8 +154,11 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     }
 
     data class CouponUiModel(
-        val code: String,
-    )
+        private val coupon: Coupon,
+        private val performanceReport: CouponPerformanceReport
+    ) {
+        val code: String = coupon.code.orEmpty()
+    }
 
     @AssistedFactory
     interface Factory {
