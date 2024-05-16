@@ -33,7 +33,7 @@ class AnalyticsTracker private constructor(
     private var username: String? = null
     private var anonymousID: String? = null
 
-    private val analyticsEventsToTrack = Channel<Pair<AnalyticsEvent, Map<String, *>>>(capacity = BUFFERED)
+    private val analyticsEventsToTrack = Channel<Pair<IAnalyticsEvent, Map<String, *>>>(capacity = BUFFERED)
 
     init {
         appCoroutineScope.launch {
@@ -82,11 +82,11 @@ class AnalyticsTracker private constructor(
         return uuid
     }
 
-    private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
+    private fun track(stat: IAnalyticsEvent, properties: Map<String, *>) {
         analyticsEventsToTrack.trySend(Pair(stat, properties))
     }
 
-    private fun doTrack(stat: AnalyticsEvent, properties: Map<String, *>) {
+    private fun doTrack(stat: IAnalyticsEvent, properties: Map<String, *>) {
         if (tracksClient == null) {
             return
         }
@@ -687,7 +687,7 @@ class AnalyticsTracker private constructor(
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
 
-        fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {
+        fun track(stat: IAnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {
             if (instance == null && BuildConfig.DEBUG && !PackageUtils.isTesting()) {
                 error("event $stat was tracked before AnalyticsTracker was initialized.")
             }
@@ -703,7 +703,7 @@ class AnalyticsTracker private constructor(
          * @param errorType The type of error.
          * @param errorDescription The error text or other description.
          */
-        fun track(stat: AnalyticsEvent, errorContext: String?, errorType: String?, errorDescription: String?) {
+        fun track(stat: IAnalyticsEvent, errorContext: String?, errorType: String?, errorDescription: String?) {
             track(stat, mapOf(), errorContext, errorType, errorDescription)
         }
 
@@ -716,7 +716,7 @@ class AnalyticsTracker private constructor(
          * @param errorDescription The error text or other description.
          */
         fun track(
-            stat: AnalyticsEvent,
+            stat: IAnalyticsEvent,
             properties: Map<String, Any>,
             errorContext: String?,
             errorType: String?,
