@@ -10,6 +10,8 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
+import com.woocommerce.commons.wear.DataParameters.ORDER_ID
+import com.woocommerce.commons.wear.DataParameters.ORDER_PRODUCTS_JSON
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.OrderEntity
@@ -61,9 +63,23 @@ class OrdersRepository @Inject constructor(
         }
     }
 
+    suspend fun receiveOrderProductsDataFromPhone(data: DataMap) {
+        val orderId = data.getLong(ORDER_ID.value, 0)
+        val productsJson = data.getString(ORDER_PRODUCTS_JSON.value, "")
+
+        ordersDataStore.edit { prefs ->
+            prefs[stringPreferencesKey(generateProductsKey(orderId))] = productsJson
+        }
+    }
+
     private fun generateOrdersKey(): String {
         val siteId = loginRepository.selectedSite?.siteId ?: 0
         return "${ORDERS_KEY_PREFIX}:$siteId"
+    }
+
+    private fun generateProductsKey(orderId: Long): String {
+        val siteId = loginRepository.selectedSite?.siteId ?: 0
+        return "${ORDERS_KEY_PREFIX}:$siteId:$orderId"
     }
 
     companion object {

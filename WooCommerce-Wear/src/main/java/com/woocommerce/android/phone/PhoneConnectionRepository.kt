@@ -8,7 +8,9 @@ import com.google.android.gms.wearable.MessageClient
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.stats.datasource.StatsRepository
+import com.woocommerce.commons.wear.DataPath
 import com.woocommerce.commons.wear.DataPath.ORDERS_DATA
+import com.woocommerce.commons.wear.DataPath.ORDER_PRODUCTS_DATA
 import com.woocommerce.commons.wear.DataPath.SITE_DATA
 import com.woocommerce.commons.wear.DataPath.STATS_DATA
 import com.woocommerce.commons.wear.MessagePath
@@ -38,6 +40,7 @@ class PhoneConnectionRepository @Inject constructor(
                 SITE_DATA.value -> loginRepository.receiveStoreDataFromPhone(dataMap)
                 STATS_DATA.value -> statsRepository.receiveStatsDataFromPhone(dataMap)
                 ORDERS_DATA.value -> ordersRepository.receiveOrdersDataFromPhone(dataMap)
+                ORDER_PRODUCTS_DATA.value -> ordersRepository.receiveOrderProductsDataFromPhone(dataMap)
                 else -> Log.d(TAG, "Unknown path data received")
             }
         }
