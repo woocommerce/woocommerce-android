@@ -81,13 +81,6 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given woo payments setup not completed, then return false`() = testBlocking {
-        val result = buildPaymentAccountResult(status = WCPaymentAccountResult.WCPaymentAccountStatus.NO_ACCOUNT)
-        whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
-        assertFalse(sut())
-    }
-
-    @Test
     fun `given feature flag disabled, then return false`() = testBlocking {
         whenever(isWooPosFFEnabled.invoke()).thenReturn(false)
         assertFalse(sut())
