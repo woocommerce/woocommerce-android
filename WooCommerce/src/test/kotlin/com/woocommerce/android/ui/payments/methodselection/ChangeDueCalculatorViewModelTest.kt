@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.payments.methodselection
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.util.CurrencyFormatter
@@ -14,9 +13,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.test.assertEquals
@@ -36,16 +33,10 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         on { id }.thenReturn(1L)
         on { currency }.thenReturn("USD")
     }
-    private val orderEntity: OrderEntity = mock()
 
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(site)
     }
-    private val orderStore: WCOrderStore = mock {
-        onBlocking { getOrderByIdAndSite(any(), any()) }.thenReturn(orderEntity)
-        on { getOrderStatusForSiteAndKey(any(), any()) }.thenReturn(mock())
-    }
-    private val networkStatus: NetworkStatus = mock()
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(any<BigDecimal>(), any(), any()) }.thenReturn(ORDER_TOTAL)
     }
@@ -57,13 +48,11 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private val savedStateHandle: SavedStateHandle = mock()
 
-
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
     @Before
     fun setup() {
         viewModel = initViewModel()
-
     }
 
     @Test
@@ -74,11 +63,11 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         whenever(orderDetailRepository.getOrderById(1)).thenReturn(order)
 
         // WHEN
-        //viewModel.fetchOrderDetails()  // Your actual function call to load the data
+        // viewModel.fetchOrderDetails()
         viewModel = initViewModel()
 
         // THEN
-        val uiState = viewModel.uiState.value  // Assuming uiState is how the ViewModel exposes the current state
+        val uiState = viewModel.uiState.value
         assert(uiState is ChangeDueCalculatorViewModel.UiState.Success)
         uiState as ChangeDueCalculatorViewModel.UiState.Success
         assertEquals(expectedAmountDue, uiState.amountDue)
@@ -88,14 +77,14 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     @Test
     fun `given order details retrieval failure, when order details are loaded, then error state is emitted`() = runBlockingTest {
         // GIVEN
-        //whenever(repository.getOrderDetails()).thenThrow(RuntimeException("Error fetching order details"))
+        // whenever(repository.getOrderDetails()).thenThrow(RuntimeException("Error fetching order details"))
 
         // WHEN
-        //viewModel.fetchOrderDetails()
+        // viewModel.fetchOrderDetails()
 
         // THEN
-        //val uiState = viewModel.uiState.value
-        //assert(uiState is ChangeDueCalculatorViewModel.UiState.Error)
+        // val uiState = viewModel.uiState.value
+        // assert(uiState is ChangeDueCalculatorViewModel.UiState.Error)
     }
 
     private fun initViewModel(): ChangeDueCalculatorViewModel {
