@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard.stats
+package com.woocommerce.android.ui.dashboard.domain
 
 import android.icu.text.SimpleDateFormat
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.dashboard.data.asRevenueRangeId
 import com.woocommerce.android.util.DateUtils
 import javax.inject.Inject
 
-class DashboardStatsRangeFormatter @Inject constructor(private val dateUtils: DateUtils) {
+class DashboardDateRangeFormatter @Inject constructor(private val dateUtils: DateUtils) {
     fun formatRangeDate(rangeSelection: StatsTimeRangeSelection): String {
         val startDate = rangeSelection.currentRange.start
         val endDate = rangeSelection.currentRange.end
