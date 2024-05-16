@@ -24,8 +24,8 @@ class IsWooPosEnabled @Inject constructor(
 
         if (!isWooPosFFEnabled()) return false
 
-        val ippPlugin = getActivePaymentsPlugin() ?: return false
         val selectedSite = selectedSite.getOrNull() ?: return false
+        val ippPlugin = getActivePaymentsPlugin() ?: return false
         val paymentAccount = ippStore.loadAccount(ippPlugin, selectedSite).model ?: return false
         val countryCode = paymentAccount.country
 
