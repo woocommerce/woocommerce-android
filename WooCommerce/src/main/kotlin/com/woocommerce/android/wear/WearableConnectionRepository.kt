@@ -7,7 +7,6 @@ import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.gson.Gson
 import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.commons.wear.DataParameters
 import com.woocommerce.commons.wear.DataParameters.CONVERSION_RATE
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
@@ -40,7 +39,7 @@ class WearableConnectionRepository @Inject constructor(
     private val wooCommerceStore: WooCommerceStore,
     private val orderStore: WCOrderStore,
     private val getStats: GetWearableMyStoreStats,
-    private val getWearableOrderProducts: GetWearableOrderProducts,
+    private val getOrderProducts: GetWearableOrderProducts,
     private val coroutineScope: CoroutineScope
 ) {
     private val gson by lazy { Gson() }
@@ -101,14 +100,14 @@ class WearableConnectionRepository @Inject constructor(
         val orderId = runCatching { message.data.toString().toLong() }.getOrNull()
 
         val orderProductsJson = orderId
-            ?.let { getWearableOrderProducts(it) }
+            ?.let { getOrderProducts(it) }
             ?.let { gson.toJson(it) }
             .orEmpty()
 
         sendData(
             ORDER_PRODUCTS_DATA,
             DataMap().apply {
-                putString(ORDER_ID.value, orderId?.toString().orEmpty())
+                putLong(ORDER_ID.value, orderId ?: -1L)
                 putString(ORDER_PRODUCTS_JSON.value, orderProductsJson)
             }
         )
