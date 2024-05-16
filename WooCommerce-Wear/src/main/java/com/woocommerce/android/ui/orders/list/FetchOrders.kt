@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.system.NetworkStatus
-import com.woocommerce.android.ui.login.ObserveLoginRequest.Companion.TIMEOUT_MILLIS
 import com.woocommerce.android.ui.orders.OrdersRepository
+import com.woocommerce.android.util.combineWithTimeout
 import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDERS
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.model.OrderEntity
@@ -22,16 +20,14 @@ class FetchOrders @Inject constructor(
 ) {
     suspend operator fun invoke(
         selectedSite: SiteModel
-    ): Flow<List<OrderEntity>> = combine(
-        selectOrdersDataSource(selectedSite),
-        timeoutFlow
-    ) { orders, isTimeout ->
-        when {
-            orders.isNotEmpty() -> orders
-            isTimeout -> emptyList()
-            else -> null
-        }
-    }.filterNotNull()
+    ): Flow<List<OrderEntity>> = selectOrdersDataSource(selectedSite)
+        .combineWithTimeout { orders, isTimeout ->
+            when {
+                orders.isNotEmpty() -> orders
+                isTimeout -> emptyList()
+                else -> null
+            }
+        }.filterNotNull()
 
     private suspend fun selectOrdersDataSource(
         selectedSite: SiteModel
@@ -48,11 +44,4 @@ class FetchOrders @Inject constructor(
             return ordersRepository.observeOrdersDataChanges()
         }
     }
-
-    private val timeoutFlow: Flow<Boolean>
-        get() = flow {
-            emit(false)
-            delay(TIMEOUT_MILLIS)
-            emit(true)
-        }
 }
