@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.ui.NavArgs.ORDER_ID
@@ -8,6 +9,7 @@ import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.orders.FormatOrderData
 import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 import com.woocommerce.android.ui.orders.OrdersRepository
+import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +22,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OrderDetailsViewModel @Inject constructor(
+    private val fetchOrderProducts: FetchOrderProducts,
     ordersRepository: OrdersRepository,
     formatOrder: FormatOrderData,
     loginRepository: LoginRepository,
@@ -39,8 +42,26 @@ class OrderDetailsViewModel @Inject constructor(
                 savedState.get<Long>(ORDER_ID.key)
                     ?.let { ordersRepository.getOrderFromId(site, it) }
                     ?.let { formatOrder(site, it) }
-                    .let { presentOrderData(it) }
+                    .let {
+                        presentOrderData(it)
+                        it?.let { updateOrderProducts(it.id) }
+                    }
             }.launchIn(this)
+
+
+    }
+
+    private suspend fun updateOrderProducts(orderId: Long) {
+        fetchOrderProducts(orderId)
+            .onEach {
+                when (it) {
+                    is Finished -> {
+                        Log.d("OrderDetailsViewModel", "Finished: ${it.products.count()}")
+                    }
+                    else -> Log.d("OrderDetailsViewModel", "Error")
+                }
+            }
+            .launchIn(this)
     }
 
     private fun presentOrderData(order: OrderItem?) {
@@ -52,6 +73,6 @@ class OrderDetailsViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isLoading: Boolean = false,
-        val orderItem: OrderItem? = null
+        val orderItem: OrderItem? = null,
     ) : Parcelable
 }
