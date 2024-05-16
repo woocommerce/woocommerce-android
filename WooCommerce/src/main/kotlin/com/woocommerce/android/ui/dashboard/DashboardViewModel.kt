@@ -61,7 +61,7 @@ class DashboardViewModel @Inject constructor(
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
     dashboardRepository: DashboardRepository,
-    private val feedbackPrefs: FeedbackPrefs
+    private val feedbackPrefs: FeedbackPrefs,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER = 5

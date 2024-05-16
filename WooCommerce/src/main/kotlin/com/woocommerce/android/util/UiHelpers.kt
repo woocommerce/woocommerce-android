@@ -89,3 +89,7 @@ object UiHelpers {
 class IsWindowClassLargeThanCompact @Inject constructor(val context: Context) {
     operator fun invoke() = context.windowSizeClass != WindowSizeClass.Compact
 }
+
+class IsWindowClassExpandedAndBigger @Inject constructor(val context: Context) {
+    operator fun invoke() = context.windowSizeClass == WindowSizeClass.ExpandedAndBigger
+}
