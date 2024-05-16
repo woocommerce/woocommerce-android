@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,15 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ChangeDueCalculatorFragment : DialogFragment() {
+class ChangeDueCalculatorFragment : BaseFragment() {
 
     private val viewModel: ChangeDueCalculatorViewModel by viewModels()
 
@@ -42,36 +43,48 @@ class ChangeDueCalculatorFragment : DialogFragment() {
     fun ChangeDueCalculatorScreen() {
         val uiState by viewModel.uiState.collectAsState()
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            when (uiState) {
-                is ChangeDueCalculatorViewModel.UiState.Loading -> {
-                    Text(text = stringResource(R.string.loading), style = MaterialTheme.typography.h6)
+        Scaffold(
+            topBar = {
+                when (uiState) {
+                    is ChangeDueCalculatorViewModel.UiState.Success -> {
+                        val successState = uiState as ChangeDueCalculatorViewModel.UiState.Success
+                        TopAppBar(
+                            title = {
+                                Text(text = stringResource(R.string.cash_payments_take_payment_title, successState.amountDue))
+                            },
+                            backgroundColor = MaterialTheme.colors.primarySurface
+                        )
+                    }
+                    else -> {
+                        TopAppBar(
+                            title = { Text(text = stringResource(id = R.string.cash_payments_take_payment_title)) },
+                            backgroundColor = MaterialTheme.colors.primarySurface
+                        )
+                    }
                 }
-                is ChangeDueCalculatorViewModel.UiState.Success -> {
-                    val state = uiState as ChangeDueCalculatorViewModel.UiState.Success
-                    Text(
-                        text = stringResource(R.string.cash_payments_take_payment_title, state.amountDue),
-                        style = MaterialTheme.typography.h4,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        text = "TODO...",
-                        style = MaterialTheme.typography.body1
-                    )
-                }
-                is ChangeDueCalculatorViewModel.UiState.Error -> {
-                    Text(text = stringResource(R.string.error_generic), style = MaterialTheme.typography.h6)
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                when (uiState) {
+                    is ChangeDueCalculatorViewModel.UiState.Loading -> {
+                        Text(text = stringResource(R.string.loading), style = MaterialTheme.typography.h6)
+                    }
+                    is ChangeDueCalculatorViewModel.UiState.Success -> {
+                        Text("TODO...", style = MaterialTheme.typography.body1)
+                    }
+                    is ChangeDueCalculatorViewModel.UiState.Error -> {
+                        Text(text = stringResource(R.string.error_generic), style = MaterialTheme.typography.h6)
+                    }
                 }
             }
         }
     }
 }
+
