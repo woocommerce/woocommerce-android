@@ -97,7 +97,9 @@ class WearableConnectionRepository @Inject constructor(
     }
 
     fun sendOrderProductsData(message: MessageEvent) = coroutineScope.launch {
-        val orderId = runCatching { message.data.toString().toLong() }.getOrNull()
+        val orderId = runCatching {
+            message.data.toString(Charsets.UTF_8).toLong()
+        }.getOrNull()
 
         val orderProductsJson = orderId
             ?.let { getOrderProducts(it) }

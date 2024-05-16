@@ -278,6 +278,14 @@
                     android:pathPrefix="/request-orders"
                     android:scheme="wear" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/request-order-products"
+                    android:scheme="wear" />
+            </intent-filter>
         </service>
 
     </application>
