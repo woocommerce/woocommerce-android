@@ -5,14 +5,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 
-const val TIMEOUT_MILLIS = 20000L
-val timeoutFlow: Flow<Boolean>
-    get() = flow {
-        emit(false)
-        delay(TIMEOUT_MILLIS)
-        emit(true)
-    }
+const val DEFAULT_TIMEOUT_MILLIS = 20000L
+private fun createTimeoutFlow(
+    timeoutMillis: Long
+): Flow<Boolean> = flow {
+    emit(false)
+    delay(timeoutMillis)
+    emit(true)
+}
 
 fun <T, R> Flow<T>.combineWithTimeout(
+    timeoutMillis: Long = DEFAULT_TIMEOUT_MILLIS,
     transform: (data: T, isTimeout: Boolean) -> R
-) = combine(this, timeoutFlow, transform)
+) = combine(this, createTimeoutFlow(timeoutMillis), transform)
