@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -54,7 +55,7 @@ class ChangeDueCalculatorFragment : BaseFragment() {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    backgroundColor = Color.White,
+                    backgroundColor = colorResource(id = R.color.color_toolbar),
                     navigationIcon = {
                         IconButton(onClick = { findNavController().navigateUp() }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
