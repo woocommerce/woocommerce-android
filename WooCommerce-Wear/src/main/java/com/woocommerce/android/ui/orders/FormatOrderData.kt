@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.util.DateUtils
+import com.woocommerce.commons.wear.orders.WearOrderProduct
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
@@ -19,8 +20,9 @@ class FormatOrderData @Inject constructor(
 ) {
     operator fun invoke(
         selectedSite: SiteModel,
-        order: OrderEntity
-    ) = order.toOrderItem(selectedSite)
+        order: OrderEntity,
+        products: List<WearOrderProduct>?
+    ) = order.toOrderItem(selectedSite, products)
 
     operator fun invoke(
         selectedSite: SiteModel,
@@ -28,8 +30,22 @@ class FormatOrderData @Inject constructor(
     ) = orders.map { it.toOrderItem(selectedSite) }
 
     private fun OrderEntity.toOrderItem(
-        selectedSite: SiteModel
+        selectedSite: SiteModel,
+        products: List<WearOrderProduct>? = null
     ): OrderItem {
+        val orderProducts = products?.map {
+            ProductItem(
+                amount = it.amount,
+                total = wooCommerceStore.formatCurrencyForDisplay(
+                    amount = it.total.toDoubleOrNull() ?: 0.0,
+                    site = selectedSite,
+                    currencyCode = null,
+                    applyDecimalFormatting = true
+                ),
+                name = it.name
+            )
+        }
+
         val formattedOrderTotals = wooCommerceStore.formatCurrencyForDisplay(
             amount = total.toDoubleOrNull() ?: 0.0,
             site = selectedSite,
@@ -57,7 +73,8 @@ class FormatOrderData @Inject constructor(
             number = formattedNumber,
             customerName = formattedBillingName,
             total = formattedOrderTotals,
-            status = formattedStatus
+            status = formattedStatus,
+            products = orderProducts
         )
     }
 
@@ -68,6 +85,14 @@ class FormatOrderData @Inject constructor(
         val number: String,
         val customerName: String,
         val total: String,
-        val status: String
+        val status: String,
+        val products: List<ProductItem>?
+    ) : Parcelable
+
+    @Parcelize
+    data class ProductItem(
+        val amount: String,
+        val total: String,
+        val name: String
     ) : Parcelable
 }
