@@ -9,12 +9,14 @@ import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.coupons.CouponRepository
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.CouponsCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -34,7 +36,9 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = DashboardCouponsViewModel.Factory::class)
@@ -43,7 +47,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     @Assisted private val parentViewModel: DashboardViewModel,
     private val couponRepository: CouponRepository,
     getSelectedRange: GetSelectedRangeForCoupons,
-    customDateRangeDataStore: CouponsCustomDateRangeDataStore,
+    private val customDateRangeDataStore: CouponsCustomDateRangeDataStore,
     private val dateRangeFormatter: DashboardDateRangeFormatter,
     private val appPrefs: AppPrefsWrapper,
 ) : ScopedViewModel(savedStateHandle) {
@@ -92,6 +96,37 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                 )
             }
     }.asLiveData()
+
+
+    fun onTabSelected(selectionType: SelectionType) {
+        if (selectionType != SelectionType.CUSTOM) {
+            appPrefs.setActiveCouponsTab(selectionType.name)
+        } else {
+            if (dateRangeState.value?.customRange == null) {
+                onEditCustomRangeTapped()
+            } else {
+                appPrefs.setActiveTopPerformersTab(SelectionType.CUSTOM.name)
+            }
+        }
+    }
+
+    fun onEditCustomRangeTapped() {
+        triggerEvent(
+            OpenDatePicker(
+                fromDate = dateRangeState.value?.customRange?.start ?: Date(),
+                toDate = dateRangeState.value?.customRange?.end ?: Date()
+            )
+        )
+    }
+
+    fun onCustomRangeSelected(range: StatsTimeRange) {
+        viewModelScope.launch {
+            customDateRangeDataStore.updateDateRange(range)
+            if (dateRangeState.value?.rangeSelection?.selectionType != SelectionType.CUSTOM) {
+                onTabSelected(SelectionType.CUSTOM)
+            }
+        }
+    }
 
     private fun observeCouponUiModels(
         dateRange: StatsTimeRange,
@@ -195,6 +230,8 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     ) {
         val code: String = coupon.code.orEmpty()
     }
+
+    data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {
