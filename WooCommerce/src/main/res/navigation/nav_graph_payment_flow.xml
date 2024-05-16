@@ -47,6 +47,13 @@
                 app:argType="long" />
         </action>
         <action
+            android:id="@+id/action_selectPaymentMethodFragment_to_changeDueCalculatorFragment"
+            app:destination="@+id/changeDueCalculatorFragment">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+        </action>
+        <action
             android:id="@+id/action_selectPaymentMethodFragment_to_tapToPaySummaryFragment"
             app:destination="@id/tapToPaySummaryFragment"
             app:popUpTo="@+id/tapToPaySummaryFragment"
@@ -55,6 +62,12 @@
             android:id="@+id/action_selectPaymentMethodFragment_to_scanToPayDialogFragment"
             app:destination="@id/scanToPayDialogFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/changeDueCalculatorFragment"
+        android:name="com.woocommerce.android.ui.payments.methodselection.ChangeDueCalculatorFragment"
+        android:label="ChangeDueCalculatorFragment" />
+
 
     <!-- Onboarding flow -->
     <dialog
