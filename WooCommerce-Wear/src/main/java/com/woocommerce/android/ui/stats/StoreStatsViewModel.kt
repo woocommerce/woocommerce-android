@@ -3,12 +3,11 @@ package com.woocommerce.android.ui.stats
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
-import com.woocommerce.android.phone.PhoneConnectionRepository
-import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.stats.datasource.FetchStatsFromPhone
-import com.woocommerce.android.ui.stats.datasource.FetchStatsFromStore
-import com.woocommerce.android.ui.stats.datasource.StoreStatsRequest
+import com.woocommerce.android.ui.stats.datasource.FetchStats
+import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest
+import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
+import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,10 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoreStatsViewModel @Inject constructor(
-    private val phoneRepository: PhoneConnectionRepository,
-    private val fetchStatsFromStore: FetchStatsFromStore,
-    private val fetchStatsFromPhone: FetchStatsFromPhone,
-    private val networkStatus: NetworkStatus,
+    private val fetchStats: FetchStats,
+    private val locale: Locale,
     loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
@@ -40,7 +37,7 @@ class StoreStatsViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     private val friendlyTimeFormat: SimpleDateFormat by lazy {
-        SimpleDateFormat("h:mm a", Locale.getDefault())
+        SimpleDateFormat("h:mm a", locale)
     }
 
     init {
@@ -52,24 +49,19 @@ class StoreStatsViewModel @Inject constructor(
             }.launchIn(this)
     }
 
-    private suspend fun evaluateStatsSource(selectedSite: SiteModel) = when {
-        networkStatus.isConnected() -> fetchStatsFromStore(selectedSite)
-        phoneRepository.isPhoneConnectionAvailable() -> fetchStatsFromPhone()
-        else -> error("No connection available")
-    }
-
     private fun requestStoreStats(selectedSite: SiteModel) {
         _viewState.update { it.copy(isLoading = true) }
         launch {
-            evaluateStatsSource(selectedSite)
+            fetchStats(selectedSite)
                 .onEach { handleStatsDataChange(it) }
                 .launchIn(this)
         }
     }
 
-    private fun handleStatsDataChange(statsData: StoreStatsRequest?) {
-        when (statsData) {
-            is StoreStatsRequest.Data -> {
+    private fun handleStatsDataChange(request: StoreStatsRequest?) {
+        when (request) {
+            is Finished -> {
+                val statsData = request.data
                 _viewState.update {
                     it.copy(
                         isLoading = false,
@@ -81,7 +73,7 @@ class StoreStatsViewModel @Inject constructor(
                     )
                 }
             }
-
+            is Waiting -> _viewState.update { it.copy(isLoading = true) }
             else -> _viewState.update { it.copy(isLoading = false) }
         }
     }

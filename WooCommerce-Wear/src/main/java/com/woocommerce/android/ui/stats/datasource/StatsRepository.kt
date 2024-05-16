@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.stats.datasource.StoreStatsRequest.Data.RevenueData
+import com.woocommerce.android.ui.stats.datasource.StoreStatsData.RevenueData
 import com.woocommerce.android.ui.stats.range.TodayRangeData
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
@@ -98,7 +98,7 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun receiveStatsDataFromPhone(data: DataMap) {
-        val statsJson = StoreStatsRequest.Data(
+        val statsJson = StoreStatsData(
             revenueData = RevenueData(
                 totalRevenue = data.getString(TOTAL_REVENUE.value, ""),
                 orderCount = data.getInt(ORDERS_COUNT.value, 0)
@@ -107,16 +107,18 @@ class StatsRepository @Inject constructor(
         ).let { gson.toJson(it) }
 
         statsDataStore.edit { prefs ->
-            prefs[stringPreferencesKey(generateStatsKey())] = statsJson
+            val siteId = loginRepository.selectedSite?.siteId ?: 0
+            prefs[stringPreferencesKey(generateStatsKey(siteId))] = statsJson
         }
     }
 
-    fun observeStatsDataChanges() = statsDataStore.data
-        .mapNotNull { it[stringPreferencesKey(generateStatsKey())] }
-        .map { gson.fromJson(it, StoreStatsRequest.Data::class.java) }
+    fun observeStatsDataChanges(
+        selectedSite: SiteModel
+    ) = statsDataStore.data
+        .mapNotNull { it[stringPreferencesKey(generateStatsKey(selectedSite.siteId))] }
+        .map { gson.fromJson(it, StoreStatsData::class.java) }
 
-    private fun generateStatsKey(): String {
-        val siteId = loginRepository.selectedSite?.siteId ?: 0
+    private fun generateStatsKey(siteId: Long): String {
         return "$STATS_KEY_PREFIX:$siteId"
     }
 

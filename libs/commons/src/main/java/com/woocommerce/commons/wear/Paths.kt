@@ -3,13 +3,15 @@ package com.woocommerce.commons.wear
 enum class MessagePath(val value: String) {
     REQUEST_SITE("/request-site"),
     REQUEST_STATS("/request-stats"),
-    REQUEST_ORDERS("/request-orders")
+    REQUEST_ORDERS("/request-orders"),
+    REQUEST_ORDER_PRODUCTS("/request-order-products")
 }
 
 enum class DataPath(val value: String) {
     SITE_DATA("/site-data"),
     STATS_DATA("/stats-data"),
-    ORDERS_DATA("/orders-data")
+    ORDERS_DATA("/orders-data"),
+    ORDER_PRODUCTS_DATA("/order-products-data")
 }
 
 enum class DataParameters(val value: String) {
@@ -26,5 +28,9 @@ enum class DataParameters(val value: String) {
     CONVERSION_RATE("conversion-rate"),
 
     // Orders data
-    ORDERS_JSON("orders-json")
+    ORDERS_JSON("orders-json"),
+
+    // Order products data
+    ORDER_ID("order-id"),
+    ORDER_PRODUCTS_JSON("order-products-json")
 }

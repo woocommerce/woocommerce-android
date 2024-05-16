@@ -15,6 +15,11 @@
     <string name="orders_list_screen_title">Orders</string>
     <string name="orders_list_guest_customer">Guest</string>
 
+    <!-- Order Details Screen -->
+    <string name="order_details_single_product_amount">1 product</string>
+    <string name="order_details_multiple_products_amount">%1$d products</string>
+    <string name="order_details_failed_to_load">Failed to load order details</string>
+
     <!-- Tile and Complication -->
     <string name="tile_label">Example tile</string>
     <string name="complication_label">Example complication</string>
