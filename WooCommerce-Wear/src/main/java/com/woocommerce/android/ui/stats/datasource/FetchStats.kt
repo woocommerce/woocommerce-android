@@ -11,12 +11,11 @@ import com.woocommerce.commons.wear.MessagePath
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOf
 
 class FetchStats @Inject constructor(
     private val statsRepository: StatsRepository,
@@ -32,7 +31,7 @@ class FetchStats @Inject constructor(
     ) = when {
         networkStatus.isConnected() -> fetchStatsFromStore(selectedSite)
         phoneRepository.isPhoneConnectionAvailable() -> fetchStatsFromPhone()
-        else -> error("No connection available")
+        else -> flowOf(Error)
     }
 
     private suspend fun fetchStatsFromPhone(): Flow<StoreStatsRequest> {
@@ -40,7 +39,7 @@ class FetchStats @Inject constructor(
         return statsRepository.observeStatsDataChanges()
             .combineWithTimeout { statsData, isTimeout ->
                 when {
-                    statsData?.isFinished == true -> Finished(statsData)
+                    statsData?.isComplete == true -> Finished(statsData)
                     isTimeout.not() -> Waiting
                     else -> Error
                 }
@@ -55,7 +54,13 @@ class FetchStats @Inject constructor(
 
         return combine(revenueStats, visitorStats) { revenue, visitors ->
             StoreStatsData(revenue, visitors)
-        }.filter { it.isFinished }.map { Finished(it) }
+        }.combineWithTimeout { data, isTimeout ->
+            when {
+                data.isComplete -> Finished(data)
+                isTimeout.not() -> Waiting
+                else -> Error
+            }
+        }.filterNotNull()
     }
 
     private suspend fun fetchRevenueStats(selectedSite: SiteModel) {

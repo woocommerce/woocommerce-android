@@ -16,7 +16,7 @@ data class StoreStatsData(
             return ordersCount convertedFrom visitorsCount
         }
 
-    val isFinished
+    val isComplete
         get() = revenueData != null &&
             visitorData != null
 
