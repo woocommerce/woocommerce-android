@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 
+@Suppress("LongParameterList")
 @HiltViewModel(assistedFactory = Factory::class)
 class DashboardOrdersViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
