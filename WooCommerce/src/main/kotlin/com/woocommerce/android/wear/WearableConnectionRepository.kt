@@ -12,6 +12,7 @@ import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
 import com.woocommerce.commons.wear.DataParameters.ORDER_ID
 import com.woocommerce.commons.wear.DataParameters.ORDER_PRODUCTS_JSON
+import com.woocommerce.commons.wear.DataParameters.SITE_ID
 import com.woocommerce.commons.wear.DataParameters.SITE_JSON
 import com.woocommerce.commons.wear.DataParameters.TIMESTAMP
 import com.woocommerce.commons.wear.DataParameters.TOKEN
@@ -124,6 +125,7 @@ class WearableConnectionRepository @Inject constructor(
             .apply {
                 dataMap.putAll(data)
                 dataMap.putLong(TIMESTAMP.value, Instant.now().epochSecond)
+                dataMap.putLong(SITE_ID.value, selectedSite.getOrNull()?.siteId ?: 0L)
             }.asPutDataRequest().setUrgent()
             .let { dataClient.putDataItem(it) }
     }
