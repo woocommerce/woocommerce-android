@@ -53,38 +53,41 @@ class ChangeDueCalculatorFragment : BaseFragment() {
 
         Scaffold(
             topBar = {
-                when (uiState) {
-                    is ChangeDueCalculatorViewModel.UiState.Success -> {
-                        val successState = uiState as ChangeDueCalculatorViewModel.UiState.Success
-                        TopAppBar(
-                            title = {
-                                Text(
-                                    text = stringResource(
-                                        R.string.cash_payments_take_payment_title,
-                                        successState.amountDue
-                                    ),
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Center
-                                )
-                            },
-                            backgroundColor = Color.White, // Set the background color to white
-                            navigationIcon = {
-                                IconButton(onClick = { findNavController().navigateUp() }) {
-                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                                }
-                            },
-                            actions = {
-                                // Keep an empty action to center the title text
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
-                        )
+                TopAppBar(
+                    backgroundColor = Color.White,
+                    navigationIcon = {
+                        // Back button
+                        IconButton(onClick = { findNavController().navigateUp() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    },
+                    title = {
+                        // Adjust text based on state within the AppBar directly
+                        if (uiState is ChangeDueCalculatorViewModel.UiState.Success) {
+                            val successState = uiState as ChangeDueCalculatorViewModel.UiState.Success
+                            Text(
+                                text = stringResource(
+                                    R.string.cash_payments_take_payment_title,
+                                    successState.amountDue
+                                ),
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(id = R.string.cash_payments_take_payment_title),
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    },
+                    actions = {
+                        // This is required to center the title when there are no actual actions
+                        if (uiState !is ChangeDueCalculatorViewModel.UiState.Success) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
                     }
-                    else -> {
-                        TopAppBar(
-                            title = { Text(text = stringResource(id = R.string.cash_payments_take_payment_title)) },
-                        )
-                    }
-                }
+                )
             }
         ) { paddingValues ->
             Column(
