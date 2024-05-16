@@ -44,7 +44,7 @@ class FetchOrders @Inject constructor(
             }
         } else {
             phoneRepository.sendMessage(REQUEST_ORDERS)
-            return ordersRepository.observeOrdersDataChanges()
+            return ordersRepository.observeOrdersDataChanges(selectedSite.siteId)
         }
     }
 
