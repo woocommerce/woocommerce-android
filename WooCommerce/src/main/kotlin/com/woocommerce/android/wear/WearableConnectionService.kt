@@ -2,7 +2,6 @@ package com.woocommerce.android.wear
 
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.WearableListenerService
-import com.woocommerce.commons.wear.MessagePath
 import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDERS
 import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDER_PRODUCTS
 import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE

@@ -8,7 +8,6 @@ import com.google.android.gms.wearable.MessageClient
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.stats.datasource.StatsRepository
-import com.woocommerce.commons.wear.DataPath
 import com.woocommerce.commons.wear.DataPath.ORDERS_DATA
 import com.woocommerce.commons.wear.DataPath.ORDER_PRODUCTS_DATA
 import com.woocommerce.commons.wear.DataPath.SITE_DATA
