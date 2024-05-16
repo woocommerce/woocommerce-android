@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard.coupons
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -54,7 +56,14 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                 observeCouponUiModels(it.isForced).map { result ->
                     result.fold(
                         onSuccess = { coupons -> State.Loaded(coupons) },
-                        onFailure = { State.Error.Generic }
+                        onFailure = { error ->
+                            when {
+                                error is WooException && error.error.type == WooErrorType.API_NOT_FOUND ->
+                                    State.Error.WCAdminInactive
+
+                                else -> State.Error.Generic
+                            }
+                        }
                     )
                 }
             )
