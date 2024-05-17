@@ -18,13 +18,13 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.WCWearableStore
 
 class LoginRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.LOGIN) private val loginDataStore: DataStore<Preferences>,
-    private val accountStore: AccountStore,
+    private val wearableStore: WCWearableStore,
     private val wooCommerceStore: WooCommerceStore,
     private val coroutineScope: CoroutineScope
 ) {
@@ -56,7 +56,7 @@ class LoginRepository @Inject constructor(
         loginDataStore.edit { prefs ->
             prefs[stringPreferencesKey(CURRENT_SITE_KEY)] = siteJSON
             data.getString(TOKEN.value)?.let { token ->
-                accountStore.updateToken(token)
+                wearableStore.updateToken(token)
                 prefs[stringPreferencesKey(generateTokenKey(site.siteId))] = token
             }
         }

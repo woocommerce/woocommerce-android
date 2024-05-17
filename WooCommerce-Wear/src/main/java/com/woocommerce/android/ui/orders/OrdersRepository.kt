@@ -18,19 +18,21 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCWearableStore
 
 class OrdersRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.ORDERS) private val ordersDataStore: DataStore<Preferences>,
     private val loginRepository: LoginRepository,
+    private val wearableStore: WCWearableStore,
     private val orderStore: WCOrderStore
 ) {
     private val gson by lazy { Gson() }
 
     suspend fun fetchOrders(
         selectedSite: SiteModel
-    ) = orderStore.fetchOrdersForWearables(
+    ) = wearableStore.fetchOrders(
         site = selectedSite,
         shouldStoreData = true
     )

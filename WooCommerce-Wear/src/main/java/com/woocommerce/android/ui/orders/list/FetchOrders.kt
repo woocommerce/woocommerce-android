@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.Success
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.WCWearableStore.OrdersForWearablesResult.Success
 
 class FetchOrders @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
