@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 18.7
+We've fixed an issue that caused the app to crash during screen rotation, ensuring a smoother shopping experience. Update now to enjoy a more stable and reliable app!
+
 ## 18.6
 Enjoy enhanced functionality in our latest app update! We've improved the 'Tap To Pay' feature, introducing a new navigation path from the summary to the 'About Tap To Pay' screen, and revised its description for better clarity. Additionally, selecting shipping methods has been made more flexible, allowing you to choose specific options directly when adding or editing shipping details on an order. Update your app today for a smoother and more efficient experience!
 
