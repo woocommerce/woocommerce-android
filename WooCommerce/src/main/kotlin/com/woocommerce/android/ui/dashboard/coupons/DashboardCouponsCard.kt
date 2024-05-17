@@ -1,8 +1,11 @@
 package com.woocommerce.android.ui.dashboard.coupons
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -10,11 +13,13 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.model.DashboardWidget.Type.COUPONS
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
@@ -113,7 +118,7 @@ private fun DashboardCouponsCard(
 
             when (viewState) {
                 is Loading -> {
-                    CircularProgressIndicator()
+                    CouponsLoading()
                 }
 
                 is Loaded -> {
@@ -141,5 +146,43 @@ private fun DashboardCouponsList(
             Text(text = it.code)
             Divider()
         }
+    }
+}
+
+@Composable
+private fun CouponsLoading(
+    modifier: Modifier = Modifier
+) {
+    Column(modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Header(Modifier.fillMaxWidth())
+        Spacer(modifier = Modifier.height(8.dp))
+        repeat(3) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    SkeletonView(width = 260.dp, height = 16.dp)
+                    SkeletonView(width = 40.dp, height = 16.dp)
+                }
+                SkeletonView(width = 120.dp, height = 16.dp)
+                Spacer(modifier = Modifier)
+                Divider()
+            }
+        }
+    }
+}
+
+@Composable
+private fun Header(modifier: Modifier = Modifier) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+    ) {
+        Text(text = "Coupons")
+        Text(text = "Uses")
     }
 }
