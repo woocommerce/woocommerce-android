@@ -30,6 +30,7 @@ data class DashboardWidget(
         POPULAR_PRODUCTS(R.string.my_store_widget_top_products_title, "top_performers"),
         BLAZE(R.string.my_store_widget_blaze_title, "blaze"),
         REVIEWS(R.string.my_store_widget_reviews_title, "reviews"),
+        ORDERS(R.string.my_store_widget_orders_title, "orders"),
     }
 
     sealed interface Status : Parcelable {
