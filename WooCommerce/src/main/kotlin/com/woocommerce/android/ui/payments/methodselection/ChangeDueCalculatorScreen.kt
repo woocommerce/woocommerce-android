@@ -16,8 +16,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -25,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
 import java.math.BigDecimal
 
@@ -66,13 +63,14 @@ fun ChangeDueCalculatorScreen(
                     style = MaterialTheme.typography.h6
                 )
 
-                is ChangeDueCalculatorViewModel.UiState.Success -> {Text(
-                    stringResource(
-                        R.string.cash_payments_take_payment_title,
-                        uiState.amountDue
-                    ),
-                    style = MaterialTheme.typography.body1
-                )
+                is ChangeDueCalculatorViewModel.UiState.Success -> {
+                    Text(
+                        stringResource(
+                            R.string.cash_payments_take_payment_title,
+                            uiState.amountDue
+                        ),
+                        style = MaterialTheme.typography.body1
+                    )
 
                     OutlinedTextField(
                         value = "cashReceived",
@@ -93,6 +91,7 @@ fun ChangeDueCalculatorScreen(
                         readOnly = true
                     )
                 }
+
                 is ChangeDueCalculatorViewModel.UiState.Error -> {
                     Text(text = stringResource(R.string.error_generic), style = MaterialTheme.typography.h6)
                 }
