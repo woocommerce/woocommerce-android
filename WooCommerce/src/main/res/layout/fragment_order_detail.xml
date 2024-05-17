@@ -108,6 +108,12 @@
                         android:clipToPadding="false"
                         android:contentDescription="@string/custom_amounts" />
 
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/orderDetail_shippingLines"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/shipping" />
+
                     <!-- Custom fields button -->
                     <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomFieldsCard
                         android:id="@+id/customFieldsCard"

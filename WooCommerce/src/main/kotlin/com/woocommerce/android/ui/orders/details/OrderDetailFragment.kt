@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -453,6 +454,7 @@ class OrderDetailFragment :
         viewModel.giftCards.observe(viewLifecycleOwner) {
             showGiftCards(it, viewModel.order.currency)
         }
+        showShippingLines(viewModel.shippingLineList)
 
         setupOrderAttributionInfoCard(viewModel.orderAttributionInfo)
 
@@ -482,6 +484,22 @@ class OrderDetailFragment :
             }
         }
         viewModel.start()
+    }
+
+    private fun showShippingLines(shippingLineList: LiveData<List<OrderDetailViewModel.ShippingLineDetails>>) {
+        binding.orderDetailShippingLines.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                shippingLineList.observeAsState().value?.let { shippingLines ->
+                    WooThemeWithBackground {
+                        ShippingLineSection(
+                            shippingLineDetails = shippingLines,
+                            modifier = Modifier.padding(bottom = 1.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun showSubscriptions(subscriptions: List<Subscription>) {
@@ -715,9 +733,9 @@ class OrderDetailFragment :
                 if (!feeLineState.value.isNullOrEmpty()) {
                     WooThemeWithBackground {
                         Column(
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            modifier = Modifier.padding(bottom = 1.dp)
                         ) {
-                            Header()
+                            Header(text = stringResource(id = R.string.order_detail_custom_amounts_header))
                             feeLineState.value.forEachIndexed { index, feeLine ->
                                 CustomAmountCard(
                                     CustomAmountUI(
