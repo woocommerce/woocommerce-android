@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 
@@ -86,4 +87,16 @@ private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String 
 
         else -> stringResource(id = R.string.cash_payments_take_payment_title)
     }
+}
+
+@Composable
+@PreviewLightDark()
+fun ChangeDueCalculatorScreenSuccessPreview() {
+    ChangeDueCalculatorScreen(
+        uiState = ChangeDueCalculatorViewModel.UiState.Success(
+            amountDue = "$100.00",
+            change = 0.00.toBigDecimal()
+        ),
+        onNavigateUp = {}
+    )
 }
