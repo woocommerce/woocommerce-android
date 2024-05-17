@@ -37,6 +37,7 @@ fun WooPosCartScreen(
     WooPosCartScreen(
         onButtonClicked = onCheckoutClick,
         productsState = productsViewModel.viewState,
+        onLoadMore = productsViewModel::onLoadMore,
     )
 }
 
@@ -45,6 +46,7 @@ fun WooPosCartScreen(
 private fun WooPosCartScreen(
     onButtonClicked: () -> Unit,
     productsState: StateFlow<ProductSelectorViewModel.ViewState>,
+    onLoadMore: () -> Unit,
 ) {
     Box(
         Modifier.fillMaxSize(),
@@ -77,7 +79,7 @@ private fun WooPosCartScreen(
             Row(
                 modifier = Modifier.padding(16.dp)
             ) {
-                ProductSelector(productsState)
+                ProductSelector(productsState, onLoadMore)
                 Cart(onButtonClicked)
             }
         }
@@ -114,5 +116,5 @@ fun WooPosCartScreenPreview() {
             )
         )
     )
-    WooPosCartScreen(onButtonClicked = {}, productsState = productState)
+    WooPosCartScreen(onButtonClicked = {}, productsState = productState, onLoadMore = {})
 }
