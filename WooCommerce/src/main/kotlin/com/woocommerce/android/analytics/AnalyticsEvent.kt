@@ -5,7 +5,7 @@ interface IAnalyticsEvent {
     val name: String
 }
 
-sealed class AnalyticsEvent(override val siteless: Boolean = false): IAnalyticsEvent {
+sealed class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEvent {
     override val name: String = this::class.simpleName!!
 
     // -- General
