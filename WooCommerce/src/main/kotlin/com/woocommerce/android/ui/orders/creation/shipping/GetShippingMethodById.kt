@@ -11,7 +11,8 @@ class GetShippingMethodById @Inject constructor(
         if (shippingMethodId == ShippingMethodsRepository.OTHER_ID || shippingMethodId == null) {
             return other
         }
-        val result = shippingMethodsRepository.fetchShippingMethodById(shippingMethodId)
-        return result.model ?: other
+        val result = shippingMethodsRepository.getShippingMethodById(shippingMethodId)
+            ?: shippingMethodsRepository.fetchShippingMethodByIdAndSaveResult(shippingMethodId).model
+        return result ?: other
     }
 }

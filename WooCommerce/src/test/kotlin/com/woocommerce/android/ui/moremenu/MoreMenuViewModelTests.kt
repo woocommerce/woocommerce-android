@@ -74,7 +74,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
     private val isWooPosEnabled: IsWooPosEnabled = mock {
-        on { invoke() } doReturn true
+        onBlocking { invoke() } doReturn true
     }
 
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()

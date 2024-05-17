@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,12 +14,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,6 +54,7 @@ fun OrderShippingMethodsScreen(
         viewState = viewState,
         onMethodSelected = viewModel::onMethodSelected,
         onRetry = viewModel::retry,
+        onRefresh = viewModel::refresh,
         modifier = modifier
     )
 }
@@ -57,6 +64,7 @@ fun OrderShippingMethodsScreen(
     viewState: OrderShippingMethodsViewModel.ViewState,
     onMethodSelected: (method: OrderShippingMethodsViewModel.ShippingMethodUI) -> Unit,
     onRetry: () -> Unit,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (viewState) {
@@ -75,25 +83,43 @@ fun OrderShippingMethodsScreen(
             OrderShippingMethodsList(
                 methods = viewState.methods,
                 onMethodSelected = onMethodSelected,
+                isRefreshing = viewState.isRefreshing,
+                onRefresh = onRefresh,
                 modifier = modifier
             )
         }
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun OrderShippingMethodsList(
     methods: List<OrderShippingMethodsViewModel.ShippingMethodUI>,
     onMethodSelected: (method: OrderShippingMethodsViewModel.ShippingMethodUI) -> Unit,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
-        items(methods, key = { item -> item.method.id }) { method ->
-            SelectableShippingMethod(
-                method = method,
-                modifier = Modifier.clickable { onMethodSelected(method) }
-            )
+    val pullRefreshState = rememberPullRefreshState(isRefreshing, { onRefresh() })
+    Box(Modifier.pullRefresh(pullRefreshState)) {
+        val listState = rememberLazyListState()
+        LazyColumn(
+            state = listState,
+            modifier = modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp)
+        ) {
+            items(methods, key = { item -> item.method.id }) { method ->
+                SelectableShippingMethod(
+                    method = method,
+                    modifier = Modifier.clickable { onMethodSelected(method) }
+                )
+            }
         }
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colors.primary,
+        )
     }
 }
 

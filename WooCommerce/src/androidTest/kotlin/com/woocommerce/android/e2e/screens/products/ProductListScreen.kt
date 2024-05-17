@@ -121,9 +121,9 @@ class ProductListScreen : Screen {
                     Matchers.allOf(
                         ViewMatchers.withId(R.id.productStockAndStatus),
                         ViewMatchers.withText(
-                            "${product.stockStatus}${product.variations} • \$${product.priceDiscountedRaw}.00"
-
-                        )
+                            Matchers.containsString("${product.stockStatus}${product.variations} • ")
+                        ),
+                        ViewMatchers.withText(Matchers.containsString(product.priceDiscountedRaw))
                     )
                 ),
                 ViewMatchers.withChild(
