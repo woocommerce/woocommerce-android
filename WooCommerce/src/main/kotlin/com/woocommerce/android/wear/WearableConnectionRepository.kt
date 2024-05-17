@@ -27,18 +27,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.Success
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.time.Instant
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.WCWearableStore
+import org.wordpress.android.fluxc.store.WCWearableStore.OrdersForWearablesResult.Success
 
 class WearableConnectionRepository @Inject constructor(
     private val dataClient: DataClient,
     private val selectedSite: SelectedSite,
     private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val orderStore: WCOrderStore,
+    private val wearableStore: WCWearableStore,
     private val getStats: GetWearableMyStoreStats,
     private val getOrderProducts: GetWearableOrderProducts,
     private val coroutineScope: CoroutineScope
@@ -84,7 +84,7 @@ class WearableConnectionRepository @Inject constructor(
     }
 
     fun sendOrdersData() = coroutineScope.launch {
-        val orders = orderStore.fetchOrdersForWearables(
+        val orders = wearableStore.fetchOrders(
             site = selectedSite.get(),
             shouldStoreData = false
         ).run { this as? Success }?.orders ?: emptyList()
