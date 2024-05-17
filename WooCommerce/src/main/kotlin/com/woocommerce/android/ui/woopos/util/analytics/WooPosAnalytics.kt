@@ -19,16 +19,24 @@ sealed class WooPosAnalytics : IAnalyticsEvent {
         abstract val errorDescription: String?
 
         data class Test(
-            override val name: String = "WOO_POS_TEST_ERROR",
             override val errorContext: KClass<Any>,
             override val errorType: String?,
             override val errorDescription: String?,
-        ) : Error()
+        ) : Error() {
+            override val name: String = "WOO_POS_TEST_ERROR"
+        }
     }
 
     sealed class Event : WooPosAnalytics() {
-        data class Test(
-            override val name: String = "WOO_POS_TEST_EVENT",
-        ) : Event()
+        data object Test : Event() {
+            override val name: String = "WOO_POS_TEST_EVENT"
+        }
+    }
+}
+
+internal fun IAnalyticsEvent.addProperties(additionalProperties: Map<String, String>) {
+    when (this) {
+        is WooPosAnalytics -> addProperties(additionalProperties)
+        else -> error("Cannot add properties to non-WooPosAnalytics event")
     }
 }
