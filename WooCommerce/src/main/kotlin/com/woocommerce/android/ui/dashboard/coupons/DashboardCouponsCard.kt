@@ -5,17 +5,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import com.woocommerce.android.R
 import com.woocommerce.android.model.DashboardWidget.Type.COUPONS
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
@@ -141,11 +146,46 @@ private fun DashboardCouponsList(
     state: Loaded,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier) {
-        state.coupons.forEach {
-            Text(text = it.code)
-            Divider()
+    Column(modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Header(Modifier.fillMaxWidth())
+        Spacer(modifier = Modifier.height(8.dp))
+        state.coupons.forEach { couponUiModel ->
+            CouponListItem(
+                couponUiModel = couponUiModel
+            )
         }
+    }
+}
+
+@Composable
+private fun CouponListItem(
+    couponUiModel: DashboardCouponsViewModel.CouponUiModel,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = modifier.padding(top = 8.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = couponUiModel.code,
+                style = MaterialTheme.typography.subtitle1
+            )
+            Text(
+                text = couponUiModel.uses.toString(),
+                style = MaterialTheme.typography.subtitle1
+            )
+        }
+        Text(
+            text = couponUiModel.description,
+            style = MaterialTheme.typography.body2,
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+        )
+        Spacer(modifier = Modifier)
+        Divider()
     }
 }
 
@@ -182,7 +222,15 @@ private fun Header(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
     ) {
-        Text(text = "Coupons")
-        Text(text = "Uses")
+        Text(
+            text = stringResource(id = R.string.dashboard_coupons_card_header_coupons),
+            style = MaterialTheme.typography.subtitle2,
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+        )
+        Text(
+            text = stringResource(id = R.string.dashboard_coupons_card_header_uses),
+            style = MaterialTheme.typography.subtitle2,
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+        )
     }
 }
