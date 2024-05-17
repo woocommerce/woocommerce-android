@@ -731,7 +731,7 @@ class OrderDetailFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val feeLineState = feeLine.observeAsState(emptyList())
-                if (!feeLineState.value.isNullOrEmpty()) {
+                if (feeLineState.value.isEmpty().not()) {
                     WooThemeWithBackground {
                         Column(
                             modifier = Modifier.padding(bottom = 1.dp)
