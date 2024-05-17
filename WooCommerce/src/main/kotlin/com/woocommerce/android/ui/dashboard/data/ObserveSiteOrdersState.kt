@@ -7,13 +7,13 @@ import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.observeEvents
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.flow.onStart
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCOrderStore.HasOrdersResult
 import org.wordpress.android.fluxc.store.WCOrderStore.OnOrderStatusOptionsChanged
@@ -28,23 +28,12 @@ class ObserveSiteOrdersState @Inject constructor(
 ) {
     operator fun invoke() = selectedSite.observe()
         .filterNotNull()
-        .flatMapLatest { orderStore.observeOrderCountForSite(it) }
-        .map { count -> count != 0 }
-        .distinctUntilChanged()
-        .transformLatest { hasOrders ->
-            if (!hasOrders) {
-                // This means either the store doesn't have orders, or no orders are cached yet
-                // Use other approaches to determine if the store has orders
-
-                emitAll(
-                    observeValueFromOrdersStatusOptions().map {
-                        it ?: fetchHasOrdersFromApi()
-                    }
-                )
-            } else {
-                emit(true)
-            }
-        }.map { hasOrders ->
+        .flatMapLatest { observeHasOrdersFromOrdersStatusOptions(it) }
+        .map {
+            // Fallback to fetching from API if we can't infer the value from the order status options
+            it ?: fetchHasOrdersFromApi()
+        }
+        .map { hasOrders ->
             if (hasOrders) {
                 DashboardWidget.Status.Available
             } else {
@@ -54,15 +43,17 @@ class ObserveSiteOrdersState @Inject constructor(
             }
         }
 
-    private fun observeValueFromOrdersStatusOptions() = dispatcher.observeEvents<OnOrderStatusOptionsChanged>()
-        .map {
-            orderStore.getOrderStatusOptionsForSite(selectedSite.get())
-                .filter { it.statusKey != "checkout-draft" }
-                .takeIf { it.isNotEmpty() }
-                ?.any { it.statusCount > 0 }
-        }
-        .distinctUntilChanged()
-        .flowOn(coroutineDispatchers.io)
+    private fun observeHasOrdersFromOrdersStatusOptions(site: SiteModel) =
+        dispatcher.observeEvents<OnOrderStatusOptionsChanged>()
+            .onStart { emit(OnOrderStatusOptionsChanged(0)) }
+            .map {
+                orderStore.getOrderStatusOptionsForSite(site)
+                    .filter { it.statusKey != "checkout-draft" }
+                    .takeIf { it.isNotEmpty() }
+                    ?.any { it.statusCount > 0 }
+            }
+            .distinctUntilChanged()
+            .flowOn(coroutineDispatchers.io)
 
     private suspend fun fetchHasOrdersFromApi(): Boolean {
         return orderStore.fetchHasOrders(selectedSite.get(), null).let {
