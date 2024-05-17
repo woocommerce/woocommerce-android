@@ -44,6 +44,18 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
     @Test
+    fun `when ViewModel is initialized, then initial state is loading`() {
+        // GIVEN
+        whenever(savedStateHandle.get<Long>("orderId")).thenReturn(1L)
+
+        // WHEN
+        viewModel = initViewModel()
+
+        // THEN
+        assertThat(viewModel.uiState.value).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Loading::class.java)
+    }
+
+    @Test
     fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
         // GIVEN
         val expectedAmountDue = "100.00"
