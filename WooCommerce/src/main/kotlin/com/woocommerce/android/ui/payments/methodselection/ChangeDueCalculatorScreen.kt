@@ -51,14 +51,25 @@ fun ChangeDueCalculatorScreen(
         ) {
             when (uiState) {
                 is ChangeDueCalculatorViewModel.UiState.Loading -> Text(
-                    "Loading...",
+                    stringResource(
+                        R.string.loading,
+                    ),
                     style = MaterialTheme.typography.h6
                 )
+
                 is ChangeDueCalculatorViewModel.UiState.Success -> Text(
-                    "Amount Due: ${uiState.amountDue}",
+                    stringResource(
+                        R.string.cash_payments_take_payment_title,
+                        uiState.amountDue
+                    ),
                     style = MaterialTheme.typography.body1
                 )
-                is ChangeDueCalculatorViewModel.UiState.Error -> Text("Error", style = MaterialTheme.typography.h6)
+
+                is ChangeDueCalculatorViewModel.UiState.Error -> Text(
+                    stringResource(
+                        R.string.error_generic,
+                    ), style = MaterialTheme.typography.h6
+                )
             }
         }
     }
@@ -71,6 +82,7 @@ private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String 
             R.string.cash_payments_take_payment_title,
             uiState.amountDue
         )
+
         else -> stringResource(id = R.string.cash_payments_take_payment_title)
     }
 }
