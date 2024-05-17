@@ -14,6 +14,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
@@ -59,6 +60,7 @@ class ObserveProcessingOrdersCount @Inject constructor(
         coroutineScope {
             merge(
                 wcOrderStore.observeOrderCountForSite(site)
+                    .drop(1)
                     .distinctUntilChanged(),
                 dispatcher.observeEvents<OnOrderChanged>()
                     .filter {
