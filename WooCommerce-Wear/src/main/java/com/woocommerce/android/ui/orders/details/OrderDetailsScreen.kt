@@ -51,7 +51,7 @@ fun OrderDetailsScreen(
     WooTheme {
         TimeText()
         Box(
-            contentAlignment = Alignment.TopCenter,
+            contentAlignment = Alignment.Center,
             modifier = modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
@@ -72,7 +72,11 @@ fun OrderDetailsContent(
     order: OrderItem,
     modifier: Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(bottom = 40.dp)
+    ) {
         OrderHeader(modifier, order)
         Spacer(modifier = modifier.padding(10.dp))
         OrderProductsList(order.products, modifier)
