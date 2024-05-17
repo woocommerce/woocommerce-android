@@ -9,10 +9,10 @@ class ProductsDataSourceImpl @Inject constructor(private val handler: ProductLis
     override val products: Flow<List<Product>> = handler.productsFlow
 
     override suspend fun loadProducts() {
-         handler.loadFromCacheAndFetch(searchType = ProductListHandler.SearchType.DEFAULT)
+        handler.loadFromCacheAndFetch(searchType = ProductListHandler.SearchType.DEFAULT)
     }
 
     override suspend fun loadMore() {
-         handler.loadMore()
+        handler.loadMore()
     }
 }
