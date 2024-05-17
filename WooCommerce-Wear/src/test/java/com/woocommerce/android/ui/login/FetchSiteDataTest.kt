@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.BaseUnitTest
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
+import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState
+import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Logged
+import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
+import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Waiting
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -16,7 +16,7 @@ import org.mockito.kotlin.whenever
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-class ObserveLoginRequestTest : BaseUnitTest() {
+class FetchSiteDataTest : BaseUnitTest() {
 
     private val loginRepository: LoginRepository = mock()
 
@@ -27,7 +27,7 @@ class ObserveLoginRequestTest : BaseUnitTest() {
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(true))
 
         // When
-        ObserveLoginRequest(loginRepository).invoke()
+        FetchSiteData(loginRepository).invoke()
             .onEach { events.add(it) }
             .launchIn(this)
 
@@ -42,7 +42,7 @@ class ObserveLoginRequestTest : BaseUnitTest() {
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(false))
 
         // When
-        ObserveLoginRequest(loginRepository).invoke()
+        FetchSiteData(loginRepository).invoke()
             .onEach { events.add(it) }
             .launchIn(this)
 
@@ -58,7 +58,7 @@ class ObserveLoginRequestTest : BaseUnitTest() {
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(false))
 
         // When
-        ObserveLoginRequest(loginRepository).invoke()
+        FetchSiteData(loginRepository).invoke()
             .onEach { events.add(it) }
             .launchIn(this)
 

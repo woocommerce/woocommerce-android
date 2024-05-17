@@ -7,9 +7,9 @@ import androidx.navigation.NavHostController
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.ui.NavRoutes
 import com.woocommerce.android.ui.NavRoutes.MY_STORE
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Logged
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Timeout
-import com.woocommerce.android.ui.login.ObserveLoginRequest.LoginRequestState.Waiting
+import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Logged
+import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
+import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Waiting
 import com.woocommerce.commons.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
@@ -23,7 +23,7 @@ import kotlinx.parcelize.Parcelize
 
 @HiltViewModel(assistedFactory = LoginViewModel.Factory::class)
 class LoginViewModel @AssistedInject constructor(
-    private val observeLoginRequest: ObserveLoginRequest,
+    private val fetchSiteData: FetchSiteData,
     private val phoneConnectionRepository: PhoneConnectionRepository,
     @Assisted private val navController: NavHostController,
     savedState: SavedStateHandle
@@ -50,7 +50,7 @@ class LoginViewModel @AssistedInject constructor(
     }
 
     private suspend fun observeLoginChanges() {
-        observeLoginRequest().collect { loginState ->
+        fetchSiteData().collect { loginState ->
             when (loginState) {
                 Logged -> navController.navigate(MY_STORE.route) {
                     popUpTo(NavRoutes.LOGIN.route) { inclusive = true }
