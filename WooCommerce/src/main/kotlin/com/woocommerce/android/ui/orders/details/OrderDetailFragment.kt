@@ -621,7 +621,6 @@ class OrderDetailFragment :
         receiptButtonStatus: OrderDetailViewState.ReceiptButtonStatus
     ) {
         binding.orderDetailOrderStatus.updateOrder(order)
-        binding.orderDetailShippingMethodNotice.isVisible = order.hasMultipleShippingLines
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
