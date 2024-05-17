@@ -5,7 +5,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.WooException
-import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
@@ -15,6 +14,9 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.CouponsCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -23,6 +25,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -51,6 +54,9 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     private val customDateRangeDataStore: CouponsCustomDateRangeDataStore,
     private val dateRangeFormatter: DashboardDateRangeFormatter,
     private val appPrefs: AppPrefsWrapper,
+    private val couponUtils: CouponUtils,
+    private val parameterRepository: ParameterRepository,
+    private val coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         private const val COUPONS_LIMIT = 3
@@ -63,6 +69,10 @@ class DashboardCouponsViewModel @AssistedInject constructor(
 
     private val selectedDateRange = getSelectedRange()
         .shareIn(viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
+
+    private val currencyCodeTask = async(coroutineDispatchers.io) {
+        parameterRepository.getParameters().currencyCode
+    }
 
     val dateRangeState = combine(
         selectedDateRange,
@@ -152,8 +162,9 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                                 ?: error("Coupon not found for id: ${performanceReport.couponId}")
 
                             CouponUiModel(
-                                coupon = coupon,
-                                performanceReport = performanceReport
+                                code = coupon.code.orEmpty(),
+                                uses = performanceReport.ordersCount,
+                                description = couponUtils.generateSummary(coupon, currencyCodeTask.await())
                             )
                         }
 
@@ -232,11 +243,10 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     )
 
     data class CouponUiModel(
-        private val coupon: Coupon,
-        private val performanceReport: CouponPerformanceReport
-    ) {
-        val code: String = coupon.code.orEmpty()
-    }
+        val code: String,
+        val uses: Int,
+        val description: String
+    )
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
 
