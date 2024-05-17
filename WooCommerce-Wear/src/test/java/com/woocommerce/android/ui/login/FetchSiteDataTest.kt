@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.BaseUnitTest
+import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
@@ -18,6 +19,7 @@ import kotlin.test.Test
 @ExperimentalCoroutinesApi
 class FetchSiteDataTest : BaseUnitTest() {
 
+    private val phoneRepository: PhoneConnectionRepository = mock()
     private val loginRepository: LoginRepository = mock()
 
     @Test
@@ -27,7 +29,8 @@ class FetchSiteDataTest : BaseUnitTest() {
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(true))
 
         // When
-        FetchSiteData(loginRepository).invoke()
+        FetchSiteData(phoneRepository, loginRepository)
+            .invoke()
             .onEach { events.add(it) }
             .launchIn(this)
 
@@ -42,7 +45,8 @@ class FetchSiteDataTest : BaseUnitTest() {
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(false))
 
         // When
-        FetchSiteData(loginRepository).invoke()
+        FetchSiteData(phoneRepository, loginRepository)
+            .invoke()
             .onEach { events.add(it) }
             .launchIn(this)
 
@@ -58,7 +62,8 @@ class FetchSiteDataTest : BaseUnitTest() {
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(false))
 
         // When
-        FetchSiteData(loginRepository).invoke()
+        FetchSiteData(phoneRepository, loginRepository)
+            .invoke()
             .onEach { events.add(it) }
             .launchIn(this)
 
