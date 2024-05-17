@@ -6,7 +6,7 @@ import kotlin.reflect.KClass
 sealed class WooPosAnalytics : IAnalyticsEvent {
     override val siteless: Boolean = false
 
-    val properties: Map<String, *> = emptyMap<String, String>()
+    val properties: Map<String, String> = emptyMap()
 
     sealed class Error : WooPosAnalytics() {
         abstract val errorContext: KClass<Any>

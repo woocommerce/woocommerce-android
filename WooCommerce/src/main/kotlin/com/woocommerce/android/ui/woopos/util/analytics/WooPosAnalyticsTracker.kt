@@ -21,6 +21,7 @@ class WooPosAnalyticsTracker @Inject constructor(
                 is WooPosAnalytics.Error -> {
                     analyticsTrackerWrapper.track(
                         analytics,
+                        analytics.properties,
                         analytics.errorContext.simpleName,
                         analytics.errorType,
                         analytics.errorDescription
