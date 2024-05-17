@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
+import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -109,7 +110,7 @@ class DashboardViewModel @Inject constructor(
 
         launch {
             shouldShowPrivacyBanner().let {
-                if (it) {
+                if (it && !PackageUtils.isTesting()) {
                     triggerEvent(DashboardEvent.ShowPrivacyBanner)
                 }
             }
