@@ -18,7 +18,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -76,7 +76,7 @@ fun DashboardStatsHeader(
             )
             if (isCustomRange) {
                 Icon(
-                    imageVector = Icons.Default.Edit,
+                    painter = painterResource(id = R.drawable.ic_edit_pencil),
                     contentDescription = null,
                     tint = MaterialTheme.colors.primary,
                     modifier = Modifier.size(dimensionResource(id = dimen.image_minor_40))
@@ -104,7 +104,8 @@ fun DashboardStatsHeader(
             DropdownMenu(
                 expanded = isMenuExpanded,
                 onDismissRequest = { isMenuExpanded = false },
-                modifier = Modifier.defaultMinSize(minWidth = 250.dp)
+                modifier = Modifier
+                    .defaultMinSize(minWidth = 250.dp)
                     .testTag(DashboardStatsTestTags.STATS_RANGE_DROPDOWN_MENU)
             ) {
                 DashboardViewModel.SUPPORTED_RANGES_ON_MY_STORE_TAB.forEach {

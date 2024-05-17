@@ -419,7 +419,7 @@
             app:argType="long" />
         <argument
             android:name="tempStatus"
-            android:defaultValue="null"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument

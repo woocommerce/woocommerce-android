@@ -8,7 +8,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -16,7 +16,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import kotlin.test.assertEquals
 
 private const val ORDER_TOTAL = "100.00"
 
@@ -44,9 +43,16 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
-    @Before
-    fun setup() {
-        // TODO
+    @Test
+    fun `when ViewModel is initialized, then initial state is loading`() {
+        // GIVEN
+        whenever(savedStateHandle.get<Long>("orderId")).thenReturn(1L)
+
+        // WHEN
+        viewModel = initViewModel()
+
+        // THEN
+        assertThat(viewModel.uiState.value).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Loading::class.java)
     }
 
     @Test
@@ -58,28 +64,26 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         whenever(savedStateHandle.get<Long>("orderId")).thenReturn(1L)
 
         // WHEN
-        // viewModel.fetchOrderDetails()
         viewModel = initViewModel()
 
         // THEN
         val uiState = viewModel.uiState.value
-        assert(uiState is ChangeDueCalculatorViewModel.UiState.Success)
+        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
         uiState as ChangeDueCalculatorViewModel.UiState.Success
-        assertEquals(expectedAmountDue, uiState.amountDue)
-        assertEquals(expectedChange, uiState.change)
+        assertThat(uiState.change).isEqualTo(expectedChange)
+        assertThat(uiState.amountDue).isEqualTo(expectedAmountDue)
     }
 
     @Test
     fun `given order details retrieval failure, when order details are loaded, then error state is emitted`() = runTest {
         // GIVEN
-        // whenever(repository.getOrderDetails()).thenThrow(RuntimeException("Error fetching order details"))
+        // TODO
 
         // WHEN
-        // viewModel.fetchOrderDetails()
+        // TODO
 
         // THEN
-        // val uiState = viewModel.uiState.value
-        // assert(uiState is ChangeDueCalculatorViewModel.UiState.Error)
+        // TODO
     }
 
     private fun initViewModel(): ChangeDueCalculatorViewModel {

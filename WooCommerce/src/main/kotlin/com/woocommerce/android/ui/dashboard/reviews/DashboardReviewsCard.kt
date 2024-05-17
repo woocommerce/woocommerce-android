@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard.reviews
 
 import android.widget.RatingBar
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,7 +48,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMe
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
-import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsViewModel.OpenReviewsList
 import com.woocommerce.android.ui.reviews.ProductReviewStatus
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -68,6 +68,7 @@ fun DashboardReviewsCard(
             onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.REVIEWS) },
             onFilterSelected = viewModel::onFilterSelected,
             onViewAllClicked = viewModel::onViewAllClicked,
+            onReviewClicked = viewModel::onReviewClicked,
             onContactSupportClicked = parentViewModel::onContactSupportClicked,
             onRetryClicked = viewModel::onRetryClicked,
             modifier = modifier
@@ -83,9 +84,23 @@ private fun HandleEvents(event: LiveData<MultiLiveEvent.Event>) {
     DisposableEffect(event, navController, lifecycleOwner) {
         val observer = Observer { event: MultiLiveEvent.Event ->
             when (event) {
-                OpenReviewsList -> navController.navigateSafely(
+                is DashboardReviewsViewModel.OpenReviewsList -> navController.navigateSafely(
                     DashboardFragmentDirections.actionDashboardToReviews()
                 )
+                is DashboardReviewsViewModel.OpenReviewDetail -> {
+                    // Open the review list screen first as it's responsible for handling review status changes
+                    navController.navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToReviews()
+                    )
+                    // Continue to the details screen
+                    navController.navigateSafely(
+                        directions = DashboardFragmentDirections.actionGlobalReviewDetailFragment(
+                            launchedFromNotification = false,
+                            remoteReviewId = event.review.remoteId
+                        ),
+                        skipThrottling = true
+                    )
+                }
             }
         }
 
@@ -103,6 +118,7 @@ private fun DashboardReviewsCard(
     onHideClicked: () -> Unit,
     onFilterSelected: (ProductReviewStatus) -> Unit,
     onViewAllClicked: () -> Unit,
+    onReviewClicked: (ProductReview) -> Unit,
     onContactSupportClicked: () -> Unit,
     onRetryClicked: () -> Unit,
     modifier: Modifier
@@ -132,7 +148,8 @@ private fun DashboardReviewsCard(
             is DashboardReviewsViewModel.ViewState.Success -> {
                 ProductReviewsCardContent(
                     viewState = viewState,
-                    onFilterSelected = onFilterSelected
+                    onFilterSelected = onFilterSelected,
+                    onReviewClicked = onReviewClicked
                 )
             }
 
@@ -150,6 +167,7 @@ private fun DashboardReviewsCard(
 private fun ProductReviewsCardContent(
     viewState: DashboardReviewsViewModel.ViewState.Success,
     onFilterSelected: (ProductReviewStatus) -> Unit,
+    onReviewClicked: (ProductReview) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
@@ -161,7 +179,8 @@ private fun ProductReviewsCardContent(
             viewState.reviews.forEachIndexed { index, productReview ->
                 ReviewListItem(
                     review = productReview,
-                    showDivider = index < viewState.reviews.size - 1
+                    showDivider = index < viewState.reviews.size - 1,
+                    onClicked = { onReviewClicked(productReview) }
                 )
             }
         }
@@ -172,11 +191,15 @@ private fun ProductReviewsCardContent(
 private fun ReviewListItem(
     review: ProductReview,
     showDivider: Boolean,
+    onClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClicked)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_comment),
