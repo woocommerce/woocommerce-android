@@ -35,16 +35,21 @@ class FetchOrders @Inject constructor(
     private suspend fun selectOrdersDataSource(
         selectedSite: SiteModel
     ): Flow<List<OrderEntity>> {
-        return if (networkStatus.isConnected()) {
-            flow {
+        return when {
+            networkStatus.isConnected() -> flow {
                 when (val result = ordersRepository.fetchOrders(selectedSite)) {
                     is Success -> result.orders
                     else -> emptyList()
                 }.let { emit(it) }
             }
-        } else {
-            phoneRepository.sendMessage(REQUEST_ORDERS)
-            return ordersRepository.observeOrdersDataChanges(selectedSite.siteId)
+            phoneRepository.isPhoneConnectionAvailable() -> {
+                phoneRepository.sendMessage(REQUEST_ORDERS)
+                ordersRepository.observeOrdersDataChanges(selectedSite.siteId)
+            }
+            else -> flow {
+                val orders = ordersRepository.getStoredOrders(selectedSite)
+                emit(orders)
+            }
         }
     }
 

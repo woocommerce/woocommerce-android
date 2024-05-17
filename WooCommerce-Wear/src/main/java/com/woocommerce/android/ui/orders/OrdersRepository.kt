@@ -37,6 +37,10 @@ class OrdersRepository @Inject constructor(
         shouldStoreData = true
     )
 
+    suspend fun getStoredOrders(
+        selectedSite: SiteModel
+    ) = orderStore.getOrdersForSite(selectedSite)
+
     suspend fun getOrderFromId(
         selectedSite: SiteModel,
         orderId: Long
@@ -54,6 +58,8 @@ class OrdersRepository @Inject constructor(
     suspend fun receiveOrdersDataFromPhone(data: DataMap) {
         val ordersJson = data.getString(ORDERS_JSON.value, "")
         val siteId = data.getSiteId(loginRepository.selectedSite)
+        val receivedOrders = gson.fromJson(ordersJson, Array<OrderEntity>::class.java).toList()
+        wearableStore.insertOrders(receivedOrders)
 
         ordersDataStore.edit { prefs ->
             prefs[stringPreferencesKey(generateOrdersKey(siteId))] = ordersJson
