@@ -74,6 +74,8 @@ fun DashboardCouponsCard(
         onCustomRangeClick = viewModel::onEditCustomRangeTapped,
         onViewAllClick = viewModel::onViewAllClicked,
         onHideClick = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.COUPONS) },
+        onRetryClick = viewModel::onRetryClicked,
+        onContactSupportClick = parentViewModel::onContactSupportClicked,
         modifier = modifier
     )
 }
@@ -117,6 +119,8 @@ private fun DashboardCouponsCard(
     onCustomRangeClick: () -> Unit,
     onViewAllClick: () -> Unit,
     onHideClick: () -> Unit,
+    onRetryClick: () -> Unit,
+    onContactSupportClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     WidgetCard(
@@ -136,15 +140,17 @@ private fun DashboardCouponsCard(
         modifier = modifier
     ) {
         Column {
-            DashboardDateRangeHeader(
-                rangeSelection = dateRangeState.rangeSelection,
-                dateFormatted = dateRangeState.rangeFormatted,
-                onCustomRangeClick = onCustomRangeClick,
-                onTabSelected = onTabSelected,
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (viewState !is Error) {
+                DashboardDateRangeHeader(
+                    rangeSelection = dateRangeState.rangeSelection,
+                    dateFormatted = dateRangeState.rangeFormatted,
+                    onCustomRangeClick = onCustomRangeClick,
+                    onTabSelected = onTabSelected,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-            Divider()
+                Divider()
+            }
 
             when (viewState) {
                 is Loading -> {
@@ -157,8 +163,8 @@ private fun DashboardCouponsCard(
 
                 is Error -> {
                     WidgetError(
-                        onContactSupportClicked = { /*TODO*/ },
-                        onRetryClicked = { /*TODO*/ }
+                        onContactSupportClicked = onContactSupportClick,
+                        onRetryClicked = onRetryClick
                     )
                 }
             }

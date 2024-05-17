@@ -144,6 +144,10 @@ class DashboardCouponsViewModel @AssistedInject constructor(
         triggerEvent(ViewAllCoupons)
     }
 
+    fun onRetryClicked() {
+        _refreshTrigger.tryEmit(RefreshEvent())
+    }
+
     private fun observeCouponUiModels(
         dateRange: StatsTimeRange,
         forceRefresh: Boolean
