@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.DashboardWidget.Type.COUPONS
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
@@ -28,6 +30,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
+import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.WidgetCard
@@ -37,6 +40,8 @@ import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.St
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.State.Error
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.State.Loaded
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.State.Loading
+import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.ViewAllCoupons
+import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import java.util.Date
 
@@ -67,6 +72,8 @@ fun DashboardCouponsCard(
         viewState = viewState,
         onTabSelected = viewModel::onTabSelected,
         onCustomRangeClick = viewModel::onEditCustomRangeTapped,
+        onViewAllClick = viewModel::onViewAllClicked,
+        onHideClick = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.COUPONS) },
         modifier = modifier
     )
 }
@@ -85,6 +92,12 @@ private fun HandleEvents(
                 is DashboardCouponsViewModel.OpenDatePicker -> {
                     openDatePicker(event.fromDate.time, event.toDate.time)
                 }
+
+                ViewAllCoupons -> {
+                    navController.navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToCouponListFragment()
+                    )
+                }
             }
         }
 
@@ -102,11 +115,23 @@ private fun DashboardCouponsCard(
     viewState: State,
     onTabSelected: (SelectionType) -> Unit,
     onCustomRangeClick: () -> Unit,
+    onViewAllClick: () -> Unit,
+    onHideClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     WidgetCard(
         titleResource = COUPONS.titleResource,
-        menu = DashboardWidgetMenu(emptyList()),
+        menu = DashboardWidgetMenu(
+            listOf(
+                DashboardWidget.Type.COUPONS.defaultHideMenuEntry {
+                    onHideClick()
+                }
+            )
+        ),
+        button = DashboardViewModel.DashboardWidgetAction(
+            titleResource = R.string.dashboard_coupons_view_all_button,
+            action = onViewAllClick
+        ),
         isError = viewState is Error,
         modifier = modifier
     ) {

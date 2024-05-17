@@ -429,6 +429,7 @@
 
     <string name="dashboard_coupons_card_header_coupons">Coupons</string>
     <string name="dashboard_coupons_card_header_uses">Uses</string>
+    <string name="dashboard_coupons_view_all_button">View all coupons</string>
 
     <!--
         Sign Up Flow

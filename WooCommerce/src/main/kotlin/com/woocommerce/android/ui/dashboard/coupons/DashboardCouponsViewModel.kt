@@ -140,6 +140,10 @@ class DashboardCouponsViewModel @AssistedInject constructor(
         }
     }
 
+    fun onViewAllClicked() {
+        triggerEvent(ViewAllCoupons)
+    }
+
     private fun observeCouponUiModels(
         dateRange: StatsTimeRange,
         forceRefresh: Boolean
@@ -249,6 +253,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     )
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
+    data object ViewAllCoupons : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {
