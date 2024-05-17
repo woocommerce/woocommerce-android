@@ -44,11 +44,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
-    @Before
-    fun setup() {
-        // TODO
-    }
-
     @Test
     fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
         // GIVEN
@@ -58,7 +53,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         whenever(savedStateHandle.get<Long>("orderId")).thenReturn(1L)
 
         // WHEN
-        // viewModel.fetchOrderDetails()
         viewModel = initViewModel()
 
         // THEN
@@ -72,14 +66,13 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     @Test
     fun `given order details retrieval failure, when order details are loaded, then error state is emitted`() = runTest {
         // GIVEN
-        // whenever(repository.getOrderDetails()).thenThrow(RuntimeException("Error fetching order details"))
+        // TODO
 
         // WHEN
-        // viewModel.fetchOrderDetails()
+        // TODO
 
         // THEN
-        // val uiState = viewModel.uiState.value
-        // assert(uiState is ChangeDueCalculatorViewModel.UiState.Error)
+        // TODO
     }
 
     private fun initViewModel(): ChangeDueCalculatorViewModel {
