@@ -78,7 +78,7 @@ class OrderListRepository @Inject constructor(
             if (selectedSite.exists()) {
                 val statusOptions = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
                 if (statusOptions.isNotEmpty()) {
-                    statusOptions.map { it.statusKey to it }.toMap()
+                    statusOptions.associateBy { it.statusKey }
                 } else {
                     emptyMap()
                 }
@@ -125,6 +125,10 @@ class OrderListRepository @Inject constructor(
             Result.success(Unit)
         }
     }
+
+    suspend fun hasOrdersLocally(statusFilter: Order.Status? = null) =
+        orderStore.getOrdersForSite(selectedSite.get())
+            .any { statusFilter == null || it.status == statusFilter.value }
 
     fun observeTopOrders(count: Int, isForced: Boolean, statusFilter: Order.Status? = null) = flow {
         if (!isForced) {
