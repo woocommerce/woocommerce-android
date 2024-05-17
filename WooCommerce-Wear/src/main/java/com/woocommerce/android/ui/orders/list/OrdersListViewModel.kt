@@ -38,6 +38,7 @@ class OrdersListViewModel @AssistedInject constructor(
     val viewState = _viewState.asLiveData()
 
     init {
+        _viewState.update { it.copy(isLoading = true) }
         loginRepository.selectedSiteFlow
             .filterNotNull()
             .onEach { requestOrdersData(it) }
@@ -49,7 +50,6 @@ class OrdersListViewModel @AssistedInject constructor(
     }
 
     private suspend fun requestOrdersData(selectedSite: SiteModel) {
-        _viewState.update { it.copy(isLoading = true) }
         fetchOrders(selectedSite)
             .onEach { request ->
                 when (request) {
