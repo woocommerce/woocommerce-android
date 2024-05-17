@@ -46,7 +46,7 @@ class ChangeDueCalculatorFragment : BaseFragment() {
 
     @Composable
     fun ChangeDueCalculatorScreen() {
-        val uiState by viewModel.uiState.collectAsState()
+        val uiState = viewModel.uiState.collectAsState().value
 
         Scaffold(
             topBar = {
@@ -63,21 +63,16 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                         }
                     },
                     title = {
-                        if (uiState is ChangeDueCalculatorViewModel.UiState.Success) {
-                            val successState = uiState as ChangeDueCalculatorViewModel.UiState.Success
-                            Text(
-                                text = stringResource(
+                        val titleText = when (uiState) {
+                            is ChangeDueCalculatorViewModel.UiState.Success -> {
+                                stringResource(
                                     R.string.cash_payments_take_payment_title,
-                                    successState.amountDue
-                                ),
-                                modifier = Modifier.padding(start = 16.dp)
-                            )
-                        } else {
-                            Text(
-                                text = stringResource(id = R.string.cash_payments_take_payment_title),
-                                modifier = Modifier.padding(start = 16.dp)
-                            )
+                                    uiState.amountDue
+                                )
+                            }
+                            else -> stringResource(id = R.string.cash_payments_take_payment_title)
                         }
+                        Text(text = titleText, modifier = Modifier.padding(start = 16.dp))
                     }
                 )
             }
