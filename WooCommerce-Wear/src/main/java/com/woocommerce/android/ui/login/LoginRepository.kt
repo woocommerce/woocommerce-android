@@ -18,9 +18,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WCWearableStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import org.wordpress.android.fluxc.store.WCWearableStore
 
 class LoginRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.LOGIN) private val loginDataStore: DataStore<Preferences>,

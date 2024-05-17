@@ -85,7 +85,6 @@ private fun OrderHeader(
     modifier: Modifier,
     order: OrderItem
 ) {
-
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -179,7 +178,6 @@ fun OrderProductsList(
         }
     }
 }
-
 
 @Composable
 fun OrderLoadingFailed() {

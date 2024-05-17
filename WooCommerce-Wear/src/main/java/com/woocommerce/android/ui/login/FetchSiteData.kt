@@ -6,8 +6,8 @@ import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Waiting
 import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
-import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 class FetchSiteData @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,

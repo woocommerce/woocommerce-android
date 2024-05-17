@@ -10,9 +10,9 @@ import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDER_PRODUCTS
 import com.woocommerce.commons.wear.orders.WearOrderProduct
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
-import javax.inject.Inject
 import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.model.SiteModel
+import javax.inject.Inject
 
 class FetchOrderProducts @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
