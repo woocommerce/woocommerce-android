@@ -8,6 +8,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -15,7 +16,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-import kotlin.test.assertEquals
 
 private const val ORDER_TOTAL = "100.00"
 
@@ -56,10 +56,10 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
         // THEN
         val uiState = viewModel.uiState.value
-        assert(uiState is ChangeDueCalculatorViewModel.UiState.Success)
+        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
         uiState as ChangeDueCalculatorViewModel.UiState.Success
-        assertEquals(expectedAmountDue, uiState.amountDue)
-        assertEquals(expectedChange, uiState.change)
+        assertThat(uiState.change).isEqualTo(expectedChange)
+        assertThat(uiState.amountDue).isEqualTo(expectedAmountDue)
     }
 
     @Test

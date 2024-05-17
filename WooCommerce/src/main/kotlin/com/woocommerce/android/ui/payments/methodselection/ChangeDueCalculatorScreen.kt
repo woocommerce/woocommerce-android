@@ -68,7 +68,8 @@ fun ChangeDueCalculatorScreen(
                 is ChangeDueCalculatorViewModel.UiState.Error -> Text(
                     stringResource(
                         R.string.error_generic,
-                    ), style = MaterialTheme.typography.h6
+                    ),
+                    style = MaterialTheme.typography.h6
                 )
             }
         }
