@@ -6,10 +6,12 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class WooPosAnalyticsTracker @Inject constructor(
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    private val commonPropertiesProvider: WooPosAnalyticsCommonPropertiesProvider
 ) {
     suspend fun track(analytics: WooPosAnalytics) {
         withContext(Dispatchers.IO) {
+            analytics.addProperties(commonPropertiesProvider.commonProperties)
             when (analytics) {
                 is WooPosAnalytics.Event -> {
                     analyticsTrackerWrapper.track(

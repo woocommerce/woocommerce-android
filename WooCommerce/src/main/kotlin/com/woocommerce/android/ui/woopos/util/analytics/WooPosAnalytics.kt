@@ -6,7 +6,12 @@ import kotlin.reflect.KClass
 sealed class WooPosAnalytics : IAnalyticsEvent {
     override val siteless: Boolean = false
 
-    val properties: Map<String, String> = emptyMap()
+    private val _properties: MutableMap<String, String> = mutableMapOf()
+    val properties: Map<String, String> get() = _properties.toMap()
+
+    fun addProperties(additionalProperties: Map<String, String>) {
+        _properties.putAll(additionalProperties)
+    }
 
     sealed class Error : WooPosAnalytics() {
         abstract val errorContext: KClass<Any>
