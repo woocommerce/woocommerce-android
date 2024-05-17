@@ -29,7 +29,13 @@ class CouponRepository @Inject constructor(
         pageSize: Int,
         couponIds: List<Long> = emptyList()
     ): Result<Boolean> {
-        return store.fetchCoupons(selectedSite.get(), page, pageSize, couponIds)
+        return store.fetchCoupons(
+            site = selectedSite.get(),
+            page = page,
+            pageSize = pageSize,
+            couponIds = couponIds,
+            deleteOldData = page == 1 && couponIds.isEmpty()
+        )
             .let { result ->
                 if (result.isError) {
                     analyticsTrackerWrapper.track(

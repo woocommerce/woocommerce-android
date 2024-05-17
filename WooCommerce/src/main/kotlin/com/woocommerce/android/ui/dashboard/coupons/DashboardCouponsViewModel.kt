@@ -59,7 +59,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
 
-    private val couponsReportCache: Pair<StatsTimeRange, List<CouponPerformanceReport>>? = null
+    private var couponsReportCache = mutableMapOf<StatsTimeRange, List<CouponPerformanceReport>>()
 
     private val selectedDateRange = getSelectedRange()
         .shareIn(viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
@@ -79,7 +79,9 @@ class DashboardCouponsViewModel @AssistedInject constructor(
         refreshTrigger
             .onStart { emit(RefreshEvent()) }
             .transformLatest {
-                emit(State.Loading)
+                if (it.isForced || !couponsReportCache.containsKey(rangeSelection.currentRange)) {
+                    emit(State.Loading)
+                }
                 emitAll(
                     observeCouponUiModels(rangeSelection.currentRange, it.isForced).map { result ->
                         result.fold(
@@ -169,15 +171,16 @@ class DashboardCouponsViewModel @AssistedInject constructor(
         dateRange: StatsTimeRange,
         forceRefresh: Boolean
     ) = flow {
-        if (!forceRefresh && couponsReportCache?.first == dateRange) {
-            val (_, cachedCoupons) = couponsReportCache
-            emit(Result.success(cachedCoupons))
+        if (!forceRefresh && couponsReportCache.containsKey(dateRange)) {
+            emit(Result.success(couponsReportCache.getValue(dateRange)))
         } else {
             emit(
                 couponRepository.fetchMostActiveCoupons(
                     dateRange = dateRange,
                     limit = COUPONS_LIMIT
-                )
+                ).onSuccess {
+                    couponsReportCache[dateRange] = it
+                }
             )
         }
     }
@@ -205,7 +208,11 @@ class DashboardCouponsViewModel @AssistedInject constructor(
         emitAll(
             couponRepository.observeCoupons(couponIds)
                 .map { Result.success(it) }
-                .onStart { if (!fetchCouponsBeforeEmitting) fetchCoupons() }
+                .onStart {
+                    if (!fetchCouponsBeforeEmitting) {
+                        launch { fetchCoupons() }
+                    }
+                }
         )
     }
 
