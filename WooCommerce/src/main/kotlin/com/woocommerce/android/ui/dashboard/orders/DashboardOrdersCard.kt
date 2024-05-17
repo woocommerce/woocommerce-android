@@ -14,6 +14,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +29,7 @@ import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCTag
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
+import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
@@ -36,6 +38,7 @@ import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.View
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Error
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Loading
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.OrderItem
+import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 @Composable
@@ -57,6 +60,9 @@ fun DashboardOrdersCard(
             when (state) {
                 is Content -> {
                     TopOrders(
+                        selectedFilter = state.selectedFilter,
+                        filterOptions = state.filterOptions,
+                        onFilterSelected = viewModel::onFilterSelected,
                         orders = state.orders
                     )
                 }
@@ -104,10 +110,38 @@ private fun HandleEvents(
 }
 
 @Composable
+private fun Header(
+    selectedFilter: OrderStatusOption,
+    filterOptions: List<OrderStatusOption>,
+    onFilterSelected: (OrderStatusOption) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        DashboardFilterableCardHeader(
+            title = stringResource(id = R.string.dashboard_reviews_card_header_title),
+            currentFilter = selectedFilter,
+            filterList = filterOptions,
+            onFilterSelected = onFilterSelected,
+            mapper = { it.label }
+        )
+
+        Divider()
+    }
+}
+
+@Composable
 fun TopOrders(
+    selectedFilter: OrderStatusOption,
+    filterOptions: List<OrderStatusOption>,
+    onFilterSelected: (OrderStatusOption) -> Unit,
     orders: List<OrderItem>
 ) {
     Column {
+        Header(
+            selectedFilter = selectedFilter,
+            filterOptions = filterOptions,
+            onFilterSelected = onFilterSelected
+        )
         orders.forEach { order ->
             OrderListItem(order)
 
@@ -288,6 +322,27 @@ fun PreviewTopOrders() {
                 totalPrice = "$200.00"
             )
         ),
+        selectedFilter = OrderStatusOption(
+            key = "processing",
+            label = "Processing",
+            statusCount = 1,
+            isSelected = true
+        ),
+        filterOptions = listOf(
+            OrderStatusOption(
+                key = "processing",
+                label = "Processing",
+                statusCount = 1,
+                isSelected = true
+            ),
+            OrderStatusOption(
+                key = "completed",
+                label = "Completed",
+                statusCount = 1,
+                isSelected = false
+            )
+        ),
+        onFilterSelected = {}
     )
 }
 
