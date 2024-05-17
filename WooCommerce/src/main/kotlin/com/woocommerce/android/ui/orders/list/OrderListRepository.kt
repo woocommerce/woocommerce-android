@@ -78,7 +78,7 @@ class OrderListRepository @Inject constructor(
             if (selectedSite.exists()) {
                 val statusOptions = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
                 if (statusOptions.isNotEmpty()) {
-                    statusOptions.map { it.statusKey to it }.toMap()
+                    statusOptions.associateBy { it.statusKey }
                 } else {
                     emptyMap()
                 }

@@ -34,6 +34,7 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
@@ -56,14 +57,21 @@ class DashboardOrdersViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD = 3
-        const val DEFAULT_FILTER_OPTION = "all"
+        const val DEFAULT_FILTER_OPTION_STATUS = "all"
     }
 
-    private val statusOptions = MutableSharedFlow<List<OrderStatusOption>>(replay = 1)
+    private val defaultFilterOption = OrderStatusOption(
+        key = DEFAULT_FILTER_OPTION_STATUS,
+        label = resourceProvider.getString(R.string.orderfilters_default_filter_value),
+        statusCount = 0,
+        isSelected = true
+    )
+
+    private val statusOptions = MutableStateFlow(listOf(defaultFilterOption))
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
         .onStart { emit(RefreshEvent()) }
-    private val selectedFilter = savedStateHandle.getStateFlow(viewModelScope, DEFAULT_FILTER_OPTION)
+    private val selectedFilter = savedStateHandle.getStateFlow(viewModelScope, DEFAULT_FILTER_OPTION_STATUS)
 
     val menu = DashboardWidgetMenu(
         items = listOf(
@@ -83,7 +91,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
         refreshTrigger.map { Pair(status, it) }
     }.transformLatest { (filterStatus, refresh) ->
         val statusFilter = filterStatus
-            .takeIf { it != DEFAULT_FILTER_OPTION }
+            .takeIf { it != DEFAULT_FILTER_OPTION_STATUS }
             ?.let { Order.Status.fromValue(it) }
         val hasOrders = orderListRepository.hasOrdersLocally(statusFilter)
         if (refresh.isForced || !hasOrders) {
@@ -133,17 +141,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
             statusOptions.tryEmit(
                 getOrderStatusFilterOptions()
                     .toMutableList()
-                    .apply {
-                        this.add(
-                            index = 0,
-                            element = OrderStatusOption(
-                                key = DEFAULT_FILTER_OPTION,
-                                label = resourceProvider.getString(R.string.orderfilters_default_filter_value),
-                                statusCount = 0,
-                                isSelected = true
-                            )
-                        )
-                    }
+                    .apply { add(0, defaultFilterOption) }
             )
         }
     }
