@@ -85,6 +85,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderMetaDataEntity
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.OptimisticUpdateResult
 import org.wordpress.android.fluxc.store.WCOrderStore.UpdateOrderResult.RemoteUpdateResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -109,8 +110,8 @@ class OrderDetailViewModel @Inject constructor(
     private val productDetailRepository: ProductDetailRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val analyticsTracker: AnalyticsTrackerWrapper,
-    private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
-    private val refreshShippingMethods: RefreshShippingMethods
+    private val refreshShippingMethods: RefreshShippingMethods,
+    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -181,7 +182,7 @@ class OrderDetailViewModel @Inject constructor(
                 ShippingLineDetails(
                     name = shippingLine.methodTitle,
                     shippingMethod = method,
-                    amount = shippingLine.total.toString()
+                    amount = shippingLine.total
                 )
             }
             if (shouldRefreshShippingMethods) launch { refreshShippingMethods() }
@@ -951,7 +952,7 @@ class OrderDetailViewModel @Inject constructor(
 
     data class ShippingLineDetails(
         val shippingMethod: ShippingMethod?,
-        val amount: String,
+        val amount: BigDecimal,
         val name: String
     )
 }

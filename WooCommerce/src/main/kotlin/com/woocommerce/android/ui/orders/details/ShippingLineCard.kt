@@ -31,10 +31,12 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.Header
+import java.math.BigDecimal
 
 @Composable
 fun ShippingLineSection(
     shippingLineDetails: List<OrderDetailViewModel.ShippingLineDetails>,
+    formatCurrency: (amount: BigDecimal) -> String,
     modifier: Modifier = Modifier
 ) {
     if (shippingLineDetails.isNotEmpty()) {
@@ -44,7 +46,11 @@ fun ShippingLineSection(
                 Card(
                     shape = RectangleShape
                 ) {
-                    ShippingLineDetailsCard(shippingDetails = shippingDetails)
+                    ShippingLineDetailsCard(
+                        name = shippingDetails.name,
+                        method = shippingDetails.shippingMethod?.title,
+                        amount = formatCurrency(shippingDetails.amount)
+                    )
                 }
             }
         }
@@ -53,7 +59,9 @@ fun ShippingLineSection(
 
 @Composable
 fun ShippingLineDetailsCard(
-    shippingDetails: OrderDetailViewModel.ShippingLineDetails,
+    name: String,
+    method: String?,
+    amount: String,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -71,7 +79,7 @@ fun ShippingLineDetailsCard(
     ) {
         Column(modifier = Modifier.weight(2f)) {
             Text(
-                text = shippingDetails.name,
+                text = name,
                 style = TextStyle(
                     fontWeight = FontWeight.Normal,
                     fontSize = 18.sp
@@ -80,9 +88,9 @@ fun ShippingLineDetailsCard(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            if (shippingDetails.shippingMethod != null) {
+            if (method != null) {
                 Text(
-                    text = shippingDetails.shippingMethod.title,
+                    text = method,
                     style = TextStyle(
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp,
@@ -95,7 +103,7 @@ fun ShippingLineDetailsCard(
         }
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = shippingDetails.amount,
+            text = amount,
             style = TextStyle(
                 fontWeight = FontWeight.Normal,
                 fontSize = 18.sp
@@ -111,11 +119,9 @@ fun ShippingLineDetailsCard(
 fun ShippingLineDetailsPreview() {
     WooThemeWithBackground {
         ShippingLineDetailsCard(
-            OrderDetailViewModel.ShippingLineDetails(
-                name = "UPS Shipping",
-                shippingMethod = ShippingMethod("ups","UPS"),
-                amount = "$10.00"
-            )
+            name = "UPS Shipping",
+            method = "UPS",
+            amount = "$10.00"
         )
     }
 }
