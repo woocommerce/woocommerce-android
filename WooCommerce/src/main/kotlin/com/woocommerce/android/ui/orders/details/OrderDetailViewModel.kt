@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
@@ -23,6 +24,7 @@ import com.woocommerce.android.model.OrderShipmentTracking
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.model.getNonRefundedProducts
@@ -50,6 +52,8 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsF
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
+import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -70,6 +74,10 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
@@ -100,7 +108,9 @@ class OrderDetailViewModel @Inject constructor(
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue,
+    private val refreshShippingMethods: RefreshShippingMethods
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -155,6 +165,28 @@ class OrderDetailViewModel @Inject constructor(
 
     private val _orderAttributionInfo = MutableLiveData<OrderAttributionInfo>()
     val orderAttributionInfo: LiveData<OrderAttributionInfo> = _orderAttributionInfo
+
+    private val _shippingLineList = MutableStateFlow<List<Order.ShippingLine>>(emptyList())
+    val shippingLineList =
+        combine(
+            _shippingLineList.filter { it.isNotEmpty() },
+            getShippingMethodsWithOtherValue().withIndex()
+        ) { shippingLines, shippingMethods ->
+            val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
+            var shouldRefreshShippingMethods = false
+            val result = shippingLines.map { shippingLine ->
+                val method = shippingLine.methodId?.let { shippingMethodsMap[it] }
+                shouldRefreshShippingMethods =
+                    shippingLine.methodId != null && method == null && shippingMethods.index == 0
+                ShippingLineDetails(
+                    name = shippingLine.methodTitle,
+                    shippingMethod = method,
+                    amount = shippingLine.total.toString()
+                )
+            }
+            if (shouldRefreshShippingMethods) launch { refreshShippingMethods() }
+            result
+        }.asLiveData()
 
     private var isFetchingData = false
 
@@ -578,6 +610,7 @@ class OrderDetailViewModel @Inject constructor(
                             is OptimisticUpdateResult -> {
                                 // no-op. We reload order details in any case
                             }
+
                             is RemoteUpdateResult -> {
                                 if (result.event.isError) {
                                     triggerEvent(ShowSnackbar(string.order_error_update_general))
@@ -812,6 +845,8 @@ class OrderDetailViewModel @Inject constructor(
             _shipmentTrackings.value = shipmentTracking.list
         }
 
+        _shippingLineList.value = order.shippingLines
+
         _orderAttributionInfo.value = orderDetailRepository.getOrderAttributionInfo(navArgs.orderId)
 
         val orderEligibleForInPersonPayments = viewState.orderInfo?.isPaymentCollectableWithCardReader == true
@@ -913,4 +948,10 @@ class OrderDetailViewModel @Inject constructor(
 
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
     data class TrashOrder(val orderId: Long) : MultiLiveEvent.Event()
+
+    data class ShippingLineDetails(
+        val shippingMethod: ShippingMethod?,
+        val amount: String,
+        val name: String
+    )
 }
