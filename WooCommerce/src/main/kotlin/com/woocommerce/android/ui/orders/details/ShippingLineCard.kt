@@ -40,15 +40,17 @@ fun ShippingLineSection(
     if (shippingLineDetails.isNotEmpty()) {
         Column(modifier = modifier) {
             Header(text = stringResource(id = R.string.order_detail_shipping_header))
-            shippingLineDetails.forEach { shippingDetails ->
-                Card(
-                    shape = RectangleShape
-                ) {
-                    ShippingLineDetailsCard(
-                        name = shippingDetails.name,
-                        method = shippingDetails.shippingMethod?.title,
-                        amount = formatCurrency(shippingDetails.amount)
-                    )
+            Card(shape = RectangleShape) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    shippingLineDetails.forEachIndexed { i, shippingDetails ->
+                        val itemModifier = if (i == 0) Modifier else Modifier.padding(top = 8.dp)
+                        ShippingLineDetailsCard(
+                            name = shippingDetails.name,
+                            method = shippingDetails.shippingMethod?.title,
+                            amount = formatCurrency(shippingDetails.amount),
+                            modifier = itemModifier
+                        )
+                    }
                 }
             }
         }
@@ -66,7 +68,6 @@ fun ShippingLineDetailsCard(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .padding(dimensionResource(id = R.dimen.major_100))
             .border(
                 brush = SolidColor(MaterialTheme.colors.onSurface.copy(alpha = 0.12f)),
                 width = 1.dp,
@@ -115,11 +116,12 @@ fun ShippingLineDetailsCard(
 @Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ShippingLineDetailsPreview() {
-    WooThemeWithBackground {
+    WooThemeWithBackground{
         ShippingLineDetailsCard(
             name = "UPS Shipping",
             method = "UPS",
-            amount = "$10.00"
+            amount = "$10.00",
+            modifier = Modifier.padding(16.dp)
         )
     }
 }
