@@ -48,4 +48,3 @@ class ProductSelectorViewModel @Inject constructor(
         val imageUrl: String? = null,
     )
 }
-
