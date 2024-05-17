@@ -8,11 +8,11 @@ import com.google.android.gms.wearable.DataMap
 import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.extensions.getSiteId
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
 import com.woocommerce.commons.wear.DataParameters.ORDER_ID
 import com.woocommerce.commons.wear.DataParameters.ORDER_PRODUCTS_JSON
-import com.woocommerce.commons.wear.DataParameters.SITE_ID
 import com.woocommerce.commons.wear.orders.WearOrderProduct
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -51,7 +51,7 @@ class OrdersRepository @Inject constructor(
 
     suspend fun receiveOrdersDataFromPhone(data: DataMap) {
         val ordersJson = data.getString(ORDERS_JSON.value, "")
-        val siteId = data.getLong(SITE_ID.value, loginRepository.selectedSite?.siteId ?: 0)
+        val siteId = data.getSiteId(loginRepository.selectedSite)
 
         ordersDataStore.edit { prefs ->
             prefs[stringPreferencesKey(generateOrdersKey(siteId))] = ordersJson
@@ -69,8 +69,8 @@ class OrdersRepository @Inject constructor(
 
     suspend fun receiveOrderProductsDataFromPhone(data: DataMap) {
         val orderId = data.getLong(ORDER_ID.value, 0)
-        val siteId = data.getLong(SITE_ID.value, loginRepository.selectedSite?.siteId ?: 0)
         val productsJson = data.getString(ORDER_PRODUCTS_JSON.value, "")
+        val siteId = data.getSiteId(loginRepository.selectedSite)
 
         ordersDataStore.edit { prefs ->
             val key = generateProductsKey(orderId, siteId)
@@ -82,6 +82,7 @@ class OrdersRepository @Inject constructor(
         orderId: Long,
         siteId: Long
     ) = "${ORDERS_KEY_PREFIX}:$siteId:$orderId"
+
     companion object {
         private const val ORDERS_KEY_PREFIX = "store-orders"
     }
