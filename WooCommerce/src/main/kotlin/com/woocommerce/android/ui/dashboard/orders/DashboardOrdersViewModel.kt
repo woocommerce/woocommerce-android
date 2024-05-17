@@ -82,7 +82,11 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     val viewState = selectedFilter.flatMapLatest { status ->
         refreshTrigger.map { Pair(status, it) }
     }.transformLatest { (filterStatus, refresh) ->
-        if (refresh.isForced) {
+        val statusFilter = filterStatus
+            .takeIf { it != DEFAULT_FILTER_OPTION }
+            ?.let { Order.Status.fromValue(it) }
+        val hasOrders = orderListRepository.hasOrdersLocally(statusFilter)
+        if (refresh.isForced || !hasOrders) {
             emit(ViewState.Loading)
         }
         emitAll(
@@ -90,9 +94,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                 orderListRepository.observeTopOrders(
                     count = MAX_NUMBER_OF_ORDERS_TO_DISPLAY_IN_CARD,
                     isForced = refresh.isForced,
-                    statusFilter = filterStatus
-                        .takeIf { it != DEFAULT_FILTER_OPTION }
-                        ?.let { Order.Status.fromValue(it) }
+                    statusFilter = statusFilter
                 ),
                 statusOptions
             ) { result, statusOptions ->

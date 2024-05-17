@@ -126,6 +126,10 @@ class OrderListRepository @Inject constructor(
         }
     }
 
+    suspend fun hasOrdersLocally(statusFilter: Order.Status? = null) =
+        orderStore.getOrdersForSite(selectedSite.get())
+            .any { statusFilter == null || it.status == statusFilter.value }
+
     fun observeTopOrders(count: Int, isForced: Boolean, statusFilter: Order.Status? = null) = flow {
         if (!isForced) {
             orderStore.getOrdersForSite(selectedSite.get())
