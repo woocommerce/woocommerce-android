@@ -54,7 +54,12 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     backgroundColor = colorResource(id = R.color.color_toolbar),
                     navigationIcon = {
                         IconButton(onClick = { findNavController().navigateUp() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(
+                                    R.string.back
+                                )
+                            )
                         }
                     },
                     title = {
