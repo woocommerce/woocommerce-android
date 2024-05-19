@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.coupons
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.navigation.navOptions
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
@@ -29,6 +31,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
+import com.woocommerce.android.ui.coupons.CouponListFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -37,10 +40,6 @@ import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.DateRangeState
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.State
-import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.State.Error
-import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.State.Loaded
-import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.State.Loading
-import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.ViewAllCoupons
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import java.util.Date
@@ -73,6 +72,7 @@ fun DashboardCouponsCard(
         onTabSelected = viewModel::onTabSelected,
         onCustomRangeClick = viewModel::onEditCustomRangeTapped,
         onViewAllClick = viewModel::onViewAllClicked,
+        onCouponClick = viewModel::onCouponClicked,
         onHideClick = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.COUPONS) },
         onRetryClick = viewModel::onRetryClicked,
         onContactSupportClick = parentViewModel::onContactSupportClicked,
@@ -95,9 +95,30 @@ private fun HandleEvents(
                     openDatePicker(event.fromDate.time, event.toDate.time)
                 }
 
-                ViewAllCoupons -> {
+                DashboardCouponsViewModel.ViewAllCoupons -> {
                     navController.navigateSafely(
                         DashboardFragmentDirections.actionDashboardToCouponListFragment()
+                    )
+                }
+
+                is DashboardCouponsViewModel.ViewCouponDetails -> {
+                    navController.navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToCouponListFragment()
+                    )
+                    navController.navigateSafely(
+                        directions = CouponListFragmentDirections.actionCouponListFragmentToCouponDetailsFragment(
+                            couponId = event.couponId
+                        ),
+                        skipThrottling = true,
+                        navOptions = navOptions {
+                            popUpTo(R.id.dashboard)
+                            anim {
+                                enter = R.anim.default_enter_anim
+                                exit = R.anim.default_exit_anim
+                                popEnter = R.anim.default_pop_enter_anim
+                                popExit = R.anim.default_pop_exit_anim
+                            }
+                        }
                     )
                 }
             }
@@ -118,6 +139,7 @@ private fun DashboardCouponsCard(
     onTabSelected: (SelectionType) -> Unit,
     onCustomRangeClick: () -> Unit,
     onViewAllClick: () -> Unit,
+    onCouponClick: (Long) -> Unit,
     onHideClick: () -> Unit,
     onRetryClick: () -> Unit,
     onContactSupportClick: () -> Unit,
@@ -153,15 +175,18 @@ private fun DashboardCouponsCard(
             }
 
             when (viewState) {
-                is Loading -> {
+                is State.Loading -> {
                     CouponsLoading()
                 }
 
-                is Loaded -> {
-                    DashboardCouponsList(viewState)
+                is State.Loaded -> {
+                    DashboardCouponsList(
+                        viewState,
+                        onCouponClick
+                    )
                 }
 
-                is Error -> {
+                is State.Error -> {
                     WidgetError(
                         onContactSupportClicked = onContactSupportClick,
                         onRetryClicked = onRetryClick
@@ -174,7 +199,8 @@ private fun DashboardCouponsCard(
 
 @Composable
 private fun DashboardCouponsList(
-    state: Loaded,
+    state: State.Loaded,
+    onCouponClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
@@ -182,7 +208,8 @@ private fun DashboardCouponsList(
         Spacer(modifier = Modifier.height(8.dp))
         state.coupons.forEach { couponUiModel ->
             CouponListItem(
-                couponUiModel = couponUiModel
+                couponUiModel = couponUiModel,
+                onClick = { onCouponClick(couponUiModel.id) }
             )
         }
     }
@@ -191,11 +218,14 @@ private fun DashboardCouponsList(
 @Composable
 private fun CouponListItem(
     couponUiModel: DashboardCouponsViewModel.CouponUiModel,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = modifier.padding(top = 8.dp)
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .padding(top = 8.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,

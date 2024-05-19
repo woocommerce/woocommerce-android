@@ -144,6 +144,10 @@ class DashboardCouponsViewModel @AssistedInject constructor(
         triggerEvent(ViewAllCoupons)
     }
 
+    fun onCouponClicked(couponId: Long) {
+        triggerEvent(ViewCouponDetails(couponId))
+    }
+
     fun onRetryClicked() {
         _refreshTrigger.tryEmit(RefreshEvent())
     }
@@ -170,6 +174,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                                 ?: error("Coupon not found for id: ${performanceReport.couponId}")
 
                             CouponUiModel(
+                                id = coupon.id,
                                 code = coupon.code.orEmpty(),
                                 uses = performanceReport.ordersCount,
                                 description = couponUtils.generateSummary(coupon, currencyCodeTask.await())
@@ -251,6 +256,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     )
 
     data class CouponUiModel(
+        val id: Long,
         val code: String,
         val uses: Int,
         val description: String
@@ -258,6 +264,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
     data object ViewAllCoupons : MultiLiveEvent.Event()
+    data class ViewCouponDetails(val couponId: Long) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {
