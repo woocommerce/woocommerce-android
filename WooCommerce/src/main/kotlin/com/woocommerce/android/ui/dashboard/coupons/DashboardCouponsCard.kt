@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -203,8 +204,8 @@ private fun DashboardCouponsList(
     onCouponClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-        Header(Modifier.fillMaxWidth())
+    Column(modifier.padding(vertical = 8.dp)) {
+        Header(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.height(8.dp))
         state.coupons.forEach { couponUiModel ->
             CouponListItem(
@@ -229,7 +230,9 @@ private fun CouponListItem(
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         ) {
             Text(
                 text = couponUiModel.code,
@@ -243,10 +246,11 @@ private fun CouponListItem(
         Text(
             text = couponUiModel.description,
             style = MaterialTheme.typography.body2,
-            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+            color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium),
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
         Spacer(modifier = Modifier)
-        Divider()
+        Divider(modifier = Modifier.padding(start = 16.dp))
     }
 }
 
@@ -254,8 +258,8 @@ private fun CouponListItem(
 private fun CouponsLoading(
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-        Header(Modifier.fillMaxWidth())
+    Column(modifier.padding(vertical = 8.dp)) {
+        Header(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.height(8.dp))
         repeat(3) {
             Column(
@@ -264,14 +268,20 @@ private fun CouponsLoading(
             ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
                 ) {
                     SkeletonView(width = 260.dp, height = 16.dp)
                     SkeletonView(width = 40.dp, height = 16.dp)
                 }
-                SkeletonView(width = 120.dp, height = 16.dp)
+                SkeletonView(
+                    modifier = Modifier
+                        .size(width = 120.dp, height = 16.dp)
+                        .padding(horizontal = 16.dp)
+                )
                 Spacer(modifier = Modifier)
-                Divider()
+                Divider(Modifier.padding(start = 16.dp))
             }
         }
     }
