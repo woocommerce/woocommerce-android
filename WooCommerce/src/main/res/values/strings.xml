@@ -430,6 +430,7 @@
     <string name="dashboard_coupons_card_header_coupons">Coupons</string>
     <string name="dashboard_coupons_card_header_uses">Uses</string>
     <string name="dashboard_coupons_view_all_button">View all coupons</string>
+    <string name="dashboard_coupons_card_empty_view_message">No coupon usage during this period</string>
 
     <!--
         Sign Up Flow

@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.coupons
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -16,9 +18,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -181,10 +186,14 @@ private fun DashboardCouponsCard(
                 }
 
                 is State.Loaded -> {
-                    DashboardCouponsList(
-                        viewState,
-                        onCouponClick
-                    )
+                    if (viewState.coupons.isEmpty()) {
+                        CouponsEmptyView()
+                    } else {
+                        DashboardCouponsList(
+                            state = viewState,
+                            onCouponClick = onCouponClick
+                        )
+                    }
                 }
 
                 is State.Error -> {
@@ -205,7 +214,10 @@ private fun DashboardCouponsList(
     modifier: Modifier = Modifier
 ) {
     Column(modifier.padding(vertical = 8.dp)) {
-        Header(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+        Header(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.height(8.dp))
         state.coupons.forEach { couponUiModel ->
             CouponListItem(
@@ -259,7 +271,10 @@ private fun CouponsLoading(
     modifier: Modifier = Modifier
 ) {
     Column(modifier.padding(vertical = 8.dp)) {
-        Header(Modifier.fillMaxWidth().padding(horizontal = 16.dp))
+        Header(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp))
         Spacer(modifier = Modifier.height(8.dp))
         repeat(3) {
             Column(
@@ -284,6 +299,32 @@ private fun CouponsLoading(
                 Divider(Modifier.padding(start = 16.dp))
             }
         }
+    }
+}
+
+@Composable
+private fun CouponsEmptyView(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_coupon_list),
+            contentDescription = null,
+            modifier = Modifier.sizeIn(maxWidth = 160.dp, maxHeight = 160.dp)
+                .padding(vertical = 16.dp)
+        )
+
+        Text(
+            text = stringResource(id = R.string.dashboard_coupons_card_empty_view_message),
+            style = MaterialTheme.typography.body1,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
