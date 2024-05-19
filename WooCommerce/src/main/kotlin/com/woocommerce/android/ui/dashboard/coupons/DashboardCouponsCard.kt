@@ -217,7 +217,8 @@ private fun DashboardCouponsList(
         Header(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp))
+                .padding(horizontal = 16.dp)
+        )
         Spacer(modifier = Modifier.height(8.dp))
         state.coupons.forEach { couponUiModel ->
             CouponListItem(
@@ -274,7 +275,8 @@ private fun CouponsLoading(
         Header(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp))
+                .padding(horizontal = 16.dp)
+        )
         Spacer(modifier = Modifier.height(8.dp))
         repeat(3) {
             Column(
@@ -316,7 +318,8 @@ private fun CouponsEmptyView(
         Image(
             painter = painterResource(id = R.drawable.img_empty_coupon_list),
             contentDescription = null,
-            modifier = Modifier.sizeIn(maxWidth = 160.dp, maxHeight = 160.dp)
+            modifier = Modifier
+                .sizeIn(maxWidth = 160.dp, maxHeight = 160.dp)
                 .padding(vertical = 16.dp)
         )
 
