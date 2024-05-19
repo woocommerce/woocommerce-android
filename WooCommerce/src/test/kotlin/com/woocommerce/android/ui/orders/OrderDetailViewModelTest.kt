@@ -25,6 +25,8 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
+import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
+import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -173,6 +175,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         )
     )
 
+    private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue = mock()
+    private val refreshShippingMethods: RefreshShippingMethods = mock()
+
     private fun createViewModel() {
         createViewModel(newSavedState = savedState)
     }
@@ -198,7 +203,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 orderProductMapper,
                 productDetailRepository,
                 paymentReceiptHelper,
-                analyticsTracker
+                analyticsTracker,
+                refreshShippingMethods,
+                getShippingMethodsWithOtherValue,
             )
         )
     }
