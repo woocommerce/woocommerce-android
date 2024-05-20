@@ -1,26 +1,19 @@
 package com.woocommerce.android.ui.orders.creation.shipping
 
 import com.woocommerce.android.model.ShippingMethod
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetShippingMethodsWithOtherValue @Inject constructor(
     private val shippingMethodsRepository: ShippingMethodsRepository
 ) {
-    suspend operator fun invoke(): Result<List<ShippingMethod>> {
-        val result = shippingMethodsRepository.fetchShippingMethods()
-        return when {
-            result.model != null -> {
-                val shippingMethodsWithOtherValue = result.model!!.toMutableList().also {
-                    it.add(shippingMethodsRepository.getOtherShippingMethod())
-                }
-
-                Result.success(shippingMethodsWithOtherValue)
+    operator fun invoke(): Flow<List<ShippingMethod>> {
+        return shippingMethodsRepository.observeShippingMethods()
+            .map { list ->
+                val withOtherValue = list.toMutableList()
+                    .also { it.add(shippingMethodsRepository.getOtherShippingMethod()) }
+                withOtherValue
             }
-
-            else -> {
-                val message = result.error.message ?: "error fetching shipping methods"
-                Result.failure(Exception(message))
-            }
-        }
     }
 }

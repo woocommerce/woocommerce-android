@@ -19,7 +19,7 @@ import javax.inject.Inject
 class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
     private val dashboardDataStore: DashboardDataStore,
-    observeStatsWidgetsStatus: ObserveStatsWidgetsStatus,
+    observeSiteOrdersState: ObserveSiteOrdersState,
     observeBlazeWidgetStatus: ObserveBlazeWidgetStatus,
     observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus
 ) {
@@ -28,7 +28,7 @@ class DashboardRepository @Inject constructor(
         SiteComponentEntryPoint::class.java
     ).siteCoroutineScope()
 
-    private val statsWidgetsStatus = observeStatsWidgetsStatus()
+    private val siteOrdersState = observeSiteOrdersState()
         .stateIn(
             scope = siteCoroutineScope,
             started = SharingStarted.Lazily,
@@ -51,11 +51,11 @@ class DashboardRepository @Inject constructor(
 
     val widgets = combine(
         dashboardDataStore.widgets,
-        statsWidgetsStatus,
+        siteOrdersState,
         blazeWidgetStatus,
         onboardingWidgetStatus
-    ) { widgets, statsWidgetStatus, blazeWidgetStatus, onboardingWidgetStatus ->
-        widgets.toDomainModel(statsWidgetStatus, blazeWidgetStatus, onboardingWidgetStatus)
+    ) { widgets, siteOrdersState, blazeWidgetStatus, onboardingWidgetStatus ->
+        widgets.toDomainModel(siteOrdersState, blazeWidgetStatus, onboardingWidgetStatus)
     }
 
     suspend fun updateWidgets(widgets: List<DashboardWidget>) = dashboardDataStore.updateDashboard(
@@ -77,7 +77,7 @@ class DashboardRepository @Inject constructor(
     }
 
     private fun List<DashboardWidgetDataModel>.toDomainModel(
-        statsWidgetsStatus: DashboardWidget.Status,
+        siteOrdersState: DashboardWidget.Status,
         blazeWidgetStatus: DashboardWidget.Status,
         onboardingWidgetStatus: DashboardWidget.Status
     ): List<DashboardWidget> {
@@ -88,11 +88,12 @@ class DashboardRepository @Inject constructor(
                 isSelected = widget.isAdded,
                 status = when (type) {
                     DashboardWidget.Type.STATS,
-                    DashboardWidget.Type.POPULAR_PRODUCTS -> statsWidgetsStatus
-
+                    DashboardWidget.Type.ORDERS,
+                    DashboardWidget.Type.POPULAR_PRODUCTS -> siteOrdersState
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
-
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
+
+                    else -> DashboardWidget.Status.Available
                 }
             )
         }
