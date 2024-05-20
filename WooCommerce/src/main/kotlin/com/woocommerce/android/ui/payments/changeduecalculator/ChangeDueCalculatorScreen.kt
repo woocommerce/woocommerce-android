@@ -74,7 +74,7 @@ fun ChangeDueCalculatorScreen(
                     )
 
                     OutlinedTextField(
-                        value = "cashReceived",
+                        value = uiState.amountDue,
                         onValueChange = { newValue ->
                             if (newValue.isBigDecimalFormat()) {
                                 BigDecimal.ZERO
@@ -88,7 +88,7 @@ fun ChangeDueCalculatorScreen(
                     )
 
                     TextField(
-                        value = "changeDue",
+                        value = "$0.00",
                         onValueChange = {},
                         modifier = Modifier
                             .fillMaxWidth()
@@ -133,7 +133,7 @@ private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String 
 fun ChangeDueCalculatorScreenSuccessPreview() {
     ChangeDueCalculatorScreen(
         uiState = ChangeDueCalculatorViewModel.UiState.Success(
-            amountDue = "$100.00",
+            amountDue = "$666.00",
             change = 0.00.toBigDecimal()
         ),
         onNavigateUp = {}
