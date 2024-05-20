@@ -567,14 +567,6 @@ class OrderListFragment :
                     openBarcodeScanningFragment()
                 }
 
-                is OrderListViewModel.OrderListEvent.OpenOrder -> {
-                    findNavController().navigateSafely(
-                        directions = OrderListFragmentDirections
-                            .actionOrderListFragmentToOrderDetailFragment(event.orderId, longArrayOf()),
-                        skipThrottling = true
-                    )
-                }
-
                 is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
                 is MultiLiveEvent.Event.ShowActionSnackbar -> uiMessageResolver.showActionSnack(
                     message = event.message,

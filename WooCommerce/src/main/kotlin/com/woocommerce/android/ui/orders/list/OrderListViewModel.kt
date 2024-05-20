@@ -231,10 +231,6 @@ class OrderListViewModel @Inject constructor(
                 // stay on the screen
             }
         }
-
-        if (navArgs.orderId != -1L) {
-            triggerEvent(OpenOrder(navArgs.orderId))
-        }
     }
 
     fun loadOrders() {
@@ -901,8 +897,6 @@ class OrderListViewModel @Inject constructor(
         data object RetryLoadingOrders : OrderListEvent()
 
         data object OpenOrderCreationWithSimplePaymentsMigration : OrderListEvent()
-
-        data class OpenOrder(val orderId: Long) : OrderListEvent()
     }
 
     @Parcelize

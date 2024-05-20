@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.navOptions
 import com.woocommerce.android.R
@@ -42,7 +43,7 @@ import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.View
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Loading
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.OrderItem
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
-import com.woocommerce.android.ui.orders.list.OrderListFragmentArgs
+import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 @Composable
@@ -87,6 +88,17 @@ fun DashboardOrdersCard(
 private fun HandleEvents(
     event: LiveData<Event>
 ) {
+    fun NavController.navigateToOrders() {
+        navigateSafely(
+            resId = R.id.orders,
+            navOptions = navOptions {
+                popUpTo(graph.findStartDestination().id) {
+                    saveState = true
+                }
+            }
+        )
+    }
+
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -94,24 +106,14 @@ private fun HandleEvents(
         val observer = Observer { event: Event ->
             when (event) {
                 is NavigateToOrders -> {
-                    navController.navigateSafely(
-                        resId = R.id.orders,
-                        navOptions = navOptions {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                        }
-                    )
+                    navController.navigateToOrders()
                 }
                 is NavigateToOrderDetails -> {
+                    navController.navigateToOrders()
                     navController.navigateSafely(
-                        resId = R.id.orders,
-                        navOptions = navOptions {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                        },
-                        bundle = OrderListFragmentArgs(orderId = event.orderId).toBundle()
+                        directions = OrderListFragmentDirections
+                            .actionOrderListFragmentToOrderDetailFragment(event.orderId, longArrayOf()),
+                        skipThrottling = true
                     )
                 }
             }
