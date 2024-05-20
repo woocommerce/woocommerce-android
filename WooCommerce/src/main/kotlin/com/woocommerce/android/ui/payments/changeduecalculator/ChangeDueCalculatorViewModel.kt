@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.methodselection
+package com.woocommerce.android.ui.payments.changeduecalculator
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.tools.SelectedSite

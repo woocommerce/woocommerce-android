@@ -65,7 +65,7 @@
 
     <fragment
         android:id="@+id/changeDueCalculatorFragment"
-        android:name="com.woocommerce.android.ui.payments.methodselection.ChangeDueCalculatorFragment"
+        android:name="com.woocommerce.android.ui.payments.changeduecalculator.ChangeDueCalculatorFragment"
         android:label="ChangeDueCalculatorFragment" />
 
 

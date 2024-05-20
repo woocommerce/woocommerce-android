@@ -1,14 +1,15 @@
-package com.woocommerce.android.ui.payments.methodselection
+package com.woocommerce.android.ui.payments.changeduecalculator
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.payments.methodselection.ORDER_TOTAL
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -16,8 +17,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
-
-private const val ORDER_TOTAL = "100.00"
 
 @ExperimentalCoroutinesApi
 class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
@@ -52,7 +51,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel = initViewModel()
 
         // THEN
-        assertThat(viewModel.uiState.value).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Loading::class.java)
+        Assertions.assertThat(viewModel.uiState.value).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Loading::class.java)
     }
 
     @Test
@@ -68,10 +67,10 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
         // THEN
         val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
+        Assertions.assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
         uiState as ChangeDueCalculatorViewModel.UiState.Success
-        assertThat(uiState.change).isEqualTo(expectedChange)
-        assertThat(uiState.amountDue).isEqualTo(expectedAmountDue)
+        Assertions.assertThat(uiState.change).isEqualTo(expectedChange)
+        Assertions.assertThat(uiState.amountDue).isEqualTo(expectedAmountDue)
     }
 
     @Test

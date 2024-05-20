@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.methodselection
+package com.woocommerce.android.ui.payments.changeduecalculator
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.payments.changeduecalculator.ChangeDueCalculatorViewModel
 import java.math.BigDecimal
 
 @Composable
