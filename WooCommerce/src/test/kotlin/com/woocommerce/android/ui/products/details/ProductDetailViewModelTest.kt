@@ -51,7 +51,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.MediaStore
-import org.wordpress.android.fluxc.store.SiteStore.SiteVisibility
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
@@ -78,9 +77,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private val productTagsRepository: ProductTagsRepository = mock()
     private val mediaFilesRepository: MediaFilesRepository = mock()
     private val variationRepository: VariationRepository = mock()
-    private var selectedSite: SelectedSite = mock {
-        on { get() } doReturn SiteModel()
-    }
 
     private val resources: ResourceProvider = mock {
         on(it.getString(any())).thenAnswer { i -> i.arguments[0].toString() }
@@ -131,12 +127,16 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: ProductDetailViewModel
 
+    private var selectedSite: SelectedSite = mock {
+        on { get() } doReturn SiteModel().apply { setIsPrivate(false) }
+    }
+
     private val productWithParameters = ProductDetailViewModel.ProductDetailViewState(
         productDraft = product,
         auxiliaryState = ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None,
         uploadingImageUris = emptyList(),
         showBottomSheetButton = true,
-        areImagesAvailable = false,
+        areImagesAvailable = true,
     )
 
     private val expectedCards = listOf(
@@ -1067,6 +1067,41 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given selected site is private, when product detail is opened, then images are not available`() = testBlocking {
         // GIVEN
+        val selectedSite: SelectedSite = mock {
+            on { get() } doReturn SiteModel().apply { setIsPrivate(true) }
+        }
+
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+            .toSavedStateHandle()
+        viewModel = spy(
+            ProductDetailViewModel(
+                savedState = savedState,
+                dispatchers = coroutinesTestRule.testDispatchers,
+                parameterRepository = parameterRepository,
+                productRepository = productRepository,
+                networkStatus = networkStatus,
+                currencyFormatter = currencyFormatter,
+                resources = resources,
+                productCategoriesRepository = productCategoriesRepository,
+                productTagsRepository = productTagsRepository,
+                mediaFilesRepository = mediaFilesRepository,
+                variationRepository = variationRepository,
+                mediaFileUploadHandler = mediaFileUploadHandler,
+                appPrefsWrapper = prefsWrapper,
+                addonRepository = addonRepository,
+                generateVariationCandidates = generateVariationCandidates,
+                duplicateProduct = mock(),
+                tracker = tracker,
+                selectedSite = selectedSite,
+                getProductQuantityRules = mock(),
+                getBundledProductsCount = mock(),
+                getComponentProducts = mock(),
+                productListRepository = mock(),
+                isBlazeEnabled = isBlazeEnabled,
+                isProductCurrentlyPromoted = mock(),
+                isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
+            )
+        )
         viewModel.start()
 
         // WHEN
@@ -1080,86 +1115,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `given selected site is public, when product detail is opened, then images are available`() = testBlocking {
         // GIVEN
-        selectedSite = mock {
-            on { get() } doReturn SiteModel().apply { publishedStatus = SiteVisibility.COMING_SOON.value() }
-        }
-        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
-            .toSavedStateHandle()
-        viewModel = spy(
-            ProductDetailViewModel(
-                savedState = savedState,
-                dispatchers = coroutinesTestRule.testDispatchers,
-                parameterRepository = parameterRepository,
-                productRepository = productRepository,
-                networkStatus = networkStatus,
-                currencyFormatter = currencyFormatter,
-                resources = resources,
-                productCategoriesRepository = productCategoriesRepository,
-                productTagsRepository = productTagsRepository,
-                mediaFilesRepository = mediaFilesRepository,
-                variationRepository = variationRepository,
-                mediaFileUploadHandler = mediaFileUploadHandler,
-                appPrefsWrapper = prefsWrapper,
-                addonRepository = addonRepository,
-                generateVariationCandidates = generateVariationCandidates,
-                duplicateProduct = mock(),
-                tracker = tracker,
-                selectedSite = selectedSite,
-                getProductQuantityRules = mock(),
-                getBundledProductsCount = mock(),
-                getComponentProducts = mock(),
-                productListRepository = mock(),
-                isBlazeEnabled = isBlazeEnabled,
-                isProductCurrentlyPromoted = mock(),
-                isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
-            )
-        )
-
-        // WHEN
-        var productData: ProductDetailViewModel.ProductDetailViewState? = null
-        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
-
-        // THEN
-        Assertions.assertThat(productData?.areImagesAvailable).isTrue()
-    }
-
-    @Test
-    fun `given selected site is coming soon, when product detail is opened, then images are available`() = testBlocking {
-        // GIVEN
-        selectedSite = mock {
-            on { get() } doReturn SiteModel().apply { publishedStatus = SiteVisibility.COMING_SOON.value() }
-        }
-        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
-            .toSavedStateHandle()
-        viewModel = spy(
-            ProductDetailViewModel(
-                savedState = savedState,
-                dispatchers = coroutinesTestRule.testDispatchers,
-                parameterRepository = parameterRepository,
-                productRepository = productRepository,
-                networkStatus = networkStatus,
-                currencyFormatter = currencyFormatter,
-                resources = resources,
-                productCategoriesRepository = productCategoriesRepository,
-                productTagsRepository = productTagsRepository,
-                mediaFilesRepository = mediaFilesRepository,
-                variationRepository = variationRepository,
-                mediaFileUploadHandler = mediaFileUploadHandler,
-                appPrefsWrapper = prefsWrapper,
-                addonRepository = addonRepository,
-                generateVariationCandidates = generateVariationCandidates,
-                duplicateProduct = mock(),
-                tracker = tracker,
-                selectedSite = selectedSite,
-                getProductQuantityRules = mock(),
-                getBundledProductsCount = mock(),
-                getComponentProducts = mock(),
-                productListRepository = mock(),
-                isBlazeEnabled = isBlazeEnabled,
-                isProductCurrentlyPromoted = mock(),
-                isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
-            )
-        )
         viewModel.start()
 
         // WHEN
