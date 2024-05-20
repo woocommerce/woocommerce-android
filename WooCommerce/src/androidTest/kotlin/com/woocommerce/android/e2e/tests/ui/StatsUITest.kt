@@ -98,7 +98,7 @@ class StatsUITest : TestBase() {
             .assertTopPerformers(topPerformersJSONArray, composeTestRule)
     }
 
-    @Ignore("This became flaky after combining Compose and View on the dashboard")
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eStatsTapChart() {
         DashboardScreen()
