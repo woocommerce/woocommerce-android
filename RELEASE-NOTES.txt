@@ -6,6 +6,7 @@
 18.7
 -----
 - [*] Products: Fixed a bug that caused the app to crash sometimes during screen rotation [https://github.com/woocommerce/woocommerce-android/pull/11484]
+- [*] Dashboard: Fixed an issue that caused the date range picker to be invisible when using large fonts [https://github.com/woocommerce/woocommerce-android/pull/11552]
 
 18.6
 -----
