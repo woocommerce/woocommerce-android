@@ -39,6 +39,7 @@ class OrderListRepository @Inject constructor(
 ) {
     companion object {
         private const val TAG = "OrderListRepository"
+        private const val ORDER_STATUS_TRASH = "trash"
     }
 
     private var isFetchingOrderStatusOptions = false
@@ -134,7 +135,7 @@ class OrderListRepository @Inject constructor(
         if (!isForced) {
             orderStore.getOrdersForSite(selectedSite.get())
                 .asSequence()
-                .filter { statusFilter == null || it.status == statusFilter.value }
+                .filter { it.status != ORDER_STATUS_TRASH && (statusFilter == null || it.status == statusFilter.value) }
                 .sortedByDescending { it.dateCreated }
                 .take(count)
                 .map { orderMapper.toAppModel(it) }
