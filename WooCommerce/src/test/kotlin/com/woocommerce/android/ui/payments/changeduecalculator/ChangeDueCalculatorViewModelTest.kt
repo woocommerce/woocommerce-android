@@ -9,7 +9,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -51,7 +51,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel = initViewModel()
 
         // THEN
-        Assertions.assertThat(viewModel.uiState.value).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Loading::class.java)
+        assertThat(viewModel.uiState.value).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Loading::class.java)
     }
 
     @Test
@@ -67,10 +67,10 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
         // THEN
         val uiState = viewModel.uiState.value
-        Assertions.assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
+        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
         uiState as ChangeDueCalculatorViewModel.UiState.Success
-        Assertions.assertThat(uiState.change).isEqualTo(expectedChange)
-        Assertions.assertThat(uiState.amountDue).isEqualTo(expectedAmountDue)
+        assertThat(uiState.change).isEqualTo(expectedChange)
+        assertThat(uiState.amountDue).isEqualTo(expectedAmountDue)
     }
 
     @Test
