@@ -254,6 +254,15 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                     findNavController().navigateSafely(action)
                 }
 
+                is NavigateToChangeDueCalculatorScreen -> {
+                    val action =
+                        SelectPaymentMethodFragmentDirections
+                            .actionSelectPaymentMethodFragmentToChangeDueCalculatorFragment(
+                                orderId = event.order.id
+                            )
+                    findNavController().navigate(action)
+                }
+
                 is NavigateToTapToPaySummary -> {
                     findNavController().navigateSafely(
                         SelectPaymentMethodFragmentDirections

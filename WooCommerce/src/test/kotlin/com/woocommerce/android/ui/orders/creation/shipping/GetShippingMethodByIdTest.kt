@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.orders.creation.shipping
 
-import com.woocommerce.android.network.shippingmethods.ShippingMethodsRestClient
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -14,10 +13,12 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCShippingMethod
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.store.WCShippingMethodsStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetShippingMethodByIdTest : BaseUnitTest() {
@@ -26,13 +27,13 @@ class GetShippingMethodByIdTest : BaseUnitTest() {
         on { get() } doReturn siteModel
     }
     private val resourceProvider: ResourceProvider = mock()
-    private val shippingMethodsRestClient: ShippingMethodsRestClient = mock()
+    private val shippingMethodsStore: WCShippingMethodsStore = mock()
 
     private val shippingMethodsRepository = ShippingMethodsRepository(
         selectedSite = selectedSite,
         dispatchers = coroutinesTestRule.testDispatchers,
         resourceProvider = resourceProvider,
-        shippingMethodsRestClient = shippingMethodsRestClient
+        shippingMethodsStore = shippingMethodsStore
     )
 
     val sut = GetShippingMethodById(shippingMethodsRepository)
@@ -40,14 +41,12 @@ class GetShippingMethodByIdTest : BaseUnitTest() {
     @Test
     fun `when the method is in the result, then return is the expected`() = testBlocking {
         val methodId = "id1"
-        val fetchResult = ShippingMethodsRestClient.ShippingMethodDto(
+        val fetchResult = WCShippingMethod(
             id = methodId,
             title = "title1",
         )
 
-        whenever(shippingMethodsRestClient.fetchShippingMethodsById(siteModel, methodId)).doReturn(
-            WooPayload(fetchResult)
-        )
+        whenever(shippingMethodsStore.fetchShippingMethod(siteModel, methodId)).doReturn(WooResult(fetchResult))
         whenever(resourceProvider.getString(any())).doReturn("Other")
 
         val result = sut.invoke(methodId)
@@ -62,7 +61,7 @@ class GetShippingMethodByIdTest : BaseUnitTest() {
         val result = sut.invoke(ShippingMethodsRepository.OTHER_ID)
 
         // If is other doesn't need to fetch the values from the API
-        verify(shippingMethodsRestClient, never()).fetchShippingMethodsById(
+        verify(shippingMethodsStore, never()).fetchShippingMethod(
             siteModel,
             ShippingMethodsRepository.OTHER_ID
         )
@@ -74,8 +73,7 @@ class GetShippingMethodByIdTest : BaseUnitTest() {
     fun `when fetching shipping methods fail, then return other`() = testBlocking {
         val methodId = "id8"
         val fetchResult = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
-        whenever(shippingMethodsRestClient.fetchShippingMethodsById(siteModel, methodId))
-            .doReturn(WooPayload(fetchResult))
+        whenever(shippingMethodsStore.fetchShippingMethod(siteModel, methodId)).doReturn(WooResult(fetchResult))
         whenever(resourceProvider.getString(any())).doReturn("Other")
 
         val result = sut.invoke(methodId)
