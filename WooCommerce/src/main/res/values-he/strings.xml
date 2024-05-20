@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-08 09:54:09+0000
+Translation-Revision-Date: 2024-05-15 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="product_category_clear_parent">למחוק קטגוריית אם</string>
+    <string name="product_list_fetch_error">שגיאה בהבאת המוצרים!</string>
+    <string name="order_creation_add_shipping_method_select_hint">לבחור שיטת משלוח</string>
+    <string name="order_creation_add_shipping_name_hint">משלוח</string>
+    <string name="order_creation_add_shipping_name">שם</string>
+    <string name="order_creation_add_shipping_method">שיטה</string>
+    <string name="order_creation_shipping_add">להוסיף משלוח</string>
+    <string name="order_creation_shipping_methods_error">שגיאה בהבאת שיטות המשלוח שלך. יש לנסות שוב</string>
+    <string name="order_creation_shipping_methods_title">שיטה</string>
+    <string name="custom_amounts_percentage_invalid_value">ערך לא תקין</string>
+    <string name="my_store_widget_onboarding_title">הגדרת חנות</string>
+    <string name="my_store_edit_screen_widgets">להתאים אישית</string>
     <string name="blaze_campaign_show_all_button">להציג את כל הקמפיינים</string>
     <string name="blaze_campaign_suggested_product_caption">מוצר מומלץ</string>
     <string name="dynamic_dashboard_widget_error_description">יש לנסות לטעון את הכרטיס שוב. אם הבעיה נמשכת, ניתן &lt;a href=\"support\"&gt;ליצור קשר עם התמיכה&lt;/a&gt;.</string>
@@ -21,9 +33,7 @@ Language: he_IL
     <string name="analytics_session_no_available">הנתונים של ההפעלה לא זמינים</string>
     <string name="my_store_widget_unavailable">לא זמין</string>
     <string name="my_store_widget_stats_title">ביצועים</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">להציג את כל הנתונים האנליטיים של החנות</string>
     <string name="dashboard_stats_custom_range_label">התאמה אישית</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">הפריט נבחר</string>
     <string name="dashboard_stats_edit_granularity_content_description">הכפתור \'לשנות טווח תאריכים\'</string>
     <string name="images_unavailable_notice">התמונות לא זמינות מאחר שהאתר שלך מסומן כ\'פרטי\'. אפשר לשנות את ההגדרה הזאת על ידי מעבר למצב \'בקרוב\'.\n</string>
     <string name="card_selection_control">בחירת כרטיס לניתוח אנליטי</string>
@@ -64,13 +74,7 @@ Language: he_IL
     <string name="analytics_bundles_list_header_title">חבילות</string>
     <string name="analytics_bundles_list_items_sold">חבילות שנמכרו</string>
     <string name="my_store_widget_blaze_title">קמפיינים של Blaze</string>
-    <string name="my_store_widget_top_products_title">מוצרים מובילים</string>
-    <string name="my_store_widget_onboarding_title">הצטרפות</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">הצטרפות לחנות</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">קמפיינים של Blaze</string>
-    <string name="my_store_edit_screen_widget_top_performers">מוצרים עם ביצועים מובילים</string>
-    <string name="my_store_edit_screen_widget_stats">נתונים סטטיסטיים של החנות</string>
-    <string name="my_store_edit_screen_widgets">לערוך מקטעים בחנות שלי</string>
+    <string name="my_store_widget_top_products_title">הביצועים הטובים ביותר</string>
     <string name="product_list_unsaved_product_unselected_message">האם ברצונך למחוק את השינויים שביצעת במוצר?</string>
     <string name="product_list_unsaved_product_unselected_title">הפעולה הזאת תמחק את השינויים שבוצעו ב\'%s\'</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">האפשרות של הנתונים הסטטיסטיים לא תומכת בתצוגת הנתונים של מבקרים והמרות עבור טווחי תאריכים שרירותיים.\n\nעם זאת, אפשר להקיש על ערך בגרף כדי לראות מבקרים והמרות בטווח תאריכים ספציפי.</string>
@@ -103,6 +107,7 @@ Language: he_IL
     <string name="my_store_custom_range_granularity_label">תדירות %s</string>
     <string name="login_site_picker_add_a_store">לחבר חנות נוספת</string>
     <string name="login_prologue_start_new_store">רוצה לפתוח חנות חדשה?</string>
+    <string name="analytics_section_see_all">להציג את כל הנתונים האנליטיים של החנות</string>
     <string name="product_update_stock_status_dialog_subtitle">רק רגע…</string>
     <string name="product_update_stock_status_dialog_title">מעדכן את מצבי המלאי</string>
     <string name="product_update_stock_status_error">משהו השתבש. יש לנסות שוב.</string>
@@ -209,9 +214,9 @@ Language: he_IL
     <string name="blaze_campaign_edit_ad_destination_product_url_option">כתובת ה-URL של המוצר</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">כתובת URL ליעד</string>
     <string name="blaze_campaign_creation_location_search_message">יש להתחיל בהקלדת מדינה או עיר כדי להציג את האפשרויות הזמינות</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">לחיצה על \'לשלוח את הקמפיין\' נחשבת הסכמה מצדך ל&lt;a href=\'termsOfService\'&gt;&lt;u&gt;תנאי השימוש&lt;/u&gt;&lt;/a&gt; &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;ולמדיניות הפרסום&lt;/u&gt;&lt;/a&gt; שלנו ומאשרת לנו לחייב את אמצעי התשלום שלך בהתאם לתקציב ולמשך הזמן שבחרת. ניתן &lt;a href=\'learnMore\'&gt;&lt;u&gt;לקבל מידע נוסף&lt;/u&gt;&lt;/a&gt; לגבי האופן שבו תקציבים ותשלומים עובדים בפוסטים מקודמים.</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">פרמטרים של כתובת URL</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">יש להזין באופן ידני</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">לחיצה על \'לשלוח את הקמפיין\' נחשבת הסכמה מצדך ל&lt;a href=\'termsOfService\'&gt;&lt;u&gt;תנאי השימוש&lt;/u&gt;&lt;/a&gt; &lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;ולמדיניות הפרסום&lt;/u&gt;&lt;/a&gt; שלנו ומאשרת לנו לחייב את אמצעי התשלום שלך בהתאם לתקציב ולמשך הזמן שבחרת. ניתן &lt;a href=\'learnMore\'&gt;&lt;u&gt;לקבל מידע נוסף&lt;/u&gt;&lt;/a&gt; לגבי האופן שבו תקציבים ותשלומים עובדים בפוסטים מקודמים.</string>
     <string name="blaze_campaign_creation_location_search_failed_message">החיפוש נכשל.\nיש לנסות שוב</string>
     <string name="blaze_campaign_payment_summary_submit_campaign">שליחת קמפיין</string>
     <string name="blaze_campaign_payment_summary_total_budget">סכום כולל</string>
@@ -235,7 +240,6 @@ Language: he_IL
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">מתחיל במועד</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">⁦%1$s⁩ ימים</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_title">להגדיר מיקום</string>
-    <string name="blaze_campaign_budget_impressions_info">הצפיות מייצגות את התדירות שבה הפרסומת שלך מוצגת ללקוחות פוטנציאליים.\n\n\n        אומנם לא ניתן להבטיח שהמספרים יהיו מדויקים עקב שינויים בתעבורה המקוונת והתנהגות המשתמשים, אך אנחנו שואפים להתאים כמה שאפשר את מספר הצפיות במודעה שלך בפועל למספר היעד שהצבת.\n\n\n        חשוב לזכור, הצפיות משקפות את הנראות של הפרסומת, לא את הפעולה שבוצעה על ידי הצופים.</string>
     <string name="blaze_campaign_budget_impressions_done_button">סיימתי</string>
     <string name="blaze_campaign_budget_impressions_title">צפיות</string>
     <string name="blaze_campaign_budget_update_button">לעדכן</string>
@@ -246,6 +250,7 @@ Language: he_IL
     <string name="blaze_campaign_budget_days_duration">ל-⁦%1$s⁩ ימים</string>
     <string name="blaze_campaign_budget_total_spend">הוצאה כוללת</string>
     <string name="blaze_campaign_budget_subtitle">כמה ברצונך להוציא על קמפיין הקידום של המוצר שלך?</string>
+    <string name="blaze_campaign_budget_impressions_info">הצפיות מייצגות את התדירות שבה הפרסומת שלך מוצגת ללקוחות פוטנציאליים.\n\n\n        אומנם לא ניתן להבטיח שהמספרים יהיו מדויקים עקב שינויים בתעבורה המקוונת והתנהגות המשתמשים, אך אנחנו שואפים להתאים כמה שאפשר את מספר הצפיות במודעה שלך בפועל למספר היעד שהצבת.\n\n\n        חשוב לזכור, הצפיות משקפות את הנראות של הפרסומת, לא את הפעולה שבוצעה על ידי הצופים.</string>
     <string name="blaze_campaign_budget_toolbar_title">להגדיר את תקציב שלך</string>
     <string name="blaze_campaign_preview_target_default_value">הכול</string>
     <string name="blaze_campaign_preview_days_duration">⁦%1$s⁩ ימים מ-⁦%2$s⁩</string>
@@ -484,14 +489,12 @@ Language: he_IL
     <string name="card_reader_tap_to_pay_about_how_works_4">4. הלקוח יחזיק את הכרטיס אופקית מעל החלק העליון של הטלפון מעל הסימן של \'ללא מגע\'.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. יש לתת ללקוח את הטלפון.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. יש להקיש על \"Collect Payment\" ולבחור באפשרות \"Tap To Pay\".</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">לקבל תשלום</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">ליצור הזמנה</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. ⁦%1$s⁩ או ⁦%2$s⁩</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">איך זה עובד</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">מידע נוסף על קוראי כרטיסים</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">כדי לקבל תשלומים מעל מגבלה זו, כדאי לשקול לרכוש קורא כרטיסים שניתן להזין בו קוד PIN.</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_2">אנחנו לא מציעים תמיכה בהזנת קוד PIN במסגרת השימוש ב-Tap To Pay במכשירי Android.</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_1">ב⁦%1$s⁩, כרטיסים מסוימים מחייבים הזנת קוד PIN כדי לבצע עסקאות ללא מגע בסכום הגדול מ-⁦%2$s⁩.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. יש ליצור הזמנה</string>
     <string name="card_reader_tap_to_pay_about_important_info_title">מידע חשוב</string>
     <string name="card_reader_tap_to_pay_about_description">שירות Tap To Pay מאפשר לקבל את כל סוגי התשלומים ללא מגע - מכרטיסי חיוב וכרטיסי אשראי פיזיים ועד ארנקים דיגיטליים - ללא צורך ברכישת קורא כרטיסים פיזי.</string>
     <string name="card_reader_tap_to_pay_about_header">מה זה Tap To Pay?</string>
@@ -1598,6 +1601,7 @@ Language: he_IL
     <string name="order_creation_payment_fee">עמלות</string>
     <string name="order_creation_customer_details">פרטי לקוח</string>
     <string name="order_creation_add_fee">להוסיף עמלה</string>
+    <string name="order_creation_add_shipping_amount">סכום</string>
     <string name="order_creation_customer_note_edit_content_description">לערוך את הערות הלקוח</string>
     <string name="order_creation_customer_edit_content_description">לערוך את פרטי הלקוח</string>
     <string name="order_creation_status_edit_content_description">לערוך את סטטוס ההזמנה</string>
@@ -2336,9 +2340,6 @@ Language: he_IL
     <string name="upsells_label">שדרוגי מכירות</string>
     <string name="product_detail_linked_products">מוצרים מקושרים</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">ליצור קשר</string>
-    <string name="my_store_stats_availability_description">עליך לוודא שמותקנת באתר שלך הגרסה האחרונה של WooCommerce ושהתוסף של WooCommerce Admin מופעל.\n\nעדיין דרושה לך עזרה? %1$s</string>
-    <string name="my_store_stats_availability_title">לא הצלחנו להפעיל את \nהניתוח הסטטיסטי של החנות</string>
     <string name="login_get_link_by_email">לקבל קישור להתחברות באימייל</string>
     <string name="email_not_registered_wpcom">מצטערים, לא הצלחנו לאתר את חשבון ה-WordPress.com שמקושר לכתובת האימייל הזו.</string>
     <string name="settings_enable_product_adding_teaser_title">יצירת מוצרים</string>
@@ -2584,8 +2585,6 @@ Language: he_IL
     <string name="settings_app_theme_title">מראה</string>
     <string name="product_short_description_empty">סיכום קצר לגבי המוצר</string>
     <string name="product_short_description">תיאור קצר</string>
-    <string name="my_store_stats_reverted_title">לעדכן כדי להמשיך להציג את הנתונים הסטטיסטיים שלך</string>
-    <string name="my_store_stats_reverted_message">פרסמנו שיפורים לכלי הניתוח שלנו. יש לעדכן את WooCommerce לגרסת 4.0 ומעלה או להתקין את התוסף WooCommerce Admin כדי להמשיך להציג את הנתונים הסטטיסטיים שלך אחרי 1 בספטמבר 2020.</string>
     <string name="product_pricing_update_sale_price_error">מחיר המבצע חייב להיות פחות מהמחיר הרגיל</string>
     <string name="product_schedule_remove_end_date_link_label">להסיר את תאריך הסיום</string>
     <string name="product_shipping_empty">להוסיף משלוח</string>
@@ -3419,7 +3418,6 @@ Language: he_IL
     <string name="orderdetail_note_private">פרטי</string>
     <string name="connect_site">לחבר את האתר</string>
     <string name="dashboard_top_performers_empty">אין פעילות בפרק זמן זה</string>
-    <string name="dashboard_top_performers_title">הביצועים הטובים ביותר</string>
     <string name="dashboard_top_performers_total_orders">סך כל ההזמנות: %s</string>
     <string name="order_error_fetch_notes_generic">שגיאה בעת הבאת הפתקים</string>
     <string name="app_name">WooCommerce</string>
