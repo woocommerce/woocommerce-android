@@ -177,8 +177,8 @@ class OrderDetailViewModel @Inject constructor(
             var shouldRefreshShippingMethods = false
             val result = shippingLines.map { shippingLine ->
                 val method = shippingLine.methodId?.let { shippingMethodsMap[it] }
-                shouldRefreshShippingMethods =
-                    shippingLine.methodId != null && method == null && shippingMethods.index == 0
+                shouldRefreshShippingMethods = shouldRefreshShippingMethods
+                    || shippingLine.methodId.isNullOrEmpty().not() && method == null && shippingMethods.index == 0
                 ShippingLineDetails(
                     name = shippingLine.methodTitle,
                     shippingMethod = method,
