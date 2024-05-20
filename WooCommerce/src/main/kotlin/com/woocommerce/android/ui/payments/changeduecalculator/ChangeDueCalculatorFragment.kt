@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
-import com.woocommerce.android.ui.payments.changeduecalculator.ChangeDueCalculatorScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
