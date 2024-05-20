@@ -32,7 +32,7 @@ class ProductSelectorViewModel @Inject constructor(
         }
     }
 
-    fun onLoadMore() {
+    fun onEndOfProductsGridReached() {
         launch {
             productsDataSource.loadMore()
         }

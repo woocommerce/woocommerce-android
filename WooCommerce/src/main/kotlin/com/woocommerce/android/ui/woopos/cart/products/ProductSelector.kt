@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.filter
 @Composable
 fun ProductSelector(
     productsState: StateFlow<ProductSelectorViewModel.ViewState>,
-    onLoadMore: () -> Unit,
+    onEndOfProductsGridReached: () -> Unit,
 ) {
     ConstraintLayout(
         modifier = Modifier.fillMaxWidth(0.7f)
@@ -49,7 +49,7 @@ fun ProductSelector(
             }
         }
         InfiniteGridHandler(gridState) {
-            onLoadMore()
+            onEndOfProductsGridReached()
         }
     }
 }
@@ -68,7 +68,7 @@ fun ProductItem(product: ProductSelectorViewModel.ListItem) {
 }
 
 @Composable
-fun InfiniteGridHandler(gridState: LazyGridState, buffer: Int = 1, onLoadMore: () -> Unit) {
+fun InfiniteGridHandler(gridState: LazyGridState, buffer: Int = 1, onEndOfProductsGridReached: () -> Unit) {
     val loadMore = remember {
         derivedStateOf {
             val layoutInfo = gridState.layoutInfo
@@ -84,7 +84,7 @@ fun InfiniteGridHandler(gridState: LazyGridState, buffer: Int = 1, onLoadMore: (
             .distinctUntilChanged()
             .filter { it }
             .collect {
-                onLoadMore()
+                onEndOfProductsGridReached()
             }
     }
 }
@@ -101,5 +101,5 @@ fun ProductSelectorPreview() {
             )
         )
     )
-    ProductSelector(productsState = state, onLoadMore = {})
+    ProductSelector(productsState = state, onEndOfProductsGridReached = {})
 }
