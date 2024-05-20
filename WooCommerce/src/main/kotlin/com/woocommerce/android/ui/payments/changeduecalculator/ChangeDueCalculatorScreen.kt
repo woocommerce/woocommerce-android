@@ -83,7 +83,7 @@ fun ChangeDueCalculatorScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
-                        label = { Text("Cash Received") },
+                        label = { Text(stringResource(R.string.cash_payments_cash_received)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     )
 
@@ -93,7 +93,7 @@ fun ChangeDueCalculatorScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp),
-                        label = { Text("Change Due") },
+                        label = { Text(stringResource(R.string.cash_payments_change_due)) },
                         enabled = false,
                         readOnly = true
                     )
