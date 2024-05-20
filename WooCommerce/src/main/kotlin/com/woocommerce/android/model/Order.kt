@@ -66,6 +66,10 @@ data class Order(
     @IgnoredOnParcel
     val isRefundAvailable = !isOrderFullyRefunded && quantityOfItemsWhichPossibleToRefund > 0 && isOrderPaid
 
+    @IgnoredOnParcel
+    val billingName
+        get() = getBillingName("")
+
     val hasMultipleShippingLines: Boolean
         get() = shippingLines.size > 1
 

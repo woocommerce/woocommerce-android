@@ -390,6 +390,7 @@
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
+    <string name="dashboard_action_view_all_orders">View all orders</string>
 
     <string name="my_store_stats_plugin_inactive_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_stats_plugin_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.</string>
@@ -410,6 +411,8 @@
     <string name="my_store_widget_top_products_title">Top performers</string>
     <string name="my_store_widget_blaze_title">Blaze campaigns</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
+    <string name="my_store_widget_orders_title">Most recent orders</string>
+    <string name="my_store_widget_reviews_title">Most recent reviews</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>
@@ -419,6 +422,9 @@
     <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
 
     <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">No reviews found</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">No reviews match the selected filter, please try changing the filter</string>
+    <string name="dashboard_reviews_card_view_all_button">View all reviews</string>
     <!--
         Sign Up Flow
     -->
@@ -564,6 +570,11 @@
     <string name="simple_payments_cash_dlg_button">Mark as paid</string>
     <string name="simple_payments_share_payment_link">Share Payment Link</string>
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
+
+    <!--
+     Cash Payments
+-->
+    <string name="cash_payments_take_payment_title">Take payment (%s)</string>
 
     <!--
          Custom Amounts

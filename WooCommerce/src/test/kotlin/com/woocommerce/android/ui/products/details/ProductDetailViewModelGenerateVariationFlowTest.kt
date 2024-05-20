@@ -10,6 +10,7 @@ import com.woocommerce.android.media.ProductImagesServiceWrapper
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
@@ -40,6 +41,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -78,6 +80,10 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
     private val product = ProductTestUtils.generateProduct(PRODUCT_REMOTE_ID)
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
 
+    private var selectedSite: SelectedSite = mock {
+        on { get() } doReturn SiteModel().apply { setIsPrivate(false) }
+    }
+
     private lateinit var viewModel: ProductDetailViewModel
 
     @Before
@@ -111,7 +117,7 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                 generateVariationCandidates = generateVariationCandidates,
                 duplicateProduct = mock(),
                 tracker = tracker,
-                selectedSite = mock(),
+                selectedSite = selectedSite,
                 getProductQuantityRules = mock(),
                 getBundledProductsCount = mock(),
                 getComponentProducts = mock(),

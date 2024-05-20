@@ -22,7 +22,7 @@ import org.wordpress.android.fluxc.model.order.ShippingLine as WCShippingLine
 
 class OrderMapper @Inject constructor(
     private val getLocations: GetLocations,
-    private val dateUtils: DateUtils
+    private val dateUtils: DateUtils,
 ) {
     fun toAppModel(databaseEntity: OrderEntity): Order {
         val metaDataList = databaseEntity.getMetaDataList()

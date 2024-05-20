@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -229,23 +230,34 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onCashPaymentClicked() {
+        if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled()) {
+            handleCashPaymentClick()
+        } else {
+            launch {
+                trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
+                val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
+                    SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
+                    ORDER, ORDER_CREATION -> R.string.existing_order_cash_dlg_message
+                }
+                triggerEvent(
+                    MultiLiveEvent.Event.ShowDialog(
+                        titleId = R.string.simple_payments_cash_dlg_title,
+                        messageId = messageIdForPaymentType,
+                        positiveButtonId = R.string.simple_payments_cash_dlg_button,
+                        positiveBtnAction = { _, _ ->
+                            onCashPaymentConfirmed()
+                        },
+                        negativeButtonId = R.string.cancel
+                    )
+                )
+            }
+        }
+    }
+
+    private fun handleCashPaymentClick() {
         launch {
             trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
-            val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
-                SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
-                ORDER, ORDER_CREATION -> R.string.existing_order_cash_dlg_message
-            }
-            triggerEvent(
-                MultiLiveEvent.Event.ShowDialog(
-                    titleId = R.string.simple_payments_cash_dlg_title,
-                    messageId = messageIdForPaymentType,
-                    positiveButtonId = R.string.simple_payments_cash_dlg_button,
-                    positiveBtnAction = { _, _ ->
-                        onCashPaymentConfirmed()
-                    },
-                    negativeButtonId = R.string.cancel
-                )
-            )
+            triggerEvent(NavigateToChangeDueCalculatorScreen(order.first()))
         }
     }
 

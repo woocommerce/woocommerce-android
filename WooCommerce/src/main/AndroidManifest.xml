@@ -160,7 +160,9 @@
             android:name="com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity"
             android:screenOrientation="unspecified"
             tools:replace="android:screenOrientation" />
-        <activity android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity" />
+        <activity
+            android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
+            android:exported="false" />
 
         <!-- Stats today app widget -->
         <meta-data
