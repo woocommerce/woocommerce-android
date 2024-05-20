@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.changeduecalculator
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -79,13 +80,19 @@ fun ChangeDueCalculatorScreen(
                                 BigDecimal.ZERO
                             }
                         },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
                         label = { Text("Cash Received") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     )
 
                     TextField(
                         value = "changeDue",
                         onValueChange = {},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp),
                         label = { Text("Change Due") },
                         enabled = false,
                         readOnly = true
