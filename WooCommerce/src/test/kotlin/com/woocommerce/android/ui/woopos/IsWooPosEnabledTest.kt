@@ -87,6 +87,13 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given woo payments setup not completed, then return false`() = testBlocking {
+        val result = buildPaymentAccountResult(status = WCPaymentAccountResult.WCPaymentAccountStatus.NO_ACCOUNT)
+        whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
+        assertFalse(sut())
+    }
+
+    @Test
     fun `given big enough screen, woo payments enabled, USD currency and store in the US, then return true`() = testBlocking {
         val result = buildPaymentAccountResult(defaultCurrency = "USD", countryCode = "US", status = COMPLETE)
         whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
