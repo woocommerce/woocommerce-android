@@ -26,7 +26,6 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
-import com.woocommerce.android.ui.orders.OrderTestUtils.generateOrderWithMultipleShippingLines
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
@@ -2304,7 +2303,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
             doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
-            doReturn(flowOf(shippingMethods,shippingMethods)).whenever(getShippingMethodsWithOtherValue).invoke()
+            doReturn(flowOf(shippingMethods, shippingMethods)).whenever(getShippingMethodsWithOtherValue).invoke()
 
             createViewModel()
 
