@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-07 16:54:07+0000
+Translation-Revision-Date: 2024-05-14 09:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="product_category_clear_parent">مسح التصنيف الأصلي </string>
+    <string name="product_list_fetch_error">خطأ في أثناء إحضار المنتجات!</string>
+    <string name="order_creation_add_shipping_method_select_hint">تحديد طريقة شحن</string>
+    <string name="order_creation_add_shipping_name_hint">الشحن</string>
+    <string name="order_creation_add_shipping_name">الاسم</string>
+    <string name="order_creation_add_shipping_method">الطريقة</string>
+    <string name="order_creation_shipping_add">إضافة الشحن</string>
+    <string name="order_creation_shipping_methods_error">خطأ في أثناء إحضار طرق الشحن الخاصة بك. يرجى المحاولة مجددًا</string>
+    <string name="order_creation_shipping_methods_title">الطريقة</string>
+    <string name="custom_amounts_percentage_invalid_value">قيمة غير صالحة</string>
+    <string name="my_store_widget_onboarding_title">إعداد المتجر</string>
+    <string name="my_store_edit_screen_widgets">تخصيص</string>
     <string name="blaze_campaign_show_all_button">مشاهدة كل الحملات</string>
     <string name="blaze_campaign_suggested_product_caption">المنتج المقترح</string>
     <string name="dynamic_dashboard_widget_error_description">جرِّب إعادة تحميل هذه البطاقة. إذا استمرت المشكلة، فيرجى &lt;a href=\"support\"&gt;الاتصال بالدعم&lt;/a&gt;.</string>
@@ -21,9 +33,7 @@ Language: ar
     <string name="analytics_session_no_available">بيانات الجلسة غير متاحة</string>
     <string name="my_store_widget_unavailable">غير متاح</string>
     <string name="my_store_widget_stats_title">الأداء</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">مشاهدة كل تحليلات المتجر</string>
     <string name="dashboard_stats_custom_range_label">مخصص</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">تم تحديد العنصر</string>
     <string name="dashboard_stats_edit_granularity_content_description">تغيير زر نطاق التاريخ</string>
     <string name="images_unavailable_notice">الصور غير متاحة نظرًا إلى وسم موقعك بأنه \"خاص\". يمكنك تغيير ذلك عن طريق التبديل إلى وضع \"قريبًا\".\n</string>
     <string name="card_selection_control">تحديد البطاقة التحليلية</string>
@@ -64,13 +74,7 @@ Language: ar
     <string name="analytics_bundles_list_header_title">الحزم</string>
     <string name="analytics_bundles_list_items_sold">الحزم المبيعة</string>
     <string name="my_store_widget_blaze_title">حملات Blaze</string>
-    <string name="my_store_widget_top_products_title">أهم المنتجات</string>
-    <string name="my_store_widget_onboarding_title">الإعداد</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">إعداد المتجر</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">حملات Blaze</string>
-    <string name="my_store_edit_screen_widget_top_performers">أفضل المنتجات أداءً</string>
-    <string name="my_store_edit_screen_widget_stats">إحصاءات المتجر</string>
-    <string name="my_store_edit_screen_widgets">تحرير أقسام متجري</string>
+    <string name="my_store_widget_top_products_title">أهم المؤدِّين</string>
     <string name="product_list_unsaved_product_unselected_message">هل تريد بالتأكيد تجاهل التغييرات التي أجريتها على هذا المنتج؟</string>
     <string name="product_list_unsaved_product_unselected_title">أنت على وشك التخلص من التغييرات على %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">لا تدعم ميزة الإحصاءات عرض بيانات الزائرين والتحويلات لنطاقات زمنية عشوائية.\n\nومع ذلك، يمكنك النقر على قيمة موجودة على الرسم البياني لرؤية الزائرين والتحويلات لذلك النطاق المحدد.</string>
@@ -94,6 +98,7 @@ Language: ar
     <string name="domain_picker_suggestions_title">اقتراحات</string>
     <string name="domain_picker_hint">كتابة نطاق</string>
     <string name="domain_picker_title">اختيار نطاق</string>
+    <string name="analytics_section_see_all">مشاهدة كل تحليلات المتجر</string>
     <string name="my_store_custom_range_granularity_year">سنويًا</string>
     <string name="my_store_custom_range_granularity_month">شهريًا</string>
     <string name="my_store_custom_range_granularity_week">أسبوعيًا</string>
@@ -484,9 +489,7 @@ Language: ar
     <string name="card_reader_tap_to_pay_about_how_works_4">4. يحمل عميلك بطاقته بشكل أفقي في الجزء العلوي من هاتفك، فوق الرمز غير التلامسي.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. اعرض هاتفك أمام العميل.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. اضغط على \"تحصيل المدفوعات\"، واختر ميزة \"Tap to Pay\".</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">تحصيل المدفوعات</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">إنشاء طلب</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. ⁦%1$s⁩ أو ⁦%2$s⁩</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. إنشاء طلب</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">كيفية عمله</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">معرفة المزيد حول قراء البطاقات</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">لقبول مدفوعات أعلى من هذا الحد، فكِّر في شراء قارئ بطاقات يقبل إدخال PIN.</string>
@@ -1595,6 +1598,7 @@ Language: ar
     <string name="order_creation_add_shipping">إضافة الشحن</string>
     <string name="order_creation_shipping_title_add">إضافة الشحن</string>
     <string name="order_creation_shipping_name">الاسم</string>
+    <string name="order_creation_add_shipping_amount">المبلغ</string>
     <string name="order_creation_payment_fee">الرسوم</string>
     <string name="order_creation_customer_details">بيانات الزبون</string>
     <string name="order_creation_add_fee">إضافة رسوم إضافية</string>
@@ -2336,9 +2340,6 @@ Language: ar
     <string name="upsells_label">منتجات يوصى بها</string>
     <string name="product_detail_linked_products">المنتجات المرتبطة</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">اتصل بنا</string>
-    <string name="my_store_stats_availability_description">تأكَّد من أنَّك تقوم بتشغيل أحدث إصدار من WooCommerce على موقعك وأنَّك قمت بتفعيل مسؤول WooCommerce.\n\nهل لا تزال تحتاج إلى المساعدة؟ %1$s</string>
-    <string name="my_store_stats_availability_title">يتعذر علينا عرض\n تحليلات مخزنك</string>
     <string name="login_get_link_by_email">الحصول على رابط تسجيل الدخول عن طريق البريد الإلكتروني</string>
     <string name="email_not_registered_wpcom">حسناً، لا يمكننا العثور على حساب WordPress.com متصلاً بعنوان البريد الإلكتروني هذا.</string>
     <string name="settings_enable_product_addons_teaser_message">اختبر عرض الوظائف الإضافية للطلبات بينما نستعد للإطلاق</string>
@@ -2584,8 +2585,6 @@ Language: ar
     <string name="settings_app_theme_title">المظهر</string>
     <string name="product_short_description_empty">ملخص موجز حول المنتج</string>
     <string name="product_short_description">وصف قصير</string>
-    <string name="my_store_stats_reverted_message">طرحنا تحسينات على التحليلات الخاصة بنا. يمكنك الترقية إلى WooCommerce 4.0 أو إصدار أعلى منه، أو يمكنك تثبيت إضافة مسؤول WooCommerce للاستمرار في رؤية إحصاءاتك بعد الأول من سبتمبر 2020.</string>
-    <string name="my_store_stats_reverted_title">الترقية لمواصلة الاطِّلاع على إحصاءاتك</string>
     <string name="product_pricing_update_sale_price_error">يجب أن يكون سعر التخفيض أقل من السعر العادي</string>
     <string name="product_schedule_remove_end_date_link_label">إزالة تاريخ الانتهاء</string>
     <string name="product_shipping_empty">إضافة الشحن</string>
@@ -3362,7 +3361,6 @@ Language: ar
     <string name="dashboard_action_view_order">عرض الطلب</string>
     <string name="dashboard_top_performers_empty">لا يوجد أي نشاط في هذه الفترة</string>
     <string name="dashboard_top_performers_total_orders">إجمالي الطلبات: %s</string>
-    <string name="dashboard_top_performers_title">أهم المؤدِّين</string>
     <string name="dashboard_stats_error_content_description">صورة الخطأ</string>
     <string name="dashboard_stats_error">حدث خطأ أثناء إحضار البيانات</string>
     <string name="dashboard_stats_revenue">الإيرادات</string>
