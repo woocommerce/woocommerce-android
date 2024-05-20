@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,7 +38,7 @@ fun ShippingLineSection(
     formatCurrency: (amount: BigDecimal) -> String,
     modifier: Modifier = Modifier
 ) {
-    if (shippingLineDetails.isNotEmpty()) {
+    AnimatedVisibility (shippingLineDetails.isNotEmpty()) {
         Column(modifier = modifier) {
             Header(text = stringResource(id = R.string.order_detail_shipping_header))
             Card(shape = RectangleShape) {
