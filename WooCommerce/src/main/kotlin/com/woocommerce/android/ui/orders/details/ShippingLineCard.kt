@@ -38,7 +38,7 @@ fun ShippingLineSection(
     formatCurrency: (amount: BigDecimal) -> String,
     modifier: Modifier = Modifier
 ) {
-    AnimatedVisibility (shippingLineDetails.isNotEmpty()) {
+    AnimatedVisibility(shippingLineDetails.isNotEmpty()) {
         Column(modifier = modifier) {
             Header(text = stringResource(id = R.string.order_detail_shipping_header))
             Card(shape = RectangleShape) {
