@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.payments.methodselection.ORDER_TOTAL
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,6 +16,8 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
+
+private const val ORDER_TOTAL = "100.00"
 
 @ExperimentalCoroutinesApi
 class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
