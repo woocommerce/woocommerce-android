@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.orders.filters.domain.GetSelectedOrderFiltersC
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFilters
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
+import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.OpenOrder
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.RetryLoadingOrders
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowErrorSnack
 import com.woocommerce.android.ui.orders.list.OrderListViewModel.OrderListEvent.ShowOrderFilters
@@ -229,6 +230,10 @@ class OrderListViewModel @Inject constructor(
             Mode.STANDARD -> {
                 // stay on the screen
             }
+        }
+
+        if (navArgs.orderId != -1L) {
+            triggerEvent(OpenOrder(navArgs.orderId))
         }
     }
 
@@ -896,6 +901,8 @@ class OrderListViewModel @Inject constructor(
         data object RetryLoadingOrders : OrderListEvent()
 
         data object OpenOrderCreationWithSimplePaymentsMigration : OrderListEvent()
+
+        data class OpenOrder(val orderId: Long) : OrderListEvent()
     }
 
     @Parcelize
