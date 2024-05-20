@@ -66,7 +66,11 @@
     <fragment
         android:id="@+id/changeDueCalculatorFragment"
         android:name="com.woocommerce.android.ui.payments.changeduecalculator.ChangeDueCalculatorFragment"
-        android:label="ChangeDueCalculatorFragment" />
+        android:label="ChangeDueCalculatorFragment" >
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+    </fragment>
 
 
     <!-- Onboarding flow -->
