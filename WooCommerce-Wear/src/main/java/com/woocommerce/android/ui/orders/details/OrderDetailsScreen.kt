@@ -15,17 +15,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.woocommerce.android.R
 import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
@@ -102,6 +105,7 @@ private fun OrderHeader(
             color = Color.White
         )
     }
+    Spacer(modifier = modifier.padding(10.dp))
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.Start
@@ -118,7 +122,7 @@ private fun OrderHeader(
             ?.takeIf { it.isNotEmpty() }
             ?.let {
                 Text(
-                    text = "${it.count()} products",
+                    text = pluralizedProductsText(products = it),
                     textAlign = TextAlign.Center,
                     color = Color.White
                 )
@@ -148,8 +152,8 @@ fun OrderProductsList(
     modifier: Modifier
 ) {
     when {
-        products == null -> Text("We couldn't retrieve the Order products")
-        products.isEmpty() -> Text("No products found")
+        products == null -> Text(stringResource(id = R.string.order_details_products_failed))
+        products.isEmpty() -> Text(stringResource(id = R.string.order_details_no_products_found))
         else -> products.forEach { product ->
             Box(
                 modifier = modifier
@@ -186,9 +190,20 @@ fun OrderProductsList(
 @Composable
 fun OrderLoadingFailed() {
     Text(
-        text = "Failed to load Order data",
+        text = stringResource(id = R.string.order_details_failed_to_load),
         color = Color.White
     )
+}
+
+@Composable
+@ReadOnlyComposable
+private fun pluralizedProductsText(products: List<ProductItem>): String {
+    val amount = products.size
+    return if (amount == 1) {
+        stringResource(id = R.string.order_details_single_product_amount, amount)
+    } else {
+        stringResource(id = R.string.order_details_multiple_products_amount, amount)
+    }
 }
 
 @Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
