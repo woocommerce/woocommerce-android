@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
@@ -37,6 +38,7 @@ import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 
 @Composable
 fun OrdersListScreen(viewModel: OrdersListViewModel) {
+    LocalLifecycleOwner.current.lifecycle.addObserver(viewModel)
     val viewState by viewModel.viewState.observeAsState()
     OrdersListScreen(
         isLoading = viewState?.isLoading ?: false,

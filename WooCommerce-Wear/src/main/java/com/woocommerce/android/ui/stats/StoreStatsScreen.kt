@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
@@ -37,6 +38,7 @@ import com.woocommerce.android.presentation.theme.WooTypography
 
 @Composable
 fun StoreStatsScreen(viewModel: StoreStatsViewModel) {
+    LocalLifecycleOwner.current.lifecycle.addObserver(viewModel)
     val viewState by viewModel.viewState.observeAsState()
     StoreStatsScreen(
         isLoading = viewState?.isLoading ?: false,

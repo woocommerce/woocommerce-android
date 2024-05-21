@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
@@ -38,6 +39,7 @@ import com.woocommerce.android.ui.orders.FormatOrderData.ProductItem
 
 @Composable
 fun OrderDetailsScreen(viewModel: OrderDetailsViewModel) {
+    LocalLifecycleOwner.current.lifecycle.addObserver(viewModel)
     val viewState = viewModel.viewState.observeAsState()
     OrderDetailsScreen(
         isLoading = viewState.value?.isLoading ?: false,
