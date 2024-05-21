@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -76,6 +78,7 @@ fun ChangeDueCalculatorScreen(
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
                         label = { Text(stringResource(R.string.cash_payments_cash_received)) },
+                        textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     )
 
@@ -86,6 +89,7 @@ fun ChangeDueCalculatorScreen(
                             .fillMaxWidth()
                             .padding(top = 8.dp),
                         label = { Text(stringResource(R.string.cash_payments_change_due)) },
+                        textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold),
                         enabled = false,
                         readOnly = true
                     )
