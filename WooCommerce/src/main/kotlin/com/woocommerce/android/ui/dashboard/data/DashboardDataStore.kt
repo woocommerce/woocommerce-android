@@ -87,8 +87,10 @@ class DashboardDataStore @Inject constructor(
     // Use the feature flag [DYNAMIC_DASHBOARD_M2] to filter out unsupported widgets during development
     private val supportedWidgets: List<DashboardWidget.Type> = DashboardWidget.Type.entries
         .filter {
-            FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled() ||
+            FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled() || (
                 it != DashboardWidget.Type.ORDERS &&
-                it != DashboardWidget.Type.REVIEWS
+                    it != DashboardWidget.Type.REVIEWS &&
+                    it != DashboardWidget.Type.COUPONS
+                )
         }
 }

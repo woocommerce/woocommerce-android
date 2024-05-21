@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard.stats
+package com.woocommerce.android.ui.dashboard
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,10 +34,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 
 @Composable
-fun DashboardStatsHeader(
+fun DashboardDateRangeHeader(
     rangeSelection: StatsTimeRangeSelection,
     dateFormatted: String,
     onCustomRangeClick: () -> Unit,
