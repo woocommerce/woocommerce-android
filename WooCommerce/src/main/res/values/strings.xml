@@ -430,6 +430,7 @@
     <string name="dashboard_coupons_card_header_uses">Uses</string>
     <string name="dashboard_coupons_view_all_button">View all coupons</string>
     <string name="dashboard_coupons_card_empty_view_message">No coupon usage during this period</string>
+    <string name="dashboard_coupons_wcadmin_inactive_title">Unable to load coupon usage report</string>
 
     <string name="dashboard_wcadmin_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.</string>
     <string name="dashboard_wcadmin_inactive_contact_us">Still need help? Contact us</string>

@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
+import com.woocommerce.android.ui.dashboard.WCAdminNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.DateRangeState
@@ -197,9 +198,10 @@ private fun DashboardCouponsCard(
                 }
 
                 is State.Error -> {
-                    WidgetError(
-                        onContactSupportClicked = onContactSupportClick,
-                        onRetryClicked = onRetryClick
+                    CouponsErrorView(
+                        error = viewState,
+                        onRetryClick = onRetryClick,
+                        onContactSupportClick = onContactSupportClick
                     )
                 }
             }
@@ -347,5 +349,27 @@ private fun Header(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.subtitle2,
             color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
         )
+    }
+}
+
+@Composable
+fun CouponsErrorView(
+    error: State.Error,
+    onRetryClick: () -> Unit,
+    onContactSupportClick: () -> Unit
+) {
+    when (error) {
+        State.Error.Generic -> {
+            WidgetError(
+                onContactSupportClicked = onContactSupportClick,
+                onRetryClicked = onRetryClick
+            )
+        }
+        State.Error.WCAdminInactive -> {
+            WCAdminNotAvailableErrorView(
+                title = stringResource(id = R.string.dashboard_coupons_wcadmin_inactive_title),
+                onContactSupportClick = onContactSupportClick
+            )
+        }
     }
 }
