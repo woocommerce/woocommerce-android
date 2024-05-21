@@ -85,7 +85,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var orderCreateEditRepository: OrderCreateEditRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
     protected lateinit var parameterRepository: ParameterRepository
-    private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
     protected lateinit var resourceProvider: ResourceProvider
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
@@ -167,9 +166,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                     }
                 } ?: emptyList()
             }
-        }
-        determineMultipleLinesContext = mock {
-            on { invoke(any()) } doReturn OrderCreateEditViewModel.MultipleLinesContext.None
         }
         tracker = mock()
         barcodeScanningTracker = mock()
@@ -2501,7 +2497,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when shipping button tapped, send tracks event`() {
-        sut.onShippingButtonClicked()
+        sut.onAddOrEditShipping()
 
         verify(tracker).track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
     }
@@ -2516,7 +2512,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             orderDetailRepository = orderDetailRepository,
             orderCreateEditRepository = orderCreateEditRepository,
             createOrderItem = createOrderItemUseCase,
-            determineMultipleLinesContext = determineMultipleLinesContext,
             parameterRepository = parameterRepository,
             autoSyncOrder = autoSyncOrder,
             autoSyncPriceModifier = autoSyncPriceModifier,
@@ -2541,7 +2536,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel,
             currencySymbolFinder = currencySymbolFinder,
             totalsHelper = totalsHelper,
-            dateUtils = mock()
+            dateUtils = mock(),
+            getShippingMethodsWithOtherValue = mock()
         )
     }
 
