@@ -377,7 +377,8 @@ class OrderCreateEditViewModel @Inject constructor(
 
     val shippingLineList =
         combine(
-            _orderDraft.filter { it.shippingLines.isNotEmpty() }.map { it.shippingLines },
+            _orderDraft.filter { it.shippingLines.isNotEmpty() }
+                .map { it.shippingLines.filter { line -> line.methodId != null } },
             getShippingMethodsWithOtherValue().withIndex()
         ) { shippingLines, shippingMethods ->
             val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
