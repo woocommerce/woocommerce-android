@@ -1,5 +1,6 @@
 package com.woocommerce.android.viewmodel
 
+import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
  */
 abstract class ScopedViewModel(
     protected val savedState: SavedStateHandle,
-) : ViewModel(), CoroutineScope {
+) : ViewModel(), CoroutineScope, DefaultLifecycleObserver {
 
     override val coroutineContext: CoroutineContext
         get() = viewModelScope.coroutineContext
