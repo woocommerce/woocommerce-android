@@ -303,16 +303,14 @@ class MoreMenuViewModel @Inject constructor(
         get() = generateFormattedPlanName(resourceProvider)
 
     data class MoreMenuViewState(
-        val generalMenuItems: List<MenuUiButton> = emptyList(),
-        val settingsMenuItems: List<MenuUiButton> = emptyList(),
+        val menuItems: List<MoreMenuItem>,
         val siteName: String = "",
         val siteUrl: String = "",
         val sitePlan: String = "",
         val userAvatarUrl: String = "",
         val isStoreSwitcherEnabled: Boolean = false
     ) {
-        val enabledGeneralItems = generalMenuItems.filter { it.isEnabled }
-        val enabledSettingsItems = settingsMenuItems.filter { it.isEnabled }
+        val visibleMenuItems = menuItems.filter { it.isEnabled }
     }
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
