@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.extensions.getSiteId
+import com.woocommerce.android.extensions.toOrderEntity
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.commons.DataParameters.ORDERS_JSON
 import com.woocommerce.commons.DataParameters.ORDER_ID
@@ -17,12 +18,10 @@ import com.woocommerce.commons.WearOrder
 import com.woocommerce.commons.WearOrderedProduct
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCWearableStore
 import javax.inject.Inject
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 
 class OrdersRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.ORDERS) private val ordersDataStore: DataStore<Preferences>,
@@ -62,18 +61,7 @@ class OrdersRepository @Inject constructor(
         val siteId = data.getSiteId(loginRepository.selectedSite)
         val receivedOrders = gson.fromJson(ordersJson, Array<WearOrder>::class.java).toList()
         wearableStore.insertOrders(
-            orders = receivedOrders.map {
-                OrderEntity(
-                    orderId = it.id,
-                    localSiteId = LocalOrRemoteId.LocalId(siteId.toInt()),
-                    dateCreated = it.date,
-                    number = it.number,
-                    total = it.total,
-                    status = it.status,
-                    billingFirstName = it.billingFirstName,
-                    billingLastName = it.billingLastName
-                )
-            }
+            orders = receivedOrders.map { it.toOrderEntity(siteId.toInt()) }
         )
 
         ordersDataStore.edit { prefs ->
