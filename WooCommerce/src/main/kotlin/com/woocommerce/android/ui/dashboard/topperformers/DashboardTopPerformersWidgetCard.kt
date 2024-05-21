@@ -49,6 +49,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
+import com.woocommerce.android.ui.dashboard.WCAdminNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
@@ -81,10 +82,11 @@ fun DashboardTopPerformersWidgetCard(
             menu = topPerformersState.menu,
             button = topPerformersState.onOpenAnalyticsTapped,
             modifier = modifier.testTag(DashboardStatsTestTags.DASHBOARD_TOP_PERFORMERS_CARD),
-            isError = topPerformersState.isError
+            isError = topPerformersState.error != null
         ) {
             when {
-                topPerformersState.isError -> TopPerformersErrorView(
+                topPerformersState.error != null -> TopPerformersErrorView(
+                    errorType = topPerformersState.error,
                     onContactSupportClicked = parentViewModel::onContactSupportClicked,
                     onRetryClicked = topPerformersViewModel::onRefresh
                 )
@@ -358,13 +360,24 @@ private fun TopPerformersEmptyView(modifier: Modifier = Modifier) {
 
 @Composable
 private fun TopPerformersErrorView(
+    errorType: DashboardTopPerformersViewModel.ErrorType,
     onContactSupportClicked: () -> Unit,
     onRetryClicked: () -> Unit
 ) {
-    WidgetError(
-        onContactSupportClicked = onContactSupportClicked,
-        onRetryClicked = onRetryClicked
-    )
+    when (errorType) {
+        DashboardTopPerformersViewModel.ErrorType.WCAdminInactive -> {
+            WCAdminNotAvailableErrorView(
+                title = stringResource(id = R.string.dashboard_top_performers_wcadmin_inactive_title),
+                onContactSupportClick = onContactSupportClicked
+            )
+        }
+        else -> {
+            WidgetError(
+                onContactSupportClicked = onContactSupportClicked,
+                onRetryClicked = onRetryClicked
+            )
+        }
+    }
 }
 
 @LightDarkThemePreviews
@@ -407,7 +420,6 @@ private fun TopPerformersWidgetCardPreview() {
                 onClick = {}
             ),
         ),
-        isError = false,
         isLoading = false,
         titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
         menu = DashboardWidgetMenu(emptyList()),
@@ -432,7 +444,7 @@ private fun TopPerformersWidgetCardPreview() {
             onEditCustomRangeTapped = {}
         )
         DashboardTopPerformersContent(
-            topPerformersState = topPerformersState.copy(isError = true),
+            topPerformersState = topPerformersState.copy(error = DashboardTopPerformersViewModel.ErrorType.Generic),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
             onTabSelected = {},
