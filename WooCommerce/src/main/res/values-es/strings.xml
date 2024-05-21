@@ -25,8 +25,6 @@ Language: es
     <string name="dynamic_dashboard_widget_menu_item_hide">Ocultar %s</string>
     <string name="my_store_widget_onboarding_completed">Completado</string>
     <string name="my_store_widget_feedback_title">Comentarios</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">¿Aún necesitas ayuda? Contacto</string>
-    <string name="my_store_stats_plugin_inactive_description">Asegúrate de estar ejecutando la última versión de WooCommerce en tu sitio web y de haber activado WooCommerce Admin.</string>
     <string name="my_store_stats_plugin_inactive_title">No podemos visualizar el\n análisis de tu tienda</string>
     <string name="store_onboarding_task_view_all_tasks">Ver todas las tareas</string>
     <string name="analytics_session_no_available_description">Los análisis de sesiones se basan en los recuentos de visitantes únicos, que no están disponibles para rangos de fechas personalizados</string>

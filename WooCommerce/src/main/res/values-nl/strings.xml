@@ -25,8 +25,6 @@ Language: nl
     <string name="dynamic_dashboard_widget_menu_item_hide">Verbergen %s</string>
     <string name="my_store_widget_onboarding_completed">Voltooid</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Meer hulp nodig? Neem contact met ons op</string>
-    <string name="my_store_stats_plugin_inactive_description">Zorg dat je de nieuwste versie van WooCommerce gebruikt op je site en dat WooCommerce Admin geactiveerd is.</string>
     <string name="my_store_stats_plugin_inactive_title">We kunnen de\n analyses van je winkel niet weergeven</string>
     <string name="store_onboarding_task_view_all_tasks">Alle taken bekijken</string>
     <string name="analytics_session_no_available_description">Sessie-analyses gebruiken tellingen van unieke bezoekers, die niet beschikbaar zijn voor aangepaste datumbereiken</string>

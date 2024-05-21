@@ -25,8 +25,6 @@ Language: id
     <string name="dynamic_dashboard_widget_menu_item_hide">Sembunyikan %s</string>
     <string name="my_store_widget_onboarding_completed">Selesai</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Masih butuh bantuan? Hubungi kami</string>
-    <string name="my_store_stats_plugin_inactive_description">Pastikan Anda mengoperasikan WooCommerce versi terbaru di situs Anda dan telah mengaktifkan WooCommerce Admin.</string>
     <string name="my_store_stats_plugin_inactive_title">Kami tidak dapat menampilkan \n Anda analitik toko</string>
     <string name="store_onboarding_task_view_all_tasks">Lihat semua tugas</string>
     <string name="analytics_session_no_available_description">Analitik sesi bergantung pada jumlah pengunjung unik yang tidak tersedia untuk rentang tanggal kustom</string>

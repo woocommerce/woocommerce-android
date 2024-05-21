@@ -25,8 +25,6 @@ Language: tr
     <string name="dynamic_dashboard_widget_menu_item_hide">Şunu Gizle: %s</string>
     <string name="my_store_widget_onboarding_completed">Tamamlandı</string>
     <string name="my_store_widget_feedback_title">Geri bildirim</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Hâlâ yardıma ihtiyacınız mı var? Bizimle iletişim kurun</string>
-    <string name="my_store_stats_plugin_inactive_description">Sitenizde en son WooCommerce sürümünü çalıştırdığınızdan ve WooCommerce Admin\'i etkinleştirdiğinizden emin olun.</string>
     <string name="my_store_stats_plugin_inactive_title">Mağazanızın analizlerini\n gösteremiyoruz</string>
     <string name="store_onboarding_task_view_all_tasks">Tüm görevleri görüntüle</string>
     <string name="analytics_session_no_available_description">Oturum analizleri, özel tarih aralıklarında kullanılamayan benzersiz ziyaretçi sayılarına dayanır</string>
