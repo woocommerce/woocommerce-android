@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import java.math.BigDecimal
 
 @Composable
@@ -36,75 +37,77 @@ fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
     onNavigateUp: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = getTitleText(uiState)) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateUp) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.back)
+    WooThemeWithBackground {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(text = getTitleText(uiState)) },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateUp) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.back)
+                            )
+                        }
+                    },
+                    backgroundColor = colorResource(id = R.color.color_toolbar),
+                )
+            }
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                when (uiState) {
+                    is ChangeDueCalculatorViewModel.UiState.Loading -> Text(
+                        stringResource(
+                            R.string.loading,
+                        ),
+                        style = MaterialTheme.typography.h6
+                    )
+
+                    is ChangeDueCalculatorViewModel.UiState.Success -> {
+                        OutlinedTextField(
+                            value = uiState.amountDue,
+                            onValueChange = { newValue ->
+                                if (newValue.isBigDecimalFormat()) {
+                                    BigDecimal.ZERO
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
+                            label = { Text(stringResource(R.string.cash_payments_cash_received)) },
+                            textStyle = LocalTextStyle.current.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = TextUnit(44f, TextUnitType.Sp)
+                            ),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        )
+
+                        TextField(
+                            value = "$0.00",
+                            onValueChange = {},
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
+                            label = { Text(stringResource(R.string.cash_payments_change_due)) },
+                            textStyle = LocalTextStyle.current.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = TextUnit(44f, TextUnitType.Sp)
+                            ),
+                            enabled = false,
+                            readOnly = true
                         )
                     }
-                },
-                backgroundColor = colorResource(id = R.color.color_toolbar),
-            )
-        }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            when (uiState) {
-                is ChangeDueCalculatorViewModel.UiState.Loading -> Text(
-                    stringResource(
-                        R.string.loading,
-                    ),
-                    style = MaterialTheme.typography.h6
-                )
 
-                is ChangeDueCalculatorViewModel.UiState.Success -> {
-                    OutlinedTextField(
-                        value = uiState.amountDue,
-                        onValueChange = { newValue ->
-                            if (newValue.isBigDecimalFormat()) {
-                                BigDecimal.ZERO
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
-                        label = { Text(stringResource(R.string.cash_payments_cash_received)) },
-                        textStyle = LocalTextStyle.current.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = TextUnit(44f, TextUnitType.Sp)
-                        ),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    )
-
-                    TextField(
-                        value = "$0.00",
-                        onValueChange = {},
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
-                        label = { Text(stringResource(R.string.cash_payments_change_due)) },
-                        textStyle = LocalTextStyle.current.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = TextUnit(44f, TextUnitType.Sp)
-                        ),
-                        enabled = false,
-                        readOnly = true
-                    )
-                }
-
-                is ChangeDueCalculatorViewModel.UiState.Error -> {
-                    Text(text = stringResource(R.string.error_generic), style = MaterialTheme.typography.h6)
+                    is ChangeDueCalculatorViewModel.UiState.Error -> {
+                        Text(text = stringResource(R.string.error_generic), style = MaterialTheme.typography.h6)
+                    }
                 }
             }
         }
