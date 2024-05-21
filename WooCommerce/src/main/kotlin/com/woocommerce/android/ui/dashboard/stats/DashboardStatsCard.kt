@@ -213,7 +213,7 @@ private fun StatsChart(
         statsView.showLastUpdate(lastUpdateState)
     }
 
-    LaunchedEffect(dateRange?.rangeSelection, revenueStatsState) {
+    LaunchedEffect(revenueStatsState) {
         when (revenueStatsState) {
             is DashboardStatsViewModel.RevenueStatsViewState.Content -> {
                 statsView.showErrorView(false)
@@ -239,7 +239,7 @@ private fun StatsChart(
         }
     }
 
-    LaunchedEffect(dateRange?.rangeSelection, visitorsStatsState) {
+    LaunchedEffect(visitorsStatsState) {
         visitorsStatsState?.let {
             statsView.showVisitorStats(it)
         }
