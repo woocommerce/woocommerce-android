@@ -280,7 +280,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 ),
                 mode = mode,
                 viewState = viewState!!,
-                onShippingClicked = { onShippingButtonClicked() },
                 onCouponsClicked = { onCouponButtonClicked() },
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
