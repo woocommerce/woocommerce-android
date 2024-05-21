@@ -112,15 +112,6 @@ fun ChangeDueCalculatorScreen(
     }
 }
 
-fun String.isBigDecimalFormat(): Boolean {
-    return try {
-        BigDecimal(this)
-        true
-    } catch (ex: NumberFormatException) {
-        false
-    }
-}
-
 @Composable
 private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
     return when (uiState) {
