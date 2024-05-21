@@ -9,13 +9,13 @@ import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
 import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDERS
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCWearableStore.OrdersForWearablesResult.Success
 import javax.inject.Inject
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 class FetchOrders @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
