@@ -73,10 +73,8 @@ fun ChangeDueCalculatorScreen(
                     is ChangeDueCalculatorViewModel.UiState.Success -> {
                         OutlinedTextField(
                             value = uiState.amountDue,
-                            onValueChange = { newValue ->
-                                if (newValue.isBigDecimalFormat()) {
-                                    // TODO
-                                }
+                            onValueChange = {
+                                // TODO
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
