@@ -75,7 +75,7 @@ fun ChangeDueCalculatorScreen(
                             value = uiState.amountDue,
                             onValueChange = { newValue ->
                                 if (newValue.isBigDecimalFormat()) {
-                                    BigDecimal.ZERO
+                                    // TODO: Update the view model
                                 }
                             },
                             modifier = Modifier
