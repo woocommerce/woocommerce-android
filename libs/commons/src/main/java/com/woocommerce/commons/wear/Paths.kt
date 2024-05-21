@@ -15,7 +15,9 @@ enum class DataPath(val value: String) {
 }
 
 enum class DataParameters(val value: String) {
+    // Default parameters for every DataMap
     TIMESTAMP("timestamp"),
+    SITE_ID("site-id"),
 
     // Store credentials data
     TOKEN("token"),

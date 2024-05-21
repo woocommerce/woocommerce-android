@@ -41,6 +41,7 @@ class StoreStatsViewModel @Inject constructor(
     }
 
     init {
+        _viewState.update { it.copy(isLoading = true) }
         loginRepository.selectedSiteFlow
             .filterNotNull()
             .onEach {
@@ -50,7 +51,6 @@ class StoreStatsViewModel @Inject constructor(
     }
 
     private fun requestStoreStats(selectedSite: SiteModel) {
-        _viewState.update { it.copy(isLoading = true) }
         launch {
             fetchStats(selectedSite)
                 .onEach { handleStatsDataChange(it) }

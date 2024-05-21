@@ -9,11 +9,12 @@ import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
 import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDERS
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WCOrderStore.OrdersForWearablesResult.Success
+import org.wordpress.android.fluxc.store.WCWearableStore.OrdersForWearablesResult.Success
 import javax.inject.Inject
 
 class FetchOrders @Inject constructor(
@@ -30,21 +31,27 @@ class FetchOrders @Inject constructor(
                 isTimeout.not() -> Waiting
                 else -> Error
             }
-        }.filterNotNull()
+        }.distinctUntilChanged()
+        .filterNotNull()
 
     private suspend fun selectOrdersDataSource(
         selectedSite: SiteModel
     ): Flow<List<OrderEntity>> {
-        return if (networkStatus.isConnected()) {
-            flow {
+        return when {
+            networkStatus.isConnected() -> flow {
                 when (val result = ordersRepository.fetchOrders(selectedSite)) {
                     is Success -> result.orders
                     else -> emptyList()
                 }.let { emit(it) }
             }
-        } else {
-            phoneRepository.sendMessage(REQUEST_ORDERS)
-            return ordersRepository.observeOrdersDataChanges()
+            phoneRepository.isPhoneConnectionAvailable() -> {
+                phoneRepository.sendMessage(REQUEST_ORDERS)
+                ordersRepository.observeOrdersDataChanges(selectedSite.siteId)
+            }
+            else -> flow {
+                val orders = ordersRepository.getStoredOrders(selectedSite)
+                emit(orders)
+            }
         }
     }
 

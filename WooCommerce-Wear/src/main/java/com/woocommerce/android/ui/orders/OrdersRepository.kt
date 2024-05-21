@@ -8,6 +8,7 @@ import com.google.android.gms.wearable.DataMap
 import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.extensions.getSiteId
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
 import com.woocommerce.commons.wear.DataParameters.ORDER_ID
@@ -18,21 +19,27 @@ import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCWearableStore
 import javax.inject.Inject
 
 class OrdersRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.ORDERS) private val ordersDataStore: DataStore<Preferences>,
     private val loginRepository: LoginRepository,
+    private val wearableStore: WCWearableStore,
     private val orderStore: WCOrderStore
 ) {
     private val gson by lazy { Gson() }
 
     suspend fun fetchOrders(
         selectedSite: SiteModel
-    ) = orderStore.fetchOrdersForWearables(
+    ) = wearableStore.fetchOrders(
         site = selectedSite,
         shouldStoreData = true
     )
+
+    suspend fun getStoredOrders(
+        selectedSite: SiteModel
+    ) = orderStore.getOrdersForSite(selectedSite)
 
     suspend fun getOrderFromId(
         selectedSite: SiteModel,
@@ -42,40 +49,47 @@ class OrdersRepository @Inject constructor(
         orderId = orderId
     )
 
-    fun observeOrdersDataChanges() = ordersDataStore.data
-        .mapNotNull { it[stringPreferencesKey(generateOrdersKey())] }
+    fun observeOrdersDataChanges(
+        siteId: Long
+    ) = ordersDataStore.data
+        .mapNotNull { it[stringPreferencesKey(generateOrdersKey(siteId))] }
         .map { gson.fromJson(it, Array<OrderEntity>::class.java).toList() }
 
     suspend fun receiveOrdersDataFromPhone(data: DataMap) {
         val ordersJson = data.getString(ORDERS_JSON.value, "")
+        val siteId = data.getSiteId(loginRepository.selectedSite)
+        val receivedOrders = gson.fromJson(ordersJson, Array<OrderEntity>::class.java).toList()
+        wearableStore.insertOrders(receivedOrders)
 
         ordersDataStore.edit { prefs ->
-            prefs[stringPreferencesKey(generateOrdersKey())] = ordersJson
+            prefs[stringPreferencesKey(generateOrdersKey(siteId))] = ordersJson
         }
     }
 
-    private fun generateOrdersKey(): String {
-        val siteId = loginRepository.selectedSite?.siteId ?: 0
-        return "${ORDERS_KEY_PREFIX}:$siteId"
-    }
+    private fun generateOrdersKey(siteId: Long) = "${ORDERS_KEY_PREFIX}:$siteId"
 
-    fun observeOrderProductsDataChanges(orderId: Long) = ordersDataStore.data
-        .mapNotNull { it[stringPreferencesKey(generateProductsKey(orderId))] }
+    fun observeOrderProductsDataChanges(
+        orderId: Long,
+        siteId: Long
+    ) = ordersDataStore.data
+        .mapNotNull { it[stringPreferencesKey(generateProductsKey(orderId, siteId))] }
         .map { gson.fromJson(it, Array<WearOrderProduct>::class.java).toList() }
 
     suspend fun receiveOrderProductsDataFromPhone(data: DataMap) {
         val orderId = data.getLong(ORDER_ID.value, 0)
         val productsJson = data.getString(ORDER_PRODUCTS_JSON.value, "")
+        val siteId = data.getSiteId(loginRepository.selectedSite)
 
         ordersDataStore.edit { prefs ->
-            prefs[stringPreferencesKey(generateProductsKey(orderId))] = productsJson
+            val key = generateProductsKey(orderId, siteId)
+            prefs[stringPreferencesKey(key)] = productsJson
         }
     }
 
-    private fun generateProductsKey(orderId: Long): String {
-        val siteId = loginRepository.selectedSite?.siteId ?: 0
-        return "${ORDERS_KEY_PREFIX}:$siteId:$orderId"
-    }
+    private fun generateProductsKey(
+        orderId: Long,
+        siteId: Long
+    ) = "${ORDERS_KEY_PREFIX}:$siteId:$orderId"
 
     companion object {
         private const val ORDERS_KEY_PREFIX = "store-orders"

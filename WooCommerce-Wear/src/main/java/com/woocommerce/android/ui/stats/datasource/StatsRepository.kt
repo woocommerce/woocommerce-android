@@ -8,6 +8,7 @@ import com.google.android.gms.wearable.DataMap
 import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.extensions.getSiteId
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.stats.datasource.StoreStatsData.RevenueData
 import com.woocommerce.android.ui.stats.range.TodayRangeData
@@ -105,9 +106,9 @@ class StatsRepository @Inject constructor(
             ),
             visitorData = data.getInt(VISITORS_TOTAL.value, 0),
         ).let { gson.toJson(it) }
+        val siteId = data.getSiteId(loginRepository.selectedSite)
 
         statsDataStore.edit { prefs ->
-            val siteId = loginRepository.selectedSite?.siteId ?: 0
             prefs[stringPreferencesKey(generateStatsKey(siteId))] = statsJson
         }
     }
