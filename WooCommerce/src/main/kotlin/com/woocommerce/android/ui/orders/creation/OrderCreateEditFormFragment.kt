@@ -408,9 +408,28 @@ class OrderCreateEditFormFragment :
             bindCustomAmountsSection(binding.customAmountsSection, it)
         }
 
+        bindShippingLinesSection(binding)
+
         observeViewStateChanges(binding)
 
         viewModel.event.observe(viewLifecycleOwner) { handleViewModelEvents(it, binding) }
+    }
+    private fun bindShippingLinesSection(binding: FragmentOrderCreateEditFormBinding) {
+        binding.shippingLines.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                viewModel.shippingLineList.observeAsState().value?.let { shippingLines ->
+                    WooThemeWithBackground {
+                        ShippingLineFormSection(
+                            shippingLineDetails = shippingLines,
+                            formatCurrency = { amount -> currencyFormatter.formatCurrency(amount) },
+                            modifier = Modifier.padding(bottom = 1.dp),
+                            onEdit = { }
+                        )
+                    }
+                }
+            }
+        }
     }
 
     @Suppress("LongMethod")
