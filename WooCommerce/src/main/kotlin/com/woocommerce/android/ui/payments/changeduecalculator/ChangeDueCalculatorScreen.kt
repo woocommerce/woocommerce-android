@@ -65,14 +65,6 @@ fun ChangeDueCalculatorScreen(
                 )
 
                 is ChangeDueCalculatorViewModel.UiState.Success -> {
-                    Text(
-                        stringResource(
-                            R.string.cash_payments_take_payment_title,
-                            uiState.amountDue
-                        ),
-                        style = MaterialTheme.typography.body1
-                    )
-
                     OutlinedTextField(
                         value = uiState.amountDue,
                         onValueChange = { newValue ->
