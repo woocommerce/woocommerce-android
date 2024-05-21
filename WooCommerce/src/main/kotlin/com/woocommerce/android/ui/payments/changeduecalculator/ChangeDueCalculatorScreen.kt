@@ -25,6 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import java.math.BigDecimal
@@ -76,9 +78,12 @@ fun ChangeDueCalculatorScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 8.dp),
+                            .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
                         label = { Text(stringResource(R.string.cash_payments_cash_received)) },
-                        textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold),
+                        textStyle = LocalTextStyle.current.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = TextUnit(44f, TextUnitType.Sp)
+                        ),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     )
 
@@ -87,9 +92,12 @@ fun ChangeDueCalculatorScreen(
                         onValueChange = {},
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp),
+                            .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
                         label = { Text(stringResource(R.string.cash_payments_change_due)) },
-                        textStyle = LocalTextStyle.current.copy(fontWeight = FontWeight.Bold),
+                        textStyle = LocalTextStyle.current.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = TextUnit(44f, TextUnitType.Sp)
+                        ),
                         enabled = false,
                         readOnly = true
                     )
