@@ -8,7 +8,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
@@ -41,7 +40,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,11 +68,12 @@ import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @Composable
 fun MoreMenuScreen(viewModel: MoreMenuViewModel) {
-    val moreMenuState by viewModel.moreMenuViewState.observeAsState(initial = (MoreMenuViewState()))
-    MoreMenuScreen(
-        moreMenuState,
-        viewModel::onSwitchStoreClick
-    )
+    viewModel.moreMenuViewState.observeAsState().value?.let { moreMenuState ->
+        MoreMenuScreen(
+            moreMenuState,
+            viewModel::onSwitchStoreClick
+        )
+    }
 }
 
 @Composable
@@ -90,18 +89,22 @@ fun MoreMenuScreen(
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state)
 
-        if (state.enabledSettingsItems.isNotEmpty()) {
-            MoreMenuSection(
-                title = stringResource(id = R.string.more_menu_settings_section_title),
-                items = state.enabledSettingsItems
-            )
-        }
+        state.visibleMenuItems.forEach { item ->
+            when (item) {
+                is MoreMenuItem.Button -> MoreMenuButton(
+                    title = item.title,
+                    description = item.description,
+                    iconDrawable = item.icon,
+                    badgeState = item.badgeState,
+                    onClick = item.onClick
+                )
 
-        if (state.enabledGeneralItems.isNotEmpty()) {
-            MoreMenuSection(
-                title = stringResource(id = R.string.more_menu_general_section_title),
-                items = state.enabledGeneralItems
-            )
+                is MoreMenuItem.Header -> Text(
+                    text = stringResource(id = item.title),
+                    style = MaterialTheme.typography.subtitle1,
+                    color = colorResource(id = R.color.color_on_surface)
+                )
+            }
         }
     }
 }
@@ -282,37 +285,6 @@ private fun HeaderAvatar(
 }
 
 @Composable
-private fun MoreMenuSection(
-    title: String,
-    items: List<MenuUiButton>
-) {
-    Column(
-        modifier = Modifier.padding(
-            PaddingValues(
-                horizontal = dimensionResource(id = R.dimen.major_100),
-                vertical = dimensionResource(id = R.dimen.major_100)
-            )
-        )
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.subtitle1,
-            color = colorResource(id = R.color.color_on_surface)
-        )
-
-        items.forEach { item ->
-            MoreMenuButton(
-                title = item.title,
-                description = item.description,
-                iconDrawable = item.icon,
-                badgeState = item.badgeState,
-                onClick = item.onClick
-            )
-        }
-    }
-}
-
-@Composable
 private fun MoreMenuButton(
     @StringRes title: Int,
     @StringRes description: Int,
@@ -402,7 +374,6 @@ fun MoreMenuBadge(badgeState: BadgeState?) {
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 private fun createBadgeEnterAnimation(): EnterTransition {
     val animationSpec = TweenSpec<Float>(durationMillis = 400, delay = 200)
     return scaleIn(animationSpec = animationSpec) + fadeIn(animationSpec = animationSpec)
@@ -417,12 +388,31 @@ private fun createBadgeEnterAnimation(): EnterTransition {
 @Composable
 private fun MoreMenuPreview() {
     val state = MoreMenuViewState(
-        generalMenuItems = listOf(
-            MenuUiButton(
+        menuItems = listOf(
+            MoreMenuItem.Button(
+                title = R.string.more_menu_button_woo_pos,
+                description = R.string.more_menu_button_woo_pos_description,
+                icon = R.drawable.ic_more_menu_payments,
+            ),
+
+            MoreMenuItem.Header(R.string.more_menu_settings_section_title),
+            MoreMenuItem.Button(
+                R.string.more_menu_button_settings,
+                R.string.more_menu_button_settings_description,
+                R.drawable.ic_more_screen_settings
+            ),
+            MoreMenuItem.Button(
+                R.string.more_menu_button_subscriptions,
+                R.string.more_menu_button_subscriptions_description,
+                R.drawable.ic_more_menu_upgrades
+            ),
+
+            MoreMenuItem.Header(R.string.more_menu_general_section_title),
+            MoreMenuItem.Button(
                 R.string.more_menu_button_payments,
                 R.string.more_menu_button_payments_description,
                 R.drawable.ic_more_menu_payments,
-                BadgeState(
+                badgeState = BadgeState(
                     badgeSize = R.dimen.major_110,
                     backgroundColor = R.color.color_secondary,
                     textColor = R.color.color_on_primary,
@@ -430,21 +420,21 @@ private fun MoreMenuPreview() {
                     animateAppearance = true
                 )
             ),
-            MenuUiButton(
+            MoreMenuItem.Button(
                 R.string.more_menu_button_wс_admin,
                 R.string.more_menu_button_wc_admin_description,
                 R.drawable.ic_more_menu_wp_admin
             ),
-            MenuUiButton(
+            MoreMenuItem.Button(
                 R.string.more_menu_button_store,
                 R.string.more_menu_button_store_description,
                 R.drawable.ic_more_menu_store
             ),
-            MenuUiButton(
+            MoreMenuItem.Button(
                 R.string.more_menu_button_reviews,
                 R.string.more_menu_button_reviews_description,
                 R.drawable.ic_more_menu_reviews,
-                BadgeState(
+                badgeState = BadgeState(
                     badgeSize = R.dimen.major_150,
                     backgroundColor = R.color.color_primary,
                     textColor = R.color.color_on_primary,
@@ -452,23 +442,11 @@ private fun MoreMenuPreview() {
                     animateAppearance = false
                 )
             ),
-            MenuUiButton(
+            MoreMenuItem.Button(
                 R.string.more_menu_button_coupons,
                 R.string.more_menu_button_coupons_description,
                 R.drawable.ic_more_menu_coupons
             ),
-        ),
-        settingsMenuItems = listOf(
-            MenuUiButton(
-                R.string.more_menu_button_settings,
-                R.string.more_menu_button_settings_description,
-                R.drawable.ic_more_screen_settings
-            ),
-            MenuUiButton(
-                R.string.more_menu_button_subscriptions,
-                R.string.more_menu_button_subscriptions_description,
-                R.drawable.ic_more_menu_upgrades
-            )
         ),
         siteName = "Example Site",
         siteUrl = "woocommerce.com",

@@ -68,11 +68,10 @@ class MoreMenuViewModel @Inject constructor(
             loadSitePlanName()
         ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName ->
             MoreMenuViewState(
-                generalMenuItems = generateGeneralMenuButtons(
+                menuItems = generateGeneralMenuButtons(
                     unseenReviewsCount = count,
                     paymentsFeatureWasClicked = paymentsFeatureWasClicked,
-                ),
-                settingsMenuItems = generateSettingsMenuButtons(),
+                ) + generateSettingsMenuButtons(),
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
                 sitePlan = sitePlanName,
@@ -90,53 +89,53 @@ class MoreMenuViewModel @Inject constructor(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
     ) = listOf(
-        MenuUiButton(
+        MoreMenuItem.Button(
             title = R.string.more_menu_button_payments,
             description = R.string.more_menu_button_payments_description,
             icon = R.drawable.ic_more_menu_payments,
             badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
             onClick = ::onPaymentsButtonClick,
         ),
-        MenuUiButton(
+        MoreMenuItem.Button(
             title = R.string.more_menu_button_blaze,
             description = R.string.more_menu_button_blaze_description,
             icon = R.drawable.ic_blaze,
             onClick = ::onPromoteProductsWithBlaze,
             isEnabled = isBlazeEnabled()
         ),
-        MenuUiButton(
+        MoreMenuItem.Button(
             title = R.string.more_menu_button_wс_admin,
             description = R.string.more_menu_button_wc_admin_description,
             icon = R.drawable.ic_more_menu_wp_admin,
             onClick = ::onViewAdminButtonClick
         ),
-        MenuUiButton(
+        MoreMenuItem.Button(
             title = R.string.more_menu_button_store,
             description = R.string.more_menu_button_store_description,
             icon = R.drawable.ic_more_menu_store,
             onClick = ::onViewStoreButtonClick
         ),
-        MenuUiButton(
+        MoreMenuItem.Button(
             title = R.string.more_menu_button_coupons,
             description = R.string.more_menu_button_coupons_description,
             icon = R.drawable.ic_more_menu_coupons,
             onClick = ::onCouponsButtonClick
         ),
-        MenuUiButton(
+        MoreMenuItem.Button(
             title = R.string.more_menu_button_reviews,
             description = R.string.more_menu_button_reviews_description,
             icon = R.drawable.ic_more_menu_reviews,
             badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
             onClick = ::onReviewsButtonClick
         ),
-        MenuUiButton(
+        MoreMenuItem.Button(
             title = R.string.more_menu_button_inbox,
             description = R.string.more_menu_button_inbox_description,
             icon = R.drawable.ic_more_menu_inbox,
             isEnabled = moreMenuRepository.isInboxEnabled(),
             onClick = ::onInboxButtonClick
         ),
-        MenuUiButton(
+        MoreMenuItem.Button(
             title = R.string.more_menu_button_woo_pos,
             description = R.string.more_menu_button_woo_pos_description,
             icon = R.drawable.ic_more_menu_payments,
@@ -157,13 +156,13 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun generateSettingsMenuButtons() = listOf(
-        MenuUiButton(
+        MoreMenuItem.Button(
             title = R.string.more_menu_button_settings,
             description = R.string.more_menu_button_settings_description,
             icon = R.drawable.ic_more_screen_settings,
             onClick = ::onSettingsClick
         ),
-        MenuUiButton(
+        MoreMenuItem.Button(
             title = R.string.more_menu_button_subscriptions,
             description = R.string.more_menu_button_subscriptions_description,
             icon = R.drawable.ic_more_menu_upgrades,
@@ -287,7 +286,8 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun isPaymentBadgeVisible() = moreMenuViewState.value
-        ?.generalMenuItems
+        ?.menuItems
+        ?.filterIsInstance<MoreMenuItem.Button>()
         ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
 

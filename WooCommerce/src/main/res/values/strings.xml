@@ -3672,8 +3672,8 @@
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
 
-    <string name="more_menu_button_woo_pos">Woo Pos</string>
-    <string name="more_menu_button_woo_pos_description">Temporary entry point to POS mode</string>
+    <string name="more_menu_button_woo_pos">Point of Sale Mode</string>
+    <string name="more_menu_button_woo_pos_description">Use the app as a cash register</string>
 
     <!--
     Composite products
