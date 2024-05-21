@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-13 16:54:04+0000
+Translation-Revision-Date: 2024-05-20 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Punto di accesso temporaneo alla modalità POS</string>
+    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="cash_payments_take_payment_title">Ricevi il pagamento%s</string>
+    <string name="dashboard_reviews_card_view_all_button">Visualizza tutte le recensioni</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Nessuna recensione corrisponde al filtro selezionato, prova a cambiare il filtro</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Nessuna recensione trovata</string>
+    <string name="dashboard_reviews_card_header_title">Stato</string>
+    <string name="my_store_widget_reviews_title">Recensioni più recenti</string>
+    <string name="my_store_widget_orders_title">Ordini più recenti</string>
+    <string name="dashboard_action_view_all_orders">Visualizza tutti gli ordini</string>
+    <string name="dashboard_filter_menu_content_description">Open filter dropdown</string>
     <string name="product_category_clear_parent">Cancella la categoria genitore</string>
     <string name="product_list_fetch_error">Errore durante il recupero dei prodotti.</string>
     <string name="order_creation_add_shipping_method_select_hint">Seleziona un metodo di spedizione</string>

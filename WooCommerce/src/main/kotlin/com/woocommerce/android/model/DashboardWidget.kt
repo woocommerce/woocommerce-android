@@ -31,6 +31,7 @@ data class DashboardWidget(
         BLAZE(R.string.my_store_widget_blaze_title, "blaze"),
         REVIEWS(R.string.my_store_widget_reviews_title, "reviews"),
         ORDERS(R.string.my_store_widget_orders_title, "orders"),
+        COUPONS(R.string.my_store_widget_coupons_title, "coupons"),
     }
 
     sealed interface Status : Parcelable {
