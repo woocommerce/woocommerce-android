@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.stats.datasource.StoreStatsData.RevenueData
 import com.woocommerce.android.ui.stats.range.TodayRangeData
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.commons.extensions.formatToYYYYmmDDhhmmss
+import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.wear.DataParameters.TOTAL_REVENUE
 import com.woocommerce.commons.wear.DataParameters.VISITORS_TOTAL
