@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
+import com.woocommerce.android.ui.woopos.IsWooPosEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -72,6 +73,9 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     private val isBlazeEnabled: IsBlazeEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
+    private val isWooPosEnabled: IsWooPosEnabled = mock {
+        onBlocking { invoke() } doReturn true
+    }
 
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
 
@@ -92,6 +96,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             blazeCampaignsStore = blazeCampaignsStore,
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             isBlazeEnabled = isBlazeEnabled,
+            isWooPosEnabled = isWooPosEnabled,
         )
     }
 
@@ -401,5 +406,36 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         }.last()
 
         assertThat(event).isEqualTo(MoreMenuViewModel.MoreMenuEvent.OpenBlazeCampaignListEvent)
+    }
+
+    @Test
+    fun `given isWooPosEnabled returns false, when building state, then WooPOS button is not displayed`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(isWooPosEnabled.invoke()).thenReturn(false)
+            }
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(states.last().generalMenuItems.first { it.title == R.string.more_menu_button_woo_pos }.isEnabled)
+                .isFalse()
+        }
+
+    @Test
+    fun `given isWooPosEnabled returns true, when building state, then WooPOS button is displayed`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(isWooPosEnabled.invoke()).thenReturn(true)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().generalMenuItems.first { it.title == R.string.more_menu_button_woo_pos }.isEnabled)
+            .isTrue()
     }
 }

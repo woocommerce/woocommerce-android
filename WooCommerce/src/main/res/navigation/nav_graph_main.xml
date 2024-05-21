@@ -87,6 +87,9 @@
         <action
             android:id="@+id/action_dashboard_to_editWidgetsFragment"
             app:destination="@id/dashboardWidgetEditorFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_reviews"
+            app:destination="@id/reviews" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -416,7 +419,7 @@
             app:argType="long" />
         <argument
             android:name="tempStatus"
-            android:defaultValue="null"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument

@@ -1,7 +1,11 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
-18.7
+18.8
 -----
 
+
+18.7
+-----
+- [*] Products: Fixed a bug that caused the app to crash sometimes during screen rotation [https://github.com/woocommerce/woocommerce-android/pull/11484]
 
 18.6
 -----

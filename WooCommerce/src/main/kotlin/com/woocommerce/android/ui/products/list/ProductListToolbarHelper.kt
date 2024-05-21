@@ -39,6 +39,10 @@ class ProductListToolbarHelper @Inject constructor(
     private var scanBarcodeMenuItem: MenuItem? = null
     private var searchView: SearchView? = null
 
+    private val refreshOptionsMenuCallback = Runnable {
+        refreshOptionsMenu()
+    }
+
     override fun onCreate(owner: LifecycleOwner) {
         (activity as FragmentActivity).onBackPressedDispatcher.addCallback(
             owner,
@@ -86,7 +90,7 @@ class ProductListToolbarHelper @Inject constructor(
         this.viewModel = productListViewModel
         this.binding = binding
 
-        fragment.lifecycle.addObserver(this)
+        fragment.viewLifecycleOwner.lifecycle.addObserver(this)
 
         if (productListViewModel.isSearching()) {
             binding.productsSearchTabView.isVisible = true
@@ -98,6 +102,7 @@ class ProductListToolbarHelper @Inject constructor(
 
     override fun onDestroy(owner: LifecycleOwner) {
         disableSearchListeners()
+        binding?.toolbar?.removeCallbacks(refreshOptionsMenuCallback)
         listFragment = null
         searchMenuItem = null
         scanBarcodeMenuItem = null
@@ -169,9 +174,7 @@ class ProductListToolbarHelper @Inject constructor(
 
         // We want to refresh the options menu after the toolbar has been inflated
         // Otherwise, logic in it will be executed before the toolbar is in restored state after configuration change
-        toolbar.post {
-            refreshOptionsMenu()
-        }
+        toolbar.post(refreshOptionsMenuCallback)
     }
 
     private fun refreshOptionsMenu() {
