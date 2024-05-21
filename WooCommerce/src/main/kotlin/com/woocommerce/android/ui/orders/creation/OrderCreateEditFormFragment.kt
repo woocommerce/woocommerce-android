@@ -375,7 +375,7 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.initAdditionalInfoCollectionSection() {
         additionalInfoCollectionSection.addShippingButton.setOnClickListener {
-            viewModel.onShippingButtonClicked()
+            viewModel.onAddOrEditShipping()
         }
     }
 
@@ -422,7 +422,8 @@ class OrderCreateEditFormFragment :
                             shippingLineDetails = shippingLines,
                             formatCurrency = { amount -> currencyFormatter.formatCurrency(amount) },
                             modifier = Modifier.padding(bottom = 1.dp),
-                            onEdit = { }
+                            onAdd = { viewModel.onAddOrEditShipping()},
+                            onEdit = { id -> viewModel.onAddOrEditShipping(id) }
                         )
                     }
                 }
