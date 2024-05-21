@@ -13,7 +13,8 @@ import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.commons.DataParameters.ORDERS_JSON
 import com.woocommerce.commons.DataParameters.ORDER_ID
 import com.woocommerce.commons.DataParameters.ORDER_PRODUCTS_JSON
-import com.woocommerce.commons.WearOrderProduct
+import com.woocommerce.commons.WearOrder
+import com.woocommerce.commons.WearOrderedProduct
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.OrderEntity
@@ -21,6 +22,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCWearableStore
 import javax.inject.Inject
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 
 class OrdersRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.ORDERS) private val ordersDataStore: DataStore<Preferences>,
@@ -53,13 +55,26 @@ class OrdersRepository @Inject constructor(
         siteId: Long
     ) = ordersDataStore.data
         .mapNotNull { it[stringPreferencesKey(generateOrdersKey(siteId))] }
-        .map { gson.fromJson(it, Array<OrderEntity>::class.java).toList() }
+        .map { gson.fromJson(it, Array<WearOrder>::class.java).toList() }
 
     suspend fun receiveOrdersDataFromPhone(data: DataMap) {
         val ordersJson = data.getString(ORDERS_JSON.value, "")
         val siteId = data.getSiteId(loginRepository.selectedSite)
-        val receivedOrders = gson.fromJson(ordersJson, Array<OrderEntity>::class.java).toList()
-        wearableStore.insertOrders(receivedOrders)
+        val receivedOrders = gson.fromJson(ordersJson, Array<WearOrder>::class.java).toList()
+        wearableStore.insertOrders(
+            orders = receivedOrders.map {
+                OrderEntity(
+                    orderId = it.id,
+                    localSiteId = LocalOrRemoteId.LocalId(siteId.toInt()),
+                    dateCreated = it.date,
+                    number = it.number,
+                    total = it.total,
+                    status = it.status,
+                    billingFirstName = it.billingFirstName,
+                    billingLastName = it.billingLastName
+                )
+            }
+        )
 
         ordersDataStore.edit { prefs ->
             prefs[stringPreferencesKey(generateOrdersKey(siteId))] = ordersJson
@@ -73,7 +88,7 @@ class OrdersRepository @Inject constructor(
         siteId: Long
     ) = ordersDataStore.data
         .mapNotNull { it[stringPreferencesKey(generateProductsKey(orderId, siteId))] }
-        .map { gson.fromJson(it, Array<WearOrderProduct>::class.java).toList() }
+        .map { gson.fromJson(it, Array<WearOrderedProduct>::class.java).toList() }
 
     suspend fun receiveOrderProductsDataFromPhone(data: DataMap) {
         val orderId = data.getLong(ORDER_ID.value, 0)

@@ -23,6 +23,7 @@ import com.woocommerce.commons.DataPath.ORDERS_DATA
 import com.woocommerce.commons.DataPath.ORDER_PRODUCTS_DATA
 import com.woocommerce.commons.DataPath.SITE_DATA
 import com.woocommerce.commons.DataPath.STATS_DATA
+import com.woocommerce.commons.WearOrder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
@@ -84,10 +85,22 @@ class WearableConnectionRepository @Inject constructor(
     }
 
     fun sendOrdersData() = coroutineScope.launch {
-        val orders = wearableStore.fetchOrders(
+        val fetchedOrders = wearableStore.fetchOrders(
             site = selectedSite.get(),
             shouldStoreData = false
         ).run { this as? Success }?.orders ?: emptyList()
+
+        val orders = fetchedOrders.map {
+            WearOrder(
+                id = it.orderId,
+                number = it.number,
+                date = it.dateCreated,
+                status = it.status,
+                total = it.total,
+                billingFirstName = it.billingFirstName,
+                billingLastName = it.billingLastName
+            )
+        }
 
         sendData(
             ORDERS_DATA,

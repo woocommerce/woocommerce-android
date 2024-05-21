@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.extensions.getStateFlow
+import com.woocommerce.android.extensions.toWearOrder
 import com.woocommerce.android.ui.NavArgs.ORDER_ID
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.orders.FormatOrderData
@@ -61,6 +62,7 @@ class OrderDetailsViewModel @Inject constructor(
                 }
             }.filterNotNull().map { (site, products) ->
                 ordersRepository.getOrderFromId(site, orderId)
+                    ?.toWearOrder()
                     ?.let { formatOrderData(site, it, products) }
             }.onEach {
                 presentOrderData(it)

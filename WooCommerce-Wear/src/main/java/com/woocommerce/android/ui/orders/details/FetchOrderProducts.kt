@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProduct
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Waiting
 import com.woocommerce.commons.MessagePath.REQUEST_ORDER_PRODUCTS
-import com.woocommerce.commons.WearOrderProduct
+import com.woocommerce.commons.WearOrderedProduct
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
@@ -44,7 +44,7 @@ class FetchOrderProducts @Inject constructor(
     sealed class OrderProductsRequest {
         data object Error : OrderProductsRequest()
         data object Waiting : OrderProductsRequest()
-        data class Finished(val products: List<WearOrderProduct>) : OrderProductsRequest()
+        data class Finished(val products: List<WearOrderedProduct>) : OrderProductsRequest()
     }
 
     companion object {
