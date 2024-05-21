@@ -35,7 +35,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
-import com.woocommerce.android.ui.orders.details.ShippingLineDetailsCard
 import java.math.BigDecimal
 
 @Composable
@@ -96,7 +95,6 @@ fun ShippingLineEditCard(
             )
             .clickable { onEdit(shippingLine) }
             .padding(dimensionResource(id = R.dimen.major_100))
-
 
     ) {
         Column(modifier = Modifier.weight(2f).align(Alignment.CenterVertically)) {

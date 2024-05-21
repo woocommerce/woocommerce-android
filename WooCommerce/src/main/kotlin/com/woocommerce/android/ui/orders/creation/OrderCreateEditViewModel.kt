@@ -259,8 +259,6 @@ class OrderCreateEditViewModel @Inject constructor(
             )
         }.asLiveData()
 
-
-
     val orderStatusData: LiveData<OrderStatus> = _orderDraft
         .map { it.status }
         .distinctUntilChanged()
