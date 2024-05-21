@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'danger-dangermattic', '~> 1.0'
+gem 'danger-dangermattic', '~> 1.1'
 gem 'fastlane', '~> 2.216'
 gem 'nokogiri'
 gem 'rubocop', '~> 1.60'
