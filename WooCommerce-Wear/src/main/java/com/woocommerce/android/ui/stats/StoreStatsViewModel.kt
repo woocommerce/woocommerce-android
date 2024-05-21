@@ -8,7 +8,7 @@ import com.woocommerce.android.ui.stats.datasource.FetchStats
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
-import com.woocommerce.commons.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull

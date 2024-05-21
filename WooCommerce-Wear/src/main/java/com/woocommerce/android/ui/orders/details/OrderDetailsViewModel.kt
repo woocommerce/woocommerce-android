@@ -10,7 +10,7 @@ import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Error
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
-import com.woocommerce.commons.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull

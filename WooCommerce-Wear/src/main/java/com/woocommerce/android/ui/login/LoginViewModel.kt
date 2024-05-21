@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.NavRoutes.MY_STORE
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Waiting
-import com.woocommerce.commons.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

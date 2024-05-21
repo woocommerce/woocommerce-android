@@ -10,7 +10,7 @@ import com.woocommerce.android.ui.orders.FormatOrderData
 import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
-import com.woocommerce.commons.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.commons.viewmodel.getStateFlow
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
