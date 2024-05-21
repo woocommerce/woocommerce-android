@@ -16,8 +16,8 @@
     "jsonBody": {
       "date": "{{fnow format='yyyy-MM-dd'}}",
       "period": "month",
-      "views": 12000,
-      "visitors": 12000,
+      "views": 440,
+      "visitors": 440,
       "likes": 0,
       "reblogs": 0,
       "comments": 0,
