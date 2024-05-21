@@ -422,7 +422,7 @@ class OrderCreateEditFormFragment :
                             shippingLineDetails = shippingLines,
                             formatCurrency = { amount -> currencyFormatter.formatCurrency(amount) },
                             modifier = Modifier.padding(bottom = 1.dp),
-                            onAdd = { viewModel.onAddOrEditShipping()},
+                            onAdd = { viewModel.onAddOrEditShipping() },
                             onEdit = { id -> viewModel.onAddOrEditShipping(id) }
                         )
                     }

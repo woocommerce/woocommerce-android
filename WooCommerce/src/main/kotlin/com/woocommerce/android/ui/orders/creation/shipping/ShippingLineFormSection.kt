@@ -100,9 +100,11 @@ fun ShippingLineEditCard(
             .padding(dimensionResource(id = R.dimen.major_100))
 
     ) {
-        Column(modifier = Modifier
-            .weight(2f)
-            .align(Alignment.CenterVertically)) {
+        Column(
+            modifier = Modifier
+                .weight(2f)
+                .align(Alignment.CenterVertically)
+        ) {
             Text(
                 text = shippingLine.name,
                 style = TextStyle(
