@@ -117,7 +117,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
             if (dateRangeState.value?.customRange == null) {
                 onEditCustomRangeTapped()
             } else {
-                appPrefs.setActiveTopPerformersTab(SelectionType.CUSTOM.name)
+                appPrefs.setActiveCouponsTab(SelectionType.CUSTOM.name)
             }
         }
     }

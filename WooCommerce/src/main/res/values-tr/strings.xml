@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-07 12:54:04+0000
+Translation-Revision-Date: 2024-05-14 13:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="product_category_clear_parent">Üst kategoriyi temizle</string>
+    <string name="product_list_fetch_error">Ürünler getirilirken hata oluştu!</string>
+    <string name="order_creation_add_shipping_method_select_hint">Gönderim yöntemi seç</string>
+    <string name="order_creation_add_shipping_name_hint">Gönderim</string>
+    <string name="order_creation_add_shipping_name">Ad</string>
+    <string name="order_creation_add_shipping_method">Yöntem</string>
+    <string name="order_creation_shipping_add">Gönderim Ekle</string>
+    <string name="order_creation_shipping_methods_error">Gönderim yöntemleriniz getirilirken hata oluştu. Lütfen tekrar deneyin</string>
+    <string name="order_creation_shipping_methods_title">Yöntem</string>
+    <string name="custom_amounts_percentage_invalid_value">Geçersiz değer</string>
+    <string name="my_store_widget_onboarding_title">Mağaza kurulumu</string>
+    <string name="my_store_edit_screen_widgets">Özelleştir</string>
     <string name="blaze_campaign_show_all_button">Tüm kampanyaları görüntüle</string>
     <string name="blaze_campaign_suggested_product_caption">Önerilen ürün</string>
     <string name="dynamic_dashboard_widget_error_description">Bu kartı yeniden yüklemeyi deneyin. Sorun devam ederse lütfen &lt;a href=\"support\"&gt;desteğe başvurun&lt;/a&gt;.</string>
@@ -21,9 +33,7 @@ Language: tr
     <string name="analytics_session_no_available">Oturum verileri kullanılamıyor</string>
     <string name="my_store_widget_unavailable">Kullanılamıyor</string>
     <string name="my_store_widget_stats_title">Performans</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">Tüm mağaza analizlerini görüntüle</string>
     <string name="dashboard_stats_custom_range_label">Özel</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">Öğe seçildi</string>
     <string name="dashboard_stats_edit_granularity_content_description">Tarih aralığını değiştirme düğmesi</string>
     <string name="images_unavailable_notice">Siteniz Özel olarak işaretlendiğinden görseller kullanılamıyor. Çok Yakında moduna geçerek bunu değiştirebilirsiniz.\n</string>
     <string name="card_selection_control">Analiz kartı seçimi</string>
@@ -64,13 +74,7 @@ Language: tr
     <string name="analytics_bundles_list_header_title">Paketler</string>
     <string name="analytics_bundles_list_items_sold">Satılan paketler</string>
     <string name="my_store_widget_blaze_title">Kampanyaları öne çıkarın</string>
-    <string name="my_store_widget_top_products_title">En popüler ürünler</string>
-    <string name="my_store_widget_onboarding_title">İlk Katılım</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">Mağaza İlk Katılımı</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze Kampanyaları</string>
-    <string name="my_store_edit_screen_widget_top_performers">En Performanslı Ürünler</string>
-    <string name="my_store_edit_screen_widget_stats">Mağaza İstatistikleri</string>
-    <string name="my_store_edit_screen_widgets">Mağazanızın bölümlerini düzenleyin</string>
+    <string name="my_store_widget_top_products_title">En yüksek performans gösterenler</string>
     <string name="product_list_unsaved_product_unselected_message">Bu üründe yaptığınız değişikliklerden vazgeçmek istediğinizden emin misiniz?</string>
     <string name="product_list_unsaved_product_unselected_title">%s ürününde yapılan değişikliklerden vazgeçmek üzeresiniz.</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">İstatistikler özelliği, ziyaretçiler ve dönüşüm verilerinin isteğe bağlı tarih aralıkları için görüntülenmesini desteklemiyor.\n\nAncak bu belirli aralık için ziyaretçileri ve dönüşümleri görmek için grafikte bir değere tıklayabilirsiniz.</string>
@@ -94,6 +98,7 @@ Language: tr
     <string name="domain_picker_suggestions_title">Öneriler</string>
     <string name="domain_picker_hint">Bir alan adı yazın</string>
     <string name="domain_picker_title">Bir alan adı seçin</string>
+    <string name="analytics_section_see_all">Tüm mağaza analizlerini görüntüle</string>
     <string name="my_store_custom_range_granularity_year">Yıllık</string>
     <string name="my_store_custom_range_granularity_month">Aylık</string>
     <string name="my_store_custom_range_granularity_week">Haftalık</string>
@@ -484,9 +489,7 @@ Language: tr
     <string name="card_reader_tap_to_pay_about_how_works_4">4. Müşteriniz kartını telefonunuzun üzerinde temassız simgesinin üstünde yatay olarak tutar.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Telefonunuzu müşteriye gösterin.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. “Ödemeyi Al” seçeneğine dokunun ve ardından “Tap to Pay” seçeneğini belirleyin.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">ödeme alın</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">Sipariş oluştur</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s veya %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Sipariş oluşturun</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">Nasıl çalışır?</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">Kart okuyucular hakkında daha fazla bilgi edinin</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">Bu sınırın üzerindeki ödemeleri kabul etmek için PIN girdisi kabul eden bir kart okuyucu satın almayı düşünün.</string>
@@ -1595,6 +1598,7 @@ Language: tr
     <string name="order_creation_add_shipping">Gönderim ekle</string>
     <string name="order_creation_shipping_title_add">Gönderim Ekle</string>
     <string name="order_creation_shipping_name">İsim</string>
+    <string name="order_creation_add_shipping_amount">Tutar</string>
     <string name="order_creation_payment_fee">Masraflar</string>
     <string name="order_creation_customer_details">Müşteri bilgileri</string>
     <string name="order_creation_add_fee">Ücret ekle</string>
@@ -2336,9 +2340,6 @@ Language: tr
     <string name="upsells_label">Yukarı satışlar</string>
     <string name="product_detail_linked_products">Bağlı ürünler</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">Bizimle iletişim kurun</string>
-    <string name="my_store_stats_availability_description">Sitenizde en son WooCommerce sürümünü çalıştırdığınızdan ve WooCommerce Admin\'i etkinleştirdiğinizden emin olun.\n\nHâlâ yardıma ihtiyacınız var mı? %1$s</string>
-    <string name="my_store_stats_availability_title">Mağazanızın analizlerini gösteremiyoruz</string>
     <string name="login_get_link_by_email">E-posta ile bir oturum açma bağlantısı alın</string>
     <string name="email_not_registered_wpcom">Bu e-posta hesabına bağlı bir WordPress.com hesabı bulamıyoruz.</string>
     <string name="settings_enable_product_addons_teaser_message">Biz lansmana hazırlanırken siz de Sipariş Eklentilerini görüntüleme işlevini test edin</string>
@@ -2584,8 +2585,6 @@ Language: tr
     <string name="settings_app_theme_title">Görünüm</string>
     <string name="product_short_description_empty">Ürünle ilgili kısa bir özet</string>
     <string name="product_short_description">Kısa açıklama</string>
-    <string name="my_store_stats_reverted_message">Analizlerimiz için iyileştirmeler yaptık. İstatistiklerinizi 1 Eylül 2020\'den sonra da görmeye devam etmek için WooCommerce 4.0 veya daha üst bir sürüme yükseltin veya WooCommerce Yönetici eklentisini yükleyin.</string>
-    <string name="my_store_stats_reverted_title">İstatistiklerinizi görmeye devam etmek için yeni sürüme geçin</string>
     <string name="product_pricing_update_sale_price_error">Satış fiyatı normal fiyattan düşük olmalıdır</string>
     <string name="product_schedule_remove_end_date_link_label">Bitiş tarihini kaldır</string>
     <string name="product_shipping_empty">Nakliye bilgisi ekle</string>
@@ -3362,7 +3361,6 @@ Language: tr
     <string name="dashboard_action_view_order">Siparişi Görüntüle</string>
     <string name="dashboard_top_performers_empty">Bu dönemde hiç etkinlik yok</string>
     <string name="dashboard_top_performers_total_orders">Toplam sipariş: %s</string>
-    <string name="dashboard_top_performers_title">En yüksek performans gösterenler</string>
     <string name="dashboard_stats_error_content_description">Görsel hatası</string>
     <string name="dashboard_stats_error">Veri almada hata</string>
     <string name="dashboard_stats_revenue">Kazanç</string>

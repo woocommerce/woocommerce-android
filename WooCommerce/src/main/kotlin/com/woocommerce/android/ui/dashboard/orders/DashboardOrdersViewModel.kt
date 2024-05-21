@@ -114,6 +114,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                                     .first { option -> option.key == order.status.value }.label
 
                                 ViewState.OrderItem(
+                                    id = order.id,
                                     number = "#${order.number}",
                                     date = order.dateCreated.formatToMMMdd(),
                                     customerName = order.billingName.ifEmpty {
@@ -175,6 +176,10 @@ class DashboardOrdersViewModel @AssistedInject constructor(
         selectedFilter.value = filter.key
     }
 
+    fun onOrderClicked(orderId: Long) {
+        triggerEvent(NavigateToOrderDetails(orderId))
+    }
+
     sealed class ViewState {
         data object Loading : ViewState()
         data class Error(val message: String) : ViewState()
@@ -187,6 +192,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
         @StringRes val title: Int = ORDERS.titleResource
 
         data class OrderItem(
+            val id: Long,
             val number: String,
             val date: String,
             val customerName: String,
@@ -202,4 +208,5 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     }
 
     data object NavigateToOrders : MultiLiveEvent.Event()
+    data class NavigateToOrderDetails(val orderId: Long) : MultiLiveEvent.Event()
 }
