@@ -1,28 +1,19 @@
 package com.woocommerce.android.ui.dashboard.stats
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -32,13 +23,13 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.WCAdminNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
@@ -113,7 +104,8 @@ fun DashboardStatsCard(
             }
 
             else -> {
-                PluginNotAvailableError(
+                WCAdminNotAvailableErrorView(
+                    title = stringResource(id = R.string.my_store_stats_plugin_inactive_title),
                     onContactSupportClick = parentViewModel::onContactSupportClicked
                 )
             }
@@ -243,39 +235,6 @@ private fun StatsChart(
         visitorsStatsState?.let {
             statsView.showVisitorStats(it)
         }
-    }
-}
-
-@Composable
-private fun PluginNotAvailableError(onContactSupportClick: () -> Unit) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_empty_search),
-            contentDescription = null
-        )
-
-        Text(
-            text = stringResource(id = R.string.my_store_stats_plugin_inactive_title),
-            style = MaterialTheme.typography.h6,
-            textAlign = TextAlign.Center
-        )
-
-        Text(
-            text = stringResource(id = R.string.my_store_stats_plugin_inactive_description),
-            style = MaterialTheme.typography.body1,
-            textAlign = TextAlign.Center
-        )
-
-        WCOutlinedButton(
-            text = stringResource(id = R.string.my_store_stats_plugin_inactive_contact_us),
-            onClick = onContactSupportClick
-        )
     }
 }
 
