@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.dashboard.orders
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.navOptions
 import com.woocommerce.android.R
@@ -33,12 +36,14 @@ import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
+import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.NavigateToOrderDetails
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.NavigateToOrders
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Content
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Error
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.Loading
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersViewModel.ViewState.OrderItem
 import com.woocommerce.android.ui.orders.filters.data.OrderStatusOption
+import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 @Composable
@@ -63,7 +68,8 @@ fun DashboardOrdersCard(
                         selectedFilter = state.selectedFilter,
                         filterOptions = state.filterOptions,
                         onFilterSelected = viewModel::onFilterSelected,
-                        orders = state.orders
+                        orders = state.orders,
+                        onOrderClicked = { order -> viewModel.onOrderClicked(order.id) }
                     )
                 }
                 is Error -> WidgetError(
@@ -82,6 +88,17 @@ fun DashboardOrdersCard(
 private fun HandleEvents(
     event: LiveData<Event>
 ) {
+    fun NavController.navigateToOrders() {
+        navigateSafely(
+            resId = R.id.orders,
+            navOptions = navOptions {
+                popUpTo(graph.findStartDestination().id) {
+                    saveState = true
+                }
+            }
+        )
+    }
+
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -89,13 +106,14 @@ private fun HandleEvents(
         val observer = Observer { event: Event ->
             when (event) {
                 is NavigateToOrders -> {
+                    navController.navigateToOrders()
+                }
+                is NavigateToOrderDetails -> {
+                    navController.navigateToOrders()
                     navController.navigateSafely(
-                        resId = R.id.orders,
-                        navOptions = navOptions {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                        }
+                        directions = OrderListFragmentDirections
+                            .actionOrderListFragmentToOrderDetailFragment(event.orderId, longArrayOf()),
+                        skipThrottling = true
                     )
                 }
             }
@@ -134,7 +152,8 @@ fun TopOrders(
     selectedFilter: OrderStatusOption,
     filterOptions: List<OrderStatusOption>,
     onFilterSelected: (OrderStatusOption) -> Unit,
-    orders: List<OrderItem>
+    orders: List<OrderItem>,
+    onOrderClicked: (OrderItem) -> Unit
 ) {
     Column {
         Header(
@@ -143,7 +162,7 @@ fun TopOrders(
             onFilterSelected = onFilterSelected
         )
         orders.forEach { order ->
-            OrderListItem(order)
+            OrderListItem(order, onOrderClicked)
 
             Divider(
                 modifier = Modifier
@@ -234,10 +253,12 @@ private fun LoadingItem() {
 
 @Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
-private fun OrderListItem(order: OrderItem) {
+private fun OrderListItem(order: OrderItem, onOrderClicked: (OrderItem) -> Unit) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
+            .focusable(true)
+            .clickable(onClick = { onOrderClicked(order) })
             .padding(16.dp)
     ) {
         val (number, date, name, status, total) = createRefs()
@@ -306,6 +327,7 @@ fun PreviewTopOrders() {
     TopOrders(
         orders = listOf(
             OrderItem(
+                id = 0L,
                 number = "123",
                 date = "2021-09-01",
                 customerName = "John Doe",
@@ -314,6 +336,7 @@ fun PreviewTopOrders() {
                 totalPrice = "$100.00"
             ),
             OrderItem(
+                id = 0L,
                 number = "124",
                 date = "2021-09-02",
                 customerName = "Jane Doe",
@@ -342,7 +365,8 @@ fun PreviewTopOrders() {
                 isSelected = false
             )
         ),
-        onFilterSelected = {}
+        onFilterSelected = {},
+        onOrderClicked = {}
     )
 }
 
