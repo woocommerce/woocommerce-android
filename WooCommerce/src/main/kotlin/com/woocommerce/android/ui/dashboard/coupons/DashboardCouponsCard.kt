@@ -165,11 +165,11 @@ private fun DashboardCouponsCard(
             titleResource = R.string.dashboard_coupons_view_all_button,
             action = onViewAllClick
         ),
-        isError = viewState is Error,
+        isError = viewState is State.Error,
         modifier = modifier
     ) {
         Column {
-            if (viewState !is Error) {
+            if (viewState !is State.Error) {
                 DashboardDateRangeHeader(
                     rangeSelection = dateRangeState.rangeSelection,
                     dateFormatted = dateRangeState.rangeFormatted,
