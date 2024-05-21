@@ -1243,9 +1243,10 @@ class OrderCreateEditViewModel @Inject constructor(
         _selectedGiftCard.update { selectedGiftCard }
     }
 
-    fun onShippingButtonClicked() {
+    fun onAddOrEditShipping(itemId: Long? = null) {
         tracker.track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
-        triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
+        val shippingLine = itemId?.let { id -> currentDraft.shippingLines.firstOrNull { it.itemId == id } }
+        triggerEvent(EditShipping(shippingLine))
     }
 
     fun onCreateOrderClicked(order: Order, isTablet: Boolean = false) {
@@ -1528,18 +1529,30 @@ class OrderCreateEditViewModel @Inject constructor(
             }
         )
         _orderDraft.update { draft ->
-            val shipping: List<ShippingLine> = draft.shippingLines.map { shippingLine ->
-                if (shippingLine.itemId == shippingUpdateResult.id) {
-                    shippingLine.copy(
-                        methodId = shippingUpdateResult.methodId ?: "other",
-                        total = shippingUpdateResult.amount,
-                        methodTitle = shippingUpdateResult.name
-                    )
-                } else {
-                    shippingLine
+            val shipping = when {
+                shippingUpdateResult.id != null -> draft.shippingLines.map { shippingLine ->
+                    if (shippingLine.itemId == shippingUpdateResult.id) {
+                        shippingLine.copy(
+                            methodId = shippingUpdateResult.methodId ?: "other",
+                            total = shippingUpdateResult.amount,
+                            methodTitle = shippingUpdateResult.name
+                        )
+                    } else {
+                        shippingLine
+                    }
                 }
-            }.ifEmpty {
-                listOf(
+
+                draft.shippingLines.isNotEmpty() -> draft.shippingLines.toMutableList().also {
+                    it.add(
+                        ShippingLine(
+                            methodId = shippingUpdateResult.methodId ?: "other",
+                            total = shippingUpdateResult.amount,
+                            methodTitle = shippingUpdateResult.name
+                        )
+                    )
+                }
+
+                else -> listOf(
                     ShippingLine(
                         methodId = shippingUpdateResult.methodId ?: "other",
                         total = shippingUpdateResult.amount,
