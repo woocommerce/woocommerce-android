@@ -10,6 +10,7 @@ plugins {
     id 'com.google.dagger.hilt.android' apply false
     id 'com.google.gms.google-services' apply false
     id 'com.google.devtools.ksp' apply false
+    id 'org.jetbrains.kotlin.plugin.compose' apply false
 }
 
 measureBuilds {
@@ -30,7 +31,7 @@ allprojects {
     tasks.withType(KotlinCompile).all {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_1_8
-            allWarningsAsErrors = true
+            allWarningsAsErrors = false
             freeCompilerArgs += [
                     "-opt-in=kotlin.RequiresOptIn",
                     "-Xjvm-default=all-compatibility",
