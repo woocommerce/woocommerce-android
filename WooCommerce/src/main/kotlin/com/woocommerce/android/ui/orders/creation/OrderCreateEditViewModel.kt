@@ -385,6 +385,7 @@ class OrderCreateEditViewModel @Inject constructor(
             shippingLines.map { shippingLine ->
                 val method = shippingLine.methodId?.let { shippingMethodsMap[it] }
                 OrderDetailViewModel.ShippingLineDetails(
+                    id = shippingLine.itemId,
                     name = shippingLine.methodTitle,
                     shippingMethod = method,
                     amount = shippingLine.total
