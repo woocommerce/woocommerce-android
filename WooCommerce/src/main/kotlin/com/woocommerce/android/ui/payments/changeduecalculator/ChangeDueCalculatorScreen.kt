@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import java.math.BigDecimal
 
 @Composable
 fun ChangeDueCalculatorScreen(
