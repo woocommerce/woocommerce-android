@@ -3,13 +3,13 @@ package com.woocommerce.android.ui.stats
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.extensions.getStateFlow
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.stats.datasource.FetchStats
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
-import com.woocommerce.commons.viewmodel.ScopedViewModel
-import com.woocommerce.commons.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn

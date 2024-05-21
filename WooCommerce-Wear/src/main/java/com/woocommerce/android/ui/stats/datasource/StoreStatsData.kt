@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.stats.datasource
 
-import com.woocommerce.commons.extensions.convertedFrom
+import com.woocommerce.android.extensions.convertedFrom
 
 data class StoreStatsData(
     private val revenueData: RevenueData?,

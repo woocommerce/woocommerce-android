@@ -1,8 +1,7 @@
-package com.woocommerce.commons.di
+package com.woocommerce.android.di
 
 import android.content.Context
 import com.google.android.gms.wearable.CapabilityClient
-import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.Wearable
 import dagger.Module
@@ -14,12 +13,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class WearableClientModule {
-    @Provides
-    @Singleton
-    fun provideDataClient(
-        appContext: Context
-    ): DataClient = Wearable.getDataClient(appContext)
-
     @Provides
     @Singleton
     fun provideMessageClient(

@@ -7,22 +7,23 @@ import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.gson.Gson
 import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.commons.wear.DataParameters.CONVERSION_RATE
-import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
-import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
-import com.woocommerce.commons.wear.DataParameters.ORDER_ID
-import com.woocommerce.commons.wear.DataParameters.ORDER_PRODUCTS_JSON
-import com.woocommerce.commons.wear.DataParameters.SITE_ID
-import com.woocommerce.commons.wear.DataParameters.SITE_JSON
-import com.woocommerce.commons.wear.DataParameters.TIMESTAMP
-import com.woocommerce.commons.wear.DataParameters.TOKEN
-import com.woocommerce.commons.wear.DataParameters.TOTAL_REVENUE
-import com.woocommerce.commons.wear.DataParameters.VISITORS_TOTAL
-import com.woocommerce.commons.wear.DataPath
-import com.woocommerce.commons.wear.DataPath.ORDERS_DATA
-import com.woocommerce.commons.wear.DataPath.ORDER_PRODUCTS_DATA
-import com.woocommerce.commons.wear.DataPath.SITE_DATA
-import com.woocommerce.commons.wear.DataPath.STATS_DATA
+import com.woocommerce.commons.DataParameters.CONVERSION_RATE
+import com.woocommerce.commons.DataParameters.ORDERS_COUNT
+import com.woocommerce.commons.DataParameters.ORDERS_JSON
+import com.woocommerce.commons.DataParameters.ORDER_ID
+import com.woocommerce.commons.DataParameters.ORDER_PRODUCTS_JSON
+import com.woocommerce.commons.DataParameters.SITE_ID
+import com.woocommerce.commons.DataParameters.SITE_JSON
+import com.woocommerce.commons.DataParameters.TIMESTAMP
+import com.woocommerce.commons.DataParameters.TOKEN
+import com.woocommerce.commons.DataParameters.TOTAL_REVENUE
+import com.woocommerce.commons.DataParameters.VISITORS_TOTAL
+import com.woocommerce.commons.DataPath
+import com.woocommerce.commons.DataPath.ORDERS_DATA
+import com.woocommerce.commons.DataPath.ORDER_PRODUCTS_DATA
+import com.woocommerce.commons.DataPath.SITE_DATA
+import com.woocommerce.commons.DataPath.STATS_DATA
+import com.woocommerce.commons.WearOrder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
@@ -84,10 +85,22 @@ class WearableConnectionRepository @Inject constructor(
     }
 
     fun sendOrdersData() = coroutineScope.launch {
-        val orders = wearableStore.fetchOrders(
+        val fetchedOrders = wearableStore.fetchOrders(
             site = selectedSite.get(),
             shouldStoreData = false
         ).run { this as? Success }?.orders ?: emptyList()
+
+        val orders = fetchedOrders.map {
+            WearOrder(
+                id = it.orderId,
+                number = it.number,
+                date = it.dateCreated,
+                status = it.status,
+                total = it.total,
+                billingFirstName = it.billingFirstName,
+                billingLastName = it.billingLastName
+            )
+        }
 
         sendData(
             ORDERS_DATA,

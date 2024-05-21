@@ -4,9 +4,9 @@ import android.content.Context
 import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.commons.wear.orders.WearOrderProduct
+import com.woocommerce.commons.WearOrder
+import com.woocommerce.commons.WearOrderedProduct
 import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.Locale
@@ -20,18 +20,18 @@ class FormatOrderData @Inject constructor(
 ) {
     operator fun invoke(
         selectedSite: SiteModel,
-        order: OrderEntity,
-        products: List<WearOrderProduct>?
+        order: WearOrder,
+        products: List<WearOrderedProduct>?
     ) = order.toOrderItem(selectedSite, products)
 
     operator fun invoke(
         selectedSite: SiteModel,
-        orders: List<OrderEntity>
+        orders: List<WearOrder>
     ) = orders.map { it.toOrderItem(selectedSite) }
 
-    private fun OrderEntity.toOrderItem(
+    private fun WearOrder.toOrderItem(
         selectedSite: SiteModel,
-        products: List<WearOrderProduct>? = null
+        products: List<WearOrderedProduct>? = null
     ): OrderItem {
         val orderProducts = products?.map {
             ProductItem(
@@ -53,9 +53,7 @@ class FormatOrderData @Inject constructor(
             applyDecimalFormatting = true
         )
 
-        val formattedCreationDate = dateUtils.getFormattedDateWithSiteTimeZone(
-            dateCreated
-        ) ?: dateCreated
+        val formattedCreationDate = dateUtils.getFormattedDateWithSiteTimeZone(date) ?: date
 
         val formattedBillingName = takeUnless {
             billingFirstName.isEmpty() && billingLastName.isEmpty()
@@ -68,7 +66,7 @@ class FormatOrderData @Inject constructor(
         val formattedNumber = "#$number"
 
         return OrderItem(
-            id = orderId,
+            id = id,
             date = formattedCreationDate,
             number = formattedNumber,
             customerName = formattedBillingName,

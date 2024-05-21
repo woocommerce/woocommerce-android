@@ -8,11 +8,11 @@ import com.google.android.gms.wearable.MessageClient
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.stats.datasource.StatsRepository
-import com.woocommerce.commons.wear.DataPath.ORDERS_DATA
-import com.woocommerce.commons.wear.DataPath.ORDER_PRODUCTS_DATA
-import com.woocommerce.commons.wear.DataPath.SITE_DATA
-import com.woocommerce.commons.wear.DataPath.STATS_DATA
-import com.woocommerce.commons.wear.MessagePath
+import com.woocommerce.commons.DataPath.ORDERS_DATA
+import com.woocommerce.commons.DataPath.ORDER_PRODUCTS_DATA
+import com.woocommerce.commons.DataPath.SITE_DATA
+import com.woocommerce.commons.DataPath.STATS_DATA
+import com.woocommerce.commons.MessagePath
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

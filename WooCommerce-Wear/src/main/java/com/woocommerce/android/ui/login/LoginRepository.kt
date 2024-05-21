@@ -8,8 +8,8 @@ import com.google.android.gms.wearable.DataMap
 import com.google.gson.Gson
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
-import com.woocommerce.commons.wear.DataParameters.SITE_JSON
-import com.woocommerce.commons.wear.DataParameters.TOKEN
+import com.woocommerce.commons.DataParameters.SITE_JSON
+import com.woocommerce.commons.DataParameters.TOKEN
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,18 +1,19 @@
 package com.woocommerce.android.ui.orders.list
 
 import com.woocommerce.android.extensions.combineWithTimeout
+import com.woocommerce.android.extensions.toWearOrder
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Error
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
-import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDERS
+import com.woocommerce.commons.MessagePath.REQUEST_ORDERS
+import com.woocommerce.commons.WearOrder
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
-import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCWearableStore.OrdersForWearablesResult.Success
 import javax.inject.Inject
@@ -36,13 +37,13 @@ class FetchOrders @Inject constructor(
 
     private suspend fun selectOrdersDataSource(
         selectedSite: SiteModel
-    ): Flow<List<OrderEntity>> {
+    ): Flow<List<WearOrder>> {
         return when {
             networkStatus.isConnected() -> flow {
                 when (val result = ordersRepository.fetchOrders(selectedSite)) {
                     is Success -> result.orders
                     else -> emptyList()
-                }.let { emit(it) }
+                }.map { it.toWearOrder() }.let { emit(it) }
             }
             phoneRepository.isPhoneConnectionAvailable() -> {
                 phoneRepository.sendMessage(REQUEST_ORDERS)
@@ -50,6 +51,7 @@ class FetchOrders @Inject constructor(
             }
             else -> flow {
                 val orders = ordersRepository.getStoredOrders(selectedSite)
+                    .map { it.toWearOrder() }
                 emit(orders)
             }
         }
@@ -58,6 +60,6 @@ class FetchOrders @Inject constructor(
     sealed class OrdersRequest {
         data object Error : OrdersRequest()
         data object Waiting : OrdersRequest()
-        data class Finished(val orders: List<OrderEntity>) : OrdersRequest()
+        data class Finished(val orders: List<WearOrder>) : OrdersRequest()
     }
 }

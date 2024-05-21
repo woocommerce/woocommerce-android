@@ -1,4 +1,4 @@
-package com.woocommerce.commons.extensions
+package com.woocommerce.android.extensions
 
 import java.text.DecimalFormat
 
