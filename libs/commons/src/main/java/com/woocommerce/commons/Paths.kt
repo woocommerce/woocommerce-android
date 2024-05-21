@@ -1,4 +1,4 @@
-package com.woocommerce.commons.wear
+package com.woocommerce.commons
 
 enum class MessagePath(val value: String) {
     REQUEST_SITE("/request-site"),

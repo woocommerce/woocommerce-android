@@ -6,8 +6,8 @@ import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Error
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Waiting
-import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDER_PRODUCTS
-import com.woocommerce.commons.wear.orders.WearOrderProduct
+import com.woocommerce.commons.MessagePath.REQUEST_ORDER_PRODUCTS
+import com.woocommerce.commons.WearOrderProduct
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf

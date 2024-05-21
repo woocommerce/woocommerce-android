@@ -5,7 +5,7 @@ import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Waiting
-import com.woocommerce.commons.wear.MessagePath.REQUEST_SITE
+import com.woocommerce.commons.MessagePath.REQUEST_SITE
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

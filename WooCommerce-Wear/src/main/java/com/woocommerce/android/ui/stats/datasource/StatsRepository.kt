@@ -14,9 +14,9 @@ import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.stats.datasource.StoreStatsData.RevenueData
 import com.woocommerce.android.ui.stats.range.TodayRangeData
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.commons.wear.DataParameters.ORDERS_COUNT
-import com.woocommerce.commons.wear.DataParameters.TOTAL_REVENUE
-import com.woocommerce.commons.wear.DataParameters.VISITORS_TOTAL
+import com.woocommerce.commons.DataParameters.ORDERS_COUNT
+import com.woocommerce.commons.DataParameters.TOTAL_REVENUE
+import com.woocommerce.commons.DataParameters.VISITORS_TOTAL
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.SiteModel

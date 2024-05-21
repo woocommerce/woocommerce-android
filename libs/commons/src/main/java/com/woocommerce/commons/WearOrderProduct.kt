@@ -1,4 +1,4 @@
-package com.woocommerce.commons.wear.orders
+package com.woocommerce.commons
 
 data class WearOrderProduct(
     val amount: String,

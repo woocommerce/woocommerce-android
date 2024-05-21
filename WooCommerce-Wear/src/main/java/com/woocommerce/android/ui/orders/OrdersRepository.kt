@@ -10,10 +10,10 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.extensions.getSiteId
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.commons.wear.DataParameters.ORDERS_JSON
-import com.woocommerce.commons.wear.DataParameters.ORDER_ID
-import com.woocommerce.commons.wear.DataParameters.ORDER_PRODUCTS_JSON
-import com.woocommerce.commons.wear.orders.WearOrderProduct
+import com.woocommerce.commons.DataParameters.ORDERS_JSON
+import com.woocommerce.commons.DataParameters.ORDER_ID
+import com.woocommerce.commons.DataParameters.ORDER_PRODUCTS_JSON
+import com.woocommerce.commons.WearOrderProduct
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.OrderEntity

@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
 import com.woocommerce.android.ui.stats.datasource.StoreStatsData.RevenueData
-import com.woocommerce.commons.wear.MessagePath
+import com.woocommerce.commons.MessagePath
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine

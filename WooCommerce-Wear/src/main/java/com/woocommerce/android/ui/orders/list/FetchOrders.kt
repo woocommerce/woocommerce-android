@@ -7,7 +7,7 @@ import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Error
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
-import com.woocommerce.commons.wear.MessagePath.REQUEST_ORDERS
+import com.woocommerce.commons.MessagePath.REQUEST_ORDERS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull

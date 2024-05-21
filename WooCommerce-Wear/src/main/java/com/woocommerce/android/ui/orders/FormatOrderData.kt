@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Parcelable
 import com.woocommerce.android.R
 import com.woocommerce.android.util.DateUtils
-import com.woocommerce.commons.wear.orders.WearOrderProduct
+import com.woocommerce.commons.WearOrderProduct
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
