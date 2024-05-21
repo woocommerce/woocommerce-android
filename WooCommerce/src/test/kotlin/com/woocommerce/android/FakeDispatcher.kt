@@ -4,7 +4,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 
-class FakeDispatcher : Dispatcher() {
+class FakeDispatcher(private val dispatchCallback: Dispatcher.(action: Action<*>) -> Unit = {}) : Dispatcher() {
     private val listeners = mutableListOf<Any>()
 
     @Synchronized
@@ -31,7 +31,7 @@ class FakeDispatcher : Dispatcher() {
         }
     }
 
-    override fun dispatch(action: Action<*>?) {
-        // NO-OP
+    override fun dispatch(action: Action<*>) {
+        dispatchCallback(action)
     }
 }

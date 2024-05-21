@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-08 09:54:06+0000
+Translation-Revision-Date: 2024-05-14 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="product_category_clear_parent">清除父级分类</string>
+    <string name="product_list_fetch_error">获取产品时出错！</string>
+    <string name="order_creation_add_shipping_method_select_hint">选择配送方式</string>
+    <string name="order_creation_add_shipping_name_hint">配送</string>
+    <string name="order_creation_add_shipping_name">名称</string>
+    <string name="order_creation_add_shipping_method">方式</string>
+    <string name="order_creation_shipping_add">添加配送信息</string>
+    <string name="order_creation_shipping_methods_error">获取配送方式时出错。 请重试</string>
+    <string name="order_creation_shipping_methods_title">方式</string>
+    <string name="custom_amounts_percentage_invalid_value">无效值</string>
+    <string name="my_store_widget_onboarding_title">商店设置</string>
+    <string name="my_store_edit_screen_widgets">自定义</string>
     <string name="blaze_campaign_show_all_button">查看所有广告活动</string>
     <string name="blaze_campaign_suggested_product_caption">建议产品</string>
     <string name="dynamic_dashboard_widget_error_description">尝试重新加载此卡。 如果问题仍然存在，请&lt;a href=\"support\"&gt;联系支持人员&lt;/a&gt;。</string>
@@ -21,9 +33,7 @@ Language: zh_CN
     <string name="analytics_session_no_available">会话数据不可用</string>
     <string name="my_store_widget_unavailable">不可用</string>
     <string name="my_store_widget_stats_title">业绩</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">查看所有商店分析数据</string>
     <string name="dashboard_stats_custom_range_label">自定义</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">已选择项目</string>
     <string name="dashboard_stats_edit_granularity_content_description">更改日期范围按钮</string>
     <string name="images_unavailable_notice">图片不可用，因为您的站点已标记为“私人”。 您可以切换至“即将推出”模式来更改此设置。\n</string>
     <string name="card_selection_control">分析卡选择</string>
@@ -64,13 +74,7 @@ Language: zh_CN
     <string name="analytics_bundles_list_header_title">捆绑</string>
     <string name="analytics_bundles_list_items_sold">已售捆绑</string>
     <string name="my_store_widget_blaze_title">Blaze 广告活动</string>
-    <string name="my_store_widget_top_products_title">热门产品</string>
-    <string name="my_store_widget_onboarding_title">入门流程</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">商店入门流程</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze 广告活动</string>
-    <string name="my_store_edit_screen_widget_top_performers">热销产品</string>
-    <string name="my_store_edit_screen_widget_stats">商店统计信息</string>
-    <string name="my_store_edit_screen_widgets">编辑我的商店的各个部分</string>
+    <string name="my_store_widget_top_products_title">热销产品</string>
     <string name="product_list_unsaved_product_unselected_message">是否确定要放弃您对此产品所做的更改？</string>
     <string name="product_list_unsaved_product_unselected_title">您将放弃对 %s 所做的更改</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">统计信息功能不支持显示任意日期范围内的访客人数和转化数据。\n\n但您可以点击图表上的某个值，查看该特定范围内的访客人数和转化数据。</string>
@@ -103,6 +107,7 @@ Language: zh_CN
     <string name="login_site_picker_add_a_store">关联另一家商店</string>
     <string name="login_prologue_start_new_store">开设新商店？</string>
     <string name="store_name_default">商店名称</string>
+    <string name="analytics_section_see_all">查看所有商店分析数据</string>
     <string name="product_update_stock_status_dialog_subtitle">请稍候…</string>
     <string name="product_update_stock_status_dialog_title">正在更新库存状态</string>
     <string name="product_update_stock_status_error">出错了。 请重试。</string>
@@ -209,9 +214,9 @@ Language: zh_CN
     <string name="blaze_campaign_edit_ad_destination_product_url_option">产品 URL</string>
     <string name="blaze_campaign_edit_ad_destination_parameters_property_title">URL 参数</string>
     <string name="blaze_campaign_creation_location_search_message">开始键入国家/地区、州或城市，查看可用选项</string>
-    <string name="blaze_campaign_payment_summary_terms_and_conditions">点击“提交广告活动”即表示您同意&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服务条款&lt;/u&gt;&lt;/a&gt;和&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;广告政策&lt;/u&gt;&lt;/a&gt;，并授权您的付款方式，以便按照您选择的预算和持续时间收费。 &lt;a href=\'learnMore\'&gt;&lt;u&gt;详细了解&lt;/u&gt;&lt;/a&gt; Promoted Posts 的预算和付款的运作方式。</string>
     <string name="blaze_campaign_edit_ad_destination_url_property_title">目标 URL</string>
     <string name="blaze_campaign_edit_ad_destination_empty_parameters_message">手动输入</string>
+    <string name="blaze_campaign_payment_summary_terms_and_conditions">点击“提交广告活动”即表示您同意&lt;a href=\'termsOfService\'&gt;&lt;u&gt;服务条款&lt;/u&gt;&lt;/a&gt;和&lt;a href=\'advertisingPolicy\'&gt;&lt;u&gt;广告政策&lt;/u&gt;&lt;/a&gt;，并授权您的付款方式，以便按照您选择的预算和持续时间收费。 &lt;a href=\'learnMore\'&gt;&lt;u&gt;详细了解&lt;/u&gt;&lt;/a&gt; Promoted Posts 的预算和付款的运作方式。</string>
     <string name="blaze_campaign_creation_location_search_failed_message">搜索失败。\n请重试</string>
     <string name="blaze_campaign_payment_summary_add_payment_method">添加付款方式</string>
     <string name="blaze_campaign_payment_summary_total_budget">总计</string>
@@ -235,11 +240,11 @@ Language: zh_CN
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">开始</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s 天</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_title">设置时长</string>
-    <string name="blaze_campaign_budget_impressions_info">展示次数反映了您的广告出现在潜在客户面前的频率。\n\n\n        由于在线流量的波动和用户行为的差异，我们无法确保确切的数字，但我们将致力于使您广告的实际展示次数尽可能接近目标次数。\n\n\n        请记住，展示次数关乎可见性，而非查看者的操作。</string>
     <string name="blaze_campaign_budget_impressions_done_button">完成</string>
     <string name="blaze_campaign_budget_impressions_title">展示次数</string>
     <string name="blaze_campaign_budget_update_button">更新</string>
     <string name="blaze_campaign_budget_edit_duration_button">编辑</string>
+    <string name="blaze_campaign_budget_impressions_info">展示次数反映了您的广告出现在潜在客户面前的频率。\n\n\n        由于在线流量的波动和用户行为的差异，我们无法确保确切的数字，但我们将致力于使您广告的实际展示次数尽可能接近目标次数。\n\n\n        请记住，展示次数关乎可见性，而非查看者的操作。</string>
     <string name="blaze_campaign_budget_duration_section_title">时长</string>
     <string name="blaze_campaign_budget_reach_forecast">每天的预计受众人数</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s 每天</string>
@@ -484,14 +489,12 @@ Language: zh_CN
     <string name="card_reader_tap_to_pay_about_how_works_4">4. 客户将其银行卡平放在您手机顶部的非接触式标志上方。</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. 将您的手机展示给客户。</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. 轻点“收款”并选择“点按付款”。</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">收款</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">创建订单</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s 或 %2$s</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">工作原理</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">进一步了解读卡器</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">如需接受超过此限额的付款，请考虑购买支持输入 PIN 码的读卡器。</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_2">Android 系统的“点按付款”功能不支持输入 PIN 码。</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_1">在 %1$s，使用某些银行卡进行金额超过 %2$s 的非接触式交易时需要输入 PIN 码。</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. 创建订单</string>
     <string name="card_reader_tap_to_pay_about_important_info_title">重要信息</string>
     <string name="card_reader_tap_to_pay_about_description">通过“点按付款”功能，您可以接受各种类型的非接触式付款（从实体借记卡和信用卡到数字钱包），而无需购买实体读卡器。</string>
     <string name="card_reader_tap_to_pay_about_header">什么是“点按付款”功能？</string>
@@ -1598,6 +1601,7 @@ Language: zh_CN
     <string name="order_creation_payment_fee">费用</string>
     <string name="order_creation_customer_details">客户详情</string>
     <string name="order_creation_add_fee">手续费</string>
+    <string name="order_creation_add_shipping_amount">金额</string>
     <string name="order_creation_customer_note_edit_content_description">编辑客户备注</string>
     <string name="order_creation_customer_edit_content_description">编辑客户详情</string>
     <string name="order_creation_status_edit_content_description">编辑订单状态</string>
@@ -2336,9 +2340,6 @@ Language: zh_CN
     <string name="upsells_label">追加销售</string>
     <string name="product_detail_linked_products">关联产品</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">联系我们</string>
-    <string name="my_store_stats_availability_description">确保您的站点上运行的是最新版本的 WooCommerce，并且已激活 WooCommerce Admin。\n\n仍需要帮助？ %1$s</string>
-    <string name="my_store_stats_availability_title">我们无法显示您的\n商店分析</string>
     <string name="login_get_link_by_email">通过电子邮件获取登录链接</string>
     <string name="email_not_registered_wpcom">找不到与此电子邮件地址关联的 WordPress.com 帐户。</string>
     <string name="settings_enable_product_adding_teaser_title">创建产品</string>
@@ -2584,8 +2585,6 @@ Language: zh_CN
     <string name="settings_app_theme_title">外观</string>
     <string name="product_short_description_empty">产品摘要</string>
     <string name="product_short_description">简短说明</string>
-    <string name="my_store_stats_reverted_title">升级以继续查看统计信息</string>
-    <string name="my_store_stats_reverted_message">我们已经对我们的分析功能进行了改进。 升级至 WooCommerce 4.0 或更高版本，或者安装 WooCommerce Admin 插件，方可在 2020 年 9 月 1 日后继续查看统计信息。</string>
     <string name="product_pricing_update_sale_price_error">售价必须低于正常价格</string>
     <string name="product_schedule_remove_end_date_link_label">移除结束日期</string>
     <string name="product_shipping_empty">添加运费</string>
@@ -3420,7 +3419,6 @@ Language: zh_CN
     <string name="orderdetail_note_private">私人</string>
     <string name="connect_site">连接站点</string>
     <string name="dashboard_top_performers_empty">这段时间内没有任何活动</string>
-    <string name="dashboard_top_performers_title">热销产品</string>
     <string name="dashboard_top_performers_total_orders">订单总数： %s</string>
     <string name="order_error_fetch_notes_generic">抓取备注时出错</string>
     <string name="login_configure_link">请查看%1$s配置说明%2$s。</string>
