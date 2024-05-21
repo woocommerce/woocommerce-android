@@ -102,7 +102,8 @@ class AnalyticsTracker private constructor(
         }
 
         val propertiesJson = JSONObject(properties.buildFinalProperties(stat.siteless))
-        tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+        val eventPrefix = if (stat.isPosEvent) POS_EVENTS_PREFIX else EVENTS_PREFIX
+        tracksClient?.track(eventPrefix + eventName, propertiesJson, user, userType)
 
         if (propertiesJson.length() > 0) {
             WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
@@ -166,6 +167,7 @@ class AnalyticsTracker private constructor(
 
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
+        private const val POS_EVENTS_PREFIX = "woocommerceandroid_pos_"
         private const val KEY_SITE_URL = "site_url"
 
         const val IS_DEBUG = "is_debug"

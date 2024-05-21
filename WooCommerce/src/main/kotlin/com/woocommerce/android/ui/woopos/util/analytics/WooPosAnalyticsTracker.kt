@@ -30,6 +30,8 @@ class WooPosAnalyticsTracker @Inject constructor(
                         analytics.errorDescription
                     )
                 }
+
+                else -> error("Unknown analytics event type: $analytics")
             }
         }
     }

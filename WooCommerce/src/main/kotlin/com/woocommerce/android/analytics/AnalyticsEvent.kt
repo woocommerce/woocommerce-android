@@ -3,10 +3,12 @@ package com.woocommerce.android.analytics
 interface IAnalyticsEvent {
     val siteless: Boolean
     val name: String
+    val isPosEvent: Boolean
 }
 
 sealed class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEvent {
     override val name: String = this::class.simpleName!!
+    override val isPosEvent: Boolean = false
 
     // -- General
     object APPLICATION_OPENED : AnalyticsEvent(siteless = true)

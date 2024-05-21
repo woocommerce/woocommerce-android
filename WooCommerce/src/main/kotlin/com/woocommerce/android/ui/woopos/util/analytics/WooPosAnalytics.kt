@@ -5,6 +5,7 @@ import kotlin.reflect.KClass
 
 sealed class WooPosAnalytics : IAnalyticsEvent {
     override val siteless: Boolean = false
+    override val isPosEvent: Boolean = true
 
     private val _properties: MutableMap<String, String> = mutableMapOf()
     val properties: Map<String, String> get() = _properties.toMap()
