@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.stats.range
 
-import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.extensions.endOfCurrentDay
 import com.woocommerce.android.extensions.formatToMMMddYYYY
 import com.woocommerce.android.extensions.oneDayAgo
 import com.woocommerce.android.extensions.startOfCurrentDay
+import com.woocommerce.android.util.DateUtils
 import java.util.Calendar
 import java.util.Locale
 

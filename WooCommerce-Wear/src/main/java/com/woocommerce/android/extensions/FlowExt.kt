@@ -3,7 +3,6 @@ package com.woocommerce.android.extensions
 import android.os.Parcelable
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
-import java.io.Serializable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.Serializable
 
 const val DEFAULT_TIMEOUT_MILLIS = 20000L
 private fun createTimeoutFlow(
@@ -28,7 +28,6 @@ fun <T, R> Flow<T>.combineWithTimeout(
     timeoutMillis: Long = DEFAULT_TIMEOUT_MILLIS,
     transform: (data: T, isTimeout: Boolean) -> R
 ) = combine(this, createTimeoutFlow(timeoutMillis), transform)
-
 
 /**
  * A helper function to create a [MutableStateFlow] that creates an entry in [SavedStateHandle] to persist value
