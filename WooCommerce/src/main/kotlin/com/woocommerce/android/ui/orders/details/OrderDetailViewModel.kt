@@ -180,6 +180,7 @@ class OrderDetailViewModel @Inject constructor(
                 shouldRefreshShippingMethods = shouldRefreshShippingMethods ||
                     shippingLine.methodId.isNullOrEmpty().not() && method == null && shippingMethods.index == 0
                 ShippingLineDetails(
+                    id = shippingLine.itemId,
                     name = shippingLine.methodTitle,
                     shippingMethod = method,
                     amount = shippingLine.total
@@ -951,6 +952,7 @@ class OrderDetailViewModel @Inject constructor(
     data class TrashOrder(val orderId: Long) : MultiLiveEvent.Event()
 
     data class ShippingLineDetails(
+        val id: Long,
         val shippingMethod: ShippingMethod?,
         val amount: BigDecimal,
         val name: String

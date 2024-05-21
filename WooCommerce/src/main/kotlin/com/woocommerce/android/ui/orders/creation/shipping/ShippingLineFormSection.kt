@@ -40,7 +40,8 @@ import java.math.BigDecimal
 @Composable
 fun ShippingLineFormSection(
     shippingLineDetails: List<OrderDetailViewModel.ShippingLineDetails>,
-    onEdit: (shippingLine: OrderDetailViewModel.ShippingLineDetails) -> Unit,
+    onAdd: () -> Unit,
+    onEdit: (id: Long) -> Unit,
     formatCurrency: (amount: BigDecimal) -> String,
     modifier: Modifier = Modifier
 ) {
@@ -58,7 +59,9 @@ fun ShippingLineFormSection(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Add shipping line",
-                        modifier = Modifier.align(Alignment.CenterVertically),
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .clickable { onAdd() },
                         tint = MaterialTheme.colors.primary
                     )
                 }
@@ -81,7 +84,7 @@ fun ShippingLineFormSection(
 fun ShippingLineEditCard(
     shippingLine: OrderDetailViewModel.ShippingLineDetails,
     formatCurrency: (amount: BigDecimal) -> String,
-    onEdit: (shippingLine: OrderDetailViewModel.ShippingLineDetails) -> Unit,
+    onEdit: (id: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -93,11 +96,13 @@ fun ShippingLineEditCard(
                 width = 1.dp,
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.corner_radius_large))
             )
-            .clickable { onEdit(shippingLine) }
+            .clickable { onEdit(shippingLine.id) }
             .padding(dimensionResource(id = R.dimen.major_100))
 
     ) {
-        Column(modifier = Modifier.weight(2f).align(Alignment.CenterVertically)) {
+        Column(modifier = Modifier
+            .weight(2f)
+            .align(Alignment.CenterVertically)) {
             Text(
                 text = shippingLine.name,
                 style = TextStyle(
@@ -134,7 +139,9 @@ fun ShippingLineEditCard(
         Icon(
             imageVector = Icons.Outlined.Edit,
             contentDescription = null,
-            modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp)
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(start = 16.dp)
         )
     }
 }
@@ -145,6 +152,7 @@ fun ShippingLineEditCard(
 fun ShippingLineDetailsPreview() {
     WooThemeWithBackground {
         OrderDetailViewModel.ShippingLineDetails(
+            id = 1L,
             name = "UPS Shipping",
             shippingMethod = ShippingMethod(id = "ups", title = "UPS"),
             amount = BigDecimal.TEN,
@@ -157,6 +165,7 @@ fun ShippingLineDetailsPreview() {
 fun ShippingLineFormSectionPreview() {
     val shippingDetails = List(3) { i ->
         OrderDetailViewModel.ShippingLineDetails(
+            id = i * 1L,
             shippingMethod = null,
             amount = BigDecimal.TEN * i.toBigDecimal(),
             name = "Shipping $i"
@@ -166,6 +175,7 @@ fun ShippingLineFormSectionPreview() {
         ShippingLineFormSection(
             shippingLineDetails = shippingDetails,
             formatCurrency = { it.toString() },
+            onAdd = { },
             onEdit = { }
         )
     }
