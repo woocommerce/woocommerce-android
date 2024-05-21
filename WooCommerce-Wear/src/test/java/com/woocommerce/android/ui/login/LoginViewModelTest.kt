@@ -123,7 +123,6 @@ class LoginViewModelTest : BaseUnitTest() {
     private fun createSut() {
         sut = LoginViewModel(
             fetchSiteData,
-            phoneConnectionRepository,
             navController,
             SavedStateHandle()
         )
