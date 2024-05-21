@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Error
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -39,7 +38,6 @@ class FetchOrdersTest : BaseUnitTest() {
 
         FetchOrders(phoneRepository, ordersRepository, networkStatus)
             .invoke(selectedSite)
-            .distinctUntilChanged()
             .onEach { events.add(it) }
             .launchIn(this)
 
@@ -91,7 +89,6 @@ class FetchOrdersTest : BaseUnitTest() {
 
         FetchOrders(phoneRepository, ordersRepository, networkStatus)
             .invoke(selectedSite)
-            .distinctUntilChanged()
             .onEach { events.add(it) }
             .launchIn(this)
 
@@ -110,7 +107,6 @@ class FetchOrdersTest : BaseUnitTest() {
 
         FetchOrders(phoneRepository, ordersRepository, networkStatus)
             .invoke(selectedSite)
-            .distinctUntilChanged()
             .onEach { events.add(it) }
             .launchIn(this)
 

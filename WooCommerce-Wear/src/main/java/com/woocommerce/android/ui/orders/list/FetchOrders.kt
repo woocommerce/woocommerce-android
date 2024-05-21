@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.model.OrderEntity
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCWearableStore.OrdersForWearablesResult.Success
 import javax.inject.Inject
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 class FetchOrders @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
@@ -30,7 +31,8 @@ class FetchOrders @Inject constructor(
                 isTimeout.not() -> Waiting
                 else -> Error
             }
-        }.filterNotNull()
+        }.distinctUntilChanged()
+        .filterNotNull()
 
     private suspend fun selectOrdersDataSource(
         selectedSite: SiteModel
