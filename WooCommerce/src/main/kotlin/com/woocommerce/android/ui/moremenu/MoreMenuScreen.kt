@@ -279,9 +279,9 @@ private fun MoreMenuSection(section: MoreMenuItemSection) {
         Spacer(modifier = Modifier.height(24.dp))
         section.title?.let { title ->
             Text(
-                text = stringResource(id = title),
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = R.color.color_on_surface),
+                text = stringResource(id = title).uppercase(),
+                style = MaterialTheme.typography.subtitle2,
+                color = colorResource(id = R.color.color_surface_variant),
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
 
@@ -344,6 +344,7 @@ private fun MoreMenuButton(button: MoreMenuItemButton) {
                         text = stringResource(id = button.description),
                         style = MaterialTheme.typography.caption,
                         textAlign = TextAlign.Start,
+                        color = colorResource(id = R.color.color_surface_variant),
                     )
                 }
             }
