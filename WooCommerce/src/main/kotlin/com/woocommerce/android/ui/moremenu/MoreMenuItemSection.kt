@@ -17,6 +17,7 @@ data class MoreMenuItemButton(
     @DrawableRes val icon: Int,
     val isVisible: Boolean = true,
     val badgeState: BadgeState? = null,
+    val withDivider: Boolean = true,
     val onClick: () -> Unit = {},
 )
 

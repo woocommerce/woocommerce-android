@@ -4,8 +4,6 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.MutableTransitionState
@@ -35,6 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -65,6 +64,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.moremenu.MoreMenuViewModel.MoreMenuViewState
 
 @Composable
@@ -88,31 +88,10 @@ fun MoreMenuScreen(
             .fillMaxSize()
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
         MoreMenuHeader(onSwitchStore, state)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
-        state.visibleMenuItems.forEach { item ->
-            when (item) {
-                is MoreMenuItem.Button -> MoreMenuButton(
-                    title = item.title,
-                    description = item.description,
-                    iconDrawable = item.icon,
-                    badgeState = item.badgeState,
-                    onClick = item.onClick
-                )
-
-                is MoreMenuItem.Header -> Text(
-                    text = stringResource(id = item.title),
-                    style = MaterialTheme.typography.subtitle1,
-                    color = colorResource(id = R.color.color_on_surface),
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 32.dp,
-                    )
-                )
-            }
-        }
+        state.menuSections.forEach { section -> MoreMenuSection(section) }
     }
 }
 
@@ -292,23 +271,48 @@ private fun HeaderAvatar(
 }
 
 @Composable
-private fun MoreMenuButton(
-    @StringRes title: Int,
-    @StringRes description: Int,
-    @DrawableRes iconDrawable: Int,
-    badgeState: BadgeState?,
-    onClick: () -> Unit,
-) {
+private fun MoreMenuSection(section: MoreMenuItemSection) {
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+    ) {
+        Spacer(modifier = Modifier.height(24.dp))
+        section.title?.let { title ->
+            Text(
+                text = stringResource(id = title),
+                style = MaterialTheme.typography.subtitle1,
+                color = colorResource(id = R.color.color_on_surface),
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+
+
+        Column(
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(color = colorResource(id = R.color.more_menu_button_background)),
+        ) {
+            section.items.forEach { item ->
+                MoreMenuButton(item)
+            }
+        }
+    }
+}
+
+@Composable
+private fun MoreMenuButton(button: MoreMenuItemButton) {
     Button(
-        onClick = onClick,
+        onClick = button.onClick,
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = colorResource(id = R.color.more_menu_button_background)
+            backgroundColor = colorResource(id = R.color.more_menu_button_background),
         ),
-        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75))
+        elevation = null,
     ) {
         Box(Modifier.fillMaxSize()) {
-            MoreMenuBadge(badgeState = badgeState)
+            MoreMenuBadge(badgeState = button.badgeState)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -321,8 +325,8 @@ private fun MoreMenuButton(
                         .background(colorResource(id = R.color.more_menu_button_icon_background))
                 ) {
                     Image(
-                        painter = painterResource(id = iconDrawable),
-                        contentDescription = stringResource(id = title),
+                        painter = painterResource(id = button.icon),
+                        contentDescription = stringResource(id = button.title),
                         modifier = Modifier
                             .size(dimensionResource(id = R.dimen.major_125))
                             .align(Alignment.Center)
@@ -333,17 +337,27 @@ private fun MoreMenuButton(
                     modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100))
                 ) {
                     Text(
-                        text = stringResource(id = title),
+                        text = stringResource(id = button.title),
                         textAlign = TextAlign.Start,
                     )
                     Text(
-                        text = stringResource(id = description),
+                        text = stringResource(id = button.description),
                         style = MaterialTheme.typography.caption,
                         textAlign = TextAlign.Start,
                     )
                 }
             }
         }
+    }
+    if (button.withDivider) {
+        Spacer(modifier = Modifier.height(1.dp))
+        Divider(
+            color = colorResource(id = R.color.divider_color),
+            modifier = Modifier.padding(start = 68.dp)
+        )
+        Spacer(modifier = Modifier.height(1.dp))
+    } else {
+        Spacer(modifier = Modifier.height(2.dp))
     }
 }
 
@@ -393,72 +407,89 @@ private fun createBadgeEnterAnimation(): EnterTransition {
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 private fun MoreMenuPreview() {
-    val state = MoreMenuViewState(
-        menuSections = listOf(
-            MoreMenuItem.Button(
-                title = R.string.more_menu_button_woo_pos,
-                description = R.string.more_menu_button_woo_pos_description,
-                icon = R.drawable.ic_more_menu_payments,
-            ),
+    WooThemeWithBackground {
+        val state = MoreMenuViewState(
+            menuSections = listOf(
+                MoreMenuItemSection(
+                    title = null,
+                    items = listOf(
+                        MoreMenuItemButton(
+                            title = R.string.more_menu_button_woo_pos,
+                            description = R.string.more_menu_button_woo_pos_description,
+                            icon = R.drawable.ic_more_menu_payments,
+                            withDivider = false,
+                        ),
+                    ),
+                ),
+                MoreMenuItemSection(
+                    title = R.string.more_menu_settings_section_title,
+                    items = listOf(
+                        MoreMenuItemButton(
+                            title = R.string.more_menu_button_settings,
+                            description = R.string.more_menu_button_settings_description,
+                            icon = R.drawable.ic_more_screen_settings,
+                        ),
+                        MoreMenuItemButton(
+                            title = R.string.more_menu_button_subscriptions,
+                            description = R.string.more_menu_button_subscriptions_description,
+                            icon = R.drawable.ic_more_menu_upgrades,
+                            withDivider = false
+                        ),
+                    ),
+                ),
 
-            MoreMenuItem.Header(R.string.more_menu_settings_section_title),
-            MoreMenuItem.Button(
-                R.string.more_menu_button_settings,
-                R.string.more_menu_button_settings_description,
-                R.drawable.ic_more_screen_settings
-            ),
-            MoreMenuItem.Button(
-                R.string.more_menu_button_subscriptions,
-                R.string.more_menu_button_subscriptions_description,
-                R.drawable.ic_more_menu_upgrades
-            ),
-
-            MoreMenuItem.Header(R.string.more_menu_general_section_title),
-            MoreMenuItem.Button(
-                R.string.more_menu_button_payments,
-                R.string.more_menu_button_payments_description,
-                R.drawable.ic_more_menu_payments,
-                badgeState = BadgeState(
-                    badgeSize = R.dimen.major_110,
-                    backgroundColor = R.color.color_secondary,
-                    textColor = R.color.color_on_primary,
-                    textState = TextState("", R.dimen.text_minor_80),
-                    animateAppearance = true
+                MoreMenuItemSection(
+                    title = R.string.more_menu_general_section_title,
+                    items = listOf(
+                        MoreMenuItemButton(
+                            title = R.string.more_menu_button_payments,
+                            description = R.string.more_menu_button_payments_description,
+                            icon = R.drawable.ic_more_menu_payments,
+                            badgeState = BadgeState(
+                                badgeSize = R.dimen.major_110,
+                                backgroundColor = R.color.color_secondary,
+                                textColor = R.color.color_on_primary,
+                                textState = TextState("", R.dimen.text_minor_80),
+                                animateAppearance = true
+                            )
+                        ),
+                        MoreMenuItemButton(
+                            title = R.string.more_menu_button_wс_admin,
+                            description = R.string.more_menu_button_wc_admin_description,
+                            icon = R.drawable.ic_more_menu_wp_admin
+                        ),
+                        MoreMenuItemButton(
+                            title = R.string.more_menu_button_store,
+                            description = R.string.more_menu_button_store_description,
+                            icon = R.drawable.ic_more_menu_store
+                        ),
+                        MoreMenuItemButton(
+                            title = R.string.more_menu_button_reviews,
+                            description = R.string.more_menu_button_reviews_description,
+                            icon = R.drawable.ic_more_menu_reviews,
+                            badgeState = BadgeState(
+                                badgeSize = R.dimen.major_150,
+                                backgroundColor = R.color.color_primary,
+                                textColor = R.color.color_on_primary,
+                                textState = TextState("3", R.dimen.text_minor_80),
+                                animateAppearance = false
+                            )
+                        ),
+                        MoreMenuItemButton(
+                            title = R.string.more_menu_button_coupons,
+                            description = R.string.more_menu_button_coupons_description,
+                            icon = R.drawable.ic_more_menu_coupons,
+                            withDivider = false
+                        ),
+                    ),
                 )
             ),
-            MoreMenuItem.Button(
-                R.string.more_menu_button_wс_admin,
-                R.string.more_menu_button_wc_admin_description,
-                R.drawable.ic_more_menu_wp_admin
-            ),
-            MoreMenuItem.Button(
-                R.string.more_menu_button_store,
-                R.string.more_menu_button_store_description,
-                R.drawable.ic_more_menu_store
-            ),
-            MoreMenuItem.Button(
-                R.string.more_menu_button_reviews,
-                R.string.more_menu_button_reviews_description,
-                R.drawable.ic_more_menu_reviews,
-                badgeState = BadgeState(
-                    badgeSize = R.dimen.major_150,
-                    backgroundColor = R.color.color_primary,
-                    textColor = R.color.color_on_primary,
-                    textState = TextState("3", R.dimen.text_minor_80),
-                    animateAppearance = false
-                )
-            ),
-            MoreMenuItem.Button(
-                R.string.more_menu_button_coupons,
-                R.string.more_menu_button_coupons_description,
-                R.drawable.ic_more_menu_coupons
-            ),
-        ),
-        siteName = "Example Site",
-        siteUrl = "woocommerce.com",
-        sitePlan = "free trial",
-        userAvatarUrl = "", // To force displaying placeholder image
-        isStoreSwitcherEnabled = true
-    )
-    MoreMenuScreen(state, {})
+            siteName = "Example Site",
+            siteUrl = "woocommerce.com",
+            sitePlan = "free trial",
+            userAvatarUrl = "", // To force displaying placeholder image
+            isStoreSwitcherEnabled = true
+        )
+        MoreMenuScreen(state, {})
+    }
 }
