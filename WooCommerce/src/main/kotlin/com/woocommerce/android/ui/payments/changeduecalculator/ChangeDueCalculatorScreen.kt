@@ -129,7 +129,10 @@ fun RecordTransactionDetailsNote(
     ) {
         Text(
             text = stringResource(R.string.cash_payments_record_transaction_details),
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier.align(Alignment.CenterVertically),
+            style = LocalTextStyle.current.copy(
+                fontSize = TextUnit(16f, TextUnitType.Sp)
+            )
         )
         Checkbox(
             checked = checked,
