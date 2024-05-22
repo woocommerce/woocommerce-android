@@ -130,6 +130,10 @@ class WearableConnectionRepository @Inject constructor(
         )
     }
 
+    fun receiveAnalyticsFromWear(dataMap: DataMap) {
+
+    }
+
     private fun sendData(
         dataPath: DataPath,
         data: DataMap
