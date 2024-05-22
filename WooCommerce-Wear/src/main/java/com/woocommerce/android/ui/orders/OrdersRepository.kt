@@ -17,13 +17,13 @@ import com.woocommerce.commons.DataParameters.ORDER_ID
 import com.woocommerce.commons.DataParameters.ORDER_PRODUCTS_JSON
 import com.woocommerce.commons.WearOrder
 import com.woocommerce.commons.WearOrderedProduct
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCWearableStore
 import javax.inject.Inject
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 class OrdersRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.ORDERS) private val ordersDataStore: DataStore<Preferences>,
