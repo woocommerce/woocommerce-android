@@ -21,8 +21,12 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +44,12 @@ fun ChangeDueCalculatorScreen(
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit
 ) {
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     WooThemeWithBackground {
         Scaffold(
             topBar = {
@@ -67,12 +77,9 @@ fun ChangeDueCalculatorScreen(
             ) {
                 when (uiState) {
                     is ChangeDueCalculatorViewModel.UiState.Loading -> Text(
-                        stringResource(
-                            R.string.loading,
-                        ),
+                        stringResource(R.string.loading),
                         style = MaterialTheme.typography.h6
                     )
-
                     is ChangeDueCalculatorViewModel.UiState.Success -> {
                         OutlinedTextField(
                             value = uiState.amountDue,
@@ -81,7 +88,8 @@ fun ChangeDueCalculatorScreen(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
+                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
+                                .focusRequester(focusRequester),
                             label = { Text(stringResource(R.string.cash_payments_cash_received)) },
                             textStyle = LocalTextStyle.current.copy(
                                 fontWeight = FontWeight.Bold,
@@ -116,7 +124,6 @@ fun ChangeDueCalculatorScreen(
                             modifier = Modifier.padding(top = 16.dp)
                         )
                     }
-
                     is ChangeDueCalculatorViewModel.UiState.Error -> {
                         Text(text = stringResource(R.string.error_generic), style = MaterialTheme.typography.h6)
                     }
@@ -169,7 +176,6 @@ private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String 
             R.string.cash_payments_take_payment_title,
             uiState.amountDue
         )
-
         else -> stringResource(id = R.string.cash_payments_take_payment_title)
     }
 }
@@ -183,6 +189,6 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
             change = 0.00.toBigDecimal()
         ),
         onNavigateUp = {},
-        onCompleteOrderClick = {}
+        onCompleteOrderClick = { /* Your complete order logic here */ }
     )
 }
