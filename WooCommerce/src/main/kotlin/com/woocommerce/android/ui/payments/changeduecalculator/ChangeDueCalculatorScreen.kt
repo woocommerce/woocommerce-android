@@ -21,7 +21,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,10 +44,6 @@ fun ChangeDueCalculatorScreen(
     onCompleteOrderClick: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
 
     WooThemeWithBackground {
         Scaffold(
