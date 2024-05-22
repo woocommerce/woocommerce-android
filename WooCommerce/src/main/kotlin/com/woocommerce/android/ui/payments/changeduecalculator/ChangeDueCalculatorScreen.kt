@@ -127,7 +127,10 @@ fun RecordTransactionDetailsNote(
         modifier = modifier,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text(text = stringResource(R.string.cash_payments_record_transaction_details), modifier = Modifier.align(Alignment.CenterVertically))
+        Text(
+            text = stringResource(R.string.cash_payments_record_transaction_details),
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
         Checkbox(
             checked = checked,
             onCheckedChange = onCheckedChange
