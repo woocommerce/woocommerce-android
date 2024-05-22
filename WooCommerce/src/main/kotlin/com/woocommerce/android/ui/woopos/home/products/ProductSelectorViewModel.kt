@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.products
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -13,6 +14,9 @@ class ProductSelectorViewModel @Inject constructor(
     private val productsDataSource: ProductsDataSource,
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
+
+    private var loadProductsJob: Job? = null
+    private var loadMoreProductsJob: Job? = null
 
     val viewState: StateFlow<ViewState> = productsDataSource.products.map { products ->
         ViewState(
@@ -27,6 +31,8 @@ class ProductSelectorViewModel @Inject constructor(
     }.toStateFlow(ViewState(products = emptyList()))
 
     init {
+        loadProductsJob?.cancel()
+        loadMoreProductsJob?.cancel()
         launch {
             productsDataSource.loadProducts()
         }
