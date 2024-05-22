@@ -288,7 +288,6 @@ private fun MoreMenuSection(section: MoreMenuItemSection) {
             Spacer(modifier = Modifier.height(4.dp))
         }
 
-
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
