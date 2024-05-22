@@ -187,7 +187,7 @@ fun OrderProductsList(
                         modifier = modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = product.amount,
+                            text = product.amount.toString(),
                             color = Color.White
                         )
                         Text(
@@ -238,12 +238,12 @@ fun Preview() {
             status = "Processing",
             products = listOf(
                 ProductItem(
-                    amount = "3",
+                    amount = 3,
                     total = "$100.00",
                     name = "Product 1"
                 ),
                 ProductItem(
-                    amount = "2",
+                    amount = 2,
                     total = "$200.00",
                     name = "Product 2"
                 )
