@@ -92,6 +92,7 @@ class WearableConnectionRepository @Inject constructor(
 
         val orders = fetchedOrders.map {
             WearOrder(
+                localSiteId = it.localSiteId.value,
                 id = it.orderId,
                 number = it.number,
                 date = it.dateCreated,

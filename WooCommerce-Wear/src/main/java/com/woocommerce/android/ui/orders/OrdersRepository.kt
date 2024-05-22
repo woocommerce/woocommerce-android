@@ -61,7 +61,7 @@ class OrdersRepository @Inject constructor(
         val siteId = data.getSiteId(loginRepository.selectedSite)
         val receivedOrders = gson.fromJson(ordersJson, Array<WearOrder>::class.java).toList()
         wearableStore.insertOrders(
-            orders = receivedOrders.map { it.toOrderEntity(siteId.toInt()) }
+            orders = receivedOrders.map { it.toOrderEntity() }
         )
 
         ordersDataStore.edit { prefs ->
