@@ -66,11 +66,16 @@ class OrdersListViewModel @AssistedInject constructor(
                     is Finished -> _viewState.update { viewState ->
                         viewState.copy(
                             orders = formatOrders(selectedSite, request.orders),
+                            isError = false,
                             isLoading = false
                         )
                     }
-                    is Waiting -> _viewState.update { it.copy(isLoading = true) }
-                    else -> _viewState.update { it.copy(isLoading = false) }
+                    is Waiting -> _viewState.update {
+                        it.copy(isLoading = true, isError = false)
+                    }
+                    else -> _viewState.update {
+                        it.copy(isLoading = false, isError = true)
+                    }
                 }
             }.launchIn(this)
     }
@@ -78,6 +83,7 @@ class OrdersListViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val isLoading: Boolean = false,
+        val isError: Boolean = false,
         val orders: List<OrderItem> = emptyList()
     ) : Parcelable
 

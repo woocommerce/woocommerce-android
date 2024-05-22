@@ -30,6 +30,7 @@ import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
+import com.woocommerce.android.presentation.component.ErrorScreen
 import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
@@ -42,6 +43,7 @@ fun OrdersListScreen(viewModel: OrdersListViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     OrdersListScreen(
         isLoading = viewState?.isLoading ?: false,
+        isError = viewState?.isError ?: false,
         orders = viewState?.orders.orEmpty(),
         onOrderClicked = viewModel::onOrderItemClick
     )
@@ -50,6 +52,7 @@ fun OrdersListScreen(viewModel: OrdersListViewModel) {
 @Composable
 fun OrdersListScreen(
     isLoading: Boolean,
+    isError: Boolean,
     orders: List<OrderItem>,
     onOrderClicked: (orderId: Long) -> Unit,
     modifier: Modifier = Modifier
@@ -72,10 +75,10 @@ fun OrdersListScreen(
                         .fillMaxWidth()
                         .padding(top = 6.dp)
                 )
-                if (isLoading) {
-                    LoadingScreen()
-                } else {
-                    OrdersLazyColumn(orders, onOrderClicked, modifier)
+                when {
+                    isLoading -> LoadingScreen()
+                    isError -> ErrorScreen(errorText = stringResource(id = R.string.orders_list_failed_to_load))
+                    else -> OrdersLazyColumn(orders, onOrderClicked, modifier)
                 }
             }
         }
@@ -167,6 +170,7 @@ fun OrderListItem(
 fun Preview() {
     OrdersListScreen(
         isLoading = false,
+        isError = false,
         onOrderClicked = {},
         orders = listOf(
             OrderItem(

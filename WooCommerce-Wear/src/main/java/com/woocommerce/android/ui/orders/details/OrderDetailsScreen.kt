@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
+import com.woocommerce.android.presentation.component.ErrorScreen
 import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
@@ -65,7 +66,7 @@ fun OrderDetailsScreen(
         ) {
             when {
                 isLoading -> LoadingScreen()
-                order == null -> OrderLoadingFailed()
+                order == null -> ErrorScreen(errorText = stringResource(id = R.string.order_details_failed_to_load))
                 else -> OrderDetailsContent(order, modifier)
             }
         }
