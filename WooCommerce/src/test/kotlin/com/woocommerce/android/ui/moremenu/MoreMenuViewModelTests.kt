@@ -116,7 +116,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(false)
 
         // THEN
-        val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
+        val paymentsButton =
+            states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.icon).isEqualTo(R.drawable.ic_more_menu_payments)
         assertThat(paymentsButton.badgeState?.textColor).isEqualTo(
             R.color.color_on_surface
@@ -149,7 +150,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(false)
 
         // THEN
-        val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
+        val paymentsButton =
+            states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.badgeState).isNull()
     }
 
@@ -164,7 +166,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         val states = viewModel.moreMenuViewState.captureValues()
 
         // THEN
-        val reviewsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_reviews }
+        val reviewsButton =
+            states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_reviews }
         assertThat(reviewsButton.icon).isEqualTo(R.drawable.ic_more_menu_reviews)
         assertThat(reviewsButton.badgeState?.textColor).isEqualTo(
             R.color.color_on_primary
@@ -324,7 +327,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             prefsChanges.emit(false)
 
             // THEN
-            assertThat(states.last().generalMenuItems.first().badgeState).isNotNull
+            assertThat(states.last().menuSections.flatMap { it.items }.first().badgeState).isNotNull
         }
 
     @Test
@@ -340,7 +343,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(true)
 
         // THEN
-        assertThat(states.last().generalMenuItems.first().badgeState).isNull()
+        assertThat(states.last().menuSections.flatMap { it.items }.first().badgeState).isNull()
     }
 
     @Test
@@ -384,7 +387,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         }
 
         val state = viewModel.moreMenuViewState.captureValues().last()
-        val button = state.generalMenuItems.first { it.title == R.string.more_menu_button_blaze }
+        val button = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_blaze }
         val event = viewModel.event.runAndCaptureValues {
             button.onClick()
         }.last()
@@ -400,7 +403,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         }
 
         val state = viewModel.moreMenuViewState.captureValues().last()
-        val button = state.generalMenuItems.first { it.title == R.string.more_menu_button_blaze }
+        val button = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_blaze }
         val event = viewModel.event.runAndCaptureValues {
             button.onClick()
         }.last()
@@ -420,7 +423,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             val states = viewModel.moreMenuViewState.captureValues()
 
             // THEN
-            assertThat(states.last().generalMenuItems.first { it.title == R.string.more_menu_button_woo_pos }.isEnabled)
+            assertThat(states.last().menuSections.flatMap { it.items }
+                .first { it.title == R.string.more_menu_button_woo_pos }.isVisible)
                 .isFalse()
         }
 
@@ -435,7 +439,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         val states = viewModel.moreMenuViewState.captureValues()
 
         // THEN
-        assertThat(states.last().generalMenuItems.first { it.title == R.string.more_menu_button_woo_pos }.isEnabled)
+        assertThat(states.last().menuSections.flatMap { it.items }
+            .first { it.title == R.string.more_menu_button_woo_pos }.isVisible)
             .isTrue()
     }
 }
