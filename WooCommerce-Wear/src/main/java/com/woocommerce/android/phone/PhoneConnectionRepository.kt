@@ -2,17 +2,23 @@ package com.woocommerce.android.phone
 
 import android.util.Log
 import com.google.android.gms.wearable.CapabilityClient
+import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataItem
+import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
+import com.google.android.gms.wearable.PutDataMapRequest
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.stats.datasource.StatsRepository
+import com.woocommerce.commons.DataParameters
+import com.woocommerce.commons.DataPath
 import com.woocommerce.commons.DataPath.ORDERS_DATA
 import com.woocommerce.commons.DataPath.ORDER_PRODUCTS_DATA
 import com.woocommerce.commons.DataPath.SITE_DATA
 import com.woocommerce.commons.DataPath.STATS_DATA
 import com.woocommerce.commons.MessagePath
+import java.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -25,6 +31,7 @@ class PhoneConnectionRepository @Inject constructor(
     private val statsRepository: StatsRepository,
     private val ordersRepository: OrdersRepository,
     private val capabilityClient: CapabilityClient,
+    private val dataClient: DataClient,
     private val messageClient: MessageClient,
     private val coroutineScope: CoroutineScope
 ) {
@@ -54,6 +61,19 @@ class PhoneConnectionRepository @Inject constructor(
         ?.awaitAll()
         ?.let { Result.success(Unit) }
         ?: Result.failure(Exception(MESSAGE_FAILURE_EXCEPTION))
+
+    fun sendData(
+        dataPath: DataPath,
+        data: DataMap
+    ) {
+        PutDataMapRequest
+            .create(dataPath.value)
+            .apply {
+                dataMap.putAll(data)
+                dataMap.putLong(DataParameters.TIMESTAMP.value, Instant.now().epochSecond)
+            }.asPutDataRequest().setUrgent()
+            .let { dataClient.putDataItem(it) }
+    }
 
     private suspend fun fetchReachableNodes() = capabilityClient
         .getAllCapabilities(CapabilityClient.FILTER_REACHABLE)
