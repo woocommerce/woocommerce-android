@@ -14,10 +14,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,8 +31,11 @@ import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
+import androidx.wear.compose.material.PositionIndicator
+import androidx.wear.compose.material.Scaffold
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
+import com.woocommerce.android.presentation.component.AlwaysShowScrollBarScalingLazyColumnStateAdapter
 import com.woocommerce.android.presentation.component.ErrorScreen
 import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
@@ -91,19 +97,37 @@ private fun OrdersLazyColumn(
     onOrderClicked: (orderId: Long) -> Unit,
     modifier: Modifier
 ) {
-    ScalingLazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        autoCentering = AutoCenteringParams(itemIndex = 0),
-        state = rememberScalingLazyListState(
-            initialCenterItemIndex = 0
-        )
-    ) {
-        items(orders) {
-            OrderListItem(
-                order = it,
-                onOrderClicked = onOrderClicked,
-                modifier = modifier
+    val state = rememberScalingLazyListState(
+        initialCenterItemIndex = 0
+    )
+    val height = remember { mutableIntStateOf(1) }
+    Scaffold(
+        modifier = Modifier.onGloballyPositioned { height.intValue = it.size.height },
+        positionIndicator = {
+            PositionIndicator(
+                state = AlwaysShowScrollBarScalingLazyColumnStateAdapter(
+                    state = state,
+                    viewportHeightPx = height,
+                ),
+                indicatorHeight = 50.dp,
+                indicatorWidth = 4.dp,
+                paddingHorizontal = 5.dp,
+                reverseDirection = false,
             )
+        }
+    ) {
+        ScalingLazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            autoCentering = AutoCenteringParams(itemIndex = 0),
+            state = state
+        ) {
+            items(orders) {
+                OrderListItem(
+                    order = it,
+                    onOrderClicked = onOrderClicked,
+                    modifier = modifier
+                )
+            }
         }
     }
 }
