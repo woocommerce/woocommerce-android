@@ -45,13 +45,13 @@ class OrderDetailsViewModel @Inject constructor(
         _viewState.update { it.copy(isLoading = true) }
         loginRepository.selectedSiteFlow
             .filterNotNull()
-            .onEach { site ->
-                requestProductsData(site)
-            }.launchIn(this)
+            .onEach { requestProductsData(it) }
+            .launchIn(this)
     }
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
+        if (_viewState.value.isLoading) return
         launch {
             loginRepository.selectedSite?.let { requestProductsData(it) }
         }

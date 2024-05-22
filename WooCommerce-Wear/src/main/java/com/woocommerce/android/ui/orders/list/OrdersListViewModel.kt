@@ -49,6 +49,7 @@ class OrdersListViewModel @AssistedInject constructor(
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
+        if (_viewState.value.isLoading) return
         launch {
             loginRepository.selectedSite?.let { requestOrdersData(it) }
         }
