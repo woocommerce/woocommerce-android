@@ -50,40 +50,35 @@ private fun WooPosCartScreen(
     productsState: StateFlow<ViewState>,
     onEndOfProductsGridReached: () -> Unit,
 ) {
-    Box(
-        Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close POS"
+                    )
+                },
+                title = {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "⚠️ Reader not connected",
+                        style = MaterialTheme.typography.h5,
+                        color = MaterialTheme.colors.onPrimary,
+                        textAlign = TextAlign.Center,
+                    )
+                },
+                actions = {
+                    Text(text = "History")
+                }
+            )
+        },
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    navigationIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Close POS"
-                        )
-                    },
-                    title = {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "⚠️ Reader not connected",
-                            style = MaterialTheme.typography.h5,
-                            color = MaterialTheme.colors.onPrimary,
-                            textAlign = TextAlign.Center,
-                        )
-                    },
-                    actions = {
-                        Text(text = "History")
-                    }
-                )
-            },
+        Row(
+            modifier = Modifier.padding(16.dp)
         ) {
-            Row(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                ProductSelector(productsState, onEndOfProductsGridReached)
-                Cart(onCheckoutClick)
-            }
+            ProductSelector(productsState, onEndOfProductsGridReached)
+            Cart(onCheckoutClick)
         }
     }
 }
@@ -118,5 +113,8 @@ fun WooPosCartScreenPreview() {
             )
         )
     )
-    WooPosCartScreen(onCheckoutClick = {}, productsState = productState, onEndOfProductsGridReached = {})
+    WooPosCartScreen(
+        onCheckoutClick = {},
+        productsState = productState,
+        onEndOfProductsGridReached = {})
 }
