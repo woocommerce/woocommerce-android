@@ -15,7 +15,6 @@ class ProductSelectorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
 
-    private var loadProductsJob: Job? = null
     private var loadMoreProductsJob: Job? = null
 
     val viewState: StateFlow<ViewState> = productsDataSource.products.map { products ->
@@ -31,15 +30,14 @@ class ProductSelectorViewModel @Inject constructor(
     }.toStateFlow(ViewState(products = emptyList()))
 
     init {
-        loadProductsJob?.cancel()
-        loadMoreProductsJob?.cancel()
         launch {
             productsDataSource.loadProducts()
         }
     }
 
     fun onEndOfProductsGridReached() {
-        launch {
+        loadMoreProductsJob?.cancel()
+        loadMoreProductsJob = launch {
             productsDataSource.loadMore()
         }
     }
