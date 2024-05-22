@@ -209,15 +209,19 @@ class AppPrefsWrapper @Inject constructor() {
         AppPrefs.setActiveStatsTab(selectionName)
     }
 
-    fun getActiveStoreStatsTab() =
-        AppPrefs.getActiveStatsTab()
+    fun getActiveStoreStatsTab() = AppPrefs.getActiveStatsTab()
 
     fun setActiveTopPerformersTab(selectionName: String) {
         AppPrefs.setActiveTopPerformersTab(selectionName)
     }
 
-    fun getActiveTopPerformersTab() =
-        AppPrefs.getActiveTopPerformersTab()
+    fun getActiveTopPerformersTab() = AppPrefs.getActiveTopPerformersTab()
+
+    fun getActiveCouponsTab() = AppPrefs.getActiveCouponsTab()
+
+    fun setActiveCouponsTab(selectionName: String) {
+        AppPrefs.setActiveCouponsTab(selectionName)
+    }
 
     fun setCustomDomainsSource(source: DomainFlowSource) {
         AppPrefs.setCustomDomainsSource(source.name)

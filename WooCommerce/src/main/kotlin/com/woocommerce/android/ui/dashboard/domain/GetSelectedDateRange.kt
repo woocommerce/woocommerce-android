@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard.stats
+package com.woocommerce.android.ui.dashboard.domain
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
