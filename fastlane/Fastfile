@@ -62,8 +62,9 @@ BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeF
 BUILD_CODE_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeCalculator.new
 VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(version_properties_path: VERSION_PROPERTIES_PATH)
 
-WOOCOMMERCE_MOBILE_APP = 'WooCommerce'
-WOOCOMMERCE_WEAR_APP = 'WooCommerce-Wear'
+MOBILE_APP = 'WooCommerce'
+WEAR_APP = 'WooCommerce-Wear'
+APPS = [MOBILE_APP, WEAR_APP].freeze
 
 ########################################################################
 # Environment
@@ -634,9 +635,9 @@ platform :android do
 
     # Create the file names
     version = version_name_current
-    build_bundle(app: WOOCOMMERCE_MOBILE_APP, version: version, flavor: 'Vanilla')
+    build_bundle(app: MOBILE_APP, version: version, flavor: 'Vanilla')
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(WOOCOMMERCE_MOBILE_APP, version))
+    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(MOBILE_APP, version))
 
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
@@ -689,9 +690,9 @@ platform :android do
 
     # Create the file names
     version = version_name_current
-    build_bundle(app: WOOCOMMERCE_MOBILE_APP, version: version, flavor: 'Vanilla')
+    build_bundle(app: MOBILE_APP, version: version, flavor: 'Vanilla')
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(WOOCOMMERCE_MOBILE_APP, version))
+    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(MOBILE_APP, version))
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
     upload_to_play_store(
@@ -1213,8 +1214,8 @@ platform :android do
       json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
-    mobile_aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(WOOCOMMERCE_MOBILE_APP, version))
-    wear_aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(WOOCOMMERCE_WEAR_APP, version))
+    mobile_aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(MOBILE_APP, version))
+    wear_aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(WEAR_APP, version))
     release_assets = [universal_apk_path, mobile_aab_file_path, wear_aab_file_path].compact
 
     create_release(
