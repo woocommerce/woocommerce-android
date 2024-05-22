@@ -364,14 +364,10 @@ private fun MoreMenuButton(button: MoreMenuItemButton) {
     }
 
     if (button.withDivider) {
-        Spacer(modifier = Modifier.height(1.dp))
         Divider(
             color = colorResource(id = R.color.divider_color),
             modifier = Modifier.padding(start = 68.dp)
         )
-        Spacer(modifier = Modifier.height(1.dp))
-    } else {
-        Spacer(modifier = Modifier.height(2.dp))
     }
 }
 
