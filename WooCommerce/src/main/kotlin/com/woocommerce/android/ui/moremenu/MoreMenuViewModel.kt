@@ -100,7 +100,8 @@ class MoreMenuViewModel @Inject constructor(
                 MoreMenuItemButton(
                     title = R.string.more_menu_button_woo_pos,
                     description = R.string.more_menu_button_woo_pos_description,
-                    icon = R.drawable.ic_more_menu_payments,
+                    icon = R.drawable.ic_more_menu_pos,
+                    extraIcon = R.drawable.ic_more_menu_pos_extra,
                     isVisible = isWooPosEnabled(),
                     withDivider = false,
                     onClick = {

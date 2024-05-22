@@ -347,8 +347,20 @@ private fun MoreMenuButton(button: MoreMenuItemButton) {
                     )
                 }
             }
+
+            button.extraIcon?.let {
+                Icon(
+                    painter = painterResource(id = it),
+                    contentDescription = null,
+                    tint = colorResource(id = R.color.color_on_surface),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 8.dp)
+                )
+            }
         }
     }
+
     if (button.withDivider) {
         Spacer(modifier = Modifier.height(1.dp))
         Divider(
@@ -416,7 +428,8 @@ private fun MoreMenuPreview() {
                         MoreMenuItemButton(
                             title = R.string.more_menu_button_woo_pos,
                             description = R.string.more_menu_button_woo_pos_description,
-                            icon = R.drawable.ic_more_menu_payments,
+                            icon = R.drawable.ic_more_menu_pos,
+                            extraIcon = R.drawable.ic_more_menu_pos_extra,
                             withDivider = false,
                         ),
                     ),

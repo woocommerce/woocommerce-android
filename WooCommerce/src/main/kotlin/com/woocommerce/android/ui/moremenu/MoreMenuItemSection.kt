@@ -15,6 +15,7 @@ data class MoreMenuItemButton(
     @StringRes val title: Int,
     @StringRes val description: Int,
     @DrawableRes val icon: Int,
+    @DrawableRes val extraIcon: Int? = null,
     val isVisible: Boolean = true,
     val badgeState: BadgeState? = null,
     val withDivider: Boolean = true,
