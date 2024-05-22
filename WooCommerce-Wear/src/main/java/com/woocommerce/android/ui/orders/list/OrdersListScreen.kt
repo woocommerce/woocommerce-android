@@ -114,10 +114,10 @@ fun OrderListItem(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(15.dp))
+            .clickable { onOrderClicked(order.id) }
             .background(Color.DarkGray)
             .padding(10.dp)
             .fillMaxWidth()
-            .clickable { onOrderClicked(order.id) }
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(
