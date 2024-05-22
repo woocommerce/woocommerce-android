@@ -578,6 +578,7 @@
     <string name="cash_payments_take_payment_title">Take payment (%s)</string>
     <string name="cash_payments_cash_received">Cash received</string>
     <string name="cash_payments_change_due">Change due</string>
+    <string name="cash_payments_record_transaction_details">Record transaction details in order note</string>
 
     <!--
          Custom Amounts

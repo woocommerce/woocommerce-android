@@ -103,7 +103,7 @@ fun ChangeDueCalculatorScreen(
                             readOnly = true
                         )
 
-                        RecordTransactionDetailsNote()
+                        RecordTransactionDetailsNote(modifier = Modifier.padding(top = 16.dp).fillMaxWidth())
                     }
 
                     is ChangeDueCalculatorViewModel.UiState.Error -> {
@@ -118,21 +118,20 @@ fun ChangeDueCalculatorScreen(
 @Composable
 fun RecordTransactionDetailsNote(
     checked: Boolean = false,
-    onCheckedChange: (Boolean) -> Unit = {}
+    onCheckedChange: (Boolean) -> Unit = {},
+    modifier: Modifier
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(text = "Record transaction details in order note")
+        Text(text = stringResource(R.string.cash_payments_record_transaction_details))
         Checkbox(
             checked = checked,
             onCheckedChange = onCheckedChange
         )
     }
 }
-
-
 
 @Composable
 private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
