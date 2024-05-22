@@ -21,8 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.woopos.home.products.ListItem
 import com.woocommerce.android.ui.woopos.home.products.ProductSelector
 import com.woocommerce.android.ui.woopos.home.products.ProductSelectorViewModel
+import com.woocommerce.android.ui.woopos.home.products.ViewState
 import com.woocommerce.android.ui.woopos.util.WooPosPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +47,7 @@ fun WooPosCartScreen(
 @Composable
 private fun WooPosCartScreen(
     onCheckoutClick: () -> Unit,
-    productsState: StateFlow<ProductSelectorViewModel.ViewState>,
+    productsState: StateFlow<ViewState>,
     onEndOfProductsGridReached: () -> Unit,
 ) {
     Box(
@@ -108,11 +110,11 @@ private fun Cart(onButtonClicked: () -> Unit) {
 @WooPosPreview
 fun WooPosCartScreenPreview() {
     val productState = MutableStateFlow(
-        ProductSelectorViewModel.ViewState(
+        ViewState(
             products = listOf(
-                ProductSelectorViewModel.ListItem(1, "Product 1"),
-                ProductSelectorViewModel.ListItem(2, "Product 2"),
-                ProductSelectorViewModel.ListItem(3, "Product 3"),
+                ListItem(1, "Product 1"),
+                ListItem(2, "Product 2"),
+                ListItem(3, "Product 3"),
             )
         )
     )

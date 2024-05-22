@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -28,7 +27,7 @@ import kotlinx.coroutines.flow.filter
 
 @Composable
 fun ProductSelector(
-    productsState: StateFlow<ProductSelectorViewModel.ViewState>,
+    productsState: StateFlow<ViewState>,
     onEndOfProductsGridReached: () -> Unit,
 ) {
     ConstraintLayout(
@@ -56,7 +55,7 @@ fun ProductSelector(
 }
 
 @Composable
-fun ProductItem(product: ProductSelectorViewModel.ListItem) {
+fun ProductItem(product: ListItem) {
     ConstraintLayout(
         modifier = Modifier.background(Color.Yellow)
     ) {
@@ -94,11 +93,11 @@ fun InfiniteGridHandler(gridState: LazyGridState, buffer: Int = 1, onEndOfProduc
 @WooPosPreview
 fun ProductSelectorPreview() {
     val state = MutableStateFlow(
-        ProductSelectorViewModel.ViewState(
+        ViewState(
             listOf(
-                ProductSelectorViewModel.ListItem(1, "Product 1"),
-                ProductSelectorViewModel.ListItem(2, "Product 2"),
-                ProductSelectorViewModel.ListItem(3, "Product 3"),
+                ListItem(1, "Product 1"),
+                ListItem(2, "Product 2"),
+                ListItem(3, "Product 3"),
             )
         )
     )

@@ -37,14 +37,4 @@ class ProductSelectorViewModel @Inject constructor(
             productsDataSource.loadMore()
         }
     }
-
-    data class ViewState(
-        val products: List<ListItem>,
-    )
-
-    data class ListItem(
-        val productId: Long,
-        val title: String,
-        val imageUrl: String? = null,
-    )
 }
