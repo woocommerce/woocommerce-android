@@ -8,13 +8,14 @@ import androidx.annotation.StringRes
 data class MoreMenuItemSection(
     @StringRes val title: Int?,
     val items: List<MoreMenuItemButton>,
+    val isVisible: Boolean = true,
 )
 
 data class MoreMenuItemButton(
     @StringRes val title: Int,
     @StringRes val description: Int,
     @DrawableRes val icon: Int,
-    val isEnabled: Boolean = true,
+    val isVisible: Boolean = true,
     val badgeState: BadgeState? = null,
     val onClick: () -> Unit = {},
 )

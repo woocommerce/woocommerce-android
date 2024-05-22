@@ -394,7 +394,7 @@ private fun createBadgeEnterAnimation(): EnterTransition {
 @Composable
 private fun MoreMenuPreview() {
     val state = MoreMenuViewState(
-        menuItems = listOf(
+        menuSections = listOf(
             MoreMenuItem.Button(
                 title = R.string.more_menu_button_woo_pos,
                 description = R.string.more_menu_button_woo_pos_description,
