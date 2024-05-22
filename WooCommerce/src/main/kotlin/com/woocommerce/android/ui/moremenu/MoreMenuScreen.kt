@@ -92,6 +92,8 @@ fun MoreMenuScreen(
         MoreMenuHeader(onSwitchStore, state)
 
         state.menuSections.forEach { section -> MoreMenuSection(section) }
+
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
