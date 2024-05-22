@@ -87,7 +87,7 @@ class FetchOrdersTest : BaseUnitTest() {
         val expectedOrders = listOf<WearOrder>(mock())
         whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
         whenever(networkStatus.isConnected()).thenReturn(false)
-        whenever(ordersRepository.observeOrdersDataChanges(selectedSite.siteId))
+        whenever(ordersRepository.observeOrdersDataChanges(selectedSite))
             .thenReturn(flowOf(expectedOrders))
         val events = mutableListOf<OrdersRequest>()
 

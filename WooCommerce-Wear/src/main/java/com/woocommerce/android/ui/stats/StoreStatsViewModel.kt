@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.stats
 
 import android.os.Parcelable
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.extensions.getStateFlow
@@ -27,7 +28,7 @@ import javax.inject.Inject
 class StoreStatsViewModel @Inject constructor(
     private val fetchStats: FetchStats,
     private val locale: Locale,
-    loginRepository: LoginRepository,
+    private val loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val _viewState = savedState.getStateFlow(
@@ -48,6 +49,17 @@ class StoreStatsViewModel @Inject constructor(
                 updateSiteData(it)
                 requestStoreStats(it)
             }.launchIn(this)
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        if (_viewState.value.isLoading) return
+        launch {
+            loginRepository.selectedSite?.let {
+                updateSiteData(it)
+                requestStoreStats(it)
+            }
+        }
     }
 
     private fun requestStoreStats(selectedSite: SiteModel) {

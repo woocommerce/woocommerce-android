@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.extensions.getStateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
@@ -28,9 +30,11 @@ class OrderDetailsViewModel @Inject constructor(
     private val fetchOrderProducts: FetchOrderProducts,
     private val ordersRepository: OrdersRepository,
     private val formatOrderData: FormatOrderData,
-    loginRepository: LoginRepository,
+    private val loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    private val orderId = savedState.get<Long>(ORDER_ID.key) ?: 0
+
     private val _viewState = savedState.getStateFlow(
         scope = this,
         initialValue = ViewState()
@@ -41,18 +45,19 @@ class OrderDetailsViewModel @Inject constructor(
         _viewState.update { it.copy(isLoading = true) }
         loginRepository.selectedSiteFlow
             .filterNotNull()
-            .onEach { site ->
-                requestProductsData(
-                    site = site,
-                    orderId = savedState.get<Long>(ORDER_ID.key) ?: 0
-                )
-            }.launchIn(this)
+            .onEach { requestProductsData(it) }
+            .launchIn(this)
     }
 
-    private suspend fun requestProductsData(
-        site: SiteModel,
-        orderId: Long,
-    ) {
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        if (_viewState.value.isLoading) return
+        launch {
+            loginRepository.selectedSite?.let { requestProductsData(it) }
+        }
+    }
+
+    private suspend fun requestProductsData(site: SiteModel) {
         fetchOrderProducts(site, orderId)
             .map { productsRequest ->
                 when (productsRequest) {

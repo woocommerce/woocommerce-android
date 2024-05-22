@@ -5,6 +5,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.OrderEntity
 
 fun OrderEntity.toWearOrder() = WearOrder(
+    localSiteId = localSiteId.value,
     id = orderId,
     date = dateCreated,
     number = number,
@@ -14,9 +15,9 @@ fun OrderEntity.toWearOrder() = WearOrder(
     billingLastName = billingLastName
 )
 
-fun WearOrder.toOrderEntity(siteId: Int) = OrderEntity(
+fun WearOrder.toOrderEntity() = OrderEntity(
     orderId = id,
-    localSiteId = LocalOrRemoteId.LocalId(siteId),
+    localSiteId = LocalOrRemoteId.LocalId(localSiteId),
     dateCreated = date,
     number = number,
     total = total,

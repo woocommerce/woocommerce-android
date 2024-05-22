@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -28,7 +30,7 @@ class OrdersListViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
     private val fetchOrders: FetchOrders,
     private val formatOrders: FormatOrderData,
-    loginRepository: LoginRepository,
+    private val loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val _viewState = savedState.getStateFlow(
@@ -45,6 +47,14 @@ class OrdersListViewModel @AssistedInject constructor(
             .launchIn(this)
     }
 
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        if (_viewState.value.isLoading) return
+        launch {
+            loginRepository.selectedSite?.let { requestOrdersData(it) }
+        }
+    }
+
     fun onOrderItemClick(orderId: Long) {
         navController.navigate(ORDER_DETAILS.withArgs(orderId))
     }
@@ -56,11 +66,16 @@ class OrdersListViewModel @AssistedInject constructor(
                     is Finished -> _viewState.update { viewState ->
                         viewState.copy(
                             orders = formatOrders(selectedSite, request.orders),
+                            isError = false,
                             isLoading = false
                         )
                     }
-                    is Waiting -> _viewState.update { it.copy(isLoading = true) }
-                    else -> _viewState.update { it.copy(isLoading = false) }
+                    is Waiting -> _viewState.update {
+                        it.copy(isLoading = true, isError = false)
+                    }
+                    else -> _viewState.update {
+                        it.copy(isLoading = false, isError = true)
+                    }
                 }
             }.launchIn(this)
     }
@@ -68,6 +83,7 @@ class OrdersListViewModel @AssistedInject constructor(
     @Parcelize
     data class ViewState(
         val isLoading: Boolean = false,
+        val isError: Boolean = false,
         val orders: List<OrderItem> = emptyList()
     ) : Parcelable
 

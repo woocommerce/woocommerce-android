@@ -1,6 +1,7 @@
 package com.woocommerce.commons
 
 data class WearOrder(
+    val localSiteId: Int,
     val id: Long,
     val date: String,
     val number: String,

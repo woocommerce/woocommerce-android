@@ -10,12 +10,14 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.extensions.getSiteId
 import com.woocommerce.android.extensions.toOrderEntity
+import com.woocommerce.android.extensions.toWearOrder
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.commons.DataParameters.ORDERS_JSON
 import com.woocommerce.commons.DataParameters.ORDER_ID
 import com.woocommerce.commons.DataParameters.ORDER_PRODUCTS_JSON
 import com.woocommerce.commons.WearOrder
 import com.woocommerce.commons.WearOrderedProduct
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import org.wordpress.android.fluxc.model.SiteModel
@@ -51,25 +53,21 @@ class OrdersRepository @Inject constructor(
     )
 
     fun observeOrdersDataChanges(
-        siteId: Long
-    ) = ordersDataStore.data
-        .mapNotNull { it[stringPreferencesKey(generateOrdersKey(siteId))] }
-        .map { gson.fromJson(it, Array<WearOrder>::class.java).toList() }
+        selectedSite: SiteModel
+    ) = orderStore.observeOrdersForSite(selectedSite)
+        .distinctUntilChanged()
+        .map { orders ->
+            orders.sortedByDescending { it.dateCreated }
+                .map { it.toWearOrder() }
+        }
 
     suspend fun receiveOrdersDataFromPhone(data: DataMap) {
         val ordersJson = data.getString(ORDERS_JSON.value, "")
-        val siteId = data.getSiteId(loginRepository.selectedSite)
         val receivedOrders = gson.fromJson(ordersJson, Array<WearOrder>::class.java).toList()
         wearableStore.insertOrders(
-            orders = receivedOrders.map { it.toOrderEntity(siteId.toInt()) }
+            orders = receivedOrders.map { it.toOrderEntity() }
         )
-
-        ordersDataStore.edit { prefs ->
-            prefs[stringPreferencesKey(generateOrdersKey(siteId))] = ordersJson
-        }
     }
-
-    private fun generateOrdersKey(siteId: Long) = "${ORDERS_KEY_PREFIX}:$siteId"
 
     fun observeOrderProductsDataChanges(
         orderId: Long,

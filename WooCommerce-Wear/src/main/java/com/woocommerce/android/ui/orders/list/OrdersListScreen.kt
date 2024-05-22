@@ -14,22 +14,30 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
+import androidx.wear.compose.material.PositionIndicator
+import androidx.wear.compose.material.Scaffold
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
+import com.woocommerce.android.presentation.component.ErrorScreen
 import com.woocommerce.android.presentation.component.LoadingScreen
+import com.woocommerce.android.presentation.component.ScrollingLazyColumnAdapter
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
@@ -37,9 +45,11 @@ import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 
 @Composable
 fun OrdersListScreen(viewModel: OrdersListViewModel) {
+    LocalLifecycleOwner.current.lifecycle.addObserver(viewModel)
     val viewState by viewModel.viewState.observeAsState()
     OrdersListScreen(
         isLoading = viewState?.isLoading ?: false,
+        isError = viewState?.isError ?: false,
         orders = viewState?.orders.orEmpty(),
         onOrderClicked = viewModel::onOrderItemClick
     )
@@ -48,6 +58,7 @@ fun OrdersListScreen(viewModel: OrdersListViewModel) {
 @Composable
 fun OrdersListScreen(
     isLoading: Boolean,
+    isError: Boolean,
     orders: List<OrderItem>,
     onOrderClicked: (orderId: Long) -> Unit,
     modifier: Modifier = Modifier
@@ -70,10 +81,10 @@ fun OrdersListScreen(
                         .fillMaxWidth()
                         .padding(top = 6.dp)
                 )
-                if (isLoading) {
-                    LoadingScreen()
-                } else {
-                    OrdersLazyColumn(orders, onOrderClicked, modifier)
+                when {
+                    isLoading -> LoadingScreen()
+                    isError -> ErrorScreen(errorText = stringResource(id = R.string.orders_list_failed_to_load))
+                    else -> OrdersLazyColumn(orders, onOrderClicked, modifier)
                 }
             }
         }
@@ -86,19 +97,37 @@ private fun OrdersLazyColumn(
     onOrderClicked: (orderId: Long) -> Unit,
     modifier: Modifier
 ) {
-    ScalingLazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        autoCentering = AutoCenteringParams(itemIndex = 0),
-        state = rememberScalingLazyListState(
-            initialCenterItemIndex = 0
-        )
-    ) {
-        items(orders) {
-            OrderListItem(
-                order = it,
-                onOrderClicked = onOrderClicked,
-                modifier = modifier
+    val state = rememberScalingLazyListState(
+        initialCenterItemIndex = 0
+    )
+    val height = remember { mutableIntStateOf(1) }
+    Scaffold(
+        modifier = Modifier.onGloballyPositioned { height.intValue = it.size.height },
+        positionIndicator = {
+            PositionIndicator(
+                state = ScrollingLazyColumnAdapter(
+                    state = state,
+                    viewportHeightPx = height,
+                ),
+                indicatorHeight = 50.dp,
+                indicatorWidth = 4.dp,
+                paddingHorizontal = 5.dp,
+                reverseDirection = false,
             )
+        }
+    ) {
+        ScalingLazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            autoCentering = AutoCenteringParams(itemIndex = 0),
+            state = state
+        ) {
+            items(orders) {
+                OrderListItem(
+                    order = it,
+                    onOrderClicked = onOrderClicked,
+                    modifier = modifier
+                )
+            }
         }
     }
 }
@@ -112,10 +141,10 @@ fun OrderListItem(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(15.dp))
+            .clickable { onOrderClicked(order.id) }
             .background(Color.DarkGray)
             .padding(10.dp)
             .fillMaxWidth()
-            .clickable { onOrderClicked(order.id) }
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(
@@ -165,6 +194,7 @@ fun OrderListItem(
 fun Preview() {
     OrdersListScreen(
         isLoading = false,
+        isError = false,
         onOrderClicked = {},
         orders = listOf(
             OrderItem(

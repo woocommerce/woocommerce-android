@@ -26,9 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
+import com.woocommerce.android.presentation.component.ErrorScreen
 import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
@@ -38,6 +40,7 @@ import com.woocommerce.android.ui.orders.FormatOrderData.ProductItem
 
 @Composable
 fun OrderDetailsScreen(viewModel: OrderDetailsViewModel) {
+    LocalLifecycleOwner.current.lifecycle.addObserver(viewModel)
     val viewState = viewModel.viewState.observeAsState()
     OrderDetailsScreen(
         isLoading = viewState.value?.isLoading ?: false,
@@ -63,7 +66,7 @@ fun OrderDetailsScreen(
         ) {
             when {
                 isLoading -> LoadingScreen()
-                order == null -> OrderLoadingFailed()
+                order == null -> ErrorScreen(errorText = stringResource(id = R.string.order_details_failed_to_load))
                 else -> OrderDetailsContent(order, modifier)
             }
         }
@@ -152,8 +155,20 @@ fun OrderProductsList(
     modifier: Modifier
 ) {
     when {
-        products == null -> Text(stringResource(id = R.string.order_details_products_failed))
-        products.isEmpty() -> Text(stringResource(id = R.string.order_details_no_products_found))
+        products == null -> Text(
+            text = stringResource(id = R.string.order_details_products_failed),
+            style = WooTypography.caption1,
+            color = WooColors.woo_gray_alpha,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+        products.isEmpty() -> Text(
+            text = stringResource(id = R.string.order_details_no_products_found),
+            style = WooTypography.caption1,
+            color = WooColors.woo_gray_alpha,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
         else -> products.forEach { product ->
             Box(
                 modifier = modifier
@@ -172,7 +187,7 @@ fun OrderProductsList(
                         modifier = modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = product.amount,
+                            text = product.amount.toString(),
                             color = Color.White
                         )
                         Text(
@@ -223,12 +238,12 @@ fun Preview() {
             status = "Processing",
             products = listOf(
                 ProductItem(
-                    amount = "3",
+                    amount = 3,
                     total = "$100.00",
                     name = "Product 1"
                 ),
                 ProductItem(
-                    amount = "2",
+                    amount = 2,
                     total = "$200.00",
                     name = "Product 2"
                 )

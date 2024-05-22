@@ -35,7 +35,7 @@ class FormatOrderData @Inject constructor(
     ): OrderItem {
         val orderProducts = products?.map {
             ProductItem(
-                amount = it.amount,
+                amount = it.amount.toDoubleOrNull()?.toInt() ?: 0,
                 total = wooCommerceStore.formatCurrencyForDisplay(
                     amount = it.total.toDoubleOrNull() ?: 0.0,
                     site = selectedSite,
@@ -89,7 +89,7 @@ class FormatOrderData @Inject constructor(
 
     @Parcelize
     data class ProductItem(
-        val amount: String,
+        val amount: Int,
         val total: String,
         val name: String
     ) : Parcelable
