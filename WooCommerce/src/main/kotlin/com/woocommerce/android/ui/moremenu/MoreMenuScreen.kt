@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
@@ -88,6 +89,7 @@ fun MoreMenuScreen(
     ) {
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         MoreMenuHeader(onSwitchStore, state)
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
         state.visibleMenuItems.forEach { item ->
             when (item) {
@@ -102,7 +104,12 @@ fun MoreMenuScreen(
                 is MoreMenuItem.Header -> Text(
                     text = stringResource(id = item.title),
                     style = MaterialTheme.typography.subtitle1,
-                    color = colorResource(id = R.color.color_on_surface)
+                    color = colorResource(id = R.color.color_on_surface),
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        end = 16.dp,
+                        top = 32.dp,
+                    )
                 )
             }
         }
@@ -292,7 +299,6 @@ private fun MoreMenuButton(
     badgeState: BadgeState?,
     onClick: () -> Unit,
 ) {
-    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_75)))
     Button(
         onClick = onClick,
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.major_75)),
