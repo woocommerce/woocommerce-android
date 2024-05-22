@@ -154,8 +154,20 @@ fun OrderProductsList(
     modifier: Modifier
 ) {
     when {
-        products == null -> Text(stringResource(id = R.string.order_details_products_failed))
-        products.isEmpty() -> Text(stringResource(id = R.string.order_details_no_products_found))
+        products == null -> Text(
+            text = stringResource(id = R.string.order_details_products_failed),
+            style = WooTypography.caption1,
+            color = WooColors.woo_gray_alpha,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+        products.isEmpty() -> Text(
+            text = stringResource(id = R.string.order_details_no_products_found),
+            style = WooTypography.caption1,
+            color = WooColors.woo_gray_alpha,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
         else -> products.forEach { product ->
             Box(
                 modifier = modifier
