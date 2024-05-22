@@ -13,7 +13,7 @@ import androidx.wear.compose.material.PositionIndicatorVisibility
  * but still rejects Wear apps without it. This adapter is a workaround to always show the scroll
  * and it was taken from https://stackoverflow.com/a/77356995.
  */
-class AlwaysShowScrollBarScalingLazyColumnStateAdapter(
+class ScrollingLazyColumnAdapter(
     private val state: ScalingLazyListState,
     private val viewportHeightPx: State<Int?>,
     private val anchorType: ScalingLazyListAnchorType = ItemCenter,
@@ -50,8 +50,10 @@ class AlwaysShowScrollBarScalingLazyColumnStateAdapter(
 
     override fun visibility(scrollableContainerSizePx: Float): PositionIndicatorVisibility {
         val canScroll = state.layoutInfo.visibleItemsInfo.isNotEmpty() &&
-            (decimalFirstItemIndex() > 0 ||
-                decimalLastItemIndex() < state.layoutInfo.totalItemsCount)
+            (
+                decimalFirstItemIndex() > 0 ||
+                    decimalLastItemIndex() < state.layoutInfo.totalItemsCount
+                )
 
         return if (canScroll) PositionIndicatorVisibility.Show else PositionIndicatorVisibility.Hide
     }
@@ -61,7 +63,7 @@ class AlwaysShowScrollBarScalingLazyColumnStateAdapter(
     }
 
     override fun equals(other: Any?): Boolean {
-        return (other as? AlwaysShowScrollBarScalingLazyColumnStateAdapter)?.state == state
+        return (other as? ScrollingLazyColumnAdapter)?.state == state
     }
 
     private fun decimalLastItemIndex(): Float {

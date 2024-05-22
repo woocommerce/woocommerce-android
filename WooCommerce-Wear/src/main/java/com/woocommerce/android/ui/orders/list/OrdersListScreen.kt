@@ -35,9 +35,9 @@ import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
-import com.woocommerce.android.presentation.component.AlwaysShowScrollBarScalingLazyColumnStateAdapter
 import com.woocommerce.android.presentation.component.ErrorScreen
 import com.woocommerce.android.presentation.component.LoadingScreen
+import com.woocommerce.android.presentation.component.ScrollingLazyColumnAdapter
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
 import com.woocommerce.android.presentation.theme.WooTypography
@@ -105,7 +105,7 @@ private fun OrdersLazyColumn(
         modifier = Modifier.onGloballyPositioned { height.intValue = it.size.height },
         positionIndicator = {
             PositionIndicator(
-                state = AlwaysShowScrollBarScalingLazyColumnStateAdapter(
+                state = ScrollingLazyColumnAdapter(
                     state = state,
                     viewportHeightPx = height,
                 ),

@@ -20,10 +20,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
-import kotlinx.coroutines.launch
 
 @HiltViewModel
 class OrderDetailsViewModel @Inject constructor(
