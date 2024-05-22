@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -37,8 +38,8 @@ fun ProductSelector(
         val gridState = rememberLazyGridState()
         LazyVerticalGrid(
             columns = GridCells.Adaptive(minSize = 128.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = spacedBy(4.dp),
+            verticalArrangement = spacedBy(4.dp),
             state = gridState
         ) {
             items(
