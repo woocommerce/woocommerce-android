@@ -2,6 +2,7 @@ package com.woocommerce.android.di
 
 import android.content.Context
 import com.google.android.gms.wearable.CapabilityClient
+import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.Wearable
 import dagger.Module
@@ -24,4 +25,10 @@ class WearableClientModule {
     fun provideCapabilityClient(
         appContext: Context
     ): CapabilityClient = Wearable.getCapabilityClient(appContext)
+
+    @Provides
+    @Singleton
+    fun provideDataClient(
+        appContext: Context
+    ): DataClient = Wearable.getDataClient(appContext)
 }
