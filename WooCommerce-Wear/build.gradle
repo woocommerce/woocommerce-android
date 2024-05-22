@@ -26,6 +26,7 @@ repositories {
 }
 
 def versionProperties = loadPropertiesFromFile(file("${rootDir}/version.properties"))
+def versionCodeDifferenceBetweenAppAndWear = 50000
 
 android {
     namespace 'com.woocommerce.android'
@@ -35,8 +36,8 @@ android {
         applicationId "com.woocommerce.android"
         minSdk gradle.ext.minSdkVersion
         targetSdk gradle.ext.targetSdkVersion
-        versionName versionProperties.getProperty("wearVersionName")
-        versionCode versionProperties.getProperty("wearVersionCode").toInteger()
+        versionName "${versionProperties.getProperty("versionName")}w"
+        versionCode versionProperties.getProperty("versionCode").toInteger() + versionCodeDifferenceBetweenAppAndWear
         vectorDrawables {
             useSupportLibrary true
         }
