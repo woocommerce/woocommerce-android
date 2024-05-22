@@ -22,8 +22,4 @@
     <string name="order_details_failed_to_load">Failed to load order details, make sure your Watch is connected to the Internet or your phone is nearby.</string>
     <string name="order_details_products_failed">We couldn\'t retrieve the Order products, make sure your phone is nearby.</string>
     <string name="order_details_no_products_found">No products found for this order.</string>
-
-    <!-- Tile and Complication -->
-    <string name="tile_label">Example tile</string>
-    <string name="complication_label">Example complication</string>
 </resources>
