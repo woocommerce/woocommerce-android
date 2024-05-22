@@ -21,7 +21,9 @@ class ChangeDueCalculatorFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val uiState by viewModel.uiState.collectAsState()
-                ChangeDueCalculatorScreen(uiState = uiState, onNavigateUp = { findNavController().navigateUp() })
+                ChangeDueCalculatorScreen(uiState = uiState, onNavigateUp = {
+                    findNavController().navigateUp()
+                }, onCompleteOrderClick = {})
             }
         }
     }

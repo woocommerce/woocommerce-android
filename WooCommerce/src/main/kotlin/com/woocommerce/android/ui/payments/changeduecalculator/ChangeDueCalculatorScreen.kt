@@ -37,7 +37,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
+    onCompleteOrderClick: () -> Unit
 ) {
     WooThemeWithBackground {
         Scaffold(
@@ -105,12 +106,13 @@ fun ChangeDueCalculatorScreen(
                         )
 
                         RecordTransactionDetailsNote(
-                            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp).fillMaxWidth()
+                            modifier = Modifier
+                                .padding(top = 16.dp, bottom = 16.dp, start = 16.dp)
+                                .fillMaxWidth()
                         )
 
-                        val onCompleteOrderClick = Unit
                         MarkOrderAsCompleteButton(
-                            onClick = { onCompleteOrderClick },
+                            onClick = onCompleteOrderClick,
                             modifier = Modifier.padding(top = 16.dp)
                         )
                     }
@@ -180,6 +182,7 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
             amountDue = "$666.00",
             change = 0.00.toBigDecimal()
         ),
-        onNavigateUp = {}
+        onNavigateUp = {},
+        onCompleteOrderClick = {}
     )
 }
