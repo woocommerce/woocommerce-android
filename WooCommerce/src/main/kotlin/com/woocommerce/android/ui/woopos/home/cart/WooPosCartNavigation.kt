@@ -1,9 +1,9 @@
-package com.woocommerce.android.ui.woopos.cart
+package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.woocommerce.android.ui.woopos.cart.products.ProductSelectorViewModel
+import com.woocommerce.android.ui.woopos.home.products.ProductSelectorViewModel
 
 internal const val CART_ROUTE = "cart"
 

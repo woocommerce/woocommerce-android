@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.di
 
 import com.woocommerce.android.ui.products.selector.ProductListHandler
-import com.woocommerce.android.ui.woopos.cart.products.ProductsDataSource
-import com.woocommerce.android.ui.woopos.cart.products.ProductsDataSourceImpl
+import com.woocommerce.android.ui.woopos.home.products.ProductsDataSource
+import com.woocommerce.android.ui.woopos.home.products.ProductsDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

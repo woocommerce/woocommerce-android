@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.cart
+package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.ScopedViewModel
