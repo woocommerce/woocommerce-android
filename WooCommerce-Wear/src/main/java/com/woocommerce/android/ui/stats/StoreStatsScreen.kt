@@ -161,7 +161,6 @@ private fun StatsContentScreen(
             }
         }
 
-
         Text(
             style = WooTypography.caption2,
             textAlign = TextAlign.Center,
