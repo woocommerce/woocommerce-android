@@ -14,6 +14,7 @@ import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
@@ -134,7 +135,7 @@ fun RecordTransactionDetailsNote(
                 fontSize = TextUnit(16f, TextUnitType.Sp)
             )
         )
-        Checkbox(
+        Switch(
             checked = checked,
             onCheckedChange = onCheckedChange
         )
