@@ -640,7 +640,7 @@ platform :android do
     upload_to_play_store(
       package_name: APP_PACKAGE_NAME,
       aab: aab_file_path,
-      track: 'production',
+      track: track(app: :mobile, track_name: 'production'),
       release_status: 'inProgress',
       rollout: '0.1', # Start the production rollout at 10%
       skip_upload_metadata: false,
@@ -694,7 +694,7 @@ platform :android do
     upload_to_play_store(
       package_name: APP_PACKAGE_NAME,
       aab: aab_file_path,
-      track: 'beta',
+      track: track(app: :mobile, track_name: 'beta'),
       release_status: 'completed',
       rollout: '1.0', # Rollout to 100% of testers on the beta track
       skip_upload_metadata: true,
@@ -1238,6 +1238,13 @@ platform :android do
 
   def universal_apk_name(version)
     "wcandroid-#{version}-universal.apk"
+  end
+
+  # @param [Symbol] app The type of app, `:wear` or `:mobile`
+  # @param [String] track_name The track name, e.g. `'beta'` or `'production'`
+  def track(app:, track_name:)
+    prefix = app == :mobile ? '' : "#{app}:"
+    "#{prefix}#{track_name}"
   end
 
   def beta_version?(version)
