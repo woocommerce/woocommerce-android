@@ -327,7 +327,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             prefsChanges.emit(false)
 
             // THEN
-            assertThat(states.last().menuSections.flatMap { it.items }.first().badgeState).isNotNull
+            assertThat(
+                states.last().menuSections.flatMap { it.items }.first {
+                    it.title == R.string.more_menu_button_payments
+                }.badgeState
+            ).isNotNull
         }
 
     @Test
@@ -412,7 +416,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `given isWooPosEnabled returns false, when building state, then WooPOS button is not displayed`() =
+    fun `given isWooPosEnabled returns false, when building state, then WooPOS section is not displayed`() =
         testBlocking {
             // GIVEN
             setup {
@@ -424,12 +428,12 @@ class MoreMenuViewModelTests : BaseUnitTest() {
 
             // THEN
             assertThat(states.last().menuSections.flatMap { it.items }
-                .first { it.title == R.string.more_menu_button_woo_pos }.isVisible)
-                .isFalse()
+                .firstOrNull { it.title == R.string.more_menu_button_woo_pos })
+                .isNull()
         }
 
     @Test
-    fun `given isWooPosEnabled returns true, when building state, then WooPOS button is displayed`() = testBlocking {
+    fun `given isWooPosEnabled returns true, when building state, then WooPOS section is displayed`() = testBlocking {
         // GIVEN
         setup {
             whenever(isWooPosEnabled.invoke()).thenReturn(true)
@@ -439,8 +443,47 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         val states = viewModel.moreMenuViewState.captureValues()
 
         // THEN
+        assertThat(states.last().menuSections.first().title).isNull()
+        assertThat(states.last().menuSections.first().items.count()).isEqualTo(1)
         assertThat(states.last().menuSections.flatMap { it.items }
             .first { it.title == R.string.more_menu_button_woo_pos }.isVisible)
             .isTrue()
     }
+
+    @Test
+    fun `given isWooPosEnabled returns true, when building state, then 3 sections are shown without dividers at the end`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(isWooPosEnabled.invoke()).thenReturn(true)
+                whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
+            }
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(states.last().menuSections.count()).isEqualTo(3)
+
+            assertThat(states.last().menuSections[0].title).isNull()
+            val itemsFirstSection = states.last().menuSections[0].items
+            assertThat(itemsFirstSection.count()).isEqualTo(1)
+            itemsFirstSection.forEachIndexed { index, moreMenuItemButton ->
+                assertThat(moreMenuItemButton.withDivider == (itemsFirstSection.size != index))
+            }
+
+            assertThat(states.last().menuSections[1].title).isEqualTo(R.string.more_menu_general_section_title)
+            val itemsSecondSection = states.last().menuSections[1].items
+            assertThat(itemsSecondSection.count()).isEqualTo(7)
+            itemsSecondSection.forEachIndexed { index, moreMenuItemButton ->
+                assertThat(moreMenuItemButton.withDivider == (itemsSecondSection.size != index))
+            }
+
+            assertThat(states.last().menuSections[2].title).isEqualTo(R.string.more_menu_settings_section_title)
+            val itemsThirdSection = states.last().menuSections[2].items
+            assertThat(itemsThirdSection.count()).isEqualTo(2)
+            itemsThirdSection.forEachIndexed { index, moreMenuItemButton ->
+                assertThat(moreMenuItemButton.withDivider == (itemsSecondSection.size != index))
+            }
+        }
 }

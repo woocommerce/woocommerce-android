@@ -69,7 +69,7 @@ class MoreMenuViewModel @Inject constructor(
         ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName ->
             MoreMenuViewState(
                 menuSections = listOf(
-                    generatePosSection(),
+                    generatePOSSection(),
                     generateGeneralSection(
                         unseenReviewsCount = count,
                         paymentsFeatureWasClicked = paymentsFeatureWasClicked,
@@ -93,7 +93,7 @@ class MoreMenuViewModel @Inject constructor(
         launch { trackBlazeDisplayed() }
     }
 
-    private suspend fun generatePosSection() =
+    private suspend fun generatePOSSection() =
         MoreMenuItemSection(
             title = null,
             items = listOf(
