@@ -103,7 +103,9 @@ fun ChangeDueCalculatorScreen(
                             readOnly = true
                         )
 
-                        RecordTransactionDetailsNote(modifier = Modifier.padding(top = 16.dp).fillMaxWidth())
+                        RecordTransactionDetailsNote(
+                            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp).fillMaxWidth()
+                        )
                     }
 
                     is ChangeDueCalculatorViewModel.UiState.Error -> {
@@ -123,9 +125,9 @@ fun RecordTransactionDetailsNote(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.Center
     ) {
-        Text(text = stringResource(R.string.cash_payments_record_transaction_details))
+        Text(text = stringResource(R.string.cash_payments_record_transaction_details), modifier = Modifier.align(Alignment.CenterVertically))
         Checkbox(
             checked = checked,
             onCheckedChange = onCheckedChange
