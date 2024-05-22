@@ -35,7 +35,7 @@ fun WooPosCartScreen(
     onCheckoutClick: () -> Unit,
 ) {
     WooPosCartScreen(
-        onButtonClicked = onCheckoutClick,
+        onCheckoutClick = onCheckoutClick,
         productsState = productsViewModel.viewState,
         onEndOfProductsGridReached = productsViewModel::onEndOfProductsGridReached,
     )
@@ -44,7 +44,7 @@ fun WooPosCartScreen(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 private fun WooPosCartScreen(
-    onButtonClicked: () -> Unit,
+    onCheckoutClick: () -> Unit,
     productsState: StateFlow<ProductSelectorViewModel.ViewState>,
     onEndOfProductsGridReached: () -> Unit,
 ) {
@@ -80,7 +80,7 @@ private fun WooPosCartScreen(
                 modifier = Modifier.padding(16.dp)
             ) {
                 ProductSelector(productsState, onEndOfProductsGridReached)
-                Cart(onButtonClicked)
+                Cart(onCheckoutClick)
             }
         }
     }
@@ -116,5 +116,5 @@ fun WooPosCartScreenPreview() {
             )
         )
     )
-    WooPosCartScreen(onButtonClicked = {}, productsState = productState, onEndOfProductsGridReached = {})
+    WooPosCartScreen(onCheckoutClick = {}, productsState = productState, onEndOfProductsGridReached = {})
 }
