@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
@@ -106,6 +107,12 @@ fun ChangeDueCalculatorScreen(
                         RecordTransactionDetailsNote(
                             modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp).fillMaxWidth()
                         )
+
+                        val onCompleteOrderClick = Unit
+                        MarkOrderAsCompleteButton(
+                            onClick = { onCompleteOrderClick },
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
                     }
 
                     is ChangeDueCalculatorViewModel.UiState.Error -> {
@@ -138,6 +145,18 @@ fun RecordTransactionDetailsNote(
             checked = checked,
             onCheckedChange = onCheckedChange
         )
+    }
+}
+
+@Composable
+fun MarkOrderAsCompleteButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, top = 8.dp, end = 16.dp)
+    ) {
+        Text(text = stringResource(R.string.cash_payments_mark_order_as_complete))
     }
 }
 
