@@ -634,27 +634,29 @@ platform :android do
     android_build_preflight unless options[:skip_prechecks]
 
     # Create the file names
-    version = version_name_current
-    build_bundle(app: MOBILE_APP, version: version, flavor: 'Vanilla')
+    APPS.each do |app|
+      version = version_name_current
+      build_bundle(app: app, version: version, flavor: 'Vanilla')
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(MOBILE_APP, version))
+      aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(app, version))
 
-    UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
+      UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
-    upload_to_play_store(
-      package_name: APP_PACKAGE_NAME,
-      aab: aab_file_path,
-      track: track(app: MOBILE_APP, track_name: 'production'),
-      release_status: 'inProgress',
-      rollout: '0.1', # Start the production rollout at 10%
-      skip_upload_metadata: false,
-      skip_upload_changelogs: false,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY,
-      # We're retaining version 16.4 - 480 because 16.5 increases the minSDKVersion from Android 7 to Android 8
-      version_codes_to_retain: [480]
-    )
+      upload_to_play_store(
+        package_name: APP_PACKAGE_NAME,
+        aab: aab_file_path,
+        track: track(app: app, track_name: 'production'),
+        release_status: 'inProgress',
+        rollout: '0.1', # Start the production rollout at 10%
+        skip_upload_metadata: false,
+        skip_upload_changelogs: false,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+        json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY,
+        # We're retaining version 16.4 - 480 because 16.5 increases the minSDKVersion from Android 7 to Android 8
+        version_codes_to_retain: [480]
+      )
+    end
 
     create_gh_release(version: version) if options[:create_release]
   end
@@ -689,24 +691,26 @@ platform :android do
     android_build_preflight unless options[:skip_prechecks]
 
     # Create the file names
-    version = version_name_current
-    build_bundle(app: MOBILE_APP, version: version, flavor: 'Vanilla')
+    APPS.each do |app|
+      version = version_name_current
+      build_bundle(app: app, version: version, flavor: 'Vanilla')
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(MOBILE_APP, version))
-    UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
+      aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(app, version))
+      UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
-    upload_to_play_store(
-      package_name: APP_PACKAGE_NAME,
-      aab: aab_file_path,
-      track: track(app: MOBILE_APP, track_name: 'beta'),
-      release_status: 'completed',
-      rollout: '1.0', # Rollout to 100% of testers on the beta track
-      skip_upload_metadata: true,
-      skip_upload_changelogs: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
-      json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
-    )
+      upload_to_play_store(
+        package_name: APP_PACKAGE_NAME,
+        aab: aab_file_path,
+        track: track(app: app, track_name: 'beta'),
+        release_status: 'completed',
+        rollout: '1.0', # Rollout to 100% of testers on the beta track
+        skip_upload_metadata: true,
+        skip_upload_changelogs: true,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+        json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
+      )
+    end
 
     create_gh_release(version: version, prerelease: true) if options[:create_release]
   end
