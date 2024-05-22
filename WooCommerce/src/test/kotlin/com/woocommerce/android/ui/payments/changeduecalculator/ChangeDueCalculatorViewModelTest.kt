@@ -9,7 +9,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -40,15 +39,9 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private val orderDetailRepository: OrderDetailRepository = mock()
 
-    private var savedStateHandle: SavedStateHandle = mock {
-        SavedStateHandle(mapOf("orderId" to 1L))
-    }
-    private lateinit var viewModel: ChangeDueCalculatorViewModel
+    private val savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("orderId" to 1L))
 
-    @Before
-    fun setup() {
-        savedStateHandle = SavedStateHandle(mapOf("orderId" to 1L))
-    }
+    private lateinit var viewModel: ChangeDueCalculatorViewModel
 
     @Test
     fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
