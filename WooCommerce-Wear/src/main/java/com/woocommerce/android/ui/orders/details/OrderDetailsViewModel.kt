@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.extensions.getStateFlow
@@ -22,15 +23,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class OrderDetailsViewModel @Inject constructor(
     private val fetchOrderProducts: FetchOrderProducts,
     private val ordersRepository: OrdersRepository,
     private val formatOrderData: FormatOrderData,
-    loginRepository: LoginRepository,
+    private val loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
+    private val orderId = savedState.get<Long>(ORDER_ID.key) ?: 0
+
     private val _viewState = savedState.getStateFlow(
         scope = this,
         initialValue = ViewState()
@@ -42,17 +46,18 @@ class OrderDetailsViewModel @Inject constructor(
         loginRepository.selectedSiteFlow
             .filterNotNull()
             .onEach { site ->
-                requestProductsData(
-                    site = site,
-                    orderId = savedState.get<Long>(ORDER_ID.key) ?: 0
-                )
+                requestProductsData(site)
             }.launchIn(this)
     }
 
-    private suspend fun requestProductsData(
-        site: SiteModel,
-        orderId: Long,
-    ) {
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        launch {
+            loginRepository.selectedSite?.let { requestProductsData(it) }
+        }
+    }
+
+    private suspend fun requestProductsData(site: SiteModel) {
         fetchOrderProducts(site, orderId)
             .map { productsRequest ->
                 when (productsRequest) {

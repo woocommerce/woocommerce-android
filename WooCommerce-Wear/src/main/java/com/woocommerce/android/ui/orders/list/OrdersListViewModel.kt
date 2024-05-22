@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -28,7 +30,7 @@ class OrdersListViewModel @AssistedInject constructor(
     @Assisted private val navController: NavHostController,
     private val fetchOrders: FetchOrders,
     private val formatOrders: FormatOrderData,
-    loginRepository: LoginRepository,
+    private val loginRepository: LoginRepository,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
     private val _viewState = savedState.getStateFlow(
@@ -43,6 +45,13 @@ class OrdersListViewModel @AssistedInject constructor(
             .filterNotNull()
             .onEach { requestOrdersData(it) }
             .launchIn(this)
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        launch {
+            loginRepository.selectedSite?.let { requestOrdersData(it) }
+        }
     }
 
     fun onOrderItemClick(orderId: Long) {
