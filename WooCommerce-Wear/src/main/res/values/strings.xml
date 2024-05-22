@@ -14,11 +14,12 @@
     <!-- Orders List Screen -->
     <string name="orders_list_screen_title">Orders</string>
     <string name="orders_list_guest_customer">Guest</string>
+    <string name="orders_list_failed_to_load">Failed to load orders, make sure your Watch is connected to the Internet or your phone is nearby.</string>
 
     <!-- Order Details Screen -->
     <string name="order_details_single_product_amount">1 product</string>
     <string name="order_details_multiple_products_amount">%1$d products</string>
-    <string name="order_details_failed_to_load">Failed to load order details</string>
+    <string name="order_details_failed_to_load">Failed to load order details, make sure your Watch is connected to the Internet or your phone is nearby.</string>
     <string name="order_details_products_failed">We couldn\'t retrieve the Order products, make sure your phone is nearby.</string>
     <string name="order_details_no_products_found">No products found for this order.</string>
 
