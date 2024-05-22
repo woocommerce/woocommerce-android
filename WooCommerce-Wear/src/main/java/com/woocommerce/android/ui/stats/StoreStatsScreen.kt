@@ -132,7 +132,7 @@ private fun StatsContentScreen(
                     .padding(top = 6.dp)
             )
             Text(
-                text = totalRevenue,
+                text = totalRevenue.takeIf { it.isNotEmpty() } ?: "—",
                 textAlign = TextAlign.Center,
                 style = WooTypography.display3,
                 modifier = modifier
@@ -161,14 +161,18 @@ private fun StatsContentScreen(
             }
         }
 
+
         Text(
-            text = stringResource(id = R.string.stats_screen_time_description, timestamp),
             style = WooTypography.caption2,
             textAlign = TextAlign.Center,
             modifier = modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 14.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            text = timestamp
+                .takeIf { it.isNotEmpty() }
+                ?.let { stringResource(id = R.string.stats_screen_time_description, it) }
+                ?: stringResource(id = R.string.stats_screen_no_data)
         )
     }
 }
@@ -192,7 +196,7 @@ private fun IconStats(
                 .size(18.dp)
         )
         Text(
-            text = value,
+            text = value.takeIf { it.isNotEmpty() } ?: "—",
             modifier = modifier
                 .align(Alignment.CenterHorizontally)
         )

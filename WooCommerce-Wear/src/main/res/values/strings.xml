@@ -10,6 +10,7 @@
     <!-- Stats Screen -->
     <string name="stats_screen_revenue_title">Revenue</string>
     <string name="stats_screen_time_description">Today • As of %1$s</string>
+    <string name="stats_screen_no_data">Failed to load stats</string>
 
     <!-- Orders List Screen -->
     <string name="orders_list_screen_title">Orders</string>
