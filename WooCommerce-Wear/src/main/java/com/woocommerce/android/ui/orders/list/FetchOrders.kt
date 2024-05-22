@@ -47,7 +47,7 @@ class FetchOrders @Inject constructor(
             }
             phoneRepository.isPhoneConnectionAvailable() -> {
                 phoneRepository.sendMessage(REQUEST_ORDERS)
-                ordersRepository.observeOrdersDataChanges(selectedSite.siteId)
+                ordersRepository.observeOrdersDataChanges(selectedSite)
             }
             else -> flow {
                 val orders = ordersRepository.getStoredOrders(selectedSite)
