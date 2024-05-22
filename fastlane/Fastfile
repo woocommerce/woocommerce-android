@@ -631,9 +631,9 @@ platform :android do
 
     # Create the file names
     version = version_name_current
-    build_bundle(version: version, flavor: 'Vanilla')
+    build_bundle(app: 'WooCommerce', version: version, flavor: 'Vanilla')
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(version))
+    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name('WooCommerce', version))
 
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
@@ -686,9 +686,9 @@ platform :android do
 
     # Create the file names
     version = version_name_current
-    build_bundle(version: version, flavor: 'Vanilla')
+    build_bundle(app: 'WooCommerce', version: version, flavor: 'Vanilla')
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(version))
+    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name('WooCommerce', version))
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
     upload_to_play_store(
@@ -852,6 +852,9 @@ platform :android do
   # build_bundle
   # -----------------------------------------------------------------------------------
   # This lane builds an app bundle
+  # @param [String] version The version to create
+  # @param [String] app The Android app to build ('WooCommerce' or 'WooCommerce-Wear')
+  # @param [String] flavor The flavor of app ('Wasabi', 'Jalapeno' or 'Vanilla')
   # -----------------------------------------------------------------------------------
   # Usage:
   # bundle exec fastlane build_bundle [skip_confirm:<skip confirm>]
@@ -860,9 +863,10 @@ platform :android do
   lane :build_bundle do |options|
     # Create the file names
     version = options[:version]
-    name = aab_file_name(version)
-    aab_file = 'WooCommerce-vanilla-release.aab'
-    output_dir = 'WooCommerce/build/outputs/bundle/'
+    app = options[:app]
+    name = aab_file_name(app, version)
+    aab_file = "#{app}-vanilla-release.aab"
+    output_dir = "#{app}/build/outputs/bundle/"
     build_dir = 'artifacts/'
 
     # Build
@@ -1206,8 +1210,9 @@ platform :android do
       json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(version))
-    release_assets = [universal_apk_path, aab_file_path].compact
+    mobile_aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name('WooCommerce', version))
+    wear_aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name('WooCommerce-Wear', version))
+    release_assets = [universal_apk_path, mobile_aab_file_path, wear_aab_file_path].compact
 
     create_release(
       repository: GITHUB_REPO,
@@ -1227,8 +1232,8 @@ platform :android do
   #####################################################################################
   # Utils
   #####################################################################################
-  def aab_file_name(version)
-    "wcandroid-#{version}.aab"
+  def aab_file_name(app, version)
+    "wcandroid-#{app}-#{version}.aab"
   end
 
   def universal_apk_name(version)
