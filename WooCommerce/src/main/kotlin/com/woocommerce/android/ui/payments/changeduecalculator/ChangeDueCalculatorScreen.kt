@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -72,11 +73,21 @@ fun ChangeDueCalculatorScreen(
                     )
 
                     is ChangeDueCalculatorViewModel.UiState.Success -> {
+                        val hintString = stringResource(R.string.cash_payments_cash_received)
                         AndroidView(
                             factory = { ctx ->
                                 WCMaterialOutlinedCurrencyEditTextView(ctx).apply {
+                                    layoutParams = ViewGroup.LayoutParams(
+                                        ViewGroup.LayoutParams.MATCH_PARENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT
+                                    )
+                                    gravity = android.view.Gravity.START
+                                    imeOptions = android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN
+                                    visibility = android.view.View.VISIBLE
+                                    supportsEmptyState = false
+                                    supportsNegativeValues = false
+                                    hint = hintString
                                     setValueIfDifferent(uiState.amountDue)
-                                    // Apply other necessary configurations or attributes
                                 }
                             },
                             modifier = Modifier
