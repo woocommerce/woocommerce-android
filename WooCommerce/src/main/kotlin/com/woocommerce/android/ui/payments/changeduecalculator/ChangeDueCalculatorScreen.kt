@@ -138,8 +138,8 @@ fun RecordTransactionDetailsNote(
     modifier: Modifier
 ) {
     Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.Center
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = stringResource(R.string.cash_payments_record_transaction_details),
