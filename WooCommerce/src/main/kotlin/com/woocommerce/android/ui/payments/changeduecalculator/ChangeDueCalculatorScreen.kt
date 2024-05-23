@@ -88,20 +88,18 @@ fun ChangeDueCalculatorScreen(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         )
 
-                        TextField(
-                            value = "$0.00",
-                            onValueChange = {},
+                        Text(
+                            text = "$0.00", // Your text content
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
-                            label = { Text(stringResource(R.string.cash_payments_change_due)) },
-                            textStyle = LocalTextStyle.current.copy(
+                            style = LocalTextStyle.current.copy(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = TextUnit(44f, TextUnitType.Sp)
                             ),
-                            enabled = false,
-                            readOnly = true
+                            maxLines = 1 // Restrict to single line if needed
                         )
+
 
                         RecordTransactionDetailsNote(
                             modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp).fillMaxWidth()
