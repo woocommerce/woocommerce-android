@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -2211,7 +2212,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            var shippingLineDetails: List<OrderDetailViewModel.ShippingLineDetails>? = null
+            var shippingLineDetails: List<ShippingLineDetails>? = null
 
             // When
             viewModel.viewStateData.observeForever { _, _ -> }
@@ -2261,7 +2262,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            var shippingLineDetails: List<OrderDetailViewModel.ShippingLineDetails>? = null
+            var shippingLineDetails: List<ShippingLineDetails>? = null
 
             // When
             viewModel.viewStateData.observeForever { _, _ -> }
@@ -2309,7 +2310,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             viewModel.start()
 
-            var shippingLineDetails: List<OrderDetailViewModel.ShippingLineDetails>? = null
+            var shippingLineDetails: List<ShippingLineDetails>? = null
 
             // When
             viewModel.viewStateData.observeForever { _, _ -> }
