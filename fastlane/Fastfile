@@ -587,15 +587,18 @@ platform :android do
   # bundle exec fastlane build_and_upload_google_play
   #####################################################################################
   desc 'Builds and uploads a release to Google Play'
-  lane :build_and_upload_google_play do |_options|
+  lane :build_and_upload_google_play do |options|
+    app = get_app_param!(options)
     if beta_version?(version_name_current)
       build_and_upload_beta(
+        app: app,
         skip_confirm: is_ci,
         skip_prechecks: true,
         create_release: true
       )
     else
       build_and_upload_release(
+        app: app,
         skip_confirm: is_ci,
         skip_prechecks: true,
         create_release: true
@@ -706,20 +709,22 @@ platform :android do
 
   #####################################################################################
   # trigger_release_build
-  # -----------------------------------------------------------------------------------
-  # This lane triggers a stable release build on CI
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
   #
-  #####################################################################################
+  # This lane triggers a stable release build on CI
+  #
+  # @param [String] app The app to trigger a release build for (`MOBILE_APP` or `WEAR_APP`)
+  # @param [String] branch_to_build The git branch the CI build should run on. Defaults to the current branch at the time of calling that lane.
+  #
   desc 'Tell Buildkite to trigger a release build'
   lane :trigger_release_build do |options|
+    app = get_app_param!(options)
+    branch = options.fetch(:branch_to_build, git_branch)
     buildkite_trigger_build(
       buildkite_organization: 'automattic',
       buildkite_pipeline: 'woocommerce-android',
-      branch: options[:branch_to_build] || git_branch,
-      pipeline_file: 'release-builds.yml'
+      branch: branch,
+      pipeline_file: 'release-build.yml',
+      environment: { APP_TO_BUILD: app }
     )
   end
 
