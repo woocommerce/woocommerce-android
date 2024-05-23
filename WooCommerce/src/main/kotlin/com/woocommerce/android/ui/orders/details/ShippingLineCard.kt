@@ -30,11 +30,12 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.Header
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import java.math.BigDecimal
 
 @Composable
 fun ShippingLineSection(
-    shippingLineDetails: List<OrderDetailViewModel.ShippingLineDetails>,
+    shippingLineDetails: List<ShippingLineDetails>,
     formatCurrency: (amount: BigDecimal) -> String,
     modifier: Modifier = Modifier
 ) {

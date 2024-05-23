@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.orders.creation.configuration.ProductRules
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
@@ -37,7 +38,6 @@ import com.woocommerce.android.ui.orders.creation.taxes.rates.GetTaxRatePercenta
 import com.woocommerce.android.ui.orders.creation.taxes.rates.setting.GetAutoTaxRateSetting
 import com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsHelper
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import com.woocommerce.android.ui.products.OrderCreationProductRestrictions
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductStatus
@@ -2532,7 +2532,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(getShippingMethodsResult)
         createSut()
 
-        var shippingDetails: List<OrderDetailViewModel.ShippingLineDetails>? = null
+        var shippingDetails: List<ShippingLineDetails>? = null
         sut.shippingLineList.observeForever {
             shippingDetails = it
         }
@@ -2569,7 +2569,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(getShippingMethodsResult)
         createSut()
 
-        var shippingDetails: List<OrderDetailViewModel.ShippingLineDetails>? = null
+        var shippingDetails: List<ShippingLineDetails>? = null
         sut.shippingLineList.observeForever {
             shippingDetails = it
         }

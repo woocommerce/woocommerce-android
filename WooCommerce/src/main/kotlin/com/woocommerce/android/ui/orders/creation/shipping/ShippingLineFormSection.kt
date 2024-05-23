@@ -37,12 +37,11 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.orders.details.OrderDetailViewModel
 import java.math.BigDecimal
 
 @Composable
 fun ShippingLineFormSection(
-    shippingLineDetails: List<OrderDetailViewModel.ShippingLineDetails>,
+    shippingLineDetails: List<ShippingLineDetails>,
     onAdd: () -> Unit,
     onEdit: (id: Long) -> Unit,
     formatCurrency: (amount: BigDecimal) -> String,
@@ -88,7 +87,7 @@ fun ShippingLineFormSection(
 
 @Composable
 fun ShippingLineEditCard(
-    shippingLine: OrderDetailViewModel.ShippingLineDetails,
+    shippingLine: ShippingLineDetails,
     formatCurrency: (amount: BigDecimal) -> String,
     onEdit: (id: Long) -> Unit,
     modifier: Modifier = Modifier
@@ -159,7 +158,7 @@ fun ShippingLineEditCard(
 @Composable
 fun ShippingLineDetailsPreview() {
     WooThemeWithBackground {
-        OrderDetailViewModel.ShippingLineDetails(
+        ShippingLineDetails(
             id = 1L,
             name = "UPS Shipping",
             shippingMethod = ShippingMethod(id = "ups", title = "UPS"),
@@ -172,7 +171,7 @@ fun ShippingLineDetailsPreview() {
 @Composable
 fun ShippingLineFormSectionPreview() {
     val shippingDetails = List(3) { i ->
-        OrderDetailViewModel.ShippingLineDetails(
+        ShippingLineDetails(
             id = i * 1L,
             shippingMethod = null,
             amount = BigDecimal.TEN * i.toBigDecimal(),
