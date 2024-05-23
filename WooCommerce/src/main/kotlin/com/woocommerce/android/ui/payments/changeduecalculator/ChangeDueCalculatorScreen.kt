@@ -8,12 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
@@ -26,13 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
 
 @Composable
 fun ChangeDueCalculatorScreen(
@@ -73,20 +72,16 @@ fun ChangeDueCalculatorScreen(
                     )
 
                     is ChangeDueCalculatorViewModel.UiState.Success -> {
-                        OutlinedTextField(
-                            value = uiState.amountDue,
-                            onValueChange = {
-                                // TODO
+                        AndroidView(
+                            factory = { ctx ->
+                                WCMaterialOutlinedCurrencyEditTextView(ctx).apply {
+                                    setValueIfDifferent(uiState.amountDue)
+                                    // Apply other necessary configurations or attributes
+                                }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
-                            label = { Text(stringResource(R.string.cash_payments_cash_received)) },
-                            textStyle = LocalTextStyle.current.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = TextUnit(44f, TextUnitType.Sp)
-                            ),
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
                         )
 
                         Column(
@@ -166,7 +161,7 @@ private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String 
 fun ChangeDueCalculatorScreenSuccessPreview() {
     ChangeDueCalculatorScreen(
         uiState = ChangeDueCalculatorViewModel.UiState.Success(
-            amountDue = "$666.00",
+            amountDue = 666.00.toBigDecimal(),
             change = 0.00.toBigDecimal()
         ),
         onNavigateUp = {}
