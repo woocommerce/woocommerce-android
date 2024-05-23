@@ -3,8 +3,10 @@ package com.woocommerce.android.ui.payments.changeduecalculator
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -87,17 +89,28 @@ fun ChangeDueCalculatorScreen(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         )
 
-                        Text(
-                            text = "$0.00", // Your text content
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 48.dp, bottom = 16.dp, start = 32.dp),
-                            style = LocalTextStyle.current.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = TextUnit(44f, TextUnitType.Sp)
-                            ),
-                            maxLines = 1
-                        )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.cash_payments_change_due),
+                                style = LocalTextStyle.current.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = TextUnit(16f, TextUnitType.Sp)
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "$0.00",
+                                style = LocalTextStyle.current.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = TextUnit(44f, TextUnitType.Sp)
+                                ),
+                                maxLines = 1
+                            )
+                        }
 
                         RecordTransactionDetailsNote(
                             modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp).fillMaxWidth()
