@@ -15,7 +15,6 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -92,14 +91,13 @@ fun ChangeDueCalculatorScreen(
                             text = "$0.00", // Your text content
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
+                                .padding(top = 48.dp, bottom = 16.dp, start = 32.dp),
                             style = LocalTextStyle.current.copy(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = TextUnit(44f, TextUnitType.Sp)
                             ),
-                            maxLines = 1 // Restrict to single line if needed
+                            maxLines = 1
                         )
-
 
                         RecordTransactionDetailsNote(
                             modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp).fillMaxWidth()
