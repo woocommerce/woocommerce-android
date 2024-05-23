@@ -97,7 +97,6 @@ fun ChangeDueCalculatorScreen(
                             Text(
                                 text = stringResource(R.string.cash_payments_change_due),
                                 style = LocalTextStyle.current.copy(
-                                    fontWeight = FontWeight.Bold,
                                     fontSize = TextUnit(16f, TextUnitType.Sp)
                                 )
                             )
