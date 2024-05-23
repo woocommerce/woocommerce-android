@@ -10,10 +10,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.main.AppBarStatus
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ChangeDueCalculatorFragment : BaseFragment() {
+
+    override val activityAppBarStatus: AppBarStatus
+        get() = AppBarStatus.Hidden
 
     private val viewModel: ChangeDueCalculatorViewModel by viewModels()
 
