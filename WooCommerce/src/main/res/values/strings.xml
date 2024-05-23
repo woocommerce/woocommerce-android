@@ -429,6 +429,8 @@
     <string name="dashboard_reviews_card_view_all_button">View all reviews</string>
 
     <string name="dashboard_product_stock_status_header_title">Status</string>
+    <string name="dashboard_product_stock_levels">Stock levels</string>
+    <string name="dashboard_product_stock_products">Products</string>
 
     <!--
         Sign Up Flow
