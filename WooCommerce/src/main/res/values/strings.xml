@@ -983,6 +983,7 @@
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
     <string name="order_detail_payment_header">PAYMENT TOTALS</string>
     <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
+    <string name="order_detail_shipping_header">SHIPPING</string>
     <string name="order_detail_attribution_header">Order attribution</string>
     <string name="order_detail_attribution_origin">Origin</string>
     <string name="order_detail_attribution_organic_origin">Organic: %1$s</string>
