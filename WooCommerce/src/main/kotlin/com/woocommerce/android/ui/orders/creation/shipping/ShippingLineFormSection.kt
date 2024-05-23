@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,7 +53,7 @@ fun ShippingLineFormSection(
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(modifier = Modifier.padding(bottom = 16.dp)) {
                     Text(
-                        text = "Shipping",
+                        text = stringResource(id = R.string.shipping),
                         style = MaterialTheme.typography.h6,
                         modifier = modifier
                             .weight(2f, true)
@@ -60,7 +61,7 @@ fun ShippingLineFormSection(
                     )
                     Icon(
                         imageVector = Icons.Default.Add,
-                        contentDescription = "Add shipping line",
+                        contentDescription = stringResource(id = R.string.order_creation_add_shipping),
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .clickable(
