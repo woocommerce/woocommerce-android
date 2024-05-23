@@ -5,8 +5,13 @@ import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.commons.DataParameters.ANALYTICS_PARAMETERS
+import com.woocommerce.commons.DataParameters.ANALYTICS_TRACK
 import com.woocommerce.commons.DataParameters.CONVERSION_RATE
 import com.woocommerce.commons.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.DataParameters.ORDERS_JSON
@@ -23,6 +28,22 @@ import com.woocommerce.commons.DataPath.ORDERS_DATA
 import com.woocommerce.commons.DataPath.ORDER_PRODUCTS_DATA
 import com.woocommerce.commons.DataPath.SITE_DATA
 import com.woocommerce.commons.DataPath.STATS_DATA
+import com.woocommerce.commons.WearAnalyticsEvent
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_APP_OPENED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_DATA_FAILED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_DATA_RECEIVED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_DATA_REQUESTED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_OPENED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_FAILED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_RECEIVED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_REQUESTED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_OPENED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_FAILED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_RECEIVED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_REQUESTED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_FAILED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_RECEIVED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_REQUESTED
 import com.woocommerce.commons.WearOrder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -42,6 +63,7 @@ class WearableConnectionRepository @Inject constructor(
     private val wearableStore: WCWearableStore,
     private val getStats: GetWearableMyStoreStats,
     private val getOrderProducts: GetWearableOrderProducts,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val coroutineScope: CoroutineScope
 ) {
     private val gson by lazy { Gson() }
@@ -131,7 +153,11 @@ class WearableConnectionRepository @Inject constructor(
     }
 
     fun receiveAnalyticsFromWear(dataMap: DataMap) {
-
+        val stat = dataMap.getString(ANALYTICS_TRACK.value)
+        val typeToken = object : TypeToken<Map<String, String>>() {}.type
+        val parameters: Map<String, String> = dataMap.getString(ANALYTICS_PARAMETERS.value)
+            .let { gson.fromJson(it, typeToken) }
+        analyticsTrackerWrapper.track(stat, parameters)
     }
 
     private fun sendData(
@@ -146,5 +172,26 @@ class WearableConnectionRepository @Inject constructor(
                 dataMap.putLong(SITE_ID.value, selectedSite.getOrNull()?.siteId ?: 0L)
             }.asPutDataRequest().setUrgent()
             .let { dataClient.putDataItem(it) }
+    }
+
+    fun WearAnalyticsEvent.toAnalyticsEvent(): AnalyticsEvent {
+        return when (this) {
+            WATCH_STORE_DATA_REQUESTED -> AnalyticsEvent.WATCH_STORE_DATA_REQUESTED
+            WATCH_STORE_DATA_RECEIVED -> AnalyticsEvent.WATCH_STORE_DATA_RECEIVED
+            WATCH_STORE_DATA_FAILED -> AnalyticsEvent.WATCH_STORE_DATA_FAILED
+            WATCH_STATS_DATA_REQUESTED -> AnalyticsEvent.WATCH_STATS_DATA_REQUESTED
+            WATCH_STATS_DATA_RECEIVED -> AnalyticsEvent.WATCH_STATS_DATA_RECEIVED
+            WATCH_STATS_DATA_FAILED -> AnalyticsEvent.WATCH_STATS_DATA_FAILED
+            WATCH_ORDERS_DATA_REQUESTED -> AnalyticsEvent.WATCH_ORDERS_DATA_REQUESTED
+            WATCH_ORDERS_DATA_RECEIVED -> AnalyticsEvent.WATCH_ORDERS_DATA_RECEIVED
+            WATCH_ORDERS_DATA_FAILED -> AnalyticsEvent.WATCH_ORDERS_DATA_FAILED
+            WATCH_ORDER_DETAILS_DATA_REQUESTED -> AnalyticsEvent.WATCH_ORDER_DETAILS_DATA_REQUESTED
+            WATCH_ORDER_DETAILS_DATA_RECEIVED -> AnalyticsEvent.WATCH_ORDER_DETAILS_DATA_RECEIVED
+            WATCH_ORDER_DETAILS_DATA_FAILED -> AnalyticsEvent.WATCH_ORDER_DETAILS_DATA_FAILED
+            WATCH_APP_OPENED -> AnalyticsEvent.WATCH_APP_OPENED
+            WATCH_ORDERS_LIST_OPENED -> AnalyticsEvent.WATCH_ORDERS_LIST_OPENED
+            WATCH_ORDER_DETAILS_OPENED -> AnalyticsEvent.WATCH_ORDER_DETAILS_OPENED
+            else -> throw IllegalArgumentException("Unknown WearAnalyticsEvent")
+        }
     }
 }
