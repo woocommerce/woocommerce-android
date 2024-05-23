@@ -213,7 +213,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(branch_to_build: "release/#{release_version_current}")
+    trigger_release_build(app: MOBILE_APP, branch_to_build: "release/#{release_version_current}")
+    # NOTE: The MC Release Scenario has a separate, optional Task to build the WEAR_APP after `complete_code_freeze` if team needs one this sprint
 
     # Create an intermediate branch
     new_intermediate_branch_name = "merge/#{release_version_current}-code-freeze-into-#{DEFAULT_BRANCH}"
@@ -319,7 +320,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(branch_to_build: "release/#{release_version_current}")
+    trigger_release_build(app: MOBILE_APP, branch_to_build: "release/#{release_version_current}")
+    # NOTE: The MC Release Scenario has a separate, optional Task to build the WEAR_APP after `complete_code_freeze` if team needs one this sprint
 
     # Create an intermediate branch
     new_intermediate_branch_name = "merge/#{version_name_current}-into-#{DEFAULT_BRANCH}"
@@ -423,7 +425,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(branch_to_build: "release/#{hotfix_version}")
+    trigger_release_build(app: MOBILE_APP, branch_to_build: "release/#{hotfix_version}")
+    # NOTE: The MC Release Scenario has a separate, optional Task to build the WEAR_APP after `complete_code_freeze` if team needs one this sprint
 
     # Retrieve the current non-hotfix release version
     Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
@@ -538,7 +541,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(branch_to_build: "release/#{version}")
+    trigger_release_build(app: MOBILE_APP, branch_to_build: "release/#{version}")
+    # NOTE: The MC Release Scenario has a separate, optional Task to build the WEAR_APP after `complete_code_freeze` if team needs one this sprint
 
     # Create an intermediate branch
     new_intermediate_branch_name = "merge/#{release_version_current}-final-into-#{DEFAULT_BRANCH}"
