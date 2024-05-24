@@ -49,7 +49,8 @@ fun StoreStatsScreen(viewModel: StoreStatsViewModel) {
         ordersCount = viewState?.ordersCount?.toString().orEmpty(),
         visitorsCount = viewState?.visitorsCount?.toString().orEmpty(),
         conversionRate = viewState?.conversionRate.orEmpty(),
-        timestamp = viewState?.timestamp.orEmpty()
+        timestamp = viewState?.timestamp.orEmpty(),
+        onRetryClicked = viewModel::reloadData
     )
 }
 
@@ -63,6 +64,7 @@ fun StoreStatsScreen(
     visitorsCount: String,
     conversionRate: String,
     timestamp: String,
+    onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     WooTheme {
@@ -101,7 +103,7 @@ fun StoreStatsScreen(
                     isLoading -> LoadingScreen()
                     isError -> ErrorScreen(
                         errorText = stringResource(id = R.string.stats_screen_error_message),
-                        onRetryClicked = { /* TODO */ }
+                        onRetryClicked = onRetryClicked
                     )
                     else -> StatsContentScreen(
                         modifier,
@@ -222,6 +224,7 @@ fun DefaultPreview() {
         ordersCount = "5",
         visitorsCount = "12",
         conversionRate = "100%",
-        timestamp = "02:19"
+        timestamp = "02:19",
+        onRetryClicked = {}
     )
 }

@@ -53,6 +53,10 @@ class StoreStatsViewModel @Inject constructor(
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
+        reloadData()
+    }
+
+    fun reloadData() {
         if (_viewState.value.isLoading) return
         launch {
             loginRepository.selectedSite?.let {
