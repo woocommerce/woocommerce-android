@@ -51,7 +51,8 @@ fun OrdersListScreen(viewModel: OrdersListViewModel) {
         isLoading = viewState?.isLoading ?: false,
         isError = viewState?.isError ?: false,
         orders = viewState?.orders.orEmpty(),
-        onOrderClicked = viewModel::onOrderItemClick
+        onOrderClicked = viewModel::onOrderItemClick,
+        onRetryClicked = viewModel::reloadData
     )
 }
 
@@ -61,6 +62,7 @@ fun OrdersListScreen(
     isError: Boolean,
     orders: List<OrderItem>,
     onOrderClicked: (orderId: Long) -> Unit,
+    onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     WooTheme {
@@ -83,7 +85,10 @@ fun OrdersListScreen(
                 )
                 when {
                     isLoading -> LoadingScreen()
-                    isError -> ErrorScreen(errorText = stringResource(id = R.string.orders_list_failed_to_load))
+                    isError -> ErrorScreen(
+                        errorText = stringResource(id = R.string.orders_list_failed_to_load),
+                        onRetryClicked = onRetryClicked
+                    )
                     else -> OrdersLazyColumn(orders, onOrderClicked, modifier)
                 }
             }
@@ -196,6 +201,7 @@ fun Preview() {
         isLoading = false,
         isError = false,
         onOrderClicked = {},
+        onRetryClicked = {},
         orders = listOf(
             OrderItem(
                 id = 0L,
