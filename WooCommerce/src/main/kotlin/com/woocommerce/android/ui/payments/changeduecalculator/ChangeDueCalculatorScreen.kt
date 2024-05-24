@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
@@ -38,7 +39,8 @@ import java.math.BigDecimal
 @Composable
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
+    onCompleteOrderClick: () -> Unit
 ) {
     WooThemeWithBackground {
         Scaffold(
@@ -121,6 +123,11 @@ fun ChangeDueCalculatorScreen(
                                 .padding(top = 16.dp, bottom = 16.dp, start = 16.dp)
                                 .fillMaxWidth()
                         )
+
+                        MarkOrderAsCompleteButton(
+                            onClick = onCompleteOrderClick,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
                     }
 
                     is ChangeDueCalculatorViewModel.UiState.Error -> {
@@ -191,6 +198,7 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00")
         ),
-        onNavigateUp = {}
+        onNavigateUp = {},
+        onCompleteOrderClick = {}
     )
 }
