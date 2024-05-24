@@ -182,16 +182,12 @@ platform :android do
 
   #####################################################################################
   # complete_code_freeze
-  # -----------------------------------------------------------------------------------
+  # 
   # This lane executes the last steps planned on code freeze
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane complete_code_freeze [skip_confirm:<skip confirm>]
+  # 
+  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
+  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
-  # Example:
-  # bundle exec fastlane complete_code_freeze
-  # bundle exec fastlane complete_code_freeze skip_confirm:true
-  #####################################################################################
   desc 'Creates a new release branch from the current trunk'
   lane :complete_code_freeze do |options|
     # Ensure we use the latest version of the toolkit
@@ -213,8 +209,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(app: MOBILE_APP, branch_to_build: "release/#{release_version_current}")
-    # NOTE: The MC Release Scenario has a separate, optional Task to build the WEAR_APP after `complete_code_freeze` if team needs one this sprint
+    include_wear_app = options.fetch(:include_wear_app, false)
+    trigger_release_build(branch_to_build: "release/#{release_version_current}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
     new_intermediate_branch_name = "merge/#{release_version_current}-code-freeze-into-#{DEFAULT_BRANCH}"
@@ -269,17 +265,13 @@ platform :android do
 
   #####################################################################################
   # new_beta_release
-  # -----------------------------------------------------------------------------------
+  # 
   # This lane updates the release branch for a new beta release. It will update the
   # current release branch by default.
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane new_beta_release [skip_confirm:<skip confirm>]
+  # 
+  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
+  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
-  # Example:
-  # bundle exec fastlane new_beta_release
-  # bundle exec fastlane new_beta_release skip_confirm:true
-  #####################################################################################
   desc 'Updates a release branch for a new beta release'
   lane :new_beta_release do |options|
     # Verify that there's nothing in progress in the working copy
@@ -320,8 +312,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(app: MOBILE_APP, branch_to_build: "release/#{release_version_current}")
-    # NOTE: The MC Release Scenario has a separate, optional Task to build the WEAR_APP after `complete_code_freeze` if team needs one this sprint
+    include_wear_app = options.fetch(:include_wear_app, false)
+    trigger_release_build(branch_to_build: "release/#{release_version_current}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
     new_intermediate_branch_name = "merge/#{version_name_current}-into-#{DEFAULT_BRANCH}"
@@ -398,15 +390,12 @@ platform :android do
 
   #####################################################################################
   # finalize_hotfix_release
-  # -----------------------------------------------------------------------------------
+  # 
   # This lane finalizes the hotfix branch.
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane finalize_hotfix_release
+  # 
+  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
+  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
-  # Example:
-  # bundle exec fastlane finalize_hotfix_release
-  #####################################################################################
   desc 'Finalizes a hotfix release by triggering a release build'
   lane :finalize_hotfix_release do |options|
     # Verify that there's nothing in progress in the working copy
@@ -423,8 +412,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(app: MOBILE_APP, branch_to_build: "release/#{hotfix_version}")
-    # NOTE: The MC Release Scenario has a separate, optional Task to build the WEAR_APP after `complete_code_freeze` if team needs one this sprint
+    include_wear_app = options.fetch(:include_wear_app, false)
+    trigger_release_build(branch_to_build: "release/#{hotfix_version}", include_wear_app: include_wear_app)
 
     # Retrieve the current non-hotfix release version
     Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
@@ -464,16 +453,12 @@ platform :android do
 
   #####################################################################################
   # finalize_release
-  # -----------------------------------------------------------------------------------
+  # 
   # This lane finalize a release: updates store metadata and runs the release checks
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane finalize_release [skip_confirm:<skip confirm>]
+  # 
+  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
+  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
-  # Example:
-  # bundle exec fastlane finalize_release
-  # bundle exec fastlane finalize_release skip_confirm:true
-  #####################################################################################
   desc 'Updates store metadata and runs the release checks'
   lane :finalize_release do |options|
     UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix(version_properties_path: VERSION_PROPERTIES_PATH)
@@ -539,8 +524,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(app: MOBILE_APP, branch_to_build: "release/#{version}")
-    # NOTE: The MC Release Scenario has a separate, optional Task to build the WEAR_APP after `complete_code_freeze` if team needs one this sprint
+    include_wear_app = options.fetch(:include_wear_app, false)
+    trigger_release_build(branch_to_build: "release/#{version}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
     new_intermediate_branch_name = "merge/#{release_version_current}-final-into-#{DEFAULT_BRANCH}"
@@ -710,19 +695,20 @@ platform :android do
   #
   # This lane triggers a stable release build on CI
   #
-  # @param [String] app The app to trigger a release build for (`MOBILE_APP` or `WEAR_APP`)
   # @param [String] branch_to_build The git branch the CI build should run on. Defaults to the current branch at the time of calling that lane.
+  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
   desc 'Tell Buildkite to trigger a release build'
   lane :trigger_release_build do |options|
-    app = get_app_param!(options)
     branch = options.fetch(:branch_to_build, git_branch)
+    include_wear_app = options.fetch(:include_wear_app)
+
     buildkite_trigger_build(
       buildkite_organization: 'automattic',
       buildkite_pipeline: 'woocommerce-android',
       branch: branch,
-      pipeline_file: 'release-build.yml',
-      environment: { APP_TO_BUILD: app }
+      pipeline_file: 'release-builds.yml',
+      environment: { INCLUDE_WEAR_APP: include_wear_app }
     )
   end
 
