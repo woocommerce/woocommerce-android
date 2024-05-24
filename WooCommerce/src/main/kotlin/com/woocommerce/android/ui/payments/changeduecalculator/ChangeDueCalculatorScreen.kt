@@ -117,7 +117,9 @@ fun ChangeDueCalculatorScreen(
                         }
 
                         RecordTransactionDetailsNote(
-                            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp, start = 16.dp).fillMaxWidth()
+                            modifier = Modifier
+                                .padding(top = 16.dp, bottom = 16.dp, start = 16.dp)
+                                .fillMaxWidth()
                         )
                     }
 
