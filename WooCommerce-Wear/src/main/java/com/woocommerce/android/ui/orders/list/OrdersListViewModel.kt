@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
@@ -12,7 +11,7 @@ import com.woocommerce.android.ui.orders.FormatOrderData
 import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.WearViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -32,7 +31,7 @@ class OrdersListViewModel @AssistedInject constructor(
     private val formatOrders: FormatOrderData,
     private val loginRepository: LoginRepository,
     savedState: SavedStateHandle
-) : ScopedViewModel(savedState) {
+) : WearViewModel() {
     private val _viewState = savedState.getStateFlow(
         scope = this,
         initialValue = ViewState()
@@ -47,14 +46,9 @@ class OrdersListViewModel @AssistedInject constructor(
             .launchIn(this)
     }
 
-    override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
-        reloadData()
-    }
-
-    fun reloadData() {
+    override fun reloadData(withLoading: Boolean) {
         if (_viewState.value.isLoading) return
-        _viewState.update { it.copy(isLoading = true) }
+        _viewState.update { it.copy(isLoading = withLoading) }
         launch {
             loginRepository.selectedSite?.let { requestOrdersData(it) }
         }

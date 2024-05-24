@@ -29,7 +29,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     LoginScreen(
         isLoading = viewState?.isLoading ?: false,
-        onTryAgainClicked = viewModel::onTryAgainClicked
+        onTryAgainClicked = viewModel::reloadData
     )
 }
 
@@ -47,14 +47,14 @@ fun LoginScreen(
                 TimeText()
                 LoadingScreen()
             } else {
-                ErrorScreen(onTryAgainClicked)
+                LoginErrorScreen(onTryAgainClicked)
             }
         }
     }
 }
 
 @Composable
-fun ErrorScreen(
+private fun LoginErrorScreen(
     onTryAgainClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {

@@ -80,9 +80,7 @@ fun StoreStatsScreen(
             )
             Canvas(
                 modifier = modifier.fillMaxSize(),
-                onDraw = {
-                    drawRect(brush)
-                }
+                onDraw = { drawRect(brush) }
             )
             TimeText()
             Column(
