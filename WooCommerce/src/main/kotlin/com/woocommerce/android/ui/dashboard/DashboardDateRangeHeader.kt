@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -56,12 +57,14 @@ fun DashboardDateRangeHeader(
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.onSurface
         )
-        val isCustomRange = rangeSelection.selectionType == SelectionType.CUSTOM
 
+        val isCustomRange = rangeSelection.selectionType == SelectionType.CUSTOM
         Row(
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
+                .weight(1f)
+                .wrapContentSize(align = Alignment.CenterStart)
                 .then(if (isCustomRange) Modifier.clickable(onClick = onCustomRangeClick) else Modifier)
                 .padding(dimensionResource(id = dimen.minor_100))
         ) {
@@ -72,7 +75,8 @@ fun DashboardDateRangeHeader(
                     MaterialTheme.colors.primary
                 } else {
                     MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-                }
+                },
+                modifier = Modifier.weight(1f, fill = false)
             )
             if (isCustomRange) {
                 Icon(
@@ -83,8 +87,6 @@ fun DashboardDateRangeHeader(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         Box {
             var isMenuExpanded by remember { mutableStateOf(false) }

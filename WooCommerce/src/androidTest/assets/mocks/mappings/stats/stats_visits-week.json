@@ -4,10 +4,10 @@
         "urlPath": "/rest/v1.1/sites/161477129/stats/visits/",
         "queryParameters": {
             "unit": {
-                "equalTo": "week"
+                "equalTo": "day"
             },
             "quantity": {
-                "matches": "[0-9]+"
+                "equalTo": "7"
             },
             "date": {
                 "matches": "(.*)"
@@ -23,62 +23,18 @@
             "date": "2020-01-30",
             "unit": "week",
             "fields": [
-                "period", 
+                "period",
                 "visitors"
             ],
             "data": [
-                [
-                    "2019W11W04",
-                    0
-                ],
-                [
-                    "2019W11W11",
-                    0
-                ],
-                [
-                    "2019W11W18",
-                    0
-                ],
-                [
-                    "2019W11W25",
-                    0
-                ],
-                [
-                    "2019W12W02",
-                    0
-                ],
-                [
-                    "2019W12W09",
-                    0
-                ],
-                [
-                    "2019W12W16",
-                    0
-                ],
-                [
-                    "2019W12W23",
-                    0
-                ],
-                [
-                    "2019W12W30",
-                    0
-                ],
-                [
-                    "2020W01W06",
-                    0
-                ],
-                [
-                    "2020W01W13",
-                    0
-                ],
-                [
-                    "2020W01W20",
-                    0
-                ],
-                [
-                    "2020W01W27",
-                    0
-                ]
+              ["{{fnow offset='-7 days' format='yyyy-MM-dd'}}", 0],
+              ["{{fnow offset='-6 days' format='yyyy-MM-dd'}}", 0],
+              ["{{fnow offset='-5 days' format='yyyy-MM-dd'}}", 0],
+              ["{{fnow offset='-4 days' format='yyyy-MM-dd'}}", 0],
+              ["{{fnow offset='-3 days' format='yyyy-MM-dd'}}", 0],
+              ["{{fnow offset='-2 days' format='yyyy-MM-dd'}}", 0],
+              ["{{fnow offset='-1 days' format='yyyy-MM-dd'}}", 0],
+              ["{{fnow format='yyyy-MM-dd'}}", 440]
             ]
         }
     }
