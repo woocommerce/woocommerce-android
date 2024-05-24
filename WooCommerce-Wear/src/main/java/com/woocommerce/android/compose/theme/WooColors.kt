@@ -18,11 +18,11 @@ object WooColors {
     val md_theme_dark_surface = Color(0xFF000000)
     val md_theme_dark_onSurface = Color(0xFFFFFFFF)
     val woo_purple_surface = Color(0xBB533582)
-    val woo_gray_surface = Color(0xFFBDC1C6)
     val woo_purple_5 = Color(0xFFDFD1FB)
     val woo_purple_10 = Color(0xFFCFB9F6)
     val woo_purple_20 = Color(0xFFBEA0F2)
     val woo_gray_alpha = Color(0x80FFFFFF)
+    val woo_amber_40 = Color(0xFFFFA60E)
 }
 
 val WooWearColors = Colors(

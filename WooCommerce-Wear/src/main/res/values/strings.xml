@@ -5,7 +5,7 @@
     <string name="login_screen_loading_text">Loading</string>
     <string name="login_screen_error_title">Log in</string>
     <string name="login_screen_error_caption">Log in to Woo on your phone and hold your Watch nearby</string>
-    <string name="login_screen_action_button">Connect</string>
+    <string name="login_screen_action_button">It\'s not working</string>
 
     <!-- Stats Screen -->
     <string name="stats_screen_revenue_title">Revenue</string>

@@ -26,6 +26,7 @@ import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.component.LoadingScreen
+import com.woocommerce.android.compose.theme.WooColors
 import com.woocommerce.android.compose.theme.WooTheme
 
 @Composable
@@ -85,7 +86,7 @@ private fun LoginInstructionsScreen(
             Icon(painter = painterResource(
                 id = R.drawable.ic_lightning),
                 contentDescription = null,
-                tint = Color.Yellow,
+                tint = WooColors.woo_amber_40,
             )
             Button(
                 onClick = onTryAgainClicked,
