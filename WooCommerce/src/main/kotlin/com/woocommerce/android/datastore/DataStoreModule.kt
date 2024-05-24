@@ -91,4 +91,18 @@ class DataStoreModule {
         scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
         serializer = CustomDateRangeSerializer
     )
+
+    @Provides
+    @Singleton
+    @DataStoreQualifier(DataStoreType.COUPONS)
+    fun provideCouponsCustomDateRangeDataStore(
+        appContext: Context,
+        @AppCoroutineScope appCoroutineScope: CoroutineScope
+    ): DataStore<CustomDateRange> = DataStoreFactory.create(
+        produceFile = {
+            appContext.preferencesDataStoreFile("dashboard_coupons_custom_date_range_configuration")
+        },
+        scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO),
+        serializer = CustomDateRangeSerializer
+    )
 }
