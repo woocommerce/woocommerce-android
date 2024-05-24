@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 15:54:04+0000
+Translation-Revision-Date: 2024-05-21 13:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Временная точка входа в режим POS</string>
+    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="cash_payments_take_payment_title">Получить оплату (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Посмотреть все отзывы</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Не найдено ни одного отзыва, соответствующего выбранному фильтру. Попробуйте изменить фильтр.</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Не найдено отзывов</string>
+    <string name="dashboard_reviews_card_header_title">Статус</string>
+    <string name="my_store_widget_reviews_title">Последние отзывы</string>
+    <string name="my_store_widget_orders_title">Последние заказы</string>
+    <string name="dashboard_action_view_all_orders">Просмотреть все заказы</string>
+    <string name="dashboard_filter_menu_content_description">Открыть раскрывающийся список фильтров</string>
     <string name="product_category_clear_parent">Очистить родительскую рубрику</string>
     <string name="product_list_fetch_error">Ошибка при получении товаров!</string>
     <string name="order_creation_add_shipping_method_select_hint">Выберите способ доставки</string>

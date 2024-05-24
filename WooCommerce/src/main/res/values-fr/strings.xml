@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-13 16:54:10+0000
+Translation-Revision-Date: 2024-05-21 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Point d’entrée temporaire vers le mode Point de vente</string>
+    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="cash_payments_take_payment_title">Accepter le paiement (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Voir tous les avis</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Aucun avis ne correspond au filtre sélectionné, veuillez essayer un autre filtre</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Aucun avis trouvé.</string>
+    <string name="dashboard_reviews_card_header_title">État</string>
+    <string name="my_store_widget_reviews_title">Avis les plus récents</string>
+    <string name="my_store_widget_orders_title">Commandes les plus récentes</string>
+    <string name="dashboard_action_view_all_orders">Voir toutes les commandes</string>
+    <string name="dashboard_filter_menu_content_description">Ouvrir la liste déroulante du filtre</string>
     <string name="product_category_clear_parent">Effacer la catégorie parente</string>
     <string name="product_list_fetch_error">Erreur lors de l’extraction des produits !</string>
     <string name="order_creation_add_shipping_method_select_hint">Choisir un mode d’expédition</string>
