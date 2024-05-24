@@ -6,6 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.GiftCardSummary
@@ -2324,4 +2325,65 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
             verify(refreshShippingMethods).invoke()
         }
+
+    @Test
+    fun `when the order contains shipping lines then track the event`() = testBlocking {
+        val shippingLines = listOf(
+            Order.ShippingLine(
+                methodId = "other",
+                methodTitle = "Other",
+                total = BigDecimal.TEN
+            ),
+            Order.ShippingLine(
+                methodId = "free_shipping",
+                methodTitle = "Free",
+                total = BigDecimal.ZERO
+            )
+        )
+        val order = order.copy(shippingLines = shippingLines)
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
+
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
+        doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
+        doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+
+        createViewModel()
+        viewModel.start()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
+            mapOf(AnalyticsTracker.KEY_SHIPPING_LINES_COUNT to shippingLines.size)
+        )
+    }
+
+    @Test
+    fun `when the order DOESN'T contains shipping lines then DON'T track the event`() = testBlocking {
+        val shippingLines = emptyList<Order.ShippingLine>()
+        val order = order.copy(shippingLines = shippingLines)
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
+
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
+        doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
+        doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+
+        createViewModel()
+        viewModel.start()
+
+        verify(analyticsTracker, never()).track(
+            AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
+            mapOf(AnalyticsTracker.KEY_SHIPPING_LINES_COUNT to shippingLines.size)
+        )
+    }
 }

@@ -314,7 +314,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when shipping line added or edited, send tracks event`() {
         val result = ShippingUpdateResult(
-            id = 1L,
+            id = null,
             amount = BigDecimal.TEN,
             name = "Other",
             methodId = "other"
@@ -325,7 +325,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_SHIPPING_METHOD to result.methodId
+                AnalyticsTracker.KEY_SHIPPING_METHOD to result.methodId,
+                AnalyticsTracker.KEY_SHIPPING_LINES_COUNT to 1
             )
         )
     }
