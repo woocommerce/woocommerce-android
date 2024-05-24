@@ -77,6 +77,7 @@ class StoreStatsViewModel @Inject constructor(
                 _viewState.update {
                     it.copy(
                         isLoading = false,
+                        isError = false,
                         revenueTotal = statsData.revenue,
                         ordersCount = statsData.ordersCount,
                         visitorsCount = statsData.visitorsCount,
@@ -85,8 +86,8 @@ class StoreStatsViewModel @Inject constructor(
                     )
                 }
             }
-            is Waiting -> _viewState.update { it.copy(isLoading = true) }
-            else -> _viewState.update { it.copy(isLoading = false) }
+            is Waiting -> _viewState.update { it.copy(isLoading = true, isError = false) }
+            else -> _viewState.update { it.copy(isLoading = false, isError = true) }
         }
     }
 
@@ -97,6 +98,7 @@ class StoreStatsViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isLoading: Boolean = false,
+        val isError: Boolean = false,
         val currentSiteName: String? = null,
         val revenueTotal: String? = null,
         val ordersCount: Int? = null,

@@ -31,6 +31,7 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
+import com.woocommerce.android.presentation.component.ErrorScreen
 import com.woocommerce.android.presentation.component.LoadingScreen
 import com.woocommerce.android.presentation.theme.WooColors
 import com.woocommerce.android.presentation.theme.WooTheme
@@ -42,6 +43,7 @@ fun StoreStatsScreen(viewModel: StoreStatsViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     StoreStatsScreen(
         isLoading = viewState?.isLoading ?: false,
+        isError = viewState?.isError ?: false,
         currentSiteName = viewState?.currentSiteName.orEmpty(),
         totalRevenue = viewState?.revenueTotal.orEmpty(),
         ordersCount = viewState?.ordersCount?.toString().orEmpty(),
@@ -54,6 +56,7 @@ fun StoreStatsScreen(viewModel: StoreStatsViewModel) {
 @Composable
 fun StoreStatsScreen(
     isLoading: Boolean,
+    isError: Boolean,
     currentSiteName: String,
     totalRevenue: String,
     ordersCount: String,
@@ -94,10 +97,13 @@ fun StoreStatsScreen(
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                 )
-                if (isLoading) {
-                    LoadingScreen()
-                } else {
-                    StatsContentScreen(
+                when {
+                    isLoading -> LoadingScreen()
+                    isError -> ErrorScreen(
+                        errorText = stringResource(id = R.string.stats_screen_error_message),
+                        onRetryClicked = { /* TODO */ }
+                    )
+                    else -> StatsContentScreen(
                         modifier,
                         totalRevenue,
                         visitorsCount,
@@ -171,7 +177,7 @@ private fun StatsContentScreen(
             text = timestamp
                 .takeIf { it.isNotEmpty() }
                 ?.let { stringResource(id = R.string.stats_screen_time_description, it) }
-                ?: stringResource(id = R.string.stats_screen_no_data)
+                ?: stringResource(id = R.string.stats_screen_time_unavailable)
         )
     }
 }
@@ -210,6 +216,7 @@ private fun IconStats(
 fun DefaultPreview() {
     StoreStatsScreen(
         isLoading = false,
+        isError = false,
         currentSiteName = "My Store",
         totalRevenue = "$5,321.90",
         ordersCount = "5",
