@@ -354,10 +354,11 @@ private fun MoreMenuButton(button: MoreMenuItemButton) {
                 Icon(
                     painter = painterResource(id = it),
                     contentDescription = null,
-                    tint = colorResource(id = R.color.color_on_surface),
+                    tint = colorResource(id = R.color.color_icon),
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .padding(end = 8.dp)
+                        .size(20.dp)
                 )
             }
         }
@@ -467,7 +468,8 @@ private fun MoreMenuPreview() {
                         MoreMenuItemButton(
                             title = R.string.more_menu_button_wс_admin,
                             description = R.string.more_menu_button_wc_admin_description,
-                            icon = R.drawable.ic_more_menu_wp_admin
+                            icon = R.drawable.ic_more_menu_wp_admin,
+                            extraIcon = R.drawable.ic_external
                         ),
                         MoreMenuItemButton(
                             title = R.string.more_menu_button_store,
