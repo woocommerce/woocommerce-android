@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Button
+import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
@@ -88,8 +89,10 @@ private fun LoginInstructionsScreen(
             )
             Button(
                 onClick = onTryAgainClicked,
-                modifier = modifier
-                    .fillMaxWidth()
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.DarkGray
+                ),
+                modifier = modifier.fillMaxWidth()
             ) {
                 Text(stringResource(id = R.string.login_screen_action_button))
             }
