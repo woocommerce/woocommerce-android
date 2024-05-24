@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,8 +22,14 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +49,8 @@ fun ChangeDueCalculatorScreen(
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
     WooThemeWithBackground {
         Scaffold(
             topBar = {
@@ -75,6 +84,17 @@ fun ChangeDueCalculatorScreen(
 
                     is ChangeDueCalculatorViewModel.UiState.Success -> {
                         val hintString = stringResource(R.string.cash_payments_cash_received)
+                        var view: WCMaterialOutlinedCurrencyEditTextView? by remember { mutableStateOf(null) }
+
+                        LaunchedEffect(view) {
+                            view?.let {
+                                it.requestFocus()
+                                context.getSystemService(
+                                    InputMethodManager::class.java
+                                ).showSoftInput(it, InputMethodManager.SHOW_IMPLICIT)
+                            }
+                        }
+
                         AndroidView(
                             factory = { ctx ->
                                 WCMaterialOutlinedCurrencyEditTextView(ctx).apply {
@@ -89,6 +109,7 @@ fun ChangeDueCalculatorScreen(
                                     supportsNegativeValues = false
                                     hint = hintString
                                     setValueIfDifferent(uiState.amountDue)
+                                    view = this
                                 }
                             },
                             modifier = Modifier
