@@ -135,12 +135,14 @@ class MoreMenuViewModel @Inject constructor(
                 title = R.string.more_menu_button_wс_admin,
                 description = R.string.more_menu_button_wc_admin_description,
                 icon = R.drawable.ic_more_menu_wp_admin,
+                extraIcon = R.drawable.ic_external,
                 onClick = ::onViewAdminButtonClick
             ),
             MoreMenuItemButton(
                 title = R.string.more_menu_button_store,
                 description = R.string.more_menu_button_store_description,
                 icon = R.drawable.ic_more_menu_store,
+                extraIcon = R.drawable.ic_external,
                 onClick = ::onViewStoreButtonClick
             ),
             MoreMenuItemButton(
