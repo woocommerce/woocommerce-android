@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-08 09:54:07+0000
+Translation-Revision-Date: 2024-05-21 13:54:03+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Временная точка входа в режим POS</string>
+    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="cash_payments_take_payment_title">Получить оплату (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Посмотреть все отзывы</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Не найдено ни одного отзыва, соответствующего выбранному фильтру. Попробуйте изменить фильтр.</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Не найдено отзывов</string>
+    <string name="dashboard_reviews_card_header_title">Статус</string>
+    <string name="my_store_widget_reviews_title">Последние отзывы</string>
+    <string name="my_store_widget_orders_title">Последние заказы</string>
+    <string name="dashboard_action_view_all_orders">Просмотреть все заказы</string>
+    <string name="dashboard_filter_menu_content_description">Открыть раскрывающийся список фильтров</string>
+    <string name="product_category_clear_parent">Очистить родительскую рубрику</string>
+    <string name="product_list_fetch_error">Ошибка при получении товаров!</string>
+    <string name="order_creation_add_shipping_method_select_hint">Выберите способ доставки</string>
+    <string name="order_creation_add_shipping_name_hint">Доставка</string>
+    <string name="order_creation_add_shipping_name">Имя</string>
+    <string name="order_creation_add_shipping_method">Способ</string>
+    <string name="order_creation_shipping_add">Добавить доставку</string>
+    <string name="order_creation_shipping_methods_error">Ошибка при получении способов доставки. Повторите попытку</string>
+    <string name="order_creation_shipping_methods_title">Способ</string>
+    <string name="custom_amounts_percentage_invalid_value">Недопустимое значение</string>
+    <string name="my_store_widget_onboarding_title">Настройки магазина</string>
+    <string name="my_store_edit_screen_widgets">Настроить</string>
     <string name="blaze_campaign_show_all_button">Показать все кампании</string>
     <string name="blaze_campaign_suggested_product_caption">Рекомендуемый товар</string>
     <string name="dynamic_dashboard_widget_error_description">Попробуйте перезагрузить карточку. Если устранить проблему не удалось, &lt;a href=\"support\"&gt;обратитесь в службу поддержки&lt;/a&gt;.</string>
@@ -21,9 +44,7 @@ Language: ru
     <string name="analytics_session_no_available">Данные сеанса недоступны</string>
     <string name="my_store_widget_unavailable">Недоступно</string>
     <string name="my_store_widget_stats_title">Производительность</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">Просмотреть всю аналитику магазина</string>
     <string name="dashboard_stats_custom_range_label">Произвольный</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">Выбранный элемент</string>
     <string name="dashboard_stats_edit_granularity_content_description">Кнопка «Изменить период»</string>
     <string name="images_unavailable_notice">Изображения недоступны, так как статус вашего сайта — «Закрытый». Вы можете изменить его на «Скоро будет доступно».\n</string>
     <string name="card_selection_control">Выбор карт аналитики</string>
@@ -64,13 +85,7 @@ Language: ru
     <string name="analytics_bundles_list_header_title">Комплекты</string>
     <string name="analytics_bundles_list_items_sold">Продано комплектов</string>
     <string name="my_store_widget_blaze_title">Кампании Blaze</string>
-    <string name="my_store_widget_top_products_title">Популярные товары</string>
-    <string name="my_store_widget_onboarding_title">Вводный курс</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">Вводный курс по работе с магазином</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">Кампании Blaze</string>
-    <string name="my_store_edit_screen_widget_top_performers">Хиты продаж</string>
-    <string name="my_store_edit_screen_widget_stats">Статистика магазина</string>
-    <string name="my_store_edit_screen_widgets">Редактировать отделы магазина</string>
+    <string name="my_store_widget_top_products_title">Самые продаваемые</string>
     <string name="product_list_unsaved_product_unselected_message">Вы уверены, что хотите отменить изменения этого товара?</string>
     <string name="product_list_unsaved_product_unselected_title">Вы собираетесь отменить изменения %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">Функция статистики не поддерживает отображения данных о посетителях и переходах за произвольные периоды времени.\n\nТем не менее можно щёлкнуть по значению на графике, чтобы увидеть сведения о посетителях и переходах за данный период.</string>
@@ -94,6 +109,7 @@ Language: ru
     <string name="domain_picker_suggestions_title">Варианты</string>
     <string name="domain_picker_hint">Укажите домен</string>
     <string name="domain_picker_title">Выберите домен</string>
+    <string name="analytics_section_see_all">Просмотреть всю аналитику магазина</string>
     <string name="my_store_custom_range_granularity_year">По годам</string>
     <string name="my_store_custom_range_granularity_month">По месяцам</string>
     <string name="my_store_custom_range_granularity_week">По неделям</string>
@@ -484,9 +500,7 @@ Language: ru
     <string name="card_reader_tap_to_pay_about_how_works_4">4. Покупатель прикладывает свою карту горизонтально к верхней части вашего смартфона, к символу бесконтактной оплаты.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Покажите покупателю ваш смартфон.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Нажмите «Принять платёж» и выберите Tap to Pay.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">получение платежа</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">Создать заказ</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s или %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Создайте заказ</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">Как это работает</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">Подробнее об устройствах чтения карт</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">Чтобы принимать платежи сверх лимита, вам может потребоваться устройство чтения карт, в котором можно вводить PIN-коды.</string>
@@ -1595,6 +1609,7 @@ Language: ru
     <string name="order_creation_add_shipping">Добавить метод доставки</string>
     <string name="order_creation_shipping_title_add">Добавить доставку</string>
     <string name="order_creation_shipping_name">Имя</string>
+    <string name="order_creation_add_shipping_amount">Сумма</string>
     <string name="order_creation_payment_fee">Сборы</string>
     <string name="order_creation_customer_details">Информация о клиенте</string>
     <string name="order_creation_add_fee">Добавить комиссию</string>
@@ -2336,9 +2351,6 @@ Language: ru
     <string name="upsells_label">Апсейл</string>
     <string name="product_detail_linked_products">Связанные продукты</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">Связь с нами</string>
-    <string name="my_store_stats_availability_description">Убедитесь, что на сайте используется последняя версия WooCommerce и вы активировали WooCommerce Admin.\n\nПо-прежнему нужна помощь? %1$s</string>
-    <string name="my_store_stats_availability_title">Мы не можем показать аналитику\n для вашего магазина</string>
     <string name="login_get_link_by_email">Получить ссылку для входа по email</string>
     <string name="email_not_registered_wpcom">Не получается найти учётную запись WordPress.com для этого адреса email.</string>
     <string name="settings_enable_product_addons_teaser_message">Протестируйте наши дополнительные модули заказов в процессе подготовки к запуску</string>
@@ -2584,8 +2596,6 @@ Language: ru
     <string name="settings_app_theme_title">Внешний вид</string>
     <string name="product_short_description_empty">Короткое описание продукта</string>
     <string name="product_short_description">Короткое описание</string>
-    <string name="my_store_stats_reverted_message">Мы подготовили обновление для нашей системы аналитики. Для просмотра статистики с 1 сентября 2020 года потребуется установка WooCommerce 4.0 или более поздней версии или расширения WooCommerce Admin.</string>
-    <string name="my_store_stats_reverted_title">Установите обновление для работы со статистикой</string>
     <string name="product_pricing_update_sale_price_error">Цена со скидкой должна быть больше обычной цены</string>
     <string name="product_schedule_remove_end_date_link_label">Удалить дату окончания</string>
     <string name="product_shipping_empty">Добавить доставку</string>
@@ -3362,7 +3372,6 @@ Language: ru
     <string name="dashboard_action_view_order">Просмотреть заказ</string>
     <string name="dashboard_top_performers_empty">Нет активности за этот период</string>
     <string name="dashboard_top_performers_total_orders">Всего заказов: %s</string>
-    <string name="dashboard_top_performers_title">Самые продаваемые</string>
     <string name="dashboard_stats_error_content_description">Изображение ошибки</string>
     <string name="dashboard_stats_error">Ошибка при получении данных</string>
     <string name="dashboard_stats_revenue">Доход</string>
