@@ -74,15 +74,6 @@ fun OrdersListScreen(
                 modifier = modifier
                     .fillMaxSize()
             ) {
-                Text(
-                    text = stringResource(id = R.string.orders_list_screen_title),
-                    style = WooTypography.body1,
-                    color = WooColors.woo_gray_alpha,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 6.dp)
-                )
                 when {
                     isLoading -> LoadingScreen()
                     isError -> ErrorScreen(
@@ -102,6 +93,15 @@ private fun OrdersLazyColumn(
     onOrderClicked: (orderId: Long) -> Unit,
     modifier: Modifier
 ) {
+    Text(
+        text = stringResource(id = R.string.orders_list_screen_title),
+        style = WooTypography.body1,
+        color = WooColors.woo_gray_alpha,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 6.dp)
+    )
     val state = rememberScalingLazyListState(
         initialCenterItemIndex = 0
     )
