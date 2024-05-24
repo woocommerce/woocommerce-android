@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 13:54:03+0000
+Translation-Revision-Date: 2024-05-21 17:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">POS moduna geçici giriş noktası</string>
+    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="cash_payments_take_payment_title">Ödeme Al (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Tüm incelemeleri görüntüle</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Seçilen filtreyle eşleşen inceleme yok, lütfen filtreyi değiştirmeyi deneyin</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Hiç inceleme bulunamadı</string>
+    <string name="dashboard_reviews_card_header_title">Durum</string>
+    <string name="my_store_widget_reviews_title">En son incelemeler</string>
+    <string name="my_store_widget_orders_title">En son siparişler</string>
+    <string name="dashboard_action_view_all_orders">Tüm siparişleri görüntüle</string>
+    <string name="dashboard_filter_menu_content_description">Filtre açılır menüsünü açın</string>
     <string name="product_category_clear_parent">Üst kategoriyi temizle</string>
     <string name="product_list_fetch_error">Ürünler getirilirken hata oluştu!</string>
     <string name="order_creation_add_shipping_method_select_hint">Gönderim yöntemi seç</string>
