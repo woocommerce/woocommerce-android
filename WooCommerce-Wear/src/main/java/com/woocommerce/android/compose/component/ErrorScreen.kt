@@ -1,4 +1,4 @@
-package com.woocommerce.android.presentation.component
+package com.woocommerce.android.compose.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,9 +18,8 @@ import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
-import com.woocommerce.android.presentation.theme.WooColors
-import com.woocommerce.android.presentation.theme.WooTheme
-import com.woocommerce.android.presentation.theme.WooTypography
+import com.woocommerce.android.compose.theme.WooTheme
+import com.woocommerce.android.compose.theme.WooTypography
 
 @Composable
 fun ErrorScreen(

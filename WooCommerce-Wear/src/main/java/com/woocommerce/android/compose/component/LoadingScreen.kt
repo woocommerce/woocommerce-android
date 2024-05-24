@@ -1,4 +1,4 @@
-package com.woocommerce.android.presentation.component
+package com.woocommerce.android.compose.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

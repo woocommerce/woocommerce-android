@@ -35,12 +35,12 @@ import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
-import com.woocommerce.android.presentation.component.ErrorScreen
-import com.woocommerce.android.presentation.component.LoadingScreen
-import com.woocommerce.android.presentation.component.ScrollingLazyColumnAdapter
-import com.woocommerce.android.presentation.theme.WooColors
-import com.woocommerce.android.presentation.theme.WooTheme
-import com.woocommerce.android.presentation.theme.WooTypography
+import com.woocommerce.android.compose.component.ErrorScreen
+import com.woocommerce.android.compose.component.LoadingScreen
+import com.woocommerce.android.compose.component.ScrollingLazyColumnAdapter
+import com.woocommerce.android.compose.theme.WooColors
+import com.woocommerce.android.compose.theme.WooTheme
+import com.woocommerce.android.compose.theme.WooTypography
 import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 
 @Composable

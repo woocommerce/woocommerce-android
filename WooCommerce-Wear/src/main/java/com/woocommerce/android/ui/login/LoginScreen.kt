@@ -25,8 +25,8 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
-import com.woocommerce.android.presentation.component.LoadingScreen
-import com.woocommerce.android.presentation.theme.WooTheme
+import com.woocommerce.android.compose.component.LoadingScreen
+import com.woocommerce.android.compose.theme.WooTheme
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {

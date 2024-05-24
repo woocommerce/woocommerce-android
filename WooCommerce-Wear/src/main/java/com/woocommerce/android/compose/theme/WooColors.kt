@@ -1,4 +1,4 @@
-package com.woocommerce.android.presentation.theme
+package com.woocommerce.android.compose.theme
 
 import androidx.compose.ui.graphics.Color
 import androidx.wear.compose.material.Colors
