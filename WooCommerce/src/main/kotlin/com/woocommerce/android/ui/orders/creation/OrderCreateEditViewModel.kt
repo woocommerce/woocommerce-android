@@ -1334,6 +1334,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
                 mutableMap[KEY_COUPONS_COUNT] = orderDraft.value?.couponLines?.size ?: 0
                 mutableMap[KEY_USE_GIFT_CARD] = orderDraft.value?.selectedGiftCard.isNotNullOrEmpty()
+                mutableMap[KEY_SHIPPING_LINES_COUNT] = orderDraft.value?.shippingLines?.size ?: 0
             }
         )
     }
