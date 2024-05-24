@@ -56,8 +56,9 @@ class StoreStatsViewModel @Inject constructor(
         reloadData()
     }
 
-    fun reloadData() {
+    fun reloadData(withLoading: Boolean = true) {
         if (_viewState.value.isLoading) return
+        _viewState.update { it.copy(isLoading = withLoading) }
         launch {
             loginRepository.selectedSite?.let {
                 updateSiteData(it)

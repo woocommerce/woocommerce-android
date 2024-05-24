@@ -91,14 +91,16 @@ fun StoreStatsScreen(
                     .padding(horizontal = 12.dp)
                     .padding(top = 24.dp)
             ) {
-                Text(
-                    text = currentSiteName,
-                    textAlign = TextAlign.Center,
-                    style = WooTypography.body1,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                )
+                if (isError.not()) {
+                    Text(
+                        text = currentSiteName,
+                        textAlign = TextAlign.Center,
+                        style = WooTypography.body1,
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    )
+                }
                 when {
                     isLoading -> LoadingScreen()
                     isError -> ErrorScreen(
