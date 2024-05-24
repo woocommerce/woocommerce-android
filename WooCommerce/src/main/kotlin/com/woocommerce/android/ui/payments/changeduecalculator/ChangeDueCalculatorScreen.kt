@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -33,6 +33,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
+import java.math.BigDecimal
 
 @Composable
 fun ChangeDueCalculatorScreen(
@@ -66,9 +67,7 @@ fun ChangeDueCalculatorScreen(
             ) {
                 when (uiState) {
                     is ChangeDueCalculatorViewModel.UiState.Loading -> Text(
-                        stringResource(
-                            R.string.loading,
-                        ),
+                        stringResource(R.string.loading),
                         style = MaterialTheme.typography.h6
                     )
 
@@ -123,7 +122,10 @@ fun ChangeDueCalculatorScreen(
                     }
 
                     is ChangeDueCalculatorViewModel.UiState.Error -> {
-                        Text(text = stringResource(R.string.error_generic), style = MaterialTheme.typography.h6)
+                        Text(
+                            text = stringResource(R.string.error_generic),
+                            style = MaterialTheme.typography.h6
+                        )
                     }
                 }
             }
@@ -135,7 +137,7 @@ fun ChangeDueCalculatorScreen(
 fun RecordTransactionDetailsNote(
     checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit = {},
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -168,12 +170,12 @@ private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String 
 }
 
 @Composable
-@PreviewLightDark()
+@Preview(showBackground = true)
 fun ChangeDueCalculatorScreenSuccessPreview() {
     ChangeDueCalculatorScreen(
         uiState = ChangeDueCalculatorViewModel.UiState.Success(
-            amountDue = 666.00.toBigDecimal(),
-            change = 0.00.toBigDecimal()
+            amountDue = BigDecimal("666.00"),
+            change = BigDecimal("0.00")
         ),
         onNavigateUp = {}
     )

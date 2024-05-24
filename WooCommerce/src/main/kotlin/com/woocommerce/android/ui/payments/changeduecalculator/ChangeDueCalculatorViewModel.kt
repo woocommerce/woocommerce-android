@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -16,6 +18,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedStateHandle) {
+
     val navArgs: ChangeDueCalculatorFragmentArgs by savedStateHandle.navArgs()
     private val orderId: Long = navArgs.orderId
 
@@ -28,14 +31,25 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
 
+    private val _navigationEvent = MutableLiveData<Unit>()
+    val navigationEvent: LiveData<Unit> = _navigationEvent
+
     init {
         loadOrderDetails()
     }
 
     private fun loadOrderDetails() {
         launch {
-            val order = orderDetailRepository.getOrderById(orderId)!!
-            _uiState.value = UiState.Success(amountDue = order.total, 0.00.toBigDecimal())
+            val order = orderDetailRepository.getOrderById(orderId)
+            order?.let {
+                _uiState.value = UiState.Success(amountDue = order.total, change = BigDecimal.ZERO)
+            } ?: run {
+                _uiState.value = UiState.Error
+            }
         }
+    }
+
+    fun onBackPressed() {
+        _navigationEvent.value = Unit
     }
 }
