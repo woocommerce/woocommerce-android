@@ -47,14 +47,14 @@ fun LoginScreen(
                 TimeText()
                 LoadingScreen()
             } else {
-                LoginErrorScreen(onTryAgainClicked)
+                LoginInstructionsScreen(onTryAgainClicked)
             }
         }
     }
 }
 
 @Composable
-private fun LoginErrorScreen(
+private fun LoginInstructionsScreen(
     onTryAgainClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -80,7 +80,7 @@ private fun LoginErrorScreen(
             onClick = onTryAgainClicked,
             modifier = modifier.width(150.dp)
         ) {
-            Text(stringResource(id = R.string.login_screen_error_action_button))
+            Text(stringResource(id = R.string.login_screen_action_button))
         }
     }
 }
