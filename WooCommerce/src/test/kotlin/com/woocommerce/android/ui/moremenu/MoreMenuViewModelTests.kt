@@ -427,9 +427,10 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             val states = viewModel.moreMenuViewState.captureValues()
 
             // THEN
-            assertThat(states.last().menuSections.flatMap { it.items }
-                .firstOrNull { it.title == R.string.more_menu_button_woo_pos })
-                .isNull()
+            assertThat(
+                states.last().menuSections.flatMap { it.items }
+                    .firstOrNull { it.title == R.string.more_menu_button_woo_pos }
+            ).isNull()
         }
 
     @Test
@@ -445,9 +446,10 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         // THEN
         assertThat(states.last().menuSections.first().title).isNull()
         assertThat(states.last().menuSections.first().items.count()).isEqualTo(1)
-        assertThat(states.last().menuSections.flatMap { it.items }
-            .first { it.title == R.string.more_menu_button_woo_pos }.isVisible)
-            .isTrue()
+        assertThat(
+            states.last().menuSections.flatMap { it.items }
+                .first { it.title == R.string.more_menu_button_woo_pos }.isVisible
+        ).isTrue()
     }
 
     @Test
