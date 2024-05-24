@@ -51,7 +51,12 @@ class OrderDetailsViewModel @Inject constructor(
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
+        reloadData()
+    }
+
+    fun reloadData() {
         if (_viewState.value.isLoading) return
+        _viewState.update { it.copy(isLoading = true) }
         launch {
             loginRepository.selectedSite?.let { requestProductsData(it) }
         }

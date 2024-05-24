@@ -43,16 +43,18 @@ fun OrderDetailsScreen(viewModel: OrderDetailsViewModel) {
     LocalLifecycleOwner.current.lifecycle.addObserver(viewModel)
     val viewState = viewModel.viewState.observeAsState()
     OrderDetailsScreen(
+        order = viewState.value?.orderItem,
         isLoading = viewState.value?.isLoading ?: false,
-        order = viewState.value?.orderItem
+        onRetryClicked = viewModel::reloadData
     )
 }
 
 @Composable
 fun OrderDetailsScreen(
-    modifier: Modifier = Modifier,
+    order: OrderItem?,
     isLoading: Boolean,
-    order: OrderItem?
+    onRetryClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     WooTheme {
         TimeText()
@@ -66,7 +68,10 @@ fun OrderDetailsScreen(
         ) {
             when {
                 isLoading -> LoadingScreen()
-                order == null -> ErrorScreen(errorText = stringResource(id = R.string.order_details_failed_to_load))
+                order == null -> ErrorScreen(
+                    errorText = stringResource(id = R.string.order_details_failed_to_load),
+                    onRetryClicked = onRetryClicked
+                )
                 else -> OrderDetailsContent(order, modifier)
             }
         }
@@ -229,6 +234,7 @@ private fun pluralizedProductsText(products: List<ProductItem>): String {
 fun Preview() {
     OrderDetailsScreen(
         isLoading = false,
+        onRetryClicked = {},
         order = OrderItem(
             id = 0L,
             date = "25 Feb",
