@@ -182,9 +182,9 @@ platform :android do
 
   #####################################################################################
   # complete_code_freeze
-  # 
+  #
   # This lane executes the last steps planned on code freeze
-  # 
+  #
   # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
   # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
@@ -265,10 +265,10 @@ platform :android do
 
   #####################################################################################
   # new_beta_release
-  # 
+  #
   # This lane updates the release branch for a new beta release. It will update the
   # current release branch by default.
-  # 
+  #
   # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
   # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
@@ -330,9 +330,9 @@ platform :android do
 
   #####################################################################################
   # new_hotfix_release
-  # 
+  #
   # This lane updates the release branch for a new hotfix release.
-  # 
+  #
   # @param [String] version_name The versionName to give the hotfix, e.g. `24.3.1`
   # @param [Int] version_code The versionCode to use for the hotfix build
   # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
@@ -390,9 +390,9 @@ platform :android do
 
   #####################################################################################
   # finalize_hotfix_release
-  # 
+  #
   # This lane finalizes the hotfix branch.
-  # 
+  #
   # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
   # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
@@ -453,9 +453,9 @@ platform :android do
 
   #####################################################################################
   # finalize_release
-  # 
+  #
   # This lane finalize a release: updates store metadata and runs the release checks
-  # 
+  #
   # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
   # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
   #
@@ -563,12 +563,12 @@ platform :android do
 
   #####################################################################################
   # build_and_upload_google_play
-  # 
+  #
   # This lane builds the app for Google Play, and will correctly select which build
   # should be produced based on the build number.
-  # 
+  #
   # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
-  # 
+  #
   desc 'Builds and uploads a release to Google Play'
   lane :build_and_upload_google_play do |options|
     app = get_app_param!(options)
