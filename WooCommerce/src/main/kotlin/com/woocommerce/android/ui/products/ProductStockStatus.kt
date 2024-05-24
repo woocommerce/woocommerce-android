@@ -55,6 +55,16 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
             }
         }
 
+        fun ProductStockStatus.toCoreProductStockStatus(): CoreProductStockStatus {
+            return when (this) {
+                InStock -> CoreProductStockStatus.IN_STOCK
+                LowStock -> CoreProductStockStatus.LOW_STOCK
+                OutOfStock -> CoreProductStockStatus.OUT_OF_STOCK
+                OnBackorder -> CoreProductStockStatus.ON_BACK_ORDER
+                else -> CoreProductStockStatus.IN_STOCK
+            }
+        }
+
         fun toStringResource(value: String) = fromString(value).stringResource
 
         fun toMap(context: Context) = CoreProductStockStatus.values()
