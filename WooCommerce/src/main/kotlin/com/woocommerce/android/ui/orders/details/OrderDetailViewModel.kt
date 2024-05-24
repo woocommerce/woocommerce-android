@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SHIPPING_LINES_COUNT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
@@ -76,7 +77,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -220,6 +224,15 @@ class OrderDetailViewModel @Inject constructor(
                     paymentTypeFlow = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER_CREATION
                 )
             )
+        }
+        launch {
+            val shippingLines = _shippingLineList.drop(1).filter { it.isNotEmpty() }.first()
+            if (shippingLines.isNotEmpty()) {
+                analyticsTracker.track(
+                    AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
+                    mapOf(KEY_SHIPPING_LINES_COUNT to shippingLines.size)
+                )
+            }
         }
     }
 
