@@ -259,6 +259,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAILS_GIFT_CARD_SHOWN,
     ORDER_PRODUCTS_LOADED,
     ORDER_DETAIL_TRASH_TAPPED,
+    ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
