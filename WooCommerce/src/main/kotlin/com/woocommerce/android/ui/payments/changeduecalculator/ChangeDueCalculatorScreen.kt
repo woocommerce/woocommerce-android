@@ -144,9 +144,9 @@ fun ChangeDueCalculatorScreen(
 
 @Composable
 fun RecordTransactionDetailsNote(
+    modifier: Modifier = Modifier,
     checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
