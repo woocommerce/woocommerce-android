@@ -338,15 +338,13 @@ platform :android do
 
   #####################################################################################
   # new_hotfix_release
-  # -----------------------------------------------------------------------------------
+  # 
   # This lane updates the release branch for a new hotfix release.
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane new_hotfix_release [skip_confirm:<skip confirm>] [version_name:<x.y.z>] [version_code:<nnnn>]
+  # 
+  # @param [String] version_name The versionName to give the hotfix, e.g. `24.3.1`
+  # @param [Int] version_code The versionCode to use for the hotfix build
+  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
   #
-  # Example:
-  # bundle exec fastlane new_hotfix_release version_name:10.6.1 version_code:1070
-  #####################################################################################
   desc 'Prepare a new hotfix branch cut from the previous tag, and bump the version'
   lane :new_hotfix_release do |options|
     UI.user_error!('A `version_name` must be provided when calling this lane') if options[:version_name].nil?
@@ -580,16 +578,12 @@ platform :android do
 
   #####################################################################################
   # build_and_upload_google_play
-  # -----------------------------------------------------------------------------------
+  # 
   # This lane builds the app for Google Play, and will correctly select which build
   # should be produced based on the build number.
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane build_and_upload_google_play
-  #
-  # Example:
-  # bundle exec fastlane build_and_upload_google_play
-  #####################################################################################
+  # 
+  # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
+  # 
   desc 'Builds and uploads a release to Google Play'
   lane :build_and_upload_google_play do |options|
     app = get_app_param!(options)
