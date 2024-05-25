@@ -21,6 +21,7 @@ object WooColors {
     val woo_purple_5 = Color(0xFFDFD1FB)
     val woo_purple_10 = Color(0xFFCFB9F6)
     val woo_purple_20 = Color(0xFFBEA0F2)
+    val woo_purple_alpha = Color(0x44271B3D)
     val woo_gray_alpha = Color(0x80FFFFFF)
     val woo_amber_40 = Color(0xFFFFA60E)
 }
