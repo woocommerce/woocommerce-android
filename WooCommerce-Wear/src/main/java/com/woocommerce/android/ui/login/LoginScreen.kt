@@ -75,7 +75,7 @@ private fun LoginInstructionsScreen(
                 vertical = dimensionResource(id = R.dimen.activity_vertical_margin),
                 horizontal = dimensionResource(id = R.dimen.activity_horizontal_margin)
             )
-    ){
+    ) {
         Column(
             modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,

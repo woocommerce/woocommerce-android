@@ -4,8 +4,8 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
+import kotlin.coroutines.CoroutineContext
 
 /**
  * A base class for WearOS ViewModels that use coroutines and enforces the data reload behavior for compose views.

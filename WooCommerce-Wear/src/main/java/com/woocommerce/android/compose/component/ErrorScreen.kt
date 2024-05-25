@@ -62,7 +62,8 @@ fun ErrorScreen(
 fun ErrorScreenPreview() {
     WooTheme {
         ErrorScreen(
-            errorText = "Failed to load order details, make sure your Watch is connected to the Internet or your phone is nearby.",
+            errorText = "Failed to load order details, " +
+                "make sure your Watch is connected to the Internet or your phone is nearby.",
             onRetryClicked = { }
         )
     }
