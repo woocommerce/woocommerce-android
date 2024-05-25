@@ -93,15 +93,6 @@ private fun OrdersLazyColumn(
     onOrderClicked: (orderId: Long) -> Unit,
     modifier: Modifier
 ) {
-    Text(
-        text = stringResource(id = R.string.orders_list_screen_title),
-        style = WooTypography.body1,
-        color = WooColors.woo_gray_alpha,
-        textAlign = TextAlign.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 6.dp)
-    )
     val state = rememberScalingLazyListState(
         initialCenterItemIndex = 0
     )
@@ -114,8 +105,8 @@ private fun OrdersLazyColumn(
                     state = state,
                     viewportHeightPx = height,
                 ),
-                indicatorHeight = 50.dp,
-                indicatorWidth = 4.dp,
+                indicatorHeight = 100.dp,
+                indicatorWidth = 7.dp,
                 paddingHorizontal = 5.dp,
                 reverseDirection = false,
             )

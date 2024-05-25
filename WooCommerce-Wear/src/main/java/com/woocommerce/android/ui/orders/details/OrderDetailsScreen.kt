@@ -122,7 +122,7 @@ private fun OrderHeader(
     ) {
         Text(
             text = order.customerName,
-            style = WooTypography.body1,
+            style = WooTypography.title2,
             color = Color.White,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
@@ -130,7 +130,7 @@ private fun OrderHeader(
 
         Text(
             text = order.total,
-            style = WooTypography.title2,
+            style = WooTypography.title1,
             color = Color.White,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -138,7 +138,7 @@ private fun OrderHeader(
         )
         Text(
             text = order.status,
-            style = WooTypography.body2,
+            style = WooTypography.body1,
             color = Color.White,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
