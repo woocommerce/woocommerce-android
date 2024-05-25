@@ -57,13 +57,12 @@ fun OrderDetailsScreen(
     modifier: Modifier = Modifier
 ) {
     WooTheme {
-        TimeText()
         Box(
             contentAlignment = Alignment.Center,
             modifier = modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(top = 32.dp)
+                .padding(top = 16.dp)
                 .padding(horizontal = 20.dp)
         ) {
             when {
@@ -72,6 +71,7 @@ fun OrderDetailsScreen(
                     errorText = stringResource(id = R.string.order_details_failed_to_load),
                     onRetryClicked = onRetryClicked
                 )
+
                 else -> OrderDetailsContent(order, modifier)
             }
         }
@@ -105,12 +105,16 @@ private fun OrderHeader(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = order.date,
-            color = Color.White
+            text = order.number,
+            fontWeight = FontWeight.Bold,
+            color = WooColors.woo_purple_20,
+            modifier = modifier.padding(bottom = 10.dp)
         )
         Text(
-            text = order.number,
-            color = Color.White
+            text = order.date,
+            style = WooTypography.body2,
+            fontWeight = FontWeight.Bold,
+            color = WooColors.woo_gray_alpha,
         )
     }
     Spacer(modifier = modifier.padding(10.dp))
@@ -120,35 +124,25 @@ private fun OrderHeader(
     ) {
         Text(
             text = order.customerName,
-            style = WooTypography.title3,
+            style = WooTypography.body1,
             color = Color.White,
-            textAlign = TextAlign.Start,
+            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
 
-        order.products
-            ?.takeIf { it.isNotEmpty() }
-            ?.let {
-                Text(
-                    text = pluralizedProductsText(products = it),
-                    textAlign = TextAlign.Center,
-                    color = Color.White
-                )
-            }
-
         Text(
             text = order.total,
-            style = WooTypography.body1,
+            style = WooTypography.title2,
             color = Color.White,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Start,
+            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
         Text(
             text = order.status,
-            style = WooTypography.caption1,
-            color = WooColors.woo_gray_alpha,
-            textAlign = TextAlign.Start,
+            style = WooTypography.body2,
+            color = Color.White,
+            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -159,6 +153,20 @@ fun OrderProductsList(
     products: List<ProductItem>?,
     modifier: Modifier
 ) {
+    products
+        ?.takeIf { it.isNotEmpty() }
+        ?.let {
+            Text(
+                text = pluralizedProductsText(products = it),
+                textAlign = TextAlign.Center,
+                style = WooTypography.body1,
+                fontWeight = FontWeight.Bold,
+                color = WooColors.woo_gray_alpha,
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 20.dp)
+            )
+        }
     when {
         products == null -> Text(
             text = stringResource(id = R.string.order_details_products_failed),
@@ -167,6 +175,7 @@ fun OrderProductsList(
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
+
         products.isEmpty() -> Text(
             text = stringResource(id = R.string.order_details_no_products_found),
             style = WooTypography.caption1,
@@ -174,6 +183,7 @@ fun OrderProductsList(
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
+
         else -> products.forEach { product ->
             Box(
                 modifier = modifier
