@@ -49,7 +49,7 @@ fun ErrorScreen(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Text(stringResource(id = R.string.error_screen_retry_button))
+            Text(stringResource(id = R.string.retry_text))
         }
     }
 }

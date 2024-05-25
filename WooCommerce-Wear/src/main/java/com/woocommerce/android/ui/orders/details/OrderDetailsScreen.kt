@@ -208,14 +208,6 @@ fun OrderProductsList(
 }
 
 @Composable
-fun OrderLoadingFailed() {
-    Text(
-        text = stringResource(id = R.string.order_details_failed_to_load),
-        color = Color.White
-    )
-}
-
-@Composable
 @ReadOnlyComposable
 private fun pluralizedProductsText(products: List<ProductItem>): String {
     val amount = products.size
