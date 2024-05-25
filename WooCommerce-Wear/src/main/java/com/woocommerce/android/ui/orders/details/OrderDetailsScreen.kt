@@ -183,7 +183,7 @@ fun OrderProductsList(
         else -> products.forEach { product ->
             Box(
                 modifier = modifier
-                    .padding(10.dp)
+                    .padding(12.dp)
                     .fillMaxWidth()
             ) {
                 Row(modifier = modifier.fillMaxWidth()) {
@@ -191,6 +191,7 @@ fun OrderProductsList(
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = modifier
+                                .padding(2.dp)
                                 .size(16.dp)
                                 .clip(CircleShape)
                                 .background(WooColors.woo_purple_alpha)
@@ -208,6 +209,7 @@ fun OrderProductsList(
                             text = product.name,
                             maxLines = 2,
                             color = Color.White,
+                            style = WooTypography.body1,
                             modifier = modifier.fillMaxWidth()
                         )
                         Text(

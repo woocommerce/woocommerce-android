@@ -61,7 +61,7 @@ class FormatOrderData @Inject constructor(
 
         val formattedStatus = status.replaceFirstChar {
             if (it.isLowerCase()) it.titlecase(locale) else it.toString()
-        }
+        }.replace("-", " ")
 
         val formattedNumber = "#$number"
 
