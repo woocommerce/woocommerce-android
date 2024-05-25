@@ -44,9 +44,10 @@ class StoreStatsViewModel @Inject constructor(
         _viewState.update { it.copy(isLoading = true) }
         loginRepository.selectedSiteFlow
             .filterNotNull()
-            .onEach {
-                updateSiteData(it)
-                requestStoreStats(it)
+            .onEach { site ->
+                _viewState.update { it.copy(isLoading = true) }
+                updateSiteData(site)
+                requestStoreStats(site)
             }.launchIn(this)
     }
 

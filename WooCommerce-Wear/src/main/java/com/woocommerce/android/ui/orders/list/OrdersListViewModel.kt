@@ -42,8 +42,10 @@ class OrdersListViewModel @AssistedInject constructor(
         _viewState.update { it.copy(isLoading = true) }
         loginRepository.selectedSiteFlow
             .filterNotNull()
-            .onEach { requestOrdersData(it) }
-            .launchIn(this)
+            .onEach { site ->
+                _viewState.update { it.copy(isLoading = true) }
+                requestOrdersData(site)
+            }.launchIn(this)
     }
 
     override fun reloadData(withLoading: Boolean) {
