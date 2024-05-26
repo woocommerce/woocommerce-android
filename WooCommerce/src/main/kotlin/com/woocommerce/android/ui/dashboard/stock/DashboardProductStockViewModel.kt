@@ -41,7 +41,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
     private val _refreshTrigger = MutableSharedFlow<DashboardViewModel.RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
         .onStart { emit(DashboardViewModel.RefreshEvent()) }
-    private val status = savedStateHandle.getStateFlow(viewModelScope, ProductStockStatus.LowStock)
+    private val status = savedStateHandle.getStateFlow<ProductStockStatus>(viewModelScope, ProductStockStatus.LowStock)
 
     val productStockState = status
         .flatMapLatest {
@@ -55,6 +55,10 @@ class DashboardProductStockViewModel @AssistedInject constructor(
                     onFailure = { emit(ViewState.Error) }
                 )
         }.asLiveData()
+
+    fun onFilterSelected(productStockStatus: ProductStockStatus) {
+        this.status.value = productStockStatus
+    }
 
     sealed interface ViewState {
         data class Loading(val selectedFilter: ProductStockStatus) : ViewState

@@ -44,7 +44,7 @@ fun DashboardProductStockCard(
         DashboardProductStockCard(
             viewState = viewState,
             onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.PRODUCT_STOCK) },
-            onFilterSelected = { },
+            onFilterSelected = viewModel::onFilterSelected,
             onProductClicked = { },
             modifier = modifier
         )
