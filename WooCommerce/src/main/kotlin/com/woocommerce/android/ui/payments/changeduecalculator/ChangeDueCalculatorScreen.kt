@@ -54,7 +54,6 @@ fun ChangeDueCalculatorScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    var amountReceived by remember { mutableStateOf(BigDecimal.ZERO) }
 
     WooThemeWithBackground {
         Scaffold(
@@ -116,7 +115,6 @@ fun ChangeDueCalculatorScreen(
                                     setValueIfDifferent(uiState.amountDue)
                                     value.filterNotNull().observe(lifecycleOwner) {
                                         onAmountReceivedChanged(it)
-                                        amountReceived = it
                                     }
                                     view = this
                                 }
