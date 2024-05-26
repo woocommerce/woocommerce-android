@@ -153,11 +153,17 @@ class WearableConnectionRepository @Inject constructor(
     }
 
     fun receiveAnalyticsFromWear(dataMap: DataMap) {
-        val stat = dataMap.getString(ANALYTICS_TRACK.value)
         val typeToken = object : TypeToken<Map<String, String>>() {}.type
         val parameters: Map<String, String> = dataMap.getString(ANALYTICS_PARAMETERS.value)
-            .let { gson.fromJson(it, typeToken) }
-        analyticsTrackerWrapper.track(stat, parameters)
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { gson.fromJson(it, typeToken) }
+            ?: emptyMap()
+
+        dataMap.getString(ANALYTICS_TRACK.value)
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { runCatching { WearAnalyticsEvent.valueOf(it) }.getOrNull() }
+            ?.toAnalyticsEvent()
+            ?.let { analyticsTrackerWrapper.track(it, parameters) }
     }
 
     private fun sendData(
@@ -174,7 +180,7 @@ class WearableConnectionRepository @Inject constructor(
             .let { dataClient.putDataItem(it) }
     }
 
-    fun WearAnalyticsEvent.toAnalyticsEvent(): AnalyticsEvent {
+    private fun WearAnalyticsEvent.toAnalyticsEvent(): AnalyticsEvent? {
         return when (this) {
             WATCH_STORE_DATA_REQUESTED -> AnalyticsEvent.WATCH_STORE_DATA_REQUESTED
             WATCH_STORE_DATA_RECEIVED -> AnalyticsEvent.WATCH_STORE_DATA_RECEIVED
@@ -191,7 +197,7 @@ class WearableConnectionRepository @Inject constructor(
             WATCH_APP_OPENED -> AnalyticsEvent.WATCH_APP_OPENED
             WATCH_ORDERS_LIST_OPENED -> AnalyticsEvent.WATCH_ORDERS_LIST_OPENED
             WATCH_ORDER_DETAILS_OPENED -> AnalyticsEvent.WATCH_ORDER_DETAILS_OPENED
-            else -> throw IllegalArgumentException("Unknown WearAnalyticsEvent")
+            else -> null
         }
     }
 }

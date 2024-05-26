@@ -6,6 +6,7 @@ import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.commons.DataParameters.ANALYTICS_PARAMETERS
 import com.woocommerce.commons.DataParameters.ANALYTICS_TRACK
 import com.woocommerce.commons.DataPath
+import com.woocommerce.commons.WearAnalyticsEvent
 import javax.inject.Inject
 
 class AnalyticsTracker @Inject constructor(
@@ -13,7 +14,7 @@ class AnalyticsTracker @Inject constructor(
 ) {
     private val gson by lazy { Gson() }
 
-    fun track(stat: AnalyticsParameter, properties: Map<String, String> = emptyMap()) {
+    fun track(stat: WearAnalyticsEvent, properties: Map<String, String> = emptyMap()) {
         val parameters = gson.toJson(properties)
         phoneRepository.sendData(
             dataPath = DataPath.ANALYTICS_DATA,
@@ -23,9 +24,4 @@ class AnalyticsTracker @Inject constructor(
             }
         )
     }
-}
-
-enum class AnalyticsParameter {
-    APP_OPENED,
-    APP_CLOSED
 }
