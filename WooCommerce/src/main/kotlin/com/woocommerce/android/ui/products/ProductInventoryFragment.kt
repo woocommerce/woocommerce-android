@@ -182,7 +182,7 @@ class ProductInventoryFragment :
                     this@ProductInventoryFragment,
                     RequestCodes.PRODUCT_INVENTORY_STOCK_STATUS,
                     getString(R.string.product_stock_status),
-                    ProductStockStatus.toMap(requireContext()),
+                    ProductStockStatus.getMapForInventoryStockStatuses(requireContext()),
                     binding.editProductStockStatus.getText()
                 ).also { it.show(parentFragmentManager, ProductItemSelectorDialog.TAG) }
             }
