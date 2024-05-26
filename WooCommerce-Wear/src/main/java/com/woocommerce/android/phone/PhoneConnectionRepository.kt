@@ -18,12 +18,12 @@ import com.woocommerce.commons.DataPath.ORDER_PRODUCTS_DATA
 import com.woocommerce.commons.DataPath.SITE_DATA
 import com.woocommerce.commons.DataPath.STATS_DATA
 import com.woocommerce.commons.MessagePath
-import java.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.time.Instant
 import javax.inject.Inject
 
 class PhoneConnectionRepository @Inject constructor(

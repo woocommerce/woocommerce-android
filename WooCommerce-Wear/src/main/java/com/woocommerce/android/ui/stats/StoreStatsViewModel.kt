@@ -3,13 +3,17 @@ package com.woocommerce.android.ui.stats
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.getStateFlow
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.android.ui.stats.datasource.FetchStats
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest
+import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Error
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
-import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
 import com.woocommerce.android.viewmodel.WearViewModel
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_FAILED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_RECEIVED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_REQUESTED
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -28,6 +32,7 @@ class StoreStatsViewModel @Inject constructor(
     private val fetchStats: FetchStats,
     private val locale: Locale,
     private val loginRepository: LoginRepository,
+    private val analyticsTracker: AnalyticsTracker,
     savedState: SavedStateHandle
 ) : WearViewModel() {
     private val _viewState = savedState.getStateFlow(
@@ -63,6 +68,7 @@ class StoreStatsViewModel @Inject constructor(
     }
 
     private fun requestStoreStats(selectedSite: SiteModel) {
+        analyticsTracker.track(WATCH_STATS_DATA_REQUESTED)
         launch {
             fetchStats(selectedSite)
                 .onEach { handleStatsDataChange(it) }
@@ -73,6 +79,7 @@ class StoreStatsViewModel @Inject constructor(
     private fun handleStatsDataChange(request: StoreStatsRequest?) {
         when (request) {
             is Finished -> {
+                analyticsTracker.track(WATCH_STATS_DATA_RECEIVED)
                 val statsData = request.data
                 _viewState.update {
                     it.copy(
@@ -86,8 +93,11 @@ class StoreStatsViewModel @Inject constructor(
                     )
                 }
             }
-            is Waiting -> _viewState.update { it.copy(isLoading = true, isError = false) }
-            else -> _viewState.update { it.copy(isLoading = false, isError = true) }
+            is Error -> {
+                analyticsTracker.track(WATCH_STATS_DATA_FAILED)
+                _viewState.update { it.copy(isLoading = false, isError = true) }
+            }
+            else -> _viewState.update { it.copy(isLoading = true, isError = false) }
         }
     }
 

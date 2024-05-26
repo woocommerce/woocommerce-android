@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Waiting
 import com.woocommerce.android.viewmodel.WearViewModel
-import com.woocommerce.commons.WearAnalyticsEvent
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_FAILED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_RECEIVED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_REQUESTED

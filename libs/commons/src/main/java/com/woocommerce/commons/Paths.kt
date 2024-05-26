@@ -12,7 +12,7 @@ enum class DataPath(val value: String) {
     STATS_DATA("/stats-data"),
     ORDERS_DATA("/orders-data"),
     ORDER_PRODUCTS_DATA("/order-products-data"),
-    ANALYTICS_DATA("/analytics_data")
+    ANALYTICS_DATA("/analytics-data")
 }
 
 enum class DataParameters(val value: String) {
