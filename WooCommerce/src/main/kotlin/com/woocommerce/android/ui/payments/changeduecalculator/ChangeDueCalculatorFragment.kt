@@ -37,7 +37,8 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                 ChangeDueCalculatorScreen(
                     uiState = uiState,
                     onNavigateUp = { viewModel.onBackPressed() },
-                    onCompleteOrderClick = {}
+                    onCompleteOrderClick = {},
+                    onAmountReceivedChanged = {}
                 )
             }
         }
