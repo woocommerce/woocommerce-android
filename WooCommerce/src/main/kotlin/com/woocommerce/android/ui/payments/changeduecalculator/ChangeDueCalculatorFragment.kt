@@ -45,7 +45,10 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     onCompleteOrderClick = {
                         val action = ChangeDueCalculatorFragmentDirections
                             .actionChangeDueCalculatorFragmentToSelectPaymentMethodFragment(
-                                cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(viewModel.navArgs.orderId, CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE),
+                                cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(
+                                    viewModel.navArgs.orderId,
+                                    CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
+                                ),
                                 isOrderPaid = true
                             )
                         findNavController().navigate(action)
