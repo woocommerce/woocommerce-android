@@ -4,15 +4,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -106,20 +110,27 @@ private fun ProductStockLoading(
         Header(selectedFilter, onFilterSelected)
         repeat(3) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                SkeletonView(width = 24.dp, height = 24.dp)
-
+                SkeletonView(
+                    modifier = Modifier
+                        .height(42.dp)
+                        .width(42.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                )
                 Column(
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    SkeletonView(width = 260.dp, height = 16.dp)
-                    SkeletonView(width = 120.dp, height = 16.dp)
-                    SkeletonView(width = 60.dp, height = 16.dp)
-                    Spacer(modifier = Modifier)
-                    Divider()
+                    SkeletonView(width = 240.dp, height = 16.dp)
+                    SkeletonView(width = 140.dp, height = 12.dp)
                 }
+                SkeletonView(width = 20.dp, height = 14.dp)
             }
         }
     }
