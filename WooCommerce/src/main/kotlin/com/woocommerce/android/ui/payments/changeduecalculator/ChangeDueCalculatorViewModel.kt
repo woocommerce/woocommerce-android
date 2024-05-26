@@ -24,7 +24,11 @@ class ChangeDueCalculatorViewModel @Inject constructor(
 
     sealed class UiState {
         data object Loading : UiState()
-        data class Success(val amountDue: BigDecimal, val change: BigDecimal, val amountReceived: BigDecimal) : UiState()
+        data class Success(
+            val amountDue: BigDecimal,
+            val change: BigDecimal,
+            val amountReceived: BigDecimal
+        ) : UiState()
         data object Error : UiState()
     }
 
@@ -56,7 +60,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     fun updateAmountReceived(amount: BigDecimal) {
         val currentState = _uiState.value
         if (currentState is UiState.Success) {
-            _uiState.value = currentState.copy(amountReceived = amount)
+            val newChange = amount - currentState.amountDue
+            _uiState.value = currentState.copy(amountReceived = amount, change = newChange)
         }
     }
 }

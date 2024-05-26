@@ -139,7 +139,7 @@ fun ChangeDueCalculatorScreen(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "$0.00",
+                                text = uiState.change.toPlainString(),
                                 style = LocalTextStyle.current.copy(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = TextUnit(44f, TextUnitType.Sp)
