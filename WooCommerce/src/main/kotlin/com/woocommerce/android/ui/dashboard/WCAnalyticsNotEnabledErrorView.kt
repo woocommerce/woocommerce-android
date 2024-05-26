@@ -20,7 +20,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun WCAdminNotAvailableErrorView(
+fun WCAnalyticsNotAvailableErrorView(
     title: String,
     onContactSupportClick: () -> Unit
 ) {
@@ -43,13 +43,13 @@ fun WCAdminNotAvailableErrorView(
         )
 
         Text(
-            text = stringResource(id = R.string.dashboard_wcadmin_inactive_description),
+            text = stringResource(id = R.string.dashboard_wcanalytics_inactive_description),
             style = MaterialTheme.typography.body1,
             textAlign = TextAlign.Center
         )
 
         WCOutlinedButton(
-            text = stringResource(id = R.string.dashboard_wcadmin_inactive_contact_us),
+            text = stringResource(id = R.string.dashboard_wcanalytics_inactive_contact_us),
             onClick = onContactSupportClick
         )
     }
@@ -59,7 +59,7 @@ fun WCAdminNotAvailableErrorView(
 @Preview
 private fun WCAdminNotAvailableErrorViewPreview() {
     WooThemeWithBackground {
-        WCAdminNotAvailableErrorView(
+        WCAnalyticsNotAvailableErrorView(
             title = stringResource(id = R.string.my_store_stats_plugin_inactive_title),
             onContactSupportClick = {}
         )

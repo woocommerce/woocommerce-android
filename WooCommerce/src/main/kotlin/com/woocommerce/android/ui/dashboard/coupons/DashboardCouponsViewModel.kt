@@ -99,7 +99,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                             onFailure = { error ->
                                 when {
                                     error is WooException && error.error.type == WooErrorType.API_NOT_FOUND ->
-                                        State.Error.WCAdminInactive
+                                        State.Error.WCAnalyticsInactive
 
                                     else -> State.Error.Generic
                                 }
@@ -245,7 +245,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
         data class Loaded(val coupons: List<CouponUiModel>) : State
         enum class Error : State {
             Generic,
-            WCAdminInactive
+            WCAnalyticsInactive
         }
     }
 

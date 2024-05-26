@@ -215,7 +215,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
                 onFailure = {
                     _topPerformersState.value = _topPerformersState.value?.copy(
                         error = if ((it as? WooException)?.error?.type == WooErrorType.API_NOT_FOUND) {
-                            ErrorType.WCAdminInactive
+                            ErrorType.WCAnalyticsInactive
                         } else {
                             ErrorType.Generic
                         },
@@ -304,7 +304,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     )
 
     enum class ErrorType {
-        Generic, WCAdminInactive
+        Generic, WCAnalyticsInactive
     }
 
     data class OpenTopPerformer(

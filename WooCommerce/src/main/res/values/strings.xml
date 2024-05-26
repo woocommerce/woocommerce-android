@@ -387,7 +387,7 @@
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
-    <string name="dashboard_top_performers_wcadmin_inactive_title">Unable to load the top performers</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Unable to load the top performers</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
@@ -430,10 +430,10 @@
     <string name="dashboard_coupons_card_header_uses">Uses</string>
     <string name="dashboard_coupons_view_all_button">View all coupons</string>
     <string name="dashboard_coupons_card_empty_view_message">No coupon usage during this period</string>
-    <string name="dashboard_coupons_wcadmin_inactive_title">Unable to load coupon usage report</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Unable to load coupon usage report</string>
 
-    <string name="dashboard_wcadmin_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.</string>
-    <string name="dashboard_wcadmin_inactive_contact_us">Still need help? Contact us</string>
+    <string name="dashboard_wcanalytics_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Analytics activated.</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Still need help? Contact us</string>
     <!--
         Sign Up Flow
     -->

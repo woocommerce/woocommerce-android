@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.WCAdminNotAvailableErrorView
+import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
@@ -104,7 +104,7 @@ fun DashboardStatsCard(
             }
 
             else -> {
-                WCAdminNotAvailableErrorView(
+                WCAnalyticsNotAvailableErrorView(
                     title = stringResource(id = R.string.my_store_stats_plugin_inactive_title),
                     onContactSupportClick = parentViewModel::onContactSupportClicked
                 )

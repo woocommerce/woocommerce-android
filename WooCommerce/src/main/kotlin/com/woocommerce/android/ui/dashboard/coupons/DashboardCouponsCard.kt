@@ -42,7 +42,7 @@ import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
-import com.woocommerce.android.ui.dashboard.WCAdminNotAvailableErrorView
+import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.DateRangeState
@@ -365,9 +365,9 @@ fun CouponsErrorView(
                 onRetryClicked = onRetryClick
             )
         }
-        State.Error.WCAdminInactive -> {
-            WCAdminNotAvailableErrorView(
-                title = stringResource(id = R.string.dashboard_coupons_wcadmin_inactive_title),
+        State.Error.WCAnalyticsInactive -> {
+            WCAnalyticsNotAvailableErrorView(
+                title = stringResource(id = R.string.dashboard_coupons_wcanalytics_inactive_title),
                 onContactSupportClick = onContactSupportClick
             )
         }

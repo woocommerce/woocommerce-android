@@ -49,7 +49,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
-import com.woocommerce.android.ui.dashboard.WCAdminNotAvailableErrorView
+import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
@@ -365,9 +365,9 @@ private fun TopPerformersErrorView(
     onRetryClicked: () -> Unit
 ) {
     when (errorType) {
-        DashboardTopPerformersViewModel.ErrorType.WCAdminInactive -> {
-            WCAdminNotAvailableErrorView(
-                title = stringResource(id = R.string.dashboard_top_performers_wcadmin_inactive_title),
+        DashboardTopPerformersViewModel.ErrorType.WCAnalyticsInactive -> {
+            WCAnalyticsNotAvailableErrorView(
+                title = stringResource(id = R.string.dashboard_top_performers_wcanalytics_inactive_title),
                 onContactSupportClick = onContactSupportClicked
             )
         }
