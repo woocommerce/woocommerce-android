@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.stats
 
 import android.os.Parcelable
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.extensions.getStateFlow
@@ -10,7 +9,7 @@ import com.woocommerce.android.ui.stats.datasource.FetchStats
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.WearViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -30,7 +29,7 @@ class StoreStatsViewModel @Inject constructor(
     private val locale: Locale,
     private val loginRepository: LoginRepository,
     savedState: SavedStateHandle
-) : ScopedViewModel(savedState) {
+) : WearViewModel() {
     private val _viewState = savedState.getStateFlow(
         scope = this,
         initialValue = ViewState()
@@ -45,15 +44,16 @@ class StoreStatsViewModel @Inject constructor(
         _viewState.update { it.copy(isLoading = true) }
         loginRepository.selectedSiteFlow
             .filterNotNull()
-            .onEach {
-                updateSiteData(it)
-                requestStoreStats(it)
+            .onEach { site ->
+                _viewState.update { it.copy(isLoading = true) }
+                updateSiteData(site)
+                requestStoreStats(site)
             }.launchIn(this)
     }
 
-    override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
+    override fun reloadData(withLoading: Boolean) {
         if (_viewState.value.isLoading) return
+        _viewState.update { it.copy(isLoading = withLoading) }
         launch {
             loginRepository.selectedSite?.let {
                 updateSiteData(it)
@@ -77,6 +77,7 @@ class StoreStatsViewModel @Inject constructor(
                 _viewState.update {
                     it.copy(
                         isLoading = false,
+                        isError = false,
                         revenueTotal = statsData.revenue,
                         ordersCount = statsData.ordersCount,
                         visitorsCount = statsData.visitorsCount,
@@ -85,8 +86,8 @@ class StoreStatsViewModel @Inject constructor(
                     )
                 }
             }
-            is Waiting -> _viewState.update { it.copy(isLoading = true) }
-            else -> _viewState.update { it.copy(isLoading = false) }
+            is Waiting -> _viewState.update { it.copy(isLoading = true, isError = false) }
+            else -> _viewState.update { it.copy(isLoading = false, isError = true) }
         }
     }
 
@@ -97,6 +98,7 @@ class StoreStatsViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val isLoading: Boolean = false,
+        val isError: Boolean = false,
         val currentSiteName: String? = null,
         val revenueTotal: String? = null,
         val ordersCount: Int? = null,

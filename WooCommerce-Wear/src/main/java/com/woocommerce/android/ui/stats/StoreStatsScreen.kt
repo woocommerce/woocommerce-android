@@ -31,10 +31,11 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.TimeText
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
-import com.woocommerce.android.presentation.component.LoadingScreen
-import com.woocommerce.android.presentation.theme.WooColors
-import com.woocommerce.android.presentation.theme.WooTheme
-import com.woocommerce.android.presentation.theme.WooTypography
+import com.woocommerce.android.compose.component.ErrorScreen
+import com.woocommerce.android.compose.component.LoadingScreen
+import com.woocommerce.android.compose.theme.WooColors
+import com.woocommerce.android.compose.theme.WooTheme
+import com.woocommerce.android.compose.theme.WooTypography
 
 @Composable
 fun StoreStatsScreen(viewModel: StoreStatsViewModel) {
@@ -42,24 +43,28 @@ fun StoreStatsScreen(viewModel: StoreStatsViewModel) {
     val viewState by viewModel.viewState.observeAsState()
     StoreStatsScreen(
         isLoading = viewState?.isLoading ?: false,
+        isError = viewState?.isError ?: false,
         currentSiteName = viewState?.currentSiteName.orEmpty(),
         totalRevenue = viewState?.revenueTotal.orEmpty(),
         ordersCount = viewState?.ordersCount?.toString().orEmpty(),
         visitorsCount = viewState?.visitorsCount?.toString().orEmpty(),
         conversionRate = viewState?.conversionRate.orEmpty(),
-        timestamp = viewState?.timestamp.orEmpty()
+        timestamp = viewState?.timestamp.orEmpty(),
+        onRetryClicked = viewModel::reloadData
     )
 }
 
 @Composable
 fun StoreStatsScreen(
     isLoading: Boolean,
+    isError: Boolean,
     currentSiteName: String,
     totalRevenue: String,
     ordersCount: String,
     visitorsCount: String,
     conversionRate: String,
     timestamp: String,
+    onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     WooTheme {
@@ -75,9 +80,7 @@ fun StoreStatsScreen(
             )
             Canvas(
                 modifier = modifier.fillMaxSize(),
-                onDraw = {
-                    drawRect(brush)
-                }
+                onDraw = { drawRect(brush) }
             )
             TimeText()
             Column(
@@ -86,18 +89,23 @@ fun StoreStatsScreen(
                     .padding(horizontal = 12.dp)
                     .padding(top = 24.dp)
             ) {
-                Text(
-                    text = currentSiteName,
-                    textAlign = TextAlign.Center,
-                    style = WooTypography.body1,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                )
-                if (isLoading) {
-                    LoadingScreen()
-                } else {
-                    StatsContentScreen(
+                if (isError.not()) {
+                    Text(
+                        text = currentSiteName,
+                        textAlign = TextAlign.Center,
+                        style = WooTypography.body1,
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                    )
+                }
+                when {
+                    isLoading -> LoadingScreen()
+                    isError -> ErrorScreen(
+                        errorText = stringResource(id = R.string.stats_screen_error_message),
+                        onRetryClicked = onRetryClicked
+                    )
+                    else -> StatsContentScreen(
                         modifier,
                         totalRevenue,
                         visitorsCount,
@@ -171,7 +179,7 @@ private fun StatsContentScreen(
             text = timestamp
                 .takeIf { it.isNotEmpty() }
                 ?.let { stringResource(id = R.string.stats_screen_time_description, it) }
-                ?: stringResource(id = R.string.stats_screen_no_data)
+                ?: stringResource(id = R.string.stats_screen_time_unavailable)
         )
     }
 }
@@ -210,11 +218,13 @@ private fun IconStats(
 fun DefaultPreview() {
     StoreStatsScreen(
         isLoading = false,
+        isError = false,
         currentSiteName = "My Store",
         totalRevenue = "$5,321.90",
         ordersCount = "5",
         visitorsCount = "12",
         conversionRate = "100%",
-        timestamp = "02:19"
+        timestamp = "02:19",
+        onRetryClicked = {}
     )
 }

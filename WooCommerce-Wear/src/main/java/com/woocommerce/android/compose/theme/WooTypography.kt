@@ -1,4 +1,4 @@
-package com.woocommerce.android.presentation.theme
+package com.woocommerce.android.compose.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily

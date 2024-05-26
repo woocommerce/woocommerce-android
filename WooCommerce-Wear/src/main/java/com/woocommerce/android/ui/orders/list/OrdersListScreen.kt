@@ -35,12 +35,12 @@ import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
-import com.woocommerce.android.presentation.component.ErrorScreen
-import com.woocommerce.android.presentation.component.LoadingScreen
-import com.woocommerce.android.presentation.component.ScrollingLazyColumnAdapter
-import com.woocommerce.android.presentation.theme.WooColors
-import com.woocommerce.android.presentation.theme.WooTheme
-import com.woocommerce.android.presentation.theme.WooTypography
+import com.woocommerce.android.compose.component.ErrorScreen
+import com.woocommerce.android.compose.component.LoadingScreen
+import com.woocommerce.android.compose.component.ScrollingLazyColumnAdapter
+import com.woocommerce.android.compose.theme.WooColors
+import com.woocommerce.android.compose.theme.WooTheme
+import com.woocommerce.android.compose.theme.WooTypography
 import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 
 @Composable
@@ -51,7 +51,8 @@ fun OrdersListScreen(viewModel: OrdersListViewModel) {
         isLoading = viewState?.isLoading ?: false,
         isError = viewState?.isError ?: false,
         orders = viewState?.orders.orEmpty(),
-        onOrderClicked = viewModel::onOrderItemClick
+        onOrderClicked = viewModel::onOrderItemClick,
+        onRetryClicked = viewModel::reloadData
     )
 }
 
@@ -61,6 +62,7 @@ fun OrdersListScreen(
     isError: Boolean,
     orders: List<OrderItem>,
     onOrderClicked: (orderId: Long) -> Unit,
+    onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     WooTheme {
@@ -72,18 +74,12 @@ fun OrdersListScreen(
                 modifier = modifier
                     .fillMaxSize()
             ) {
-                Text(
-                    text = stringResource(id = R.string.orders_list_screen_title),
-                    style = WooTypography.body1,
-                    color = WooColors.woo_gray_alpha,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 6.dp)
-                )
                 when {
                     isLoading -> LoadingScreen()
-                    isError -> ErrorScreen(errorText = stringResource(id = R.string.orders_list_failed_to_load))
+                    isError -> ErrorScreen(
+                        errorText = stringResource(id = R.string.orders_list_failed_to_load),
+                        onRetryClicked = onRetryClicked
+                    )
                     else -> OrdersLazyColumn(orders, onOrderClicked, modifier)
                 }
             }
@@ -109,8 +105,8 @@ private fun OrdersLazyColumn(
                     state = state,
                     viewportHeightPx = height,
                 ),
-                indicatorHeight = 50.dp,
-                indicatorWidth = 4.dp,
+                indicatorHeight = 100.dp,
+                indicatorWidth = 7.dp,
                 paddingHorizontal = 5.dp,
                 reverseDirection = false,
             )
@@ -196,6 +192,7 @@ fun Preview() {
         isLoading = false,
         isError = false,
         onOrderClicked = {},
+        onRetryClicked = {},
         orders = listOf(
             OrderItem(
                 id = 0L,

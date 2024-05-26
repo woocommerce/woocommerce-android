@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.extensions.getStateFlow
@@ -13,7 +12,7 @@ import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Error
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.WearViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -32,7 +31,7 @@ class OrderDetailsViewModel @Inject constructor(
     private val formatOrderData: FormatOrderData,
     private val loginRepository: LoginRepository,
     savedState: SavedStateHandle
-) : ScopedViewModel(savedState) {
+) : WearViewModel() {
     private val orderId = savedState.get<Long>(ORDER_ID.key) ?: 0
 
     private val _viewState = savedState.getStateFlow(
@@ -49,9 +48,9 @@ class OrderDetailsViewModel @Inject constructor(
             .launchIn(this)
     }
 
-    override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
+    override fun reloadData(withLoading: Boolean) {
         if (_viewState.value.isLoading) return
+        _viewState.update { it.copy(isLoading = withLoading) }
         launch {
             loginRepository.selectedSite?.let { requestProductsData(it) }
         }

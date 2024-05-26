@@ -14,7 +14,6 @@ import com.woocommerce.android.ui.NavRoutes.MY_STORE
 import com.woocommerce.android.ui.NavRoutes.ORDER_DETAILS
 import com.woocommerce.android.ui.login.LoginScreen
 import com.woocommerce.android.ui.login.LoginViewModel
-import com.woocommerce.android.ui.mystore.MyStoreScreen
 import com.woocommerce.android.ui.orders.details.OrderDetailsScreen
 import com.woocommerce.android.ui.orders.details.OrderDetailsViewModel
 import com.woocommerce.android.ui.orders.list.OrdersListViewModel

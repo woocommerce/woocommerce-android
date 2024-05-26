@@ -10,7 +10,7 @@ import com.woocommerce.android.ui.NavRoutes.MY_STORE
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Logged
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Waiting
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.WearViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -24,7 +24,7 @@ class LoginViewModel @AssistedInject constructor(
     private val fetchSiteData: FetchSiteData,
     @Assisted private val navController: NavHostController,
     savedState: SavedStateHandle
-) : ScopedViewModel(savedState) {
+) : WearViewModel() {
     private val _viewState = savedState.getStateFlow(
         scope = this,
         initialValue = ViewState()
@@ -33,7 +33,7 @@ class LoginViewModel @AssistedInject constructor(
 
     init { requestSiteData() }
 
-    fun onTryAgainClicked() { requestSiteData() }
+    override fun reloadData(withLoading: Boolean) { requestSiteData() }
 
     private fun requestSiteData() {
         _viewState.update { it.copy(isLoading = true) }

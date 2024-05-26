@@ -50,9 +50,8 @@ class FetchOrders @Inject constructor(
                 ordersRepository.observeOrdersDataChanges(selectedSite)
             }
             else -> flow {
-                val orders = ordersRepository.getStoredOrders(selectedSite)
-                    .map { it.toWearOrder() }
-                emit(orders)
+                ordersRepository.getStoredOrders(selectedSite)
+                    .map { it.toWearOrder() }.let { emit(it) }
             }
         }
     }
