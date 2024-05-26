@@ -43,7 +43,7 @@ fun DashboardProductStockCard(
     viewModel.productStockState.observeAsState().value?.let { viewState ->
         DashboardProductStockCard(
             viewState = viewState,
-            onHideClicked = { },
+            onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.PRODUCT_STOCK) },
             onFilterSelected = { },
             onProductClicked = { },
             modifier = modifier
