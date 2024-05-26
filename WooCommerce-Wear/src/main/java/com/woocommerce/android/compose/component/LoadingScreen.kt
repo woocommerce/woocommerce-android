@@ -1,4 +1,4 @@
-package com.woocommerce.android.presentation.component
+package com.woocommerce.android.compose.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,7 +30,7 @@ fun LoadingScreen(
                 .size(24.dp)
         )
         Text(
-            text = stringResource(id = R.string.login_screen_loading_text),
+            text = stringResource(id = R.string.loading_text),
             modifier = modifier.padding(8.dp)
         )
     }

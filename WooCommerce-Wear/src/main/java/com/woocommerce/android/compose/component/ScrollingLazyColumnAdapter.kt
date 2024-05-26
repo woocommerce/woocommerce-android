@@ -1,4 +1,4 @@
-package com.woocommerce.android.presentation.component
+package com.woocommerce.android.compose.component
 
 import androidx.compose.runtime.State
 import androidx.wear.compose.foundation.lazy.ScalingLazyListAnchorType
