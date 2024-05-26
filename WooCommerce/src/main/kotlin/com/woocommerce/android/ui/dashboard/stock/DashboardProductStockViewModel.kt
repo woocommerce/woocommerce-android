@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
-import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsViewModel
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.ViewState.Loading
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.stock.ProductStockItem
@@ -15,6 +14,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -23,7 +23,8 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
 
 
-@HiltViewModel(assistedFactory = DashboardReviewsViewModel.Factory::class)
+@OptIn(ExperimentalCoroutinesApi::class)
+@HiltViewModel(assistedFactory = DashboardProductStockViewModel.Factory::class)
 class DashboardProductStockViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     @Assisted private val parentViewModel: DashboardViewModel,
@@ -46,7 +47,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         .flatMapLatest {
             refreshTrigger.map { refresh -> Pair(refresh, it) }
         }
-        .transformLatest { (refresh, status) ->
+        .transformLatest { (_, status) ->
             emit(Loading(status))
             productStockRepository.fetchProductStockReport(status)
                 .fold(
