@@ -24,7 +24,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
 
     sealed class UiState {
         data object Loading : UiState()
-        data class Success(val amountDue: BigDecimal, val change: BigDecimal) : UiState()
+        data class Success(val amountDue: BigDecimal, val change: BigDecimal, val amountReceived: BigDecimal) : UiState()
         data object Error : UiState()
     }
 
@@ -42,7 +42,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         launch {
             val order = orderDetailRepository.getOrderById(orderId)
             order?.let {
-                _uiState.value = UiState.Success(amountDue = order.total, change = BigDecimal.ZERO)
+                _uiState.value = UiState.Success(amountDue = order.total, change = BigDecimal.ZERO, amountReceived = BigDecimal.ZERO)
             } ?: run {
                 _uiState.value = UiState.Error
             }
@@ -51,5 +51,12 @@ class ChangeDueCalculatorViewModel @Inject constructor(
 
     fun onBackPressed() {
         _navigationEvent.value = Unit
+    }
+
+    fun updateAmountReceived(amount: BigDecimal) {
+        val currentState = _uiState.value
+        if (currentState is UiState.Success) {
+            _uiState.value = currentState.copy(amountReceived = amount)
+        }
     }
 }

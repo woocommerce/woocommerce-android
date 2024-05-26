@@ -226,7 +226,8 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
     ChangeDueCalculatorScreen(
         uiState = ChangeDueCalculatorViewModel.UiState.Success(
             amountDue = BigDecimal("666.00"),
-            change = BigDecimal("0.00")
+            change = BigDecimal("0.00"),
+            amountReceived = BigDecimal("0.00")
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},

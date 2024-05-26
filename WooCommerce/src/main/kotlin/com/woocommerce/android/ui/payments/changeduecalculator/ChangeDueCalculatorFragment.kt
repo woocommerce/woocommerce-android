@@ -38,7 +38,7 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     uiState = uiState,
                     onNavigateUp = { viewModel.onBackPressed() },
                     onCompleteOrderClick = {},
-                    onAmountReceivedChanged = {}
+                    onAmountReceivedChanged = { viewModel.updateAmountReceived(it) }
                 )
             }
         }
