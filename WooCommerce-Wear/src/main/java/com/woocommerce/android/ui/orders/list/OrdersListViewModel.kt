@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavHostController
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.getStateFlow
 import com.woocommerce.android.ui.NavRoutes.ORDER_DETAILS
 import com.woocommerce.android.ui.login.LoginRepository
@@ -12,6 +13,10 @@ import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
 import com.woocommerce.android.viewmodel.WearViewModel
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_DATA_FAILED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_DATA_RECEIVED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_DATA_REQUESTED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_OPENED
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -30,6 +35,7 @@ class OrdersListViewModel @AssistedInject constructor(
     private val fetchOrders: FetchOrders,
     private val formatOrders: FormatOrderData,
     private val loginRepository: LoginRepository,
+    private val analyticsTracker: AnalyticsTracker,
     savedState: SavedStateHandle
 ) : WearViewModel() {
     private val _viewState = savedState.getStateFlow(
@@ -39,6 +45,7 @@ class OrdersListViewModel @AssistedInject constructor(
     val viewState = _viewState.asLiveData()
 
     init {
+        analyticsTracker.track(WATCH_ORDERS_LIST_OPENED)
         _viewState.update { it.copy(isLoading = true) }
         loginRepository.selectedSiteFlow
             .filterNotNull()
@@ -61,10 +68,12 @@ class OrdersListViewModel @AssistedInject constructor(
     }
 
     private suspend fun requestOrdersData(selectedSite: SiteModel) {
+        analyticsTracker.track(WATCH_ORDERS_DATA_REQUESTED)
         fetchOrders(selectedSite)
             .onEach { request ->
                 when (request) {
                     is Finished -> _viewState.update { viewState ->
+                        analyticsTracker.track(WATCH_ORDERS_DATA_RECEIVED)
                         viewState.copy(
                             orders = formatOrders(selectedSite, request.orders),
                             isError = false,
@@ -75,6 +84,7 @@ class OrdersListViewModel @AssistedInject constructor(
                         it.copy(isLoading = true, isError = false)
                     }
                     else -> _viewState.update {
+                        analyticsTracker.track(WATCH_ORDERS_DATA_FAILED)
                         it.copy(isLoading = false, isError = true)
                     }
                 }
