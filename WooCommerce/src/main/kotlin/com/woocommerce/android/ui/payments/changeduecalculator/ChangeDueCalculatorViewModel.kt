@@ -29,6 +29,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             val change: BigDecimal,
             val amountReceived: BigDecimal
         ) : UiState()
+
         data object Error : UiState()
     }
 
@@ -46,7 +47,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         launch {
             val order = orderDetailRepository.getOrderById(orderId)
             order?.let {
-                _uiState.value = UiState.Success(amountDue = order.total, change = BigDecimal.ZERO, amountReceived = BigDecimal.ZERO)
+                _uiState.value =
+                    UiState.Success(amountDue = order.total, change = BigDecimal.ZERO, amountReceived = BigDecimal.ZERO)
             } ?: run {
                 _uiState.value = UiState.Error
             }
