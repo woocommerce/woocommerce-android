@@ -1075,6 +1075,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     WATCH_ORDER_DETAILS_OPENED
 }
 
+@Suppress("CyclomaticComplexMethod")
 fun WearAnalyticsEvent.toAnalyticsEvent(): AnalyticsEvent? {
     return when (this) {
         WearAnalyticsEvent.WATCH_STORE_DATA_REQUESTED -> AnalyticsEvent.WATCH_STORE_DATA_REQUESTED
