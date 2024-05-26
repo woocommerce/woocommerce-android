@@ -137,7 +137,7 @@ fun ChangeDueCalculatorScreen(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = uiState.change.toPlainString(),
+                                text = if (uiState.change < BigDecimal.ZERO) "-" else uiState.change.toPlainString(),
                                 style = LocalTextStyle.current.copy(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = TextUnit(44f, TextUnitType.Sp)
