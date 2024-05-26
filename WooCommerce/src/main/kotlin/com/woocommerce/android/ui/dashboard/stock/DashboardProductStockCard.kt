@@ -82,7 +82,8 @@ private fun DashboardProductStockCard(
                     selectedFilter = viewState.selectedFilter,
                     productStockItems = viewState.productStockItems,
                     onFilterSelected = onFilterSelected,
-                    onProductClicked = onProductClicked
+                    onProductClicked = onProductClicked,
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
             }
 
@@ -134,9 +135,7 @@ private fun ProductReviewsCardContent(
 ) {
     Column(modifier) {
         Header(selectedFilter, onFilterSelected)
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
+        Row(modifier = Modifier.padding(16.dp)) {
             Text(
                 modifier = Modifier.weight(1f),
                 text = stringResource(id = R.string.dashboard_product_stock_products),
