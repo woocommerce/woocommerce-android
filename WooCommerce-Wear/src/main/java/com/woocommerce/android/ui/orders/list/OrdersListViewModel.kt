@@ -14,8 +14,8 @@ import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
 import com.woocommerce.android.viewmodel.WearViewModel
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_FAILED
-import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_REQUESTED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_OPENED
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory

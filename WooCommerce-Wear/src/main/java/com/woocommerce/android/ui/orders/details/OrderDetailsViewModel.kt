@@ -15,8 +15,8 @@ import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProduct
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
 import com.woocommerce.android.viewmodel.WearViewModel
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_FAILED
-import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_REQUESTED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_OPENED
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull

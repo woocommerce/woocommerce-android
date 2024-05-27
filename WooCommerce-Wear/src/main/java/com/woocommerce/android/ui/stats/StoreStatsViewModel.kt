@@ -12,8 +12,8 @@ import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
 import com.woocommerce.android.viewmodel.WearViewModel
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_FAILED
-import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_REQUESTED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_SUCCEEDED
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn

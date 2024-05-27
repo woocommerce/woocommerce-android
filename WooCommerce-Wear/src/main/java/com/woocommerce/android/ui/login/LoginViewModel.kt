@@ -13,8 +13,8 @@ import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Waiting
 import com.woocommerce.android.viewmodel.WearViewModel
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_FAILED
-import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_REQUESTED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_SUCCEEDED
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
