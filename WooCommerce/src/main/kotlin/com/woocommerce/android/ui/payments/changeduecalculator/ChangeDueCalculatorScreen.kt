@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
 import java.math.BigDecimal
@@ -189,7 +190,7 @@ fun RecordTransactionDetailsNote(
 
 @Composable
 fun MarkOrderAsCompleteButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Button(
+    WCColoredButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
