@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.woopos.cardreader
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavArgument
 import androidx.navigation.fragment.NavHostFragment
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
@@ -14,6 +16,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
+import com.woocommerce.android.ui.payments.cardreader.tutorial.CardReaderTutorialDialogFragmentArgs
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -45,16 +48,16 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.woopos_card_reader_nav_host_fragment) as NavHostFragment
-        val navController = navHostFragment.navController
         val countryConfig = cardReaderCountryConfigProvider.provideCountryConfigFor(
             wooStore.getStoreCountryCode(selectedSite.get())
         ) as CardReaderConfigForSupportedCountry
 
+        val navController = navHostFragment.navController
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            Log.d("WOOPOS", "current destination: $destination")
+            Log.d("WOOPOS-payment-flow", "current destination: $destination")
         }
         val navGraph = navController.navInflater.inflate(R.navigation.nav_graph_payment_flow).apply {
-            setStartDestination(R.id.cardReaderTutorialDialogFragment)
+            setStartDestination(R.id.cardReaderStatusCheckerDialogFragment)
         }
 
         lifecycleScope.launch {
@@ -66,12 +69,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             result.fold(
                 onSuccess = {
                     withContext(Dispatchers.Main) {
-                            val args = collectPaymentArgs(it.id)
-                            navController.setGraph(
-                                navGraph,
-                                args
-                            )
-
+                        navController.setGraph(navGraph, buildPaymentArgs(it.id).toBundle())
                     }
                 },
                 onFailure = {
@@ -85,17 +83,11 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
         }
     }
 
-    private fun collectPaymentArgs(orderId: Long) = Bundle().apply {
-        putParcelable(
-            "cardReaderFlowParam",
-            CardReaderFlowParam.PaymentOrRefund.Payment(
-                orderId = orderId,
-                paymentType = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE,
-            )
-        )
-        putParcelable(
-            "cardReaderType",
-            CardReaderType.EXTERNAL
-        )
-    }
+    private fun buildPaymentArgs(orderId: Long) = CardReaderTutorialDialogFragmentArgs(
+        CardReaderFlowParam.PaymentOrRefund.Payment(
+            orderId = orderId,
+            paymentType = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE,
+        ),
+        CardReaderType.EXTERNAL
+    )
 }
