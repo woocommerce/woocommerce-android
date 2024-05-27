@@ -72,7 +72,6 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
                                 args
                             )
 
-                            navController.navigate(R.id.cardReaderTutorialDialogFragment, args)
                     }
                 },
                 onFailure = {
