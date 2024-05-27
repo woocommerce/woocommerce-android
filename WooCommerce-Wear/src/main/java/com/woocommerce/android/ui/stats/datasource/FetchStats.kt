@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
 import com.woocommerce.android.ui.stats.datasource.StoreStatsData.RevenueData
 import com.woocommerce.commons.MessagePath
-import com.woocommerce.commons.WearAnalyticsEvent
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_DATA_REQUESTED_FROM_PHONE
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_DATA_REQUESTED_FROM_STORE
 import kotlinx.coroutines.flow.Flow
