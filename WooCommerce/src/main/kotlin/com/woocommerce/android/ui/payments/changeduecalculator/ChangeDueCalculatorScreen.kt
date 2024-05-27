@@ -58,7 +58,7 @@ fun ChangeDueCalculatorScreen(
         val numberOfDecimals: Int,
     )
 
-    val discountInputFieldConfig = DiscountInputFieldConfig (
+    val discountInputFieldConfig = DiscountInputFieldConfig(
         decimalSeparator = ".",
         numberOfDecimals = 2
     )
