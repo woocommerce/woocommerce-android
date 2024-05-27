@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
@@ -29,18 +28,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.orders.creation.product.discount.DiscountInputFieldConfig
+import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountViewModel
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
 import java.math.BigDecimal
 
@@ -51,6 +57,16 @@ fun ChangeDueCalculatorScreen(
     onCompleteOrderClick: () -> Unit
 ) {
     val context = LocalContext.current
+
+    data class DiscountInputFieldConfig(
+        val decimalSeparator: String,
+        val numberOfDecimals: Int,
+    )
+
+    val discountInputFieldConfig = com.woocommerce.android.ui.orders.creation.product.discount.DiscountInputFieldConfig(
+        decimalSeparator = ".",
+        numberOfDecimals = 2
+    )
 
     WooThemeWithBackground {
         Scaffold(
@@ -96,27 +112,28 @@ fun ChangeDueCalculatorScreen(
                             }
                         }
 
-                        AndroidView(
-                            factory = { ctx ->
-                                WCMaterialOutlinedCurrencyEditTextView(ctx).apply {
-                                    layoutParams = ViewGroup.LayoutParams(
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.WRAP_CONTENT
-                                    )
-                                    gravity = android.view.Gravity.START
-                                    imeOptions = android.view.inputmethod.EditorInfo.IME_FLAG_NO_FULLSCREEN
-                                    visibility = android.view.View.VISIBLE
-                                    supportsEmptyState = false
-                                    supportsNegativeValues = false
-                                    hint = hintString
-                                    setValueIfDifferent(uiState.amountDue)
-                                    view = this
-                                }
-                            },
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
-                        )
+                                .padding(dimensionResource(id = R.dimen.minor_100)),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            WCOutlinedTypedTextField(
+
+                                modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
+                                value = uiState.amountDue,
+                                label = hintString,
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                                valueMapper = NullableCurrencyTextFieldValueMapper.create(
+                                    discountInputFieldConfig.decimalSeparator,
+                                    discountInputFieldConfig.numberOfDecimals
+                                ),
+                                onValueChange = {}
+                            )
+                        }
 
                         Column(
                             modifier = Modifier
