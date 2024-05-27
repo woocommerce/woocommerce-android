@@ -6,7 +6,6 @@ import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import dagger.hilt.EntryPoints
@@ -40,26 +39,7 @@ class DashboardDataStore @Inject constructor(
             } else {
                 it
             }
-        }
-        .map {
-            val widgets = it.widgetsList.toMutableList()
-
-            // Add any new widgets that are not present in the saved configuration
-            if (supportedWidgets.size != widgets.size) {
-                supportedWidgets.filter { type ->
-                    widgets.none { widget -> widget.type == type.name }
-                }.forEach { type ->
-                    widgets.add(
-                        DashboardWidgetDataModel.newBuilder()
-                            .setType(type.name)
-                            .setIsAdded(false)
-                            .build()
-                    )
-                }
-            }
-
-            return@map widgets
-        }
+        }.map { it.widgetsList }
 
     suspend fun updateDashboard(dashboard: DashboardDataModel) {
         runCatching {
@@ -76,21 +56,11 @@ class DashboardDataStore @Inject constructor(
                 this == DashboardWidget.Type.ONBOARDING ||
                 this == DashboardWidget.Type.BLAZE
 
-        return supportedWidgets.map {
+        return DashboardWidget.Type.supportedWidgets.map {
             DashboardWidgetDataModel.newBuilder()
                 .setType(it.name)
                 .setIsAdded(it.shouldBeEnabledByDefault())
                 .build()
         }
     }
-
-    // Use the feature flag [DYNAMIC_DASHBOARD_M2] to filter out unsupported widgets during development
-    private val supportedWidgets: List<DashboardWidget.Type> = DashboardWidget.Type.entries
-        .filter {
-            FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled() || (
-                it != DashboardWidget.Type.ORDERS &&
-                    it != DashboardWidget.Type.REVIEWS &&
-                    it != DashboardWidget.Type.COUPONS
-                )
-        }
 }
