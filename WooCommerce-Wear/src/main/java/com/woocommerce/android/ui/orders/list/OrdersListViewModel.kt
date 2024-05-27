@@ -13,9 +13,9 @@ import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
 import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
 import com.woocommerce.android.viewmodel.WearViewModel
-import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_DATA_FAILED
-import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_DATA_RECEIVED
-import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_DATA_REQUESTED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_FAILED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_SUCCEEDED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_REQUESTED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDERS_LIST_OPENED
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -68,12 +68,12 @@ class OrdersListViewModel @AssistedInject constructor(
     }
 
     private suspend fun requestOrdersData(selectedSite: SiteModel) {
-        analyticsTracker.track(WATCH_ORDERS_DATA_REQUESTED)
+        analyticsTracker.track(WATCH_ORDERS_LIST_DATA_REQUESTED)
         fetchOrders(selectedSite)
             .onEach { request ->
                 when (request) {
                     is Finished -> _viewState.update { viewState ->
-                        analyticsTracker.track(WATCH_ORDERS_DATA_RECEIVED)
+                        analyticsTracker.track(WATCH_ORDERS_LIST_DATA_SUCCEEDED)
                         viewState.copy(
                             orders = formatOrders(selectedSite, request.orders),
                             isError = false,
@@ -84,7 +84,7 @@ class OrdersListViewModel @AssistedInject constructor(
                         it.copy(isLoading = true, isError = false)
                     }
                     else -> _viewState.update {
-                        analyticsTracker.track(WATCH_ORDERS_DATA_FAILED)
+                        analyticsTracker.track(WATCH_ORDERS_LIST_DATA_FAILED)
                         it.copy(isLoading = false, isError = true)
                     }
                 }

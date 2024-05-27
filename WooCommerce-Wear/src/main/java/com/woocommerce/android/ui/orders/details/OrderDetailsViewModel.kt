@@ -15,7 +15,7 @@ import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProduct
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
 import com.woocommerce.android.viewmodel.WearViewModel
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_FAILED
-import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_RECEIVED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_REQUESTED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_OPENED
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -69,7 +69,7 @@ class OrderDetailsViewModel @Inject constructor(
             .map { productsRequest ->
                 when (productsRequest) {
                     is Finished -> {
-                        analyticsTracker.track(WATCH_ORDER_DETAILS_DATA_RECEIVED)
+                        analyticsTracker.track(WATCH_ORDER_DETAILS_DATA_SUCCEEDED)
                         Pair(site, productsRequest.products)
                     }
                     is Error -> {

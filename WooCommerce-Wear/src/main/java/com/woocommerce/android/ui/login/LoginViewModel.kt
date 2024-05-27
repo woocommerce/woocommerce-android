@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
 import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Waiting
 import com.woocommerce.android.viewmodel.WearViewModel
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_FAILED
-import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_RECEIVED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STORE_DATA_REQUESTED
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -47,7 +47,7 @@ class LoginViewModel @AssistedInject constructor(
             fetchSiteData().collect { loginState ->
                 when (loginState) {
                     Logged -> {
-                        analyticsTracker.track(WATCH_STORE_DATA_RECEIVED)
+                        analyticsTracker.track(WATCH_STORE_DATA_SUCCEEDED)
                         navController.navigate(MY_STORE.route) {
                             popUpTo(NavRoutes.LOGIN.route) { inclusive = true }
                         }

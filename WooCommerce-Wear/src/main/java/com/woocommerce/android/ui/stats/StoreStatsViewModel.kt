@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
 import com.woocommerce.android.viewmodel.WearViewModel
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_FAILED
-import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_RECEIVED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_SUCCEEDED
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_STATS_DATA_REQUESTED
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
@@ -79,7 +79,7 @@ class StoreStatsViewModel @Inject constructor(
     private fun handleStatsDataChange(request: StoreStatsRequest?) {
         when (request) {
             is Finished -> {
-                analyticsTracker.track(WATCH_STATS_DATA_RECEIVED)
+                analyticsTracker.track(WATCH_STATS_DATA_SUCCEEDED)
                 val statsData = request.data
                 _viewState.update {
                     it.copy(
