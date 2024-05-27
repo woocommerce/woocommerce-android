@@ -290,8 +290,7 @@ private fun MoreMenuSection(section: MoreMenuItemSection) {
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        Column(
-        ) {
+        Column {
             section.items.forEach { item ->
                 MoreMenuButton(item)
                 Spacer(modifier = Modifier.height(8.dp))
