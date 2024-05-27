@@ -5,12 +5,19 @@ import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 
-data class MenuUiButton(
+data class MoreMenuItemSection(
+    @StringRes val title: Int?,
+    val items: List<MoreMenuItemButton>,
+    val isVisible: Boolean = true,
+)
+
+data class MoreMenuItemButton(
     @StringRes val title: Int,
     @StringRes val description: Int,
     @DrawableRes val icon: Int,
+    @DrawableRes val extraIcon: Int? = null,
+    val isVisible: Boolean = true,
     val badgeState: BadgeState? = null,
-    val isEnabled: Boolean = true,
     val onClick: () -> Unit = {},
 )
 
