@@ -183,7 +183,10 @@ fun OrderProductsList(
         else -> products.forEach { product ->
             Box(
                 modifier = modifier
-                    .padding(12.dp)
+                    .padding(
+                        vertical = 4.dp,
+                        horizontal = 12.dp
+                    )
                     .fillMaxWidth()
             ) {
                 Row(modifier = modifier.fillMaxWidth()) {
