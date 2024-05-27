@@ -163,6 +163,7 @@
         <activity
             android:name="com.woocommerce.android.ui.woopos.root.WooPosActivity"
             android:exported="false" />
+        <activity android:name="com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity" />
 
         <!-- Stats today app widget -->
         <meta-data
