@@ -54,7 +54,7 @@ fun ChangeDueCalculatorScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    var isChecked by remember { mutableStateOf(false) }
+    var recordTransactionDetailsChecked by remember { mutableStateOf(false) }
 
     WooThemeWithBackground {
         Scaffold(
@@ -151,8 +151,8 @@ fun ChangeDueCalculatorScreen(
                             modifier = Modifier
                                 .padding(top = 16.dp, bottom = 16.dp, start = 16.dp)
                                 .fillMaxWidth(),
-                            checked = isChecked,
-                            onCheckedChange = { checked -> isChecked = checked }
+                            checked = recordTransactionDetailsChecked,
+                            onCheckedChange = { checked -> recordTransactionDetailsChecked = checked }
                         )
 
                         MarkOrderAsCompleteButton(
