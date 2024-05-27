@@ -44,6 +44,10 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
 import java.math.BigDecimal
+import java.text.DecimalFormatSymbols
+import java.util.Locale
+
+const val DEFAULT_DECIMALS_NUMBER = 2
 
 @Composable
 fun ChangeDueCalculatorScreen(
@@ -59,8 +63,8 @@ fun ChangeDueCalculatorScreen(
     )
 
     val discountInputFieldConfig = DiscountInputFieldConfig(
-        decimalSeparator = ".",
-        numberOfDecimals = 2
+        decimalSeparator = DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString(),
+        numberOfDecimals = DEFAULT_DECIMALS_NUMBER
     )
 
     WooThemeWithBackground {
@@ -95,7 +99,6 @@ fun ChangeDueCalculatorScreen(
                     )
 
                     is ChangeDueCalculatorViewModel.UiState.Success -> {
-                        val hintString = stringResource(R.string.cash_payments_cash_received)
                         val view: WCMaterialOutlinedCurrencyEditTextView? by remember { mutableStateOf(null) }
 
                         LaunchedEffect(view) {
@@ -119,7 +122,7 @@ fun ChangeDueCalculatorScreen(
                                     .fillMaxWidth()
                                     .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
                                 value = uiState.amountDue,
-                                label = hintString,
+                                label = stringResource(R.string.cash_payments_cash_received),
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                                 valueMapper = NullableCurrencyTextFieldValueMapper.create(
