@@ -58,7 +58,7 @@ fun ChangeDueCalculatorScreen(
         val numberOfDecimals: Int,
     )
 
-    val discountInputFieldConfig = com.woocommerce.android.ui.orders.creation.product.discount.DiscountInputFieldConfig(
+    val discountInputFieldConfig = DiscountInputFieldConfig (
         decimalSeparator = ".",
         numberOfDecimals = 2
     )
