@@ -97,7 +97,7 @@ fun ChangeDueCalculatorScreen(
 
                     is ChangeDueCalculatorViewModel.UiState.Success -> {
                         val hintString = stringResource(R.string.cash_payments_cash_received)
-                        var view: WCMaterialOutlinedCurrencyEditTextView? by remember { mutableStateOf(null) }
+                        val view: WCMaterialOutlinedCurrencyEditTextView? by remember { mutableStateOf(null) }
 
                         LaunchedEffect(view) {
                             view?.let {
@@ -117,8 +117,8 @@ fun ChangeDueCalculatorScreen(
                             WCOutlinedTypedTextField(
 
                                 modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
                                 value = uiState.amountDue,
                                 label = hintString,
                                 singleLine = true,
