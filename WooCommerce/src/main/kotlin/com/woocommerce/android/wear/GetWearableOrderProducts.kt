@@ -15,7 +15,7 @@ class GetWearableOrderProducts @Inject constructor(
             .fetchOrderById(orderId)?.items
             ?: return emptyList()
 
-        return orderDetailRepository.fetchOrderRefunds(orderId)
+        return orderDetailRepository.getOrderRefunds(orderId)
             .getNonRefundedProducts(orderItems)
             .map {
                 WearOrderedProduct(
