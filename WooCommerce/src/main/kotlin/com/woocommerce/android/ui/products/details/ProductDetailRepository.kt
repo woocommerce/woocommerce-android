@@ -295,8 +295,16 @@ class ProductDetailRepository @Inject constructor(
         productStore.getShippingClassByRemoteId(selectedSite.get(), remoteShippingClassId)?.toAppModel()
 
     fun getQuantityRules(remoteProductId: Long): QuantityRules? {
-        return getCachedWCProductModel(remoteProductId)?.metadata
-            ?.let { quantityRulesMapper.toAppModelFromProductMetadata(it) }
+        val product = getCachedWCProductModel(remoteProductId)
+        return product?.let {
+            QuantityRules(if (product.minAllowedQuantity > 0) product.minAllowedQuantity else null,
+                if (product.maxAllowedQuantity > 0) product.maxAllowedQuantity else null,
+                if (product.groupOfQuantity > 0) product.groupOfQuantity else null)
+        }
+
+        //return QuantityRules()
+        //return getCachedWCProductModel(remoteProductId)?.metadata
+        //    ?.let { quantityRulesMapper.toAppModelFromProductMetadata(it) }
     }
 
     fun getProductMetadata(remoteProductId: Long): Map<String, Any>? {
