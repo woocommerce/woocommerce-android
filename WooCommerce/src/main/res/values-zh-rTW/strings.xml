@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 15:54:04+0000
+Translation-Revision-Date: 2024-05-21 13:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">指向 POS 模式的臨時入口</string>
+    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="cash_payments_take_payment_title">收取款項 (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">檢視所有評論</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">沒有符合所選篩選條件的評論，請嘗試變更篩選條件</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">找不到評論</string>
+    <string name="dashboard_reviews_card_header_title">狀態</string>
+    <string name="my_store_widget_reviews_title">最近評論</string>
+    <string name="my_store_widget_orders_title">最近訂單</string>
+    <string name="dashboard_action_view_all_orders">檢視所有訂單</string>
+    <string name="dashboard_filter_menu_content_description">開啟篩選條件的下拉選單</string>
     <string name="product_category_clear_parent">清除上層分類</string>
     <string name="product_list_fetch_error">擷取商品時發生錯誤！</string>
     <string name="order_creation_add_shipping_method_select_hint">選取運送方式</string>

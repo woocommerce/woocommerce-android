@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-20 10:54:04+0000
+Translation-Revision-Date: 2024-05-21 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
@@ -16,7 +16,7 @@ Language: it
     <string name="my_store_widget_reviews_title">Recensioni più recenti</string>
     <string name="my_store_widget_orders_title">Ordini più recenti</string>
     <string name="dashboard_action_view_all_orders">Visualizza tutti gli ordini</string>
-    <string name="dashboard_filter_menu_content_description">Open filter dropdown</string>
+    <string name="dashboard_filter_menu_content_description">Apri menu a discesa del filtro</string>
     <string name="product_category_clear_parent">Cancella la categoria genitore</string>
     <string name="product_list_fetch_error">Errore durante il recupero dei prodotti.</string>
     <string name="order_creation_add_shipping_method_select_hint">Seleziona un metodo di spedizione</string>

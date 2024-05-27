@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.methodselection
+package com.woocommerce.android.ui.payments.changeduecalculator
 
 import android.os.Bundle
 import android.view.LayoutInflater
