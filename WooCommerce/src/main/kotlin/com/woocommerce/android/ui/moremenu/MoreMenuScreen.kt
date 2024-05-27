@@ -90,6 +90,8 @@ fun MoreMenuScreen(
 
         MoreMenuHeader(onSwitchStore, state)
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         state.menuSections.forEach { section -> MoreMenuSection(section) }
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -277,25 +279,22 @@ private fun MoreMenuSection(section: MoreMenuItemSection) {
         modifier = Modifier
             .padding(horizontal = 16.dp)
     ) {
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         section.title?.let { title ->
             Text(
-                text = stringResource(id = title).uppercase(),
-                style = MaterialTheme.typography.subtitle2,
+                text = stringResource(id = title),
+                style = MaterialTheme.typography.subtitle1,
                 color = colorResource(id = R.color.color_surface_variant),
-                modifier = Modifier.padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
         Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(color = colorResource(id = R.color.more_menu_button_background)),
         ) {
             section.items.forEach { item ->
                 MoreMenuButton(item)
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -309,7 +308,7 @@ private fun MoreMenuButton(button: MoreMenuItemButton) {
         colors = ButtonDefaults.buttonColors(
             backgroundColor = colorResource(id = R.color.more_menu_button_background),
         ),
-        elevation = null,
+        shape = RoundedCornerShape(dimensionResource(id = R.dimen.major_75)),
     ) {
         Box(Modifier.fillMaxSize()) {
             MoreMenuBadge(badgeState = button.badgeState)

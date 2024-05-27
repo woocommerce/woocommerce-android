@@ -70,11 +70,11 @@ class MoreMenuViewModel @Inject constructor(
             MoreMenuViewState(
                 menuSections = listOf(
                     generatePOSSection(),
+                    generateSettingsMenuButtons(),
                     generateGeneralSection(
                         unseenReviewsCount = count,
                         paymentsFeatureWasClicked = paymentsFeatureWasClicked,
-                    ),
-                    generateSettingsMenuButtons()
+                    )
                 ).map { section ->
                     section.copy(
                         items = section.items.filter { it.isVisible }
