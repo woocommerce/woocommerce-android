@@ -470,22 +470,13 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             assertThat(states.last().menuSections[0].title).isNull()
             val itemsFirstSection = states.last().menuSections[0].items
             assertThat(itemsFirstSection.count()).isEqualTo(1)
-            itemsFirstSection.forEachIndexed { index, moreMenuItemButton ->
-                assertThat(moreMenuItemButton.withDivider == (itemsFirstSection.size != index))
-            }
 
-            assertThat(states.last().menuSections[1].title).isEqualTo(R.string.more_menu_general_section_title)
-            val itemsSecondSection = states.last().menuSections[1].items
-            assertThat(itemsSecondSection.count()).isEqualTo(7)
-            itemsSecondSection.forEachIndexed { index, moreMenuItemButton ->
-                assertThat(moreMenuItemButton.withDivider == (itemsSecondSection.size != index))
-            }
-
-            assertThat(states.last().menuSections[2].title).isEqualTo(R.string.more_menu_settings_section_title)
-            val itemsThirdSection = states.last().menuSections[2].items
+            assertThat(states.last().menuSections[1].title).isEqualTo(R.string.more_menu_settings_section_title)
+            val itemsThirdSection = states.last().menuSections[1].items
             assertThat(itemsThirdSection.count()).isEqualTo(2)
-            itemsThirdSection.forEachIndexed { index, moreMenuItemButton ->
-                assertThat(moreMenuItemButton.withDivider == (itemsSecondSection.size != index))
-            }
+
+            assertThat(states.last().menuSections[2].title).isEqualTo(R.string.more_menu_general_section_title)
+            val itemsSecondSection = states.last().menuSections[2].items
+            assertThat(itemsSecondSection.count()).isEqualTo(7)
         }
 }
