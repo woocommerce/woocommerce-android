@@ -33,7 +33,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -363,13 +362,6 @@ private fun MoreMenuButton(button: MoreMenuItemButton) {
             }
         }
     }
-
-    if (button.withDivider) {
-        Divider(
-            color = colorResource(id = R.color.divider_color),
-            modifier = Modifier.padding(start = 68.dp)
-        )
-    }
 }
 
 @Composable
@@ -429,7 +421,6 @@ private fun MoreMenuPreview() {
                             description = R.string.more_menu_button_woo_pos_description,
                             icon = R.drawable.ic_more_menu_pos,
                             extraIcon = R.drawable.ic_more_menu_pos_extra,
-                            withDivider = false,
                         ),
                     ),
                 ),
@@ -445,7 +436,6 @@ private fun MoreMenuPreview() {
                             title = R.string.more_menu_button_subscriptions,
                             description = R.string.more_menu_button_subscriptions_description,
                             icon = R.drawable.ic_more_menu_upgrades,
-                            withDivider = false
                         ),
                     ),
                 ),
@@ -492,7 +482,6 @@ private fun MoreMenuPreview() {
                             title = R.string.more_menu_button_coupons,
                             description = R.string.more_menu_button_coupons_description,
                             icon = R.drawable.ic_more_menu_coupons,
-                            withDivider = false
                         ),
                     ),
                 )

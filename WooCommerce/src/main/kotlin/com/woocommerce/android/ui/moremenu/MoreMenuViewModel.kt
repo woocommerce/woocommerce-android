@@ -103,7 +103,6 @@ class MoreMenuViewModel @Inject constructor(
                     icon = R.drawable.ic_more_menu_pos,
                     extraIcon = R.drawable.ic_more_menu_pos_extra,
                     isVisible = isWooPosEnabled(),
-                    withDivider = false,
                     onClick = {
                         triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
                     }
@@ -163,7 +162,6 @@ class MoreMenuViewModel @Inject constructor(
                 description = R.string.more_menu_button_inbox_description,
                 icon = R.drawable.ic_more_menu_inbox,
                 isVisible = moreMenuRepository.isInboxEnabled(),
-                withDivider = false,
                 onClick = ::onInboxButtonClick,
             )
         )
@@ -183,7 +181,6 @@ class MoreMenuViewModel @Inject constructor(
                 description = R.string.more_menu_button_subscriptions_description,
                 icon = R.drawable.ic_more_menu_upgrades,
                 isVisible = moreMenuRepository.isUpgradesEnabled(),
-                withDivider = false,
                 onClick = ::onUpgradesButtonClick
             )
         )
