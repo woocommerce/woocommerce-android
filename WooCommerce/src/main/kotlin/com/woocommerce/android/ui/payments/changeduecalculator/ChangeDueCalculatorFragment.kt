@@ -36,7 +36,8 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                 val uiState by viewModel.uiState.collectAsState()
                 ChangeDueCalculatorScreen(
                     uiState = uiState,
-                    onNavigateUp = { viewModel.onBackPressed() }
+                    onNavigateUp = { viewModel.onBackPressed() },
+                    onCompleteOrderClick = {}
                 )
             }
         }

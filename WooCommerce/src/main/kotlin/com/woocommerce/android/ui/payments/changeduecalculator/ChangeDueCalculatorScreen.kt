@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
@@ -20,8 +22,14 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,8 +46,11 @@ import java.math.BigDecimal
 @Composable
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
+    onCompleteOrderClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
     WooThemeWithBackground {
         Scaffold(
             topBar = {
@@ -73,6 +84,17 @@ fun ChangeDueCalculatorScreen(
 
                     is ChangeDueCalculatorViewModel.UiState.Success -> {
                         val hintString = stringResource(R.string.cash_payments_cash_received)
+                        var view: WCMaterialOutlinedCurrencyEditTextView? by remember { mutableStateOf(null) }
+
+                        LaunchedEffect(view) {
+                            view?.let {
+                                it.requestFocus()
+                                context.getSystemService(
+                                    InputMethodManager::class.java
+                                ).showSoftInput(it, InputMethodManager.SHOW_IMPLICIT)
+                            }
+                        }
+
                         AndroidView(
                             factory = { ctx ->
                                 WCMaterialOutlinedCurrencyEditTextView(ctx).apply {
@@ -87,6 +109,7 @@ fun ChangeDueCalculatorScreen(
                                     supportsNegativeValues = false
                                     hint = hintString
                                     setValueIfDifferent(uiState.amountDue)
+                                    view = this
                                 }
                             },
                             modifier = Modifier
@@ -121,6 +144,11 @@ fun ChangeDueCalculatorScreen(
                                 .padding(top = 16.dp, bottom = 16.dp, start = 16.dp)
                                 .fillMaxWidth()
                         )
+
+                        MarkOrderAsCompleteButton(
+                            onClick = onCompleteOrderClick,
+                            modifier = Modifier.padding(top = 16.dp)
+                        )
                     }
 
                     is ChangeDueCalculatorViewModel.UiState.Error -> {
@@ -137,9 +165,9 @@ fun ChangeDueCalculatorScreen(
 
 @Composable
 fun RecordTransactionDetailsNote(
+    modifier: Modifier = Modifier,
     checked: Boolean = false,
     onCheckedChange: (Boolean) -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -156,6 +184,18 @@ fun RecordTransactionDetailsNote(
             checked = checked,
             onCheckedChange = onCheckedChange
         )
+    }
+}
+
+@Composable
+fun MarkOrderAsCompleteButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, top = 8.dp, end = 16.dp)
+    ) {
+        Text(text = stringResource(R.string.cash_payments_mark_order_as_complete))
     }
 }
 
@@ -179,6 +219,7 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00")
         ),
-        onNavigateUp = {}
+        onNavigateUp = {},
+        onCompleteOrderClick = {}
     )
 }
