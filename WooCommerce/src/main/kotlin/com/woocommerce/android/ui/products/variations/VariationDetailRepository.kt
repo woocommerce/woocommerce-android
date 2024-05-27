@@ -97,8 +97,12 @@ class VariationDetailRepository @Inject constructor(
 
     suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
         return withContext(coroutineDispatchers.io) {
-            getCachedWCVariation(remoteProductId, remoteVariationId)?.metadata
-                ?.let { quantityRulesMapper.toAppModelFromVariationMetadata(it) }
+            val variation = getCachedWCVariation(remoteProductId, remoteVariationId)
+            variation?.let {
+                QuantityRules(if (variation.minAllowedQuantity > 0) variation.minAllowedQuantity else null,
+                    if (variation.maxAllowedQuantity > 0) variation.maxAllowedQuantity else null,
+                    if (variation.groupOfQuantity > 0) variation.groupOfQuantity else null)
+            }
         }
     }
 
