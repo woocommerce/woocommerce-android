@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = DashboardProductStockViewModel.Factory::class)
 class DashboardProductStockViewModel @AssistedInject constructor(
