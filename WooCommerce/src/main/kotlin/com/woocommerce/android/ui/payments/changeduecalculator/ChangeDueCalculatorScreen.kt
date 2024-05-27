@@ -38,16 +38,12 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
 import java.math.BigDecimal
-import java.text.DecimalFormatSymbols
-import java.util.Locale
-
-const val DEFAULT_DECIMALS_NUMBER = 2
 
 @Composable
 fun ChangeDueCalculatorScreen(
@@ -56,16 +52,6 @@ fun ChangeDueCalculatorScreen(
     onCompleteOrderClick: () -> Unit
 ) {
     val context = LocalContext.current
-
-    data class DiscountInputFieldConfig(
-        val decimalSeparator: String,
-        val numberOfDecimals: Int,
-    )
-
-    val discountInputFieldConfig = DiscountInputFieldConfig(
-        decimalSeparator = DecimalFormatSymbols(Locale.getDefault()).decimalSeparator.toString(),
-        numberOfDecimals = DEFAULT_DECIMALS_NUMBER
-    )
 
     WooThemeWithBackground {
         Scaffold(
@@ -125,10 +111,8 @@ fun ChangeDueCalculatorScreen(
                                 label = stringResource(R.string.cash_payments_cash_received),
                                 singleLine = true,
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                                valueMapper = NullableCurrencyTextFieldValueMapper.create(
-                                    discountInputFieldConfig.decimalSeparator,
-                                    discountInputFieldConfig.numberOfDecimals
-                                ),
+                                valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = false),
+
                                 onValueChange = {}
                             )
                         }
