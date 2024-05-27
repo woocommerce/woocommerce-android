@@ -12,6 +12,7 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -56,6 +57,10 @@ class DashboardRepository @Inject constructor(
         onboardingWidgetStatus
     ) { widgets, siteOrdersState, blazeWidgetStatus, onboardingWidgetStatus ->
         widgets.toDomainModel(siteOrdersState, blazeWidgetStatus, onboardingWidgetStatus)
+    }
+
+    val hasNewWidgets = dashboardDataStore.widgets.map { widgets ->
+        widgets.size != DashboardWidget.Type.supportedWidgets.size
     }
 
     suspend fun updateWidgets(widgets: List<DashboardWidget>) = dashboardDataStore.updateDashboard(
