@@ -44,7 +44,17 @@ class DashboardWidgetEditorViewModel @Inject constructor(
         get() = viewState.value?.isSaveButtonEnabled == true
 
     init {
+        addNewWidgetsToTheConfig()
         loadWidgets()
+    }
+
+    /**
+     * Add new widgets to the config to make sure the flag of new widgets is disabled when the user opens the editor.
+     */
+    private fun addNewWidgetsToTheConfig() {
+        viewModelScope.launch {
+            dashboardRepository.addNewWidgetsToTheConfig()
+        }
     }
 
     private fun loadWidgets() {

@@ -81,6 +81,20 @@ class DashboardRepository @Inject constructor(
         updateWidgets(dataStoreWidgets)
     }
 
+    suspend fun addNewWidgetsToTheConfig() {
+        val widgets = widgets.first()
+        val newWidgets = DashboardWidget.Type.supportedWidgets
+            .filter { widgetType -> widgets.none { it.type == widgetType } }
+            .map { widgetType ->
+                DashboardWidget(
+                    type = widgetType,
+                    isSelected = false,
+                    status = DashboardWidget.Status.Available
+                )
+            }
+        updateWidgets(widgets + newWidgets)
+    }
+
     private fun List<DashboardWidgetDataModel>.toDomainModel(
         siteOrdersState: DashboardWidget.Status,
         blazeWidgetStatus: DashboardWidget.Status,
