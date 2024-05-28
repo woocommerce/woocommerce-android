@@ -55,7 +55,7 @@ fun ChangeDueCalculatorScreen(
 ) {
     val context = LocalContext.current
 
-    WooThemeWithBackground {
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -165,7 +165,7 @@ fun ChangeDueCalculatorScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
-    }
+
 }
 
 @Composable
