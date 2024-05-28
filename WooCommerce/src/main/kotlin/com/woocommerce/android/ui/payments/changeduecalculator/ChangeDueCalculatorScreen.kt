@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
-import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -43,7 +43,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
-import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
 import java.math.BigDecimal
 
 @Composable
@@ -53,8 +52,6 @@ fun ChangeDueCalculatorScreen(
     onCompleteOrderClick: () -> Unit,
     onAmountReceivedChanged: (BigDecimal) -> Unit
 ) {
-    val context = LocalContext.current
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -87,15 +84,11 @@ fun ChangeDueCalculatorScreen(
                 )
 
                 is ChangeDueCalculatorViewModel.UiState.Success -> {
-                    val view: WCMaterialOutlinedCurrencyEditTextView? by remember { mutableStateOf(null) }
 
-                    LaunchedEffect(view) {
-                        view?.let {
-                            it.requestFocus()
-                            context.getSystemService(
-                                InputMethodManager::class.java
-                            ).showSoftInput(it, InputMethodManager.SHOW_IMPLICIT)
-                        }
+                    var inputText by remember { mutableStateOf(uiState.amountReceived) }
+
+                    LaunchedEffect(uiState.amountReceived) {
+                        inputText = uiState.amountReceived
                     }
 
                     Row(
@@ -105,23 +98,25 @@ fun ChangeDueCalculatorScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         WCOutlinedTypedTextField(
-
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
-                            value = uiState.amountDue,
+                            value = inputText,
                             label = stringResource(R.string.cash_payments_cash_received),
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                            valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = false),
-                            onValueChange = onAmountReceivedChanged
+                            valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
+                            onValueChange = {
+                                inputText = it
+                                onAmountReceivedChanged(android.icu.math.BigDecimal(it).toBigDecimal())
+                            }
                         )
                     }
 
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 48.dp, bottom = 16.dp, start = 32.dp),
+                            .padding(top = 48.dp, bottom = 16.dp, start = 32.dp)
                     ) {
                         Text(
                             text = stringResource(R.string.cash_payments_change_due),
@@ -159,7 +154,6 @@ fun ChangeDueCalculatorScreen(
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
@@ -208,7 +202,6 @@ private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String 
             R.string.cash_payments_take_payment_title,
             uiState.amountDue
         )
-
         else -> stringResource(id = R.string.cash_payments_take_payment_title)
     }
 }
