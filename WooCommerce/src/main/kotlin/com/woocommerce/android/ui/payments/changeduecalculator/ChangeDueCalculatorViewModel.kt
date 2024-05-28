@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,7 +57,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     }
 
     fun onBackPressed() {
-        _navigationEvent.value = Unit
+        triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
     fun updateAmountReceived(amount: BigDecimal) {

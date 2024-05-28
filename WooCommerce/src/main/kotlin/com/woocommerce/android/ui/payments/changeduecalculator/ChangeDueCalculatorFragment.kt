@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,10 +25,14 @@ class ChangeDueCalculatorFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.navigationEvent.observe(
-            this
-        ) {
-            findNavController().navigateUp()
+        viewLifecycleOwnerLiveData.observe(this) { viewLifecycleOwner ->
+            viewLifecycleOwner?.let { lifecycleOwner ->
+                viewModel.event.observe(lifecycleOwner) { event ->
+                    when (event) {
+                        is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                    }
+                }
+            }
         }
     }
 
@@ -41,7 +46,9 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                 val uiState by viewModel.uiState.collectAsState()
                 ChangeDueCalculatorScreen(
                     uiState = uiState,
-                    onNavigateUp = { viewModel.onBackPressed() },
+                    onNavigateUp = {
+                        findNavController().navigateUp()
+                    },
                     onCompleteOrderClick = {
                         val action = ChangeDueCalculatorFragmentDirections
                             .actionChangeDueCalculatorFragmentToSelectPaymentMethodFragment(
