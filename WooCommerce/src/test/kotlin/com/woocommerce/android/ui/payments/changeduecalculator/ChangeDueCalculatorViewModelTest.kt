@@ -50,7 +50,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when updateAmountReceived is called, then amountReceived and change are updated`() = runTest {
-
         // Given
         whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
         viewModel = ChangeDueCalculatorViewModel(
