@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.payments.changeduecalculator
 
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -173,12 +174,15 @@ fun RecordTransactionDetailsNote(
     onCheckedChange: (Boolean) -> Unit = {},
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+            .padding(all = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = stringResource(R.string.cash_payments_record_transaction_details),
-            modifier = Modifier.align(Alignment.CenterVertically),
             style = LocalTextStyle.current.copy(
                 fontSize = TextUnit(16f, TextUnitType.Sp)
             )
