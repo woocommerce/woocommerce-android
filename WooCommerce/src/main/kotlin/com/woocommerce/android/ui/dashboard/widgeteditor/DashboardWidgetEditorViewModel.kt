@@ -44,29 +44,25 @@ class DashboardWidgetEditorViewModel @Inject constructor(
         get() = viewState.value?.isSaveButtonEnabled == true
 
     init {
-        addNewWidgetsToTheConfig()
-        loadWidgets()
+        viewModelScope.launch {
+            addNewWidgetsToTheConfig()
+            loadWidgets()
+        }
     }
 
     /**
      * Add new widgets to the config to make sure the flag of new widgets is disabled when the user opens the editor.
      */
-    private fun addNewWidgetsToTheConfig() {
-        viewModelScope.launch {
-            dashboardRepository.addNewWidgetsToTheConfig()
-        }
-    }
+    private suspend fun addNewWidgetsToTheConfig() = dashboardRepository.addNewWidgetsToTheConfig()
 
-    private fun loadWidgets() {
-        viewModelScope.launch {
-            dashboardRepository.widgets.collectIndexed { index, storedWidgets ->
-                editedWidgets = if (index == 0) {
-                    storedWidgets
-                } else {
-                    editedWidgets.map { dashboardWidget ->
-                        val storedWidget = storedWidgets.first { it.type == dashboardWidget.type }
-                        dashboardWidget.copy(status = storedWidget.status)
-                    }
+    private suspend fun loadWidgets() {
+        dashboardRepository.widgets.collectIndexed { index, storedWidgets ->
+            editedWidgets = if (index == 0) {
+                storedWidgets
+            } else {
+                editedWidgets.map { dashboardWidget ->
+                    val storedWidget = storedWidgets.first { it.type == dashboardWidget.type }
+                    dashboardWidget.copy(status = storedWidget.status)
                 }
             }
         }
