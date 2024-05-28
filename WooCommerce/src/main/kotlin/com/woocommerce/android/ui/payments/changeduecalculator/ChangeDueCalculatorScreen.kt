@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
 import java.math.BigDecimal
@@ -47,9 +49,11 @@ import java.math.BigDecimal
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
     onNavigateUp: () -> Unit,
-    onCompleteOrderClick: () -> Unit
+    onCompleteOrderClick: () -> Unit,
+    onAmountReceivedChanged: (BigDecimal) -> Unit
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     WooThemeWithBackground {
         Scaffold(
@@ -109,6 +113,9 @@ fun ChangeDueCalculatorScreen(
                                     supportsNegativeValues = false
                                     hint = hintString
                                     setValueIfDifferent(uiState.amountDue)
+                                    value.filterNotNull().observe(lifecycleOwner) {
+                                        onAmountReceivedChanged(it)
+                                    }
                                     view = this
                                 }
                             },
@@ -130,7 +137,7 @@ fun ChangeDueCalculatorScreen(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "$0.00",
+                                text = if (uiState.change < BigDecimal.ZERO) "-" else uiState.change.toPlainString(),
                                 style = LocalTextStyle.current.copy(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = TextUnit(44f, TextUnitType.Sp)
@@ -217,9 +224,11 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
     ChangeDueCalculatorScreen(
         uiState = ChangeDueCalculatorViewModel.UiState.Success(
             amountDue = BigDecimal("666.00"),
-            change = BigDecimal("0.00")
+            change = BigDecimal("0.00"),
+            amountReceived = BigDecimal("0.00")
         ),
         onNavigateUp = {},
-        onCompleteOrderClick = {}
+        onCompleteOrderClick = {},
+        onAmountReceivedChanged = {}
     )
 }
