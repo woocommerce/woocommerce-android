@@ -25,6 +25,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.PackageUtils
@@ -99,9 +100,10 @@ class DashboardViewModel @Inject constructor(
 
     val dashboardWidgets = combine(
         dashboardRepository.widgets,
+        dashboardRepository.hasNewWidgets,
         feedbackPrefs.userFeedbackIsDueObservable
-    ) { widgets, userFeedbackIsDue ->
-        mapWidgetsToUiModels(widgets, userFeedbackIsDue)
+    ) { configurableWidgets, hasNewWidgets, userFeedbackIsDue ->
+        mapWidgetsToUiModels(configurableWidgets, hasNewWidgets, userFeedbackIsDue)
     }.asLiveData()
 
     val hasNewWidgets = dashboardRepository.hasNewWidgets.asLiveData()
@@ -184,6 +186,7 @@ class DashboardViewModel @Inject constructor(
 
     private fun mapWidgetsToUiModels(
         widgets: List<DashboardWidget>,
+        hasNewWidgets: Boolean,
         userFeedbackIsDue: Boolean
     ): List<DashboardWidgetUiModel> = buildList {
         addAll(
@@ -224,6 +227,15 @@ class DashboardViewModel @Inject constructor(
                     )
                     feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
                     triggerEvent(DashboardEvent.FeedbackNegativeAction)
+                }
+            )
+        )
+
+        add(
+            NewWidgetsCard(
+                isVisible = hasNewWidgets,
+                onShowCardsClick = {
+                    triggerEvent(OpenEditWidgets)
                 }
             )
         )
@@ -277,6 +289,11 @@ class DashboardViewModel @Inject constructor(
             val onShown: () -> Unit,
             val onPositiveClick: () -> Unit,
             val onNegativeClick: () -> Unit
+        ) : DashboardWidgetUiModel
+
+        data class NewWidgetsCard(
+            override val isVisible: Boolean,
+            val onShowCardsClick: () -> Unit
         ) : DashboardWidgetUiModel
     }
 
