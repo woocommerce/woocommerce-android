@@ -47,7 +47,7 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                 ChangeDueCalculatorScreen(
                     uiState = uiState,
                     onNavigateUp = {
-                        findNavController().navigateUp()
+                        viewModel.onBackPressed()
                     },
                     onCompleteOrderClick = {
                         val action = ChangeDueCalculatorFragmentDirections

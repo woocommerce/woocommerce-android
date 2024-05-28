@@ -37,9 +37,6 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
 
-    private val _navigationEvent = MutableLiveData<Unit>()
-    val navigationEvent: LiveData<Unit> = _navigationEvent
-
     init {
         loadOrderDetails()
     }
