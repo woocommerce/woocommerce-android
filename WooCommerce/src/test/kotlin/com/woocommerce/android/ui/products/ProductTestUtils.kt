@@ -26,6 +26,7 @@ object ProductTestUtils {
         productName: String = "product $productId",
         imageUrl: String? = null,
         isStockManaged: Boolean = false,
+        productCombinesVariationQuantities: Boolean = false,
     ): Product {
         return WCProductModel(2).apply {
             dateCreated = "2018-01-05T05:14:30Z"
@@ -74,6 +75,7 @@ object ProductTestUtils {
             stockQuantity = 4.2
             purchasable = isPurchasable
             manageStock = isStockManaged
+            combineVariationQuantities = productCombinesVariationQuantities
         }.toAppModel()
     }
 

@@ -1,7 +1,11 @@
 package com.woocommerce.android.ui.products.variations
 
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.ProductTestUtils.generateProduct
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import com.woocommerce.android.ui.products.generateVariation
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -78,12 +82,12 @@ class GetProductVariationQuantityRulesTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when min max extension active and allow combinations is enabled then return null`() =
+    fun `when min max extension is active and parent product combines variation quantities then return null`() =
         testBlocking {
             val productId = 1L
             val variationId = 1L
             val plugin = SitePluginModel().apply { setIsActive(true) }
-            val metadata: Map<String, Any> = mapOf(WCProductModel.QuantityRulesMetadataKeys.ALLOW_COMBINATION to "yes")
+            val product = ProductTestUtils.generateProduct(productCombinesVariationQuantities = true)
             whenever(
                 wooCommerceStore.getSitePlugin(
                     any(),
@@ -91,7 +95,7 @@ class GetProductVariationQuantityRulesTest : BaseUnitTest() {
                 )
             )
                 .doReturn(plugin)
-            whenever(productDetailRepository.getProductMetadata(productId)).doReturn(metadata)
+            whenever(productDetailRepository.getProduct(productId)).doReturn(product)
 
             val result = sut.invoke(productId, variationId)
 
@@ -99,13 +103,13 @@ class GetProductVariationQuantityRulesTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when min max extension is active and allow combinations is disabled then get quantity rules`() =
+    fun `when min max extension is active and parent product combines variation quantities but variation does not override parent product rules then return quantity rules`() =
         testBlocking {
             val productId = 1L
             val variationId = 1L
             val plugin = SitePluginModel().apply { setIsActive(true) }
-            val metadata: Map<String, Any> = mapOf(WCProductModel.QuantityRulesMetadataKeys.ALLOW_COMBINATION to "no")
-            val quantityRules = QuantityRules(2, 20, 2)
+            val product = ProductTestUtils.generateProduct(productCombinesVariationQuantities = false)
+            val variation = generateVariation().copy(overrideProductQuantities = false)
             whenever(
                 wooCommerceStore.getSitePlugin(
                     any(),
@@ -113,21 +117,22 @@ class GetProductVariationQuantityRulesTest : BaseUnitTest() {
                 )
             )
                 .doReturn(plugin)
-            whenever(variationDetailRepository.getQuantityRules(productId, variationId)).doReturn(quantityRules)
-            whenever(productDetailRepository.getProductMetadata(productId)).doReturn(metadata)
+            whenever(productDetailRepository.getProduct(productId)).doReturn(product)
+            whenever(variationDetailRepository.getVariation(productId, variationId)).doReturn(variation)
 
             val result = sut.invoke(productId, variationId)
 
-            Assertions.assertThat(result).isEqualTo(quantityRules)
+            Assertions.assertThat(result).isNull()
         }
 
     @Test
-    fun `when min max extension is active and allow combinations is not in metadata then get quantity rules`() =
+    fun `when min max extension is active and parent product combines variation quantities and variation overrides parent product rules then return quantity rules`() =
         testBlocking {
             val productId = 1L
             val variationId = 1L
             val plugin = SitePluginModel().apply { setIsActive(true) }
-            val metadata: Map<String, Any> = mapOf(WCProductModel.QuantityRulesMetadataKeys.ALLOW_COMBINATION to "no")
+            val product = ProductTestUtils.generateProduct(productCombinesVariationQuantities = false)
+            val variation = generateVariation().copy(overrideProductQuantities = true)
             val quantityRules = QuantityRules(2, 20, 2)
             whenever(
                 wooCommerceStore.getSitePlugin(
@@ -137,7 +142,8 @@ class GetProductVariationQuantityRulesTest : BaseUnitTest() {
             )
                 .doReturn(plugin)
             whenever(variationDetailRepository.getQuantityRules(productId, variationId)).doReturn(quantityRules)
-            whenever(productDetailRepository.getProductMetadata(productId)).doReturn(metadata)
+            whenever(productDetailRepository.getProduct(productId)).doReturn(product)
+            whenever(variationDetailRepository.getVariation(productId, variationId)).doReturn(variation)
 
             val result = sut.invoke(productId, variationId)
 
