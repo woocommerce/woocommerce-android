@@ -33,6 +33,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -176,7 +177,7 @@ fun FieldSelectValue(
     modifier: Modifier = Modifier
 ) {
     val display = text ?: hint.orEmpty()
-    val alpha = if (text == null) 0.6f else 1f
+    val alpha = if (text == null) 0.38f else 1f
     Box(
         modifier = modifier
             .padding(8.dp)
@@ -186,7 +187,8 @@ fun FieldSelectValue(
     ) {
         Text(
             text = display,
-            fontSize = 24.sp,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .alpha(alpha)
@@ -214,7 +216,8 @@ fun FieldEditValue(
         value = text,
         onValueChange = onValueChange,
         textStyle = TextStyle(
-            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            fontSize = 28.sp,
             color = MaterialTheme.colors.onSurface
         ),
         cursorBrush = SolidColor(colors.cursorColor(false).value),
@@ -228,7 +231,9 @@ fun FieldEditValue(
                 placeholder = @Composable {
                     Text(
                         text = stringResource(id = R.string.order_creation_add_shipping_name_hint),
-                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = .38f)
                     )
                 },
                 enabled = true,
