@@ -157,7 +157,7 @@ private fun OrderAddressSection(
     order: OrderItem,
     modifier: Modifier
 ) {
-    Spacer(modifier = modifier.padding(10.dp))
+    Spacer(modifier = modifier.padding(20.dp))
     Text(
         text = stringResource(id = R.string.order_details_order_address),
         textAlign = TextAlign.Center,
@@ -190,7 +190,7 @@ private fun OrderAddressSection(
             )
         }
         order.address.addressFirstRow.takeIf { it.isNotEmpty() }?.let {
-            Spacer(modifier = modifier.padding(4.dp))
+            Spacer(modifier = modifier.padding(10.dp))
             Text(
                 text = it,
                 style = WooTypography.body1,
@@ -238,7 +238,7 @@ private fun OrderProductsSection(
     order: OrderItem,
     modifier: Modifier
 ) {
-    Spacer(modifier = modifier.padding(10.dp))
+    Spacer(modifier = modifier.padding(20.dp))
     if (isLoadingProducts) {
         Column(
             modifier = modifier.fillMaxWidth(),
@@ -246,7 +246,7 @@ private fun OrderProductsSection(
         ) {
             Text(
                 text = stringResource(id = R.string.order_details_loading_order_products),
-                style = WooTypography.caption1,
+                style = WooTypography.body1,
                 color = WooColors.woo_gray_alpha,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -278,6 +278,7 @@ fun OrderProductsList(
                 color = WooColors.woo_gray_alpha,
                 modifier = modifier.fillMaxWidth()
             )
+            Spacer(modifier = modifier.padding(4.dp))
         }
     when {
         products == null -> Text(
