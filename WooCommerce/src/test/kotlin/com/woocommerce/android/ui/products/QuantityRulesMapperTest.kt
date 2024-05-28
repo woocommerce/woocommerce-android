@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products
 
 import com.google.gson.Gson
-import com.woocommerce.android.ui.products.models.QuantityRulesMapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions

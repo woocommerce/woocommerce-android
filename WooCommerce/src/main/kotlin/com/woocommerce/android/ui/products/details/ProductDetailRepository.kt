@@ -16,7 +16,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.model.toDataModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.models.QuantityRules
-import com.woocommerce.android.ui.products.models.QuantityRulesMapper
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
 import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
@@ -59,7 +58,6 @@ class ProductDetailRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val taxStore: WCTaxStore,
     private val coroutineDispatchers: CoroutineDispatchers,
-    private val quantityRulesMapper: QuantityRulesMapper,
     private val gson: Gson
 ) {
     private var continuationUpdateProduct: Continuation<Boolean>? = null
@@ -301,10 +299,6 @@ class ProductDetailRepository @Inject constructor(
                 if (product.maxAllowedQuantity > 0) product.maxAllowedQuantity else null,
                 if (product.groupOfQuantity > 0) product.groupOfQuantity else null)
         }
-
-        //return QuantityRules()
-        //return getCachedWCProductModel(remoteProductId)?.metadata
-        //    ?.let { quantityRulesMapper.toAppModelFromProductMetadata(it) }
     }
 
     fun getProductMetadata(remoteProductId: Long): Map<String, Any>? {

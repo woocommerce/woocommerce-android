@@ -10,7 +10,6 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.models.QuantityRules
-import com.woocommerce.android.ui.products.models.QuantityRulesMapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCProductVariationModel
@@ -22,8 +21,7 @@ import javax.inject.Inject
 class VariationDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
-    private val coroutineDispatchers: CoroutineDispatchers,
-    private val quantityRulesMapper: QuantityRulesMapper
+    private val coroutineDispatchers: CoroutineDispatchers
 ) {
     suspend fun fetchVariation(remoteProductId: Long, remoteVariationId: Long): OnVariationChanged {
         return productStore.fetchSingleVariation(
