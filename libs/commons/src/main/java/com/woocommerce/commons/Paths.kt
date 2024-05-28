@@ -11,7 +11,8 @@ enum class DataPath(val value: String) {
     SITE_DATA("/site-data"),
     STATS_DATA("/stats-data"),
     ORDERS_DATA("/orders-data"),
-    ORDER_PRODUCTS_DATA("/order-products-data")
+    ORDER_PRODUCTS_DATA("/order-products-data"),
+    ANALYTICS_DATA("/analytics-data")
 }
 
 enum class DataParameters(val value: String) {
@@ -34,5 +35,9 @@ enum class DataParameters(val value: String) {
 
     // Order products data
     ORDER_ID("order-id"),
-    ORDER_PRODUCTS_JSON("order-products-json")
+    ORDER_PRODUCTS_JSON("order-products-json"),
+
+    // Analytics data
+    ANALYTICS_TRACK("analytics-track"),
+    ANALYTICS_PARAMETERS("analytics-parameters")
 }
