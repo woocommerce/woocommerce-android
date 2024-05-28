@@ -48,19 +48,15 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     uiState = uiState,
                     onNavigateUp = viewModel::onBackPressed,
                     onCompleteOrderClick = {
-                        extracted()
+                        navigateBackWithResult(
+                            key = IS_ORDER_PAID_RESULT,
+                            result = true,
+                        )
                     },
                     onAmountReceivedChanged = { viewModel.updateAmountReceived(it) }
                 )
             }
         }
-    }
-
-    private fun extracted() {
-        navigateBackWithResult(
-            key = IS_ORDER_PAID_RESULT,
-            result = true,
-        )
     }
 
     companion object {
