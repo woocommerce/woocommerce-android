@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
+import com.yarolegovich.wellsql.core.annotation.Column
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.WCProductFileModel
@@ -86,7 +87,11 @@ data class Product(
     val subscription: SubscriptionDetails?,
     val isSampleProduct: Boolean,
     val specialStockStatus: ProductStockStatus? = null,
-    val isConfigurable: Boolean = false
+    val isConfigurable: Boolean = false,
+    val minAllowedQuantity: Int?,
+    val maxAllowedQuantity: Int?,
+    val groupOfQuantity: Int?,
+    val combineVariationQuantities: Boolean?
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -147,7 +152,11 @@ data class Product(
             isDownloadable == product.isDownloadable &&
             attributes == product.attributes &&
             subscription == product.subscription &&
-            specialStockStatus == product.specialStockStatus
+            specialStockStatus == product.specialStockStatus &&
+            minAllowedQuantity == product.minAllowedQuantity &&
+            maxAllowedQuantity == product.maxAllowedQuantity &&
+            groupOfQuantity == product.groupOfQuantity &&
+            combineVariationQuantities == product.combineVariationQuantities
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -319,7 +328,11 @@ data class Product(
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
                 subscription = updatedProduct.subscription,
-                specialStockStatus = specialStockStatus
+                specialStockStatus = specialStockStatus,
+                minAllowedQuantity = updatedProduct.minAllowedQuantity,
+                maxAllowedQuantity = updatedProduct.maxAllowedQuantity,
+                groupOfQuantity = updatedProduct.groupOfQuantity,
+                combineVariationQuantities = updatedProduct.combineVariationQuantities
             )
         } ?: this.copy()
     }
@@ -457,6 +470,10 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.downloadable = isDownloadable
         it.attributes = attributesToJson()
         it.purchasable = isPurchasable
+        it.minAllowedQuantity = minAllowedQuantity ?: -1
+        it.maxAllowedQuantity = maxAllowedQuantity ?: -1
+        it.groupOfQuantity = groupOfQuantity ?: -1
+        it.combineVariationQuantities = combineVariationQuantities ?: false
         // Subscription details are currently the only editable metadata fields from the app.
         it.metadata = subscription?.toMetadataJson().toString()
     }
@@ -562,7 +579,11 @@ fun WCProductModel.toAppModel(): Product {
         } else {
             null
         },
-        isConfigurable = isConfigurable
+        isConfigurable = isConfigurable,
+        minAllowedQuantity = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null,
+        maxAllowedQuantity = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null,
+        groupOfQuantity = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null,
+        combineVariationQuantities = this.combineVariationQuantities
     )
 }
 
