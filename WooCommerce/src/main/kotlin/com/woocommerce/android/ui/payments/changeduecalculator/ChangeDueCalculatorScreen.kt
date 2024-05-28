@@ -54,7 +54,6 @@ fun ChangeDueCalculatorScreen(
 ) {
     val context = LocalContext.current
 
-
     Scaffold(
         topBar = {
             TopAppBar(
