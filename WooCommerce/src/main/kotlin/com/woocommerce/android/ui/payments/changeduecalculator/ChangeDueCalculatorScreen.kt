@@ -160,13 +160,6 @@ fun ChangeDueCalculatorScreen(
                             modifier = Modifier.padding(top = 16.dp)
                         )
                     }
-
-                    is ChangeDueCalculatorViewModel.UiState.Error -> {
-                        Text(
-                            text = stringResource(R.string.error_generic),
-                            style = MaterialTheme.typography.h6
-                        )
-                    }
                 }
             }
         }

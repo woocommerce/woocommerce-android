@@ -28,8 +28,6 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             val change: BigDecimal,
             val amountReceived: BigDecimal
         ) : UiState()
-
-        data object Error : UiState()
     }
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
@@ -41,13 +39,12 @@ class ChangeDueCalculatorViewModel @Inject constructor(
 
     private fun loadOrderDetails() {
         launch {
-            val order = orderDetailRepository.getOrderById(orderId)
-            order?.let {
-                _uiState.value =
-                    UiState.Success(amountDue = order.total, change = BigDecimal.ZERO, amountReceived = BigDecimal.ZERO)
-            } ?: run {
-                _uiState.value = UiState.Error
-            }
+            val order = orderDetailRepository.getOrderById(orderId)!!
+            _uiState.value = UiState.Success(
+                amountDue = order.total,
+                change = BigDecimal.ZERO,
+                amountReceived = BigDecimal.ZERO
+            )
         }
     }
 
