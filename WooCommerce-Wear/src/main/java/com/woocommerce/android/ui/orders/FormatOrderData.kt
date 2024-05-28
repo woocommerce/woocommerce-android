@@ -96,7 +96,7 @@ class FormatOrderData @Inject constructor(
         val customerName: String,
         val total: String,
         val status: String,
-        val address: OrderItemAddress,
+        val address: OrderItemAddress = OrderItemAddress.EMPTY,
         val products: List<ProductItem>? = null
     ) : Parcelable
 
@@ -115,5 +115,16 @@ class FormatOrderData @Inject constructor(
         val addressSecondRow: String,
         val addressThirdRow: String,
         val country: String,
-    ) : Parcelable
+    ) : Parcelable {
+        companion object {
+            val EMPTY = OrderItemAddress(
+                name = "",
+                email = "",
+                addressFirstRow = "",
+                addressSecondRow = "",
+                addressThirdRow = "",
+                country = ""
+            )
+        }
+    }
 }

@@ -35,6 +35,7 @@ import com.woocommerce.android.compose.theme.WooColors
 import com.woocommerce.android.compose.theme.WooTheme
 import com.woocommerce.android.compose.theme.WooTypography
 import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
+import com.woocommerce.android.ui.orders.FormatOrderData.OrderItemAddress
 import com.woocommerce.android.ui.orders.FormatOrderData.ProductItem
 
 @Composable
@@ -281,6 +282,14 @@ fun Preview() {
             customerName = "John Doe",
             total = "$100.00",
             status = "Processing",
+            address = OrderItemAddress(
+                name = "John Doe",
+                email = "john@email.com",
+                addressFirstRow = "56 Champion Lane",
+                addressSecondRow = "East Framework",
+                addressThirdRow = "Runtown 1234321",
+                country = "USA"
+            ),
             products = listOf(
                 ProductItem(
                     amount = 3,
