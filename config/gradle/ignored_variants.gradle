@@ -1,0 +1,26 @@
+allprojects {
+    def ignoredProductFlavors = (findProperty('gradle.ignored.product.flavors') ?: "").toString().split(",")
+    def ignoredBuildTypes = (findProperty('gradle.ignored.build.types') ?: "").toString().split(",")
+    pluginManager.withPlugin("com.android.library") {
+        android {
+            variantFilter { variant ->
+                if (ignoredBuildTypes.contains(variant.getBuildType().name)) {
+                    variant.setIgnore(true)
+                }
+            }
+        }
+    }
+    pluginManager.withPlugin("com.android.application") {
+        android {
+            variantFilter { variant ->
+                variant.getFlavors().each { flavor ->
+                    if (ignoredProductFlavors.contains(flavor.name)
+                            || ignoredBuildTypes.contains(variant.getBuildType().name)
+                    ) {
+                        variant.setIgnore(true)
+                    }
+                }
+            }
+        }
+    }
+}

@@ -214,5 +214,6 @@ tasks.register("configureApply") {
     }
 }
 
+apply from: './config/gradle/ignored_variants.gradle'
 apply from: './config/gradle/jacoco.gradle'
 apply from: './config/gradle/gradle_build_scan.gradle'

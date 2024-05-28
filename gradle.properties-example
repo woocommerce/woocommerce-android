@@ -56,3 +56,7 @@ tracksEnabled = false
 
 android.nonTransitiveRClass=true
 android.enableR8.fullMode=false
+
+# Ignored Variants
+gradle.ignored.product.flavors=vanilla,wasabi
+gradle.ignored.build.types=release
