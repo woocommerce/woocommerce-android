@@ -102,8 +102,9 @@ class DashboardViewModel @Inject constructor(
         feedbackPrefs.userFeedbackIsDueObservable
     ) { widgets, userFeedbackIsDue ->
         mapWidgetsToUiModels(widgets, userFeedbackIsDue)
-    }
-        .asLiveData()
+    }.asLiveData()
+
+    val hasNewWidgets = dashboardRepository.hasNewWidgets.asLiveData()
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
