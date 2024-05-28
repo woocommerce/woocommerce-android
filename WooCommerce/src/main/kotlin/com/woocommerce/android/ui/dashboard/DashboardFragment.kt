@@ -88,9 +88,7 @@ class DashboardFragment :
     private val binding get() = _binding!!
 
     private val editButtonBadge by lazy {
-        BadgeDrawable.create(requireContext()).apply {
-            badgeGravity = BadgeDrawable.TOP_START
-        }
+        BadgeDrawable.create(requireContext())
     }
 
     private val mainNavigationRouter
@@ -326,6 +324,12 @@ class DashboardFragment :
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_dashboard_fragment, menu)
 
+        // Attach the badge to the top-left corner of the edit widgets button
+        editButtonBadge.badgeGravity = if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            BadgeDrawable.TOP_END
+        } else {
+            BadgeDrawable.TOP_START
+        }
         BadgeUtils.attachBadgeDrawable(
             editButtonBadge,
             requireActivity().findViewById(R.id.toolbar),
