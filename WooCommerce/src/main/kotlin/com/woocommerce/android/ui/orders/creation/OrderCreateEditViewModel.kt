@@ -111,7 +111,9 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
+import com.woocommerce.android.ui.orders.creation.shipping.getMethodIdOrDefault
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -384,7 +386,13 @@ class OrderCreateEditViewModel @Inject constructor(
             val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
 
             shippingLines.map { shippingLine ->
-                val method = shippingLine.methodId?.let { shippingMethodsMap[it] }
+                val method = shippingLine.methodId?.let {
+                    if (it == " ") {
+                        shippingMethodsMap[ShippingMethodsRepository.NA_ID]
+                    } else {
+                        shippingMethodsMap[it]
+                    }
+                }
                 ShippingLineDetails(
                     id = shippingLine.itemId,
                     name = shippingLine.methodTitle,
