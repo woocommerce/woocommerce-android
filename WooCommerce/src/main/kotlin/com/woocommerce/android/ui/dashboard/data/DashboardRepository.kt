@@ -60,7 +60,7 @@ class DashboardRepository @Inject constructor(
     }
 
     val hasNewWidgets = dashboardDataStore.widgets.map { widgets ->
-        widgets.size != DashboardWidget.Type.supportedWidgets.size
+        widgets.size < DashboardWidget.Type.supportedWidgets.size
     }
 
     suspend fun updateWidgets(widgets: List<DashboardWidget>) = dashboardDataStore.updateDashboard(
