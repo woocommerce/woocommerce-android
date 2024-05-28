@@ -43,7 +43,8 @@ fun OrderDetailsScreen(viewModel: OrderDetailsViewModel) {
     val viewState = viewModel.viewState.observeAsState()
     OrderDetailsScreen(
         order = viewState.value?.orderItem,
-        isLoading = viewState.value?.isLoading ?: false,
+        isLoadingOrder = viewState.value?.isLoadingOrder ?: false,
+        isLoadingProducts = viewState.value?.isLoadingProducts ?: false,
         onRetryClicked = viewModel::reloadData
     )
 }
@@ -51,7 +52,8 @@ fun OrderDetailsScreen(viewModel: OrderDetailsViewModel) {
 @Composable
 fun OrderDetailsScreen(
     order: OrderItem?,
-    isLoading: Boolean,
+    isLoadingOrder: Boolean,
+    isLoadingProducts: Boolean,
     onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -64,13 +66,16 @@ fun OrderDetailsScreen(
                 .padding(top = 16.dp)
         ) {
             when {
-                isLoading -> LoadingScreen()
+                isLoadingOrder -> LoadingScreen()
                 order == null -> ErrorScreen(
                     errorText = stringResource(id = R.string.order_details_failed_to_load),
                     onRetryClicked = onRetryClicked
                 )
-
-                else -> OrderDetailsContent(order, modifier)
+                else -> OrderDetailsContent(
+                    order = order,
+                    isLoadingProducts = isLoadingProducts,
+                    modifier = modifier
+                )
             }
         }
     }
@@ -79,6 +84,7 @@ fun OrderDetailsScreen(
 @Composable
 fun OrderDetailsContent(
     order: OrderItem,
+    isLoadingProducts: Boolean,
     modifier: Modifier
 ) {
     Column(
@@ -88,7 +94,7 @@ fun OrderDetailsContent(
     ) {
         OrderHeader(modifier, order)
         Spacer(modifier = modifier.padding(10.dp))
-        OrderProductsList(order.products, modifier)
+        OrderProductsSection(isLoadingProducts, order, modifier)
         Divider()
     }
 }
@@ -143,6 +149,25 @@ private fun OrderHeader(
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
+    }
+}
+
+@Composable
+private fun OrderProductsSection(
+    isLoadingProducts: Boolean,
+    order: OrderItem,
+    modifier: Modifier
+) {
+    if (isLoadingProducts) {
+        Text(
+            text = stringResource(id = R.string.order_details_loading_order_products),
+            style = WooTypography.caption1,
+            color = WooColors.woo_gray_alpha,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+    } else {
+        OrderProductsList(order.products, modifier)
     }
 }
 
@@ -246,7 +271,8 @@ private fun pluralizedProductsText(products: List<ProductItem>): String {
 @Composable
 fun Preview() {
     OrderDetailsScreen(
-        isLoading = false,
+        isLoadingOrder = false,
+        isLoadingProducts = false,
         onRetryClicked = {},
         order = OrderItem(
             id = 0L,
