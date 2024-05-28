@@ -21,6 +21,15 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
+  - label: "dependency analysis"
+    command: |
+      echo "--- 📊 Analyzing"
+      cp gradle.properties-example gradle.properties
+      ./gradlew buildHealth
+    plugins: [*ci_toolkit]
+    artifact_paths:
+      - "build/reports/dependency-analysis/build-health-report.*"
+
   - label: "detekt"
     command: |
       echo "--- 🧹 Linting"
