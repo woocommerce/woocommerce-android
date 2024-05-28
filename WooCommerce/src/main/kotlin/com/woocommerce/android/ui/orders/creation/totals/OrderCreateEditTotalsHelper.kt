@@ -22,7 +22,6 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         order: Order,
         mode: OrderCreateEditViewModel.Mode,
         viewState: ViewState,
-        onShippingClicked: () -> Unit,
         onCouponsClicked: () -> Unit,
         onGiftClicked: () -> Unit,
         onTaxesLearnMore: () -> Unit,
@@ -46,11 +45,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                 lines = listOfNotNull(
                     order.toProductsSection(bigDecimalFormatter),
                     order.toCustomAmountSection(bigDecimalFormatter),
-                    order.toShippingSection(
-                        enabled = viewState.isEditable,
-                        bigDecimalFormatter,
-                        onClick = onShippingClicked
-                    ),
+                    order.toShippingSection(bigDecimalFormatter),
                     order.toCouponsSection(
                         enabled = viewState.isCouponButtonEnabled && viewState.isIdle,
                         bigDecimalFormatter,
@@ -152,17 +147,11 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         }
     }
 
-    private fun Order.toShippingSection(
-        enabled: Boolean,
-        bigDecimalFormatter: (BigDecimal) -> String,
-        onClick: () -> Unit
-    ): TotalsSectionsState.Line? =
-        if (shippingLines.firstOrNull { it.methodId != null } != null) {
-            TotalsSectionsState.Line.Button(
-                text = resourceProvider.getString(R.string.shipping),
-                value = shippingLines.sumByBigDecimal { it.total }.let(bigDecimalFormatter),
-                enabled = enabled,
-                onClick = onClick,
+    private fun Order.toShippingSection(bigDecimalFormatter: (BigDecimal) -> String): TotalsSectionsState.Line? =
+        if (shippingLines.filter { it.methodId != null }.isNotEmpty()) {
+            TotalsSectionsState.Line.Simple(
+                label = resourceProvider.getString(R.string.shipping),
+                value = shippingLines.sumByBigDecimal { it.total }.let(bigDecimalFormatter)
             )
         } else {
             null
