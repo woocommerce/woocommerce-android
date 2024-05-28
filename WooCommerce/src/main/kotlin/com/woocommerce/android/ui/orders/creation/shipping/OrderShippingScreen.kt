@@ -105,7 +105,7 @@ fun UpdateShippingScreen(
             )
             FieldSelectValue(
                 text = method,
-                hint = stringResource(id = R.string.order_creation_add_shipping_method_select_hint),
+                hint = stringResource(id = R.string.na),
                 onSelect = onSelectMethod,
                 modifier = Modifier.fillMaxWidth()
             )

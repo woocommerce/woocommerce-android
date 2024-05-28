@@ -57,7 +57,7 @@ class OrderShippingMethodsViewModel @Inject constructor(
         getShippingMethodsWithOtherValue()
             .withIndex()
             .filter { indexedFetchedShippingMethods ->
-                indexedFetchedShippingMethods.index != 0 || indexedFetchedShippingMethods.value.size != 1
+                indexedFetchedShippingMethods.index != 0 || indexedFetchedShippingMethods.value.size != 2
             }
             .collect { fetchedShippingMethods ->
                 var methodsUIList = fetchedShippingMethods.value.map { ShippingMethodUI(it) }

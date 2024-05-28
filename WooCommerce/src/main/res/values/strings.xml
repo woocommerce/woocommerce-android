@@ -134,6 +134,7 @@
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
     <string name="other">Other</string>
+    <string name="na">N/A</string>
     <string name="free">free</string>
     <string name="and">and</string>
     <string name="generic_string" translatable="false">%s</string>
