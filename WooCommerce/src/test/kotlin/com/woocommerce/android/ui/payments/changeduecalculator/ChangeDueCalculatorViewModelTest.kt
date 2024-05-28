@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -45,5 +46,30 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         uiState as ChangeDueCalculatorViewModel.UiState.Success
         assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
+    }
+
+    @Test
+    fun `when updateAmountReceived is called, then amountReceived and change are updated`() = runTest {
+
+        // Given
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        viewModel = ChangeDueCalculatorViewModel(
+            savedStateHandle = savedStateHandle,
+            orderDetailRepository = orderDetailRepository
+        )
+        var uiState = viewModel.uiState.value
+        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
+
+        // WHEN
+        val amountReceived = BigDecimal("150.00")
+        viewModel.updateAmountReceived(amountReceived)
+        advanceUntilIdle()
+
+        // THEN
+        uiState = viewModel.uiState.value
+        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
+        uiState as ChangeDueCalculatorViewModel.UiState.Success
+        assertThat(uiState.amountReceived).isEqualTo(amountReceived)
+        assertThat(uiState.change).isEqualTo(BigDecimal("50.00"))
     }
 }
