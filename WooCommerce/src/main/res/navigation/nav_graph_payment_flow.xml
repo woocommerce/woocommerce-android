@@ -79,11 +79,7 @@
             android:id="@+id/action_changeDueCalculatorFragment_to_selectPaymentMethodFragment"
             app:destination="@id/selectPaymentMethodFragment"
             app:popUpTo="@id/selectPaymentMethodFragment"
-            app:popUpToInclusive="true">
-            <argument
-                android:name="isOrderPaid"
-                app:argType="boolean" />
-        </action>
+            app:popUpToInclusive="true"/>
     </fragment>
 
 

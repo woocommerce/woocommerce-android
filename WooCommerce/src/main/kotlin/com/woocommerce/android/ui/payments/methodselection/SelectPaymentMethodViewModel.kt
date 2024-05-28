@@ -88,9 +88,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     init {
         checkStatus()
-        if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled()) {
-            handleIsOrderPaidNavigationArgs()
-        }
     }
 
     private fun checkStatus() {
@@ -123,8 +120,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
-    private fun handleIsOrderPaidNavigationArgs() {
-        if (navArgs.isOrderPaid) {
+    fun handleIsOrderPaid(paid: Boolean) {
+        if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled() && paid) {
             onCashPaymentConfirmed()
         }
     }

@@ -9,9 +9,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -48,19 +48,22 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     uiState = uiState,
                     onNavigateUp = viewModel::onBackPressed,
                     onCompleteOrderClick = {
-                        val action = ChangeDueCalculatorFragmentDirections
-                            .actionChangeDueCalculatorFragmentToSelectPaymentMethodFragment(
-                                cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(
-                                    viewModel.navArgs.orderId,
-                                    CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER
-                                ),
-                                isOrderPaid = true
-                            )
-                        findNavController().navigate(action)
+                        extracted()
                     },
                     onAmountReceivedChanged = { viewModel.updateAmountReceived(it) }
                 )
             }
         }
+    }
+
+    private fun extracted() {
+        navigateBackWithResult(
+            key = IS_ORDER_PAID_RESULT,
+            result = true,
+        )
+    }
+
+    companion object {
+        const val IS_ORDER_PAID_RESULT = "is_order_paid_result"
     }
 }
