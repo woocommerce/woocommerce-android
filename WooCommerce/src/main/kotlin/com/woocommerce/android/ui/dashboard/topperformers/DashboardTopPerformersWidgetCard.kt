@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
+import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
@@ -50,7 +51,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMe
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
-import com.woocommerce.android.ui.dashboard.stats.DashboardStatsHeader
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenAnalytics
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
@@ -125,7 +125,7 @@ fun DashboardTopPerformersContent(
 ) {
     Column {
         selectedDateRange?.let {
-            DashboardStatsHeader(
+            DashboardDateRangeHeader(
                 rangeSelection = it.rangeSelection,
                 dateFormatted = it.dateFormatted,
                 onCustomRangeClick = onEditCustomRangeTapped,

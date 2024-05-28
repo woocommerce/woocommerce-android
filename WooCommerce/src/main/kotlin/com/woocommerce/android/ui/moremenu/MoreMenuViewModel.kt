@@ -68,11 +68,18 @@ class MoreMenuViewModel @Inject constructor(
             loadSitePlanName()
         ) { count, selectedSite, paymentsFeatureWasClicked, sitePlanName ->
             MoreMenuViewState(
-                generalMenuItems = generateGeneralMenuButtons(
-                    unseenReviewsCount = count,
-                    paymentsFeatureWasClicked = paymentsFeatureWasClicked,
-                ),
-                settingsMenuItems = generateSettingsMenuButtons(),
+                menuSections = listOf(
+                    generatePOSSection(),
+                    generateSettingsMenuButtons(),
+                    generateGeneralSection(
+                        unseenReviewsCount = count,
+                        paymentsFeatureWasClicked = paymentsFeatureWasClicked,
+                    )
+                ).map { section ->
+                    section.copy(
+                        items = section.items.filter { it.isVisible }
+                    )
+                }.filter { it.isVisible && it.items.isNotEmpty() },
                 siteName = selectedSite.getSelectedSiteName(),
                 siteUrl = selectedSite.getSelectedSiteAbsoluteUrl(),
                 sitePlan = sitePlanName,
@@ -86,64 +93,96 @@ class MoreMenuViewModel @Inject constructor(
         launch { trackBlazeDisplayed() }
     }
 
-    private suspend fun generateGeneralMenuButtons(
+    private suspend fun generatePOSSection() =
+        MoreMenuItemSection(
+            title = null,
+            items = listOf(
+                MoreMenuItemButton(
+                    title = R.string.more_menu_button_woo_pos,
+                    description = R.string.more_menu_button_woo_pos_description,
+                    icon = R.drawable.ic_more_menu_pos,
+                    extraIcon = R.drawable.ic_more_menu_pos_extra,
+                    isVisible = isWooPosEnabled(),
+                    onClick = {
+                        triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
+                    }
+                )
+            )
+        )
+
+    private suspend fun generateGeneralSection(
         unseenReviewsCount: Int,
         paymentsFeatureWasClicked: Boolean,
-    ) = listOf(
-        MenuUiButton(
-            title = R.string.more_menu_button_payments,
-            description = R.string.more_menu_button_payments_description,
-            icon = R.drawable.ic_more_menu_payments,
-            badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
-            onClick = ::onPaymentsButtonClick,
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_blaze,
-            description = R.string.more_menu_button_blaze_description,
-            icon = R.drawable.ic_blaze,
-            onClick = ::onPromoteProductsWithBlaze,
-            isEnabled = isBlazeEnabled()
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_wс_admin,
-            description = R.string.more_menu_button_wc_admin_description,
-            icon = R.drawable.ic_more_menu_wp_admin,
-            onClick = ::onViewAdminButtonClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_store,
-            description = R.string.more_menu_button_store_description,
-            icon = R.drawable.ic_more_menu_store,
-            onClick = ::onViewStoreButtonClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_coupons,
-            description = R.string.more_menu_button_coupons_description,
-            icon = R.drawable.ic_more_menu_coupons,
-            onClick = ::onCouponsButtonClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_reviews,
-            description = R.string.more_menu_button_reviews_description,
-            icon = R.drawable.ic_more_menu_reviews,
-            badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
-            onClick = ::onReviewsButtonClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_inbox,
-            description = R.string.more_menu_button_inbox_description,
-            icon = R.drawable.ic_more_menu_inbox,
-            isEnabled = moreMenuRepository.isInboxEnabled(),
-            onClick = ::onInboxButtonClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_woo_pos,
-            description = R.string.more_menu_button_woo_pos_description,
-            icon = R.drawable.ic_more_menu_payments,
-            isEnabled = isWooPosEnabled(),
-            onClick = {
-                triggerEvent(MoreMenuEvent.NavigateToWooPosEvent)
-            }
+    ) = MoreMenuItemSection(
+        title = R.string.more_menu_general_section_title,
+        items = listOf(
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_payments,
+                description = R.string.more_menu_button_payments_description,
+                icon = R.drawable.ic_more_menu_payments,
+                badgeState = buildPaymentsBadgeState(paymentsFeatureWasClicked),
+                onClick = ::onPaymentsButtonClick,
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_blaze,
+                description = R.string.more_menu_button_blaze_description,
+                icon = R.drawable.ic_blaze,
+                onClick = ::onPromoteProductsWithBlaze,
+                isVisible = isBlazeEnabled()
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_wс_admin,
+                description = R.string.more_menu_button_wc_admin_description,
+                icon = R.drawable.ic_more_menu_wp_admin,
+                extraIcon = R.drawable.ic_external,
+                onClick = ::onViewAdminButtonClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_store,
+                description = R.string.more_menu_button_store_description,
+                icon = R.drawable.ic_more_menu_store,
+                extraIcon = R.drawable.ic_external,
+                onClick = ::onViewStoreButtonClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_coupons,
+                description = R.string.more_menu_button_coupons_description,
+                icon = R.drawable.ic_more_menu_coupons,
+                onClick = ::onCouponsButtonClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_reviews,
+                description = R.string.more_menu_button_reviews_description,
+                icon = R.drawable.ic_more_menu_reviews,
+                badgeState = buildUnseenReviewsBadgeState(unseenReviewsCount),
+                onClick = ::onReviewsButtonClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_inbox,
+                description = R.string.more_menu_button_inbox_description,
+                icon = R.drawable.ic_more_menu_inbox,
+                isVisible = moreMenuRepository.isInboxEnabled(),
+                onClick = ::onInboxButtonClick,
+            )
+        )
+    )
+
+    private fun generateSettingsMenuButtons() = MoreMenuItemSection(
+        title = R.string.more_menu_settings_section_title,
+        items = listOf(
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_settings,
+                description = R.string.more_menu_button_settings_description,
+                icon = R.drawable.ic_more_screen_settings,
+                onClick = ::onSettingsClick
+            ),
+            MoreMenuItemButton(
+                title = R.string.more_menu_button_subscriptions,
+                description = R.string.more_menu_button_subscriptions_description,
+                icon = R.drawable.ic_more_menu_upgrades,
+                isVisible = moreMenuRepository.isUpgradesEnabled(),
+                onClick = ::onUpgradesButtonClick
+            )
         )
     )
 
@@ -155,22 +194,6 @@ class MoreMenuViewModel @Inject constructor(
             )
         }
     }
-
-    private fun generateSettingsMenuButtons() = listOf(
-        MenuUiButton(
-            title = R.string.more_menu_button_settings,
-            description = R.string.more_menu_button_settings_description,
-            icon = R.drawable.ic_more_screen_settings,
-            onClick = ::onSettingsClick
-        ),
-        MenuUiButton(
-            title = R.string.more_menu_button_subscriptions,
-            description = R.string.more_menu_button_subscriptions_description,
-            icon = R.drawable.ic_more_menu_upgrades,
-            isEnabled = moreMenuRepository.isUpgradesEnabled(),
-            onClick = ::onUpgradesButtonClick
-        )
-    )
 
     private fun buildPaymentsBadgeState(paymentsFeatureWasClicked: Boolean) =
         if (!paymentsFeatureWasClicked && tapToPayAvailabilityStatus().isAvailable) {
@@ -287,7 +310,8 @@ class MoreMenuViewModel @Inject constructor(
     }
 
     private fun isPaymentBadgeVisible() = moreMenuViewState.value
-        ?.generalMenuItems
+        ?.menuSections
+        ?.filterIsInstance<MoreMenuItemButton>()
         ?.find { it.title == R.string.more_menu_button_payments }
         ?.badgeState != null
 
@@ -303,17 +327,13 @@ class MoreMenuViewModel @Inject constructor(
         get() = generateFormattedPlanName(resourceProvider)
 
     data class MoreMenuViewState(
-        val generalMenuItems: List<MenuUiButton> = emptyList(),
-        val settingsMenuItems: List<MenuUiButton> = emptyList(),
+        val menuSections: List<MoreMenuItemSection>,
         val siteName: String = "",
         val siteUrl: String = "",
         val sitePlan: String = "",
         val userAvatarUrl: String = "",
         val isStoreSwitcherEnabled: Boolean = false
-    ) {
-        val enabledGeneralItems = generalMenuItems.filter { it.isEnabled }
-        val enabledSettingsItems = settingsMenuItems.filter { it.isEnabled }
-    }
+    )
 
     sealed class MoreMenuEvent : MultiLiveEvent.Event() {
         object NavigateToSettingsEvent : MoreMenuEvent()

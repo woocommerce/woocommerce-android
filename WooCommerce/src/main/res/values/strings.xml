@@ -413,6 +413,7 @@
     <string name="my_store_widget_feedback_title">Feedback</string>
     <string name="my_store_widget_orders_title">Most recent orders</string>
     <string name="my_store_widget_reviews_title">Most recent reviews</string>
+    <string name="my_store_widget_coupons_title">Most active coupons</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>
@@ -573,8 +574,10 @@
 
     <!--
      Cash Payments
--->
+    -->
     <string name="cash_payments_take_payment_title">Take payment (%s)</string>
+    <string name="cash_payments_cash_received">Cash received</string>
+    <string name="cash_payments_change_due">Change due</string>
 
     <!--
          Custom Amounts
@@ -982,6 +985,7 @@
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
     <string name="order_detail_payment_header">PAYMENT TOTALS</string>
     <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
+    <string name="order_detail_shipping_header">SHIPPING</string>
     <string name="order_detail_attribution_header">Order attribution</string>
     <string name="order_detail_attribution_origin">Origin</string>
     <string name="order_detail_attribution_organic_origin">Organic: %1$s</string>
@@ -3671,8 +3675,8 @@
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
 
-    <string name="more_menu_button_woo_pos">Woo Pos</string>
-    <string name="more_menu_button_woo_pos_description">Temporary entry point to POS mode</string>
+    <string name="more_menu_button_woo_pos">Point of Sale Mode</string>
+    <string name="more_menu_button_woo_pos_description">Use the app as a cash register</string>
 
     <!--
     Composite products

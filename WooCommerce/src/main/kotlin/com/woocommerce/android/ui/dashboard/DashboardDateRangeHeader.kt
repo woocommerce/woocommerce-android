@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.dashboard.stats
+package com.woocommerce.android.ui.dashboard
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -34,10 +35,10 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.dashboard.DashboardViewModel
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 
 @Composable
-fun DashboardStatsHeader(
+fun DashboardDateRangeHeader(
     rangeSelection: StatsTimeRangeSelection,
     dateFormatted: String,
     onCustomRangeClick: () -> Unit,
@@ -56,12 +57,14 @@ fun DashboardStatsHeader(
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.onSurface
         )
-        val isCustomRange = rangeSelection.selectionType == SelectionType.CUSTOM
 
+        val isCustomRange = rangeSelection.selectionType == SelectionType.CUSTOM
         Row(
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100)),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
+                .weight(1f)
+                .wrapContentSize(align = Alignment.CenterStart)
                 .then(if (isCustomRange) Modifier.clickable(onClick = onCustomRangeClick) else Modifier)
                 .padding(dimensionResource(id = dimen.minor_100))
         ) {
@@ -72,7 +75,8 @@ fun DashboardStatsHeader(
                     MaterialTheme.colors.primary
                 } else {
                     MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
-                }
+                },
+                modifier = Modifier.weight(1f, fill = false)
             )
             if (isCustomRange) {
                 Icon(
@@ -83,8 +87,6 @@ fun DashboardStatsHeader(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
 
         Box {
             var isMenuExpanded by remember { mutableStateOf(false) }

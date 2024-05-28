@@ -36,6 +36,7 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
+import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -136,7 +137,7 @@ private fun DashboardStatsContent(
 ) {
     Column {
         dateRange?.let {
-            DashboardStatsHeader(
+            DashboardDateRangeHeader(
                 rangeSelection = it.rangeSelection,
                 dateFormatted = dateRange.selectedDateFormatted ?: dateRange.rangeFormatted,
                 onCustomRangeClick = onAddCustomRangeClick,
@@ -213,7 +214,7 @@ private fun StatsChart(
         statsView.showLastUpdate(lastUpdateState)
     }
 
-    LaunchedEffect(dateRange?.rangeSelection, revenueStatsState) {
+    LaunchedEffect(revenueStatsState) {
         when (revenueStatsState) {
             is DashboardStatsViewModel.RevenueStatsViewState.Content -> {
                 statsView.showErrorView(false)
@@ -239,7 +240,7 @@ private fun StatsChart(
         }
     }
 
-    LaunchedEffect(dateRange?.rangeSelection, visitorsStatsState) {
+    LaunchedEffect(visitorsStatsState) {
         visitorsStatsState?.let {
             statsView.showVisitorStats(it)
         }

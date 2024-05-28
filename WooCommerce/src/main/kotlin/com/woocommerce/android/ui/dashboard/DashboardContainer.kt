@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
+import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersCard
 import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
@@ -141,6 +142,11 @@ private fun ConfigurableWidgetCard(
         )
 
         DashboardWidget.Type.REVIEWS -> DashboardReviewsCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
+
+        DashboardWidget.Type.COUPONS -> DashboardCouponsCard(
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )
