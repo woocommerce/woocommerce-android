@@ -85,7 +85,6 @@ fun ChangeDueCalculatorScreen(
                     )
 
                     is ChangeDueCalculatorViewModel.UiState.Success -> {
-
                         var inputText by remember { mutableStateOf(uiState.amountReceived) }
 
                         LaunchedEffect(uiState.amountReceived) {
