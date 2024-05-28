@@ -59,7 +59,7 @@ fun UpdateShippingScreen(
                 name = currentState.name,
                 amount = currentState.amount,
                 method = currentState.method?.title,
-                isEditFlow = currentState.isEditFlow,
+                isEditFlow = viewModel.isEditFlow,
                 isSaveChangesEnabled = currentState.isSaveChangesEnabled,
                 onNameChanged = { name -> viewModel.onNameChanged(name) },
                 onAmountChanged = { amount -> viewModel.onAmountChanged(amount) },
@@ -161,7 +161,12 @@ fun UpdateShippingScreen(
                 onClick = { onSaveChanges() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(id = R.string.order_creation_shipping_add))
+                val buttonResId = if (isEditFlow) {
+                    R.string.order_creation_shipping_edit
+                } else {
+                    R.string.order_creation_shipping_add
+                }
+                Text(stringResource(id = buttonResId))
             }
         }
     }

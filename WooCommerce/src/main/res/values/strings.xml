@@ -687,9 +687,11 @@
     <string name="order_creation_payment_tax_label">Taxes</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
+    <string name="order_creation_shipping_title_edit">Edit Shipping</string>
     <string name="order_creation_shipping_methods_title">Method</string>
     <string name="order_creation_shipping_methods_error">Error while fetching your shipping methods. Please try again</string>
     <string name="order_creation_shipping_add">Add Shipping</string>
+    <string name="order_creation_shipping_edit">Edit Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
     <string name="order_creation_add_shipping_method">Method</string>
     <string name="order_creation_add_shipping_amount">Amount</string>
