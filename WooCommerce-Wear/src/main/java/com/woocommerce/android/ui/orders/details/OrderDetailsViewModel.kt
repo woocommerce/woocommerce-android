@@ -110,12 +110,8 @@ class OrderDetailsViewModel @Inject constructor(
             formatOrderData(site, it, products)
         }
 
-        _viewState.update {
-            it.copy(
-                isLoadingOrder = false,
-                orderItem = formattedOrder
-            )
-        }
+        _viewState.update { it.copy(orderItem = formattedOrder) }
+        _viewState.update { it.copy(isLoadingOrder = false) }
     }
 
     @Parcelize
