@@ -30,6 +30,7 @@ import com.woocommerce.commons.DataPath.SITE_DATA
 import com.woocommerce.commons.DataPath.STATS_DATA
 import com.woocommerce.commons.WearAnalyticsEvent
 import com.woocommerce.commons.WearOrder
+import com.woocommerce.commons.WearOrderAddress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
@@ -98,6 +99,22 @@ class WearableConnectionRepository @Inject constructor(
         ).run { this as? Success }?.orders ?: emptyList()
 
         val orders = fetchedOrders.map {
+            val orderAddress = it.getBillingAddress().let { address ->
+                WearOrderAddress(
+                    email = address.email,
+                    firstName = address.firstName,
+                    lastName = address.lastName,
+                    company = address.company,
+                    address1 = address.address1,
+                    address2 = address.address2,
+                    city = address.city,
+                    state = address.state,
+                    postcode = address.postcode,
+                    country = address.country,
+                    phone = address.phone
+                )
+            }
+
             WearOrder(
                 localSiteId = it.localSiteId.value,
                 id = it.orderId,
@@ -106,7 +123,8 @@ class WearableConnectionRepository @Inject constructor(
                 status = it.status,
                 total = it.total,
                 billingFirstName = it.billingFirstName,
-                billingLastName = it.billingLastName
+                billingLastName = it.billingLastName,
+                address = orderAddress
             )
         }
 
