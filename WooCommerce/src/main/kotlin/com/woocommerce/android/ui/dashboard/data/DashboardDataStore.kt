@@ -39,7 +39,11 @@ class DashboardDataStore @Inject constructor(
             } else {
                 it
             }
-        }.map { it.widgetsList }
+        }.map {
+            it.widgetsList.filter { widget ->
+                DashboardWidget.Type.supportedWidgets.any { type -> type.name == widget.type }
+            }
+        }
 
     suspend fun updateDashboard(dashboard: DashboardDataModel) {
         runCatching {
