@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -55,7 +54,6 @@ fun ChangeDueCalculatorScreen(
     onAmountReceivedChanged: (BigDecimal) -> Unit
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
 
     Scaffold(
         topBar = {
@@ -116,8 +114,7 @@ fun ChangeDueCalculatorScreen(
                             singleLine = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                             valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = false),
-
-                            onValueChange = {}
+                            onValueChange = onAmountReceivedChanged
                         )
                     }
 
@@ -164,8 +161,10 @@ fun ChangeDueCalculatorScreen(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
+        }
     }
 }
+
 
 @Composable
 fun RecordTransactionDetailsNote(
