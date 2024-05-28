@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.wear.compose.material.CircularProgressIndicator
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.woocommerce.android.R
 import com.woocommerce.android.compose.component.ErrorScreen
@@ -239,13 +240,23 @@ private fun OrderProductsSection(
 ) {
     Spacer(modifier = modifier.padding(10.dp))
     if (isLoadingProducts) {
-        Text(
-            text = stringResource(id = R.string.order_details_loading_order_products),
-            style = WooTypography.caption1,
-            color = WooColors.woo_gray_alpha,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(id = R.string.order_details_loading_order_products),
+                style = WooTypography.caption1,
+                color = WooColors.woo_gray_alpha,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            CircularProgressIndicator(
+                modifier = modifier
+                    .size(24.dp)
+                    .padding(top = 5.dp)
+            )
+        }
     } else {
         OrderProductsList(order.products, modifier)
     }
