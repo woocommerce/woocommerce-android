@@ -43,7 +43,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
 import java.math.BigDecimal
 
@@ -56,115 +55,115 @@ fun ChangeDueCalculatorScreen(
     val context = LocalContext.current
 
 
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(text = getTitleText(uiState)) },
-                    navigationIcon = {
-                        IconButton(onClick = onNavigateUp) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.back)
-                            )
-                        }
-                    },
-                    backgroundColor = colorResource(id = R.color.color_toolbar),
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(text = getTitleText(uiState)) },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateUp) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                },
+                backgroundColor = colorResource(id = R.color.color_toolbar),
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            when (uiState) {
+                is ChangeDueCalculatorViewModel.UiState.Loading -> Text(
+                    stringResource(R.string.loading),
+                    style = MaterialTheme.typography.h6
                 )
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .verticalScroll(rememberScrollState())
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                when (uiState) {
-                    is ChangeDueCalculatorViewModel.UiState.Loading -> Text(
-                        stringResource(R.string.loading),
-                        style = MaterialTheme.typography.h6
+
+                is ChangeDueCalculatorViewModel.UiState.Success -> {
+                    val view: WCMaterialOutlinedCurrencyEditTextView? by remember { mutableStateOf(null) }
+
+                    LaunchedEffect(view) {
+                        view?.let {
+                            it.requestFocus()
+                            context.getSystemService(
+                                InputMethodManager::class.java
+                            ).showSoftInput(it, InputMethodManager.SHOW_IMPLICIT)
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(dimensionResource(id = R.dimen.minor_100)),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        WCOutlinedTypedTextField(
+
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
+                            value = uiState.amountDue,
+                            label = stringResource(R.string.cash_payments_cash_received),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = false),
+
+                            onValueChange = {}
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 48.dp, bottom = 16.dp, start = 32.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.cash_payments_change_due),
+                            style = LocalTextStyle.current.copy(
+                                fontSize = TextUnit(16f, TextUnitType.Sp)
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "$0.00",
+                            style = LocalTextStyle.current.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = TextUnit(44f, TextUnitType.Sp)
+                            ),
+                            maxLines = 1
+                        )
+                    }
+
+                    RecordTransactionDetailsNote(
+                        modifier = Modifier
+                            .padding(top = 16.dp, bottom = 16.dp, start = 16.dp)
+                            .fillMaxWidth()
                     )
 
-                    is ChangeDueCalculatorViewModel.UiState.Success -> {
-                        val view: WCMaterialOutlinedCurrencyEditTextView? by remember { mutableStateOf(null) }
-
-                        LaunchedEffect(view) {
-                            view?.let {
-                                it.requestFocus()
-                                context.getSystemService(
-                                    InputMethodManager::class.java
-                                ).showSoftInput(it, InputMethodManager.SHOW_IMPLICIT)
-                            }
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(dimensionResource(id = R.dimen.minor_100)),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            WCOutlinedTypedTextField(
-
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
-                                value = uiState.amountDue,
-                                label = stringResource(R.string.cash_payments_cash_received),
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                                valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = false),
-
-                                onValueChange = {}
-                            )
-                        }
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 48.dp, bottom = 16.dp, start = 32.dp),
-                        ) {
-                            Text(
-                                text = stringResource(R.string.cash_payments_change_due),
-                                style = LocalTextStyle.current.copy(
-                                    fontSize = TextUnit(16f, TextUnitType.Sp)
-                                )
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "$0.00",
-                                style = LocalTextStyle.current.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = TextUnit(44f, TextUnitType.Sp)
-                                ),
-                                maxLines = 1
-                            )
-                        }
-
-                        RecordTransactionDetailsNote(
-                            modifier = Modifier
-                                .padding(top = 16.dp, bottom = 16.dp, start = 16.dp)
-                                .fillMaxWidth()
-                        )
-
-                        MarkOrderAsCompleteButton(
-                            onClick = onCompleteOrderClick,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                    }
-
-                    is ChangeDueCalculatorViewModel.UiState.Error -> {
-                        Text(
-                            text = stringResource(R.string.error_generic),
-                            style = MaterialTheme.typography.h6
-                        )
-                    }
+                    MarkOrderAsCompleteButton(
+                        onClick = onCompleteOrderClick,
+                        modifier = Modifier.padding(top = 16.dp)
+                    )
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                is ChangeDueCalculatorViewModel.UiState.Error -> {
+                    Text(
+                        text = stringResource(R.string.error_generic),
+                        style = MaterialTheme.typography.h6
+                    )
+                }
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
+    }
 
 }
 
