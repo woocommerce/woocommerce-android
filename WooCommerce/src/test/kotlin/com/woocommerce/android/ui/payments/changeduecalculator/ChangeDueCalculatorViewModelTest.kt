@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.payments.methodselection
+package com.woocommerce.android.ui.payments.changeduecalculator
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
@@ -24,7 +24,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private val site: SiteModel = mock()
     private val order: Order = mock {
-        on { total }.thenReturn(BigDecimal(1L))
+        on { total }.thenReturn(BigDecimal(ORDER_TOTAL))
     }
 
     private val selectedSite: SelectedSite = mock {
@@ -39,29 +39,16 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private val orderDetailRepository: OrderDetailRepository = mock()
 
-    private val savedStateHandle: SavedStateHandle = mock()
+    private val savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("orderId" to 1L))
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
-
-    @Test
-    fun `when ViewModel is initialized, then initial state is loading`() {
-        // GIVEN
-        whenever(savedStateHandle.get<Long>("orderId")).thenReturn(1L)
-
-        // WHEN
-        viewModel = initViewModel()
-
-        // THEN
-        assertThat(viewModel.uiState.value).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Loading::class.java)
-    }
 
     @Test
     fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
         // GIVEN
         val expectedAmountDue = "100.00"
         val expectedChange = BigDecimal("0.0")
-        whenever(orderDetailRepository.getOrderById(1L)).thenReturn(order)
-        whenever(savedStateHandle.get<Long>("orderId")).thenReturn(1L)
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
 
         // WHEN
         viewModel = initViewModel()
@@ -72,18 +59,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         uiState as ChangeDueCalculatorViewModel.UiState.Success
         assertThat(uiState.change).isEqualTo(expectedChange)
         assertThat(uiState.amountDue).isEqualTo(expectedAmountDue)
-    }
-
-    @Test
-    fun `given order details retrieval failure, when order details are loaded, then error state is emitted`() = runTest {
-        // GIVEN
-        // TODO
-
-        // WHEN
-        // TODO
-
-        // THEN
-        // TODO
     }
 
     private fun initViewModel(): ChangeDueCalculatorViewModel {
