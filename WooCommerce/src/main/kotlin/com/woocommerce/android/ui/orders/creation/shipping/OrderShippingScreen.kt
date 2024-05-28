@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.shipping
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -142,20 +144,24 @@ fun UpdateShippingScreen(
                 .padding(16.dp)
                 .align(Alignment.BottomCenter)
         ) {
+            if (isEditFlow) {
+                WCOutlinedButton(
+                    onClick = { onRemove() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colors.error
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colors.error)
+                ) {
+                    Text(stringResource(id = R.string.order_creation_remove_shipping))
+                }
+            }
             WCColoredButton(
                 enabled = isSaveChangesEnabled,
                 onClick = { onSaveChanges() },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(id = R.string.order_creation_shipping_add))
-            }
-            if (isEditFlow) {
-                WCOutlinedButton(
-                    onClick = { onRemove() },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(id = R.string.order_creation_remove_shipping))
-                }
             }
         }
     }
