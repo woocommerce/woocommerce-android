@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
