@@ -16,6 +16,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
 import com.woocommerce.android.ui.orders.OrderTestUtils
@@ -27,6 +28,8 @@ import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigura
 import com.woocommerce.android.ui.orders.creation.configuration.ProductRules
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
+import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
@@ -85,7 +88,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     protected lateinit var orderCreateEditRepository: OrderCreateEditRepository
     protected lateinit var orderDetailRepository: OrderDetailRepository
     protected lateinit var parameterRepository: ParameterRepository
-    private lateinit var determineMultipleLinesContext: DetermineMultipleLinesContext
     protected lateinit var tracker: AnalyticsTrackerWrapper
     protected lateinit var resourceProvider: ResourceProvider
     private lateinit var barcodeScanningTracker: BarcodeScanningTracker
@@ -101,6 +103,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     val currencySymbolFinder: CurrencySymbolFinder = mock()
     private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
     protected lateinit var totalsHelper: OrderCreateEditTotalsHelper
+    private lateinit var getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -168,9 +171,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
                 } ?: emptyList()
             }
         }
-        determineMultipleLinesContext = mock {
-            on { invoke(any()) } doReturn OrderCreateEditViewModel.MultipleLinesContext.None
-        }
         tracker = mock()
         barcodeScanningTracker = mock()
         checkDigitRemoverFactory = mock()
@@ -192,6 +192,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         prefs = mock()
         mapFeeLineToCustomAmountUiModel = mock()
         totalsHelper = mock()
+        getShippingMethodsWithOtherValue = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -313,7 +314,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     @Test
     fun `when shipping line added or edited, send tracks event`() {
         val result = ShippingUpdateResult(
-            id = 1L,
+            id = null,
             amount = BigDecimal.TEN,
             name = "Other",
             methodId = "other"
@@ -324,7 +325,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             AnalyticsEvent.ORDER_SHIPPING_METHOD_ADD,
             mapOf(
                 AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_SHIPPING_METHOD to result.methodId
+                AnalyticsTracker.KEY_SHIPPING_METHOD to result.methodId,
+                AnalyticsTracker.KEY_SHIPPING_LINES_COUNT to 1
             )
         )
     }
@@ -537,32 +539,33 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a order creation with gift card already set, when a gift card is removed, then track expected event`() = testBlocking {
-        initMocksForAnalyticsWithOrder(defaultOrderValue)
-        createSut()
+    fun `given a order creation with gift card already set, when a gift card is removed, then track expected event`() =
+        testBlocking {
+            initMocksForAnalyticsWithOrder(defaultOrderValue)
+            createSut()
 
-        sut.onGiftCardSelected("abc")
+            sut.onGiftCardSelected("abc")
 
-        verify(tracker).track(
-            AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
-            mapOf(
-                AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to false,
-                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to false,
+                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
+                )
             )
-        )
 
-        sut.onGiftCardSelected("")
+            sut.onGiftCardSelected("")
 
-        verify(tracker).track(
-            AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
-            mapOf(
-                AnalyticsTracker.KEY_FLOW to tracksFlow,
-                AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to true,
-                AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
+            verify(tracker).track(
+                AnalyticsEvent.ORDER_FORM_GIFT_CARD_SET,
+                mapOf(
+                    AnalyticsTracker.KEY_FLOW to tracksFlow,
+                    AnalyticsTracker.KEY_IS_GIFT_CARD_REMOVED to true,
+                    AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to "compact"
+                )
             )
-        )
-    }
+        }
 
     // region Scanned and Deliver
     @Test
@@ -2501,9 +2504,81 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when shipping button tapped, send tracks event`() {
-        sut.onShippingButtonClicked()
+        sut.onAddOrEditShipping()
 
         verify(tracker).track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
+    }
+
+    @Test
+    fun `when the shipping method is cached, then display the shipping method title`() {
+        val shippingMethodId = "other"
+        val shippingMethodTitle = "Other"
+        val shippingLines = listOf(
+            Order.ShippingLine(
+                methodId = shippingMethodId,
+                total = BigDecimal(10),
+                methodTitle = "Random name"
+            )
+        )
+        val getShippingMethodsResult = flowOf(
+            listOf(
+                ShippingMethod(
+                    id = shippingMethodId,
+                    title = shippingMethodTitle
+                )
+            )
+        )
+        val order = defaultOrderValue.copy(shippingLines = shippingLines)
+        initMocksForAnalyticsWithOrder(order)
+        whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(getShippingMethodsResult)
+        createSut()
+
+        var shippingDetails: List<ShippingLineDetails>? = null
+        sut.shippingLineList.observeForever {
+            shippingDetails = it
+        }
+
+        assertThat(shippingDetails).isNotNull
+        assertThat(shippingDetails!!.size).isEqualTo(shippingLines.size)
+        val shippingMethod = shippingDetails!!.firstOrNull { it.shippingMethod?.id == shippingMethodId }
+        assertThat(shippingMethod).isNotNull
+        assertThat(shippingMethod!!.shippingMethod!!.title).isEqualTo(shippingMethodTitle)
+    }
+
+    @Test
+    fun `when the shipping method is NOT cached, then DON'T display the shipping method title`() {
+        val shippingMethodId = "other"
+        val notFoundMethodId = "ups"
+        val shippingMethodTitle = "Other"
+        val shippingLines = listOf(
+            Order.ShippingLine(
+                methodId = notFoundMethodId,
+                total = BigDecimal(10),
+                methodTitle = "Random name"
+            )
+        )
+        val getShippingMethodsResult = flowOf(
+            listOf(
+                ShippingMethod(
+                    id = shippingMethodId,
+                    title = shippingMethodTitle
+                )
+            )
+        )
+        val order = defaultOrderValue.copy(shippingLines = shippingLines)
+        initMocksForAnalyticsWithOrder(order)
+        whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(getShippingMethodsResult)
+        createSut()
+
+        var shippingDetails: List<ShippingLineDetails>? = null
+        sut.shippingLineList.observeForever {
+            shippingDetails = it
+        }
+
+        assertThat(shippingDetails).isNotNull
+        assertThat(shippingDetails!!.size).isEqualTo(shippingLines.size)
+        val shippingMethod = shippingDetails!!.firstOrNull { it.shippingMethod?.id == shippingMethodId }
+        assertThat(shippingMethod).isNull()
     }
     //endregion
 
@@ -2516,7 +2591,6 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             orderDetailRepository = orderDetailRepository,
             orderCreateEditRepository = orderCreateEditRepository,
             createOrderItem = createOrderItemUseCase,
-            determineMultipleLinesContext = determineMultipleLinesContext,
             parameterRepository = parameterRepository,
             autoSyncOrder = autoSyncOrder,
             autoSyncPriceModifier = autoSyncPriceModifier,
@@ -2541,7 +2615,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             mapFeeLineToCustomAmountUiModel = mapFeeLineToCustomAmountUiModel,
             currencySymbolFinder = currencySymbolFinder,
             totalsHelper = totalsHelper,
-            dateUtils = mock()
+            dateUtils = mock(),
+            getShippingMethodsWithOtherValue = getShippingMethodsWithOtherValue
         )
     }
 
