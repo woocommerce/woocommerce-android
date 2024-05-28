@@ -79,7 +79,7 @@ fun ChangeDueCalculatorScreen(
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxSize()
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -124,13 +124,13 @@ fun ChangeDueCalculatorScreen(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
+                                .padding(vertical = 8.dp)
                         )
 
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 48.dp, bottom = 16.dp, start = 32.dp),
+                                .padding(vertical = 16.dp),
                         ) {
                             Text(
                                 text = stringResource(R.string.cash_payments_change_due),
@@ -153,7 +153,7 @@ fun ChangeDueCalculatorScreen(
 
                         RecordTransactionDetailsNote(
                             modifier = Modifier
-                                .padding(top = 16.dp, bottom = 16.dp, start = 16.dp)
+                                .padding(vertical = 16.dp)
                                 .fillMaxWidth(),
                             checked = recordTransactionDetailsChecked,
                             onCheckedChange = { checked -> recordTransactionDetailsChecked = checked }
@@ -161,7 +161,7 @@ fun ChangeDueCalculatorScreen(
 
                         MarkOrderAsCompleteButton(
                             onClick = onCompleteOrderClick,
-                            modifier = Modifier.padding(top = 16.dp)
+                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                         )
                     }
                 }
@@ -203,7 +203,7 @@ fun MarkOrderAsCompleteButton(onClick: () -> Unit, modifier: Modifier = Modifier
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, top = 8.dp, end = 16.dp)
+            .padding(horizontal = 16.dp)
     ) {
         Text(text = stringResource(R.string.cash_payments_mark_order_as_complete))
     }
