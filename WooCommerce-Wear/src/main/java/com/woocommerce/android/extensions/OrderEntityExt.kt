@@ -1,8 +1,10 @@
 package com.woocommerce.android.extensions
 
 import com.woocommerce.commons.WearOrder
+import com.woocommerce.commons.WearOrderAddress
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.OrderEntity
+import org.wordpress.android.fluxc.model.order.OrderAddress
 
 fun OrderEntity.toWearOrder() = WearOrder(
     localSiteId = localSiteId.value,
@@ -12,7 +14,8 @@ fun OrderEntity.toWearOrder() = WearOrder(
     total = total,
     status = status,
     billingFirstName = billingFirstName,
-    billingLastName = billingLastName
+    billingLastName = billingLastName,
+    address = getBillingAddress().toWearOrderAddress()
 )
 
 fun WearOrder.toOrderEntity() = OrderEntity(
@@ -24,4 +27,18 @@ fun WearOrder.toOrderEntity() = OrderEntity(
     status = status,
     billingFirstName = billingFirstName,
     billingLastName = billingLastName
+)
+
+fun OrderAddress.Billing.toWearOrderAddress() = WearOrderAddress(
+    email = email,
+    firstName = firstName,
+    lastName = lastName,
+    company = company,
+    address1 = address1,
+    address2 = address2,
+    city = city,
+    state = state,
+    postcode = postcode,
+    country = country,
+    phone = phone
 )

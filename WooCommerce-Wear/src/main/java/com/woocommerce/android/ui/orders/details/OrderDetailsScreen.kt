@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -94,9 +93,8 @@ fun OrderDetailsContent(
             .padding(bottom = 40.dp)
     ) {
         OrderHeader(modifier, order)
-        Spacer(modifier = modifier.padding(10.dp))
+        OrderAddressSection(order, modifier)
         OrderProductsSection(isLoadingProducts, order, modifier)
-        Divider()
     }
 }
 
@@ -154,11 +152,92 @@ private fun OrderHeader(
 }
 
 @Composable
+private fun OrderAddressSection(
+    order: OrderItem,
+    modifier: Modifier
+) {
+    Spacer(modifier = modifier.padding(10.dp))
+    Text(
+        text = stringResource(id = R.string.order_details_order_address),
+        textAlign = TextAlign.Center,
+        style = WooTypography.body1,
+        fontWeight = FontWeight.Bold,
+        color = WooColors.woo_gray_alpha,
+        modifier = modifier.fillMaxWidth()
+    )
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        order.address.name.takeIf { it.isNotEmpty() }?.let {
+            Spacer(modifier = modifier.padding(4.dp))
+            Text(
+                text = it,
+                style = WooTypography.title3,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        order.address.email.takeIf { it.isNotEmpty() }?.let {
+            Spacer(modifier = modifier.padding(4.dp))
+            Text(
+                text = it,
+                style = WooTypography.body1,
+                color = WooColors.woo_gray_alpha,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        order.address.addressFirstRow.takeIf { it.isNotEmpty() }?.let {
+            Spacer(modifier = modifier.padding(4.dp))
+            Text(
+                text = it,
+                style = WooTypography.body1,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        order.address.addressSecondRow.takeIf { it.isNotEmpty() }?.let {
+            Spacer(modifier = modifier.padding(4.dp))
+            Text(
+                text = it,
+                style = WooTypography.body1,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        order.address.addressThirdRow.takeIf { it.isNotEmpty() }?.let {
+            Spacer(modifier = modifier.padding(4.dp))
+            Text(
+                text = it,
+                style = WooTypography.body1,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        order.address.country.takeIf { it.isNotEmpty() }?.let {
+            Spacer(modifier = modifier.padding(4.dp))
+            Text(
+                text = it,
+                style = WooTypography.body1,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
 private fun OrderProductsSection(
     isLoadingProducts: Boolean,
     order: OrderItem,
     modifier: Modifier
 ) {
+    Spacer(modifier = modifier.padding(10.dp))
     if (isLoadingProducts) {
         Text(
             text = stringResource(id = R.string.order_details_loading_order_products),

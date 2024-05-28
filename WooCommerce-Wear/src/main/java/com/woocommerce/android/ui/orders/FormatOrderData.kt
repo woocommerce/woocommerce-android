@@ -43,7 +43,7 @@ class FormatOrderData @Inject constructor(
                 email = it.email,
                 addressFirstRow = it.address1,
                 addressSecondRow = it.address2,
-                addressThirdRow = "${it.city}, ${it.state} ${it.postcode}",
+                addressThirdRow = "${it.city} ${it.state} ${it.postcode}",
                 country = it.country
             )
         }
