@@ -4,7 +4,7 @@ TARGET_BRANCH_DEPENDENCIES_FILE="target_branch_dependencies.txt"
 CURRENT_TARGET_BRANCH_DEPENDENCIES_FILE="current_branch_dependencies.txt"
 DIFF_DEPENDENCIES_FOLDER="./build/reports/diff"
 DIFF_DEPENDENCIES_FILE="$DIFF_DEPENDENCIES_FOLDER/diff_dependencies.txt"
-CONFIGURATION="vanillaReleaseRuntimeClasspath"
+CONFIGURATION="jalapenoDebugRuntimeClasspath"
 DEPENDENCY_TREE_VERSION="1.2.0"
 
 REPO_HANDLE="woocommerce/woocommerce-android"
