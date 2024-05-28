@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -50,9 +51,11 @@ import java.math.BigDecimal
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
     onNavigateUp: () -> Unit,
-    onCompleteOrderClick: () -> Unit
+    onCompleteOrderClick: () -> Unit,
+    onAmountReceivedChanged: (BigDecimal) -> Unit
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     Scaffold(
         topBar = {
@@ -131,7 +134,7 @@ fun ChangeDueCalculatorScreen(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "$0.00",
+                            text = if (uiState.change < BigDecimal.ZERO) "-" else uiState.change.toPlainString(),
                             style = LocalTextStyle.current.copy(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = TextUnit(44f, TextUnitType.Sp)
@@ -161,7 +164,6 @@ fun ChangeDueCalculatorScreen(
             }
 
             Spacer(modifier = Modifier.height(32.dp))
-        }
     }
 }
 
@@ -219,9 +221,11 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
     ChangeDueCalculatorScreen(
         uiState = ChangeDueCalculatorViewModel.UiState.Success(
             amountDue = BigDecimal("666.00"),
-            change = BigDecimal("0.00")
+            change = BigDecimal("0.00"),
+            amountReceived = BigDecimal("0.00")
         ),
         onNavigateUp = {},
-        onCompleteOrderClick = {}
+        onCompleteOrderClick = {},
+        onAmountReceivedChanged = {}
     )
 }
