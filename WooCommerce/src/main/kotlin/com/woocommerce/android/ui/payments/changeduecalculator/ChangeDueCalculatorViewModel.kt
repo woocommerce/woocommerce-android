@@ -1,6 +1,11 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
+import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -58,5 +63,21 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             val newChange = amount - currentState.amountDue
             _uiState.value = currentState.copy(amountReceived = amount, change = newChange)
         }
+    }
+
+    suspend fun addOrderNote() {
+        val draftNote = OrderNote(note = "CASH", isCustomerNote = false)
+
+        orderDetailRepository.addOrderNote(orderId, draftNote)
+            .fold(
+                onSuccess = {
+                    AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD_SUCCESS)
+                },
+                onFailure = {
+                    AnalyticsTracker.track(
+                        AnalyticsEvent.ORDER_NOTE_ADD_FAILED,
+                    )
+                }
+            )
     }
 }

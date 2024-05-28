@@ -14,6 +14,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ChangeDueCalculatorFragment : BaseFragment() {
@@ -48,10 +50,13 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     uiState = uiState,
                     onNavigateUp = viewModel::onBackPressed,
                     onCompleteOrderClick = {
-                        navigateBackWithResult(
-                            key = IS_ORDER_PAID_RESULT,
-                            result = true,
-                        )
+                        MainScope().launch {
+                            viewModel.addOrderNote()
+                            navigateBackWithResult(
+                                key = IS_ORDER_PAID_RESULT,
+                                result = true,
+                            )
+                        }
                     },
                     onAmountReceivedChanged = { viewModel.updateAmountReceived(it) }
                 )
