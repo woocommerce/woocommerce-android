@@ -56,10 +56,13 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     private val appPrefs: AppPrefsWrapper,
     private val couponUtils: CouponUtils,
     private val parameterRepository: ParameterRepository,
-    private val coroutineDispatchers: CoroutineDispatchers
+    coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        private const val COUPONS_LIMIT = 3
+        // We store double the number of coupons to account for the possibility of some coupons being deleted
+        // As the report API keeps track of the deleted ones
+        private const val INTERNAL_COUPONS_LIMIT = 6
+        private const val UI_COUPONS_LIMIT = 3
     }
 
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
@@ -169,17 +172,25 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                 couponsResult.fold(
                     onSuccess = { coupons ->
                         // Map performance reports to coupons and preserve the order of mostActiveCoupons
-                        val models = mostActiveCoupons.map { performanceReport ->
-                            val coupon = coupons.firstOrNull { coupon -> coupon.id == performanceReport.couponId }
-                                ?: error("Coupon not found for id: ${performanceReport.couponId}")
-
-                            CouponUiModel(
-                                id = coupon.id,
-                                code = coupon.code.orEmpty(),
-                                uses = performanceReport.ordersCount,
-                                description = couponUtils.generateSummary(coupon, currencyCodeTask.await())
-                            )
-                        }
+                        val models = mostActiveCoupons.mapNotNull { performanceReport ->
+                            coupons.firstOrNull { coupon -> coupon.id == performanceReport.couponId }
+                                ?.let { coupon ->
+                                    CouponUiModel(
+                                        id = coupon.id,
+                                        code = coupon.code.orEmpty(),
+                                        uses = performanceReport.ordersCount,
+                                        description = couponUtils.generateSummary(coupon, currencyCodeTask.await())
+                                    )
+                                }.also {
+                                    if (it == null) {
+                                        WooLog.w(
+                                            WooLog.T.DASHBOARD,
+                                            "Coupon not found for performance report: $performanceReport," +
+                                                "it may have been deleted"
+                                        )
+                                    }
+                                }
+                        }.take(UI_COUPONS_LIMIT)
 
                         Result.success(models)
                     },
@@ -201,7 +212,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
             emit(
                 couponRepository.fetchMostActiveCoupons(
                     dateRange = dateRange,
-                    limit = COUPONS_LIMIT
+                    limit = INTERNAL_COUPONS_LIMIT
                 ).onSuccess {
                     couponsReportCache[dateRange] = it
                 }
@@ -215,7 +226,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     ) = flow {
         suspend fun fetchCoupons() = couponRepository.fetchCoupons(
             page = 1,
-            pageSize = COUPONS_LIMIT,
+            pageSize = INTERNAL_COUPONS_LIMIT,
             couponIds = couponIds
         )
 
