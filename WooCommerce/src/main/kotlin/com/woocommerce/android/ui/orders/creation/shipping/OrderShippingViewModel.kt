@@ -153,6 +153,12 @@ data class ShippingUpdateResult(
     val methodId: String?
 ) : Parcelable
 
+fun ShippingUpdateResult.getMethodIdOrDefault() = if (this.methodId.isNullOrEmpty()) {
+    " " // Default should be N/A Id (""), but passing "" fails, so we add a space
+} else {
+    this.methodId
+}
+
 data class UpdateShipping(val shippingUpdate: ShippingUpdateResult) : MultiLiveEvent.Event()
 data class RemoveShipping(val id: Long) : MultiLiveEvent.Event()
 data class SelectShippingMethod(val currentMethodId: String?) : MultiLiveEvent.Event()

@@ -1529,7 +1529,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 shippingUpdateResult.id != null -> draft.shippingLines.map { shippingLine ->
                     if (shippingLine.itemId == shippingUpdateResult.id) {
                         shippingLine.copy(
-                            methodId = shippingUpdateResult.methodId ?: "other",
+                            methodId = shippingUpdateResult.getMethodIdOrDefault(),
                             total = shippingUpdateResult.amount,
                             methodTitle = shippingUpdateResult.name
                         )
@@ -1541,7 +1541,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 draft.shippingLines.isNotEmpty() -> draft.shippingLines.toMutableList().also {
                     it.add(
                         ShippingLine(
-                            methodId = shippingUpdateResult.methodId ?: "other",
+                            methodId = shippingUpdateResult.getMethodIdOrDefault(),
                             total = shippingUpdateResult.amount,
                             methodTitle = shippingUpdateResult.name
                         )
@@ -1550,7 +1550,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
                 else -> listOf(
                     ShippingLine(
-                        methodId = shippingUpdateResult.methodId ?: "other",
+                        methodId = shippingUpdateResult.getMethodIdOrDefault(),
                         total = shippingUpdateResult.amount,
                         methodTitle = shippingUpdateResult.name
                     )
