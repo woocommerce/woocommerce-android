@@ -65,12 +65,13 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         }
     }
 
-    fun getCurrencySymbol(): String {
+    private fun getCurrencySymbol(): String {
         val siteParameters = parameterRepository.getParameters()
         return siteParameters.currencySymbol.orEmpty()
     }
 
-    suspend fun addOrderNote(noteString: String) {
+    suspend fun addOrderNote(noteStringTemplate: String) {
+        val noteString = generateOrderNoteString(noteStringTemplate)
         val draftNote = OrderNote(note = noteString, isCustomerNote = false)
 
         orderDetailRepository.addOrderNote(orderId, draftNote)
@@ -79,10 +80,22 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                     AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD_SUCCESS)
                 },
                 onFailure = {
-                    AnalyticsTracker.track(
-                        AnalyticsEvent.ORDER_NOTE_ADD_FAILED,
-                    )
+                    AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD_FAILED)
                 }
             )
+    }
+
+    private fun generateOrderNoteString(noteStringTemplate: String): String {
+        return when (val state = _uiState.value) {
+            is UiState.Success -> {
+                val currencySymbol = getCurrencySymbol()
+                String.format(
+                    noteStringTemplate,
+                    "$currencySymbol${state.amountReceived.toPlainString()}",
+                    "$currencySymbol${state.change.toPlainString()}"
+                )
+            }
+            else -> noteStringTemplate
+        }
     }
 }
