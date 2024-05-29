@@ -9,7 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosCardReaderActivityViewModel @Inject constructor(
+class WooPosCardReaderViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
     init {
@@ -17,7 +17,7 @@ class WooPosCardReaderActivityViewModel @Inject constructor(
             is WooPosCardReaderMode.Connection -> {
                 triggerEvent(
                     StartCardReaderConnectionFlow(
-                        cardReaderFlowParam = CardReaderFlowParam.CardReadersHub(),
+                        cardReaderFlowParam = CardReaderFlowParam.WooPosConnection,
                         cardReaderType = CardReaderType.EXTERNAL
                     )
                 )

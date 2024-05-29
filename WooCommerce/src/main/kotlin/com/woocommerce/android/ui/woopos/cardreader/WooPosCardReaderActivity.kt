@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_card_reader) {
-    val viewModel: WooPosCardReaderActivityViewModel by viewModels()
+    val viewModel: WooPosCardReaderViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

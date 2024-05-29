@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.WooPosConnection
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -120,6 +121,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
                 }
             }
+            is WooPosConnection -> error("Unsupported card reader flow param: $param")
         }
     }
 
