@@ -19,12 +19,14 @@ import javax.inject.Inject
 @HiltViewModel
 class ChangeDueCalculatorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val orderDetailRepository: OrderDetailRepository
+    private val orderDetailRepository: OrderDetailRepository,
+    private val parameterRepository: ParameterRepository
 ) : ScopedViewModel(savedStateHandle) {
-    @Inject
-    lateinit var parameterRepository: ParameterRepository
     val navArgs: ChangeDueCalculatorFragmentArgs by savedStateHandle.navArgs()
     private val orderId: Long = navArgs.orderId
+    private val _recordTransactionDetailsChecked = MutableStateFlow(false)
+    val recordTransactionDetailsChecked: StateFlow<Boolean> = _recordTransactionDetailsChecked
+
 
     sealed class UiState {
         data object Loading : UiState()
@@ -70,19 +72,25 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         return siteParameters.currencySymbol.orEmpty()
     }
 
-    suspend fun addOrderNote(noteStringTemplate: String) {
-        val noteString = generateOrderNoteString(noteStringTemplate)
-        val draftNote = OrderNote(note = noteString, isCustomerNote = false)
+    fun updateRecordTransactionDetailsChecked(checked: Boolean) {
+        _recordTransactionDetailsChecked.value = checked
+    }
+    suspend fun addOrderNoteIfChecked(noteStringTemplate: String) {
+        if (recordTransactionDetailsChecked.value) {
 
-        orderDetailRepository.addOrderNote(orderId, draftNote)
-            .fold(
-                onSuccess = {
-                    AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD_SUCCESS)
-                },
-                onFailure = {
-                    AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD_FAILED)
-                }
-            )
+            val noteString = generateOrderNoteString(noteStringTemplate)
+            val draftNote = OrderNote(note = noteString, isCustomerNote = false)
+
+            orderDetailRepository.addOrderNote(orderId, draftNote)
+                .fold(
+                    onSuccess = {
+                        AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD_SUCCESS)
+                    },
+                    onFailure = {
+                        AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD_FAILED)
+                    }
+                )
+        }
     }
 
     private fun generateOrderNoteString(noteStringTemplate: String): String {

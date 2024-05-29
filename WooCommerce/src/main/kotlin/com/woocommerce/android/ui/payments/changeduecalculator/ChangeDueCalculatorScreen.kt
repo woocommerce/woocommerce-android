@@ -50,13 +50,14 @@ import java.math.BigDecimal
 @Composable
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
+    recordTransactionDetailsChecked: Boolean,
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit,
-    onAmountReceivedChanged: (BigDecimal) -> Unit
+    onAmountReceivedChanged: (BigDecimal) -> Unit,
+    onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    var recordTransactionDetailsChecked by remember { mutableStateOf(false) }
 
     WooThemeWithBackground {
         Scaffold(
@@ -156,7 +157,7 @@ fun ChangeDueCalculatorScreen(
                                 .padding(vertical = 16.dp)
                                 .fillMaxWidth(),
                             checked = recordTransactionDetailsChecked,
-                            onCheckedChange = { checked -> recordTransactionDetailsChecked = checked }
+                            onCheckedChange = onRecordTransactionDetailsCheckedChanged
                         )
 
                         MarkOrderAsCompleteButton(
@@ -230,8 +231,10 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("0.00")
         ),
+        recordTransactionDetailsChecked = false,
         onNavigateUp = {},
         onCompleteOrderClick = {},
-        onAmountReceivedChanged = {}
+        onAmountReceivedChanged = {},
+        onRecordTransactionDetailsCheckedChanged = {}
     )
 }
