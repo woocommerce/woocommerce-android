@@ -41,5 +41,5 @@ class IsWooPosEnabled @Inject constructor(
 
     private fun isPluginSetupEnabled(paymentAccount: WCPaymentAccountResult): Boolean =
         paymentAccount.status == WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE ||
-                paymentAccount.status == WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
+            paymentAccount.status == WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
 }
