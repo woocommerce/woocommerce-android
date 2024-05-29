@@ -53,7 +53,7 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     uiState = uiState,
                     recordTransactionDetailsChecked = recordTransactionDetailsChecked,
                     canCompleteOrder = viewModel.canCompleteOrder(),
-                    currencySymbol =currencySymbol,
+                    currencySymbol = currencySymbol,
                     onNavigateUp = viewModel::onBackPressed,
                     onCompleteOrderClick = {
                         MainScope().launch {
