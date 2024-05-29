@@ -48,8 +48,9 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         val uiState = viewModel.uiState.value
         assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
         uiState as ChangeDueCalculatorViewModel.UiState.Success
-        assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
+        assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
+        assertThat(uiState.amountReceived).isEqualTo(BigDecimal.ZERO)
     }
 
     @Test
@@ -73,6 +74,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         uiState = viewModel.uiState.value
         assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
         uiState as ChangeDueCalculatorViewModel.UiState.Success
+        assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
         assertThat(uiState.amountReceived).isEqualTo(amountReceived)
         assertThat(uiState.change).isEqualTo(BigDecimal("50.00"))
     }
@@ -112,6 +114,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         val uiState = viewModel.uiState.value
         assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
         uiState as ChangeDueCalculatorViewModel.UiState.Success
+        assertThat(uiState.amountDue).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.amountReceived).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
     }
@@ -135,6 +138,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         val uiState = viewModel.uiState.value
         assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
         uiState as ChangeDueCalculatorViewModel.UiState.Success
+        assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
         assertThat(uiState.amountReceived).isEqualTo(amountReceived)
         assertThat(uiState.change).isEqualTo(BigDecimal("-50.00"))
     }
@@ -156,6 +160,12 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         val canCompleteOrder = viewModel.canCompleteOrder()
 
         // THEN
+        val uiState = viewModel.uiState.value
+        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
+        uiState as ChangeDueCalculatorViewModel.UiState.Success
+        assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
+        assertThat(uiState.amountReceived).isEqualTo(amountReceived)
+        assertThat(uiState.change).isEqualTo(BigDecimal("0.00"))
         assertThat(canCompleteOrder).isTrue
     }
 
