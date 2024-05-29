@@ -40,7 +40,7 @@ class FetchOrdersTest : BaseUnitTest() {
         whenever(networkStatus.isConnected()).thenReturn(true)
         val events = mutableListOf<OrdersRequest>()
 
-        FetchOrders(phoneRepository, ordersRepository, networkStatus)
+        createSut()
             .invoke(selectedSite)
             .onEach { events.add(it) }
             .launchIn(this)
@@ -56,7 +56,7 @@ class FetchOrdersTest : BaseUnitTest() {
         whenever(networkStatus.isConnected()).thenReturn(true)
         val events = mutableListOf<OrdersRequest>()
 
-        FetchOrders(phoneRepository, ordersRepository, networkStatus)
+        createSut()
             .invoke(selectedSite)
             .onEach { events.add(it) }
             .launchIn(this)
@@ -72,7 +72,7 @@ class FetchOrdersTest : BaseUnitTest() {
         whenever(networkStatus.isConnected()).thenReturn(true)
         val events = mutableListOf<OrdersRequest>()
 
-        FetchOrders(phoneRepository, ordersRepository, networkStatus)
+        createSut()
             .invoke(selectedSite)
             .onEach { events.add(it) }
             .launchIn(this)
@@ -91,7 +91,7 @@ class FetchOrdersTest : BaseUnitTest() {
             .thenReturn(flowOf(expectedOrders))
         val events = mutableListOf<OrdersRequest>()
 
-        FetchOrders(phoneRepository, ordersRepository, networkStatus)
+        createSut()
             .invoke(selectedSite)
             .onEach { events.add(it) }
             .launchIn(this)
@@ -110,7 +110,7 @@ class FetchOrdersTest : BaseUnitTest() {
         whenever(ordersRepository.getStoredOrders(selectedSite)).thenReturn(fetchedOrders)
         val events = mutableListOf<OrdersRequest>()
 
-        FetchOrders(phoneRepository, ordersRepository, networkStatus)
+        createSut()
             .invoke(selectedSite)
             .onEach { events.add(it) }
             .launchIn(this)
@@ -119,6 +119,8 @@ class FetchOrdersTest : BaseUnitTest() {
 
         assertThat(events).containsExactly(Finished(expectedOrders))
     }
+
+    private fun createSut() = FetchOrders(phoneRepository, ordersRepository, networkStatus, mock())
 
     private fun mockedOrders() = listOf(
         OrderEntity(

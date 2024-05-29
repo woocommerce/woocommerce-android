@@ -26,6 +26,7 @@ class FetchSiteDataTest : BaseUnitTest() {
     fun `when user is logged in, return Logged state`() = testBlocking {
         // Given
         val events = mutableListOf<LoginRequestState>()
+        whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(true))
 
         // When
@@ -42,6 +43,7 @@ class FetchSiteDataTest : BaseUnitTest() {
     fun `when user is not logged in and waiting timeout, return Timeout state`() = testBlocking {
         // Given
         val events = mutableListOf<LoginRequestState>()
+        whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(false))
 
         // When
@@ -59,6 +61,7 @@ class FetchSiteDataTest : BaseUnitTest() {
     fun `when user is not logged in and waiting, return Waiting state`() = testBlocking {
         // Given
         val events = mutableListOf<LoginRequestState>()
+        whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(true)
         whenever(loginRepository.isSiteAvailable).thenReturn(flowOf(false))
 
         // When

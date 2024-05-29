@@ -56,6 +56,7 @@ class StoreStatsViewModelTest : BaseUnitTest() {
             fetchStats,
             Locale.getDefault(),
             loginRepository,
+            mock(),
             SavedStateHandle()
         )
     }

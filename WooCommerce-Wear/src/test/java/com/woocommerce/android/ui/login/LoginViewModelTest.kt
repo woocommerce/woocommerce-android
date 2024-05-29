@@ -26,7 +26,6 @@ class LoginViewModelTest : BaseUnitTest() {
 
     private lateinit var sut: LoginViewModel
     private val fetchSiteData: FetchSiteData = mock()
-    private val phoneConnectionRepository: PhoneConnectionRepository = mock()
     private val navController: NavHostController = mock()
 
     @Test
@@ -58,71 +57,23 @@ class LoginViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `on try again button clicked, loading is started and message is sent`() = testBlocking {
-        // Given
-        createSut()
-
-        // When
-        sut.onTryAgainClicked()
-
-        // Then
-        verify(phoneConnectionRepository, times(2)).sendMessage(REQUEST_SITE)
-    }
-
-    @Test
-    fun `on try again button clicked, loading is started`() = testBlocking {
-        // Given
-        val isLoadingEvents = mutableListOf<Boolean>()
-        whenever(phoneConnectionRepository.sendMessage(REQUEST_SITE))
-            .doReturn(Result.failure(Exception("")))
-        createSut()
-        sut.viewState.observeForever { isLoadingEvents.add(it.isLoading) }
-
-        // When
-        sut.onTryAgainClicked()
-
-        // Then
-        assertThat(isLoadingEvents).hasSize(3)
-        assertThat(isLoadingEvents[0]).isFalse
-        assertThat(isLoadingEvents[1]).isTrue
-        assertThat(isLoadingEvents[2]).isFalse
-    }
-
-    @Test
-    fun `on viewModel init, then send REQUEST_SITE message and observe the logged in status`() = testBlocking {
-        // Given
-        whenever(phoneConnectionRepository.sendMessage(REQUEST_SITE))
-            .doReturn(Result.success(Unit))
-
-        // When
-        createSut()
-
-        // Then
-        verify(phoneConnectionRepository).sendMessage(REQUEST_SITE)
-        verify(fetchSiteData).invoke()
-    }
-
-    @Test
-    fun `on viewModel init, then fail REQUEST_SITE message and cancel loading`() = testBlocking {
+    fun `when login is waiting, then view state is loading`() = testBlocking {
         // Given
         var isLoading: Boolean? = null
-        whenever(phoneConnectionRepository.sendMessage(REQUEST_SITE))
-            .doReturn(Result.failure(Exception("")))
-
-        // When
+        whenever(fetchSiteData.invoke()).thenReturn(flowOf(Timeout))
         createSut()
         sut.viewState.observeForever { isLoading = it.isLoading }
 
         // Then
-        verify(phoneConnectionRepository).sendMessage(REQUEST_SITE)
-        verify(fetchSiteData, never()).invoke()
         assertThat(isLoading).isNotNull()
         assertThat(isLoading).isFalse
+
     }
 
     private fun createSut() {
         sut = LoginViewModel(
             fetchSiteData,
+            mock(),
             navController,
             SavedStateHandle()
         )
