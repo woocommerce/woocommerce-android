@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardreader
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
@@ -27,7 +28,13 @@ class WooPosCardReaderViewModel @Inject constructor(
                 // TODO: Implement
             }
 
-            null -> error("No card reader mode provided")
+            null -> {
+
+            }
         }
+    }
+
+    fun onConnectToReaderResultReceived(connected: Boolean) {
+        Log.d("WooPosCardReaderViewModel", "onConnectToReaderResultReceived: $connected")
     }
 }
