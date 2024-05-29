@@ -1,8 +1,7 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.R
-import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.OrderNote
@@ -65,8 +64,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         }
     }
 
-    suspend fun addOrderNote() {
-        val draftNote = OrderNote(note = "CASH", isCustomerNote = false)
+    suspend fun addOrderNote(noteString: String) {
+        val draftNote = OrderNote(note = noteString, isCustomerNote = false)
 
         orderDetailRepository.addOrderNote(orderId, draftNote)
             .fold(

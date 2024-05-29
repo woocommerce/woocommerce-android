@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -51,7 +52,8 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     onNavigateUp = viewModel::onBackPressed,
                     onCompleteOrderClick = {
                         MainScope().launch {
-                            viewModel.addOrderNote()
+                            val noteString = getString(R.string.cash_payments_order_note_text)
+                            viewModel.addOrderNote(noteString)
                             navigateBackWithResult(
                                 key = IS_ORDER_PAID_RESULT,
                                 result = true,
