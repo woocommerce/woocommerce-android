@@ -66,7 +66,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         }
     }
 
-    private fun getCurrencySymbol(): String {
+    fun getCurrencySymbol(): String {
         val siteParameters = parameterRepository.getParameters()
         return siteParameters.currencySymbol.orEmpty()
     }
@@ -74,6 +74,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     fun updateRecordTransactionDetailsChecked(checked: Boolean) {
         _recordTransactionDetailsChecked.value = checked
     }
+
     suspend fun addOrderNoteIfChecked(noteStringTemplate: String) {
         if (recordTransactionDetailsChecked.value) {
             val noteString = generateOrderNoteString(noteStringTemplate)

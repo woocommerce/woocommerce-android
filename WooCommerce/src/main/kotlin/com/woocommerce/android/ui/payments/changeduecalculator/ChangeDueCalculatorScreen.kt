@@ -52,6 +52,7 @@ fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
     recordTransactionDetailsChecked: Boolean,
     canCompleteOrder: Boolean,
+    currencySymbol: String,
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit,
     onAmountReceivedChanged: (BigDecimal) -> Unit,
@@ -142,7 +143,7 @@ fun ChangeDueCalculatorScreen(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = if (uiState.change < BigDecimal.ZERO) "-" else uiState.change.toPlainString(),
+                                text = if (uiState.change < BigDecimal.ZERO) "-" else "$currencySymbol${uiState.change.toPlainString()}",
                                 style = LocalTextStyle.current.copy(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = TextUnit(44f, TextUnitType.Sp)
@@ -207,7 +208,7 @@ fun MarkOrderAsCompleteButton(onClick: () -> Unit, enabled: Boolean, modifier: M
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        enabled=enabled
+        enabled = enabled
     ) {
         Text(text = stringResource(R.string.cash_payments_mark_order_as_complete))
     }
@@ -236,6 +237,7 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
         ),
         recordTransactionDetailsChecked = false,
         canCompleteOrder = false,
+        currencySymbol = "$",
         onNavigateUp = {},
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
