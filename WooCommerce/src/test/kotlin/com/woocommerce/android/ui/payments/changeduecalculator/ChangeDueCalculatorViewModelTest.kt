@@ -238,7 +238,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
             // THEN
             verify(orderDetailRepository, times(1)).addOrderNote(any(), any())
-            // You might want to add further verification for the exact note content by capturing the argument passed to addOrderNote
         }
 
     @Test
