@@ -1,10 +1,9 @@
 package com.woocommerce.android.ui.woopos.root.navigation
 
-import android.content.Intent
+import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.navigation
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
 import com.woocommerce.android.ui.woopos.cart.CART_ROUTE
 import com.woocommerce.android.ui.woopos.cart.cartScreen
 import com.woocommerce.android.ui.woopos.checkout.checkoutScreen
@@ -13,7 +12,8 @@ import com.woocommerce.android.ui.woopos.checkout.navigateToCheckoutScreen
 const val MAIN_GRAPH_ROUTE = "main-graph"
 
 fun NavGraphBuilder.checkoutGraph(
-    navController: NavController
+    navController: NavController,
+    onConnectToCardReaderClicked: (Context) -> Unit,
 ) {
     navigation(
         startDestination = CART_ROUTE,
@@ -21,10 +21,7 @@ fun NavGraphBuilder.checkoutGraph(
     ) {
         cartScreen(
             onCheckoutClick = navController::navigateToCheckoutScreen,
-            onConnectToCardReaderClicked = {
-                val intent = Intent(navController.context, WooPosCardReaderActivity::class.java)
-                navController.context.startActivity(intent)
-            }
+            onConnectToCardReaderClicked = { onConnectToCardReaderClicked(navController.context) },
         )
         checkoutScreen(
             onBackClick = navController::popBackStack
