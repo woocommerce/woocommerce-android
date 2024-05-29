@@ -35,10 +35,11 @@ class IsWooPosEnabled @Inject constructor(
                 ippPlugin == WOOCOMMERCE_PAYMENTS &&
                 paymentAccount.storeCurrencies.default.lowercase() == "usd" &&
                 isWindowSizeExpandedAndBigger() &&
-                isPluginSetupCompleted(paymentAccount)
+                isPluginSetupEnabled(paymentAccount)
             ).also { cachedResult = it }
     }
 
-    private fun isPluginSetupCompleted(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status == WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE
+    private fun isPluginSetupEnabled(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status == WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE ||
+                paymentAccount.status == WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
 }
