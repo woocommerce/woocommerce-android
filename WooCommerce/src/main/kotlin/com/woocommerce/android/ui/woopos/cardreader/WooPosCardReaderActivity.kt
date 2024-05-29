@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,7 +29,17 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             when (event) {
                 is StartCardReaderConnectionFlow -> {
                     val navController = navHostFragment.navController
-                    navController.navInflater.inflate(R.navigation.nav_graph_card_reader_connection_flow)
+                    navController.navInflater.inflate(R.navigation.nav_graph_payment_flow).apply {
+                        setStartDestination(R.id.cardReaderStatusCheckerDialogFragment)
+                    }.also {
+                        navController.setGraph(
+                            it,
+                            CardReaderStatusCheckerDialogFragmentArgs(
+                                cardReaderFlowParam = event.cardReaderFlowParam,
+                                cardReaderType = event.cardReaderType,
+                            ).toBundle()
+                        )
+                    }
                 }
             }
         }
