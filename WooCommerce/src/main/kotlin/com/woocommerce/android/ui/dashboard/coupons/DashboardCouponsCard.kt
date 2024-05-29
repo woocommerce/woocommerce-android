@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
+import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsViewModel.DateRangeState
@@ -164,11 +165,11 @@ private fun DashboardCouponsCard(
             titleResource = R.string.dashboard_coupons_view_all_button,
             action = onViewAllClick
         ),
-        isError = viewState is Error,
+        isError = viewState is State.Error,
         modifier = modifier
     ) {
         Column {
-            if (viewState !is Error) {
+            if (viewState !is State.Error) {
                 DashboardDateRangeHeader(
                     rangeSelection = dateRangeState.rangeSelection,
                     dateFormatted = dateRangeState.rangeFormatted,
@@ -197,9 +198,10 @@ private fun DashboardCouponsCard(
                 }
 
                 is State.Error -> {
-                    WidgetError(
-                        onContactSupportClicked = onContactSupportClick,
-                        onRetryClicked = onRetryClick
+                    CouponsErrorView(
+                        error = viewState,
+                        onRetryClick = onRetryClick,
+                        onContactSupportClick = onContactSupportClick
                     )
                 }
             }
@@ -347,5 +349,27 @@ private fun Header(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.subtitle2,
             color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
         )
+    }
+}
+
+@Composable
+fun CouponsErrorView(
+    error: State.Error,
+    onRetryClick: () -> Unit,
+    onContactSupportClick: () -> Unit
+) {
+    when (error) {
+        State.Error.Generic -> {
+            WidgetError(
+                onContactSupportClicked = onContactSupportClick,
+                onRetryClicked = onRetryClick
+            )
+        }
+        State.Error.WCAnalyticsInactive -> {
+            WCAnalyticsNotAvailableErrorView(
+                title = stringResource(id = R.string.dashboard_coupons_wcanalytics_inactive_title),
+                onContactSupportClick = onContactSupportClick
+            )
+        }
     }
 }
