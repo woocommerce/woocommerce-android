@@ -1,6 +1,6 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/paymentFlow"
+    android:id="@+id/cardReaderConnectionFlow"
     app:startDestination="@id/cardReaderWelcomeDialogFragment">
 
     <dialog
