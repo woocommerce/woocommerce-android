@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.changeduecalculator
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -25,6 +26,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private val orderDetailRepository: OrderDetailRepository = mock()
 
+    private val parameterRepository: ParameterRepository = mock()
+
     private val savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("orderId" to 1L))
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
@@ -37,7 +40,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         // WHEN
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
-            orderDetailRepository = orderDetailRepository
+            orderDetailRepository = orderDetailRepository,
+            parameterRepository = parameterRepository
         )
 
         // THEN
@@ -54,7 +58,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
-            orderDetailRepository = orderDetailRepository
+            orderDetailRepository = orderDetailRepository,
+            parameterRepository = parameterRepository
         )
         var uiState = viewModel.uiState.value
         assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
