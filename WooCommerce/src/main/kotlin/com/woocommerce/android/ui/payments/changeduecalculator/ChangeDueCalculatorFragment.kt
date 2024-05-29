@@ -52,7 +52,18 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     onNavigateUp = viewModel::onBackPressed,
                     onCompleteOrderClick = {
                         MainScope().launch {
-                            val noteString = getString(R.string.cash_payments_order_note_text)
+                            val noteStringTemplate = getString(R.string.cash_payments_order_note_text)
+                            val noteString = when (val state = uiState) {
+                                is ChangeDueCalculatorViewModel.UiState.Success -> {
+                                    String.format(
+                                        noteStringTemplate,
+                                        state.amountReceived.toPlainString(),
+                                        state.change.toPlainString()
+                                    )
+                                }
+                                else -> noteStringTemplate
+                            }
+
                             viewModel.addOrderNote(noteString)
                             navigateBackWithResult(
                                 key = IS_ORDER_PAID_RESULT,

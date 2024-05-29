@@ -580,7 +580,7 @@
     <string name="cash_payments_change_due">Change due</string>
     <string name="cash_payments_record_transaction_details">Record transaction details in order note</string>
     <string name="cash_payments_mark_order_as_complete">Mark Order as Complete</string>
-    <string name="cash_payments_order_note_text">The order was paid by cash. Customer paid x. The change due was x.</string>
+    <string name="cash_payments_order_note_text">The order was paid by cash. Customer paid %s. The change due was %s.</string>
 
     <!--
          Custom Amounts
