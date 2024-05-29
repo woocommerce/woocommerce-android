@@ -27,7 +27,6 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private val _recordTransactionDetailsChecked = MutableStateFlow(false)
     val recordTransactionDetailsChecked: StateFlow<Boolean> = _recordTransactionDetailsChecked
 
-
     sealed class UiState {
         data object Loading : UiState()
         data class Success(
@@ -77,7 +76,6 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     }
     suspend fun addOrderNoteIfChecked(noteStringTemplate: String) {
         if (recordTransactionDetailsChecked.value) {
-
             val noteString = generateOrderNoteString(noteStringTemplate)
             val draftNote = OrderNote(note = noteString, isCustomerNote = false)
 
