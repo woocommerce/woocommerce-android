@@ -1,9 +1,8 @@
-package com.woocommerce.android.ui.mystore
+package com.woocommerce.android.ui.stats
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.stats.StoreStatsViewModel
 import com.woocommerce.android.ui.stats.datasource.FetchStats
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
