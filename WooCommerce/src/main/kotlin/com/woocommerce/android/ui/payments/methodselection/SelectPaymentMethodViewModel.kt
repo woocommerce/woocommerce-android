@@ -88,6 +88,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
 
     init {
         checkStatus()
+        if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled()) {
+            handleIsOrderPaidNavigationArgs()
+        }
     }
 
     private fun checkStatus() {
@@ -117,6 +120,12 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
                 }
             }
+        }
+    }
+
+    private fun handleIsOrderPaidNavigationArgs() {
+        if (navArgs.isOrderPaid) {
+            onCashPaymentConfirmed()
         }
     }
 

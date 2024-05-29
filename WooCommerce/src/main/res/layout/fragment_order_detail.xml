@@ -79,15 +79,6 @@
                         android:visibility="gone"
                         tools:visibility="visible" />
 
-                    <!-- Order Shipping method warning card -->
-                    <com.woocommerce.android.ui.orders.OrderDetailShippingMethodNoticeCard
-                        android:id="@+id/orderDetail_shippingMethodNotice"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
                     <!-- Product List -->
                     <com.woocommerce.android.ui.orders.details.views.OrderDetailProductListView
                         android:id="@+id/orderDetail_productList"
@@ -107,6 +98,12 @@
                         android:layout_height="wrap_content"
                         android:clipToPadding="false"
                         android:contentDescription="@string/custom_amounts" />
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/orderDetail_shippingLines"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/shipping" />
 
                     <!-- Custom fields button -->
                     <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomFieldsCard

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-13 16:54:10+0000
+Translation-Revision-Date: 2024-05-21 23:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Ponto de entrada temporário para modo POS</string>
+    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="cash_payments_take_payment_title">Aceitar pagamento (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Ver todas as avaliações</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Nenhuma avaliação corresponde ao filtro selecionado. Tente alterar o filtro</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Nenhuma avaliação encontrada.</string>
+    <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="my_store_widget_reviews_title">Avaliações mais recentes</string>
+    <string name="my_store_widget_orders_title">Pedidos mais recentes</string>
+    <string name="dashboard_action_view_all_orders">Visualizar todos os pedidos</string>
+    <string name="dashboard_filter_menu_content_description">Abrir menu suspenso do filtro</string>
     <string name="product_category_clear_parent">Apagar categoria principal</string>
     <string name="product_list_fetch_error">Erro ao buscar produtos</string>
     <string name="order_creation_add_shipping_method_select_hint">Selecione um método de envio</string>
@@ -25,8 +36,6 @@ Language: pt_BR
     <string name="dynamic_dashboard_widget_menu_item_hide">Ocultar %s</string>
     <string name="my_store_widget_onboarding_completed">Concluída</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Ainda precisa de ajuda? Fale conosco</string>
-    <string name="my_store_stats_plugin_inactive_description">Use a versão mais recente do WooCommerce no seu site e certifique-se de que o WooCommerce Admin está ativado.</string>
     <string name="my_store_stats_plugin_inactive_title">Não podemos exibir\n a análise do seu site</string>
     <string name="store_onboarding_task_view_all_tasks">Visualizar todas as tarefas</string>
     <string name="analytics_session_no_available_description">A análise da sessão depende da contagem de visitantes diferentes, não disponíveis para datas personalizadas</string>

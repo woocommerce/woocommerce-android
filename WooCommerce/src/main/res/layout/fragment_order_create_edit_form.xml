@@ -90,9 +90,11 @@
                 app:header="@string/custom_amounts"
                 app:keepAddButtons="true" />
 
-            <include
-                android:id="@+id/multiple_lines_warning_section"
-                layout="@layout/multiple_lines_warning" />
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/shipping_lines"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/shipping" />
 
             <include
                 android:id="@+id/additional_info_collection_section"

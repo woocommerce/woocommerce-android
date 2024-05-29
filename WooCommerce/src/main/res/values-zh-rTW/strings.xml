@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 15:54:04+0000
+Translation-Revision-Date: 2024-05-21 13:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">指向 POS 模式的臨時入口</string>
+    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="cash_payments_take_payment_title">收取款項 (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">檢視所有評論</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">沒有符合所選篩選條件的評論，請嘗試變更篩選條件</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">找不到評論</string>
+    <string name="dashboard_reviews_card_header_title">狀態</string>
+    <string name="my_store_widget_reviews_title">最近評論</string>
+    <string name="my_store_widget_orders_title">最近訂單</string>
+    <string name="dashboard_action_view_all_orders">檢視所有訂單</string>
+    <string name="dashboard_filter_menu_content_description">開啟篩選條件的下拉選單</string>
     <string name="product_category_clear_parent">清除上層分類</string>
     <string name="product_list_fetch_error">擷取商品時發生錯誤！</string>
     <string name="order_creation_add_shipping_method_select_hint">選取運送方式</string>
@@ -25,8 +36,6 @@ Language: zh_TW
     <string name="dynamic_dashboard_widget_menu_item_hide">隱藏「%s」</string>
     <string name="my_store_widget_onboarding_completed">已完成</string>
     <string name="my_store_widget_feedback_title">意見回饋</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">仍然需要幫助嗎？ 聯絡我們</string>
-    <string name="my_store_stats_plugin_inactive_description">請確認你的網站執行最新版本的 WooCommerce，並已啟用 WooCommerce Admin。</string>
     <string name="my_store_stats_plugin_inactive_title">我們無法顯示你的\n 商店分析</string>
     <string name="store_onboarding_task_view_all_tasks">檢視所有工作項目</string>
     <string name="analytics_session_no_available_description">自訂日期範圍無法提供工作階段分析所仰賴的不重複訪客數</string>
