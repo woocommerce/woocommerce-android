@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.cardreader
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
@@ -17,13 +16,7 @@ class WooPosCardReaderFacade @Inject constructor(
         it
     }
 
-    suspend fun connectToReader(context: Context) {
-        val intent = Intent(context, WooPosCardReaderActivity::class.java)
-        context.startActivity(intent)
+    fun connectToReader(context: Context) {
+        context.startActivity(WooPosCardReaderActivity.buildIntentForCardReaderConnection(context))
     }
-
-    suspend fun collectPayment(orderId: Long) {
-
-    }
-
 }
