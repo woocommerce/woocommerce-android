@@ -104,4 +104,13 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             else -> noteStringTemplate
         }
     }
+
+    fun canCompleteOrder(): Boolean {
+        val currentState = _uiState.value
+        return if (currentState is UiState.Success) {
+            currentState.amountReceived >= currentState.amountDue
+        } else {
+            false
+        }
+    }
 }

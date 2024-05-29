@@ -51,6 +51,7 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                 ChangeDueCalculatorScreen(
                     uiState = uiState,
                     recordTransactionDetailsChecked = recordTransactionDetailsChecked,
+                    canCompleteOrder = viewModel.canCompleteOrder(),
                     onNavigateUp = viewModel::onBackPressed,
                     onCompleteOrderClick = {
                         MainScope().launch {

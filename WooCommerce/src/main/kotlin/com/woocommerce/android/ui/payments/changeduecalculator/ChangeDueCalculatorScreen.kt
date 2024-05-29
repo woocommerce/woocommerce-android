@@ -51,6 +51,7 @@ import java.math.BigDecimal
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
     recordTransactionDetailsChecked: Boolean,
+    canCompleteOrder: Boolean,
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit,
     onAmountReceivedChanged: (BigDecimal) -> Unit,
@@ -162,6 +163,7 @@ fun ChangeDueCalculatorScreen(
 
                         MarkOrderAsCompleteButton(
                             onClick = onCompleteOrderClick,
+                            enabled = canCompleteOrder,
                             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                         )
                     }
@@ -199,12 +201,13 @@ fun RecordTransactionDetailsNote(
 }
 
 @Composable
-fun MarkOrderAsCompleteButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun MarkOrderAsCompleteButton(onClick: () -> Unit, enabled: Boolean, modifier: Modifier = Modifier) {
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+        enabled=enabled
     ) {
         Text(text = stringResource(R.string.cash_payments_mark_order_as_complete))
     }
@@ -232,6 +235,7 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
             amountReceived = BigDecimal("0.00")
         ),
         recordTransactionDetailsChecked = false,
+        canCompleteOrder = false,
         onNavigateUp = {},
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
