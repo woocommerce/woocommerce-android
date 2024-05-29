@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.orders.creation.shipping
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -33,6 +35,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,7 +59,7 @@ fun UpdateShippingScreen(
                 name = currentState.name,
                 amount = currentState.amount,
                 method = currentState.method?.title,
-                isEditFlow = currentState.isEditFlow,
+                isEditFlow = viewModel.isEditFlow,
                 isSaveChangesEnabled = currentState.isSaveChangesEnabled,
                 onNameChanged = { name -> viewModel.onNameChanged(name) },
                 onAmountChanged = { amount -> viewModel.onAmountChanged(amount) },
@@ -141,20 +144,29 @@ fun UpdateShippingScreen(
                 .padding(16.dp)
                 .align(Alignment.BottomCenter)
         ) {
+            if (isEditFlow) {
+                WCOutlinedButton(
+                    onClick = { onRemove() },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colors.error
+                    ),
+                    border = BorderStroke(1.dp, MaterialTheme.colors.error)
+                ) {
+                    Text(stringResource(id = R.string.order_creation_remove_shipping))
+                }
+            }
             WCColoredButton(
                 enabled = isSaveChangesEnabled,
                 onClick = { onSaveChanges() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(id = R.string.order_creation_shipping_add))
-            }
-            if (isEditFlow) {
-                WCOutlinedButton(
-                    onClick = { onRemove() },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(id = R.string.order_creation_remove_shipping))
+                val buttonResId = if (isEditFlow) {
+                    R.string.order_creation_shipping_edit
+                } else {
+                    R.string.order_creation_shipping_add
                 }
+                Text(stringResource(id = buttonResId))
             }
         }
     }
@@ -176,7 +188,7 @@ fun FieldSelectValue(
     modifier: Modifier = Modifier
 ) {
     val display = text ?: hint.orEmpty()
-    val alpha = if (text == null) 0.6f else 1f
+    val alpha = if (text == null) 0.38f else 1f
     Box(
         modifier = modifier
             .padding(8.dp)
@@ -186,7 +198,8 @@ fun FieldSelectValue(
     ) {
         Text(
             text = display,
-            fontSize = 24.sp,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .alpha(alpha)
@@ -214,7 +227,8 @@ fun FieldEditValue(
         value = text,
         onValueChange = onValueChange,
         textStyle = TextStyle(
-            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            fontSize = 28.sp,
             color = MaterialTheme.colors.onSurface
         ),
         cursorBrush = SolidColor(colors.cursorColor(false).value),
@@ -228,7 +242,9 @@ fun FieldEditValue(
                 placeholder = @Composable {
                     Text(
                         text = stringResource(id = R.string.order_creation_add_shipping_name_hint),
-                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp,
+                        color = MaterialTheme.colors.onSurface.copy(alpha = .38f)
                     )
                 },
                 enabled = true,
