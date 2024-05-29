@@ -427,6 +427,12 @@
     <string name="dashboard_reviews_card_empty_title_filtered">No reviews found</string>
     <string name="dashboard_reviews_card_empty_message_filtered">No reviews match the selected filter, please try changing the filter</string>
     <string name="dashboard_reviews_card_view_all_button">View all reviews</string>
+
+    <string name="dashboard_coupons_card_header_coupons">Coupons</string>
+    <string name="dashboard_coupons_card_header_uses">Uses</string>
+    <string name="dashboard_coupons_view_all_button">View all coupons</string>
+    <string name="dashboard_coupons_card_empty_view_message">No coupon usage during this period</string>
+
     <!--
         Sign Up Flow
     -->
