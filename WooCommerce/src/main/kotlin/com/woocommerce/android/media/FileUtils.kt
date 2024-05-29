@@ -3,9 +3,6 @@ package com.woocommerce.android.media
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.UTILS
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 class FileUtils @Inject constructor() {
@@ -19,8 +16,7 @@ class FileUtils @Inject constructor() {
         fileExtension: String
     ): File? {
         return try {
-            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "${prefix}_$timeStamp"
+            val fileName = "${prefix}_${System.currentTimeMillis()}"
             File.createTempFile(fileName, ".$fileExtension", storageDir)
         } catch (e: Exception) {
             WooLog.e(UTILS, "Unable to create a temp file", e)
