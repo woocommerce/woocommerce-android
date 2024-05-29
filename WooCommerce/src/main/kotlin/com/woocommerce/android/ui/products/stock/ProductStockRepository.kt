@@ -6,6 +6,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductStockStatus.Companion.toCoreProductStockStatus
 import com.woocommerce.android.util.DateUtils
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
@@ -29,17 +31,12 @@ class ProductStockRepository @Inject constructor(
             if (stockReportResult.isError) {
                 Result.failure(Exception(stockReportResult.error.message))
             } else {
-                val productSalesResult = leaderboardsStore.fetchProductSalesReport(
-                    site = selectedSite.get(),
-                    startDate = Date(dateUtils.getCurrentDateTimeMinusDays(30)).formatToYYYYmmDDhhmmss(),
-                    endDate = Date().formatToYYYYmmDDhhmmss(),
-                    productIds = stockReportResult.model!!.map { stockReport ->
-                        when {
-                            stockReport.parentId != 0L -> stockReport.parentId!!
-                            else -> stockReport.productId!!
-                        }
-                    },
-                )
+
+                coroutineScope {
+                    val productSalesDeferred = async { getProductSales(stockReportResult) }
+                    val variationSalesDeferred = async { getVariationsSales(stockReportResult) }
+                }
+
                 if (productSalesResult.isError) {
                     return Result.failure(Exception(productSalesResult.error.message))
                 } else {
@@ -51,6 +48,22 @@ class ProductStockRepository @Inject constructor(
             }
         }
     }
+
+    private suspend fun getProductSales(productIds: List<Long>) =
+        leaderboardsStore.fetchProductSalesReport(
+            site = selectedSite.get(),
+            startDate = Date(dateUtils.getCurrentDateTimeMinusDays(30)).formatToYYYYmmDDhhmmss(),
+            endDate = Date().formatToYYYYmmDDhhmmss(),
+            productIds = productIds,
+        )
+
+    private suspend fun getVariationsSales(variationIds: List<Long>) =
+        leaderboardsStore.fetchProductVariationsSalesReport(
+            site = selectedSite.get(),
+            startDate = Date(dateUtils.getCurrentDateTimeMinusDays(30)).formatToYYYYmmDDhhmmss(),
+            endDate = Date().formatToYYYYmmDDhhmmss(),
+            productVariationIds = variationIds,
+        )
 
     private fun mapToProductStockItems(
         result: WooResult<ProductStockItems>,
