@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -12,6 +13,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
@@ -170,9 +174,33 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when updateRecordTransactionDetailsChecked is called, then recordTransactionDetailsChecked state is updated`() = runTest {
+    fun `when updateRecordTransactionDetailsChecked is called, then recordTransactionDetailsChecked state is updated`() =
+        runTest {
+            // GIVEN
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            viewModel = ChangeDueCalculatorViewModel(
+                savedStateHandle = savedStateHandle,
+                orderDetailRepository = orderDetailRepository,
+                parameterRepository = parameterRepository
+            )
+
+            // WHEN
+            viewModel.updateRecordTransactionDetailsChecked(true)
+            advanceUntilIdle()
+
+            // THEN
+            val isChecked = viewModel.recordTransactionDetailsChecked.value
+            assertThat(isChecked).isTrue
+        }
+
+    @Test
+    fun `when getCurrencySymbol is called, then currency symbol from parameter repository is returned`() = runTest {
         // GIVEN
+        val currencySymbol = "$"
         whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        val siteParameters: SiteParameters = mock()
+        whenever(siteParameters.currencySymbol).thenReturn(currencySymbol)
+        whenever(parameterRepository.getParameters()).thenReturn(siteParameters)
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
@@ -180,11 +208,56 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        viewModel.updateRecordTransactionDetailsChecked(true)
-        advanceUntilIdle()
+        val result = viewModel.getCurrencySymbol()
 
         // THEN
-        val isChecked = viewModel.recordTransactionDetailsChecked.value
-        assertThat(isChecked).isTrue
+        assertThat(result).isEqualTo(currencySymbol)
     }
+
+    @Test
+    fun `when recordTransactionDetailsChecked is true and addOrderNoteIfChecked is called, then order note is added`() =
+        runTest {
+            // GIVEN
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            val siteParameters: SiteParameters = mock()
+            whenever(siteParameters.currencySymbol).thenReturn("$")
+            whenever(parameterRepository.getParameters()).thenReturn(siteParameters)
+
+            viewModel = ChangeDueCalculatorViewModel(
+                savedStateHandle = savedStateHandle,
+                orderDetailRepository = orderDetailRepository,
+                parameterRepository = parameterRepository
+            )
+            viewModel.updateRecordTransactionDetailsChecked(true)
+            val noteTemplate = "Received: %s, Change: %s"
+
+            // WHEN
+            viewModel.addOrderNoteIfChecked(noteTemplate)
+            advanceUntilIdle()
+
+            // THEN
+            verify(orderDetailRepository, times(1)).addOrderNote(any(), any())
+            // You might want to add further verification for the exact note content by capturing the argument passed to addOrderNote
+        }
+
+    @Test
+    fun `when recordTransactionDetailsChecked is false and addOrderNoteIfChecked is called, then order note is not added`() =
+        runTest {
+            // GIVEN
+            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+            viewModel = ChangeDueCalculatorViewModel(
+                savedStateHandle = savedStateHandle,
+                orderDetailRepository = orderDetailRepository,
+                parameterRepository = parameterRepository
+            )
+            viewModel.updateRecordTransactionDetailsChecked(false)
+            val noteTemplate = "Received: %s, Change: %s"
+
+            // WHEN
+            viewModel.addOrderNoteIfChecked(noteTemplate)
+            advanceUntilIdle()
+
+            // THEN
+            verify(orderDetailRepository, never()).addOrderNote(any(), any())
+        }
 }
