@@ -76,4 +76,105 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         assertThat(uiState.amountReceived).isEqualTo(amountReceived)
         assertThat(uiState.change).isEqualTo(BigDecimal("50.00"))
     }
+
+    @Test
+    fun `when ViewModel is initialized, then initial state is loading`() = runTest {
+        // WHEN
+        viewModel = ChangeDueCalculatorViewModel(
+            savedStateHandle = savedStateHandle,
+            orderDetailRepository = orderDetailRepository,
+            parameterRepository = parameterRepository
+        )
+
+        // THEN
+        val uiState = viewModel.uiState.value
+        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Loading::class.java)
+    }
+
+    @Test
+    fun `given amount due is zero, when amount received is zero, then change is zero`() = runTest {
+        // GIVEN
+        val emptyOrder: Order = mock {
+            on { total }.thenReturn(BigDecimal.ZERO)
+        }
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(emptyOrder)
+
+        // WHEN
+        viewModel = ChangeDueCalculatorViewModel(
+            savedStateHandle = savedStateHandle,
+            orderDetailRepository = orderDetailRepository,
+            parameterRepository = parameterRepository
+        )
+        viewModel.updateAmountReceived(BigDecimal.ZERO)
+        advanceUntilIdle()
+
+        // THEN
+        val uiState = viewModel.uiState.value
+        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
+        uiState as ChangeDueCalculatorViewModel.UiState.Success
+        assertThat(uiState.amountReceived).isEqualTo(BigDecimal.ZERO)
+        assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
+    }
+
+    @Test
+    fun `when amount received is less than amount due, then change is negative`() = runTest {
+        // GIVEN
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        val amountReceived = BigDecimal("50.00")
+
+        // WHEN
+        viewModel = ChangeDueCalculatorViewModel(
+            savedStateHandle = savedStateHandle,
+            orderDetailRepository = orderDetailRepository,
+            parameterRepository = parameterRepository
+        )
+        viewModel.updateAmountReceived(amountReceived)
+        advanceUntilIdle()
+
+        // THEN
+        val uiState = viewModel.uiState.value
+        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
+        uiState as ChangeDueCalculatorViewModel.UiState.Success
+        assertThat(uiState.amountReceived).isEqualTo(amountReceived)
+        assertThat(uiState.change).isEqualTo(BigDecimal("-50.00"))
+    }
+
+    @Test
+    fun `when amount received is greater than or equal to amount due, then order can be completed`() = runTest {
+        // GIVEN
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        viewModel = ChangeDueCalculatorViewModel(
+            savedStateHandle = savedStateHandle,
+            orderDetailRepository = orderDetailRepository,
+            parameterRepository = parameterRepository
+        )
+
+        // WHEN
+        val amountReceived = BigDecimal("100.00")
+        viewModel.updateAmountReceived(amountReceived)
+        advanceUntilIdle()
+        val canCompleteOrder = viewModel.canCompleteOrder()
+
+        // THEN
+        assertThat(canCompleteOrder).isTrue
+    }
+
+    @Test
+    fun `when updateRecordTransactionDetailsChecked is called, then recordTransactionDetailsChecked state is updated`() = runTest {
+        // GIVEN
+        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        viewModel = ChangeDueCalculatorViewModel(
+            savedStateHandle = savedStateHandle,
+            orderDetailRepository = orderDetailRepository,
+            parameterRepository = parameterRepository
+        )
+
+        // WHEN
+        viewModel.updateRecordTransactionDetailsChecked(true)
+        advanceUntilIdle()
+
+        // THEN
+        val isChecked = viewModel.recordTransactionDetailsChecked.value
+        assertThat(isChecked).isTrue
+    }
 }
