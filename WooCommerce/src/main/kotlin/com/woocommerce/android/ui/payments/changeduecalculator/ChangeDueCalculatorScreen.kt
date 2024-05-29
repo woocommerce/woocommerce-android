@@ -29,6 +29,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -91,6 +94,14 @@ fun ChangeDueCalculatorScreen(
                             inputText = uiState.amountReceived
                         }
 
+                        val focusRequester = remember { FocusRequester() }
+                        val keyboardController = LocalSoftwareKeyboardController.current
+
+                        LaunchedEffect(Unit) {
+                            focusRequester.requestFocus()
+                            keyboardController?.show()
+                        }
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -100,7 +111,8 @@ fun ChangeDueCalculatorScreen(
                             WCOutlinedTypedTextField(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 8.dp, bottom = 8.dp, start = 16.dp),
+                                    .padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
+                                    .focusRequester(focusRequester),
                                 value = inputText,
                                 label = stringResource(R.string.cash_payments_cash_received),
                                 singleLine = true,
