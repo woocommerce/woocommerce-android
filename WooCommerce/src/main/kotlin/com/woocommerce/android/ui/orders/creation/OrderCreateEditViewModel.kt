@@ -61,6 +61,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_PRODUCT_
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_BARCODE_FORMAT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_FAILURE_REASON
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SHIPPING_LINES_COUNT
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SHIPPING_METHOD
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_STATUS
@@ -108,7 +109,11 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.TaxRateSelector
 import com.woocommerce.android.ui.orders.creation.product.discount.CurrencySymbolFinder
+import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
+import com.woocommerce.android.ui.orders.creation.shipping.getMethodIdOrDefault
 import com.woocommerce.android.ui.orders.creation.taxes.GetAddressFromTaxRate
 import com.woocommerce.android.ui.orders.creation.taxes.GetTaxRatesInfoDialogViewState
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -161,6 +166,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.IgnoredOnParcel
@@ -183,7 +189,6 @@ class OrderCreateEditViewModel @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val orderCreationProductMapper: OrderCreationProductMapper,
     private val createOrderItem: CreateOrderItem,
-    private val determineMultipleLinesContext: DetermineMultipleLinesContext,
     private val tracker: AnalyticsTrackerWrapper,
     private val productRepository: ProductListRepository,
     private val checkDigitRemoverFactory: CheckDigitRemoverFactory,
@@ -204,6 +209,7 @@ class OrderCreateEditViewModel @Inject constructor(
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
     parameterRepository: ParameterRepository,
+    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
 ) : ScopedViewModel(savedState) {
     companion object {
         val EMPTY_BIG_DECIMAL = -Double.MAX_VALUE.toBigDecimal()
@@ -277,7 +283,6 @@ class OrderCreateEditViewModel @Inject constructor(
                 ),
                 mode = mode,
                 viewState = viewState!!,
-                onShippingClicked = { onShippingButtonClicked() },
                 onCouponsClicked = { onCouponButtonClicked() },
                 onGiftClicked = { onEditGiftCardButtonClicked(selectedGiftCard) },
                 onTaxesLearnMore = { onTaxHelpButtonClicked() },
@@ -372,6 +377,31 @@ class OrderCreateEditViewModel @Inject constructor(
     private val giftCardWasEnabledAtLeastOnce: MutableStateFlow<Boolean> =
         savedState.getStateFlow(viewModelScope, false)
 
+    val shippingLineList =
+        combine(
+            _orderDraft.filter { it.shippingLines.isNotEmpty() }
+                .map { it.shippingLines.filter { line -> line.methodId != null } },
+            getShippingMethodsWithOtherValue().withIndex()
+        ) { shippingLines, shippingMethods ->
+            val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
+
+            shippingLines.map { shippingLine ->
+                val method = shippingLine.methodId?.let {
+                    if (it == " ") {
+                        shippingMethodsMap[ShippingMethodsRepository.NA_ID]
+                    } else {
+                        shippingMethodsMap[it]
+                    }
+                }
+                ShippingLineDetails(
+                    id = shippingLine.itemId,
+                    name = shippingLine.methodTitle,
+                    shippingMethod = method,
+                    amount = shippingLine.total
+                )
+            }
+        }.asLiveData()
+
     init {
         monitorPluginAvailabilityChanges()
 
@@ -419,8 +449,7 @@ class OrderCreateEditViewModel @Inject constructor(
                         viewState = viewState.copy(
                             isUpdatingOrderDraft = false,
                             showOrderUpdateSnackbar = false,
-                            isEditable = order.isEditable,
-                            multipleLinesContext = determineMultipleLinesContext(order)
+                            isEditable = order.isEditable
                         )
                         monitorOrderChanges()
                         updateCouponButtonVisibility(order)
@@ -1224,9 +1253,10 @@ class OrderCreateEditViewModel @Inject constructor(
         _selectedGiftCard.update { selectedGiftCard }
     }
 
-    fun onShippingButtonClicked() {
+    fun onAddOrEditShipping(itemId: Long? = null) {
         tracker.track(AnalyticsEvent.ORDER_ADD_SHIPPING_TAPPED)
-        triggerEvent(EditShipping(currentDraft.shippingLines.firstOrNull { it.methodId != null }))
+        val shippingLine = itemId?.let { id -> currentDraft.shippingLines.firstOrNull { it.itemId == id } }
+        triggerEvent(EditShipping(shippingLine))
     }
 
     fun onCreateOrderClicked(order: Order, isTablet: Boolean = false) {
@@ -1312,6 +1342,7 @@ class OrderCreateEditViewModel @Inject constructor(
                 }
                 mutableMap[KEY_COUPONS_COUNT] = orderDraft.value?.couponLines?.size ?: 0
                 mutableMap[KEY_USE_GIFT_CARD] = orderDraft.value?.selectedGiftCard.isNotNullOrEmpty()
+                mutableMap[KEY_SHIPPING_LINES_COUNT] = orderDraft.value?.shippingLines?.size ?: 0
             }
         )
     }
@@ -1404,8 +1435,7 @@ class OrderCreateEditViewModel @Inject constructor(
                             viewState = viewState.copy(
                                 isUpdatingOrderDraft = false,
                                 showOrderUpdateSnackbar = false,
-                                isEditable = isOrderEditable(updateStatus),
-                                multipleLinesContext = determineMultipleLinesContext(updateStatus.order)
+                                isEditable = isOrderEditable(updateStatus)
                             )
                             _orderDraft.updateAndGet { currentDraft ->
                                 if (mode is Mode.Creation) {
@@ -1502,33 +1532,47 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onUpdatedShipping(shippingUpdateResult: ShippingUpdateResult) {
-        tracker.track(
-            ORDER_SHIPPING_METHOD_ADD,
-            buildMap {
-                put(KEY_FLOW, flow)
-                putIfNotNull(KEY_SHIPPING_METHOD to shippingUpdateResult.methodId)
-            }
-        )
         _orderDraft.update { draft ->
-            val shipping: List<ShippingLine> = draft.shippingLines.map { shippingLine ->
-                if (shippingLine.itemId == shippingUpdateResult.id) {
-                    shippingLine.copy(
-                        methodId = shippingUpdateResult.methodId ?: "other",
-                        total = shippingUpdateResult.amount,
-                        methodTitle = shippingUpdateResult.name
-                    )
-                } else {
-                    shippingLine
+            val shipping = when {
+                shippingUpdateResult.id != null -> draft.shippingLines.map { shippingLine ->
+                    if (shippingLine.itemId == shippingUpdateResult.id) {
+                        shippingLine.copy(
+                            methodId = shippingUpdateResult.getMethodIdOrDefault(),
+                            total = shippingUpdateResult.amount,
+                            methodTitle = shippingUpdateResult.name
+                        )
+                    } else {
+                        shippingLine
+                    }
                 }
-            }.ifEmpty {
-                listOf(
+
+                draft.shippingLines.isNotEmpty() -> draft.shippingLines.toMutableList().also {
+                    it.add(
+                        ShippingLine(
+                            methodId = shippingUpdateResult.getMethodIdOrDefault(),
+                            total = shippingUpdateResult.amount,
+                            methodTitle = shippingUpdateResult.name
+                        )
+                    )
+                }
+
+                else -> listOf(
                     ShippingLine(
-                        methodId = shippingUpdateResult.methodId ?: "other",
+                        methodId = shippingUpdateResult.getMethodIdOrDefault(),
                         total = shippingUpdateResult.amount,
                         methodTitle = shippingUpdateResult.name
                     )
                 )
             }
+
+            tracker.track(
+                ORDER_SHIPPING_METHOD_ADD,
+                buildMap {
+                    put(KEY_FLOW, flow)
+                    putIfNotNull(KEY_SHIPPING_METHOD to shippingUpdateResult.methodId)
+                    put(KEY_SHIPPING_LINES_COUNT, shipping.size)
+                }
+            )
 
             draft.copy(shippingLines = shipping)
         }
@@ -1982,7 +2026,6 @@ class OrderCreateEditViewModel @Inject constructor(
         val shouldDisplayAddGiftCardButton: Boolean = false,
         val isEditable: Boolean = true,
         val isTotalsExpanded: Boolean = false,
-        val multipleLinesContext: MultipleLinesContext = MultipleLinesContext.None,
         val taxBasedOnSettingLabel: String = "",
         val autoTaxRateSetting: AutoTaxRateSettingState = AutoTaxRateSettingState(),
         val taxRateSelectorButtonState: TaxRateSelectorButtonState = TaxRateSelectorButtonState(),
@@ -2034,17 +2077,6 @@ class OrderCreateEditViewModel @Inject constructor(
 
         @Parcelize
         data class Edit(val orderId: Long) : Mode()
-    }
-
-    sealed class MultipleLinesContext : Parcelable {
-        @Parcelize
-        object None : MultipleLinesContext()
-
-        @Parcelize
-        data class Warning(
-            val header: String,
-            val explanation: String,
-        ) : MultipleLinesContext()
     }
 }
 

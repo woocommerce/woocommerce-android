@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-07 14:54:04+0000
+Translation-Revision-Date: 2024-05-21 23:54:05+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Ponto de entrada temporário para modo POS</string>
+    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="cash_payments_take_payment_title">Aceitar pagamento (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Ver todas as avaliações</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Nenhuma avaliação corresponde ao filtro selecionado. Tente alterar o filtro</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Nenhuma avaliação encontrada.</string>
+    <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="my_store_widget_reviews_title">Avaliações mais recentes</string>
+    <string name="my_store_widget_orders_title">Pedidos mais recentes</string>
+    <string name="dashboard_action_view_all_orders">Visualizar todos os pedidos</string>
+    <string name="dashboard_filter_menu_content_description">Abrir menu suspenso do filtro</string>
+    <string name="product_category_clear_parent">Apagar categoria principal</string>
+    <string name="product_list_fetch_error">Erro ao buscar produtos</string>
+    <string name="order_creation_add_shipping_method_select_hint">Selecione um método de envio</string>
+    <string name="order_creation_add_shipping_name_hint">Envio</string>
+    <string name="order_creation_add_shipping_name">Nome</string>
+    <string name="order_creation_add_shipping_method">Método</string>
+    <string name="order_creation_shipping_add">Adicionar envio</string>
+    <string name="order_creation_shipping_methods_error">Erro ao buscar seus métodos de envio. Tente novamente</string>
+    <string name="order_creation_shipping_methods_title">Método</string>
+    <string name="custom_amounts_percentage_invalid_value">Valor inválido</string>
+    <string name="my_store_widget_onboarding_title">Configuração da loja</string>
+    <string name="my_store_edit_screen_widgets">Personalizar</string>
     <string name="blaze_campaign_show_all_button">Ver todas as campanhas</string>
     <string name="blaze_campaign_suggested_product_caption">Produto sugerido</string>
     <string name="dynamic_dashboard_widget_error_description">Tente recarregar este cartão. Se o problema persistir, &lt;a href=\"support\"&gt;entre em contato com o suporte&lt;/a&gt;.</string>
@@ -21,9 +44,7 @@ Language: pt_BR
     <string name="analytics_session_no_available">Dados da sessão indisponíveis</string>
     <string name="my_store_widget_unavailable">Indisponível</string>
     <string name="my_store_widget_stats_title">Desempenho</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">Ver todos os dados analíticos da loja</string>
     <string name="dashboard_stats_custom_range_label">Personalizado</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">Item selecionado.</string>
     <string name="dashboard_stats_edit_granularity_content_description">Botão Alterar intervalo de datas</string>
     <string name="images_unavailable_notice">As imagens não estão disponíveis, pois o site está marcado como privado. Você pode alterar isso ao mudar para o modo Em breve.\n</string>
     <string name="card_selection_control">Seleção de cartão analítico</string>
@@ -63,14 +84,8 @@ Language: pt_BR
     <string name="analytics_bundles_list_header_title">Pacotes</string>
     <string name="analytics_bundles_list_items_sold">Pacotes vendidos</string>
     <string name="my_store_widget_blaze_title">Campanhas no Blaze</string>
-    <string name="my_store_widget_top_products_title">Principais produtos</string>
-    <string name="my_store_widget_onboarding_title">Integração</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">Integração de loja</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">Campanhas no Blaze</string>
-    <string name="my_store_edit_screen_widget_top_performers">Produtos de melhor desempenho</string>
-    <string name="my_store_edit_screen_widget_stats">Estatísticas da loja</string>
     <string name="order_creation_simple_payment_migration_title">O recebimento de pagamentos \nmudou de lugar</string>
-    <string name="my_store_edit_screen_widgets">Editar seções da minha loja</string>
+    <string name="my_store_widget_top_products_title">Melhores desempenhos</string>
     <string name="product_list_unsaved_product_unselected_message">Tem certeza de que deseja descartar as alterações no produto?</string>
     <string name="product_list_unsaved_product_unselected_title">Você está prestes a descartar as alterações em %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">A funcionalidade de estatísticas não é compatível com a exibição dos dados de conversão e visitantes para intervalos arbitrários.\n\nNo entanto, você pode tocar em um valor no gráfico para ver as conversões e os visitantes daquele intervalo em questão.</string>
@@ -103,6 +118,7 @@ Language: pt_BR
     <string name="login_site_picker_add_a_store">Conectar outra loja</string>
     <string name="login_prologue_start_new_store">Quer começar uma nova loja?</string>
     <string name="store_name_default">Nome da loja</string>
+    <string name="analytics_section_see_all">Ver todos os dados analíticos da loja</string>
     <string name="product_update_stock_status_dialog_subtitle">Aguarde…</string>
     <string name="product_update_stock_status_dialog_title">Atualizando os status de estoque</string>
     <string name="product_update_stock_status_error">Ocorreu um erro. Tente novamente.</string>
@@ -234,11 +250,11 @@ Language: pt_BR
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">Início</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s dias</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_title">Definir duração</string>
+    <string name="blaze_campaign_budget_impressions_info">As impressões demonstram a frequência com que seu anúncio aparece para possíveis clientes.\n\n\n        Apesar de o número exato não poder ser garantido por conta das variações no tráfego online e no comportamento do usuário, nós nos esforçamos para corresponder ao máximo as impressões reais do seu anúncio à contagem desejada.\n\n\n        E lembre-se: as impressões têm a ver com a visibilidade, e não com as ações dos visitantes.</string>
     <string name="blaze_campaign_budget_impressions_done_button">Concluído</string>
     <string name="blaze_campaign_budget_impressions_title">Impressões</string>
     <string name="blaze_campaign_budget_update_button">Atualizar</string>
     <string name="blaze_campaign_budget_edit_duration_button">Editar</string>
-    <string name="blaze_campaign_budget_impressions_info">As impressões demonstram a frequência com que seu anúncio aparece para possíveis clientes.\n\n\n        Apesar de o número exato não poder ser garantido por conta das variações no tráfego online e no comportamento do usuário, nós nos esforçamos para corresponder ao máximo as impressões reais do seu anúncio à contagem desejada.\n\n\n        E lembre-se: as impressões têm a ver com a visibilidade, e não com as ações dos visitantes.</string>
     <string name="blaze_campaign_budget_duration_section_title">Duração</string>
     <string name="blaze_campaign_budget_reach_forecast">Estimativa de pessoas alcançadas por dia</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s ao dia</string>
@@ -484,14 +500,12 @@ Language: pt_BR
     <string name="card_reader_tap_to_pay_about_how_works_4">4. O cliente deve segurar o cartão na horizontal na parte superior do seu celular, acima do símbolo de pagamento por aproximação.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Mostre seu celular para o cliente.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Toque em \"Receber pagamento\" e selecione \"Tap to Pay\".</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">receber um pagamento</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">Criar um pedido</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s ou %2$s.</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">Como funciona</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">Saiba mais sobre os leitores de cartão</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">Para aceitar pagamentos acima deste limite, considere comprar um leitor de cartão em que o cliente possa inserir a senha.</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_2">Não aceitamos o uso de senha no Tap to Pay on Android.</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_1">Em %1$s, alguns cartões exigem uma senha em pagamentos por aproximação acima de %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Crie um pedido</string>
     <string name="card_reader_tap_to_pay_about_important_info_title">Importar informações</string>
     <string name="card_reader_tap_to_pay_about_description">Com o Tap to Pay, você pode aceitar todos os tipos de pagamento por aproximação, como cartões físicos de débito e crédito e carteiras digitais. Não é necessário comprar um leitor de cartão físico.</string>
     <string name="card_reader_tap_to_pay_about_header">O que é o Tap to Pay?</string>
@@ -1598,6 +1612,7 @@ Language: pt_BR
     <string name="order_creation_payment_fee">Taxas</string>
     <string name="order_creation_customer_details">Dados do cliente</string>
     <string name="order_creation_add_fee">Adicionar taxa</string>
+    <string name="order_creation_add_shipping_amount">Quantidade</string>
     <string name="order_creation_customer_note_edit_content_description">Editar anotação do cliente</string>
     <string name="order_creation_customer_edit_content_description">Editar dados do cliente</string>
     <string name="order_creation_status_edit_content_description">Editar status do pedido</string>
@@ -2336,9 +2351,6 @@ Language: pt_BR
     <string name="upsells_label">Venda adicional</string>
     <string name="product_detail_linked_products">Produtos vinculados</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">Entre em contato conosco</string>
-    <string name="my_store_stats_availability_description">Use a versão mais recente do WooCommerce no seu site e certifique-se de que o WooCommerce Admin está ativado.\n\nAinda precisa de ajuda? %1$s</string>
-    <string name="my_store_stats_availability_title">Não é possível exibir a \nanálise da sua loja</string>
     <string name="login_get_link_by_email">Receber um link de acesso por e-mail</string>
     <string name="email_not_registered_wpcom">Não foi possível encontrar uma conta do WordPress.com conectada a este endereço de e-mail.</string>
     <string name="settings_enable_product_adding_teaser_title">Criação de produtos</string>
@@ -2584,8 +2596,6 @@ Language: pt_BR
     <string name="settings_app_theme_title">Aparência</string>
     <string name="product_short_description_empty">Resumo do produto</string>
     <string name="product_short_description">Breve descrição</string>
-    <string name="my_store_stats_reverted_title">Faça o upgrade para continuar vendo suas estatísticas</string>
-    <string name="my_store_stats_reverted_message">Estamos aprimorando nossas análises. Faça upgrade para o WooCommerce versão 4.0 em diante ou instale o plugin WooCommerce Admin para continuar vendo suas estatísticas após 1º de setembro de 2020.</string>
     <string name="product_pricing_update_sale_price_error">O preço promocional deve ser menor que o preço normal</string>
     <string name="product_schedule_remove_end_date_link_label">Remover data de término</string>
     <string name="product_shipping_empty">Adicionar envio</string>
@@ -3420,7 +3430,6 @@ Language: pt_BR
     <string name="orderdetail_note_private">Privado</string>
     <string name="connect_site">Conectar um site</string>
     <string name="dashboard_top_performers_empty">Nenhuma atividade no período</string>
-    <string name="dashboard_top_performers_title">Os melhores desempenhos</string>
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="order_error_fetch_notes_generic">Ocorreu um erro ao buscar anotações</string>
     <string name="login_configure_link">Leia as %1$sinstruções de configuração%2$s.</string>

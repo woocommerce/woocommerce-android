@@ -124,7 +124,7 @@ class BlazeCampaignPaymentSummaryViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     campaignCreationState.value = null
-                    analyticsTrackerWrapper.track(stat = AnalyticsEvent.BLAZE_CREATION_PAYMENT_SUBMIT_CAMPAIGN_TAPPED)
+                    analyticsTrackerWrapper.track(stat = AnalyticsEvent.BLAZE_CAMPAIGN_CREATION_SUCCESS)
                     dashboardRepository.updateWidgetVisibility(type = DashboardWidget.Type.ONBOARDING, isVisible = true)
                     triggerEvent(NavigateToStartingScreenWithSuccessBottomSheet)
                 },

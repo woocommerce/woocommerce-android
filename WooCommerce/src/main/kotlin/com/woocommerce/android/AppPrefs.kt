@@ -103,6 +103,7 @@ object AppPrefs {
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
         ACTIVE_TOP_PERFORMERS_GRANULARITY,
+        DASHBOARD_COUPONS_CARD_TAB,
         USE_SIMULATED_READER,
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
@@ -863,6 +864,12 @@ object AppPrefs {
 
     fun setActiveTopPerformersTab(selectionName: String) {
         setString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY, selectionName)
+    }
+
+    fun getActiveCouponsTab() = getString(DeletablePrefKey.DASHBOARD_COUPONS_CARD_TAB)
+
+    fun setActiveCouponsTab(selectionName: String) {
+        setString(DeletablePrefKey.DASHBOARD_COUPONS_CARD_TAB, selectionName)
     }
 
     fun getActiveTopPerformersTab() = getString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY)

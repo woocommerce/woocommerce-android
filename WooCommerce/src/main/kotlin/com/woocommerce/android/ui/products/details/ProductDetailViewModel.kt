@@ -25,7 +25,6 @@ import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
 import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isEmpty
-import com.woocommerce.android.extensions.isSitePrivate
 import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.removeItem
@@ -171,7 +170,7 @@ class ProductDetailViewModel @Inject constructor(
     // view state for the product detail screen
     val productDetailViewStateData = LiveDataDelegate(
         savedState = savedState,
-        initialValue = ProductDetailViewState(areImagesAvailable = !selectedSite.get().isSitePrivate)
+        initialValue = ProductDetailViewState(areImagesAvailable = !selectedSite.get().isPrivate)
     ) { old, new ->
         if (old?.productDraft != new.productDraft || old?.draftPassword != new.draftPassword) {
             new.productDraft?.let {

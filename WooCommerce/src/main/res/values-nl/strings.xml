@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-08 09:54:12+0000
+Translation-Revision-Date: 2024-05-22 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Tijdelijk invoerpunt voor POS-modus</string>
+    <string name="more_menu_button_woo_pos">WooPOS</string>
+    <string name="cash_payments_take_payment_title">Betaling ontvangen (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Alle beoordelingen weergeven</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Geen beoordelingen komen overeen met de geselecteerde filter, probeer de filter te veranderen</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Geen beoordelingen gevonden.</string>
+    <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="my_store_widget_reviews_title">Recente beoordelingen</string>
+    <string name="my_store_widget_orders_title">Recente bestellingen</string>
+    <string name="dashboard_action_view_all_orders">Alle bestellingen weergeven</string>
+    <string name="dashboard_filter_menu_content_description">Vervolgkeuzelijst met filters openen</string>
+    <string name="product_category_clear_parent">Duidelijke bovenliggende categorie</string>
+    <string name="product_list_fetch_error">Fout bij ophalen producten!</string>
+    <string name="order_creation_add_shipping_method_select_hint">Een verzendmethode selecteren</string>
+    <string name="order_creation_add_shipping_name_hint">Verzenden</string>
+    <string name="order_creation_add_shipping_name">Naam</string>
+    <string name="order_creation_add_shipping_method">Methode</string>
+    <string name="order_creation_shipping_add">Verzending toevoegen</string>
+    <string name="order_creation_shipping_methods_error">Fout bij ophalen van je verzendmethoden. Probeer het nog eens</string>
+    <string name="order_creation_shipping_methods_title">Methode</string>
+    <string name="custom_amounts_percentage_invalid_value">Ongeldige waarde</string>
+    <string name="my_store_widget_onboarding_title">Winkel instellen</string>
+    <string name="my_store_edit_screen_widgets">Aanpassen</string>
     <string name="blaze_campaign_show_all_button">Alle campagnes weergeven</string>
     <string name="blaze_campaign_suggested_product_caption">Voorgesteld product</string>
     <string name="dynamic_dashboard_widget_error_description">Probeer deze kaart opnieuw te laden. &lt;a href=\"support\"&gt;Neem contact op met de klantenservice&lt;/a&gt; als het probleem nog niet is opgelost.</string>
@@ -21,9 +44,7 @@ Language: nl
     <string name="analytics_session_no_available">Sessiegegevens niet beschikbaar</string>
     <string name="my_store_widget_unavailable">Niet beschikbaar</string>
     <string name="my_store_widget_stats_title">Prestaties</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">Alle winkelanalyses bekijken</string>
     <string name="dashboard_stats_custom_range_label">Aangepast</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">Item geselecteerd</string>
     <string name="dashboard_stats_edit_granularity_content_description">Knop Datumbereik aanpassen</string>
     <string name="images_unavailable_notice">De afbeeldingen zijn niet beschikbaar omdat je site als Privé is aangemerkt. Je kan dit wijzigingen door over te schakelen naar de modus Binnenkort beschikbaar.\n</string>
     <string name="card_selection_control">Selectie analysekaarten</string>
@@ -64,13 +85,7 @@ Language: nl
     <string name="analytics_bundles_list_header_title">Bundels</string>
     <string name="analytics_bundles_list_items_sold">Verkochte bundels</string>
     <string name="my_store_widget_blaze_title">Blaze-campagnes</string>
-    <string name="my_store_widget_top_products_title">Topproducten</string>
-    <string name="my_store_widget_onboarding_title">Onboarding</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">Winkel-onboarding</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze-campagnes</string>
-    <string name="my_store_edit_screen_widget_top_performers">Best presterende producten</string>
-    <string name="my_store_edit_screen_widget_stats">Winkelstatistieken</string>
-    <string name="my_store_edit_screen_widgets">Delen van mijn winkel bewerken</string>
+    <string name="my_store_widget_top_products_title">Toppresteerders</string>
     <string name="product_list_unsaved_product_unselected_message">Weet je zeker dat je de wijzigingen die je aan dit product hebt aangebracht, wil annuleren?</string>
     <string name="product_list_unsaved_product_unselected_title">Je staat op het punt wijzigingen te annuleren aan %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">De functie statistieken ondersteunt de weergave van bezoekers- en conversiegegevens niet voor willekeurige datumbereiken.\n\nJe kan wel op een waarde in de grafiek tikken om de bezoekers en conversies van dat specifieke bereik te bekijken.</string>
@@ -94,6 +109,7 @@ Language: nl
     <string name="domain_picker_suggestions_title">Suggesties</string>
     <string name="domain_picker_hint">Typ een domein</string>
     <string name="domain_picker_title">Kies een domein</string>
+    <string name="analytics_section_see_all">Alle winkelanalyses bekijken</string>
     <string name="my_store_custom_range_granularity_year">Jaarlijks</string>
     <string name="my_store_custom_range_granularity_month">Maandelijks</string>
     <string name="my_store_custom_range_granularity_week">Wekelijks</string>
@@ -484,9 +500,7 @@ Language: nl
     <string name="card_reader_tap_to_pay_about_how_works_4">4. Je klant houdt hun kaart horizontaal tegen de bovenkant van je telefoon, over het pictogram voor contactloos betalen.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Bied je telefoon aan de klant aan.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Tik op ‘Betalingen ontvangen’ en kies ‘Tap to Pay’.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">een betaling innen</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">Maak een bestelling aan</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s of %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Maak een bestelling aan</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">Zo werkt het</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">Meer informatie over kaartlezers</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">Overweeg een kaartlezer te kopen waar een pincode op kan worden ingevoerd om betalingen boven deze limiet te kunnen accepteren.</string>
@@ -1595,6 +1609,7 @@ Language: nl
     <string name="order_creation_add_shipping">Verzending toevoegen</string>
     <string name="order_creation_shipping_title_add">Verzending toevoegen</string>
     <string name="order_creation_shipping_name">Naam</string>
+    <string name="order_creation_add_shipping_amount">Bedrag</string>
     <string name="order_creation_payment_fee">Kosten</string>
     <string name="order_creation_customer_details">Klantgegevens</string>
     <string name="order_creation_add_fee">Kosten toevoegen</string>
@@ -2336,9 +2351,6 @@ Language: nl
     <string name="upsells_label">Upsells</string>
     <string name="product_detail_linked_products">Gekoppelde producten</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">Neem contact op</string>
-    <string name="my_store_stats_availability_description">Zorg dat je de nieuwste versie van WooCommerce gebruikt op je site en dat WooCommerce Admin geactiveerd is.\n\nMeer hulp nodig? %1$s</string>
-    <string name="my_store_stats_availability_title">We kunnen de statistieken van je\n winkel niet weergeven</string>
     <string name="login_get_link_by_email">Krijg een inloglink via e-mail</string>
     <string name="email_not_registered_wpcom">We kunnen geen WordPress.com-account vinden dat is gekoppeld aan dit e-mailadres.</string>
     <string name="settings_enable_product_addons_teaser_message">Test onze Add-ons bestelling bekijken terwijl we ons voorbereiden op de lancering</string>
@@ -2584,8 +2596,6 @@ Language: nl
     <string name="settings_app_theme_title">Weergave</string>
     <string name="product_short_description_empty">Korte samenvatting van het product</string>
     <string name="product_short_description">Korte beschrijving</string>
-    <string name="my_store_stats_reverted_message">We hebben verbeteringen doorgevoerd voor analyses. Upgrade naar WooCommerce 4.0 of hoger of installeer de WooCommerce Admin-plugin om je statistieken te kunnen blijven bekijken na dinsdag 1 september 2020.</string>
-    <string name="my_store_stats_reverted_title">Upgrade om je statistieken te kunnen blijven bekijken</string>
     <string name="product_pricing_update_sale_price_error">Prijs in de aanbieding moet lager zijn dan de normale prijs</string>
     <string name="product_schedule_remove_end_date_link_label">Verwijder einddatum</string>
     <string name="product_shipping_empty">Voeg verzendkosten toe</string>
@@ -3362,7 +3372,6 @@ Language: nl
     <string name="dashboard_action_view_order">Bestelling weergeven</string>
     <string name="dashboard_top_performers_empty">Geen activiteiten deze periode</string>
     <string name="dashboard_top_performers_total_orders">Totaalaantal bestellingen: %s</string>
-    <string name="dashboard_top_performers_title">Toppresteerders</string>
     <string name="dashboard_stats_error_content_description">Foutafbeelding</string>
     <string name="dashboard_stats_error">Fout bij ophalen gegevens</string>
     <string name="dashboard_stats_revenue">Inkomsten</string>

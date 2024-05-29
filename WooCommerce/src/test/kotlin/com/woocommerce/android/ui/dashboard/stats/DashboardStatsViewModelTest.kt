@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
+import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
@@ -95,7 +96,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             observeLastUpdate = observeLastUpdate,
             timezoneProvider = timezoneProvider,
             wooCommerceStore = wooCommerceStore,
-            dateRangeFormatter = DashboardStatsRangeFormatter(dateUtils),
+            dateRangeFormatter = DashboardDateRangeFormatter(dateUtils),
             usageTracksEventEmitter = usageTracksEventEmitter,
             dateUtils = dateUtils,
             currencyFormatter = mock()

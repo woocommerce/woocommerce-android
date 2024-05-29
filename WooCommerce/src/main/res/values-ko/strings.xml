@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-08 09:54:05+0000
+Translation-Revision-Date: 2024-05-21 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">POS 모드에 대한 임시 진입점</string>
+    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="cash_payments_take_payment_title">결제하기(%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">모든 리뷰 보기</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">선택한 필터와 일치하는 리뷰가 없습니다. 필터를 변경해 보세요.</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">리뷰가 없습니다.</string>
+    <string name="dashboard_reviews_card_header_title">상태</string>
+    <string name="my_store_widget_reviews_title">최근 리뷰</string>
+    <string name="my_store_widget_orders_title">최근 주문</string>
+    <string name="dashboard_action_view_all_orders">모든 주문 보기</string>
+    <string name="dashboard_filter_menu_content_description">필터 드롭다운 열기</string>
+    <string name="product_category_clear_parent">상위 카테고리 지우기</string>
+    <string name="product_list_fetch_error">상품을 가져오는 중 오류 발생!</string>
+    <string name="order_creation_add_shipping_method_select_hint">배송 방법 선택</string>
+    <string name="order_creation_add_shipping_name_hint">배송</string>
+    <string name="order_creation_add_shipping_name">이름</string>
+    <string name="order_creation_add_shipping_method">방법</string>
+    <string name="order_creation_shipping_add">배송 추가</string>
+    <string name="order_creation_shipping_methods_error">배송 방법을 가져오는 중 오류가 발생했습니다. 다시 시도하세요.</string>
+    <string name="order_creation_shipping_methods_title">방법</string>
+    <string name="custom_amounts_percentage_invalid_value">유효하지 않은 값</string>
+    <string name="my_store_widget_onboarding_title">스토어 설정</string>
+    <string name="my_store_edit_screen_widgets">사용자 정의</string>
     <string name="blaze_campaign_show_all_button">모든 캠페인 보기</string>
     <string name="blaze_campaign_suggested_product_caption">추천 상품</string>
     <string name="dynamic_dashboard_widget_error_description">이 카드를 다시 로드해 보세요. 문제가 지속되면 &lt;a href=\"support\"&gt;지원팀에 문의&lt;/a&gt;해 주세요.</string>
@@ -21,9 +44,7 @@ Language: ko_KR
     <string name="analytics_session_no_available">세션 데이터 사용 불가</string>
     <string name="my_store_widget_unavailable">사용할 수 없음</string>
     <string name="my_store_widget_stats_title">성과</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">모든 스토어 분석 보기</string>
     <string name="dashboard_stats_custom_range_label">사용자 정의</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">아이템 선택됨</string>
     <string name="dashboard_stats_edit_granularity_content_description">날짜 범위 변경 버튼</string>
     <string name="images_unavailable_notice">사이트가 비공개로 표시되어서 이미지를 사용할 수 없습니다. 공개 예정 모드로 전환하여 이를 변경할 수 있습니다.\n</string>
     <string name="card_selection_control">분석 카드 선택</string>
@@ -64,13 +85,7 @@ Language: ko_KR
     <string name="analytics_bundles_list_header_title">번들</string>
     <string name="analytics_bundles_list_items_sold">판매된 번들</string>
     <string name="my_store_widget_blaze_title">Blaze 캠페인</string>
-    <string name="my_store_widget_top_products_title">상위 상품</string>
-    <string name="my_store_widget_onboarding_title">온보딩</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">스토어 온보딩</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze 캠페인</string>
-    <string name="my_store_edit_screen_widget_top_performers">성과 상위 상품</string>
-    <string name="my_store_edit_screen_widget_stats">스토어 통계</string>
-    <string name="my_store_edit_screen_widgets">내 스토어 섹션 편집</string>
+    <string name="my_store_widget_top_products_title">최고 인기 상품</string>
     <string name="product_list_unsaved_product_unselected_message">이 상품에 적용한 변경 사항을 취소하시겠습니까?</string>
     <string name="product_list_unsaved_product_unselected_title">%s에 대한 변경 사항을 취소하시려는 참입니다.</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">이 통계 기능에서는 임의 날짜 범위의 방문자 수와 전환율 데이터 표시가 지원되지 않습니다.\n\n그러나 그래프의 값을 눌러 해당 특정 범위의 방문자 수와 전환율을 참조할 수 있습니다.</string>
@@ -103,6 +118,7 @@ Language: ko_KR
     <string name="login_site_picker_add_a_store">다른 스토어 연결</string>
     <string name="login_prologue_start_new_store">새 스토어를 시작하시나요?</string>
     <string name="store_name_default">스토어 이름</string>
+    <string name="analytics_section_see_all">모든 스토어 분석 보기</string>
     <string name="product_update_stock_status_dialog_subtitle">기다려주세요…</string>
     <string name="product_update_stock_status_dialog_title">재고 상태 업데이트 중</string>
     <string name="product_update_stock_status_error">문제가 발생했습니다. 다시 시도하세요.</string>
@@ -235,11 +251,11 @@ Language: ko_KR
     <string name="blaze_campaign_budget_duration_bottom_sheet_starts">시작</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_duration">%1$s일</string>
     <string name="blaze_campaign_budget_duration_bottom_sheet_title">기간 설정</string>
-    <string name="blaze_campaign_budget_impressions_info">노출 수는 잠재적 고객에게 광고가 표시되는 빈도를 반영합니다.\n\n\n        온라인 트래픽과 사용자 행동의 유동성으로 인해 정확한 수는 보장할 수 없지만 광고의 실제 노출 수를 목표 수에 최대한 가깝게 일치시키는 것을 목표로 합니다.\n\n\n        노출 수는 독자의 행동이 아니라 가시성을 나타낸다는 점에 유의하세요.</string>
     <string name="blaze_campaign_budget_impressions_done_button">완료</string>
     <string name="blaze_campaign_budget_impressions_title">노출 수</string>
     <string name="blaze_campaign_budget_update_button">업데이트</string>
     <string name="blaze_campaign_budget_edit_duration_button">편집</string>
+    <string name="blaze_campaign_budget_impressions_info">노출 수는 잠재적 고객에게 광고가 표시되는 빈도를 반영합니다.\n\n\n        온라인 트래픽과 사용자 행동의 유동성으로 인해 정확한 수는 보장할 수 없지만 광고의 실제 노출 수를 목표 수에 최대한 가깝게 일치시키는 것을 목표로 합니다.\n\n\n        노출 수는 독자의 행동이 아니라 가시성을 나타낸다는 점에 유의하세요.</string>
     <string name="blaze_campaign_budget_duration_section_title">지속기간</string>
     <string name="blaze_campaign_budget_reach_forecast">일일 예상 도달 인원</string>
     <string name="blaze_campaign_budget_daily_spend">매일 %1$s</string>
@@ -484,14 +500,12 @@ Language: ko_KR
     <string name="card_reader_tap_to_pay_about_how_works_4">4. 고객이 스마트폰 상단의 비접촉 기호 위로 카드를 수평으로 들게 합니다.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. 스마트폰을 고객에게 내밉니다.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. \"결제 받기\"를 탭하고 \"Tap to Pay\"을 선택합니다.</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">결제 받기</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">주문 생성</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s 또는 %2$s</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">작동 방식</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">카드 리더에 대해 더 알아보기</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">이 한도를 초과하는 결제를 받으려면 PIN 입력을 허용하는 카드 리더 구매를 고려하세요.</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_2">Android에서는 Tap to Pay를 통한 PIN 입력이 지원되지 않습니다.</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_1">%1$s에서 일부 카드의 경우 %2$s 이상의 비접촉 거래에 PIN이 필요합니다.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. 주문 생성</string>
     <string name="card_reader_tap_to_pay_about_important_info_title">중요 정보</string>
     <string name="card_reader_tap_to_pay_about_description">Tap to Pay을 통해 카드 리더 기기를 구매하지 않고도 실물 직불 및 신용 카드부터 디지털 지갑까지 모든 비접촉 결제 유형을 수락할 수 있습니다.</string>
     <string name="card_reader_tap_to_pay_about_header">Tap to Pay란 무엇인가요?</string>
@@ -1598,6 +1612,7 @@ Language: ko_KR
     <string name="order_creation_payment_fee">수수료</string>
     <string name="order_creation_customer_details">고객 상세 정보</string>
     <string name="order_creation_add_fee">수수료 추가</string>
+    <string name="order_creation_add_shipping_amount">금액</string>
     <string name="order_creation_customer_note_edit_content_description">고객 메모 편집</string>
     <string name="order_creation_customer_edit_content_description">고객 상세 정보 편집</string>
     <string name="order_creation_status_edit_content_description">주문 상태 편집</string>
@@ -2336,9 +2351,6 @@ Language: ko_KR
     <string name="upsells_label">상향 판매</string>
     <string name="product_detail_linked_products">연결된 제품</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">문의하기</string>
-    <string name="my_store_stats_availability_description">사이트에서 WooCommerce 최신 버전을 실행하고 있으며 WooCommerce 관리자가 활성화되어 있는지 확인하세요.\n\n도움이 더 필요하세요? %1$s</string>
-    <string name="my_store_stats_availability_title">스토어의 분석을\n 표시할 수 없음</string>
     <string name="login_get_link_by_email">이메일로 로그인 링크 받기</string>
     <string name="email_not_registered_wpcom">이 이메일 주소와 연결된 워드프레스닷컴 계정을 찾을 수 없습니다.</string>
     <string name="settings_enable_product_adding_teaser_title">제품 만들기</string>
@@ -2584,8 +2596,6 @@ Language: ko_KR
     <string name="settings_app_theme_title">외모</string>
     <string name="product_short_description_empty">간단한 제품 요약</string>
     <string name="product_short_description">간단한 설명</string>
-    <string name="my_store_stats_reverted_title">업그레이드하여 계속 통계 확인</string>
-    <string name="my_store_stats_reverted_message">분석 개선 사항을 공개했습니다. 2020년 9월 1일 이후 계속해서 통계를 확인하려면 WooCommerce 4.0 이상으로 업그레이드하거나 WooCommerce 관리자 플러그인을 설치하세요.</string>
     <string name="product_pricing_update_sale_price_error">할인 가격은 정가보다 낮아야 합니다.</string>
     <string name="product_schedule_remove_end_date_link_label">종료 날짜 제거</string>
     <string name="product_shipping_empty">배송 추가</string>
@@ -3420,7 +3430,6 @@ Language: ko_KR
     <string name="orderdetail_note_private">비공개</string>
     <string name="connect_site">사이트 연결</string>
     <string name="dashboard_top_performers_empty">이 기간에 활동이 없음</string>
-    <string name="dashboard_top_performers_title">최고 인기 상품</string>
     <string name="dashboard_top_performers_total_orders">총 주문 수: %s</string>
     <string name="order_error_fetch_notes_generic">메모를 가져오는 중 오류 발생</string>
     <string name="login_configure_link">%1$s구성 지침%2$s을 읽어보세요.</string>

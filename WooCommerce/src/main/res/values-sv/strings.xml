@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-08 11:54:03+0000
+Translation-Revision-Date: 2024-05-21 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Tillfällig ingångspunkt till POS-läge</string>
+    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="cash_payments_take_payment_title">Ta emot betalning (%s)</string>
+    <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="dashboard_action_view_all_orders">Visa alla beställningar</string>
+    <string name="dashboard_reviews_card_view_all_button">Visa alla recensioner</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Inga recensioner hittades</string>
+    <string name="my_store_widget_reviews_title">De senaste recensionerna</string>
+    <string name="my_store_widget_orders_title">De senaste beställningarna</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Inga recensioner matchar det valda filtret, testa att ändra filter</string>
+    <string name="dashboard_filter_menu_content_description">Öppna listrutan för filter</string>
+    <string name="product_category_clear_parent">Rensa överordnad kategori</string>
+    <string name="product_list_fetch_error">Fel vid hämtning av produkter!</string>
+    <string name="order_creation_add_shipping_name">Namn</string>
+    <string name="order_creation_add_shipping_method">Metod</string>
+    <string name="order_creation_shipping_methods_title">Metod</string>
+    <string name="custom_amounts_percentage_invalid_value">Ogiltigt värde</string>
+    <string name="order_creation_add_shipping_name_hint">Frakt</string>
+    <string name="order_creation_shipping_add">Lägg till frakt</string>
+    <string name="order_creation_add_shipping_method_select_hint">Välj en fraktmetod</string>
+    <string name="order_creation_shipping_methods_error">Det gick inte att hämta dina fraktmetoder. Försök igen</string>
+    <string name="my_store_edit_screen_widgets">Anpassa</string>
+    <string name="my_store_widget_onboarding_title">Konfigurera din butik</string>
     <string name="blaze_campaign_show_all_button">Visa alla kampanjer</string>
     <string name="blaze_campaign_suggested_product_caption">Föreslagen produkt</string>
     <string name="dynamic_dashboard_widget_error_description">Försök att läsa in det här kortet igen. Om problemet kvarstår, &lt;a href=\"support\"&gt;kontakta supporten&lt;/a&gt;.</string>
@@ -22,8 +45,6 @@ Language: sv_SE
     <string name="analytics_session_no_available_description">Sessionsanalysen bygger på antalet unika besökare, vilket inte är tillgängligt för anpassade datumintervall</string>
     <string name="analytics_session_no_available">Sessionsdata ej tillgänglig</string>
     <string name="my_store_widget_stats_title">Prestanda</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">Visa alla butiksanalyser</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">Objekt valt</string>
     <string name="dashboard_stats_edit_granularity_content_description">Ändra datumintervall-knapp</string>
     <string name="images_unavailable_notice">Bilderna är inte tillgängliga, eftersom din webbplats är satt som Privat. Du kan ändra detta genom att växla till läget Kommer snart.\n</string>
     <string name="card_selection_control">Kortval för analys</string>
@@ -63,14 +84,8 @@ Language: sv_SE
     <string name="analytics_bundles_list_header_title">Paket</string>
     <string name="analytics_bundles_list_items_sold">Paket sålda</string>
     <string name="my_store_widget_blaze_title">Blaze-kampanjer</string>
-    <string name="my_store_widget_top_products_title">Populäraste produkter</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze-kampanjer</string>
-    <string name="my_store_widget_onboarding_title">Onboarding</string>
-    <string name="my_store_edit_screen_widget_stats">Butikstatistik</string>
     <string name="order_creation_simple_payment_migration_title">Ta emot betalning \nhar flyttat</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">Butiksonboarding</string>
-    <string name="my_store_edit_screen_widget_top_performers">Toppresterande produkter</string>
-    <string name="my_store_edit_screen_widgets">Redigera sektioner i min butik</string>
+    <string name="my_store_widget_top_products_title">Toppresterande</string>
     <string name="product_list_unsaved_product_unselected_message">Är du säker på att du vill kassera ändringarna som du har gjort för den här produkten?</string>
     <string name="product_list_unsaved_product_unselected_title">Du är på väg att kassera ändringarna för %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">Statistikfunktionen stöder inte visning av besökar- och konverteringsdata för godtyckliga datumintervall.\n\nDu kan dock trycka på ett värde i diagrammet för att se besökare och konverteringar för specifika intervall.</string>
@@ -102,8 +117,8 @@ Language: sv_SE
     <string name="login_prologue_start_new_store">Starta en ny butik</string>
     <string name="store_name_default">Butiksnamn</string>
     <string name="my_store_custom_range_granularity_hour">En gång i timmen</string>
-    <string name="analytics_section_see_all">Se alla butiksanalyser</string>
     <string name="my_store_custom_range_granularity_label">%s intervall</string>
+    <string name="analytics_section_see_all">Visa alla butiksanalyser</string>
     <string name="product_update_stock_status_dialog_subtitle">Vänta …</string>
     <string name="product_update_stock_status_dialog_title">Uppdateringar lagerstatus</string>
     <string name="product_update_stock_status_error">Något gick fel. Försök igen.</string>
@@ -247,9 +262,9 @@ Language: sv_SE
     <string name="blaze_campaign_budget_daily_spend">%1$s dagligen</string>
     <string name="blaze_campaign_budget_subtitle">Hur mycket skulle du vilja spendera på din produktmarknadsföringskampanj?</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Föreslaget av AI</string>
-    <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
     <string name="blaze_campaign_budget_impressions_title">Visningar</string>
     <string name="blaze_campaign_budget_reach_forecast">Uppskattat antal personer som nås per dag</string>
+    <string name="blaze_campaign_budget_impressions_info">Visningar återspeglar hur ofta din annons visas för potentiella kunder.\n\n\n        Exakta siffror kan inte garanteras på grund av fluktuerande onlinetrafik och användarbeteende, men vi strävar efter att annonsens faktiska antal visningar ska ligga så nära ditt målantal som möjligt.\n\n\n        Kom ihåg att visningar handlar om synlighet, inte om åtgärder som vidtas av tittarna.</string>
     <string name="product_creation_survey_button_dont_show_again">Visa det inte igen</string>
     <string name="product_creation_survey_button_remind_me_later">Påminn mig senare</string>
     <string name="product_creation_survey_description">Har du tid en minut? Hjälp oss att förbättra våra AI-assisterade funktioner genom lite snabb feedback.</string>
@@ -485,14 +500,12 @@ Language: sv_SE
     <string name="card_reader_tap_to_pay_about_how_works_4">4. Din kund håller sitt kort horisontellt högst upp på din telefon, över symbolen för kontaktlös betalning.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Håll fram din telefon mot kunden.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Tryck på \"Ta emot betalning\" och välj \"Tryck för att betala\".</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">Skapa en beställning</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s eller %2$s</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">Hur det fungerar</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">Lär dig mer om kortläsare</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">ta emot en betalning</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">För att ta emot betalningar över denna gräns, överväg att köpa en kortläsare som accepterar PIN-inmatning.</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_2">Vi stöder inte PIN-inmatning med Tryck för att betala på Android.</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_1">I %1$s kräver vissa kort en PIN för kontaktlösa transaktioner över %2$s.</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Skapa en beställning</string>
     <string name="card_reader_tap_to_pay_about_important_info_title">Viktig information</string>
     <string name="card_reader_tap_to_pay_about_description">Med Tryck för att betala kan du ta emot alla typer av kontaktlösa betalningar, från fysiska betal- och kreditkort till digitala plånböcker, utan att behöva köpa en fysisk kortläsare.</string>
     <string name="card_reader_tap_to_pay_about_header">Vad är Tryck för att betala?</string>
@@ -623,8 +636,8 @@ Language: sv_SE
     <string name="store_onboarding_task_name_store_title">Namnge din butik</string>
     <string name="card_reader_payment_failed_nfc_disabled_enable_nfc">Aktivera NFC</string>
     <string name="shipping_label_hazmat_option_small_quantity_provision">Leveranspaket för små kvantiteter (märkningar krävs)</string>
-    <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY-markpaket – Aerosoler, spraydesinfektionsmedel, sprayfärg, hårspray, propan, butan, rengöringsprodukter, osv. - Parfymer, nagellack, nagellackborttagningsmedel, lösningsmedel, handsprit, tvättsprit, etanolbaserade produkter, osv. - Andra ytmaterial i begränsad mängd (kosmetika, rengöringsprodukter, färger, osv.)</string>
     <string name="shipping_label_hazmat_option_lighters">Tändarpaket – Auktoriserade tändare</string>
+    <string name="shipping_label_hazmat_option_limited_quantity">LTD QTY-markpaket – Aerosoler, spraydesinfektionsmedel, sprayfärg, hårspray, propan, butan, rengöringsprodukter, osv. - Parfymer, nagellack, nagellackborttagningsmedel, lösningsmedel, handsprit, tvättsprit, etanolbaserade produkter, osv. - Andra ytmaterial i begränsad mängd (kosmetika, rengöringsprodukter, färger, osv.)</string>
     <string name="shipping_label_hazmat_option_id8000">ID8000-konsumentvarupaket – Luftkvalificerade ID8000-konsumentvaror (icke brandfarliga aerosoler, brandfarliga brännbara vätskor, giftiga ämnen, diverse farliga material)</string>
     <string name="shipping_label_hazmat_option_ground_only">Farliga material endast för markleverans (för föremål som inte är listade, men som är begränsade till endast yta)</string>
     <string name="shipping_label_hazmat_option_excepted_quantity_provision">Undantagna kvantitetsförsörjningspaket (t.ex. små volymer av brandfarliga vätskor och frätande, giftiga eller miljöfarliga material – märkning krävs) </string>
@@ -1596,6 +1609,7 @@ Language: sv_SE
     <string name="order_creation_add_shipping">Lägg till frakt</string>
     <string name="order_creation_shipping_title_add">Lägg till frakt</string>
     <string name="order_creation_shipping_name">Namn</string>
+    <string name="order_creation_add_shipping_amount">Belopp</string>
     <string name="order_creation_payment_fee">Avgifter</string>
     <string name="order_creation_customer_details">Kunddetaljer</string>
     <string name="order_creation_add_fee">Lägg till avgift</string>
@@ -2336,10 +2350,7 @@ Language: sv_SE
     <string name="upsells_desc">Produkter som marknadsförs istället för den för närvarande visade produkten (dvs. mer lönsamma produkter)</string>
     <string name="upsells_label">Merförsäljning</string>
     <string name="product_detail_linked_products">Länkade produkter</string>
-    <string name="my_store_stats_availability_contact_us">Kontakta oss</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_description">Se till att du kör den senaste versionen av WooCommerce på din webbplats och att du har WooCommerce Admin aktiverad.\n\nBehöver du mer hjälp? %1$s</string>
-    <string name="my_store_stats_availability_title">Vi kan inte visa din\n butiks analys</string>
     <string name="login_get_link_by_email">Skaffa en länk för inloggning via e-post</string>
     <string name="shipping_label_paper_size_options_title">Välj pappersstorlek</string>
     <string name="shipping_label_paper_size">Pappersstorlek</string>
@@ -2580,13 +2591,11 @@ Language: sv_SE
     <string name="settings_app_theme_title">Utseende</string>
     <string name="product_short_description_empty">Kort sammanfattning om produkten</string>
     <string name="product_short_description">Kort beskrivning</string>
-    <string name="my_store_stats_reverted_title">Uppgradera för att fortsätta se din statistik</string>
     <string name="settings_about_title">Om WooCommerce</string>
     <string name="settings_app_theme_option_system">Systemstandard</string>
     <string name="product_status_pending">Väntande recension</string>
     <string name="settings_app_theme_option_battery_saver">Ställs in av strömsparläget</string>
     <string name="settings_app_theme_option_light">Ljus</string>
-    <string name="my_store_stats_reverted_message">Vi har lanserat förbättringar av våra analyser. Uppgradera till WooCommerce 4.0 eller senare eller installera WooCommerce Admin-tillägget för att fortsätta att se din statistik efter den 1 september 2020</string>
     <string name="product_schedule_remove_end_date_link_label">Ta bort slutdatum</string>
     <string name="product_pricing_update_sale_price_error">Reapriset måste vara lägre än det ordinarie priset</string>
     <string name="product_shipping_empty">Lägg till frakt</string>
@@ -3422,7 +3431,6 @@ Language: sv_SE
     <string name="orderdetail_note_private">Privat</string>
     <string name="connect_site">Anslut en webbplats</string>
     <string name="dashboard_top_performers_total_orders">Totalt antal beställningar: %s</string>
-    <string name="dashboard_top_performers_title">Toppresterande</string>
     <string name="order_error_fetch_notes_generic">Det gick inte att hämta noteringar</string>
     <string name="login_configure_link">Läs %1$skonfigurationsinstruktionerna%2$s.</string>
     <string name="enter_verification_code">Nästan där! Ange verifieringskoden för WordPress.com från din autentiseringsapp.</string>

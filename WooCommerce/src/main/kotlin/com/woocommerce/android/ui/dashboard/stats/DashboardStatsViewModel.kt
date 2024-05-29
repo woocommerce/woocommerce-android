@@ -24,6 +24,7 @@ import com.woocommerce.android.ui.dashboard.DashboardTransactionLauncher
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.StatsCustomDateRangeDataStore
+import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.dashboard.stats.GetStats.LoadStatsResult
 import com.woocommerce.android.util.CurrencyFormatter
@@ -68,7 +69,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     private val observeLastUpdate: ObserveLastUpdate,
     private val wooCommerceStore: WooCommerceStore,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
-    private val dateRangeFormatter: DashboardStatsRangeFormatter,
+    private val dateRangeFormatter: DashboardDateRangeFormatter,
     val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     val dateUtils: DateUtils,
     val currencyFormatter: CurrencyFormatter

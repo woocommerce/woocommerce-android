@@ -268,6 +268,7 @@ sealed class AnalyticsEvent(override val siteless: Boolean = false) : IAnalytics
     object ORDER_DETAILS_GIFT_CARD_SHOWN : AnalyticsEvent()
     object ORDER_PRODUCTS_LOADED : AnalyticsEvent()
     object ORDER_DETAIL_TRASH_TAPPED : AnalyticsEvent()
+    object ORDER_DETAILS_SHIPPING_METHODS_SHOWN : AnalyticsEvent()
 
     // - Order detail editing
     object ORDER_DETAIL_EDIT_FLOW_STARTED : AnalyticsEvent()

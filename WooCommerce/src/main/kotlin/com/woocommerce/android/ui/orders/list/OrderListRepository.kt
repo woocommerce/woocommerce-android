@@ -39,6 +39,7 @@ class OrderListRepository @Inject constructor(
 ) {
     companion object {
         private const val TAG = "OrderListRepository"
+        private const val ORDER_STATUS_TRASH = "trash"
     }
 
     private var isFetchingOrderStatusOptions = false
@@ -78,7 +79,7 @@ class OrderListRepository @Inject constructor(
             if (selectedSite.exists()) {
                 val statusOptions = orderStore.getOrderStatusOptionsForSite(selectedSite.get())
                 if (statusOptions.isNotEmpty()) {
-                    statusOptions.map { it.statusKey to it }.toMap()
+                    statusOptions.associateBy { it.statusKey }
                 } else {
                     emptyMap()
                 }
@@ -126,11 +127,15 @@ class OrderListRepository @Inject constructor(
         }
     }
 
+    suspend fun hasOrdersLocally(statusFilter: Order.Status? = null) =
+        orderStore.getOrdersForSite(selectedSite.get())
+            .any { statusFilter == null || it.status == statusFilter.value }
+
     fun observeTopOrders(count: Int, isForced: Boolean, statusFilter: Order.Status? = null) = flow {
         if (!isForced) {
             orderStore.getOrdersForSite(selectedSite.get())
                 .asSequence()
-                .filter { statusFilter == null || it.status == statusFilter.value }
+                .filter { it.status != ORDER_STATUS_TRASH && (statusFilter == null || it.status == statusFilter.value) }
                 .sortedByDescending { it.dateCreated }
                 .take(count)
                 .map { orderMapper.toAppModel(it) }
