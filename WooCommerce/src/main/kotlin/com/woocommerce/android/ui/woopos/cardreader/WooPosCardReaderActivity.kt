@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.cardreader
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -87,4 +89,17 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
         ),
         CardReaderType.EXTERNAL
     )
+
+    companion object {
+        private const val MODE_KEY = "card_reader_connection_mode"
+
+        private enum class Mode {
+            CONNECTION, PAYMENT
+        }
+
+        fun buildIntentForCardReaderConnection(context: Context) =
+            Intent(context, WooPosCardReaderActivity::class.java).apply {
+                putExtra(MODE_KEY, Mode.CONNECTION)
+            }
+    }
 }
