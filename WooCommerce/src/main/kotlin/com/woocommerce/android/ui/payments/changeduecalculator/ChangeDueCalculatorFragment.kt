@@ -55,10 +55,11 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                             val noteStringTemplate = getString(R.string.cash_payments_order_note_text)
                             val noteString = when (val state = uiState) {
                                 is ChangeDueCalculatorViewModel.UiState.Success -> {
+                                    val currencySymbol = viewModel.getCurrencySymbol()
                                     String.format(
                                         noteStringTemplate,
-                                        state.amountReceived.toPlainString(),
-                                        state.change.toPlainString()
+                                        currencySymbol + state.amountReceived.toPlainString(),
+                                        currencySymbol + state.change.toPlainString()
                                     )
                                 }
                                 else -> noteStringTemplate

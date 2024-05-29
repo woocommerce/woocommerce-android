@@ -1,11 +1,11 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -21,7 +21,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val orderDetailRepository: OrderDetailRepository
 ) : ScopedViewModel(savedStateHandle) {
-
+    @Inject
+    lateinit var parameterRepository: ParameterRepository
     val navArgs: ChangeDueCalculatorFragmentArgs by savedStateHandle.navArgs()
     private val orderId: Long = navArgs.orderId
 
@@ -62,6 +63,11 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             val newChange = amount - currentState.amountDue
             _uiState.value = currentState.copy(amountReceived = amount, change = newChange)
         }
+    }
+
+    fun getCurrencySymbol(): String {
+        val siteParameters = parameterRepository.getParameters()
+        return siteParameters.currencySymbol.orEmpty()
     }
 
     suspend fun addOrderNote(noteString: String) {
