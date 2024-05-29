@@ -36,6 +36,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
+    private val noteTemplate = "The order was paid by cash. Customer paid %s. The change due was %s."
+
     @Test
     fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
         // GIVEN
@@ -229,7 +231,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
                 parameterRepository = parameterRepository
             )
             viewModel.updateRecordTransactionDetailsChecked(true)
-            val noteTemplate = "Received: %s, Change: %s"
 
             // WHEN
             viewModel.addOrderNoteIfChecked(noteTemplate)
@@ -251,7 +252,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
                 parameterRepository = parameterRepository
             )
             viewModel.updateRecordTransactionDetailsChecked(false)
-            val noteTemplate = "Received: %s, Change: %s"
 
             // WHEN
             viewModel.addOrderNoteIfChecked(noteTemplate)
