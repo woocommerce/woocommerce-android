@@ -27,8 +27,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            OTHER_PAYMENT_METHODS -> true
-
             MORE_MENU_INBOX,
             WOO_POS,
             WC_SHIPPING_BANNER,
@@ -36,6 +34,7 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE,
             DYNAMIC_DASHBOARD_M2 -> PackageUtils.isDebugBuild()
 
+            OTHER_PAYMENT_METHODS
             DYNAMIC_DASHBOARD,
             CONNECTIVITY_TOOL,
             CUSTOM_RANGE_ANALYTICS,
