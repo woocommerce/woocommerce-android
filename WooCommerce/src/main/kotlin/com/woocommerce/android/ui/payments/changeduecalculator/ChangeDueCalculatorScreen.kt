@@ -107,7 +107,7 @@ fun ChangeDueCalculatorScreen(
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
                         value = inputText,
-                        label = stringResource(R.string.cash_payments_cash_received),
+                        label = "${uiState.currencySymbol} ${stringResource(R.string.cash_payments_cash_received)}",
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
@@ -158,6 +158,7 @@ fun ChangeDueCalculatorScreen(
     }
 }
 
+
 @Composable
 fun RecordTransactionDetailsNote(
     modifier: Modifier = Modifier,
@@ -207,14 +208,10 @@ fun MarkOrderAsCompleteButton(
 
 @Composable
 private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
-    return if (uiState.amountDue != BigDecimal.ZERO) {
-        stringResource(
-            R.string.cash_payments_take_payment_title,
-            uiState.amountDue
-        )
-    } else {
-        ""
-    }
+    return stringResource(
+        R.string.cash_payments_take_payment_title,
+        "${uiState.currencySymbol}${uiState.amountDue}"
+    )
 }
 
 @Composable
