@@ -24,4 +24,3 @@ class CurrencyVisualTransformation(private val currencySymbol: String) : VisualT
         return TransformedText(AnnotatedString(transformedText), offsetMapping)
     }
 }
-
