@@ -33,11 +33,8 @@ class ProductStockRepository @Inject constructor(
             } else {
                 val (productSalesResult, variationSalesResult) = getProductSalesReports(stockReportResult.model!!)
                 return when {
-                    productSalesResult.isError || variationSalesResult.isError ->
-                        Result.failure(
-                            Exception(productSalesResult.error.message)
-                        )
-
+                    productSalesResult.isError -> Result.failure(Exception(productSalesResult.error.message))
+                    variationSalesResult.isError -> Result.failure(Exception(variationSalesResult.error.message))
                     else ->
                         Result.success(
                             mapToProductStockItems(
@@ -46,7 +43,6 @@ class ProductStockRepository @Inject constructor(
                             )
                         )
                 }
-
             }
         }
     }
