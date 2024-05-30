@@ -42,7 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
@@ -54,7 +54,7 @@ fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit,
-    onAmountReceivedChanged: (BigDecimal) -> Unit,
+    onAmountReceivedChanged: (BigDecimal?) -> Unit,
     onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit
 ) {
     WooThemeWithBackground {
@@ -88,7 +88,7 @@ fun ChangeDueCalculatorScreen(
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    var inputText by remember { mutableStateOf(uiState.amountReceived) }
+                    var inputText by remember { mutableStateOf<BigDecimal?>(uiState.amountDue) }
 
                     LaunchedEffect(uiState.amountReceived) {
                         inputText = uiState.amountReceived
@@ -108,13 +108,19 @@ fun ChangeDueCalculatorScreen(
                             .focusRequester(focusRequester),
                         value = inputText,
                         label = stringResource(R.string.cash_payments_cash_received),
+                        valueMapper = NullableCurrencyTextFieldValueMapper.create(
+                            decimalSeparator = ".",
+                            numberOfDecimals = 2
+                        ),
+                        onValueChange = { newValue ->
+                            inputText = newValue
+                            onAmountReceivedChanged(newValue)
+                        },
+                        visualTransformation = CurrencyVisualTransformation(uiState.currencySymbol),
                         singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
-                        onValueChange = {
-                            inputText = it
-                            onAmountReceivedChanged(it)
-                        }
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Decimal
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
