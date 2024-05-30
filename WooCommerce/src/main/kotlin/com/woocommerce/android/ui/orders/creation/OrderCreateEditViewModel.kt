@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
@@ -154,6 +155,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -164,6 +166,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.flow.withIndex
@@ -217,6 +220,7 @@ class OrderCreateEditViewModel @Inject constructor(
         const val DELAY_BEFORE_SHOWING_SIMPLE_PAYMENTS_MIGRATION_BOTTOM_SHEET = 500L
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
+        const val DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK = 1000L
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -404,6 +408,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     init {
         monitorPluginAvailabilityChanges()
+        shouldDisplayShippingFeedback()
 
         when (mode) {
             is Mode.Creation -> {
@@ -461,6 +466,19 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun shouldDisplayShippingFeedback() {
+        launch {
+            shippingLineList
+                .asFlow()
+                .drop(1)
+                .take(1)
+                .collect {
+                    delay(DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK)
+                    viewState = viewState.copy(showShippingFeedback = true)
+                }
         }
     }
 
@@ -1275,6 +1293,10 @@ class OrderCreateEditViewModel @Inject constructor(
                 triggerEvent(Exit)
             }
         }
+    }
+
+    fun onCloseShippingFeedback() {
+        viewState = viewState.copy(showShippingFeedback = false)
     }
 
     private fun onExpandCollapseTotalsClicked() {
