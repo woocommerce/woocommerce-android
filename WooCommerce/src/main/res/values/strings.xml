@@ -755,6 +755,10 @@
     <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
     <string name="customer_picker_guest">Guest</string>
 
+    <string name="order_creation_shipping_feedback_title">Shipping added!</string>
+    <string name="order_creation_shipping_feedback_message">Does Woo make shipping easy?</string>
+    <string name="order_creation_feedback_action">Share your feedback</string>
+
     <!--
          Barcode Scanning
     -->

@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnLifecycleDestroyed
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -50,6 +51,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.component.FeedbackDialog
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
@@ -408,6 +410,8 @@ class OrderCreateEditFormFragment :
 
         bindShippingLinesSection(binding)
 
+        bindFeedbackSection(binding)
+
         observeViewStateChanges(binding)
 
         viewModel.event.observe(viewLifecycleOwner) { handleViewModelEvents(it, binding) }
@@ -424,6 +428,26 @@ class OrderCreateEditFormFragment :
                             modifier = Modifier.padding(bottom = 1.dp),
                             onAdd = { viewModel.onAddOrEditShipping() },
                             onEdit = { id -> viewModel.onAddOrEditShipping(id) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun bindFeedbackSection(binding: FragmentOrderCreateEditFormBinding) {
+        binding.feedbackSection.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                viewModel.viewStateData.liveData.observeAsState().value?.showShippingFeedback?.let { show ->
+                    WooTheme {
+                        FeedbackDialog(
+                            title = stringResource(id = R.string.order_creation_shipping_feedback_title),
+                            message = stringResource(id = R.string.order_creation_shipping_feedback_message),
+                            action = stringResource(id = R.string.order_creation_feedback_action),
+                            isShown = show,
+                            onAction = { viewModel.onCloseShippingFeedback() },
+                            onClose = { viewModel.onCloseShippingFeedback() },
                         )
                     }
                 }

@@ -2033,6 +2033,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val customAmountSectionState: CustomAmountSectionState = CustomAmountSectionState(),
         val windowSizeClass: WindowSizeClass = WindowSizeClass.Compact,
         val isRecalculateNeeded: Boolean = false,
+        val showShippingFeedback: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
