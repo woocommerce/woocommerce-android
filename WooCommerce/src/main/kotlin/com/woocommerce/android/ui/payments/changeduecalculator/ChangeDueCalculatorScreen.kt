@@ -130,7 +130,7 @@ fun ChangeDueCalculatorScreen(
                                     valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
                                     onValueChange = {
                                         inputText = it
-                                        onAmountReceivedChanged(android.icu.math.BigDecimal(it).toBigDecimal())
+                                        onAmountReceivedChanged(it)
                                     }
                                 )
                             }
