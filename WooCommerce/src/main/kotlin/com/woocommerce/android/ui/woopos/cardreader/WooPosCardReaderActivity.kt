@@ -27,7 +27,7 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
     private fun observeEvents(navHostFragment: NavHostFragment) {
         viewModel.event.observe(this) { event ->
             when (event) {
-                is StartCardReaderConnectionFlow -> {
+                is WooPosCardReaderActivityEvent -> {
                     val navController = navHostFragment.navController
                     val graph = navController.navInflater.inflate(R.navigation.nav_graph_payment_flow).apply {
                         setStartDestination(R.id.cardReaderStatusCheckerDialogFragment)

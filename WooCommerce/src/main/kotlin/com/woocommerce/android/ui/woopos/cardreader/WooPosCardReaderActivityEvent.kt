@@ -4,7 +4,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 
-data class StartCardReaderConnectionFlow(
+data class WooPosCardReaderActivityEvent(
     val cardReaderFlowParam: CardReaderFlowParam,
     val cardReaderType: CardReaderType,
 ) : MultiLiveEvent.Event()

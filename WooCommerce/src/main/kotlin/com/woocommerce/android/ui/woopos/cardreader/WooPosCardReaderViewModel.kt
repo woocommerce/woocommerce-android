@@ -17,16 +17,14 @@ class WooPosCardReaderViewModel @Inject constructor(
         when (savedStateHandle.get<WooPosCardReaderMode>(WOO_POS_CARD_READER_MODE_KEY)) {
             is WooPosCardReaderMode.Connection -> {
                 triggerEvent(
-                    StartCardReaderConnectionFlow(
+                    WooPosCardReaderActivityEvent(
                         cardReaderFlowParam = CardReaderFlowParam.WooPosConnection,
                         cardReaderType = CardReaderType.EXTERNAL
                     )
                 )
             }
 
-            is WooPosCardReaderMode.Payment -> {
-                // TODO: Implement
-            }
+            is WooPosCardReaderMode.Payment -> error("Payment mode not implemented yet")
 
             null -> Log.d("WooPosCardReaderViewModel", "No card reader mode specified")
         }
