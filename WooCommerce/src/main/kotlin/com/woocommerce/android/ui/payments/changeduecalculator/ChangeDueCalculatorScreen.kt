@@ -220,7 +220,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
         uiState = ChangeDueCalculatorViewModel.UiState(
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
-            amountReceived = BigDecimal("0.00"),
+            amountReceived = BigDecimal("666.00"),
             loading = false,
             canCompleteOrder = true,
             currencySymbol = "$",
@@ -240,7 +240,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
         uiState = ChangeDueCalculatorViewModel.UiState(
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
-            amountReceived = BigDecimal("0.00"),
+            amountReceived = BigDecimal("666.00"),
             loading = true,
             canCompleteOrder = true,
             currencySymbol = "€",
@@ -260,7 +260,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
         uiState = ChangeDueCalculatorViewModel.UiState(
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
-            amountReceived = BigDecimal("0.00"),
+            amountReceived = BigDecimal("666.00"),
             loading = false,
             canCompleteOrder = false,
             currencySymbol = "€",
