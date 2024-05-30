@@ -24,6 +24,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentDashboardBinding
+import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.showDateRangePicker
@@ -88,7 +89,9 @@ class DashboardFragment :
     private val binding get() = _binding!!
 
     private val editButtonBadge by lazy {
-        BadgeDrawable.create(requireContext())
+        BadgeDrawable.create(requireContext()).apply {
+            backgroundColor = requireContext().getColorCompat(R.color.color_primary)
+        }
     }
 
     private val mainNavigationRouter
