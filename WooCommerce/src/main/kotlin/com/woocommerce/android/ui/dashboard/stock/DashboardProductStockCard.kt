@@ -188,13 +188,14 @@ fun ProductStockRow(
             .fillMaxWidth()
             .clickable { onItemClicked(product) }
             .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         ProductThumbnail(
             imageUrl = product.imageUrl ?: "",
             contentDescription = stringResource(id = R.string.product_image_content_description),
         )
-        Column(modifier = Modifier.padding(start = 8.dp)) {
-            Row(modifier = Modifier.padding(bottom = 8.dp, top = 12.dp)) {
+        Column(modifier = Modifier.padding(start = 8.dp, top = 8.dp)) {
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = product.name,
@@ -209,6 +210,7 @@ fun ProductStockRow(
                 )
             }
             Text(
+                modifier = Modifier.padding(bottom = 8.dp),
                 text = when {
                     product.itemsSold == 0 -> stringResource(R.string.dashboard_product_stock_no_sales_last_30_days)
                     else -> stringResource(R.string.dashboard_product_stock_sales_last_30_days, product.itemsSold)
