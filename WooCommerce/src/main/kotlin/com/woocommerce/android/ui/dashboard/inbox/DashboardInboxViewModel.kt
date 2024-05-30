@@ -138,7 +138,7 @@ class DashboardInboxViewModel @AssistedInject constructor(
         }
     }
 
-    private fun onNoteAction(actionId:Long, noteId: Long) {
+    private fun onNoteAction(actionId: Long, noteId: Long) {
         val clickedNote = (viewState.value as? ViewState.Content)?.notes?.firstOrNull { noteId == it.id }
         clickedNote?.let {
             when {
@@ -183,7 +183,6 @@ class DashboardInboxViewModel @AssistedInject constructor(
         )
         _refreshTrigger.tryEmit(RefreshEvent(isForced = true))
     }
-
 
     sealed class ViewState {
         data object Loading : ViewState()

@@ -206,5 +206,4 @@ class InboxViewModel @Inject constructor(
         val onRefresh: () -> Unit = {},
         val isRefreshing: Boolean = false
     )
-
 }
