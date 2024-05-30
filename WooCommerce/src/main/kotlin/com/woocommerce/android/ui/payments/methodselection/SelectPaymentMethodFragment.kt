@@ -273,6 +273,8 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                             )
                     )
                 }
+
+                is NavigateBackToWooPos -> findNavController().popBackStack()
             }
         }
     }

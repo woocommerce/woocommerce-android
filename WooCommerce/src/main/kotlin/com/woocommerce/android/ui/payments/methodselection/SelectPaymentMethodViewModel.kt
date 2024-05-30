@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowP
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER_CREATION
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.SIMPLE
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.TRY_TAP_TO_PAY
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.WooPosConnection
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
@@ -101,7 +102,6 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 when (param) {
                     is Payment -> {
                         launch {
-                            // stay on screen
                             cardReaderTrackingInfoKeeper.setCountry(
                                 wooCommerceStore.getStoreCountryCode(selectedSite.get())
                             )
@@ -113,7 +113,10 @@ class SelectPaymentMethodViewModel @Inject constructor(
                                 cardReaderTrackingInfoKeeper.setCurrency(order.currency)
                             }
 
-                            showPaymentState()
+                            when (param.paymentType) {
+                                SIMPLE, ORDER, ORDER_CREATION, TRY_TAP_TO_PAY -> showPaymentState()
+                                WOO_POS -> onBtReaderClicked()
+                            }
                         }
                         Unit
                     }
@@ -249,6 +252,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
                     SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
                     ORDER, ORDER_CREATION -> R.string.existing_order_cash_dlg_message
+                    WOO_POS -> error("Unsupported card reader flow param: $cardReaderPaymentFlowParam")
                 }
                 triggerEvent(
                     MultiLiveEvent.Event.ShowDialog(
@@ -448,6 +452,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 SIMPLE -> NavigateBackToHub(CardReadersHub())
                 TRY_TAP_TO_PAY -> NavigateToTapToPaySummary(order.first())
                 ORDER, ORDER_CREATION -> NavigateBackToOrderList(order.first())
+                WOO_POS -> NavigateToWooPos(order.first().id)
             }
         )
     }
@@ -457,7 +462,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
             SIMPLE -> AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_FLOW
             ORDER -> AnalyticsTracker.VALUE_ORDER_PAYMENTS_FLOW
             TRY_TAP_TO_PAY -> AnalyticsTracker.VALUE_TTP_TRY_PAYMENT_FLOW
-            Payment.PaymentType.ORDER_CREATION -> AnalyticsTracker.VALUE_ORDER_CREATION_PAYMENTS_FLOW
+            ORDER_CREATION -> AnalyticsTracker.VALUE_ORDER_CREATION_PAYMENTS_FLOW
+            WOO_POS -> AnalyticsTracker.VALUE_WOO_POS_PAYMENTS_FLOW
         }
 
     private fun onLearnMoreIppClicked() {
