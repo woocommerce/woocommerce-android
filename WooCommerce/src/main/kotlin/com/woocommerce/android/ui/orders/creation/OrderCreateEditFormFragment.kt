@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
@@ -55,6 +56,7 @@ import com.woocommerce.android.ui.compose.component.FeedbackDialog
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.CustomAmountTypeBottomSheetDialog
@@ -446,7 +448,7 @@ class OrderCreateEditFormFragment :
                             message = stringResource(id = R.string.order_creation_shipping_feedback_message),
                             action = stringResource(id = R.string.order_creation_feedback_action),
                             isShown = show,
-                            onAction = { viewModel.onCloseShippingFeedback() },
+                            onAction = { viewModel.onSendShippingFeedback() },
                             onClose = { viewModel.onCloseShippingFeedback() },
                         )
                     }
@@ -1186,6 +1188,8 @@ class OrderCreateEditFormFragment :
             }
 
             is Exit -> findNavController().navigateUp()
+
+            is ShippingLinesFeedback -> sendShippingLinesFeedback()
         }
     }
 
@@ -1296,5 +1300,11 @@ class OrderCreateEditFormFragment :
         if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             sharedViewModel.onProductSelectionStateChanged(false)
         }
+    }
+
+    private fun sendShippingLinesFeedback() {
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.ORDER_SHIPPING_LINES)
+            .apply { findNavController().navigateSafely(this) }
     }
 }

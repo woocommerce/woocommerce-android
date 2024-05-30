@@ -1295,6 +1295,10 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    fun onSendShippingFeedback() {
+        viewState = viewState.copy(showShippingFeedback = false)
+        triggerEvent(ShippingLinesFeedback)
+    }
     fun onCloseShippingFeedback() {
         viewState = viewState.copy(showShippingFeedback = false)
     }
@@ -2128,6 +2132,8 @@ data class OnCustomAmountTypeSelected(
 ) : Event()
 
 object OnSelectedProductsSyncRequested : Event()
+
+object ShippingLinesFeedback : Event()
 
 @Parcelize
 data class CustomAmountUIModel(
