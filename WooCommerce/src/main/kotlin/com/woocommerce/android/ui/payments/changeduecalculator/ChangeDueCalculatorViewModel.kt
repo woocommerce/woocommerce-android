@@ -30,16 +30,14 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private val _recordTransactionDetailsChecked = MutableStateFlow(false)
     val recordTransactionDetailsChecked: StateFlow<Boolean> = _recordTransactionDetailsChecked
 
-    sealed class UiState {
-        data object Loading : UiState()
-        data class Success(
-            val amountDue: BigDecimal,
-            val change: BigDecimal,
-            val amountReceived: BigDecimal
-        ) : UiState()
-    }
+    data class UiState(
+        val amountDue: BigDecimal = BigDecimal.ZERO,
+        val change: BigDecimal = BigDecimal.ZERO,
+        val amountReceived: BigDecimal = BigDecimal.ZERO,
+        val loading: Boolean = false,
+    )
 
-    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
+    private val _uiState = MutableStateFlow(UiState(loading = true))
     val uiState: StateFlow<UiState> = _uiState
 
     init {
@@ -49,7 +47,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private fun loadOrderDetails() {
         launch {
             val order = orderDetailRepository.getOrderById(orderId)!!
-            _uiState.value = UiState.Success(
+            _uiState.value = UiState(
                 amountDue = order.total,
                 change = BigDecimal.ZERO,
                 amountReceived = BigDecimal.ZERO
@@ -63,10 +61,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
 
     fun updateAmountReceived(amount: BigDecimal) {
         val currentState = _uiState.value
-        if (currentState is UiState.Success) {
-            val newChange = amount - currentState.amountDue
-            _uiState.value = currentState.copy(amountReceived = amount, change = newChange)
-        }
+        val newChange = amount - currentState.amountDue
+        _uiState.value = currentState.copy(amountReceived = amount, change = newChange)
     }
 
     private fun getCurrencySymbol(): String {
@@ -85,7 +81,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 val noteString = generateOrderNoteString(noteStringTemplate)
                 val draftNote = OrderNote(note = noteString, isCustomerNote = false)
 
-                _uiState.value = UiState.Loading
+                _uiState.value = _uiState.value.copy(loading = true)
 
                 orderDetailRepository.addOrderNote(orderId, draftNote)
                     .fold(
@@ -95,10 +91,10 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                         },
                         onFailure = {
                             AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD_FAILED)
-                            triggerEvent(MultiLiveEvent.Event.ExitWithResult(true))
                             triggerEvent(
                                 MultiLiveEvent.Event.ShowSnackbar(R.string.cash_payments_order_note_adding_error)
                             )
+                            triggerEvent(MultiLiveEvent.Event.ExitWithResult(true))
                         },
                     )
             }
@@ -108,16 +104,12 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     }
 
     private fun generateOrderNoteString(noteStringTemplate: String): String {
-        return when (val state = _uiState.value) {
-            is UiState.Success -> {
-                val currencySymbol = getCurrencySymbol()
-                String.format(
-                    noteStringTemplate,
-                    "$currencySymbol${state.amountReceived.toPlainString()}",
-                    "$currencySymbol${state.change.toPlainString()}"
-                )
-            }
-            else -> noteStringTemplate
-        }
+        val state = _uiState.value
+        val currencySymbol = getCurrencySymbol()
+        return String.format(
+            noteStringTemplate,
+            "$currencySymbol${state.amountReceived.toPlainString()}",
+            "$currencySymbol${state.change.toPlainString()}"
+        )
     }
 }
