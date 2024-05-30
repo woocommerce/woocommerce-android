@@ -107,7 +107,7 @@ fun ChangeDueCalculatorScreen(
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
                         value = inputText,
-                        label = "${uiState.currencySymbol} ${stringResource(R.string.cash_payments_cash_received)}",
+                        label = stringResource(R.string.cash_payments_cash_received),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
