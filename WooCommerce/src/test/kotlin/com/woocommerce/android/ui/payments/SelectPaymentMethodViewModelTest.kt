@@ -323,7 +323,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order payment flow, when on cash payment clicked, then show dialog event emitted`() = testBlocking {
+    fun `given order payment flow, when on cash payment clicked, then show navigate event emitted`() = testBlocking {
         // GIVEN
         val orderId = 1L
         val viewModel = initViewModel(Payment(orderId, ORDER))
@@ -334,12 +334,11 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
         // THEN
         val events = viewModel.event.captureValues()
         assertThat(events.last()).isInstanceOf(NavigateToChangeDueCalculatorScreen::class.java)
-        //  NavigateToChangeDueCalculatorScreen(order=order)
         assertThat((events.last() as NavigateToChangeDueCalculatorScreen).order.id).isEqualTo(orderId)
     }
 
     @Test
-    fun `given simple payment flow, when on cash payment clicked, then show dialog event emitted`() =
+    fun `given simple payment flow, when on cash payment clicked, then show navigate event emitted`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
@@ -367,6 +366,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
             // THEN
             val events = viewModel.event.captureValues()
             assertThat(events.last()).isInstanceOf(NavigateToChangeDueCalculatorScreen::class.java)
+            assertThat((events.last() as NavigateToChangeDueCalculatorScreen).order.id).isEqualTo(orderId)
         }
 
     @Test
