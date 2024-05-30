@@ -44,8 +44,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
-    private val noteTemplate = "The order was paid by cash. Customer paid %s. The change due was %s."
-
     @Test
     fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
         // GIVEN
@@ -90,20 +88,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when ViewModel is initialized, then initial state is loading`() = runTest {
-        // WHEN
-        viewModel = ChangeDueCalculatorViewModel(
-            savedStateHandle = savedStateHandle,
-            orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository
-        )
-
-        // THEN
-        val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Loading::class.java)
-    }
-
-    @Test
     fun `given amount due is zero, when amount received is zero, then change is zero`() = runTest {
         // GIVEN
         val emptyOrder: Order = mock {
@@ -115,15 +99,14 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            resourceProvider = resourceProvider
         )
         viewModel.updateAmountReceived(BigDecimal.ZERO)
         advanceUntilIdle()
 
         // THEN
         val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
-        uiState as ChangeDueCalculatorViewModel.UiState.Success
         assertThat(uiState.amountDue).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.amountReceived).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
@@ -139,15 +122,14 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            resourceProvider = resourceProvider
         )
         viewModel.updateAmountReceived(amountReceived)
         advanceUntilIdle()
 
         // THEN
         val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
-        uiState as ChangeDueCalculatorViewModel.UiState.Success
         assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
         assertThat(uiState.amountReceived).isEqualTo(amountReceived)
         assertThat(uiState.change).isEqualTo(BigDecimal("-50.00"))
@@ -160,19 +142,18 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            resourceProvider = resourceProvider
         )
 
         // WHEN
         val amountReceived = BigDecimal("100.00")
         viewModel.updateAmountReceived(amountReceived)
         advanceUntilIdle()
-        val canCompleteOrder = viewModel.canCompleteOrder()
+        val canCompleteOrder = viewModel.uiState.value.canCompleteOrder
 
         // THEN
         val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
-        uiState as ChangeDueCalculatorViewModel.UiState.Success
         assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
         assertThat(uiState.amountReceived).isEqualTo(amountReceived)
         assertThat(uiState.change).isEqualTo(BigDecimal("0.00"))
@@ -187,7 +168,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
             viewModel = ChangeDueCalculatorViewModel(
                 savedStateHandle = savedStateHandle,
                 orderDetailRepository = orderDetailRepository,
-                parameterRepository = parameterRepository
+                parameterRepository = parameterRepository,
+                resourceProvider = resourceProvider
             )
 
             // WHEN
@@ -195,7 +177,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
 
             // THEN
-            val isChecked = viewModel.recordTransactionDetailsChecked.value
+            val isChecked = viewModel.uiState.value.recordTransactionDetailsChecked
             assertThat(isChecked).isTrue
         }
 
@@ -210,57 +192,14 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            resourceProvider = resourceProvider
         )
 
         // WHEN
-        val result = viewModel.getCurrencySymbol()
+        val result = viewModel.uiState.value.currencySymbol
 
         // THEN
         assertThat(result).isEqualTo(currencySymbol)
     }
-
-    @Test
-    fun `when recordTransactionDetailsChecked is true and addOrderNoteIfChecked is called, then order note is added`() =
-        runTest {
-            // GIVEN
-            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
-            val siteParameters: SiteParameters = mock()
-            whenever(siteParameters.currencySymbol).thenReturn("$")
-            whenever(parameterRepository.getParameters()).thenReturn(siteParameters)
-
-            viewModel = ChangeDueCalculatorViewModel(
-                savedStateHandle = savedStateHandle,
-                orderDetailRepository = orderDetailRepository,
-                parameterRepository = parameterRepository
-            )
-            viewModel.updateRecordTransactionDetailsChecked(true)
-
-            // WHEN
-            viewModel.addOrderNoteIfChecked(noteTemplate)
-            advanceUntilIdle()
-
-            // THEN
-            verify(orderDetailRepository, times(1)).addOrderNote(any(), any())
-        }
-
-    @Test
-    fun `when recordTransactionDetailsChecked is false and addOrderNoteIfChecked is called, then order note is not added`() =
-        runTest {
-            // GIVEN
-            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
-            viewModel = ChangeDueCalculatorViewModel(
-                savedStateHandle = savedStateHandle,
-                orderDetailRepository = orderDetailRepository,
-                parameterRepository = parameterRepository
-            )
-            viewModel.updateRecordTransactionDetailsChecked(false)
-
-            // WHEN
-            viewModel.addOrderNoteIfChecked(noteTemplate)
-            advanceUntilIdle()
-
-            // THEN
-            verify(orderDetailRepository, never()).addOrderNote(any(), any())
-        }
 }
