@@ -93,6 +93,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorSharedViewMod
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -410,7 +411,9 @@ class OrderCreateEditFormFragment :
 
         bindShippingLinesSection(binding)
 
-        bindFeedbackSection(binding)
+        if (FeatureFlag.EOSL_M3.isEnabled()) {
+            bindFeedbackSection(binding)
+        }
 
         observeViewStateChanges(binding)
 
