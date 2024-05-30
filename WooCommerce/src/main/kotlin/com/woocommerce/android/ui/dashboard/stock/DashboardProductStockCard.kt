@@ -189,7 +189,7 @@ fun ProductStockRow(
             contentDescription = stringResource(id = R.string.product_image_content_description),
         )
         Column(modifier = Modifier.padding(start = 8.dp)) {
-            Row(modifier = Modifier.padding(bottom = 4.dp, end = 16.dp)) {
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = product.name,
@@ -200,6 +200,7 @@ fun ProductStockRow(
                 Text(
                     text = product.stockQuantity.toString(),
                     style = MaterialTheme.typography.subtitle1,
+                    color = colorResource(id = R.color.color_error)
                 )
             }
             Text(
