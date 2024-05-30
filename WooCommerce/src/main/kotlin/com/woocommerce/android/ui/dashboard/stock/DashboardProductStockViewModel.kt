@@ -59,6 +59,10 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         this.status.value = productStockStatus
     }
 
+    fun onRetryClicked() {
+        _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
+    }
+
     sealed interface ViewState {
         data class Loading(val selectedFilter: ProductStockStatus) : ViewState
         data class Success(

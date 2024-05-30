@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMe
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.ViewState
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.stock.ProductStockItem
 
@@ -50,6 +51,8 @@ fun DashboardProductStockCard(
             onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.PRODUCT_STOCK) },
             onFilterSelected = viewModel::onFilterSelected,
             onProductClicked = { },
+            onRetryClicked = viewModel::onRetryClicked,
+            onContactSupportClicked = parentViewModel::onContactSupportClicked,
             modifier = modifier
         )
     }
@@ -57,11 +60,13 @@ fun DashboardProductStockCard(
 
 @Composable
 private fun DashboardProductStockCard(
-    viewState: DashboardProductStockViewModel.ViewState,
+    viewState: ViewState,
     onHideClicked: () -> Unit,
     onFilterSelected: (ProductStockStatus) -> Unit,
     onProductClicked: (ProductStockItem) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onContactSupportClicked: () -> Unit,
+    onRetryClicked: () -> Unit,
 ) {
     WidgetCard(
         titleResource = DashboardWidget.Type.PRODUCT_STOCK.titleResource,
@@ -93,8 +98,8 @@ private fun DashboardProductStockCard(
 
             is DashboardProductStockViewModel.ViewState.Error -> {
                 WidgetError(
-                    onContactSupportClicked = { },
-                    onRetryClicked = { }
+                    onContactSupportClicked = onContactSupportClicked,
+                    onRetryClicked = onRetryClicked
                 )
             }
         }
