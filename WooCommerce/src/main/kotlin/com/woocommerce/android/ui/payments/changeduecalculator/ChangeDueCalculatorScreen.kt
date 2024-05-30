@@ -257,7 +257,6 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
     )
 }
 
-
 @Composable
 @PreviewLightDark
 fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
