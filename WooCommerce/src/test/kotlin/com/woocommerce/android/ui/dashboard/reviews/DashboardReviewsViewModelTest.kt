@@ -120,8 +120,10 @@ class DashboardReviewsViewModelTest : BaseUnitTest() {
 
         assertThat(viewState).isInstanceOf(DashboardReviewsViewModel.ViewState.Success::class.java)
         assertThat((viewState as DashboardReviewsViewModel.ViewState.Success).reviews)
-            .isEqualTo(sampleReviews.filter { it.status == ProductReviewStatus.HOLD.toString() }
-                .take(DashboardReviewsViewModel.MAX_REVIEWS))
+            .isEqualTo(
+                sampleReviews.filter { it.status == ProductReviewStatus.HOLD.toString() }
+                    .take(DashboardReviewsViewModel.MAX_REVIEWS)
+            )
     }
 
     @Test

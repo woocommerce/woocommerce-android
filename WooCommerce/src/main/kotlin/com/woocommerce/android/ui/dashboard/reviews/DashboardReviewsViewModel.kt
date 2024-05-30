@@ -43,6 +43,7 @@ class DashboardReviewsViewModel @AssistedInject constructor(
             ProductReviewStatus.APPROVED,
             ProductReviewStatus.HOLD
         )
+
         @VisibleForTesting
         const val MAX_REVIEWS = 3
     }
