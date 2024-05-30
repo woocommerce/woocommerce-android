@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -30,6 +31,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("orderId" to 1L))
 
+    private val resourceProvider: ResourceProvider = mock()
+
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
     @Test
@@ -41,13 +44,12 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            resourceProvider = resourceProvider
         )
 
         // THEN
         val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
-        uiState as ChangeDueCalculatorViewModel.UiState.Success
         assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
     }
@@ -59,10 +61,9 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            resourceProvider = resourceProvider
         )
-        var uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
 
         // WHEN
         val amountReceived = BigDecimal("150.00")
@@ -70,9 +71,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
-        uiState as ChangeDueCalculatorViewModel.UiState.Success
+        val uiState = viewModel.uiState.value
         assertThat(uiState.amountReceived).isEqualTo(amountReceived)
         assertThat(uiState.change).isEqualTo(BigDecimal("50.00"))
     }

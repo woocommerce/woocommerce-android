@@ -66,14 +66,14 @@ GEM
       no_proxy_fix
       octokit (>= 4.0)
       terminal-table (>= 1, < 4)
-    danger-dangermattic (1.0.2)
+    danger-dangermattic (1.1.1)
       danger (~> 9.4)
       danger-plugin-api (~> 1.0)
-      danger-rubocop (~> 0.12)
-      rubocop (~> 1.61)
+      danger-rubocop (~> 0.13)
+      rubocop (~> 1.63)
     danger-plugin-api (1.0.0)
       danger (> 2.0)
-    danger-rubocop (0.12.0)
+    danger-rubocop (0.13.0)
       danger
       rubocop (~> 1.0)
     declarative (0.0.20)
@@ -277,7 +277,7 @@ GEM
     rexml (3.2.6)
     rmagick (4.3.0)
     rouge (2.0.7)
-    rubocop (1.62.1)
+    rubocop (1.63.5)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
       parallel (~> 1.10)
@@ -336,7 +336,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  danger-dangermattic (~> 1.0)
+  danger-dangermattic (~> 1.1)
   fastlane (~> 2.216)
   fastlane-plugin-wpmreleasetoolkit (~> 9.2)
   nokogiri
