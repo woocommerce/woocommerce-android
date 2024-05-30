@@ -203,4 +203,26 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
 
         assertThat(dateRangeState.rangeFormatted).isEqualTo("Formatted date range")
     }
+
+    @Test
+    fun `when tapping on a coupon, then open coupon details`() = testBlocking {
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onCouponClicked(sampleCoupons.first().id)
+        }.last()
+
+        assertThat(event).isEqualTo(DashboardCouponsViewModel.ViewCouponDetails(sampleCoupons.first().id))
+    }
+
+    @Test
+    fun `when tapping view all, then open coupons list`() = testBlocking {
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onViewAllClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(DashboardCouponsViewModel.ViewAllCoupons)
+    }
 }
