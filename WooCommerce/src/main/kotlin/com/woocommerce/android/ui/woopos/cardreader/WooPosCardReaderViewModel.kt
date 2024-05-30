@@ -8,8 +8,6 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity.Companion.WOO_POS_CARD_READER_MODE_KEY
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -30,23 +28,17 @@ class WooPosCardReaderViewModel @Inject constructor(
     init {
         when (val mode = savedStateHandle.get<WooPosCardReaderMode>(WOO_POS_CARD_READER_MODE_KEY)) {
             is WooPosCardReaderMode.Connection -> {
-                triggerEvent(
-                    WooPosCardReaderActivityEvent(
-                        cardReaderFlowParam = CardReaderFlowParam.WooPosConnection,
-                        cardReaderType = CardReaderType.EXTERNAL
-                    )
-                )
+                triggerEvent(WooPosCardReaderEvent.Connection)
             }
 
             is WooPosCardReaderMode.Payment -> {
                 if (mode.orderId != -1L) {
-                    val orderId = savedStateHandle.get<Long>(WooPosCardReaderMode.Payment::orderId.name)!!
-                    startPaymentFlow(orderId)
+                    triggerEvent(WooPosCardReaderEvent.Payment(mode.orderId))
                 } else {
                     launch {
                         createTestOrder(
                             onSuccess = { order ->
-                                startPaymentFlow(order.id)
+                                triggerEvent(WooPosCardReaderEvent.Payment(order.id))
                             },
                             onFailure = {
                                 Log.e("WooPosCardReaderViewModel", "Failed to create test order")
@@ -58,18 +50,6 @@ class WooPosCardReaderViewModel @Inject constructor(
 
             null -> error("WooPosCardReaderMode not found in savedStateHandle")
         }
-    }
-
-    private fun startPaymentFlow(orderId: Long) {
-        triggerEvent(
-            WooPosCardReaderActivityEvent(
-                cardReaderFlowParam = CardReaderFlowParam.PaymentOrRefund.Payment(
-                    orderId = orderId,
-                    paymentType = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.WOO_POS
-                ),
-                cardReaderType = CardReaderType.EXTERNAL
-            )
-        )
     }
 
     private suspend fun createTestOrder(onSuccess: (Order) -> Unit, onFailure: () -> Unit) {
