@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun WooPosRootHost(
     connectToCardReader: (context: Context) -> Unit,
+    collectPaymentWithCardReader: (context: Context) -> Unit,
 ) {
     val rootController = rememberNavController()
 
@@ -22,6 +23,7 @@ fun WooPosRootHost(
         checkoutGraph(
             navController = rootController,
             onConnectToCardReaderClicked = { context -> connectToCardReader(context) },
+            collectPaymentWithCardReader = { context -> collectPaymentWithCardReader(context) },
         )
     }
 }

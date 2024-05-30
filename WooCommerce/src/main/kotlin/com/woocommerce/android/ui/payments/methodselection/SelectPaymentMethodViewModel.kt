@@ -452,7 +452,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 SIMPLE -> NavigateBackToHub(CardReadersHub())
                 TRY_TAP_TO_PAY -> NavigateToTapToPaySummary(order.first())
                 ORDER, ORDER_CREATION -> NavigateBackToOrderList(order.first())
-                WOO_POS -> NavigateToWooPos(order.first().id)
+                WOO_POS -> NavigateBackToWooPos
             }
         )
     }

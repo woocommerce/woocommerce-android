@@ -14,6 +14,7 @@ const val MAIN_GRAPH_ROUTE = "main-graph"
 fun NavGraphBuilder.checkoutGraph(
     navController: NavController,
     onConnectToCardReaderClicked: (Context) -> Unit,
+    collectPaymentWithCardReader: (Context) -> Unit,
 ) {
     navigation(
         startDestination = CART_ROUTE,
@@ -22,6 +23,7 @@ fun NavGraphBuilder.checkoutGraph(
         cartScreen(
             onCheckoutClick = navController::navigateToCheckoutScreen,
             onConnectToCardReaderClicked = { onConnectToCardReaderClicked(navController.context) },
+            onCollectPaymentWithCardReader = { collectPaymentWithCardReader(navController.context) },
         )
         checkoutScreen(
             onBackClick = navController::popBackStack

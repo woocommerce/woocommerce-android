@@ -51,5 +51,10 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             Intent(context, WooPosCardReaderActivity::class.java).apply {
                 putExtra(WOO_POS_CARD_READER_MODE_KEY, WooPosCardReaderMode.Connection)
             }
+
+        fun buildIntentForPayment(context: Context, orderId: Long) =
+            Intent(context, WooPosCardReaderActivity::class.java).apply {
+                putExtra(WOO_POS_CARD_READER_MODE_KEY, WooPosCardReaderMode.Payment(orderId))
+            }
     }
 }

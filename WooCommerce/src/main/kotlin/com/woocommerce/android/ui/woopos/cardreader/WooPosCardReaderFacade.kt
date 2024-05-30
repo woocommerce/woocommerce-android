@@ -14,4 +14,8 @@ class WooPosCardReaderFacade @Inject constructor(
     fun connectToReader(context: Context) {
         context.startActivity(WooPosCardReaderActivity.buildIntentForCardReaderConnection(context))
     }
+
+    fun collectPayment(context: Context, orderId: Long) {
+        context.startActivity(WooPosCardReaderActivity.buildIntentForPayment(context, orderId))
+    }
 }

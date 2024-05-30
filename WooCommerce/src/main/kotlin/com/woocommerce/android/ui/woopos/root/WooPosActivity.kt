@@ -31,6 +31,11 @@ class WooPosActivity : AppCompatActivity() {
                                 Toast.makeText(this@WooPosActivity, "Reader status: $it", Toast.LENGTH_SHORT).show()
                             }
                         }
+                    },
+                    collectPaymentWithCardReader = {
+                        lifecycleScope.launch {
+                            wooPosCardReaderFacade.collectPayment(this@WooPosActivity, -1)
+                        }
                     }
                 )
             }

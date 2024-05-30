@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,11 +20,13 @@ import com.woocommerce.android.ui.woopos.util.WooPosPreview
 fun WooPosCartScreen(
     viewModel: WooPosCartViewModel,
     onCheckoutClick: () -> Unit,
-    onConnectToCardReaderClicked: () -> Unit
+    onConnectToCardReaderClicked: () -> Unit,
+    onCollectPaymentWithCardReader: () -> Unit,
 ) {
     WooPosCartScreen(
         onCheckoutClick = onCheckoutClick,
         onConnectToCardReaderClicked = onConnectToCardReaderClicked,
+        onCollectPaymentWithCardReader = onCollectPaymentWithCardReader,
     )
 }
 
@@ -31,10 +34,13 @@ fun WooPosCartScreen(
 private fun WooPosCartScreen(
     onCheckoutClick: () -> Unit,
     onConnectToCardReaderClicked: () -> Unit,
+    onCollectPaymentWithCardReader: () -> Unit,
 ) {
     Box(
-        Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        contentAlignment = Alignment.CenterStart
     ) {
         Column {
             Text(
@@ -51,6 +57,12 @@ private fun WooPosCartScreen(
             Button(onClick = onConnectToCardReaderClicked) {
                 Text("Connect to Card Reader")
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = onCollectPaymentWithCardReader) {
+                Text("Collect Payment with Card Reader")
+            }
         }
     }
 }
@@ -58,5 +70,9 @@ private fun WooPosCartScreen(
 @Composable
 @WooPosPreview
 fun WooPosCartScreenPreview() {
-    WooPosCartScreen(onCheckoutClick = {}, onConnectToCardReaderClicked = {})
+    WooPosCartScreen(
+        onCheckoutClick = {},
+        onConnectToCardReaderClicked = {},
+        onCollectPaymentWithCardReader = {},
+    )
 }
