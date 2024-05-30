@@ -91,9 +91,6 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                     .fold(
                         onSuccess = {
                             AnalyticsTracker.track(AnalyticsEvent.ORDER_NOTE_ADD_SUCCESS)
-                            triggerEvent(
-                                MultiLiveEvent.Event.ShowSnackbar(R.string.cash_payments_order_note_adding_error)
-                            )
                             triggerEvent(MultiLiveEvent.Event.ExitWithResult(true))
                         },
                         onFailure = {
@@ -105,6 +102,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                         },
                     )
             }
+        } else {
+            triggerEvent(MultiLiveEvent.Event.ExitWithResult(true))
         }
     }
 
