@@ -131,7 +131,7 @@ fun ChangeDueCalculatorScreen(
                         text = if (uiState.change < BigDecimal.ZERO) {
                             "-"
                         } else {
-                            uiState.change.toPlainString()
+                            "$currencySymbol${uiState.change.toPlainString()}"
                         },
                         style = MaterialTheme.typography.h3,
                         fontWeight = FontWeight.Bold,
@@ -148,17 +148,16 @@ fun ChangeDueCalculatorScreen(
                         onCheckedChange = onRecordTransactionDetailsCheckedChanged
                     )
 
-                        MarkOrderAsCompleteButton(
-                            loading = uiState.loading,
-                            enabled = canCompleteOrder,
-                            onClick = onCompleteOrderClick,
-                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                        )
-                    }
+                    MarkOrderAsCompleteButton(
+                        loading = uiState.loading,
+                        enabled = canCompleteOrder,
+                        onClick = onCompleteOrderClick,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                    )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
