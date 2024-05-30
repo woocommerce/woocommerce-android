@@ -84,12 +84,14 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Address.Companion.EMPTY
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
+import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
@@ -208,6 +210,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
     private val totalsHelper: OrderCreateEditTotalsHelper,
+    private val feedbackRepository: FeedbackRepository,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -221,6 +224,7 @@ class OrderCreateEditViewModel @Inject constructor(
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
         const val DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK = 1000L
+        const val DAYS_BEFORE_SHOWING_SHIPPING_FEEDBACK = 7
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -475,7 +479,8 @@ class OrderCreateEditViewModel @Inject constructor(
                 .asFlow()
                 .drop(1)
                 .take(1)
-                .collect {
+                .takeIf { shouldDisplayShippingLinesFeedback() }
+                ?.collect {
                     delay(DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK)
                     viewState = viewState.copy(showShippingFeedback = true)
                 }
@@ -1295,8 +1300,31 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    private fun shouldDisplayShippingLinesFeedback(): Boolean {
+        val settings =
+            feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES)
+        return settings.feedbackState == FeatureFeedbackSettings.FeedbackState.UNANSWERED ||
+            settings.isFeedbackGivenMoreThanDaysAgo(DAYS_BEFORE_SHOWING_SHIPPING_FEEDBACK)
+    }
+
+    fun onSendShippingFeedback() {
+        launch {
+            feedbackRepository.saveFeatureFeedback(
+                FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
+                FeatureFeedbackSettings.FeedbackState.GIVEN
+            )
+            viewState = viewState.copy(showShippingFeedback = false)
+            triggerEvent(ShippingLinesFeedback)
+        }
+    }
     fun onCloseShippingFeedback() {
-        viewState = viewState.copy(showShippingFeedback = false)
+        launch {
+            feedbackRepository.saveFeatureFeedback(
+                FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
+                FeatureFeedbackSettings.FeedbackState.DISMISSED
+            )
+            viewState = viewState.copy(showShippingFeedback = false)
+        }
     }
 
     private fun onExpandCollapseTotalsClicked() {
@@ -2128,6 +2156,8 @@ data class OnCustomAmountTypeSelected(
 ) : Event()
 
 object OnSelectedProductsSyncRequested : Event()
+
+object ShippingLinesFeedback : Event()
 
 @Parcelize
 data class CustomAmountUIModel(

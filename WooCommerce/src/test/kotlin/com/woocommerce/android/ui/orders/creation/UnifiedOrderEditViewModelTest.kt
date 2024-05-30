@@ -15,10 +15,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SCANNING_SOURCE
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
+import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Failed
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus.Succeeded
@@ -105,6 +107,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel
     protected lateinit var totalsHelper: OrderCreateEditTotalsHelper
     private lateinit var getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
+    private lateinit var feedbackRepository: FeedbackRepository
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -194,6 +197,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         mapFeeLineToCustomAmountUiModel = mock()
         totalsHelper = mock()
         getShippingMethodsWithOtherValue = mock()
+        feedbackRepository = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2583,7 +2587,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when the shipping lines change then display the feedback dialog only one time`() = testBlocking {
+    fun `when the shipping lines change and feedback is UNANSWERED then display the feedback dialog`() = testBlocking {
         val itemId = 1L
         val shippingMethodId = "other"
         val shippingMethodTitle = "Other"
@@ -2611,17 +2615,17 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             methodId = shippingMethodId
         )
 
-        val result2 = ShippingUpdateResult(
-            id = itemId,
-            amount = BigDecimal.ONE,
-            name = "Updated name 1",
-            methodId = shippingMethodId
+        val settingResponse = FeatureFeedbackSettings(
+            feature = FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
+            feedbackState = FeatureFeedbackSettings.FeedbackState.UNANSWERED
         )
 
         val order = defaultOrderValue.copy(shippingLines = shippingLines)
 
         initMocksForAnalyticsWithOrder(order)
         whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(getShippingMethodsResult)
+        whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES))
+            .doReturn(settingResponse)
         createSut()
 
         var isShippingFeedbackDisplayed: Boolean? = null
@@ -2638,19 +2642,126 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
 
         // Assert that the feedback dialog is shown after a change on the shipping lines
         assertThat(isShippingFeedbackDisplayed).isTrue()
-
-        sut.onCloseShippingFeedback()
-
-        // Assert that the feedback dialog is hidden when onCloseShippingFeedback() is executed
-        assertThat(isShippingFeedbackDisplayed).isFalse()
-
-        sut.onUpdatedShipping(result2)
-
-        advanceTimeBy(1001)
-
-        // Assert that the feedback dialog is displayed only after the first change
-        assertThat(isShippingFeedbackDisplayed).isFalse()
     }
+
+    @Test
+    fun `when the shipping lines change and feedback was GIVEN more than 7 days ago then display the feedback dialog`() =
+        testBlocking {
+            val itemId = 1L
+            val shippingMethodId = "other"
+            val shippingMethodTitle = "Other"
+            val shippingLines = listOf(
+                Order.ShippingLine(
+                    itemId = itemId,
+                    methodId = shippingMethodId,
+                    total = BigDecimal.TEN,
+                    methodTitle = "Random name",
+                    totalTax = BigDecimal.ZERO
+                )
+            )
+            val getShippingMethodsResult = flowOf(
+                listOf(
+                    ShippingMethod(
+                        id = shippingMethodId,
+                        title = shippingMethodTitle
+                    )
+                )
+            )
+            val result1 = ShippingUpdateResult(
+                id = itemId,
+                amount = BigDecimal.ONE,
+                name = "Updated name 1",
+                methodId = shippingMethodId
+            )
+
+            val settingResponse = FeatureFeedbackSettings(
+                feature = FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
+                feedbackState = FeatureFeedbackSettings.FeedbackState.GIVEN,
+                settingChangeDate = 1716238644L // 2024-05-20
+            )
+
+            val order = defaultOrderValue.copy(shippingLines = shippingLines)
+
+            initMocksForAnalyticsWithOrder(order)
+            whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(getShippingMethodsResult)
+            whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES))
+                .doReturn(settingResponse)
+            createSut()
+
+            var isShippingFeedbackDisplayed: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isShippingFeedbackDisplayed = viewState.showShippingFeedback
+            }
+
+            // Assert that the feedback dialog is hidden when the screen is displayed
+            assertThat(isShippingFeedbackDisplayed).isFalse()
+
+            sut.onUpdatedShipping(result1)
+
+            advanceTimeBy(1001)
+
+            // Assert that the feedback dialog is shown after a change on the shipping lines
+            assertThat(isShippingFeedbackDisplayed).isTrue()
+        }
+
+    @Test
+    fun `when the shipping lines change and feedback was GIVEN less than 7 days ago then DON'T display the feedback dialog`() =
+        testBlocking {
+            val itemId = 1L
+            val shippingMethodId = "other"
+            val shippingMethodTitle = "Other"
+            val shippingLines = listOf(
+                Order.ShippingLine(
+                    itemId = itemId,
+                    methodId = shippingMethodId,
+                    total = BigDecimal.TEN,
+                    methodTitle = "Random name",
+                    totalTax = BigDecimal.ZERO
+                )
+            )
+            val getShippingMethodsResult = flowOf(
+                listOf(
+                    ShippingMethod(
+                        id = shippingMethodId,
+                        title = shippingMethodTitle
+                    )
+                )
+            )
+            val result1 = ShippingUpdateResult(
+                id = itemId,
+                amount = BigDecimal.ONE,
+                name = "Updated name 1",
+                methodId = shippingMethodId
+            )
+
+            val settingResponse = FeatureFeedbackSettings(
+                feature = FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
+                feedbackState = FeatureFeedbackSettings.FeedbackState.GIVEN
+            )
+
+            val order = defaultOrderValue.copy(shippingLines = shippingLines)
+
+            initMocksForAnalyticsWithOrder(order)
+            whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(getShippingMethodsResult)
+            whenever(feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES))
+                .doReturn(settingResponse)
+            createSut()
+
+            var isShippingFeedbackDisplayed: Boolean? = null
+            sut.viewStateData.observeForever { _, viewState ->
+                isShippingFeedbackDisplayed = viewState.showShippingFeedback
+            }
+
+            // Assert that the feedback dialog is hidden when the screen is displayed
+            assertThat(isShippingFeedbackDisplayed).isFalse()
+
+            sut.onUpdatedShipping(result1)
+
+            advanceTimeBy(1001)
+
+            // Assert that the feedback dialog is shown after a change on the shipping lines
+            assertThat(isShippingFeedbackDisplayed).isFalse()
+        }
 
     //endregion
 
@@ -2688,7 +2799,8 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             currencySymbolFinder = currencySymbolFinder,
             totalsHelper = totalsHelper,
             dateUtils = mock(),
-            getShippingMethodsWithOtherValue = getShippingMethodsWithOtherValue
+            getShippingMethodsWithOtherValue = getShippingMethodsWithOtherValue,
+            feedbackRepository = feedbackRepository
         )
     }
 
