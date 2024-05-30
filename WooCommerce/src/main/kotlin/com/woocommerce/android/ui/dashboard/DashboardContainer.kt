@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsCard
+import com.woocommerce.android.ui.dashboard.inbox.DashboardInboxCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersCard
 import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
@@ -153,6 +154,11 @@ private fun ConfigurableWidgetCard(
         )
 
         DashboardWidget.Type.PRODUCT_STOCK -> DashboardProductStockCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
+
+        DashboardWidget.Type.INBOX -> DashboardInboxCard(
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )
