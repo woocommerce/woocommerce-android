@@ -61,7 +61,7 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                 ChangeDueCalculatorScreen(
                     uiState = uiState,
                     onNavigateUp = viewModel::onBackPressed,
-                    onCompleteOrderClick = viewModel::addOrderNoteIfChecked,
+                    onCompleteOrderClick = viewModel::onOrderComplete,
                     onAmountReceivedChanged = { viewModel.updateAmountReceived(it) },
                     onRecordTransactionDetailsCheckedChanged = {
                         viewModel.updateRecordTransactionDetailsChecked(it)

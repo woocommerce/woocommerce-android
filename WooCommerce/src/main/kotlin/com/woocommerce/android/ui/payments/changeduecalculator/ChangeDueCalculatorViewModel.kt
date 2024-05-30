@@ -82,7 +82,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(recordTransactionDetailsChecked = checked)
     }
 
-    fun addOrderNoteIfChecked() {
+    fun onOrderComplete() {
         if (_uiState.value.recordTransactionDetailsChecked) {
             launch {
                 val noteStringTemplate = resourceProvider.getString(R.string.cash_payments_order_note_text)
