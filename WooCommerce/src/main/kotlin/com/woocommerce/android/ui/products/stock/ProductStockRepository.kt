@@ -23,6 +23,10 @@ class ProductStockRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dateUtils: DateUtils
 ) {
+    companion object {
+        private const val DAYS_TO_FETCH = 30
+    }
+
     suspend fun fetchProductStockReport(stockStatus: ProductStockStatus): Result<List<ProductStockItem>> {
         return stockReportStock.fetchProductStockReport(
             site = selectedSite.get(),
@@ -49,7 +53,7 @@ class ProductStockRepository @Inject constructor(
 
     private suspend fun getProductSalesReports(stockReport: ProductStockItems):
         Pair<WooResult<Array<ReportsProductApiResponse>>, WooResult<Array<ReportsProductApiResponse>>> {
-        val startDate = Date(dateUtils.getCurrentDateTimeMinusDays(30)).formatToYYYYmmDDhhmmss()
+        val startDate = Date(dateUtils.getCurrentDateTimeMinusDays(DAYS_TO_FETCH)).formatToYYYYmmDDhhmmss()
         val endDate = Date().formatToYYYYmmDDhhmmss()
         return coroutineScope {
             val productSalesDeferred = async {
