@@ -203,7 +203,10 @@ fun ProductStockRow(
                 )
             }
             Text(
-                text = product.itemsSold.toString(),
+                text = when {
+                    product.itemsSold == 0 -> stringResource(R.string.dashboard_product_stock_no_sales_last_30_days)
+                    else -> stringResource(R.string.dashboard_product_stock_sales_last_30_days, product.itemsSold)
+                },
                 style = MaterialTheme.typography.body2,
                 color = colorResource(id = R.color.color_on_surface_medium_selector)
             )

@@ -137,5 +137,5 @@ data class ProductStockItem(
     val name: String,
     val stockQuantity: Int,
     val imageUrl: String?,
-    val itemsSold: Int?
+    val itemsSold: Int
 ) : Parcelable
