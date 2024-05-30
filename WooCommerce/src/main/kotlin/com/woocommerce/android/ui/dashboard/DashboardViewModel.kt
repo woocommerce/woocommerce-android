@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -179,6 +180,10 @@ class DashboardViewModel @Inject constructor(
 
     fun onContactSupportClicked() {
         triggerEvent(DashboardEvent.ContactSupport)
+    }
+
+    fun onShowSnackbar(@StringRes message: Int) {
+        triggerEvent(Event.ShowSnackbar(message))
     }
 
     private fun mapWidgetsToUiModels(
