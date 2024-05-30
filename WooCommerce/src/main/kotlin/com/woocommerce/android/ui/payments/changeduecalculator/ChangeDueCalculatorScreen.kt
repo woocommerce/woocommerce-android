@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,15 +11,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -34,27 +35,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
+import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import java.math.BigDecimal
 
 @Composable
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
+    recordTransactionDetailsChecked: Boolean,
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit,
-    onAmountReceivedChanged: (BigDecimal) -> Unit
+    onAmountReceivedChanged: (BigDecimal) -> Unit,
+    onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit
 ) {
     WooThemeWithBackground {
         Scaffold(
@@ -83,102 +85,74 @@ fun ChangeDueCalculatorScreen(
                         .padding(paddingValues)
                         .verticalScroll(rememberScrollState())
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    when (uiState) {
-                        is ChangeDueCalculatorViewModel.UiState.Loading -> Text(
-                            stringResource(R.string.loading),
-                            style = MaterialTheme.typography.h6
-                        )
+                    var inputText by remember { mutableStateOf(uiState.amountReceived) }
 
-                        is ChangeDueCalculatorViewModel.UiState.Success -> {
-                            var inputText by remember { mutableStateOf(uiState.amountReceived) }
-
-                            LaunchedEffect(uiState.amountReceived) {
-                                inputText = uiState.amountReceived
-                            }
-
-                            val focusRequester = remember { FocusRequester() }
-                            val keyboardController = LocalSoftwareKeyboardController.current
-
-                            LaunchedEffect(Unit) {
-                                focusRequester.requestFocus()
-                                keyboardController?.show()
-                            }
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(dimensionResource(id = R.dimen.minor_100)),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                WCOutlinedTypedTextField(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
-                                        .focusRequester(focusRequester),
-                                    value = inputText,
-                                    label = stringResource(R.string.cash_payments_cash_received),
-                                    singleLine = true,
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                                    valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
-                                    onValueChange = {
-                                        inputText = it
-                                        onAmountReceivedChanged(android.icu.math.BigDecimal(it).toBigDecimal())
-                                    }
-                                )
-                            }
-
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 48.dp, bottom = 16.dp, start = 32.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.cash_payments_change_due),
-                                    style = LocalTextStyle.current.copy(
-                                        fontSize = TextUnit(16f, TextUnitType.Sp)
-                                    )
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = if (uiState.change < BigDecimal.ZERO) {
-                                        "-"
-                                    } else {
-                                        uiState.change.toPlainString()
-                                    },
-                                    style = LocalTextStyle.current.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = TextUnit(44f, TextUnitType.Sp)
-                                    ),
-                                    maxLines = 1
-                                )
-                            }
-
-                            RecordTransactionDetailsNote(
-                                modifier = Modifier
-                                    .padding(top = 16.dp, bottom = 16.dp, start = 16.dp)
-                                    .fillMaxWidth()
-                            )
-
-                            MarkOrderAsCompleteButton(
-                                onClick = onCompleteOrderClick,
-                                modifier = Modifier.padding(top = 16.dp)
-                            )
-                        }
-
-                        is ChangeDueCalculatorViewModel.UiState.Error -> {
-                            Text(
-                                text = stringResource(R.string.error_generic),
-                                style = MaterialTheme.typography.h6
-                            )
-                        }
+                    LaunchedEffect(uiState.amountReceived) {
+                        inputText = uiState.amountReceived
                     }
-                    Spacer(modifier = Modifier.height(32.dp))
+
+                    val focusRequester = remember { FocusRequester() }
+                    val keyboardController = LocalSoftwareKeyboardController.current
+
+                    LaunchedEffect(Unit) {
+                        focusRequester.requestFocus()
+                        keyboardController?.show()
+                    }
+
+                    WCOutlinedTypedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
+                        value = inputText,
+                        label = stringResource(R.string.cash_payments_cash_received),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
+                        onValueChange = {
+                            inputText = it
+                            onAmountReceivedChanged(it)
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Text(
+                        text = stringResource(R.string.cash_payments_change_due),
+                        style = MaterialTheme.typography.body2,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Text(
+                        text = if (uiState.change < BigDecimal.ZERO) {
+                            "-"
+                        } else {
+                            uiState.change.toPlainString()
+                        },
+                        style = MaterialTheme.typography.h3,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    RecordTransactionDetailsNote(
+                        modifier = Modifier.fillMaxWidth(),
+                        checked = recordTransactionDetailsChecked,
+                        onCheckedChange = onRecordTransactionDetailsCheckedChanged
+                    )
+
+                    MarkOrderAsCompleteButton(
+                        loading = uiState.loading,
+                        onClick = onCompleteOrderClick
+                    )
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -190,17 +164,17 @@ fun RecordTransactionDetailsNote(
     onCheckedChange: (Boolean) -> Unit = {},
 ) {
     Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = stringResource(R.string.cash_payments_record_transaction_details),
-            modifier = Modifier.align(Alignment.CenterVertically),
-            style = LocalTextStyle.current.copy(
-                fontSize = TextUnit(16f, TextUnitType.Sp)
-            )
+            style = MaterialTheme.typography.body1
         )
-        Switch(
+        WCSwitch(
             checked = checked,
             onCheckedChange = onCheckedChange
         )
@@ -208,25 +182,36 @@ fun RecordTransactionDetailsNote(
 }
 
 @Composable
-fun MarkOrderAsCompleteButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun MarkOrderAsCompleteButton(
+    loading: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     WCColoredButton(
         onClick = onClick,
+        enabled = !loading,
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, top = 8.dp, end = 16.dp)
     ) {
-        Text(text = stringResource(R.string.cash_payments_mark_order_as_complete))
+        if (loading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(16.dp),
+            )
+        } else {
+            Text(text = stringResource(R.string.cash_payments_mark_order_as_complete))
+        }
     }
 }
 
 @Composable
 private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
-    return when (uiState) {
-        is ChangeDueCalculatorViewModel.UiState.Success -> stringResource(
+    return if (uiState.amountDue != BigDecimal.ZERO) {
+        stringResource(
             R.string.cash_payments_take_payment_title,
             uiState.amountDue
         )
-        else -> stringResource(id = R.string.cash_payments_take_payment_title)
+    } else {
+        ""
     }
 }
 
@@ -234,13 +219,16 @@ private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String 
 @Preview(showBackground = true)
 fun ChangeDueCalculatorScreenSuccessPreview() {
     ChangeDueCalculatorScreen(
-        uiState = ChangeDueCalculatorViewModel.UiState.Success(
+        uiState = ChangeDueCalculatorViewModel.UiState(
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
-            amountReceived = BigDecimal("0.00")
+            amountReceived = BigDecimal("0.00"),
+            loading = true
         ),
+        recordTransactionDetailsChecked = false,
         onNavigateUp = {},
         onCompleteOrderClick = {},
-        onAmountReceivedChanged = {}
+        onAmountReceivedChanged = {},
+        onRecordTransactionDetailsCheckedChanged = {}
     )
 }
