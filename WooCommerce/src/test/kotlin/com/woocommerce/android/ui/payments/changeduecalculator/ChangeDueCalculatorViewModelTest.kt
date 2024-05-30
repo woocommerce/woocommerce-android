@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -30,9 +31,16 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private val orderDetailRepository: OrderDetailRepository = mock()
 
-    private val parameterRepository: ParameterRepository = mock()
+    private val parameters: SiteParameters = mock {
+        on { currencySymbol }.thenReturn("$")
+    }
+    private val parameterRepository: ParameterRepository = mock {
+        on { getParameters() }.thenReturn(parameters)
+    }
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("orderId" to 1L))
+
+    private val resourceProvider: ResourceProvider = mock()
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
@@ -47,13 +55,13 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            resourceProvider = resourceProvider
         )
 
         // THEN
         val uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
-        uiState as ChangeDueCalculatorViewModel.UiState.Success
+        assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
         assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.amountReceived).isEqualTo(BigDecimal.ZERO)
@@ -66,10 +74,9 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository
+            parameterRepository = parameterRepository,
+            resourceProvider = resourceProvider
         )
-        var uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
 
         // WHEN
         val amountReceived = BigDecimal("150.00")
@@ -77,10 +84,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
 
         // THEN
-        uiState = viewModel.uiState.value
-        assertThat(uiState).isInstanceOf(ChangeDueCalculatorViewModel.UiState.Success::class.java)
-        uiState as ChangeDueCalculatorViewModel.UiState.Success
-        assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
+        val uiState = viewModel.uiState.value
         assertThat(uiState.amountReceived).isEqualTo(amountReceived)
         assertThat(uiState.change).isEqualTo(BigDecimal("50.00"))
     }

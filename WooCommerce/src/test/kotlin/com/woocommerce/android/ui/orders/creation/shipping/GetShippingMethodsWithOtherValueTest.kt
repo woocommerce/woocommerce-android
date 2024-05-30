@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.orders.creation.shipping
 
+import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -8,7 +9,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -44,11 +44,12 @@ class GetShippingMethodsWithOtherValueTest : BaseUnitTest() {
             )
         }
         whenever(shippingMethodsStore.observeShippingMethods(siteModel)).doReturn(flowOf(fetchResult))
-        whenever(resourceProvider.getString(any())).doReturn("Other")
+        whenever(resourceProvider.getString(R.string.other)).doReturn("Other")
+        whenever(resourceProvider.getString(R.string.na)).doReturn("N/A")
 
         val result = sut.invoke().first()
         assertThat(result).isNotNull
-        assertThat(result.size).isEqualTo(4) // List + Other
+        assertThat(result.size).isEqualTo(5) // List + Other + N/A
         val other = result.firstOrNull { it.id == ShippingMethodsRepository.OTHER_ID }
         assertThat(other).isNotNull
     }

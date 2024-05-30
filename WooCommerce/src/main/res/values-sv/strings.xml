@@ -35,9 +35,7 @@ Language: sv_SE
     <string name="dynamic_dashboard_widget_menu_item_hide">Dölj %s</string>
     <string name="my_store_widget_onboarding_completed">Slutförd</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Behöver du fortfarande hjälp? Kontakta oss</string>
     <string name="dynamic_dashboard_widget_error_title">Kan inte ladda data</string>
-    <string name="my_store_stats_plugin_inactive_description">Se till att du kör den senaste versionen av WooCommerce på din webbplats och att du har WooCommerce Admin aktiverad.</string>
     <string name="my_store_stats_plugin_inactive_title">Vi kan inte visa din\n butiks analys</string>
     <string name="my_store_widget_unavailable">Inte tillgänglig</string>
     <string name="dashboard_stats_custom_range_label">Anpassad</string>

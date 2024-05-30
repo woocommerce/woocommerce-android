@@ -32,6 +32,7 @@ data class DashboardWidget(
         REVIEWS(R.string.my_store_widget_reviews_title, "reviews"),
         ORDERS(R.string.my_store_widget_orders_title, "orders"),
         COUPONS(R.string.my_store_widget_coupons_title, "coupons"),
+        PRODUCT_STOCK(R.string.my_store_widget_product_stock_title, "product_stock"),
     }
 
     sealed interface Status : Parcelable {

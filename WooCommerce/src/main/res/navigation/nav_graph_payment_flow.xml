@@ -74,12 +74,6 @@
         <argument
             android:name="orderId"
             app:argType="long" />
-
-        <action
-            android:id="@+id/action_changeDueCalculatorFragment_to_selectPaymentMethodFragment"
-            app:destination="@id/selectPaymentMethodFragment"
-            app:popUpTo="@id/selectPaymentMethodFragment"
-            app:popUpToInclusive="true"/>
     </fragment>
 
 
