@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,7 +28,12 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private val orderDetailRepository: OrderDetailRepository = mock()
 
-    private val parameterRepository: ParameterRepository = mock()
+    private val parameters: SiteParameters = mock {
+        on { currencySymbol }.thenReturn("$")
+    }
+    private val parameterRepository: ParameterRepository = mock {
+        on { getParameters() }.thenReturn(parameters)
+    }
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("orderId" to 1L))
 
