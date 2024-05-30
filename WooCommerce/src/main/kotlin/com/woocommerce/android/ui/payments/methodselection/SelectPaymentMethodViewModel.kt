@@ -88,6 +88,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderPaymentFlowParam
         get() = navArgs.cardReaderFlowParam as Payment
 
+    val displayUi: Boolean
+        get() = isWooPOSPaymentFlow()
+
     init {
         checkStatus()
         if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled()) {
@@ -124,6 +127,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     is Refund -> triggerEvent(NavigateToCardReaderRefundFlow(param, EXTERNAL))
                 }
             }
+
             is WooPosConnection -> error("Unsupported card reader flow param: $param")
         }
     }
@@ -480,6 +484,12 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private fun formatOrderTotal(total: BigDecimal): String {
         val currencyCode = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyCode ?: ""
         return currencyFormatter.formatCurrency(total, currencyCode)
+    }
+
+    private fun isWooPOSPaymentFlow() = if (navArgs.cardReaderFlowParam is Payment) {
+        (navArgs.cardReaderFlowParam as Payment).paymentType != WOO_POS
+    } else {
+        true
     }
 
     companion object {
