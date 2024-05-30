@@ -158,7 +158,6 @@ fun ChangeDueCalculatorScreen(
     }
 }
 
-
 @Composable
 fun RecordTransactionDetailsNote(
     modifier: Modifier = Modifier,

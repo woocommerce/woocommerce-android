@@ -59,7 +59,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
         assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
-        assertThat(uiState.amountReceived).isEqualTo(BigDecimal.ZERO)
+        assertThat(uiState.amountReceived).isEqualTo(ORDER_TOTAL)
     }
 
     @Test
