@@ -42,7 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
+import com.woocommerce.android.ui.compose.component.NullableCurrencyTextFieldValueMapper
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
@@ -54,7 +54,7 @@ fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit,
-    onAmountReceivedChanged: (BigDecimal) -> Unit,
+    onAmountReceivedChanged: (BigDecimal?) -> Unit,
     onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit
 ) {
     WooThemeWithBackground {
@@ -88,7 +88,7 @@ fun ChangeDueCalculatorScreen(
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    var inputText by remember { mutableStateOf(uiState.amountReceived) }
+                    var inputText by remember { mutableStateOf<BigDecimal?>(uiState.amountDue) }
 
                     LaunchedEffect(uiState.amountReceived) {
                         inputText = uiState.amountReceived
@@ -108,13 +108,19 @@ fun ChangeDueCalculatorScreen(
                             .focusRequester(focusRequester),
                         value = inputText,
                         label = stringResource(R.string.cash_payments_cash_received),
+                        valueMapper = NullableCurrencyTextFieldValueMapper.create(
+                            decimalSeparator = ".",
+                            numberOfDecimals = 2
+                        ),
+                        onValueChange = { newValue ->
+                            inputText = newValue
+                            onAmountReceivedChanged(newValue)
+                        },
+                        visualTransformation = CurrencyVisualTransformation(uiState.currencySymbol),
                         singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        valueMapper = BigDecimalTextFieldValueMapper.create(supportsNegativeValue = true),
-                        onValueChange = {
-                            inputText = it
-                            onAmountReceivedChanged(it)
-                        }
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Decimal
+                        )
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -207,14 +213,10 @@ fun MarkOrderAsCompleteButton(
 
 @Composable
 private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
-    return if (uiState.amountDue != BigDecimal.ZERO) {
-        stringResource(
-            R.string.cash_payments_take_payment_title,
-            uiState.amountDue
-        )
-    } else {
-        ""
-    }
+    return stringResource(
+        R.string.cash_payments_take_payment_title,
+        "${uiState.currencySymbol}${uiState.amountDue}"
+    )
 }
 
 @Composable
@@ -224,7 +226,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
         uiState = ChangeDueCalculatorViewModel.UiState(
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
-            amountReceived = BigDecimal("0.00"),
+            amountReceived = BigDecimal("666.00"),
             loading = false,
             canCompleteOrder = true,
             currencySymbol = "$",
@@ -244,7 +246,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
         uiState = ChangeDueCalculatorViewModel.UiState(
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
-            amountReceived = BigDecimal("0.00"),
+            amountReceived = BigDecimal("666.00"),
             loading = true,
             canCompleteOrder = true,
             currencySymbol = "€",
@@ -264,7 +266,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
         uiState = ChangeDueCalculatorViewModel.UiState(
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
-            amountReceived = BigDecimal("0.00"),
+            amountReceived = BigDecimal("666.00"),
             loading = false,
             canCompleteOrder = false,
             currencySymbol = "€",
