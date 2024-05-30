@@ -52,7 +52,6 @@ import java.math.BigDecimal
 @Composable
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
-    recordTransactionDetailsChecked: Boolean,
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit,
     onAmountReceivedChanged: (BigDecimal) -> Unit,
@@ -142,7 +141,7 @@ fun ChangeDueCalculatorScreen(
 
                     RecordTransactionDetailsNote(
                         modifier = Modifier.fillMaxWidth(),
-                        checked = recordTransactionDetailsChecked,
+                        checked = uiState.recordTransactionDetailsChecked,
                         onCheckedChange = onRecordTransactionDetailsCheckedChanged
                     )
 

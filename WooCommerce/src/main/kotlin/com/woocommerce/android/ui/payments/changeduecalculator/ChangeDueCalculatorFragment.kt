@@ -58,13 +58,8 @@ class ChangeDueCalculatorFragment : BaseFragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val uiState by viewModel.uiState.collectAsState()
-                val recordTransactionDetailsChecked by viewModel.recordTransactionDetailsChecked.collectAsState()
-                val currencySymbol = viewModel.getCurrencySymbol()
                 ChangeDueCalculatorScreen(
                     uiState = uiState,
-                    recordTransactionDetailsChecked = recordTransactionDetailsChecked,
-                    canCompleteOrder = viewModel.canCompleteOrder(),
-                    currencySymbol = currencySymbol,
                     onNavigateUp = viewModel::onBackPressed,
                     onCompleteOrderClick = viewModel::addOrderNoteIfChecked,
                     onAmountReceivedChanged = { viewModel.updateAmountReceived(it) },
