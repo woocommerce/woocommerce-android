@@ -83,9 +83,9 @@ fun CouponDetailsScreen(
             actions = {
                 IconButton(onClick = { showMenu = !showMenu }) {
                     Icon(
-                        Icons.Filled.MoreVert,
+                        imageVector = Icons.Filled.MoreVert,
                         contentDescription = "Coupons Menu",
-                        tint = colorResource(id = R.color.action_menu_fg_selector)
+                        tint = MaterialTheme.colors.primary
                     )
                 }
                 DropdownMenu(

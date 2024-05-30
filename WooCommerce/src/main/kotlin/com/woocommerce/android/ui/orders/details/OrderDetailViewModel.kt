@@ -55,6 +55,7 @@ import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
 import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -178,7 +179,13 @@ class OrderDetailViewModel @Inject constructor(
             val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
             var shouldRefreshShippingMethods = false
             val result = shippingLines.map { shippingLine ->
-                val method = shippingLine.methodId?.let { shippingMethodsMap[it] }
+                val method = shippingLine.methodId?.let {
+                    if (it == " ") {
+                        shippingMethodsMap[ShippingMethodsRepository.NA_ID]
+                    } else {
+                        shippingMethodsMap[it]
+                    }
+                }
                 shouldRefreshShippingMethods = shouldRefreshShippingMethods ||
                     shippingLine.methodId.isNullOrEmpty().not() && method == null && shippingMethods.index == 0
                 ShippingLineDetails(

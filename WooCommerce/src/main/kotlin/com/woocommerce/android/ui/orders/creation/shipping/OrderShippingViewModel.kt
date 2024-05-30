@@ -30,13 +30,14 @@ class OrderShippingViewModel @Inject constructor(
     private val navArgs: OrderShippingFragmentArgs by savedState.navArgs()
     val viewState: MutableStateFlow<ViewState>
 
+    val isEditFlow = navArgs.currentShippingLine != null
+
     init {
         val state = if (navArgs.currentShippingLine == null) {
             ViewState.ShippingState(
                 method = null,
                 name = null,
                 amount = BigDecimal.ZERO,
-                isEditFlow = false,
                 isSaveChangesEnabled = false
             )
         } else {
@@ -49,7 +50,6 @@ class OrderShippingViewModel @Inject constructor(
                     method = getShippingMethodById(shippingLine.methodId),
                     name = shippingLine.methodTitle,
                     amount = shippingLine.total,
-                    isEditFlow = true,
                     isSaveChangesEnabled = false
                 )
             }
@@ -139,7 +139,6 @@ class OrderShippingViewModel @Inject constructor(
             val method: ShippingMethod?,
             val name: String?,
             val amount: BigDecimal,
-            val isEditFlow: Boolean,
             val isSaveChangesEnabled: Boolean
         ) : ViewState()
     }
@@ -152,6 +151,12 @@ data class ShippingUpdateResult(
     val name: String,
     val methodId: String?
 ) : Parcelable
+
+fun ShippingUpdateResult.getMethodIdOrDefault() = if (this.methodId.isNullOrEmpty()) {
+    " " // Default should be N/A Id (""), but passing "" fails, so we add a space
+} else {
+    this.methodId
+}
 
 data class UpdateShipping(val shippingUpdate: ShippingUpdateResult) : MultiLiveEvent.Event()
 data class RemoveShipping(val id: Long) : MultiLiveEvent.Event()

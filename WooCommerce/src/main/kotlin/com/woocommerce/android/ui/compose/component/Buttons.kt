@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.compose.component
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -143,6 +144,7 @@ fun WCOutlinedButton(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     colors: ButtonColors = ButtonDefaults.outlinedButtonColors(),
+    border: BorderStroke? = ButtonDefaults.outlinedBorder,
     content: @Composable RowScope.() -> Unit
 ) {
     OutlinedButton(
@@ -151,6 +153,7 @@ fun WCOutlinedButton(
         colors = colors,
         contentPadding = contentPadding,
         interactionSource = interactionSource,
+        border = border,
         modifier = modifier,
     ) {
         ProvideTextStyle(
