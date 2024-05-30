@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.cardreader
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType
@@ -26,7 +25,7 @@ class WooPosCardReaderViewModel @Inject constructor(
 
             is WooPosCardReaderMode.Payment -> error("Payment mode not implemented yet")
 
-            null -> Log.d("WooPosCardReaderViewModel", "No card reader mode specified")
+            null -> error("WooPosCardReaderMode not found in savedStateHandle")
         }
     }
 }

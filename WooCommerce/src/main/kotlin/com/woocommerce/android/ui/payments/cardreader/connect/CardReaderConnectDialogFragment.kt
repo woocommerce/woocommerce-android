@@ -244,6 +244,7 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                         result = event.data as Boolean,
                     )
                 }
+                is CardReaderConnectEvent.PopBackStackForWooPOS -> findNavController().popBackStack()
                 is CardReaderConnectEvent.ShowToast ->
                     ToastUtils.showToast(requireContext(), getString(event.message))
                 is CardReaderConnectEvent.ShowToastString ->
