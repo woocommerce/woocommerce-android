@@ -187,14 +187,14 @@ fun ProductStockRow(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onItemClicked(product) }
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+            .padding(horizontal = 16.dp),
     ) {
         ProductThumbnail(
             imageUrl = product.imageUrl ?: "",
             contentDescription = stringResource(id = R.string.product_image_content_description),
         )
         Column(modifier = Modifier.padding(start = 8.dp)) {
-            Row(modifier = Modifier.padding(bottom = 4.dp)) {
+            Row(modifier = Modifier.padding(bottom = 8.dp, top = 12.dp)) {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = product.name,
