@@ -39,7 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.BigDecimalTextFieldValueMapper
@@ -218,8 +218,8 @@ private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String 
 }
 
 @Composable
-@Preview(showBackground = true)
-fun ChangeDueCalculatorScreenSuccessPreview() {
+@PreviewLightDark
+fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
     ChangeDueCalculatorScreen(
         uiState = ChangeDueCalculatorViewModel.UiState(
             amountDue = BigDecimal("666.00"),
@@ -227,9 +227,50 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
             amountReceived = BigDecimal("0.00"),
             loading = false,
             canCompleteOrder = true,
-            currencySymbol = "$"
+            currencySymbol = "$",
+            recordTransactionDetailsChecked = false,
         ),
-        recordTransactionDetailsChecked = false,
+        onNavigateUp = {},
+        onCompleteOrderClick = {},
+        onAmountReceivedChanged = {},
+        onRecordTransactionDetailsCheckedChanged = {}
+    )
+}
+
+@Composable
+@PreviewLightDark
+fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
+    ChangeDueCalculatorScreen(
+        uiState = ChangeDueCalculatorViewModel.UiState(
+            amountDue = BigDecimal("666.00"),
+            change = BigDecimal("0.00"),
+            amountReceived = BigDecimal("0.00"),
+            loading = true,
+            canCompleteOrder = true,
+            currencySymbol = "€",
+            recordTransactionDetailsChecked = true,
+        ),
+        onNavigateUp = {},
+        onCompleteOrderClick = {},
+        onAmountReceivedChanged = {},
+        onRecordTransactionDetailsCheckedChanged = {}
+    )
+}
+
+
+@Composable
+@PreviewLightDark
+fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
+    ChangeDueCalculatorScreen(
+        uiState = ChangeDueCalculatorViewModel.UiState(
+            amountDue = BigDecimal("666.00"),
+            change = BigDecimal("0.00"),
+            amountReceived = BigDecimal("0.00"),
+            loading = false,
+            canCompleteOrder = false,
+            currencySymbol = "€",
+            recordTransactionDetailsChecked = true,
+        ),
         onNavigateUp = {},
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
