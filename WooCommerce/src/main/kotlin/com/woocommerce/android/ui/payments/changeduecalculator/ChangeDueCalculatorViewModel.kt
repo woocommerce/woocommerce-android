@@ -27,17 +27,24 @@ class ChangeDueCalculatorViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
     val navArgs: ChangeDueCalculatorFragmentArgs by savedStateHandle.navArgs()
     private val orderId: Long = navArgs.orderId
-    private val _recordTransactionDetailsChecked = MutableStateFlow(false)
-    val recordTransactionDetailsChecked: StateFlow<Boolean> = _recordTransactionDetailsChecked
 
     data class UiState(
         val amountDue: BigDecimal = BigDecimal.ZERO,
         val change: BigDecimal = BigDecimal.ZERO,
         val amountReceived: BigDecimal = BigDecimal.ZERO,
         val loading: Boolean = false,
+        val recordTransactionDetailsChecked: Boolean = false,
+        val canCompleteOrder: Boolean,
+        val currencySymbol: String,
     )
 
-    private val _uiState = MutableStateFlow(UiState(loading = true))
+    private val _uiState = MutableStateFlow(
+        UiState(
+            loading = true,
+            currencySymbol = getCurrencySymbol(),
+            canCompleteOrder = false,
+        )
+    )
     val uiState: StateFlow<UiState> = _uiState
 
     init {
@@ -50,7 +57,9 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             _uiState.value = UiState(
                 amountDue = order.total,
                 change = BigDecimal.ZERO,
-                amountReceived = BigDecimal.ZERO
+                amountReceived = BigDecimal.ZERO,
+                canCompleteOrder = canCompleteOrder(),
+                currencySymbol = getCurrencySymbol(),
             )
         }
     }
@@ -65,17 +74,12 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         _uiState.value = currentState.copy(amountReceived = amount, change = newChange)
     }
 
-    fun getCurrencySymbol(): String {
-        val siteParameters = parameterRepository.getParameters()
-        return siteParameters.currencySymbol.orEmpty()
-    }
-
     fun updateRecordTransactionDetailsChecked(checked: Boolean) {
-        _recordTransactionDetailsChecked.value = checked
+        _uiState.value = _uiState.value.copy(recordTransactionDetailsChecked = checked)
     }
 
-     fun addOrderNoteIfChecked() {
-        if (recordTransactionDetailsChecked.value) {
+    fun addOrderNoteIfChecked() {
+        if (_uiState.value.recordTransactionDetailsChecked) {
             launch {
                 val noteStringTemplate = resourceProvider.getString(R.string.cash_payments_order_note_text)
                 val noteString = generateOrderNoteString(noteStringTemplate)
@@ -103,6 +107,11 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         }
     }
 
+    private fun getCurrencySymbol(): String {
+        val siteParameters = parameterRepository.getParameters()
+        return siteParameters.currencySymbol.orEmpty()
+    }
+
     private fun generateOrderNoteString(noteStringTemplate: String): String {
         val state = _uiState.value
         val currencySymbol = getCurrencySymbol()
@@ -113,7 +122,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         )
     }
 
-    fun canCompleteOrder(): Boolean {
+    private fun canCompleteOrder(): Boolean {
         val currentState = _uiState.value
         return currentState.amountReceived >= currentState.amountDue
     }

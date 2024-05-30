@@ -53,8 +53,6 @@ import java.math.BigDecimal
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
     recordTransactionDetailsChecked: Boolean,
-    canCompleteOrder: Boolean,
-    currencySymbol: String,
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit,
     onAmountReceivedChanged: (BigDecimal) -> Unit,
@@ -131,7 +129,7 @@ fun ChangeDueCalculatorScreen(
                         text = if (uiState.change < BigDecimal.ZERO) {
                             "-"
                         } else {
-                            "$currencySymbol${uiState.change.toPlainString()}"
+                            "${uiState.currencySymbol}${uiState.change.toPlainString()}"
                         },
                         style = MaterialTheme.typography.h3,
                         fontWeight = FontWeight.Bold,
@@ -150,7 +148,7 @@ fun ChangeDueCalculatorScreen(
 
                     MarkOrderAsCompleteButton(
                         loading = uiState.loading,
-                        enabled = canCompleteOrder,
+                        enabled = uiState.canCompleteOrder,
                         onClick = onCompleteOrderClick,
                         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                     )
@@ -228,11 +226,11 @@ fun ChangeDueCalculatorScreenSuccessPreview() {
             amountDue = BigDecimal("666.00"),
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("0.00"),
-            loading = true
+            loading = false,
+            canCompleteOrder = true,
+            currencySymbol = "$"
         ),
         recordTransactionDetailsChecked = false,
-        canCompleteOrder = false,
-        currencySymbol = "$",
         onNavigateUp = {},
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
