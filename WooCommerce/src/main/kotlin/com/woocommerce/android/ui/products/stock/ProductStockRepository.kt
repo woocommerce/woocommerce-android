@@ -31,70 +31,101 @@ class ProductStockRepository @Inject constructor(
             if (stockReportResult.isError) {
                 Result.failure(Exception(stockReportResult.error.message))
             } else {
+                val (productSalesResult, variationSalesResult) = getProductSalesReports(stockReportResult.model!!)
+                return when {
+                    productSalesResult.isError || variationSalesResult.isError ->
+                        Result.failure(
+                            Exception(productSalesResult.error.message)
+                        )
 
-                coroutineScope {
-                    val productSalesDeferred = async { getProductSales(stockReportResult) }
-                    val variationSalesDeferred = async { getVariationsSales(stockReportResult) }
+                    else ->
+                        Result.success(
+                            mapToProductStockItems(
+                                stockReportResult.model!!,
+                                productSalesResult.model!! + variationSalesResult.model!!
+                            )
+                        )
                 }
 
-                if (productSalesResult.isError) {
-                    return Result.failure(Exception(productSalesResult.error.message))
-                } else {
-                    val salesReport = productSalesResult.model!!
-                    Result.success(
-                        mapToProductStockItems(stockReportResult, salesReport)
-                    )
-                }
             }
         }
     }
 
-    private suspend fun getProductSales(productIds: List<Long>) =
-        leaderboardsStore.fetchProductSalesReport(
-            site = selectedSite.get(),
-            startDate = Date(dateUtils.getCurrentDateTimeMinusDays(30)).formatToYYYYmmDDhhmmss(),
-            endDate = Date().formatToYYYYmmDDhhmmss(),
-            productIds = productIds,
-        )
+    private suspend fun getProductSalesReports(stockReport: ProductStockItems):
+        Pair<WooResult<Array<ReportsProductApiResponse>>, WooResult<Array<ReportsProductApiResponse>>> {
+        val startDate = Date(dateUtils.getCurrentDateTimeMinusDays(30)).formatToYYYYmmDDhhmmss()
+        val endDate = Date().formatToYYYYmmDDhhmmss()
+        return coroutineScope {
+            val productSalesDeferred = async {
+                getProductSales(
+                    stockReport
+                        .filter { it.parentId == 0L }
+                        .map { it.productId!! },
+                    startDate,
+                    endDate
+                )
+            }
+            val variationSalesDeferred = async {
+                getVariationsSales(
+                    stockReport
+                        .filter { it.parentId != 0L }
+                        .map { it.productId!! },
+                    startDate,
+                    endDate
+                )
+            }
+            Pair(productSalesDeferred.await(), variationSalesDeferred.await())
+        }
+    }
 
-    private suspend fun getVariationsSales(variationIds: List<Long>) =
+    private suspend fun getProductSales(productIds: List<Long>, startDate: String, endDate: String) =
+        when {
+            productIds.isEmpty() -> WooResult(emptyArray())
+            else -> leaderboardsStore.fetchProductSalesReport(
+                site = selectedSite.get(),
+                startDate = startDate,
+                endDate = endDate,
+                productIds = productIds,
+            )
+        }
+
+    private suspend fun getVariationsSales(variationIds: List<Long>, startDate: String, endDate: String) =
         leaderboardsStore.fetchProductVariationsSalesReport(
             site = selectedSite.get(),
-            startDate = Date(dateUtils.getCurrentDateTimeMinusDays(30)).formatToYYYYmmDDhhmmss(),
-            endDate = Date().formatToYYYYmmDDhhmmss(),
+            startDate = startDate,
+            endDate = endDate,
             productVariationIds = variationIds,
         )
 
     private fun mapToProductStockItems(
-        result: WooResult<ProductStockItems>,
+        stockReport: ProductStockItems,
         salesReport: Array<ReportsProductApiResponse>
-    ) = result.model!!.map {
-        val productId = when {
-            it.parentId != 0L -> it.parentId!!
-            else -> it.productId!!
-        }
+    ) = stockReport.map {
         ProductStockItem(
             productId = it.productId ?: 0,
             parentProductId = it.parentId ?: 0,
             name = it.name ?: "",
             stockQuantity = it.stockQuantity ?: 0,
-            itemsSold = getSalesForProduct(productId, salesReport),
-            imageUrl = getProductThumbnail(productId, salesReport)
+            itemsSold = getSalesForProduct(it.productId, salesReport),
+            imageUrl = getProductThumbnail(it.productId, salesReport)
         )
     }
 
     private fun getSalesForProduct(
-        productId: Long,
+        productId: Long?,
         fetchedSalesReport: Array<ReportsProductApiResponse>
     ): Int {
         return fetchedSalesReport
-            .firstOrNull { it.productId == productId }
+            .firstOrNull { it.variationId == productId || it.productId == productId }
             ?.itemsSold ?: 0
     }
 
-    private fun getProductThumbnail(productId: Long, fetchedSalesReport: Array<ReportsProductApiResponse>): String? {
+    private fun getProductThumbnail(
+        productId: Long?,
+        fetchedSalesReport: Array<ReportsProductApiResponse>
+    ): String? {
         return fetchedSalesReport
-            .firstOrNull { it.productId == productId }
+            .firstOrNull { it.variationId == productId || it.productId == productId }
             ?.product?.imageUrl
     }
 }
