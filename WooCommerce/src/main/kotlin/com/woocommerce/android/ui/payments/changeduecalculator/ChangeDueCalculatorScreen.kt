@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.payments.changeduecalculator
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -156,8 +158,8 @@ fun ChangeDueCalculatorScreen(
                                         fontSize = TextUnit(44f, TextUnitType.Sp)
                                     ),
                                     maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.fillMaxWidth()
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.fillMaxWidth()
                                 )
                             }
 
@@ -165,9 +167,9 @@ fun ChangeDueCalculatorScreen(
                                 modifier = Modifier
                                     .padding(vertical = 16.dp)
                                     .fillMaxWidth(),
-                            checked = recordTransactionDetailsChecked,
-                            onCheckedChange = onRecordTransactionDetailsCheckedChanged
-                        )
+                                checked = recordTransactionDetailsChecked,
+                                onCheckedChange = onRecordTransactionDetailsCheckedChanged
+                            )
 
                             MarkOrderAsCompleteButton(
                                 onClick = onCompleteOrderClick,
@@ -228,6 +230,7 @@ private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String 
             R.string.cash_payments_take_payment_title,
             uiState.amountDue
         )
+
         else -> stringResource(id = R.string.cash_payments_take_payment_title)
     }
 }

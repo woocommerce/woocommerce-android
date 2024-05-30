@@ -27,7 +27,7 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            OTHER_PAYMENT_METHODS -> false
+            OTHER_PAYMENT_METHODS -> true
 
             MORE_MENU_INBOX,
             WOO_POS,
