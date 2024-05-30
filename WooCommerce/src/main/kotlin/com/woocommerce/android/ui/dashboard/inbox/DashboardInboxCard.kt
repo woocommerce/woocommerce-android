@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -57,10 +55,11 @@ fun DashboardInboxCard(
     }
 ) {
     viewModel.viewState.observeAsState().value?.let { state ->
+        val button = (state as? ViewState.Content)?.notes?.takeIf { it.isNotEmpty() }?.let { viewModel.button }
         WidgetCard(
             titleResource = state.title,
             menu = viewModel.menu,
-            button = viewModel.button,
+            button = button,
             modifier = modifier,
             isError = state is ViewState.Error
         ) {
@@ -208,8 +207,7 @@ fun EmptyView() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(dimensionResource(id = R.dimen.major_200))
-            .verticalScroll(rememberScrollState()),
+            .padding(dimensionResource(id = R.dimen.major_200)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

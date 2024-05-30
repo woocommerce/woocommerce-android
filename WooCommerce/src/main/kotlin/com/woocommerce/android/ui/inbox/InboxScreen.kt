@@ -7,6 +7,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -190,9 +192,10 @@ fun InboxNoteRow(note: InboxNoteUi, limitDescription: Boolean = false) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
-    Row(
+    FlowRow(
         modifier = Modifier
             .padding(
                 start = dimensionResource(id = R.dimen.minor_100),
@@ -207,9 +210,10 @@ private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>) {
-    Row(
+    FlowRow(
         modifier = Modifier.padding(
             start = dimensionResource(id = R.dimen.major_100),
             end = dimensionResource(id = R.dimen.major_100),
