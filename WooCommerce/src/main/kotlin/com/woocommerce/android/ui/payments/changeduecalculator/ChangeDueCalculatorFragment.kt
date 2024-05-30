@@ -9,17 +9,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ChangeDueCalculatorFragment : BaseFragment() {
+
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -33,6 +35,15 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                 viewModel.event.observe(lifecycleOwner) { event ->
                     when (event) {
                         is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                        is MultiLiveEvent.Event.ExitWithResult<*> -> {
+                            navigateBackWithResult(
+                                key = IS_ORDER_PAID_RESULT,
+                                result = event.data as Boolean,
+                            )
+                        }
+                        is MultiLiveEvent.Event.ShowSnackbar -> {
+                            uiMessageResolver.getSnack(event.message).show()
+                        }
                     }
                 }
             }
@@ -52,16 +63,7 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     uiState = uiState,
                     recordTransactionDetailsChecked = recordTransactionDetailsChecked,
                     onNavigateUp = viewModel::onBackPressed,
-                    onCompleteOrderClick = {
-                        MainScope().launch {
-                            val noteStringTemplate = getString(R.string.cash_payments_order_note_text)
-                            viewModel.addOrderNoteIfChecked(noteStringTemplate)
-                            navigateBackWithResult(
-                                key = IS_ORDER_PAID_RESULT,
-                                result = true,
-                            )
-                        }
-                    },
+                    onCompleteOrderClick = viewModel::addOrderNoteIfChecked,
                     onAmountReceivedChanged = { viewModel.updateAmountReceived(it) },
                     onRecordTransactionDetailsCheckedChanged = {
                         viewModel.updateRecordTransactionDetailsChecked(it)
