@@ -25,7 +25,7 @@ steps:
     command: |
       echo "--- ⚒️ Building"
       cp gradle.properties-example gradle.properties
-      ./gradlew dependencies
+      ./gradlew :WooCommerce:dependencies --scan
     plugins: [*ci_toolkit]
 
 #  - label: "☢️ Danger - PR Check"
