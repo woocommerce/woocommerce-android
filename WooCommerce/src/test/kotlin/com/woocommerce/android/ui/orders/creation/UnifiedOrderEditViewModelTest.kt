@@ -52,6 +52,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.Before
@@ -2580,6 +2581,77 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
         val shippingMethod = shippingDetails!!.firstOrNull { it.shippingMethod?.id == shippingMethodId }
         assertThat(shippingMethod).isNull()
     }
+
+    @Test
+    fun `when the shipping lines change then display the feedback dialog only one time`() = testBlocking {
+        val itemId = 1L
+        val shippingMethodId = "other"
+        val shippingMethodTitle = "Other"
+        val shippingLines = listOf(
+            Order.ShippingLine(
+                itemId = itemId,
+                methodId = shippingMethodId,
+                total = BigDecimal.TEN,
+                methodTitle = "Random name",
+                totalTax = BigDecimal.ZERO
+            )
+        )
+        val getShippingMethodsResult = flowOf(
+            listOf(
+                ShippingMethod(
+                    id = shippingMethodId,
+                    title = shippingMethodTitle
+                )
+            )
+        )
+        val result1 = ShippingUpdateResult(
+            id = itemId,
+            amount = BigDecimal.ONE,
+            name = "Updated name 1",
+            methodId = shippingMethodId
+        )
+
+        val result2 = ShippingUpdateResult(
+            id = itemId,
+            amount = BigDecimal.ONE,
+            name = "Updated name 1",
+            methodId = shippingMethodId
+        )
+
+        val order = defaultOrderValue.copy(shippingLines = shippingLines)
+
+        initMocksForAnalyticsWithOrder(order)
+        whenever(getShippingMethodsWithOtherValue.invoke()).doReturn(getShippingMethodsResult)
+        createSut()
+
+        var isShippingFeedbackDisplayed: Boolean? = null
+        sut.viewStateData.observeForever { _, viewState ->
+            isShippingFeedbackDisplayed = viewState.showShippingFeedback
+        }
+
+        // Assert that the feedback dialog is hidden when the screen is displayed
+        assertThat(isShippingFeedbackDisplayed).isFalse()
+
+        sut.onUpdatedShipping(result1)
+
+        advanceTimeBy(1001)
+
+        // Assert that the feedback dialog is shown after a change on the shipping lines
+        assertThat(isShippingFeedbackDisplayed).isTrue()
+
+        sut.onCloseShippingFeedback()
+
+        // Assert that the feedback dialog is hidden when onCloseShippingFeedback() is executed
+        assertThat(isShippingFeedbackDisplayed).isFalse()
+
+        sut.onUpdatedShipping(result2)
+
+        advanceTimeBy(1001)
+
+        // Assert that the feedback dialog is displayed only after the first change
+        assertThat(isShippingFeedbackDisplayed).isFalse()
+    }
+
     //endregion
 
     protected fun createSut(savedStateHandle: SavedStateHandle = savedState) {

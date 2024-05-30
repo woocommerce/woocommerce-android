@@ -144,6 +144,15 @@
         app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
         tools:composableName="com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsFullViewKt" />
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/feedback_section"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
+        tools:composableName="com.woocommerce.android.ui.compose.component.FeedbackDialogKt" />
+
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/loadingProgress"
         android:layout_width="0dp"
