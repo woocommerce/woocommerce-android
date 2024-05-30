@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.reviews
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -42,6 +43,9 @@ class DashboardReviewsViewModel @AssistedInject constructor(
             ProductReviewStatus.APPROVED,
             ProductReviewStatus.HOLD
         )
+
+        @VisibleForTesting
+        const val MAX_REVIEWS = 3
     }
 
     private val _refreshTrigger = MutableSharedFlow<DashboardViewModel.RefreshEvent>(extraBufferCapacity = 1)
@@ -125,10 +129,10 @@ class DashboardReviewsViewModel @AssistedInject constructor(
                 .filter { status == ProductReviewStatus.ALL || it.status == status.toString() }
                 // We need just 3 review, but we will take an additional review to account for
                 // any pending moderation requests
-                .take(4)
+                .take(MAX_REVIEWS + 1)
 
             cachedReviews.applyModerationStatus(moderationStatus)
-                .take(3)
+                .take(MAX_REVIEWS)
         }
 
     private fun List<ProductReview>.applyModerationStatus(

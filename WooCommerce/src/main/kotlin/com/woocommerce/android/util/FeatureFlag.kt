@@ -16,7 +16,6 @@ enum class FeatureFlag {
     CUSTOM_RANGE_ANALYTICS,
     CONNECTIVITY_TOOL,
     NEW_SHIPPING_SUPPORT,
-    DYNAMIC_DASHBOARD,
     APP_PASSWORD_TUTORIAL,
     EOSL_M1,
     EOSL_M3,
@@ -38,7 +37,6 @@ enum class FeatureFlag {
             DYNAMIC_DASHBOARD_M2,
             EOSL_M3 -> PackageUtils.isDebugBuild()
 
-            DYNAMIC_DASHBOARD,
             CONNECTIVITY_TOOL,
             CUSTOM_RANGE_ANALYTICS,
             NEW_SHIPPING_SUPPORT,
