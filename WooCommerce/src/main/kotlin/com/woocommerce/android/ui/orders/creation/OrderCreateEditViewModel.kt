@@ -1308,8 +1308,14 @@ class OrderCreateEditViewModel @Inject constructor(
     }
 
     fun onSendShippingFeedback() {
-        viewState = viewState.copy(showShippingFeedback = false)
-        triggerEvent(ShippingLinesFeedback)
+        launch {
+            feedbackRepository.saveFeatureFeedback(
+                FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
+                FeatureFeedbackSettings.FeedbackState.GIVEN
+            )
+            viewState = viewState.copy(showShippingFeedback = false)
+            triggerEvent(ShippingLinesFeedback)
+        }
     }
     fun onCloseShippingFeedback() {
         viewState = viewState.copy(showShippingFeedback = false)
