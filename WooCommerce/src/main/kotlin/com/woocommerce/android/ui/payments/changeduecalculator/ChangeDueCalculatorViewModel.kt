@@ -58,7 +58,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 amountDue = order.total,
                 change = BigDecimal.ZERO,
                 amountReceived = order.total,
-                canCompleteOrder = false,
+                canCompleteOrder = true,
                 currencySymbol = getCurrencySymbol(),
             )
         }
