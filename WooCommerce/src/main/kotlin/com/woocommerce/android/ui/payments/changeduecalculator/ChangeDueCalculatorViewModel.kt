@@ -58,7 +58,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 amountDue = order.total,
                 change = BigDecimal.ZERO,
                 amountReceived = BigDecimal.ZERO,
-                canCompleteOrder = canCompleteOrder(),
+                canCompleteOrder = false,
                 currencySymbol = getCurrencySymbol(),
             )
         }
@@ -71,7 +71,11 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     fun updateAmountReceived(amount: BigDecimal) {
         val currentState = _uiState.value
         val newChange = amount - currentState.amountDue
-        _uiState.value = currentState.copy(amountReceived = amount, change = newChange)
+        _uiState.value = currentState.copy(
+            amountReceived = amount,
+            change = newChange,
+            canCompleteOrder = newChange >= BigDecimal.ZERO,
+        )
     }
 
     fun updateRecordTransactionDetailsChecked(checked: Boolean) {
@@ -120,10 +124,5 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             "$currencySymbol${state.amountReceived.toPlainString()}",
             "$currencySymbol${state.change.toPlainString()}"
         )
-    }
-
-    private fun canCompleteOrder(): Boolean {
-        val currentState = _uiState.value
-        return currentState.amountReceived >= currentState.amountDue
     }
 }
