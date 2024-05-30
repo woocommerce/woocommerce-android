@@ -24,7 +24,7 @@ class WooPosActivity : AppCompatActivity() {
                 WooPosRootHost(
                     connectToCardReader = {
                         lifecycleScope.launch {
-                            wooPosCardReaderFacade.connectToReader(it)
+                            wooPosCardReaderFacade.connectToReader(this@WooPosActivity)
                         }
                         lifecycleScope.launch {
                             wooPosCardReaderFacade.readerStatus.collect {

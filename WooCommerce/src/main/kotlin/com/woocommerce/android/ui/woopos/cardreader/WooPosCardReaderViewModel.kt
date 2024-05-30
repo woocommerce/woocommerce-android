@@ -28,13 +28,7 @@ class WooPosCardReaderViewModel @Inject constructor(
                 // TODO: Implement
             }
 
-            null -> {
-
-            }
+            null -> Log.d("WooPosCardReaderViewModel", "No card reader mode specified")
         }
-    }
-
-    fun onConnectToReaderResultReceived(connected: Boolean) {
-        Log.d("WooPosCardReaderViewModel", "onConnectToReaderResultReceived: $connected")
     }
 }

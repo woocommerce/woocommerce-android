@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.cardreader
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -23,21 +22,6 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
         ) as NavHostFragment
 
         observeEvents(navHostFragment)
-        observeResults(navHostFragment)
-    }
-
-    private fun observeResults(navHostFragment: NavHostFragment) {
-        navHostFragment.navController.addOnDestinationChangedListener { _, destination, args ->
-            Log.d("WooPosCardReaderActivity", "destination: ${destination.label} args: $args")
-            when (destination.id) {
-                R.id.cardReaderStatusCheckerDialogFragment -> {
-                    navHostFragment.handleResult(
-                        "connect_to_reader_result",
-                        viewModel::onConnectToReaderResultReceived
-                    )
-                }
-            }
-        }
     }
 
     private fun observeEvents(navHostFragment: NavHostFragment) {
@@ -67,17 +51,5 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             Intent(context, WooPosCardReaderActivity::class.java).apply {
                 putExtra(WOO_POS_CARD_READER_MODE_KEY, WooPosCardReaderMode.Connection)
             }
-    }
-
-    private fun <T> NavHostFragment.handleResult(key: String, handler: (T) -> Unit) {
-        val entry = navController.currentBackStackEntry
-        entry?.savedStateHandle?.let { saveState ->
-            saveState.getLiveData<T?>(key).observe(this.viewLifecycleOwner) {
-                it?.let {
-                    handler(it)
-                    saveState[key] = null
-                }
-            }
-        }
     }
 }
