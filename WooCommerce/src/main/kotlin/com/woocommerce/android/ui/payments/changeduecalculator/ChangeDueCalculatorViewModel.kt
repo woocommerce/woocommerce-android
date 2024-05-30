@@ -57,7 +57,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             _uiState.value = UiState(
                 amountDue = order.total,
                 change = BigDecimal.ZERO,
-                amountReceived = BigDecimal.ZERO,
+                amountReceived = order.total,
                 canCompleteOrder = false,
                 currencySymbol = getCurrencySymbol(),
             )
