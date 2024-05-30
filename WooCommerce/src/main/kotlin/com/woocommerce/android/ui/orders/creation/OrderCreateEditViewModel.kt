@@ -1318,7 +1318,13 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
     fun onCloseShippingFeedback() {
-        viewState = viewState.copy(showShippingFeedback = false)
+        launch {
+            feedbackRepository.saveFeatureFeedback(
+                FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
+                FeatureFeedbackSettings.FeedbackState.DISMISSED
+            )
+            viewState = viewState.copy(showShippingFeedback = false)
+        }
     }
 
     private fun onExpandCollapseTotalsClicked() {
