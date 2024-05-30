@@ -13,19 +13,26 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
+import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -33,9 +40,11 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMe
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
-import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.ViewState
+import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.OpenProductDetail
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.ui.products.stock.ProductStockItem
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 @Composable
 fun DashboardProductStockCard(
@@ -45,12 +54,14 @@ fun DashboardProductStockCard(
         f.create(parentViewModel = parentViewModel)
     }
 ) {
+    HandleEvents(viewModel.event)
+
     viewModel.productStockState.observeAsState().value?.let { viewState ->
         DashboardProductStockCard(
             viewState = viewState,
             onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.PRODUCT_STOCK) },
             onFilterSelected = viewModel::onFilterSelected,
-            onProductClicked = { },
+            onProductClicked = viewModel::onProductClicked,
             onRetryClicked = viewModel::onRetryClicked,
             onContactSupportClicked = parentViewModel::onContactSupportClicked,
             modifier = modifier
@@ -59,8 +70,31 @@ fun DashboardProductStockCard(
 }
 
 @Composable
+private fun HandleEvents(event: LiveData<Event>) {
+    val navController = rememberNavController()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(event, navController, lifecycleOwner) {
+        val observer = Observer { event: Event ->
+            when (event) {
+                is OpenProductDetail -> navController.navigateSafely(
+                    NavGraphMainDirections.actionGlobalProductDetailFragment(
+                        mode = ShowProduct(event.productId),
+                        isTrashEnabled = false
+                    )
+                )
+            }
+        }
+        event.observe(lifecycleOwner, observer)
+        onDispose {
+            event.removeObserver(observer)
+        }
+    }
+}
+
+@Composable
 private fun DashboardProductStockCard(
-    viewState: ViewState,
+    viewState: DashboardProductStockViewModel.ViewState,
     onHideClicked: () -> Unit,
     onFilterSelected: (ProductStockStatus) -> Unit,
     onProductClicked: (ProductStockItem) -> Unit,

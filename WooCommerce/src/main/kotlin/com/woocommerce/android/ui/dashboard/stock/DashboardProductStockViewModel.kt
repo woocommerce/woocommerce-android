@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.stock.ProductStockItem
 import com.woocommerce.android.ui.products.stock.ProductStockRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.assisted.Assisted
@@ -63,6 +64,14 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
     }
 
+    fun onProductClicked(product: ProductStockItem) {
+        val id = when {
+            product.parentProductId != 0L -> product.parentProductId
+            else -> product.productId
+        }
+        triggerEvent(OpenProductDetail(id))
+    }
+
     sealed interface ViewState {
         data class Loading(val selectedFilter: ProductStockStatus) : ViewState
         data class Success(
@@ -72,6 +81,8 @@ class DashboardProductStockViewModel @AssistedInject constructor(
 
         data object Error : ViewState
     }
+
+    data class OpenProductDetail(val productId: Long) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {
