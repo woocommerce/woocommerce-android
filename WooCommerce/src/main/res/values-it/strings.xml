@@ -36,8 +36,6 @@ Language: it
     <string name="dynamic_dashboard_widget_menu_item_hide">Nascondi %s</string>
     <string name="my_store_widget_onboarding_completed">Completata</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Hai ancora bisogno di aiuto? Contattaci</string>
-    <string name="my_store_stats_plugin_inactive_description">Assicurati di star utilizzando la versione più recente di WooCommerce sul tuo sito e di aver attivato WooCommerce Admin.</string>
     <string name="my_store_stats_plugin_inactive_title">Non possiamo visualizzare il tuo\n analisi del negozio</string>
     <string name="store_onboarding_task_view_all_tasks">Visualizza tutte le attività</string>
     <string name="analytics_session_no_available_description">L\'analisi delle sessioni si basa su un numero unico di visitatori non disponibile per intervalli di date personalizzati</string>

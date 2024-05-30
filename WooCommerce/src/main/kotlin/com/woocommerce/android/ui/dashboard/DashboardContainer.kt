@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersCard
 import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
+import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 
 @Composable
@@ -147,6 +148,11 @@ private fun ConfigurableWidgetCard(
         )
 
         DashboardWidget.Type.COUPONS -> DashboardCouponsCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
+
+        DashboardWidget.Type.PRODUCT_STOCK -> DashboardProductStockCard(
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )

@@ -134,6 +134,7 @@
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
     <string name="other">Other</string>
+    <string name="na">N/A</string>
     <string name="free">free</string>
     <string name="and">and</string>
     <string name="generic_string" translatable="false">%s</string>
@@ -387,14 +388,13 @@
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Unable to load the top performers</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
     <string name="dashboard_action_view_all_orders">View all orders</string>
 
     <string name="my_store_stats_plugin_inactive_title">We can\'t display your\n store\'s analytics</string>
-    <string name="my_store_stats_plugin_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Still need help? Contact us</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
     <string name="my_store_custom_range_granularity_label">%s interval</string>
     <string name="my_store_custom_range_granularity_hour">Hourly</string>
@@ -414,6 +414,7 @@
     <string name="my_store_widget_orders_title">Most recent orders</string>
     <string name="my_store_widget_reviews_title">Most recent reviews</string>
     <string name="my_store_widget_coupons_title">Most active coupons</string>
+    <string name="my_store_widget_product_stock_title">Stock</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>
@@ -426,6 +427,20 @@
     <string name="dashboard_reviews_card_empty_title_filtered">No reviews found</string>
     <string name="dashboard_reviews_card_empty_message_filtered">No reviews match the selected filter, please try changing the filter</string>
     <string name="dashboard_reviews_card_view_all_button">View all reviews</string>
+
+    <string name="dashboard_coupons_card_header_coupons">Coupons</string>
+    <string name="dashboard_coupons_card_header_uses">Uses</string>
+    <string name="dashboard_coupons_view_all_button">View all coupons</string>
+    <string name="dashboard_coupons_card_empty_view_message">No coupon usage during this period</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Unable to load coupon usage report</string>
+
+    <string name="dashboard_wcanalytics_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Analytics activated.</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Still need help? Contact us</string>
+
+    <string name="dashboard_product_stock_status_header_title">Status</string>
+    <string name="dashboard_product_stock_levels">Stock levels</string>
+    <string name="dashboard_product_stock_products">Products</string>
+
     <!--
         Sign Up Flow
     -->
@@ -687,9 +702,11 @@
     <string name="order_creation_payment_tax_label">Taxes</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
+    <string name="order_creation_shipping_title_edit">Edit Shipping</string>
     <string name="order_creation_shipping_methods_title">Method</string>
     <string name="order_creation_shipping_methods_error">Error while fetching your shipping methods. Please try again</string>
     <string name="order_creation_shipping_add">Add Shipping</string>
+    <string name="order_creation_shipping_edit">Edit Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
     <string name="order_creation_add_shipping_method">Method</string>
     <string name="order_creation_add_shipping_amount">Amount</string>
@@ -1955,6 +1972,7 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
+    <string name="product_stock_status_low_stock">Low stock</string>
     <string name="product_stock_status_instock_quantified">%s in stock</string>
     <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>

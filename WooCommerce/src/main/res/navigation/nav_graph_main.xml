@@ -90,6 +90,9 @@
         <action
             android:id="@+id/action_dashboard_to_reviews"
             app:destination="@id/reviews" />
+        <action
+            android:id="@+id/action_dashboard_to_couponListFragment"
+            app:destination="@id/nav_graph_coupons" />
     </fragment>
     <fragment
         android:id="@+id/orders"
