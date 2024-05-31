@@ -5,6 +5,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.annotation.OptIn
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
@@ -14,12 +15,16 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.withCreated
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentDashboardBinding
+import com.woocommerce.android.extensions.getColorCompat
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.scrollStartEvents
 import com.woocommerce.android.extensions.showDateRangePicker
@@ -82,6 +87,12 @@ class DashboardFragment :
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
+
+    private val editButtonBadge by lazy {
+        BadgeDrawable.create(requireContext()).apply {
+            backgroundColor = requireContext().getColorCompat(R.color.color_primary)
+        }
+    }
 
     private val mainNavigationRouter
         get() = activity as? MainNavigationRouter
@@ -183,6 +194,9 @@ class DashboardFragment :
             ) {
                 initJitm()
             }
+        }
+        dashboardViewModel.hasNewWidgets.observe(viewLifecycleOwner) { hasNewWidgets ->
+            editButtonBadge.isVisible = hasNewWidgets
         }
     }
 
@@ -309,8 +323,21 @@ class DashboardFragment :
 
     override fun shouldExpandToolbar() = binding.statsScrollView.scrollY == 0
 
+    @OptIn(ExperimentalBadgeUtils::class)
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_dashboard_fragment, menu)
+
+        // Attach the badge to the top-left corner of the edit widgets button
+        editButtonBadge.badgeGravity = if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            BadgeDrawable.TOP_END
+        } else {
+            BadgeDrawable.TOP_START
+        }
+        BadgeUtils.attachBadgeDrawable(
+            editButtonBadge,
+            requireActivity().findViewById(R.id.toolbar),
+            R.id.menu_edit_screen_widgets
+        )
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

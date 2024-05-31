@@ -441,6 +441,8 @@
     <string name="dashboard_product_stock_levels">Stock levels</string>
     <string name="dashboard_product_stock_products">Products</string>
 
+    <string name="dashboard_new_widgets_card_title">Looking for more insights?</string>
+    <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>
     <!--
         Sign Up Flow
     -->
@@ -595,6 +597,8 @@
     <string name="cash_payments_change_due">Change due</string>
     <string name="cash_payments_record_transaction_details">Record transaction details in order note</string>
     <string name="cash_payments_mark_order_as_complete">Mark Order as Complete</string>
+    <string name="cash_payments_order_note_text">The order was paid by cash. Customer paid %s. The change due was %s.</string>
+    <string name="cash_payments_order_note_adding_error">Error adding order note</string>
 
     <!--
          Custom Amounts
@@ -754,6 +758,10 @@
     <string name="order_creation_simple_payment_migration_button">Add a Custom Amount</string>
     <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
     <string name="customer_picker_guest">Guest</string>
+
+    <string name="order_creation_shipping_feedback_title">Shipping added!</string>
+    <string name="order_creation_shipping_feedback_message">Does Woo make shipping easy?</string>
+    <string name="order_creation_feedback_action">Share your feedback</string>
 
     <!--
          Barcode Scanning
