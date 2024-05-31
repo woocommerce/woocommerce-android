@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectE
 import com.woocommerce.android.ui.payments.cardreader.connect.adapter.MultipleCardReadersFoundAdapter
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.LocationUtils
 import com.woocommerce.android.util.UiHelpers
@@ -244,7 +245,12 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                         result = event.data as Boolean,
                     )
                 }
-                is CardReaderConnectEvent.PopBackStackForWooPOS -> findNavController().popBackStack()
+                is CardReaderConnectEvent.PopBackStackForWooPOS -> {
+                    parentFragmentManager.setFragmentResult(
+                        WooPosCardReaderActivity.WOO_POS_CARD_CONNECTION_REQUEST_KEY,
+                        Bundle(),
+                    )
+                }
                 is CardReaderConnectEvent.ShowToast ->
                     ToastUtils.showToast(requireContext(), getString(event.message))
                 is CardReaderConnectEvent.ShowToastString ->

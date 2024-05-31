@@ -429,6 +429,7 @@ sealed class CardReaderFlowParam : Parcelable {
                 ORDER,
                 ORDER_CREATION,
                 TRY_TAP_TO_PAY,
+                WOO_POS,
             }
         }
 

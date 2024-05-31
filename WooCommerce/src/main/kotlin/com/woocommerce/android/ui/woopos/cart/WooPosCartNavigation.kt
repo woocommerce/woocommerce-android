@@ -8,7 +8,8 @@ internal const val CART_ROUTE = "cart"
 
 internal fun NavGraphBuilder.cartScreen(
     onCheckoutClick: () -> Unit,
-    onConnectToCardReaderClicked: () -> Unit
+    onConnectToCardReaderClicked: () -> Unit,
+    onCollectPaymentWithCardReader: () -> Unit,
 ) {
     composable(CART_ROUTE) {
         val viewModel: WooPosCartViewModel = hiltViewModel()
@@ -16,7 +17,8 @@ internal fun NavGraphBuilder.cartScreen(
         WooPosCartScreen(
             viewModel = viewModel,
             onCheckoutClick = onCheckoutClick,
-            onConnectToCardReaderClicked = onConnectToCardReaderClicked
+            onConnectToCardReaderClicked = onConnectToCardReaderClicked,
+            onCollectPaymentWithCardReader = onCollectPaymentWithCardReader,
         )
     }
 }
