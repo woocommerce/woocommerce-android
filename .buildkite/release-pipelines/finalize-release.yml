@@ -9,4 +9,4 @@ steps:
       .buildkite/commands/checkout-release-branch.sh
 
       echo '--- :shipit: Finalize Release'
-      bundle exec fastlane finalize_release skip_confirm:true
+      bundle exec fastlane finalize_release skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"

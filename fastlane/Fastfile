@@ -62,6 +62,10 @@ BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeF
 BUILD_CODE_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeCalculator.new
 VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(version_properties_path: VERSION_PROPERTIES_PATH)
 
+# The valid values for `app:` parameter, i.e. the two possible top-level modules we can build (mobile and wear app)
+MOBILE_APP = 'WooCommerce'
+WEAR_APP = 'WooCommerce-Wear'
+
 ########################################################################
 # Environment
 ########################################################################
@@ -178,16 +182,12 @@ platform :android do
 
   #####################################################################################
   # complete_code_freeze
-  # -----------------------------------------------------------------------------------
-  # This lane executes the last steps planned on code freeze
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane complete_code_freeze [skip_confirm:<skip confirm>]
   #
-  # Example:
-  # bundle exec fastlane complete_code_freeze
-  # bundle exec fastlane complete_code_freeze skip_confirm:true
-  #####################################################################################
+  # This lane executes the last steps planned on code freeze
+  #
+  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
+  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
+  #
   desc 'Creates a new release branch from the current trunk'
   lane :complete_code_freeze do |options|
     # Ensure we use the latest version of the toolkit
@@ -209,7 +209,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(branch_to_build: "release/#{release_version_current}")
+    include_wear_app = options.fetch(:include_wear_app, false)
+    trigger_release_build(branch_to_build: "release/#{release_version_current}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
     new_intermediate_branch_name = "merge/#{release_version_current}-code-freeze-into-#{DEFAULT_BRANCH}"
@@ -264,17 +265,13 @@ platform :android do
 
   #####################################################################################
   # new_beta_release
-  # -----------------------------------------------------------------------------------
+  #
   # This lane updates the release branch for a new beta release. It will update the
   # current release branch by default.
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane new_beta_release [skip_confirm:<skip confirm>]
   #
-  # Example:
-  # bundle exec fastlane new_beta_release
-  # bundle exec fastlane new_beta_release skip_confirm:true
-  #####################################################################################
+  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
+  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
+  #
   desc 'Updates a release branch for a new beta release'
   lane :new_beta_release do |options|
     # Verify that there's nothing in progress in the working copy
@@ -315,7 +312,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(branch_to_build: "release/#{release_version_current}")
+    include_wear_app = options.fetch(:include_wear_app, false)
+    trigger_release_build(branch_to_build: "release/#{release_version_current}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
     new_intermediate_branch_name = "merge/#{version_name_current}-into-#{DEFAULT_BRANCH}"
@@ -332,15 +330,13 @@ platform :android do
 
   #####################################################################################
   # new_hotfix_release
-  # -----------------------------------------------------------------------------------
-  # This lane updates the release branch for a new hotfix release.
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane new_hotfix_release [skip_confirm:<skip confirm>] [version_name:<x.y.z>] [version_code:<nnnn>]
   #
-  # Example:
-  # bundle exec fastlane new_hotfix_release version_name:10.6.1 version_code:1070
-  #####################################################################################
+  # This lane updates the release branch for a new hotfix release.
+  #
+  # @param [String] version_name The versionName to give the hotfix, e.g. `24.3.1`
+  # @param [Int] version_code The versionCode to use for the hotfix build
+  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
+  #
   desc 'Prepare a new hotfix branch cut from the previous tag, and bump the version'
   lane :new_hotfix_release do |options|
     UI.user_error!('A `version_name` must be provided when calling this lane') if options[:version_name].nil?
@@ -398,15 +394,12 @@ platform :android do
 
   #####################################################################################
   # finalize_hotfix_release
-  # -----------------------------------------------------------------------------------
-  # This lane finalizes the hotfix branch.
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane finalize_hotfix_release
   #
-  # Example:
-  # bundle exec fastlane finalize_hotfix_release
-  #####################################################################################
+  # This lane finalizes the hotfix branch.
+  #
+  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
+  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
+  #
   desc 'Finalizes a hotfix release by triggering a release build'
   lane :finalize_hotfix_release do |options|
     # Verify that there's nothing in progress in the working copy
@@ -421,7 +414,8 @@ platform :android do
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
 
-    trigger_release_build(branch_to_build: "release/#{hotfix_version}")
+    include_wear_app = options.fetch(:include_wear_app, false)
+    trigger_release_build(branch_to_build: "release/#{hotfix_version}", include_wear_app: include_wear_app)
 
     # Retrieve the current non-hotfix release version
     Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
@@ -461,16 +455,12 @@ platform :android do
 
   #####################################################################################
   # finalize_release
-  # -----------------------------------------------------------------------------------
-  # This lane finalize a release: updates store metadata and runs the release checks
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane finalize_release [skip_confirm:<skip confirm>]
   #
-  # Example:
-  # bundle exec fastlane finalize_release
-  # bundle exec fastlane finalize_release skip_confirm:true
-  #####################################################################################
+  # This lane finalize a release: updates store metadata and runs the release checks
+  #
+  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
+  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
+  #
   desc 'Updates store metadata and runs the release checks'
   lane :finalize_release do |options|
     UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix(version_properties_path: VERSION_PROPERTIES_PATH)
@@ -536,7 +526,8 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    trigger_release_build(branch_to_build: "release/#{version}")
+    include_wear_app = options.fetch(:include_wear_app, false)
+    trigger_release_build(branch_to_build: "release/#{version}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
     new_intermediate_branch_name = "merge/#{release_version_current}-final-into-#{DEFAULT_BRANCH}"
@@ -574,26 +565,25 @@ platform :android do
 
   #####################################################################################
   # build_and_upload_google_play
-  # -----------------------------------------------------------------------------------
+  #
   # This lane builds the app for Google Play, and will correctly select which build
   # should be produced based on the build number.
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane build_and_upload_google_play
   #
-  # Example:
-  # bundle exec fastlane build_and_upload_google_play
-  #####################################################################################
+  # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
+  #
   desc 'Builds and uploads a release to Google Play'
-  lane :build_and_upload_google_play do |_options|
+  lane :build_and_upload_google_play do |options|
+    app = get_app_param!(options)
     if beta_version?(version_name_current)
       build_and_upload_beta(
+        app: app,
         skip_confirm: is_ci,
         skip_prechecks: true,
         create_release: true
       )
     else
       build_and_upload_release(
+        app: app,
         skip_confirm: is_ci,
         skip_prechecks: true,
         create_release: true
@@ -603,17 +593,14 @@ platform :android do
 
   #####################################################################################
   # build_and_upload_release
-  # -----------------------------------------------------------------------------------
-  # This lane builds the final release of the app and uploads it
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane build_and_upload_release [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
-  # Example:
-  # bundle exec fastlane build_and_upload_release
-  # bundle exec fastlane build_and_upload_release skip_confirm:true
-  # bundle exec fastlane build_and_upload_release create_release:true
-  #####################################################################################
+  # This lane builds the final release of the app and uploads it to the Google Play Console
+  #
+  # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
+  # @param [Boolean] skip_confirm If set to true, will not prompt for confirmation before moving forward with the build
+  # @param [Boolean] skip_prechecks If set to true, will skip the `android_build_preflight` action
+  # @param [Boolean] create_release If set to true, will create a GitHub Release once the release has been uploaded to Play Store
+  #
   desc 'Builds and uploads release for distribution'
   lane :build_and_upload_release do |options|
     ensure_git_branch_is_release_branch unless is_ci
@@ -622,7 +609,8 @@ platform :android do
 
     ensure_git_status_clean unless is_ci
 
-    message = "Building version #{release_version_current} (#{build_code_current}) for upload to Release Channel"
+    app = get_app_param!(options)
+    message = "Building `#{app}` version #{release_version_current} (#{build_code_current}) for upload to Release Channel"
 
     UI.important(message)
     unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
@@ -633,16 +621,14 @@ platform :android do
 
     # Create the file names
     version = version_name_current
-    build_bundle(version: version, flavor: 'Vanilla')
-
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(version))
+    aab_file_path = build_bundle(app: app, version: version, flavor: 'Vanilla')
 
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
     upload_to_play_store(
       package_name: APP_PACKAGE_NAME,
       aab: aab_file_path,
-      track: 'production',
+      track: track(app: app, track_name: 'production'),
       release_status: 'inProgress',
       rollout: '0.1', # Start the production rollout at 10%
       skip_upload_metadata: false,
@@ -659,25 +645,23 @@ platform :android do
 
   #####################################################################################
   # build_and_upload_beta
-  # -----------------------------------------------------------------------------------
+  #
   # This lane builds the app for external beta distribution, and uploads the build
   # to the beta channel (but does not release it).
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane build_and_upload_beta [skip_confirm:<skip confirm>] [create_release:<Create release on GH> ]
   #
-  # Example:
-  # bundle exec fastlane build_and_upload_beta
-  # bundle exec fastlane build_and_upload_beta skip_confirm:true
-  # bundle exec fastlane build_and_upload_beta create_release:true
-  #####################################################################################
+  # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
+  # @param [Boolean] skip_confirm If set to true, will not prompt for confirmation before moving forward with the build
+  # @param [Boolean] skip_prechecks If set to true, will skip the `android_build_preflight` action
+  # @param [Boolean] create_release If set to true, will create a GitHub Release once the release has been uploaded to Play Store
+  #
   desc 'Builds and uploads a new beta build to Google Play (without releasing it)'
   lane :build_and_upload_beta do |options|
     ensure_git_branch_is_release_branch unless is_ci
 
     ensure_git_status_clean unless is_ci
 
-    message = "Building version #{version_name_current} (#{build_code_current}) for upload to Beta Channel"
+    app = get_app_param!(options)
+    message = "Building `#{app}` version #{version_name_current} (#{build_code_current}) for upload to Beta Channel"
 
     UI.important(message)
     unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
@@ -688,15 +672,14 @@ platform :android do
 
     # Create the file names
     version = version_name_current
-    build_bundle(version: version, flavor: 'Vanilla')
+    aab_file_path = build_bundle(app: app, version: version, flavor: 'Vanilla')
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(version))
     UI.error("Unable to find a build artifact at #{aab_file_path}") unless File.exist? aab_file_path
 
     upload_to_play_store(
       package_name: APP_PACKAGE_NAME,
       aab: aab_file_path,
-      track: 'beta',
+      track: track(app: app, track_name: 'beta'),
       release_status: 'completed',
       rollout: '1.0', # Rollout to 100% of testers on the beta track
       skip_upload_metadata: true,
@@ -711,20 +694,23 @@ platform :android do
 
   #####################################################################################
   # trigger_release_build
-  # -----------------------------------------------------------------------------------
-  # This lane triggers a stable release build on CI
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane trigger_release_build [branch_to_build:<branch_name>]
   #
-  #####################################################################################
+  # This lane triggers a stable release build on CI
+  #
+  # @param [String] branch_to_build The git branch the CI build should run on. Defaults to the current branch at the time of calling that lane.
+  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
+  #
   desc 'Tell Buildkite to trigger a release build'
   lane :trigger_release_build do |options|
+    branch = options.fetch(:branch_to_build, git_branch)
+    include_wear_app = options.fetch(:include_wear_app)
+
     buildkite_trigger_build(
       buildkite_organization: 'automattic',
       buildkite_pipeline: 'woocommerce-android',
-      branch: options[:branch_to_build] || git_branch,
-      pipeline_file: 'release-builds.yml'
+      branch: branch,
+      pipeline_file: 'release-builds.yml',
+      environment: { INCLUDE_WEAR_APP: include_wear_app }
     )
   end
 
@@ -852,20 +838,21 @@ platform :android do
 
   #####################################################################################
   # build_bundle
-  # -----------------------------------------------------------------------------------
+  #
   # This lane builds an app bundle
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane build_bundle [skip_confirm:<skip confirm>]
-  #####################################################################################
+  #
+  # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
+  # @param [String] version The version to create
+  # @param [String] flavor The flavor of app ('Wasabi', 'Jalapeno' or 'Vanilla')
+  #
   desc 'Builds an app bundle'
   lane :build_bundle do |options|
     # Create the file names
+    app = get_app_param!(options)
     version = options[:version]
-    name = aab_file_name(version)
-    aab_file = 'WooCommerce-vanilla-release.aab'
-    output_dir = 'WooCommerce/build/outputs/bundle/'
-    build_dir = 'artifacts/'
+    output_dir = File.join(app, 'build', 'outputs', 'bundle')
+    output_aab_file = "#{app}-vanilla-release.aab" # the file name generated by the gradle build
+    artifact_final_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(app, version))
 
     # Build
     Dir.chdir('.') do
@@ -873,15 +860,16 @@ platform :android do
       gradle(task: 'clean')
       UI.message('Running lint...')
       gradle(task: 'lint', flavor: options[:flavor], build_type: 'Release')
-      UI.message("Building #{version} / #{build_code_current} - #{aab_file}...")
+      UI.message("Building #{version} / #{build_code_current} - #{output_aab_file}...")
       gradle(task: 'bundle', flavor: options[:flavor], build_type: 'Release')
     end
 
     Dir.chdir('..') do
-      sh("mkdir -p #{build_dir} && cp -v #{output_dir}#{options[:flavor].downcase}Release/#{aab_file} #{build_dir}#{name}")
-      UI.message("Bundle ready: #{name}")
+      FileUtils.mkdir_p(File.dirname(artifact_final_path))
+      FileUtils.cp(File.join(output_dir, "#{options[:flavor].downcase}Release", output_aab_file), artifact_final_path)
+      UI.message("Bundle ready: #{artifact_final_path}")
     end
-    "#{build_dir}#{name}"
+    artifact_final_path
   end
   #####################################################################################
   # screenshots
@@ -1192,10 +1180,12 @@ platform :android do
 
   # Creates a new GitHub Release for the given version
   #
-  # @param [String] version The version to create.
+  # @param [String] app The Android app to create the release for (`MOBILE_APP` or `WEAR_APP`)
+  # @param [String] version The version of the app.
   # @param [Bool] prerelease If true, the GitHub Release will have the prerelease flag
   #
   private_lane :create_gh_release do |options|
+    app = get_app_param!(options)
     version = options[:version]
     prerelease = options[:prerelease] || false
 
@@ -1208,7 +1198,7 @@ platform :android do
       json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
-    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(version))
+    aab_file_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', aab_file_name(app, version))
     release_assets = [universal_apk_path, aab_file_path].compact
 
     create_release(
@@ -1229,12 +1219,27 @@ platform :android do
   #####################################################################################
   # Utils
   #####################################################################################
-  def aab_file_name(version)
-    "wcandroid-#{version}.aab"
+  def get_app_param!(options)
+    if [MOBILE_APP, WEAR_APP].include?(options[:app])
+      options[:app]
+    else
+      UI.user_error!("Invalid or missing `app:`. Please provide one of `app:#{MOBILE_APP}` or `app:#{WEAR_APP}`")
+    end
+  end
+
+  def aab_file_name(app, version)
+    "wcandroid-#{app}-#{version}.aab"
   end
 
   def universal_apk_name(version)
     "wcandroid-#{version}-universal.apk"
+  end
+
+  # @param [String] app The type of app (`MOBILE_APP` or `WEAR_APP`)
+  # @param [String] track_name The track name, e.g. `'beta'` or `'production'`
+  def track(app:, track_name:)
+    prefix = app == MOBILE_APP ? '' : "#{app}:"
+    "#{prefix}#{track_name}"
   end
 
   def beta_version?(version)
