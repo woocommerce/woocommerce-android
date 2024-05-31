@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 class FetchStats @Inject constructor(
     private val statsRepository: StatsRepository,
@@ -36,7 +37,7 @@ class FetchStats @Inject constructor(
         networkStatus.isConnected() -> fetchStatsFromStore(selectedSite)
         phoneRepository.isPhoneConnectionAvailable() -> fetchStatsFromPhone(selectedSite)
         else -> flowOf(Error)
-    }
+    }.distinctUntilChanged()
 
     private suspend fun fetchStatsFromPhone(
         selectedSite: SiteModel
