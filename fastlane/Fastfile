@@ -860,8 +860,8 @@ platform :android do
       gradle(task: 'clean')
       UI.message('Running lint...')
       gradle(task: 'lint', flavor: options[:flavor], build_type: 'Release')
-      UI.message("Building #{version} / #{build_code_current} - #{output_aab_file}...")
-      gradle(task: 'bundle', flavor: options[:flavor], build_type: 'Release')
+      UI.message("Building #{app} #{version} / #{build_code_current} - #{output_aab_file}...")
+      gradle(task: ":#{app}:bundle", flavor: options[:flavor], build_type: 'Release')
     end
 
     Dir.chdir('..') do
