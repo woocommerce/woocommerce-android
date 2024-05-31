@@ -3,13 +3,10 @@ package com.woocommerce.android.ui.dashboard.inbox
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -30,7 +27,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
-import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
@@ -40,6 +36,7 @@ import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.inbox.DashboardInboxViewModel.NavigateToInbox
 import com.woocommerce.android.ui.dashboard.inbox.DashboardInboxViewModel.ViewState
 import com.woocommerce.android.ui.inbox.InboxNoteActionEvent
+import com.woocommerce.android.ui.inbox.InboxNoteItemSkeleton
 import com.woocommerce.android.ui.inbox.InboxNoteRow
 import com.woocommerce.android.ui.inbox.InboxNoteUi
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -135,68 +132,11 @@ fun LatestNotes(
 private fun Loading() {
     Column {
         repeat(3) {
-            LoadingItem()
+            InboxNoteItemSkeleton()
             Divider(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun LoadingItem() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-    ) {
-        // Date
-        SkeletonView(
-            modifier = Modifier
-                .padding(top = dimensionResource(id = R.dimen.major_100))
-                .height(18.dp)
-                .width(120.dp)
-        )
-
-        // Title
-        SkeletonView(
-            modifier = Modifier
-                .padding(top = dimensionResource(id = R.dimen.major_75))
-                .height(20.dp)
-                .width(300.dp)
-        )
-
-        // Description
-        SkeletonView(
-            modifier = Modifier
-                .padding(top = dimensionResource(id = R.dimen.major_75))
-                .height(18.dp)
-                .width(350.dp)
-        )
-
-        SkeletonView(
-            modifier = Modifier
-                .padding(top = dimensionResource(id = R.dimen.minor_50))
-                .height(18.dp)
-                .width(300.dp)
-        )
-
-        // Actions
-        Row(
-            modifier = Modifier
-                .padding(vertical = dimensionResource(id = R.dimen.major_100))
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
-        ) {
-            SkeletonView(
-                width = dimensionResource(id = R.dimen.skeleton_text_large_width),
-                height = 18.dp
-            )
-            SkeletonView(
-                width = dimensionResource(id = R.dimen.major_350),
-                height = 18.dp
             )
         }
     }
