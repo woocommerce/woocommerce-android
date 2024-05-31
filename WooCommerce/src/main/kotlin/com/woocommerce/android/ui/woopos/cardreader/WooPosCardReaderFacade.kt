@@ -22,7 +22,7 @@ class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderMa
 
     override fun onCreate(owner: LifecycleOwner) {
         activity = owner as AppCompatActivity
-        paymentResultLauncher = activity?.registerForActivityResult(
+        paymentResultLauncher = activity!!.registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             val paymentResult = result.data!!.parcelable<WooPosCardReaderPaymentResult>(
