@@ -14,12 +14,12 @@ import com.woocommerce.commons.WearAnalyticsEvent.WATCH_DATA_REQUESTED_FROM_STOR
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import kotlinx.coroutines.flow.distinctUntilChanged
 
 class FetchStats @Inject constructor(
     private val statsRepository: StatsRepository,
