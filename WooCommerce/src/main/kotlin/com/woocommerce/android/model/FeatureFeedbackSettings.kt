@@ -33,6 +33,8 @@ data class FeatureFeedbackSettings(
         ORDER_SHIPPING_LINES
     }
 
+    fun isFeedbackMoreThanDaysAgo(days: Int) = Date(settingChangeDate).pastTimeDeltaFromNowInDays greaterThan days
+
     fun isFeedbackGivenMoreThanDaysAgo(days: Int) =
         feedbackState == FeedbackState.GIVEN &&
             Date(settingChangeDate).pastTimeDeltaFromNowInDays greaterThan days
