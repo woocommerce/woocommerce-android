@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-21 11:54:03+0000
+Translation-Revision-Date: 2024-05-27 23:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="cash_payments_change_due">Resto dovuto</string>
+    <string name="cash_payments_cash_received">Contanti ricevuti</string>
+    <string name="my_store_widget_coupons_title">Codici promozionali più attivi</string>
     <string name="more_menu_button_woo_pos_description">Punto di accesso temporaneo alla modalità POS</string>
     <string name="more_menu_button_woo_pos">Woo Pos</string>
     <string name="cash_payments_take_payment_title">Ricevi il pagamento%s</string>
