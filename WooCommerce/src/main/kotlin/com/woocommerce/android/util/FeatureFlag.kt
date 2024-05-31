@@ -13,11 +13,11 @@ enum class FeatureFlag {
     OTHER_PAYMENT_METHODS,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
-    CUSTOM_RANGE_ANALYTICS,
     CONNECTIVITY_TOOL,
     NEW_SHIPPING_SUPPORT,
     APP_PASSWORD_TUTORIAL,
     EOSL_M1,
+    EOSL_M3,
     DYNAMIC_DASHBOARD_M2;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -26,17 +26,16 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            OTHER_PAYMENT_METHODS -> false
-
             MORE_MENU_INBOX,
             WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            DYNAMIC_DASHBOARD_M2 -> PackageUtils.isDebugBuild()
+            DYNAMIC_DASHBOARD_M2,
+            EOSL_M3 -> PackageUtils.isDebugBuild()
 
+            OTHER_PAYMENT_METHODS,
             CONNECTIVITY_TOOL,
-            CUSTOM_RANGE_ANALYTICS,
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,
             EOSL_M1 -> true

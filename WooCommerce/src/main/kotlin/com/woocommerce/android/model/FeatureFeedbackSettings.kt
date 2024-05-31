@@ -30,6 +30,7 @@ data class FeatureFeedbackSettings(
         COUPONS,
         ANALYTICS_HUB,
         TAP_TO_PAY,
+        ORDER_SHIPPING_LINES
     }
 
     fun isFeedbackGivenMoreThanDaysAgo(days: Int) =

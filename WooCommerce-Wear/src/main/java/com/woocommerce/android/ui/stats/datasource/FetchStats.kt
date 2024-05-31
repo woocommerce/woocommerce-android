@@ -14,6 +14,7 @@ import com.woocommerce.commons.WearAnalyticsEvent.WATCH_DATA_REQUESTED_FROM_STOR
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.model.SiteModel
@@ -36,7 +37,7 @@ class FetchStats @Inject constructor(
         networkStatus.isConnected() -> fetchStatsFromStore(selectedSite)
         phoneRepository.isPhoneConnectionAvailable() -> fetchStatsFromPhone(selectedSite)
         else -> flowOf(Error)
-    }
+    }.distinctUntilChanged()
 
     private suspend fun fetchStatsFromPhone(
         selectedSite: SiteModel
