@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.products.categories
 
 import android.os.Parcelable
-import android.text.TextUtils
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -137,7 +136,6 @@ class AddProductCategoryViewModel @Inject constructor(
 
         launch {
             if (networkStatus.isConnected()) {
-                val categoryNameTrimmed = TextUtils.htmlEncode(categoryName.trim())
                 val requestResult = when {
                     addProductCategoryViewState.isEditingMode -> updateProductCategory(categoryName, parentId)
                     else -> addNewProductCategory(categoryName, parentId)
@@ -149,12 +147,10 @@ class AddProductCategoryViewModel @Inject constructor(
                             else -> R.string.add_product_category_success
                         }
                         triggerEvent(ShowSnackbar(successString))
-                        val addedCategory = productCategoriesRepository
-                            .getProductCategoryByNameAndParentId(categoryNameTrimmed, parentId)
                         val action =
                             if (addProductCategoryViewState.isEditingMode) UpdateAction.Update else UpdateAction.Add
                         triggerEvent(
-                            ExitWithResult(CategoryUpdateResult(addedCategory!!, action))
+                            ExitWithResult(CategoryUpdateResult(it, action))
                         )
                     }
                     .onFailure {

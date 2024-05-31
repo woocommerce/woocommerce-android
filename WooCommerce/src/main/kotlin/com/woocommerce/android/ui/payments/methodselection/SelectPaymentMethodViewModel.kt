@@ -120,6 +120,12 @@ class SelectPaymentMethodViewModel @Inject constructor(
         }
     }
 
+    fun handleIsOrderPaid(paid: Boolean) {
+        if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled() && paid) {
+            onCashPaymentConfirmed()
+        }
+    }
+
     private suspend fun showPaymentState() {
         val isPaymentCollectableWithCardReader = cardPaymentCollectibilityChecker.isCollectable(order.first())
         val isPaymentCollectableWithTapToPay = isTapToPayAvailable()

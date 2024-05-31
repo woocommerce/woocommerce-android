@@ -374,18 +374,22 @@ platform :android do
     UI.user_error!("Version #{previous_version} is not tagged! A hotfix branch cannot be created.") unless git_tag_exists(tag: previous_version)
 
     # Create the hotfix branch
-    UI.message 'Creating hotfix branch...'
+    UI.message('Creating hotfix branch...')
     Fastlane::Helper::GitHelper.create_branch("release/#{new_version}", from: previous_version)
     UI.success("Done! New hotfix branch is: #{git_branch}")
 
     # Bump the hotfix version and build code and write it to the `version.properties` file
-    UI.message 'Bumping hotfix version and build code...'
+    UI.message('Bumping hotfix version and build code...')
     VERSION_FILE.write_version(
       version_name: new_version,
       version_code: version_code_new
     )
     commit_version_bump
     UI.success("Done! New Release Version: #{release_version_current}. New Build Code: #{build_code_current}")
+
+    UI.important('Pushing new hotfix branch to remote...')
+
+    push_to_git_remote(tags: false)
   end
 
   #####################################################################################
@@ -405,12 +409,10 @@ platform :android do
 
     hotfix_version = release_version_current
 
-    UI.important("Pushing changes to remote and triggering hotfix build for version: #{hotfix_version}")
+    UI.important("Triggering hotfix build for version: #{hotfix_version}")
     unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
-
-    push_to_git_remote(tags: false)
 
     include_wear_app = options.fetch(:include_wear_app, false)
     trigger_release_build(branch_to_build: "release/#{hotfix_version}", include_wear_app: include_wear_app)

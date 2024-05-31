@@ -413,6 +413,7 @@
     <string name="my_store_widget_feedback_title">Feedback</string>
     <string name="my_store_widget_orders_title">Most recent orders</string>
     <string name="my_store_widget_reviews_title">Most recent reviews</string>
+    <string name="my_store_widget_coupons_title">Most active coupons</string>
 
     <string name="my_store_widget_unavailable">Unavailable</string>
     <string name="my_store_widget_onboarding_completed">Completed</string>
@@ -573,8 +574,10 @@
 
     <!--
      Cash Payments
--->
+    -->
     <string name="cash_payments_take_payment_title">Take payment (%s)</string>
+    <string name="cash_payments_cash_received">Cash received</string>
+    <string name="cash_payments_change_due">Change due</string>
 
     <!--
          Custom Amounts

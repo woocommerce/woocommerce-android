@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.orders.details
 
 import android.os.Parcelable
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.getStateFlow
 import com.woocommerce.android.extensions.toWearOrder
 import com.woocommerce.android.ui.NavArgs.ORDER_ID
@@ -13,7 +13,12 @@ import com.woocommerce.android.ui.orders.FormatOrderData.OrderItem
 import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Error
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
-import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.WearViewModel
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_FAILED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_REQUESTED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_SUCCEEDED
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_ORDER_DETAILS_OPENED
+import com.woocommerce.commons.WearOrderedProduct
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -31,8 +36,9 @@ class OrderDetailsViewModel @Inject constructor(
     private val ordersRepository: OrdersRepository,
     private val formatOrderData: FormatOrderData,
     private val loginRepository: LoginRepository,
+    private val analyticsTracker: AnalyticsTracker,
     savedState: SavedStateHandle
-) : ScopedViewModel(savedState) {
+) : WearViewModel() {
     private val orderId = savedState.get<Long>(ORDER_ID.key) ?: 0
 
     private val _viewState = savedState.getStateFlow(
@@ -42,47 +48,76 @@ class OrderDetailsViewModel @Inject constructor(
     val viewState = _viewState.asLiveData()
 
     init {
-        _viewState.update { it.copy(isLoading = true) }
+        analyticsTracker.track(WATCH_ORDER_DETAILS_OPENED)
+        _viewState.update { it.copy(isLoadingOrder = true) }
         loginRepository.selectedSiteFlow
             .filterNotNull()
-            .onEach { requestProductsData(it) }
-            .launchIn(this)
+            .onEach {
+                presentOrderData(it)
+                requestProductsData(it)
+            }.launchIn(this)
     }
 
-    override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
-        if (_viewState.value.isLoading) return
+    override fun reloadData(withLoading: Boolean) {
+        if (_viewState.value.isLoadingProducts) return
+        _viewState.update {
+            it.copy(
+                isLoadingOrder = withLoading,
+                isLoadingProducts = withLoading
+            )
+        }
         launch {
-            loginRepository.selectedSite?.let { requestProductsData(it) }
+            loginRepository.selectedSite
+                ?.let {
+                    presentOrderData(it)
+                    requestProductsData(it)
+                }
         }
     }
 
     private suspend fun requestProductsData(site: SiteModel) {
+        analyticsTracker.track(WATCH_ORDER_DETAILS_DATA_REQUESTED)
+        _viewState.update { it.copy(isLoadingProducts = true) }
         fetchOrderProducts(site, orderId)
             .map { productsRequest ->
                 when (productsRequest) {
-                    is Finished -> Pair(site, productsRequest.products)
-                    is Error -> Pair(site, null)
+                    is Finished -> {
+                        analyticsTracker.track(WATCH_ORDER_DETAILS_DATA_SUCCEEDED)
+                        Pair(site, productsRequest.products)
+                    }
+
+                    is Error -> {
+                        analyticsTracker.track(WATCH_ORDER_DETAILS_DATA_FAILED)
+                        Pair(site, null)
+                    }
+
                     else -> null
                 }
-            }.filterNotNull().map { (site, products) ->
-                ordersRepository.getOrderFromId(site, orderId)
-                    ?.toWearOrder()
-                    ?.let { formatOrderData(site, it, products) }
-            }.onEach {
-                presentOrderData(it)
+            }.filterNotNull().onEach { (site, products) ->
+                presentOrderData(site, products)
+                _viewState.update { it.copy(isLoadingProducts = false) }
             }.launchIn(this)
     }
 
-    private fun presentOrderData(order: OrderItem?) {
-        _viewState.update {
-            it.copy(isLoading = false, orderItem = order)
+    private suspend fun presentOrderData(
+        site: SiteModel,
+        products: List<WearOrderedProduct>? = emptyList()
+    ) {
+        val formattedOrder = ordersRepository.getOrderFromId(
+            selectedSite = site,
+            orderId = orderId
+        )?.toWearOrder()?.let {
+            formatOrderData(site, it, products)
         }
+
+        _viewState.update { it.copy(orderItem = formattedOrder) }
+        _viewState.update { it.copy(isLoadingOrder = false) }
     }
 
     @Parcelize
     data class ViewState(
-        val isLoading: Boolean = false,
+        val isLoadingOrder: Boolean = false,
+        val isLoadingProducts: Boolean = false,
         val orderItem: OrderItem? = null,
     ) : Parcelable
 }

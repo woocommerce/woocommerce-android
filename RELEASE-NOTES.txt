@@ -1,4 +1,10 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+18.9
+-----
+- [**] Shipping: Merchants can now use multiple shipping lines for a single order. [https://github.com/woocommerce/woocommerce-android/pull/11580]
+- [*] More Menu: UI improvements for the More Menu screen [https://github.com/woocommerce/woocommerce-android/pull/11566]
+- [**] Cash Payments: Added the option for users to calculate change due when receiving cash for the order. [https://github.com/woocommerce/woocommerce-android/pull/11594]
+
 18.8
 -----
 
@@ -6,6 +12,7 @@
 18.7
 -----
 - [*] Products: Fixed a bug that caused the app to crash sometimes during screen rotation [https://github.com/woocommerce/woocommerce-android/pull/11484]
+- [*] Dashboard: Fixed an issue that caused the date range picker to be invisible when using large fonts [https://github.com/woocommerce/woocommerce-android/pull/11552]
 
 18.6
 -----

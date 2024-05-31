@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.stats.datasource
 
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.combineWithTimeout
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.system.NetworkStatus
@@ -8,6 +9,8 @@ import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.
 import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
 import com.woocommerce.android.ui.stats.datasource.StoreStatsData.RevenueData
 import com.woocommerce.commons.MessagePath
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_DATA_REQUESTED_FROM_PHONE
+import com.woocommerce.commons.WearAnalyticsEvent.WATCH_DATA_REQUESTED_FROM_STORE
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -21,7 +24,8 @@ class FetchStats @Inject constructor(
     private val statsRepository: StatsRepository,
     private val phoneRepository: PhoneConnectionRepository,
     private val wooCommerceStore: WooCommerceStore,
-    private val networkStatus: NetworkStatus
+    private val networkStatus: NetworkStatus,
+    private val analyticsTracker: AnalyticsTracker
 ) {
     private val revenueStats = MutableStateFlow<RevenueData?>(null)
     private val visitorStats = MutableStateFlow<Int?>(null)
@@ -37,6 +41,7 @@ class FetchStats @Inject constructor(
     private suspend fun fetchStatsFromPhone(
         selectedSite: SiteModel
     ): Flow<StoreStatsRequest> {
+        analyticsTracker.track(WATCH_DATA_REQUESTED_FROM_PHONE)
         phoneRepository.sendMessage(MessagePath.REQUEST_STATS)
         return statsRepository.observeStatsDataChanges(selectedSite)
             .combineWithTimeout { statsData, isTimeout ->
@@ -51,6 +56,7 @@ class FetchStats @Inject constructor(
     private suspend fun fetchStatsFromStore(
         selectedSite: SiteModel
     ): Flow<StoreStatsRequest> {
+        analyticsTracker.track(WATCH_DATA_REQUESTED_FROM_STORE)
         fetchRevenueStats(selectedSite)
         fetchVisitorsStats(selectedSite)
 

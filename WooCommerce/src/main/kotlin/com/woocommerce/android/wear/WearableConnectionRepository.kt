@@ -5,8 +5,13 @@ import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.toAnalyticsEvent
 import com.woocommerce.android.extensions.convertedFrom
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.commons.DataParameters.ANALYTICS_PARAMETERS
+import com.woocommerce.commons.DataParameters.ANALYTICS_TRACK
 import com.woocommerce.commons.DataParameters.CONVERSION_RATE
 import com.woocommerce.commons.DataParameters.ORDERS_COUNT
 import com.woocommerce.commons.DataParameters.ORDERS_JSON
@@ -23,7 +28,9 @@ import com.woocommerce.commons.DataPath.ORDERS_DATA
 import com.woocommerce.commons.DataPath.ORDER_PRODUCTS_DATA
 import com.woocommerce.commons.DataPath.SITE_DATA
 import com.woocommerce.commons.DataPath.STATS_DATA
+import com.woocommerce.commons.WearAnalyticsEvent
 import com.woocommerce.commons.WearOrder
+import com.woocommerce.commons.WearOrderAddress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
@@ -42,6 +49,7 @@ class WearableConnectionRepository @Inject constructor(
     private val wearableStore: WCWearableStore,
     private val getStats: GetWearableMyStoreStats,
     private val getOrderProducts: GetWearableOrderProducts,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val coroutineScope: CoroutineScope
 ) {
     private val gson by lazy { Gson() }
@@ -91,6 +99,22 @@ class WearableConnectionRepository @Inject constructor(
         ).run { this as? Success }?.orders ?: emptyList()
 
         val orders = fetchedOrders.map {
+            val orderAddress = it.getBillingAddress().let { address ->
+                WearOrderAddress(
+                    email = address.email,
+                    firstName = address.firstName,
+                    lastName = address.lastName,
+                    company = address.company,
+                    address1 = address.address1,
+                    address2 = address.address2,
+                    city = address.city,
+                    state = address.state,
+                    postcode = address.postcode,
+                    country = address.country,
+                    phone = address.phone
+                )
+            }
+
             WearOrder(
                 localSiteId = it.localSiteId.value,
                 id = it.orderId,
@@ -99,7 +123,8 @@ class WearableConnectionRepository @Inject constructor(
                 status = it.status,
                 total = it.total,
                 billingFirstName = it.billingFirstName,
-                billingLastName = it.billingLastName
+                billingLastName = it.billingLastName,
+                address = orderAddress
             )
         }
 
@@ -128,6 +153,20 @@ class WearableConnectionRepository @Inject constructor(
                 putString(ORDER_PRODUCTS_JSON.value, orderProductsJson)
             }
         )
+    }
+
+    fun receiveAnalyticsFromWear(dataMap: DataMap) {
+        val typeToken = object : TypeToken<Map<String, String>>() {}.type
+        val parameters: Map<String, String> = dataMap.getString(ANALYTICS_PARAMETERS.value)
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { gson.fromJson(it, typeToken) }
+            ?: emptyMap()
+
+        dataMap.getString(ANALYTICS_TRACK.value)
+            ?.takeIf { it.isNotEmpty() }
+            ?.let { runCatching { WearAnalyticsEvent.valueOf(it) }.getOrNull() }
+            ?.toAnalyticsEvent()
+            ?.let { analyticsTrackerWrapper.track(it, parameters) }
     }
 
     private fun sendData(

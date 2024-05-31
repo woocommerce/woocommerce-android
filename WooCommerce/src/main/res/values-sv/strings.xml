@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-19 09:04:32+0000
+Translation-Revision-Date: 2024-05-21 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Tillfällig ingångspunkt till POS-läge</string>
+    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="cash_payments_take_payment_title">Ta emot betalning (%s)</string>
     <string name="dashboard_reviews_card_header_title">Status</string>
     <string name="dashboard_action_view_all_orders">Visa alla beställningar</string>
     <string name="dashboard_reviews_card_view_all_button">Visa alla recensioner</string>
     <string name="dashboard_reviews_card_empty_title_filtered">Inga recensioner hittades</string>
     <string name="my_store_widget_reviews_title">De senaste recensionerna</string>
     <string name="my_store_widget_orders_title">De senaste beställningarna</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Inga recensioner matchar det valda filtret, testa att ändra filter</string>
+    <string name="dashboard_filter_menu_content_description">Öppna listrutan för filter</string>
     <string name="product_category_clear_parent">Rensa överordnad kategori</string>
     <string name="product_list_fetch_error">Fel vid hämtning av produkter!</string>
     <string name="order_creation_add_shipping_name">Namn</string>
@@ -30,9 +35,7 @@ Language: sv_SE
     <string name="dynamic_dashboard_widget_menu_item_hide">Dölj %s</string>
     <string name="my_store_widget_onboarding_completed">Slutförd</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Behöver du fortfarande hjälp? Kontakta oss</string>
     <string name="dynamic_dashboard_widget_error_title">Kan inte ladda data</string>
-    <string name="my_store_stats_plugin_inactive_description">Se till att du kör den senaste versionen av WooCommerce på din webbplats och att du har WooCommerce Admin aktiverad.</string>
     <string name="my_store_stats_plugin_inactive_title">Vi kan inte visa din\n butiks analys</string>
     <string name="my_store_widget_unavailable">Inte tillgänglig</string>
     <string name="dashboard_stats_custom_range_label">Anpassad</string>

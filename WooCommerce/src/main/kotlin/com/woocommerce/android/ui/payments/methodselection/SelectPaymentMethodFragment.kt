@@ -29,6 +29,7 @@ import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentDialogFragment
+import com.woocommerce.android.ui.payments.changeduecalculator.ChangeDueCalculatorFragment
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Loading
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewState.Success
 import com.woocommerce.android.ui.payments.scantopay.ScanToPayDialogFragment
@@ -297,6 +298,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             entryId = R.id.selectPaymentMethodFragment
         ) {
             viewModel.onScanToPayCompleted()
+        }
+
+        handleDialogResult<Boolean>(
+            key = ChangeDueCalculatorFragment.IS_ORDER_PAID_RESULT,
+            entryId = R.id.selectPaymentMethodFragment
+        ) { paid ->
+            viewModel.handleIsOrderPaid(paid)
         }
     }
 

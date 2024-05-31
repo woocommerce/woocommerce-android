@@ -33,6 +33,21 @@ class FormatOrderData @Inject constructor(
         selectedSite: SiteModel,
         products: List<WearOrderedProduct>? = null
     ): OrderItem {
+        val formattedBillingName = takeUnless {
+            billingFirstName.isEmpty() && billingLastName.isEmpty()
+        }?.let { "$billingFirstName $billingLastName" } ?: context.getString(R.string.orders_list_guest_customer)
+
+        val orderAddress = this.address.let {
+            OrderItemAddress(
+                name = formattedBillingName,
+                email = it.email,
+                addressFirstRow = it.address1,
+                addressSecondRow = it.address2,
+                addressThirdRow = "${it.city} ${it.state} ${it.postcode}",
+                country = it.country
+            )
+        }
+
         val orderProducts = products?.map {
             ProductItem(
                 amount = it.amount.toDoubleOrNull()?.toInt() ?: 0,
@@ -55,13 +70,9 @@ class FormatOrderData @Inject constructor(
 
         val formattedCreationDate = dateUtils.getFormattedDateWithSiteTimeZone(date) ?: date
 
-        val formattedBillingName = takeUnless {
-            billingFirstName.isEmpty() && billingLastName.isEmpty()
-        }?.let { "$billingFirstName $billingLastName" } ?: context.getString(R.string.orders_list_guest_customer)
-
         val formattedStatus = status.replaceFirstChar {
             if (it.isLowerCase()) it.titlecase(locale) else it.toString()
-        }
+        }.replace("-", " ")
 
         val formattedNumber = "#$number"
 
@@ -72,6 +83,7 @@ class FormatOrderData @Inject constructor(
             customerName = formattedBillingName,
             total = formattedOrderTotals,
             status = formattedStatus,
+            address = orderAddress,
             products = orderProducts
         )
     }
@@ -84,6 +96,7 @@ class FormatOrderData @Inject constructor(
         val customerName: String,
         val total: String,
         val status: String,
+        val address: OrderItemAddress = OrderItemAddress.EMPTY,
         val products: List<ProductItem>? = null
     ) : Parcelable
 
@@ -93,4 +106,25 @@ class FormatOrderData @Inject constructor(
         val total: String,
         val name: String
     ) : Parcelable
+
+    @Parcelize
+    data class OrderItemAddress(
+        val name: String,
+        val email: String,
+        val addressFirstRow: String,
+        val addressSecondRow: String,
+        val addressThirdRow: String,
+        val country: String,
+    ) : Parcelable {
+        companion object {
+            val EMPTY = OrderItemAddress(
+                name = "",
+                email = "",
+                addressFirstRow = "",
+                addressSecondRow = "",
+                addressThirdRow = "",
+                country = ""
+            )
+        }
+    }
 }

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 09:54:04+0000
+Translation-Revision-Date: 2024-05-20 16:54:05+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">نقطة إدخال مؤقتة إلى وضع POS</string>
+    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="cash_payments_take_payment_title">تحصيل الدفع (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">عرض جميع المراجعات</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">لا توجد مراجعات تتطابق مع عامل التصفية المحدد، يرجى محاولة تغيير عامل التصفية</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">لم يتم العثور على مراجعات</string>
+    <string name="dashboard_reviews_card_header_title">الحالة</string>
+    <string name="my_store_widget_reviews_title">أحدث المراجعات</string>
+    <string name="my_store_widget_orders_title">أحدث الطلبات</string>
+    <string name="dashboard_action_view_all_orders">عرض كل الطلبات</string>
+    <string name="dashboard_filter_menu_content_description">فتح النافذة المنبثقة لعامل التصفية</string>
     <string name="product_category_clear_parent">مسح التصنيف الأصلي </string>
     <string name="product_list_fetch_error">خطأ في أثناء إحضار المنتجات!</string>
     <string name="order_creation_add_shipping_method_select_hint">تحديد طريقة شحن</string>
@@ -25,8 +36,6 @@ Language: ar
     <string name="dynamic_dashboard_widget_menu_item_hide">إخفاء %s</string>
     <string name="my_store_widget_onboarding_completed">مكتمل</string>
     <string name="my_store_widget_feedback_title">ملاحظات</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">هل لا تزال تحتاج إلى مساعدة؟ اتصل بنا</string>
-    <string name="my_store_stats_plugin_inactive_description">تأكد من أنك تقوم بتشغيل أحدث إصدار من WooCommerce على موقعك وأنك قمت بتفعيل مسؤول WooCommerce.</string>
     <string name="my_store_stats_plugin_inactive_title">يتعذر علينا عرض\n تحليلات متجرك</string>
     <string name="store_onboarding_task_view_all_tasks">عرض جميع المهام</string>
     <string name="analytics_session_no_available_description">تعتمد تحليلات الجلسة على أعداد الزائرين الفريدة غير المتاحة لنطاقات التواريخ المخصصة</string>

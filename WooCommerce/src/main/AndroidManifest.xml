@@ -288,6 +288,14 @@
                     android:pathPrefix="/request-order-products"
                     android:scheme="wear" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/analytics-data"
+                    android:scheme="wear" />
+            </intent-filter>
         </service>
 
     </application>
