@@ -87,6 +87,14 @@ android {
 
             resConfigs("en", "xxhdpi")
         }
+
+        // Used for CI builds on PRs (downloadable apks). Can be used locally when a developer needs
+        // to install multiple versions of the app on the same device.
+        // AppName: WooCommerce (PreAlpha)
+        jalapeno {
+            applicationId "com.woocommerce.android.prealpha"
+            dimension "buildType"
+        }
     }
 }
 
