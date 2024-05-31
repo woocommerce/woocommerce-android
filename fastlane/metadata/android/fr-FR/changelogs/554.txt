@@ -1,2 +1,0 @@
-18.7 :
-Nous avons corrigé un problème provoquant le plantage de l’application lors de la rotation de l’écran, pour une expérience d’achat plus fluide. Mettez à jour dès maintenant pour profiter d’une application plus stable et plus fiable !

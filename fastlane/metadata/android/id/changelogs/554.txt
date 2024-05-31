@@ -1,2 +1,0 @@
-18.7:
-Kami memperbaiki isu yang menyebabkan aplikasi mengalami crash saat layar berotasi, agar pengalaman berbelanja lebih lancar. Perbarui sekarang juga untuk menikmati aplikasi yang lebih stabil dan dapat diandalkan!

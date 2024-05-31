@@ -1,2 +1,0 @@
-18.7:
-Wir haben ein Problem behoben, durch das die App beim Drehen des Bildschirms abstürzte. Dein Shoppingerlebnis ist jetzt also noch reibungsloser. Führe jetzt ein Update durch, um von einer stabileren und zuverlässigeren App zu profitieren.

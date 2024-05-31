@@ -1,2 +1,0 @@
-18.6:
-Ta del av förbättrad funktionalitet med vår senaste appuppdatering. Vi har förbättrat funktionen "Tryck för att betala", med en ny navigeringsväg från sammanfattningen till skärmen "Om Tryck för att betala" och en tydligare beskrivning. Vi har dessutom gjort valet av fraktmetoder mer flexibelt, med möjlighet att välja specifika alternativ direkt när du lägger till eller redigerar leveransinformationen för en beställning. Uppdatera din app idag för en smidigare och mer effektiv upplevelse.
