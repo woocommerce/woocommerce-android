@@ -1,2 +1,0 @@
-18.7:
-Ekran dönüşümünde uygulamanın çökmesine neden olan bir sorunu düzelterek daha sorunsuz bir alışveriş deneyimi sağladık. Daha kararlı ve güvenilir bir uygulama için şimdi güncelleyin!
