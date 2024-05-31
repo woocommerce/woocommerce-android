@@ -65,12 +65,14 @@ steps:
     steps:
 
       - label: "🛠 Prototype Build: Mobile App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce"
+        command: |
+          ".buildkite/commands/prototype-build.sh" "WooCommerce"
         if: build.pull_request.id != null
         plugins: [*ci_toolkit]
 
       - label: "🛠 Prototype Build: Wear App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
+        command: |
+          ".buildkite/commands/prototype-build.sh" "WooCommerce-Wear"
         if: build.pull_request.id != null
         plugins: [*ci_toolkit]
 
