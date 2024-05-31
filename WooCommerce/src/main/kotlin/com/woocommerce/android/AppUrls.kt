@@ -55,6 +55,12 @@ object AppUrls {
             "https://automattic.survey.fm/product-creation-with-ai-dec-2023"
         }
 
+    val CROWDSIGNAL_ORDER_SHIPPING_LINES_SURVEY = if (BuildConfig.DEBUG) {
+        "https://automattic.survey.fm/order-creation-shipping-lines-survey-testing"
+    } else {
+        "https://automattic.survey.fm/order-creation-shipping-lines-survey-production"
+    }
+
     // Will be used later when the feature is fully launched.
     const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"
 

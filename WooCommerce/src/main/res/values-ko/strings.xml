@@ -39,8 +39,6 @@ Language: ko_KR
     <string name="dynamic_dashboard_widget_menu_item_hide">%s 숨기기</string>
     <string name="my_store_widget_onboarding_completed">완료됨</string>
     <string name="my_store_widget_feedback_title">피드백</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">여전히 도움이 필요하신가요? 문의하기</string>
-    <string name="my_store_stats_plugin_inactive_description">사이트에서 WooCommerce 최신 버전을 실행하고 있으며 WooCommerce 관리자가 활성화되어 있는지 확인하세요.</string>
     <string name="my_store_stats_plugin_inactive_title">스토어 분석을\n 표시할 수 없음</string>
     <string name="store_onboarding_task_view_all_tasks">모든 작업 보기</string>
     <string name="analytics_session_no_available_description">세션 분석에서는 사용자 정의 범위에 사용할 수 없는 고유 방문자 수를 이용합니다</string>

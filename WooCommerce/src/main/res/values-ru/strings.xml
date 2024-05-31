@@ -39,8 +39,6 @@ Language: ru
     <string name="dynamic_dashboard_widget_menu_item_hide">Скрыть %s</string>
     <string name="my_store_widget_onboarding_completed">Завершено</string>
     <string name="my_store_widget_feedback_title">Обратная связь</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Вам по-прежнему требуется помощь? Свяжитесь с нами</string>
-    <string name="my_store_stats_plugin_inactive_description">Убедитесь, что на сайте используется последняя версия WooCommerce и вы активировали WooCommerce Admin.</string>
     <string name="my_store_stats_plugin_inactive_title">Не удалось отобразить\n аналитику вашего магазина</string>
     <string name="store_onboarding_task_view_all_tasks">Посмотреть все задачи</string>
     <string name="analytics_session_no_available_description">Аналитические данные сеанса основываются на количестве уникальных посетителей, которое невозможно определить для произвольных временных промежутков.</string>

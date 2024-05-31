@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -32,6 +33,22 @@ data class DashboardWidget(
         REVIEWS(R.string.my_store_widget_reviews_title, "reviews"),
         ORDERS(R.string.my_store_widget_orders_title, "orders"),
         COUPONS(R.string.my_store_widget_coupons_title, "coupons"),
+        INBOX(R.string.inbox_screen_title, "inbox"),
+        PRODUCT_STOCK(R.string.my_store_widget_product_stock_title, "product_stock");
+
+        companion object {
+            // Use the feature flag [DYNAMIC_DASHBOARD_M2] to filter out unsupported widgets during development
+            val supportedWidgets: List<Type> = Type.entries
+                .filter {
+                    FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled() || (
+                        it != DashboardWidget.Type.ORDERS &&
+                            it != DashboardWidget.Type.REVIEWS &&
+                            it != DashboardWidget.Type.COUPONS &&
+                            it != DashboardWidget.Type.PRODUCT_STOCK &&
+                            it != DashboardWidget.Type.INBOX
+                        )
+                }
+        }
     }
 
     sealed interface Status : Parcelable {

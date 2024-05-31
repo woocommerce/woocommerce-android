@@ -13,6 +13,10 @@
             android:name="cardReaderFlowParam"
             app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
             app:nullable="false" />
+        <argument
+            android:name="isOrderPaid"
+            app:argType="boolean"
+            android:defaultValue="false" />
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderPaymentFlow"
             app:destination="@id/cardReaderStatusCheckerDialogFragment" />

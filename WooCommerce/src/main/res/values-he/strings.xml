@@ -39,8 +39,6 @@ Language: he_IL
     <string name="dynamic_dashboard_widget_menu_item_hide">להסתיר את %s</string>
     <string name="my_store_widget_onboarding_completed">הושלם</string>
     <string name="my_store_widget_feedback_title">משוב</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">עדיין דרושה לך עזרה? ליצירת קשר</string>
-    <string name="my_store_stats_plugin_inactive_description">עליך לוודא שמותקנת באתר שלך הגרסה האחרונה של WooCommerce ושהתוסף של WooCommerce Admin מופעל.</string>
     <string name="my_store_stats_plugin_inactive_title">אנחנו לא יכולים להציג את \n הנתונים האנליטיים של החנות</string>
     <string name="store_onboarding_task_view_all_tasks">להציג את כל המשימות</string>
     <string name="analytics_session_no_available_description">נתונים אנליטיים של הפעלות מסתמכים על מספר המבקרים הייחודיים, והם לא זמינים בטווח תאריכים מותאם אישית</string>

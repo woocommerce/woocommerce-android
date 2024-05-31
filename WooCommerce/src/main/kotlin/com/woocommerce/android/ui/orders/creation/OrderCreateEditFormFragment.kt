@@ -15,9 +15,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnLifecycleDestroyed
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -30,6 +32,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentOrderCreateEditFormBinding
 import com.woocommerce.android.databinding.LayoutOrderCreationCustomerInfoBinding
@@ -49,8 +52,11 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningFragment
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.compose.component.FeedbackDialog
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
+import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.CustomAmountTypeBottomSheetDialog
@@ -59,8 +65,6 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSe
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Creation
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.Mode.Edit
-import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.None
-import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.MultipleLinesContext.Warning
 import com.woocommerce.android.ui.orders.creation.configuration.EditProductConfigurationResult
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfigurationFragment
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListFragment
@@ -71,6 +75,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.product.discount.OrderCreateEditProductDiscountFragment.Companion.KEY_PRODUCT_DISCOUNT_RESULT
 import com.woocommerce.android.ui.orders.creation.shipping.OrderShippingFragment.Companion.REMOVE_SHIPPING_RESULT
 import com.woocommerce.android.ui.orders.creation.shipping.OrderShippingFragment.Companion.UPDATE_SHIPPING_RESULT
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineFormSection
 import com.woocommerce.android.ui.orders.creation.shipping.ShippingUpdateResult
 import com.woocommerce.android.ui.orders.creation.simplepaymentsmigration.OrderCreateEditSimplePaymentsMigrationBottomSheetFragment
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRate
@@ -90,6 +95,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorSharedViewMod
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
@@ -374,7 +380,7 @@ class OrderCreateEditFormFragment :
 
     private fun FragmentOrderCreateEditFormBinding.initAdditionalInfoCollectionSection() {
         additionalInfoCollectionSection.addShippingButton.setOnClickListener {
-            viewModel.onShippingButtonClicked()
+            viewModel.onAddOrEditShipping()
         }
     }
 
@@ -405,9 +411,53 @@ class OrderCreateEditFormFragment :
             bindCustomAmountsSection(binding.customAmountsSection, it)
         }
 
+        bindShippingLinesSection(binding)
+
+        if (FeatureFlag.EOSL_M3.isEnabled()) {
+            bindFeedbackSection(binding)
+        }
+
         observeViewStateChanges(binding)
 
         viewModel.event.observe(viewLifecycleOwner) { handleViewModelEvents(it, binding) }
+    }
+    private fun bindShippingLinesSection(binding: FragmentOrderCreateEditFormBinding) {
+        binding.shippingLines.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                viewModel.shippingLineList.observeAsState().value?.let { shippingLines ->
+                    WooThemeWithBackground {
+                        ShippingLineFormSection(
+                            shippingLineDetails = shippingLines,
+                            formatCurrency = { amount -> currencyFormatter.formatCurrency(amount) },
+                            modifier = Modifier.padding(bottom = 1.dp),
+                            onAdd = { viewModel.onAddOrEditShipping() },
+                            onEdit = { id -> viewModel.onAddOrEditShipping(id) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun bindFeedbackSection(binding: FragmentOrderCreateEditFormBinding) {
+        binding.feedbackSection.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                viewModel.viewStateData.liveData.observeAsState().value?.showShippingFeedback?.let { show ->
+                    WooTheme {
+                        FeedbackDialog(
+                            title = stringResource(id = R.string.order_creation_shipping_feedback_title),
+                            message = stringResource(id = R.string.order_creation_shipping_feedback_message),
+                            action = stringResource(id = R.string.order_creation_feedback_action),
+                            isShown = show,
+                            onAction = { viewModel.onSendShippingFeedback() },
+                            onClose = { viewModel.onCloseShippingFeedback() },
+                        )
+                    }
+                }
+            }
+        }
     }
 
     @Suppress("LongMethod")
@@ -453,18 +503,6 @@ class OrderCreateEditFormFragment :
                     binding.showEditableControls(new)
                 } else {
                     binding.hideEditableControls()
-                }
-            }
-            new.multipleLinesContext.takeIfNotEqualTo(old?.multipleLinesContext) { multipleLinesContext ->
-                when (multipleLinesContext) {
-                    None -> binding.multipleLinesWarningSection.root.visibility = View.GONE
-                    is Warning -> {
-                        binding.multipleLinesWarningSection.header.text =
-                            multipleLinesContext.header
-                        binding.multipleLinesWarningSection.explanation.text =
-                            multipleLinesContext.explanation
-                        binding.multipleLinesWarningSection.root.visibility = View.VISIBLE
-                    }
                 }
             }
             new.isCouponButtonEnabled.takeIfNotEqualTo(old?.isCouponButtonEnabled) {
@@ -1153,6 +1191,8 @@ class OrderCreateEditFormFragment :
             }
 
             is Exit -> findNavController().navigateUp()
+
+            is ShippingLinesFeedback -> sendShippingLinesFeedback()
         }
     }
 
@@ -1263,5 +1303,11 @@ class OrderCreateEditFormFragment :
         if (requireContext().windowSizeClass != WindowSizeClass.Compact) {
             sharedViewModel.onProductSelectionStateChanged(false)
         }
+    }
+
+    private fun sendShippingLinesFeedback() {
+        NavGraphMainDirections
+            .actionGlobalFeedbackSurveyFragment(SurveyType.ORDER_SHIPPING_LINES)
+            .apply { findNavController().navigateSafely(this) }
     }
 }

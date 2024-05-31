@@ -35,10 +35,12 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsCard
+import com.woocommerce.android.ui.dashboard.inbox.DashboardInboxCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersCard
 import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
+import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersWidgetCard
 
 @Composable
@@ -96,6 +98,13 @@ private fun WidgetList(
                             modifier = widgetModifier
                         )
                     }
+
+                    is DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard -> {
+                        NewWidgetsCard(
+                            state = it,
+                            modifier = widgetModifier
+                        )
+                    }
                 }
             }
         }
@@ -147,6 +156,16 @@ private fun ConfigurableWidgetCard(
         )
 
         DashboardWidget.Type.COUPONS -> DashboardCouponsCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
+
+        DashboardWidget.Type.PRODUCT_STOCK -> DashboardProductStockCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
+
+        DashboardWidget.Type.INBOX -> DashboardInboxCard(
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )
@@ -232,5 +251,38 @@ private fun FeedbackCard(
                 modifier = Modifier.weight(1f)
             )
         }
+    }
+}
+
+@Composable
+private fun NewWidgetsCard(
+    state: DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard,
+    modifier: Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.woo_gray_5),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.dashboard_new_widgets_card_title),
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.dashboard_new_widgets_card_description),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        WCColoredButton(
+            onClick = state.onShowCardsClick,
+            text = "Add new sections"
+        )
     }
 }

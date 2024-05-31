@@ -39,8 +39,6 @@ Language: zh_CN
     <string name="dynamic_dashboard_widget_menu_item_hide">隐藏 %s</string>
     <string name="my_store_widget_onboarding_completed">已完成</string>
     <string name="my_store_widget_feedback_title">反馈</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">仍需帮助？ 联系我们</string>
-    <string name="my_store_stats_plugin_inactive_description">确保您的站点上运行的是最新版本的 WooCommerce，并且已激活 WooCommerce Admin。</string>
     <string name="my_store_stats_plugin_inactive_title">我们无法显示您的\n 商店分析</string>
     <string name="store_onboarding_task_view_all_tasks">查看所有任务</string>
     <string name="analytics_session_no_available_description">会话分析依赖于独立访客数，但不适用于自定义日期范围</string>
