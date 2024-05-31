@@ -9,6 +9,7 @@ import androidx.navigation.fragment.NavHostFragment
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.ui.payments.cardreader.statuschecker.CardReaderStatusCheckerDialogFragmentArgs
+import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,7 +35,11 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
             when (requestKey) {
                 WOO_POS_CARD_PAYMENT_REQUEST_KEY -> {
                     val result = bundle.parcelable<WooPosCardReaderPaymentResult>(WOO_POS_CARD_PAYMENT_RESULT_KEY)
-                    viewModel.onPaymentResult(result!!)
+                    setResult(
+                        RESULT_OK,
+                        Intent().apply { putExtra(WOO_POS_CARD_PAYMENT_RESULT_KEY, result) }
+                    )
+                    finish()
                 }
 
                 else -> error("Unknown request key: $requestKey")
@@ -51,7 +56,8 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
                         setStartDestination(R.id.cardReaderStatusCheckerDialogFragment)
                     }
                     navController.setGraph(
-                        graph, CardReaderStatusCheckerDialogFragmentArgs(
+                        graph,
+                        CardReaderStatusCheckerDialogFragmentArgs(
                             cardReaderFlowParam = event.cardReaderFlowParam,
                             cardReaderType = event.cardReaderType,
                         ).toBundle()
@@ -62,10 +68,8 @@ class WooPosCardReaderActivity : AppCompatActivity(R.layout.activity_woo_pos_car
                     val navController = navHostFragment.navController
                     val graph = navController.navInflater.inflate(R.navigation.nav_graph_payment_flow)
                     navController.setGraph(
-                        graph, CardReaderStatusCheckerDialogFragmentArgs(
-                            cardReaderFlowParam = event.cardReaderFlowParam,
-                            cardReaderType = event.cardReaderType,
-                        ).toBundle()
+                        graph,
+                        SelectPaymentMethodFragmentArgs(cardReaderFlowParam = event.cardReaderFlowParam).toBundle()
                     )
                 }
             }

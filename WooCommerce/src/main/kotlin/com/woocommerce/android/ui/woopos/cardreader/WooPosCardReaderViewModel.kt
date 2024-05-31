@@ -67,8 +67,4 @@ class WooPosCardReaderViewModel @Inject constructor(
             onFailure = { onFailure() }
         )
     }
-
-    fun onPaymentResult(result: WooPosCardReaderPaymentResult) {
-        Log.e("WooPosCardReaderViewModel", "Payment result: $result")
-    }
 }

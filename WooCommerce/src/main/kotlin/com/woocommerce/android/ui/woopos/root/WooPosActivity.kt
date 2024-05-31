@@ -19,12 +19,14 @@ class WooPosActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycle.addObserver(wooPosCardReaderFacade)
+
         setContent {
             MaterialTheme {
                 WooPosRootHost(
                     connectToCardReader = {
                         lifecycleScope.launch {
-                            wooPosCardReaderFacade.connectToReader(this@WooPosActivity)
+                            wooPosCardReaderFacade.connectToReader()
                         }
                         lifecycleScope.launch {
                             wooPosCardReaderFacade.readerStatus.collect {
@@ -34,7 +36,8 @@ class WooPosActivity : AppCompatActivity() {
                     },
                     collectPaymentWithCardReader = {
                         lifecycleScope.launch {
-                            wooPosCardReaderFacade.collectPayment(this@WooPosActivity, -1)
+                            val result = wooPosCardReaderFacade.collectPayment(-1)
+                            Toast.makeText(this@WooPosActivity, "Payment result: $result", Toast.LENGTH_SHORT).show()
                         }
                     }
                 )
