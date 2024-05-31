@@ -1109,47 +1109,49 @@ platform :android do
 
   #####################################################################################
   # build_and_upload_prototype_build
-  # -----------------------------------------------------------------------------------
+  #
   # This lane builds a prototype build and uploads it to S3
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane build_and_upload_prototype_build
-  #####################################################################################
+  #
+  # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
+  # 
   desc 'Builds a prototype build and uploads it to S3'
-  lane :build_and_upload_prototype_build do |_options|
+  lane :build_and_upload_prototype_build do |options|
     UI.user_error!("'BUILDKITE_ARTIFACTS_S3_BUCKET' must be defined as an environment variable.") unless ENV['BUILDKITE_ARTIFACTS_S3_BUCKET']
 
+    app = get_app_param!(options)
     prototype_flavor = 'Jalapeno'
     prototype_build_type = 'Debug'
 
     gradle(
-      task: 'assemble',
+      task: ":#{app}:assemble",
       flavor: prototype_flavor,
       build_type: prototype_build_type
     )
 
     upload_path = upload_to_s3(
       bucket: 'a8c-apps-public-artifacts',
-      key: "woocommerce-prototype-build-#{generate_prototype_build_number}.apk",
+      key: "#{app.downcase}-prototype-build-#{generate_prototype_build_number}.apk",
       file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
       skip_if_exists: true
     )
 
     install_url = "#{PROTOTYPE_BUILD_DOMAIN}/#{upload_path}"
     comment_body = prototype_build_details_comment(
-      app_display_name: 'WooCommerce Android',
+      app_display_name: "#{app} Android",
       download_url: install_url,
       metadata: {
+        App: app,
         Flavor: prototype_flavor,
         'Build Type': prototype_build_type
-      }
+      },
+      fold: app == WEAR_APP # Keep comment for Mobile app always expanded, but collapse comment for Wear app by default, as it's modified less often
     )
 
     unless ENV['BUILDKITE_PULL_REQUEST'].nil?
       comment_on_pr(
         project: 'woocommerce/woocommerce-android',
         pr_number: Integer(ENV['BUILDKITE_PULL_REQUEST']),
-        reuse_identifier: 'prototype-build-link',
+        reuse_identifier: "#{app}-prototype-build-link",
         body: comment_body
       )
     end
