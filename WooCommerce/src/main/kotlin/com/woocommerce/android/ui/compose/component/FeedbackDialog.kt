@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Colors
 import androidx.compose.material.Icon
@@ -33,10 +35,10 @@ import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Suppress("MagicNumber")
-val Colors.feedbackSurface: Color get() = if (isLight) Color(0xFF271B3D) else Color(0xFFCFB9F6)
+val Colors.feedbackSurface: Color get() = if (isLight) Color(0xFF1C1C1E) else Color(0xFFBEA0F2)
 
 @Suppress("MagicNumber")
-val Colors.onFeedbackSurface: Color get() = if (isLight) Color(0xFFCFB9F6) else Color(0xFF271B3D)
+val Colors.onFeedbackSurface: Color get() = if (isLight) Color(0xFFBEA0F2) else Color(0xFF1C1C1E)
 
 @Composable
 fun FeedbackDialog(
@@ -76,42 +78,42 @@ fun FeedbackDialog(
         ) {
             Card(
                 backgroundColor = MaterialTheme.colors.feedbackSurface,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp),
+                shape = RoundedCornerShape(corner = CornerSize(8.dp))
             ) {
                 Row {
-                    Column(modifier = Modifier.weight(2f, true)) {
-                        val fontSize = 16.sp
+                    Column(modifier = Modifier.weight(2f, true).padding(bottom = 16.dp)) {
+                        val fontSize = 18.sp
                         Text(
                             text = title,
                             fontSize = fontSize,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colors.onPrimary,
-                            modifier = Modifier.padding(start = 16.dp, top = 12.dp)
+                            modifier = Modifier.padding(start = 24.dp, top = 24.dp)
                         )
                         Text(
                             text = message,
                             fontSize = fontSize,
                             color = MaterialTheme.colors.onPrimary.copy(alpha = .9f),
-                            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+                            modifier = Modifier.padding(start = 24.dp, top = 8.dp)
                         )
                         WCTextButton(
                             onClick = { onAction() },
-                            modifier = Modifier.padding(start = 8.dp)
                         ) {
                             Text(
                                 text = action,
                                 fontSize = fontSize,
-                                color = MaterialTheme.colors.onFeedbackSurface
+                                color = MaterialTheme.colors.onFeedbackSurface,
+                                modifier = Modifier.padding(start = 16.dp, top = 8.dp)
                             )
                         }
                     }
-                    IconButton(
-                        onClick = { onClose() },
-                    ) {
+                    IconButton(onClick = { onClose() },) {
                         Icon(
                             imageVector = Icons.Filled.Close,
-                            tint = MaterialTheme.colors.onPrimary.copy(alpha = .75f),
-                            contentDescription = stringResource(id = R.string.close)
+                            tint = MaterialTheme.colors.onPrimary.copy(alpha = .60f),
+                            contentDescription = stringResource(id = R.string.close),
+                            modifier = Modifier.padding(24.dp)
                         )
                     }
                 }
