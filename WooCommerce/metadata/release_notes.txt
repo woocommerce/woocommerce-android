@@ -1,1 +1,4 @@
-In this release, we've honed in on enhancing the app's efficiency by ironing out bugs and executing vital improvements. These updates aim to empower your business journey. Your feedback is our roadmap to continuous development, so please, keep it flowing.
+- [**] Shipping: Merchants can now use multiple shipping lines for a single order. [https://github.com/woocommerce/woocommerce-android/pull/11580]
+- [*] More Menu: UI improvements for the More Menu screen [https://github.com/woocommerce/woocommerce-android/pull/11566]
+- [**] Cash Payments: Added the option for users to calculate change due when receiving cash for the order. [https://github.com/woocommerce/woocommerce-android/pull/11594]
+
