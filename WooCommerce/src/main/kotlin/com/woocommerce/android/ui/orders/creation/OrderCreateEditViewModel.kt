@@ -1304,7 +1304,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val settings =
             feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES)
         return settings.feedbackState == FeatureFeedbackSettings.FeedbackState.UNANSWERED ||
-            settings.isFeedbackMoreThanDaysAgo(DAYS_BEFORE_SHOWING_SHIPPING_FEEDBACK)
+            settings.isFeedbackGivenMoreThanDaysAgo(DAYS_BEFORE_SHOWING_SHIPPING_FEEDBACK)
     }
 
     fun onSendShippingFeedback() {
