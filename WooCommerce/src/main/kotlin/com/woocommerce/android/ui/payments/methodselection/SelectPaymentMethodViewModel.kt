@@ -89,7 +89,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
         get() = navArgs.cardReaderFlowParam as Payment
 
     val displayUi: Boolean
-        get() = isWooPOSPaymentFlow()
+        get() = !isWooPOSPaymentFlow()
 
     init {
         checkStatus()
@@ -483,10 +483,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
         return currencyFormatter.formatCurrency(total, currencyCode)
     }
 
-    private fun isWooPOSPaymentFlow() = if (navArgs.cardReaderFlowParam is Payment) {
-        (navArgs.cardReaderFlowParam as Payment).paymentType != WOO_POS
-    } else {
-        true
+    private fun isWooPOSPaymentFlow() = with(navArgs.cardReaderFlowParam) {
+        this is Payment && paymentType == WOO_POS
     }
 
     companion object {
