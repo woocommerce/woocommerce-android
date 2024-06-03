@@ -40,12 +40,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -75,6 +78,12 @@ class DashboardStatsViewModel @AssistedInject constructor(
     val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     private val selectedDateRange = getSelectedDateRange()
+        .onEach {
+            // Reset selected chart date when date range changes
+            selectedChartDate.value = null
+        }
+        .shareIn(viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
+
     private val selectedChartDate = MutableStateFlow<String?>(null)
 
     val dateRangeState = combine(
