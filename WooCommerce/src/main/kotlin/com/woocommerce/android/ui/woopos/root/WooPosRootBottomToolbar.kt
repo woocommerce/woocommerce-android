@@ -15,6 +15,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -27,7 +28,7 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvents) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        color = MaterialTheme.colors.surface
+        color = MaterialTheme.colors.background
     ) {
         Row(
             modifier = Modifier
@@ -40,7 +41,7 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvents) -> Unit) {
             TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ExitPOSClicked) }) {
                 Text(
                     text = stringResource(id = R.string.woopos_exit_pos),
-                    color = MaterialTheme.colors.onSurface,
+                    color = Color.White,
                     style = MaterialTheme.typography.button
                 )
             }

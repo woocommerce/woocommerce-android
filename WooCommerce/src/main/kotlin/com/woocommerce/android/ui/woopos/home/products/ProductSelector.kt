@@ -37,7 +37,10 @@ fun ProductSelector(
     onEndOfProductsGridReached: () -> Unit,
 ) {
     ConstraintLayout(
-        modifier = Modifier.fillMaxWidth(0.7f)
+        modifier = Modifier
+            .fillMaxWidth(0.7f)
+            .background(MaterialTheme.colors.surface, RoundedCornerShape(8.dp))
+            .padding(16.dp)
     ) {
         val state = productsState.collectAsState()
         val gridState = rememberLazyGridState()

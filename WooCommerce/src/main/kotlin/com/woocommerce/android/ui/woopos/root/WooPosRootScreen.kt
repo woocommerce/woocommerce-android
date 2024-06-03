@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.root
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,7 +20,7 @@ fun WooPosRootScreen() {
 @Composable
 private fun WooPosRootScreen(onUIEvent: (WooPosRootUIEvents) -> Unit) {
     WooPosTheme {
-        Column(modifier = Modifier.background(Color.Black)) {
+        Column(modifier = Modifier.background(MaterialTheme.colors.background)) {
             WooPosRootHost(modifier = Modifier.weight(1f))
             WooPosBottomToolbar(onUIEvent)
         }

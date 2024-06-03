@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -44,7 +45,12 @@ private fun WooPosCartScreen(
     productsState: StateFlow<ViewState>,
     onEndOfProductsGridReached: () -> Unit,
 ) {
-    Row {
+    Row(
+        modifier = Modifier
+            .background(MaterialTheme.colors.background)
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
         ProductSelector(productsState, onEndOfProductsGridReached)
         Cart(onCheckoutClick)
     }
@@ -52,7 +58,11 @@ private fun WooPosCartScreen(
 
 @Composable
 private fun Cart(onButtonClicked: () -> Unit) {
-    Column {
+    Column(
+        modifier = Modifier
+            .background(MaterialTheme.colors.surface, RoundedCornerShape(8.dp))
+            .padding(16.dp)
+    ) {
         Text(
             text = "Cart",
             style = MaterialTheme.typography.h3,
