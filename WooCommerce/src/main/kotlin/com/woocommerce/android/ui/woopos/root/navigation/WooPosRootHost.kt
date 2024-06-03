@@ -1,18 +1,16 @@
 package com.woocommerce.android.ui.woopos.root.navigation
 
-import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun WooPosRootHost(
-    connectToCardReader: (context: Context) -> Unit,
-    collectPaymentWithCardReader: (context: Context) -> Unit,
-) {
+fun WooPosRootHost(modifier: Modifier = Modifier) {
     val rootController = rememberNavController()
 
     NavHost(
+        modifier = modifier,
         navController = rootController,
         startDestination = MAIN_GRAPH_ROUTE,
         enterTransition = { screenSlideIn() },
@@ -20,10 +18,6 @@ fun WooPosRootHost(
         popEnterTransition = { screenFadeIn() },
         popExitTransition = { screenSlideOut() },
     ) {
-        checkoutGraph(
-            navController = rootController,
-            onConnectToCardReaderClicked = { context -> connectToCardReader(context) },
-            collectPaymentWithCardReader = { context -> collectPaymentWithCardReader(context) },
-        )
+        checkoutGraph(navController = rootController)
     }
 }
