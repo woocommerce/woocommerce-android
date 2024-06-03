@@ -130,7 +130,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun handleIsOrderPaid(paid: Boolean) {
-        if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled() && paid) {
+        if (true && paid) {
             onCashPaymentConfirmed()
         }
     }
@@ -245,7 +245,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onCashPaymentClicked() {
-        if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled()) {
+        if (true) {
             handleCashPaymentClick()
         } else {
             launch {
