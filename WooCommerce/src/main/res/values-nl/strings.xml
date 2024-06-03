@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-22 09:54:03+0000
+Translation-Revision-Date: 2024-05-28 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="cash_payments_change_due">Wisselgeld</string>
+    <string name="cash_payments_cash_received">Cash ontvangen</string>
+    <string name="my_store_widget_coupons_title">Meest actieve coupons</string>
     <string name="more_menu_button_woo_pos_description">Tijdelijk invoerpunt voor POS-modus</string>
     <string name="more_menu_button_woo_pos">WooPOS</string>
     <string name="cash_payments_take_payment_title">Betaling ontvangen (%s)</string>

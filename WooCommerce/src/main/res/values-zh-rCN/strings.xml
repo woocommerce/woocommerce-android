@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-21 09:54:03+0000
+Translation-Revision-Date: 2024-05-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="cash_payments_change_due">找零</string>
+    <string name="cash_payments_cash_received">收到的现金</string>
+    <string name="my_store_widget_coupons_title">最常用的优惠券</string>
     <string name="more_menu_button_woo_pos_description">POS 模式的临时入口点</string>
     <string name="more_menu_button_woo_pos">Woo Pos</string>
     <string name="cash_payments_take_payment_title">收款 (%s)</string>

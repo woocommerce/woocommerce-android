@@ -394,6 +394,8 @@
     <string name="dashboard_action_view_orders">View Orders</string>
     <string name="dashboard_action_view_all_orders">View all orders</string>
 
+    <string name="dashboard_action_view_all_messages">View all messages</string>
+
     <string name="my_store_stats_plugin_inactive_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
     <string name="my_store_custom_range_granularity_label">%s interval</string>
