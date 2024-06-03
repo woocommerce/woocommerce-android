@@ -61,7 +61,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSelectPaymentMethodBinding.inflate(inflater, container, false)
         return if (viewModel.displayUi) {
             setupToolbar()
