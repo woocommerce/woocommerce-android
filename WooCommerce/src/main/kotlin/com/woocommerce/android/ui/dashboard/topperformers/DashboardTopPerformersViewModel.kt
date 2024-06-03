@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -27,11 +28,10 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
 import com.woocommerce.android.ui.dashboard.data.TopPerformersCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers
 import com.woocommerce.android.ui.dashboard.domain.GetTopPerformers.TopPerformerProduct
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
-import com.woocommerce.android.ui.dashboard.stats.DashboardStatsRangeFormatter
-import com.woocommerce.android.ui.dashboard.stats.GetSelectedRangeForTopPerformers
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -53,6 +53,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
@@ -78,7 +79,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private val dateUtils: DateUtils,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val customDateRangeDataStore: TopPerformersCustomDateRangeDataStore,
-    private val dateFormatter: DashboardStatsRangeFormatter,
+    private val dateFormatter: DashboardDateRangeFormatter,
     getSelectedDateRange: GetSelectedRangeForTopPerformers,
 ) : ScopedViewModel(savedState) {
     private val _selectedDateRange = getSelectedDateRange()
@@ -204,14 +205,22 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) =
         coroutineScope {
             if (!networkStatus.isConnected()) {
-                _topPerformersState.value = _topPerformersState.value?.copy(isError = true)
+                _topPerformersState.value = _topPerformersState.value?.copy(error = ErrorType.Generic)
                 return@coroutineScope
             }
 
-            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
+            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, error = null)
             val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
             result.fold(
-                onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
+                onFailure = {
+                    _topPerformersState.value = _topPerformersState.value?.copy(
+                        error = if ((it as? WooException)?.error?.type == WooErrorType.API_NOT_FOUND) {
+                            ErrorType.WCAnalyticsInactive
+                        } else {
+                            ErrorType.Generic
+                        },
+                    )
+                },
                 onSuccess = {
                     analyticsTrackerWrapper.track(
                         DASHBOARD_TOP_PERFORMERS_LOADED,
@@ -287,12 +296,16 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     data class TopPerformersState(
         val isLoading: Boolean = false,
-        val isError: Boolean = false,
+        val error: ErrorType? = null,
         @StringRes val titleStringRes: Int,
         val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
         val menu: DashboardWidgetMenu,
         val onOpenAnalyticsTapped: DashboardWidgetAction
     )
+
+    enum class ErrorType {
+        Generic, WCAnalyticsInactive
+    }
 
     data class OpenTopPerformer(
         val productId: Long

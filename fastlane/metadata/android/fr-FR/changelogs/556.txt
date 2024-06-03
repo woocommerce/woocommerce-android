@@ -1,0 +1,2 @@
+18.8 :
+Dans cette version, nous avons veillé à renforcer l’efficacité de l’application en éliminant des bugs et en apportant des améliorations essentielles. Ces mises à jour visent à dynamiser votre activité. Vos commentaires constituent notre feuille de route pour la poursuite du développement, alors continuez de nous les transmettre.

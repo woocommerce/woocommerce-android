@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-08 09:54:08+0000
+Translation-Revision-Date: 2024-05-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="cash_payments_change_due">変更期限</string>
+    <string name="cash_payments_cash_received">現金を受領しました</string>
+    <string name="my_store_widget_coupons_title">最も使われるクーポン</string>
+    <string name="more_menu_button_woo_pos_description">POS モードへの一時的なエントリーポイント</string>
+    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="cash_payments_take_payment_title">支払いを受け取る (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">すべてのレビューを表示</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">選択したフィルターに一致するレビューはありません。フィルターの変更をお試しください</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">レビューがありません</string>
+    <string name="dashboard_reviews_card_header_title">ステータス</string>
+    <string name="my_store_widget_reviews_title">最新レビュー</string>
+    <string name="my_store_widget_orders_title">最近の注文</string>
+    <string name="dashboard_action_view_all_orders">すべての注文を表示</string>
+    <string name="dashboard_filter_menu_content_description">フィルターのドロップダウンを開く</string>
+    <string name="product_category_clear_parent">親カテゴリーをクリア</string>
+    <string name="product_list_fetch_error">商品の取得中にエラーが発生しました !</string>
+    <string name="order_creation_add_shipping_method_select_hint">配送方法を選択</string>
+    <string name="order_creation_add_shipping_name_hint">配送</string>
+    <string name="order_creation_add_shipping_name">名前</string>
+    <string name="order_creation_add_shipping_method">方法</string>
+    <string name="order_creation_shipping_add">配送料を追加</string>
+    <string name="order_creation_shipping_methods_error">配送方法の取得中にエラーが発生しました。 もう一度お試しください</string>
+    <string name="order_creation_shipping_methods_title">方法</string>
+    <string name="custom_amounts_percentage_invalid_value">無効な値</string>
+    <string name="my_store_widget_onboarding_title">ストアの設定</string>
+    <string name="my_store_edit_screen_widgets">カスタマイズ</string>
     <string name="blaze_campaign_show_all_button">すべてのキャンペーンを表示</string>
     <string name="blaze_campaign_suggested_product_caption">おすすめの商品</string>
     <string name="dynamic_dashboard_widget_error_description">このカードの再読み込みを試行します。 問題が解決しない場合は、&lt;a href=\"support\"&gt;サポートにご連絡&lt;/a&gt;ください。</string>
@@ -13,17 +39,13 @@ Language: ja_JP
     <string name="dynamic_dashboard_widget_menu_item_hide">%s を非表示</string>
     <string name="my_store_widget_onboarding_completed">完了</string>
     <string name="my_store_widget_feedback_title">フィードバック</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">さらにサポートが必要ですか ? お問い合わせ</string>
-    <string name="my_store_stats_plugin_inactive_description">サイトで最新バージョンの WooCommerce を実行していることと、WooCommerce Admin を有効にしていることを確認してください。</string>
     <string name="my_store_stats_plugin_inactive_title">次を表示できません:\n ストアのアナリティクス</string>
     <string name="store_onboarding_task_view_all_tasks">すべてのタスクを表示</string>
     <string name="analytics_session_no_available_description">セッション分析はカスタムの日付範囲で利用できないユニーク訪問者数に基づいています</string>
     <string name="analytics_session_no_available">セッションデータを利用できません</string>
     <string name="my_store_widget_unavailable">利用できません</string>
     <string name="my_store_widget_stats_title">パフォーマンス</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">すべてのストアアナリティクスを表示</string>
     <string name="dashboard_stats_custom_range_label">カスタム</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">項目を選択しました</string>
     <string name="dashboard_stats_edit_granularity_content_description">日付の範囲の変更ボタン</string>
     <string name="images_unavailable_notice">サイトが「非公開」として設定されているため、画像が利用できません。 これは、「近日公開」モードに切り替えることで変更できます。\n</string>
     <string name="card_selection_control">分析カードの選択</string>
@@ -64,13 +86,7 @@ Language: ja_JP
     <string name="analytics_bundles_list_header_title">パッケージ</string>
     <string name="analytics_bundles_list_items_sold">販売済みパッケージ</string>
     <string name="my_store_widget_blaze_title">Blaze キャンペーン</string>
-    <string name="my_store_widget_top_products_title">上位の商品</string>
-    <string name="my_store_widget_onboarding_title">オンボーディング</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">ストアのオンボーディング</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze キャンペーン</string>
-    <string name="my_store_edit_screen_widget_top_performers">上位パフォーマンスの商品</string>
-    <string name="my_store_edit_screen_widget_stats">ストアの統計情報</string>
-    <string name="my_store_edit_screen_widgets">自分のストアのセクションを編集</string>
+    <string name="my_store_widget_top_products_title">上位パフォーマンス</string>
     <string name="product_list_unsaved_product_unselected_message">この商品に加えた変更を破棄してもよいですか ?</string>
     <string name="product_list_unsaved_product_unselected_title">%s への変更を破棄しようとしています</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">統計機能は、任意の日付範囲の訪問者データおよびコンバージョンデータの表示をサポートしていません。\n\nただし、グラフ上で値をタップすると、その特定の範囲の訪問者とコンバージョンを表示できます。</string>
@@ -94,6 +110,7 @@ Language: ja_JP
     <string name="domain_picker_suggestions_title">提案</string>
     <string name="domain_picker_hint">ドメインを入力</string>
     <string name="domain_picker_title">ドメインを選択</string>
+    <string name="analytics_section_see_all">すべてのストアアナリティクスを表示</string>
     <string name="my_store_custom_range_granularity_year">毎年</string>
     <string name="my_store_custom_range_granularity_month">毎月</string>
     <string name="my_store_custom_range_granularity_week">毎週</string>
@@ -484,9 +501,7 @@ Language: ja_JP
     <string name="card_reader_tap_to_pay_about_how_works_4">4. お客様がカードをあなたのスマートフォンの上部、コンタクトレス記号に水平にかざします。</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. お客様にスマートフォンを提示します。</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. 「支払いを受け取る」をタップし「Tap to Pay」を選択します。</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">支払いを受け取る</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">注文を作成する</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s または %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. 注文を作成する</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">仕組み</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">カードリーダーについて詳しくはこちら</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">この制限を超えて支払いを受け入れるには、PIN 入力を受け入れるカードリーダーの購入をご検討ください。</string>
@@ -1595,6 +1610,7 @@ Language: ja_JP
     <string name="order_creation_add_shipping">配送料を追加</string>
     <string name="order_creation_shipping_title_add">配送料を追加</string>
     <string name="order_creation_shipping_name">名前</string>
+    <string name="order_creation_add_shipping_amount">合計</string>
     <string name="order_creation_payment_fee">料金</string>
     <string name="order_creation_customer_details">お客様の詳細</string>
     <string name="order_creation_add_fee">手数料を追加</string>
@@ -2336,9 +2352,6 @@ Language: ja_JP
     <string name="upsells_label">アップセル</string>
     <string name="product_detail_linked_products">関連商品</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">お問い合わせ</string>
-    <string name="my_store_stats_availability_description">サイトで最新バージョンの WooCommerce を実行していることと、WooCommerce Admin を有効にしていることを確認してください。\n\nさらにサポートが必要ですか ? %1$s</string>
-    <string name="my_store_stats_availability_title">ストアのアナリティクスを表示できません</string>
     <string name="login_get_link_by_email">ログインリンクをメールで取得</string>
     <string name="email_not_registered_wpcom">このメールアドレスに紐付けられている WordPress.com アカウントが見つかりません</string>
     <string name="settings_enable_product_addons_teaser_message">起動の準備ができたら、注文アドオンの表示をテストします</string>
@@ -2584,8 +2597,6 @@ Language: ja_JP
     <string name="settings_app_theme_title">外観</string>
     <string name="product_short_description_empty">商品についての簡単な概要</string>
     <string name="product_short_description">簡単な説明</string>
-    <string name="my_store_stats_reverted_message">アナリティクスの改善を提供開始しました。 2020年9月1日以降も統計情報を引き続き表示するには、WooCommerce 4.0以降にアップグレードするか、WooCommerce Admin プラグインをインストールしてください。</string>
-    <string name="my_store_stats_reverted_title">統計情報を引き続き表示するにはアップグレードしてください</string>
     <string name="product_pricing_update_sale_price_error">セール価格は標準価格未満である必要があります</string>
     <string name="product_schedule_remove_end_date_link_label">終了日を削除</string>
     <string name="product_shipping_empty">配送を追加</string>
@@ -3362,7 +3373,6 @@ Language: ja_JP
     <string name="dashboard_action_view_order">注文を表示</string>
     <string name="dashboard_top_performers_empty">この期間のアクティビティはありません</string>
     <string name="dashboard_top_performers_total_orders">注文合計: %s</string>
-    <string name="dashboard_top_performers_title">成績優秀者</string>
     <string name="dashboard_stats_error_content_description">エラー画像</string>
     <string name="dashboard_stats_error">データを取得する際にエラーが発生しました</string>
     <string name="dashboard_stats_revenue">収益</string>

@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-08 11:54:03+0000
+Translation-Revision-Date: 2024-05-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="cash_payments_change_due">找零金額</string>
+    <string name="cash_payments_cash_received">收取現金</string>
+    <string name="my_store_widget_coupons_title">最常用的優惠券</string>
+    <string name="more_menu_button_woo_pos_description">指向 POS 模式的臨時入口</string>
+    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="cash_payments_take_payment_title">收取款項 (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">檢視所有評論</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">沒有符合所選篩選條件的評論，請嘗試變更篩選條件</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">找不到評論</string>
+    <string name="dashboard_reviews_card_header_title">狀態</string>
+    <string name="my_store_widget_reviews_title">最近評論</string>
+    <string name="my_store_widget_orders_title">最近訂單</string>
+    <string name="dashboard_action_view_all_orders">檢視所有訂單</string>
+    <string name="dashboard_filter_menu_content_description">開啟篩選條件的下拉選單</string>
+    <string name="product_category_clear_parent">清除上層分類</string>
+    <string name="product_list_fetch_error">擷取商品時發生錯誤！</string>
+    <string name="order_creation_add_shipping_method_select_hint">選取運送方式</string>
+    <string name="order_creation_add_shipping_name_hint">運送</string>
+    <string name="order_creation_add_shipping_name">名稱</string>
+    <string name="order_creation_add_shipping_method">方式</string>
+    <string name="order_creation_shipping_add">新增運送方式</string>
+    <string name="order_creation_shipping_methods_error">擷取運送方式時發生錯誤。 請再試一次</string>
+    <string name="order_creation_shipping_methods_title">方式</string>
+    <string name="custom_amounts_percentage_invalid_value">無效值</string>
+    <string name="my_store_widget_onboarding_title">商店設定</string>
+    <string name="my_store_edit_screen_widgets">自訂</string>
     <string name="blaze_campaign_show_all_button">檢視所有行銷活動</string>
     <string name="blaze_campaign_suggested_product_caption">建議的商品</string>
     <string name="dynamic_dashboard_widget_error_description">請嘗試重新載入這張卡片。 如果問題持續發生，請&lt;a href=\"support\"&gt;聯絡支援人員&lt;/a&gt;。</string>
@@ -13,17 +39,13 @@ Language: zh_TW
     <string name="dynamic_dashboard_widget_menu_item_hide">隱藏「%s」</string>
     <string name="my_store_widget_onboarding_completed">已完成</string>
     <string name="my_store_widget_feedback_title">意見回饋</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">仍然需要幫助嗎？ 聯絡我們</string>
-    <string name="my_store_stats_plugin_inactive_description">請確認你的網站執行最新版本的 WooCommerce，並已啟用 WooCommerce Admin。</string>
     <string name="my_store_stats_plugin_inactive_title">我們無法顯示你的\n 商店分析</string>
     <string name="store_onboarding_task_view_all_tasks">檢視所有工作項目</string>
     <string name="analytics_session_no_available_description">自訂日期範圍無法提供工作階段分析所仰賴的不重複訪客數</string>
     <string name="analytics_session_no_available">無法提供工作階段資料</string>
     <string name="my_store_widget_unavailable">無法使用</string>
     <string name="my_store_widget_stats_title">績效</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">檢視所有商店分析資料</string>
     <string name="dashboard_stats_custom_range_label">自訂</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">已選取項目</string>
     <string name="dashboard_stats_edit_granularity_content_description">變更日期範圍按鈕</string>
     <string name="images_unavailable_notice">由於你的網站已標記為私人網站，故無法使用圖片。 若要使用，可切換至「即將推出」模式。\n</string>
     <string name="card_selection_control">所選分析卡片</string>
@@ -64,13 +86,7 @@ Language: zh_TW
     <string name="analytics_bundles_list_header_title">搭售方案</string>
     <string name="analytics_bundles_list_items_sold">售出的搭售方案</string>
     <string name="my_store_widget_blaze_title">Blaze 行銷活動</string>
-    <string name="my_store_widget_top_products_title">熱門商品</string>
-    <string name="my_store_widget_onboarding_title">申請</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">商店申請</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">Blaze 行銷活動</string>
-    <string name="my_store_edit_screen_widget_top_performers">熱門商品</string>
-    <string name="my_store_edit_screen_widget_stats">商店統計資料</string>
-    <string name="my_store_edit_screen_widgets">編輯商店區段</string>
+    <string name="my_store_widget_top_products_title">成效最佳者</string>
     <string name="product_list_unsaved_product_unselected_message">你確定要捨棄這些針對本商品做出的變更？</string>
     <string name="product_list_unsaved_product_unselected_title">你即將捨棄對「%s」的變更</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">統計功能無法顯示任意日期範圍的訪客和轉換資料。\n\n不過你仍可點選圖表上的數值，查看該特定範圍的訪客和轉換資料。</string>
@@ -94,6 +110,7 @@ Language: zh_TW
     <string name="domain_picker_suggestions_title">建議</string>
     <string name="domain_picker_hint">輸入網域</string>
     <string name="domain_picker_title">選擇網域</string>
+    <string name="analytics_section_see_all">檢視所有商店分析資料</string>
     <string name="my_store_custom_range_granularity_year">每年</string>
     <string name="my_store_custom_range_granularity_month">每月</string>
     <string name="my_store_custom_range_granularity_week">每週</string>
@@ -484,9 +501,7 @@ Language: zh_TW
     <string name="card_reader_tap_to_pay_about_how_works_4">4. 顧客手持卡片，以水平方向置於你手機的感應支付符號上方。</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. 向顧客展示你的手機。</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. 點選「收取款項」並選擇「輕觸付款」。</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">收取付款</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">建立訂單</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s 或 %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. 建立訂單</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">瞭解使用方式</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">深入瞭解讀卡機</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">若要接受高於此限制的付款，請考慮購買可輸入 PIN 碼的讀卡機。</string>
@@ -1595,6 +1610,7 @@ Language: zh_TW
     <string name="order_creation_add_shipping">新增運費</string>
     <string name="order_creation_shipping_title_add">新增運送</string>
     <string name="order_creation_shipping_name">名稱</string>
+    <string name="order_creation_add_shipping_amount">金額</string>
     <string name="order_creation_payment_fee">費用</string>
     <string name="order_creation_customer_details">客戶詳細資料</string>
     <string name="order_creation_add_fee">新增費用</string>
@@ -2336,9 +2352,6 @@ Language: zh_TW
     <string name="upsells_label">追加銷售</string>
     <string name="product_detail_linked_products">連結商品</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">聯絡我們</string>
-    <string name="my_store_stats_availability_description">請確認你的網站執行最新版本的 WooCommerce，並已啟用 WooCommerce Admin。\n\n還需要協助嗎？ %1$s</string>
-    <string name="my_store_stats_availability_title">無法顯示你的\n商店分析資料</string>
     <string name="login_get_link_by_email">透過電子郵件取得登入連結</string>
     <string name="email_not_registered_wpcom">很抱歉，我們找不到與此電子郵件地址連結的 WordPress.com 帳號。</string>
     <string name="settings_enable_product_addons_teaser_message">搶先試用訂單附加元件檢視功能</string>
@@ -2584,8 +2597,6 @@ Language: zh_TW
     <string name="settings_app_theme_title">外觀</string>
     <string name="product_short_description_empty">關於產品的簡短摘要</string>
     <string name="product_short_description">簡短說明</string>
-    <string name="my_store_stats_reverted_message">我們已推出分析功能的改善項目。 請升級至 WooCommerce 4.0 以上版本或安裝 WooCommerce Admin 外掛程式，確保你可於 2020 年 9 月 1 日後繼續查看統計資料。</string>
-    <string name="my_store_stats_reverted_title">升級以繼續查看統計資料</string>
     <string name="product_pricing_update_sale_price_error">優惠價格必須低於一般價格</string>
     <string name="product_schedule_remove_end_date_link_label">移除結束日期</string>
     <string name="product_shipping_empty">新增運費</string>
@@ -3362,7 +3373,6 @@ Language: zh_TW
     <string name="dashboard_action_view_order">查看訂單</string>
     <string name="dashboard_top_performers_empty">此期間沒有任何活動</string>
     <string name="dashboard_top_performers_total_orders">訂單總數：%s</string>
-    <string name="dashboard_top_performers_title">成效最佳者</string>
     <string name="dashboard_stats_error_content_description">錯誤圖片</string>
     <string name="dashboard_stats_error">擷取資料時發生錯誤</string>
     <string name="dashboard_stats_revenue">收益</string>

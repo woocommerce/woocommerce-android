@@ -7,9 +7,7 @@ import com.woocommerce.android.ui.woopos.home.products.ProductSelectorViewModel
 
 internal const val CART_ROUTE = "cart"
 
-internal fun NavGraphBuilder.cartScreen(
-    onCheckoutClick: () -> Unit
-) {
+internal fun NavGraphBuilder.cartScreen(onCheckoutClick: () -> Unit) {
     composable(CART_ROUTE) {
         val cartViewModel: WooPosCartViewModel = hiltViewModel()
         val productsViewModel: ProductSelectorViewModel = hiltViewModel()

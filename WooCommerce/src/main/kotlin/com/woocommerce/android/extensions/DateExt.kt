@@ -85,8 +85,14 @@ fun Date.getTimeString(context: Context): String = DateFormat.getTimeFormat(cont
 
 fun Date.getMediumDate(context: Context): String = DateFormat.getMediumDateFormat(context).format(this)
 
-fun Date.formatToYYYYmmDDhhmmss(): String =
-    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(this)
+/**
+ * Formats the date to a string in the format "yyyy-MM-dd'T'HH:mm:ss".
+ *
+ * @param locale The locale to use for formatting the date, defaults to [Locale.ROOT], as this is mostly used for API
+ * requests.
+ */
+fun Date.formatToYYYYmmDDhhmmss(locale: Locale = Locale.ROOT): String =
+    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", locale).format(this)
 
 val Date.pastTimeDeltaFromNowInDays
     get() = Calendar.getInstance().time

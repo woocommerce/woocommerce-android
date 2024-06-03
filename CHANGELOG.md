@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 18.9
+Exciting updates are here! Now, you can manage orders more efficiently with multiple shipping lines per order. Enjoy a smoother navigation with the redesigned More Menu. Plus, we've added a handy feature to calculate change for cash payments. Update your WooCommerce app now for a seamless and enhanced experience!
+
+## 18.8
+In this release, we've honed in on enhancing the app's efficiency by ironing out bugs and executing vital improvements. These updates aim to empower your business journey. Your feedback is our roadmap to continuous development, so please, keep it flowing.
+
 ## 18.7
 We've fixed an issue that caused the app to crash during screen rotation, ensuring a smoother shopping experience. Update now to enjoy a more stable and reliable app!
 

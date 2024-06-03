@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-07 16:54:07+0000
+Translation-Revision-Date: 2024-05-27 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="cash_payments_change_due">Rendu</string>
+    <string name="cash_payments_cash_received">Espèces reçues</string>
+    <string name="my_store_widget_coupons_title">Codes promo les plus actifs</string>
+    <string name="more_menu_button_woo_pos_description">Point d’entrée temporaire vers le mode Point de vente</string>
+    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="cash_payments_take_payment_title">Accepter le paiement (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Voir tous les avis</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Aucun avis ne correspond au filtre sélectionné, veuillez essayer un autre filtre</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Aucun avis trouvé.</string>
+    <string name="dashboard_reviews_card_header_title">État</string>
+    <string name="my_store_widget_reviews_title">Avis les plus récents</string>
+    <string name="my_store_widget_orders_title">Commandes les plus récentes</string>
+    <string name="dashboard_action_view_all_orders">Voir toutes les commandes</string>
+    <string name="dashboard_filter_menu_content_description">Ouvrir la liste déroulante du filtre</string>
+    <string name="product_category_clear_parent">Effacer la catégorie parente</string>
+    <string name="product_list_fetch_error">Erreur lors de l’extraction des produits !</string>
+    <string name="order_creation_add_shipping_method_select_hint">Choisir un mode d’expédition</string>
+    <string name="order_creation_add_shipping_name_hint">Expédition</string>
+    <string name="order_creation_add_shipping_name">Nom</string>
+    <string name="order_creation_add_shipping_method">Méthode</string>
+    <string name="order_creation_shipping_add">Ajouter l’expédition</string>
+    <string name="order_creation_shipping_methods_error">Erreur lors de l’extraction de vos méthodes d’expédition. Veuillez réessayer</string>
+    <string name="order_creation_shipping_methods_title">Méthode</string>
+    <string name="custom_amounts_percentage_invalid_value">Valeur non valide</string>
+    <string name="my_store_widget_onboarding_title">Configuration de la boutique</string>
+    <string name="my_store_edit_screen_widgets">Personnaliser</string>
     <string name="blaze_campaign_show_all_button">Afficher toutes les campagnes</string>
     <string name="blaze_campaign_suggested_product_caption">Produit suggéré</string>
     <string name="dynamic_dashboard_widget_error_description">Essayez de recharger cette carte. Si le problème persiste, veuillez &lt;a href=\"support\"&gt;contacter l’assistance&lt;/a&gt;.</string>
@@ -13,17 +39,13 @@ Language: fr
     <string name="dynamic_dashboard_widget_menu_item_hide">Masquer %s</string>
     <string name="my_store_widget_onboarding_completed">Terminé</string>
     <string name="my_store_widget_feedback_title">Commentaire</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Besoin d’une aide supplémentaire ? Nous contacter</string>
-    <string name="my_store_stats_plugin_inactive_description">Veillez à exécuter la dernière version de WooCommerce sur votre site et à ce que WooCommerce Admin soit activé.</string>
     <string name="my_store_stats_plugin_inactive_title">Nous ne sommes pas en mesure d’afficher\n les statistiques de votre boutique</string>
     <string name="store_onboarding_task_view_all_tasks">Voir toutes les tâches</string>
     <string name="analytics_session_no_available_description">Les analyses de session se basent sur le nombre de visites uniques indisponibles pour les plages de dates personnalisées</string>
     <string name="analytics_session_no_available">Données de session indisponibles</string>
     <string name="my_store_widget_unavailable">Indisponible</string>
     <string name="my_store_widget_stats_title">Performances</string>
-    <string name="dashboard_top_performers_main_cta_view_all_analytics">Voir toutes les statistiques de la boutique</string>
     <string name="dashboard_stats_custom_range_label">Personnalisé</string>
-    <string name="dashboard_stats_edit_granularity_selected_content_description">Élément sélectionné</string>
     <string name="dashboard_stats_edit_granularity_content_description">Bouton de changement de la plage de dates</string>
     <string name="images_unavailable_notice">Les images sont indisponibles car votre site est marqué comme Privé. Vous pouvez y remédier en passant en mode Bientôt disponible.\n</string>
     <string name="card_selection_control">Sélection de la carte analytique</string>
@@ -64,13 +86,7 @@ Language: fr
     <string name="analytics_bundles_list_header_title">Formules</string>
     <string name="analytics_bundles_list_items_sold">Formules vendues</string>
     <string name="my_store_widget_blaze_title">Campagnes Blaze</string>
-    <string name="my_store_widget_top_products_title">Produits les mieux notés</string>
-    <string name="my_store_widget_onboarding_title">Intégration</string>
-    <string name="my_store_edit_screen_widget_onboarding_list">Initiation à la boutique</string>
-    <string name="my_store_edit_screen_widget_blaze_campaigns">Campagnes Blaze</string>
-    <string name="my_store_edit_screen_widget_top_performers">Produits les plus performants</string>
-    <string name="my_store_edit_screen_widget_stats">Statistique de la boutique</string>
-    <string name="my_store_edit_screen_widgets">Modifier les sections de ma boutique</string>
+    <string name="my_store_widget_top_products_title">Produits les plus performants</string>
     <string name="product_list_unsaved_product_unselected_message">Voulez-vous vraiment annuler les modifications apportées à ce produit ?</string>
     <string name="product_list_unsaved_product_unselected_title">Vous êtes sur le point d\'annuler les modifications apportées à %s</string>
     <string name="my_store_custom_range_visitors_stats_unavailable_message">La fonctionnalité de statistiques ne prend pas en charge l’affichage des visites et des données de conversion pour les plages de dates arbitraires.\n\nCependant, vous pouvez appuyer sur une valeur sur le graphique pour voir les visites et les conversions pour cette plage spécifique.</string>
@@ -94,6 +110,7 @@ Language: fr
     <string name="domain_picker_suggestions_title">Suggestions</string>
     <string name="domain_picker_hint">Entrer un domaine</string>
     <string name="domain_picker_title">Choisir un domaine</string>
+    <string name="analytics_section_see_all">Voir toutes les statistiques de la boutique</string>
     <string name="my_store_custom_range_granularity_year">Annuel</string>
     <string name="my_store_custom_range_granularity_month">Mensuel</string>
     <string name="my_store_custom_range_granularity_week">Hebdomadaire</string>
@@ -484,9 +501,7 @@ Language: fr
     <string name="card_reader_tap_to_pay_about_how_works_4">4. Votre client présente sa carte horizontalement par-dessus votre téléphone, sur le symbole sans contact.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Présentez votre téléphone au client.</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Appuyez sur « Percevoir le paiement » et choisissez « Appuyer pour payer ».</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">percevoir un paiement</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">Créer une commande</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s ou %2$s</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Créer une commande</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">Comment ça marche ?</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">En savoir plus sur les lecteurs de carte</string>
     <string name="card_reader_tap_to_pay_about_important_info_description_3">Pour accepter les paiements supérieurs à cette limite, envisagez l’achat d’un lecteur de carte qui accepte la saisie de code PIN.</string>
@@ -1595,6 +1610,7 @@ Language: fr
     <string name="order_creation_add_shipping">Ajouter l’expédition</string>
     <string name="order_creation_shipping_title_add">Ajouter l’expédition</string>
     <string name="order_creation_shipping_name">Nom</string>
+    <string name="order_creation_add_shipping_amount">Montant</string>
     <string name="order_creation_payment_fee">Frais</string>
     <string name="order_creation_customer_details">Détails du client</string>
     <string name="order_creation_add_fee">Ajouter frais</string>
@@ -2336,9 +2352,6 @@ Language: fr
     <string name="upsells_label">Produits suggérés</string>
     <string name="product_detail_linked_products">Produits associés</string>
     <string name="orderdetail_product_lineitem_attributes">%1$s%2$s x %3$s</string>
-    <string name="my_store_stats_availability_contact_us">Contactez nous</string>
-    <string name="my_store_stats_availability_description">Veillez à exécuter la dernière version de WooCommerce sur votre site et à ce que WooCommerce Admin soit activé.\n\nBesoin d’une aide supplémentaire ? %1$s</string>
-    <string name="my_store_stats_availability_title">Nous ne pouvons pas afficher\n l’analyse de votre boutique</string>
     <string name="login_get_link_by_email">Obtenir un lien de connexion par e-mail</string>
     <string name="email_not_registered_wpcom">Désolé, nous ne trouvons pas de compte WordPress.com connecté à cette adresse e-mail.</string>
     <string name="settings_enable_product_addons_teaser_message">Tester l’affichage des modules de commande peu avant le lancement</string>
@@ -2584,8 +2597,6 @@ Language: fr
     <string name="settings_app_theme_title">Apparence</string>
     <string name="product_short_description_empty">Bref récapitulatif sur le produit</string>
     <string name="product_short_description">Courte description</string>
-    <string name="my_store_stats_reverted_message">Nous avons apporté des améliorations à nos analyses. Effectuez la mise à niveau vers WooCommerce 4.0 ou version supérieure ou installez l’extension WooCommerce Admin pour continuer de voir vos statistiques après le 1er septembre 2020.</string>
-    <string name="my_store_stats_reverted_title">Procéder à la mise à niveau pour conserver l\'accès à vos statistiques</string>
     <string name="product_pricing_update_sale_price_error">Le tarif promotionnel doit être inférieur au tarif normal</string>
     <string name="product_schedule_remove_end_date_link_label">Supprimer la date d’expiration</string>
     <string name="product_shipping_empty">Ajouter l’expédition</string>
@@ -3362,7 +3373,6 @@ Language: fr
     <string name="dashboard_action_view_order">Voir la commande</string>
     <string name="dashboard_top_performers_empty">Aucune activité sur cette période</string>
     <string name="dashboard_top_performers_total_orders">Commandes totales : %s</string>
-    <string name="dashboard_top_performers_title">Produits les plus performants</string>
     <string name="dashboard_stats_error_content_description">Image d’erreur</string>
     <string name="dashboard_stats_error">Erreur lors de l’extraction des données</string>
     <string name="dashboard_stats_revenue">Revenu</string>

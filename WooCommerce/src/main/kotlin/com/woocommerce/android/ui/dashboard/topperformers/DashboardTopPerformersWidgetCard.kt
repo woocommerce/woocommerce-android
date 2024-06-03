@@ -42,15 +42,16 @@ import com.woocommerce.android.ui.compose.component.ProductThumbnail
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
+import com.woocommerce.android.ui.dashboard.DashboardDateRangeHeader
 import com.woocommerce.android.ui.dashboard.DashboardFragmentDirections
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.TopPerformerProductUiModel
+import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
-import com.woocommerce.android.ui.dashboard.stats.DashboardStatsHeader
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenAnalytics
 import com.woocommerce.android.ui.dashboard.topperformers.DashboardTopPerformersViewModel.OpenDatePicker
@@ -81,10 +82,11 @@ fun DashboardTopPerformersWidgetCard(
             menu = topPerformersState.menu,
             button = topPerformersState.onOpenAnalyticsTapped,
             modifier = modifier.testTag(DashboardStatsTestTags.DASHBOARD_TOP_PERFORMERS_CARD),
-            isError = topPerformersState.isError
+            isError = topPerformersState.error != null
         ) {
             when {
-                topPerformersState.isError -> TopPerformersErrorView(
+                topPerformersState.error != null -> TopPerformersErrorView(
+                    errorType = topPerformersState.error,
                     onContactSupportClicked = parentViewModel::onContactSupportClicked,
                     onRetryClicked = topPerformersViewModel::onRefresh
                 )
@@ -125,7 +127,7 @@ fun DashboardTopPerformersContent(
 ) {
     Column {
         selectedDateRange?.let {
-            DashboardStatsHeader(
+            DashboardDateRangeHeader(
                 rangeSelection = it.rangeSelection,
                 dateFormatted = it.dateFormatted,
                 onCustomRangeClick = onEditCustomRangeTapped,
@@ -358,13 +360,24 @@ private fun TopPerformersEmptyView(modifier: Modifier = Modifier) {
 
 @Composable
 private fun TopPerformersErrorView(
+    errorType: DashboardTopPerformersViewModel.ErrorType,
     onContactSupportClicked: () -> Unit,
     onRetryClicked: () -> Unit
 ) {
-    WidgetError(
-        onContactSupportClicked = onContactSupportClicked,
-        onRetryClicked = onRetryClicked
-    )
+    when (errorType) {
+        DashboardTopPerformersViewModel.ErrorType.WCAnalyticsInactive -> {
+            WCAnalyticsNotAvailableErrorView(
+                title = stringResource(id = R.string.dashboard_top_performers_wcanalytics_inactive_title),
+                onContactSupportClick = onContactSupportClicked
+            )
+        }
+        else -> {
+            WidgetError(
+                onContactSupportClicked = onContactSupportClicked,
+                onRetryClicked = onRetryClicked
+            )
+        }
+    }
 }
 
 @LightDarkThemePreviews
@@ -407,7 +420,6 @@ private fun TopPerformersWidgetCardPreview() {
                 onClick = {}
             ),
         ),
-        isError = false,
         isLoading = false,
         titleStringRes = DashboardWidget.Type.POPULAR_PRODUCTS.titleResource,
         menu = DashboardWidgetMenu(emptyList()),
@@ -432,7 +444,7 @@ private fun TopPerformersWidgetCardPreview() {
             onEditCustomRangeTapped = {}
         )
         DashboardTopPerformersContent(
-            topPerformersState = topPerformersState.copy(isError = true),
+            topPerformersState = topPerformersState.copy(error = DashboardTopPerformersViewModel.ErrorType.Generic),
             lastUpdateState = "Last update: 8:52 AM",
             selectedDateRange = selectedDateRange,
             onTabSelected = {},

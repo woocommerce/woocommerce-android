@@ -316,7 +316,7 @@ private fun Header(
 }
 
 @Composable
-fun EmptyView(
+private fun EmptyView(
     selectedFilter: ProductReviewStatus,
     modifier: Modifier = Modifier
 ) {

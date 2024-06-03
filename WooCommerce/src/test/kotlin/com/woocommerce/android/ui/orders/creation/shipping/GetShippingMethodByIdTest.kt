@@ -47,7 +47,6 @@ class GetShippingMethodByIdTest : BaseUnitTest() {
         )
 
         whenever(shippingMethodsStore.fetchShippingMethod(siteModel, methodId)).doReturn(WooResult(fetchResult))
-        whenever(resourceProvider.getString(any())).doReturn("Other")
 
         val result = sut.invoke(methodId)
         assertThat(result).isNotNull
@@ -67,6 +66,21 @@ class GetShippingMethodByIdTest : BaseUnitTest() {
         )
         assertThat(result).isNotNull
         assertThat(result.id).isEqualTo(ShippingMethodsRepository.OTHER_ID)
+    }
+
+    @Test
+    fun `when the method id is empty, then return is the expected`() = testBlocking {
+        whenever(resourceProvider.getString(any())).doReturn("N/A")
+
+        val result = sut.invoke(ShippingMethodsRepository.NA_ID)
+
+        // If is empty doesn't need to fetch the values from the API
+        verify(shippingMethodsStore, never()).fetchShippingMethod(
+            siteModel,
+            ShippingMethodsRepository.NA_ID
+        )
+        assertThat(result).isNotNull
+        assertThat(result.id).isEqualTo(ShippingMethodsRepository.NA_ID)
     }
 
     @Test

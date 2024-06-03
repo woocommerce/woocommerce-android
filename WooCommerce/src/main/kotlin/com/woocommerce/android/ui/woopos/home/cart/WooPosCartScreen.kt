@@ -1,31 +1,25 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.home.products.ListItem
 import com.woocommerce.android.ui.woopos.home.products.ProductSelector
 import com.woocommerce.android.ui.woopos.home.products.ProductSelectorViewModel
 import com.woocommerce.android.ui.woopos.home.products.ViewState
-import com.woocommerce.android.ui.woopos.util.WooPosPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -50,36 +44,9 @@ private fun WooPosCartScreen(
     productsState: StateFlow<ViewState>,
     onEndOfProductsGridReached: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                navigationIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close POS"
-                    )
-                },
-                title = {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "⚠️ Reader not connected",
-                        style = MaterialTheme.typography.h5,
-                        color = MaterialTheme.colors.onPrimary,
-                        textAlign = TextAlign.Center,
-                    )
-                },
-                actions = {
-                    Text(text = "History")
-                }
-            )
-        },
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            ProductSelector(productsState, onEndOfProductsGridReached)
-            Cart(onCheckoutClick)
-        }
+    Row {
+        ProductSelector(productsState, onEndOfProductsGridReached)
+        Cart(onCheckoutClick)
     }
 }
 
@@ -116,5 +83,6 @@ fun WooPosCartScreenPreview() {
     WooPosCartScreen(
         onCheckoutClick = {},
         productsState = productState,
-        onEndOfProductsGridReached = {})
+        onEndOfProductsGridReached = {}
+    )
 }

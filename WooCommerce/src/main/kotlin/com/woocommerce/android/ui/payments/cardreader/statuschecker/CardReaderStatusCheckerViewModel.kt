@@ -69,6 +69,7 @@ class CardReaderStatusCheckerViewModel
                     handleOnboardingStatus(param)
                 }
             }
+            is CardReaderFlowParam.WooPosConnection -> handleOnboardingStatus(param)
         }
     }
 
@@ -87,6 +88,7 @@ class CardReaderStatusCheckerViewModel
                     triggerEvent(StatusCheckerEvent.NavigateToWelcome(param, arguments.cardReaderType))
                 }
             }
+
             else -> triggerEvent(
                 StatusCheckerEvent.NavigateToOnboarding(
                     CardReaderOnboardingParams.Failed(param, state),

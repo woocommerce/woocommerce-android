@@ -33,7 +33,7 @@ class AnalyticsTracker private constructor(
     private var username: String? = null
     private var anonymousID: String? = null
 
-    private val analyticsEventsToTrack = Channel<Pair<AnalyticsEvent, Map<String, *>>>(capacity = BUFFERED)
+    private val analyticsEventsToTrack = Channel<Pair<IAnalyticsEvent, Map<String, *>>>(capacity = BUFFERED)
 
     init {
         appCoroutineScope.launch {
@@ -82,11 +82,11 @@ class AnalyticsTracker private constructor(
         return uuid
     }
 
-    private fun track(stat: AnalyticsEvent, properties: Map<String, *>) {
+    private fun track(stat: IAnalyticsEvent, properties: Map<String, *>) {
         analyticsEventsToTrack.trySend(Pair(stat, properties))
     }
 
-    private fun doTrack(stat: AnalyticsEvent, properties: Map<String, *>) {
+    private fun doTrack(stat: IAnalyticsEvent, properties: Map<String, *>) {
         if (tracksClient == null) {
             return
         }
@@ -102,7 +102,8 @@ class AnalyticsTracker private constructor(
         }
 
         val propertiesJson = JSONObject(properties.buildFinalProperties(stat.siteless))
-        tracksClient?.track(EVENTS_PREFIX + eventName, propertiesJson, user, userType)
+        val eventPrefix = if (stat.isPosEvent) POS_EVENTS_PREFIX else EVENTS_PREFIX
+        tracksClient?.track(eventPrefix + eventName, propertiesJson, user, userType)
 
         if (propertiesJson.length() > 0) {
             WooLog.i(T.UTILS, "\uD83D\uDD35 Tracked: $eventName, Properties: $propertiesJson")
@@ -166,6 +167,7 @@ class AnalyticsTracker private constructor(
 
         private const val TRACKS_ANON_ID = "nosara_tracks_anon_id"
         private const val EVENTS_PREFIX = "woocommerceandroid_"
+        private const val POS_EVENTS_PREFIX = "woocommerceandroid_pos_"
         private const val KEY_SITE_URL = "site_url"
 
         const val IS_DEBUG = "is_debug"
@@ -325,6 +327,7 @@ class AnalyticsTracker private constructor(
         const val KEY_COUPONS_COUNT = "coupons_count"
         const val KEY_USE_GIFT_CARD = "use_gift_card"
         const val KEY_IS_GIFT_CARD_REMOVED = "removed"
+        const val KEY_SHIPPING_LINES_COUNT = "shipping_lines_count"
 
         const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
         const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
@@ -359,6 +362,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
         const val VALUE_COUPONS_FEEDBACK = "coupons"
         const val VALUE_ANALYTICS_HUB_FEEDBACK = "analytics_hub"
+        const val VALUE_ORDER_SHIPPING_LINES_FEEDBACK = "order_shipping_lines"
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
 
@@ -380,6 +384,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_ORDER_CREATION_PAYMENTS_FLOW = "creation"
         const val VALUE_SCAN_TO_PAY_PAYMENT_FLOW = "scan_to_pay"
         const val VALUE_TTP_TRY_PAYMENT_FLOW = "tap_to_pay_try_a_payment"
+        const val VALUE_WOO_POS_PAYMENTS_FLOW = "woo_pos"
 
         const val KEY_JITM = "jitm"
         const val KEY_JITM_COUNT = "count"
@@ -687,7 +692,7 @@ class AnalyticsTracker private constructor(
             sendUsageStats = prefs.getBoolean(PREFKEY_SEND_USAGE_STATS, true)
         }
 
-        fun track(stat: AnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {
+        fun track(stat: IAnalyticsEvent, properties: Map<String, *> = emptyMap<String, String>()) {
             if (instance == null && BuildConfig.DEBUG && !PackageUtils.isTesting()) {
                 error("event $stat was tracked before AnalyticsTracker was initialized.")
             }
@@ -703,7 +708,7 @@ class AnalyticsTracker private constructor(
          * @param errorType The type of error.
          * @param errorDescription The error text or other description.
          */
-        fun track(stat: AnalyticsEvent, errorContext: String?, errorType: String?, errorDescription: String?) {
+        fun track(stat: IAnalyticsEvent, errorContext: String?, errorType: String?, errorDescription: String?) {
             track(stat, mapOf(), errorContext, errorType, errorDescription)
         }
 
@@ -716,7 +721,7 @@ class AnalyticsTracker private constructor(
          * @param errorDescription The error text or other description.
          */
         fun track(
-            stat: AnalyticsEvent,
+            stat: IAnalyticsEvent,
             properties: Map<String, Any>,
             errorContext: String?,
             errorType: String?,
