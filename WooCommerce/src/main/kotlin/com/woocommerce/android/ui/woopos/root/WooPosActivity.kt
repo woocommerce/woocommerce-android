@@ -5,9 +5,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material.MaterialTheme
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosRootHost
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ class WooPosActivity : AppCompatActivity() {
         lifecycle.addObserver(wooPosCardReaderFacade)
 
         setContent {
-            MaterialTheme {
+            WooPosTheme {
                 WooPosRootHost(
                     connectToCardReader = {
                         lifecycleScope.launch {

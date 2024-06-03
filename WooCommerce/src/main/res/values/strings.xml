@@ -4110,4 +4110,10 @@
     <string name="login_app_password_exit_dialog_message">It seems that you have not approved the app connection yet. Are you sure you want to exit?</string>
     <string name="login_app_password_exit_dialog_confirmation">Exit Anyway</string>
     <string name="login_app_password_exit_dialog_cancel">Cancel</string>
+
+    <!--
+    Woo POS
+    -->
+    <string name="woopos_exit_pos">Exit POS</string>
+    <string name="woopos_reader_connected">Reader Connected</string>
 </resources>
