@@ -244,29 +244,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onCashPaymentClicked() {
-        if (true) {
-            handleCashPaymentClick()
-        } else {
-            launch {
-                trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
-                val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
-                    SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
-                    ORDER, ORDER_CREATION -> R.string.existing_order_cash_dlg_message
-                    WOO_POS -> error("Unsupported card reader flow param: $cardReaderPaymentFlowParam")
-                }
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowDialog(
-                        titleId = R.string.simple_payments_cash_dlg_title,
-                        messageId = messageIdForPaymentType,
-                        positiveButtonId = R.string.simple_payments_cash_dlg_button,
-                        positiveBtnAction = { _, _ ->
-                            onCashPaymentConfirmed()
-                        },
-                        negativeButtonId = R.string.cancel
-                    )
-                )
-            }
-        }
+        handleCashPaymentClick()
     }
 
     private fun handleCashPaymentClick() {
