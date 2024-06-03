@@ -33,7 +33,6 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE,
             DYNAMIC_DASHBOARD_M2 -> PackageUtils.isDebugBuild()
 
-            OTHER_PAYMENT_METHODS,
             CONNECTIVITY_TOOL,
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,
