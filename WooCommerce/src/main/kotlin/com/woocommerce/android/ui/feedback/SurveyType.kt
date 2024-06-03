@@ -13,7 +13,8 @@ enum class SurveyType(private val untaggedUrl: String, private val milestone: In
     ADDONS(AppUrls.ADDONS_SURVEY),
     STORE_ONBOARDING(AppUrls.CROWDSIGNAL_STORE_SETUP_SURVEY),
     ANALYTICS_HUB(AppUrls.CROWDSIGNAL_ANALYTICS_HUB_SURVEY),
-    PAYMENTS_HUB_TAP_TO_PAY(AppUrls.CROWDSIGNAL_TAP_TO_PAY_SURVEY);
+    PAYMENTS_HUB_TAP_TO_PAY(AppUrls.CROWDSIGNAL_TAP_TO_PAY_SURVEY),
+    ORDER_SHIPPING_LINES(AppUrls.CROWDSIGNAL_ORDER_SHIPPING_LINES_SURVEY);
 
     val url
         get() = "$untaggedUrl?$platformTag$appVersionTag$milestoneTag"

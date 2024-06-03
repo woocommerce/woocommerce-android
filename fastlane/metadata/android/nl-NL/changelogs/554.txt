@@ -1,2 +1,0 @@
-18.7:
-We hebben een issue opgelost die zorgde voor de crash van de app tijdens schermrotatie, waardoor de shopervaring nu vlekkelozer verloopt. Klik op nu bijwerken om te profiteren van een stabielere en meer betrouwbare app!

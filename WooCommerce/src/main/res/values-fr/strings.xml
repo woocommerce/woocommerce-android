@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-21 11:54:03+0000
+Translation-Revision-Date: 2024-05-27 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="cash_payments_change_due">Rendu</string>
+    <string name="cash_payments_cash_received">Espèces reçues</string>
+    <string name="my_store_widget_coupons_title">Codes promo les plus actifs</string>
     <string name="more_menu_button_woo_pos_description">Point d’entrée temporaire vers le mode Point de vente</string>
     <string name="more_menu_button_woo_pos">Woo POS</string>
     <string name="cash_payments_take_payment_title">Accepter le paiement (%s)</string>
@@ -36,8 +39,6 @@ Language: fr
     <string name="dynamic_dashboard_widget_menu_item_hide">Masquer %s</string>
     <string name="my_store_widget_onboarding_completed">Terminé</string>
     <string name="my_store_widget_feedback_title">Commentaire</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Besoin d’une aide supplémentaire ? Nous contacter</string>
-    <string name="my_store_stats_plugin_inactive_description">Veillez à exécuter la dernière version de WooCommerce sur votre site et à ce que WooCommerce Admin soit activé.</string>
     <string name="my_store_stats_plugin_inactive_title">Nous ne sommes pas en mesure d’afficher\n les statistiques de votre boutique</string>
     <string name="store_onboarding_task_view_all_tasks">Voir toutes les tâches</string>
     <string name="analytics_session_no_available_description">Les analyses de session se basent sur le nombre de visites uniques indisponibles pour les plages de dates personnalisées</string>

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-22 09:54:03+0000
+Translation-Revision-Date: 2024-05-28 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="cash_payments_change_due">Wisselgeld</string>
+    <string name="cash_payments_cash_received">Cash ontvangen</string>
+    <string name="my_store_widget_coupons_title">Meest actieve coupons</string>
     <string name="more_menu_button_woo_pos_description">Tijdelijk invoerpunt voor POS-modus</string>
     <string name="more_menu_button_woo_pos">WooPOS</string>
     <string name="cash_payments_take_payment_title">Betaling ontvangen (%s)</string>
@@ -36,8 +39,6 @@ Language: nl
     <string name="dynamic_dashboard_widget_menu_item_hide">Verbergen %s</string>
     <string name="my_store_widget_onboarding_completed">Voltooid</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Meer hulp nodig? Neem contact met ons op</string>
-    <string name="my_store_stats_plugin_inactive_description">Zorg dat je de nieuwste versie van WooCommerce gebruikt op je site en dat WooCommerce Admin geactiveerd is.</string>
     <string name="my_store_stats_plugin_inactive_title">We kunnen de\n analyses van je winkel niet weergeven</string>
     <string name="store_onboarding_task_view_all_tasks">Alle taken bekijken</string>
     <string name="analytics_session_no_available_description">Sessie-analyses gebruiken tellingen van unieke bezoekers, die niet beschikbaar zijn voor aangepaste datumbereiken</string>

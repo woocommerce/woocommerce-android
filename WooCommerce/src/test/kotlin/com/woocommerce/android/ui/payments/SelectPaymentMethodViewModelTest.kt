@@ -23,6 +23,7 @@ import com.woocommerce.android.ui.payments.methodselection.NavigateBackToOrderLi
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderHubFlow
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderPaymentFlow
 import com.woocommerce.android.ui.payments.methodselection.NavigateToCardReaderRefundFlow
+import com.woocommerce.android.ui.payments.methodselection.NavigateToChangeDueCalculatorScreen
 import com.woocommerce.android.ui.payments.methodselection.OpenGenericWebView
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragmentArgs
 import com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodViewModel
@@ -36,7 +37,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -323,7 +323,7 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given order payment flow, when on cash payment clicked, then show dialog event emitted`() = testBlocking {
+    fun `given order payment flow, when on cash payment clicked, then show navigate event emitted`() = testBlocking {
         // GIVEN
         val orderId = 1L
         val viewModel = initViewModel(Payment(orderId, ORDER))
@@ -333,15 +333,12 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
         // THEN
         val events = viewModel.event.captureValues()
-        assertThat(events.last()).isInstanceOf(ShowDialog::class.java)
-        assertThat((events.last() as ShowDialog).titleId).isEqualTo(R.string.simple_payments_cash_dlg_title)
-        assertThat((events.last() as ShowDialog).messageId).isEqualTo(R.string.existing_order_cash_dlg_message)
-        assertThat((events.last() as ShowDialog).positiveButtonId).isEqualTo(R.string.simple_payments_cash_dlg_button)
-        assertThat((events.last() as ShowDialog).negativeButtonId).isEqualTo(R.string.cancel)
+        assertThat(events.last()).isInstanceOf(NavigateToChangeDueCalculatorScreen::class.java)
+        assertThat((events.last() as NavigateToChangeDueCalculatorScreen).order.id).isEqualTo(orderId)
     }
 
     @Test
-    fun `given simple payment flow, when on cash payment clicked, then show dialog event emitted`() =
+    fun `given simple payment flow, when on cash payment clicked, then show navigate event emitted`() =
         testBlocking {
             // GIVEN
             val orderId = 1L
@@ -352,13 +349,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             val events = viewModel.event.captureValues()
-            assertThat(events.last()).isInstanceOf(ShowDialog::class.java)
-            assertThat((events.last() as ShowDialog).titleId).isEqualTo(R.string.simple_payments_cash_dlg_title)
-            assertThat((events.last() as ShowDialog).messageId).isEqualTo(R.string.simple_payments_cash_dlg_message)
-            assertThat((events.last() as ShowDialog).positiveButtonId).isEqualTo(
-                R.string.simple_payments_cash_dlg_button
-            )
-            assertThat((events.last() as ShowDialog).negativeButtonId).isEqualTo(R.string.cancel)
+            assertThat(events.last()).isInstanceOf(NavigateToChangeDueCalculatorScreen::class.java)
+            assertThat((events.last() as NavigateToChangeDueCalculatorScreen).order.id).isEqualTo(orderId)
         }
 
     @Test
@@ -373,13 +365,8 @@ class SelectPaymentMethodViewModelTest : BaseUnitTest() {
 
             // THEN
             val events = viewModel.event.captureValues()
-            assertThat(events.last()).isInstanceOf(ShowDialog::class.java)
-            assertThat((events.last() as ShowDialog).titleId).isEqualTo(R.string.simple_payments_cash_dlg_title)
-            assertThat((events.last() as ShowDialog).messageId).isEqualTo(R.string.simple_payments_cash_dlg_message)
-            assertThat((events.last() as ShowDialog).positiveButtonId).isEqualTo(
-                R.string.simple_payments_cash_dlg_button
-            )
-            assertThat((events.last() as ShowDialog).negativeButtonId).isEqualTo(R.string.cancel)
+            assertThat(events.last()).isInstanceOf(NavigateToChangeDueCalculatorScreen::class.java)
+            assertThat((events.last() as NavigateToChangeDueCalculatorScreen).order.id).isEqualTo(orderId)
         }
 
     @Test

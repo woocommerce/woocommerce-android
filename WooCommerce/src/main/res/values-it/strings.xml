@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-21 11:54:03+0000
+Translation-Revision-Date: 2024-05-27 23:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="cash_payments_change_due">Resto dovuto</string>
+    <string name="cash_payments_cash_received">Contanti ricevuti</string>
+    <string name="my_store_widget_coupons_title">Codici promozionali più attivi</string>
     <string name="more_menu_button_woo_pos_description">Punto di accesso temporaneo alla modalità POS</string>
     <string name="more_menu_button_woo_pos">Woo Pos</string>
     <string name="cash_payments_take_payment_title">Ricevi il pagamento%s</string>
@@ -36,8 +39,6 @@ Language: it
     <string name="dynamic_dashboard_widget_menu_item_hide">Nascondi %s</string>
     <string name="my_store_widget_onboarding_completed">Completata</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Hai ancora bisogno di aiuto? Contattaci</string>
-    <string name="my_store_stats_plugin_inactive_description">Assicurati di star utilizzando la versione più recente di WooCommerce sul tuo sito e di aver attivato WooCommerce Admin.</string>
     <string name="my_store_stats_plugin_inactive_title">Non possiamo visualizzare il tuo\n analisi del negozio</string>
     <string name="store_onboarding_task_view_all_tasks">Visualizza tutte le attività</string>
     <string name="analytics_session_no_available_description">L\'analisi delle sessioni si basa su un numero unico di visitatori non disponibile per intervalli di date personalizzati</string>

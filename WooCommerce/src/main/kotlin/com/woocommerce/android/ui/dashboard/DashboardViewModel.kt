@@ -25,10 +25,12 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenEditWidgets
+import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -99,11 +101,13 @@ class DashboardViewModel @Inject constructor(
 
     val dashboardWidgets = combine(
         dashboardRepository.widgets,
+        dashboardRepository.hasNewWidgets,
         feedbackPrefs.userFeedbackIsDueObservable
-    ) { widgets, userFeedbackIsDue ->
-        mapWidgetsToUiModels(widgets, userFeedbackIsDue)
-    }
-        .asLiveData()
+    ) { configurableWidgets, hasNewWidgets, userFeedbackIsDue ->
+        mapWidgetsToUiModels(configurableWidgets, hasNewWidgets, userFeedbackIsDue)
+    }.asLiveData()
+
+    val hasNewWidgets = dashboardRepository.hasNewWidgets.asLiveData()
 
     init {
         ConnectionChangeReceiver.getEventBus().register(this)
@@ -181,8 +185,13 @@ class DashboardViewModel @Inject constructor(
         triggerEvent(DashboardEvent.ContactSupport)
     }
 
+    fun onShowSnackbar(@StringRes message: Int) {
+        triggerEvent(Event.ShowSnackbar(message))
+    }
+
     private fun mapWidgetsToUiModels(
         widgets: List<DashboardWidget>,
+        hasNewWidgets: Boolean,
         userFeedbackIsDue: Boolean
     ): List<DashboardWidgetUiModel> = buildList {
         addAll(
@@ -223,6 +232,15 @@ class DashboardViewModel @Inject constructor(
                     )
                     feedbackPrefs.lastFeedbackDate = Calendar.getInstance().time
                     triggerEvent(DashboardEvent.FeedbackNegativeAction)
+                }
+            )
+        )
+
+        add(
+            NewWidgetsCard(
+                isVisible = hasNewWidgets,
+                onShowCardsClick = {
+                    triggerEvent(OpenEditWidgets)
                 }
             )
         )
@@ -276,6 +294,11 @@ class DashboardViewModel @Inject constructor(
             val onShown: () -> Unit,
             val onPositiveClick: () -> Unit,
             val onNegativeClick: () -> Unit
+        ) : DashboardWidgetUiModel
+
+        data class NewWidgetsCard(
+            override val isVisible: Boolean,
+            val onShowCardsClick: () -> Unit
         ) : DashboardWidgetUiModel
     }
 

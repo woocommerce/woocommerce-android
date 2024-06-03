@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-21 09:54:03+0000
+Translation-Revision-Date: 2024-05-30 12:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="cash_payments_change_due">Cambio</string>
+    <string name="cash_payments_cash_received">Efectivo recibido</string>
+    <string name="my_store_widget_coupons_title">Cupones más activos</string>
     <string name="more_menu_button_woo_pos_description">Punto de entrada temporal al modo POS</string>
     <string name="more_menu_button_woo_pos">Woo Pos</string>
     <string name="cash_payments_take_payment_title">Aceptar pago (%s)</string>
@@ -36,8 +39,6 @@ Language: es
     <string name="dynamic_dashboard_widget_menu_item_hide">Ocultar %s</string>
     <string name="my_store_widget_onboarding_completed">Completado</string>
     <string name="my_store_widget_feedback_title">Comentarios</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">¿Aún necesitas ayuda? Contacto</string>
-    <string name="my_store_stats_plugin_inactive_description">Asegúrate de estar ejecutando la última versión de WooCommerce en tu sitio web y de haber activado WooCommerce Admin.</string>
     <string name="my_store_stats_plugin_inactive_title">No podemos visualizar el\n análisis de tu tienda</string>
     <string name="store_onboarding_task_view_all_tasks">Ver todas las tareas</string>
     <string name="analytics_session_no_available_description">Los análisis de sesiones se basan en los recuentos de visitantes únicos, que no están disponibles para rangos de fechas personalizados</string>

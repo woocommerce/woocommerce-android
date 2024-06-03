@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-21 09:54:03+0000
+Translation-Revision-Date: 2024-05-28 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="cash_payments_change_due">変更期限</string>
+    <string name="cash_payments_cash_received">現金を受領しました</string>
+    <string name="my_store_widget_coupons_title">最も使われるクーポン</string>
     <string name="more_menu_button_woo_pos_description">POS モードへの一時的なエントリーポイント</string>
     <string name="more_menu_button_woo_pos">Woo Pos</string>
     <string name="cash_payments_take_payment_title">支払いを受け取る (%s)</string>
@@ -36,8 +39,6 @@ Language: ja_JP
     <string name="dynamic_dashboard_widget_menu_item_hide">%s を非表示</string>
     <string name="my_store_widget_onboarding_completed">完了</string>
     <string name="my_store_widget_feedback_title">フィードバック</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">さらにサポートが必要ですか ? お問い合わせ</string>
-    <string name="my_store_stats_plugin_inactive_description">サイトで最新バージョンの WooCommerce を実行していることと、WooCommerce Admin を有効にしていることを確認してください。</string>
     <string name="my_store_stats_plugin_inactive_title">次を表示できません:\n ストアのアナリティクス</string>
     <string name="store_onboarding_task_view_all_tasks">すべてのタスクを表示</string>
     <string name="analytics_session_no_available_description">セッション分析はカスタムの日付範囲で利用できないユニーク訪問者数に基づいています</string>
