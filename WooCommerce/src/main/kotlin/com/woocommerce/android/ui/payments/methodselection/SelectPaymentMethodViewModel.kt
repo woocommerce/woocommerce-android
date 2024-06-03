@@ -129,7 +129,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun handleIsOrderPaid(paid: Boolean) {
-        if (true && paid) {
+        if (paid) {
             onCashPaymentConfirmed()
         }
     }
