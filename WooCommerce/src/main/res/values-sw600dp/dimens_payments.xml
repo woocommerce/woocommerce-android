@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="payments_dialog_width">288dp</dimen>
+    <dimen name="payments_dialog_height">412dp</dimen>
+    <dimen name="payments_welcome_dialog_height">495dp</dimen>
+    <dimen name="payments_welcome_dialog_width">@dimen/payments_dialog_width</dimen>
+    <dimen name="payments_dialog_bottom_padding">28dp</dimen>
+</resources>
