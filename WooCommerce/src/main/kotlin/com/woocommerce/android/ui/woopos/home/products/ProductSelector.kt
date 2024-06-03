@@ -54,7 +54,6 @@ fun ProductSelector(
         }
         InfiniteGridHandler(gridState) {
             onEndOfProductsGridReached()
-            Log.d("ProductSelector", "End of products grid reached")
         }
     }
 }
