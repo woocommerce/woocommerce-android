@@ -1,6 +1,6 @@
 @file:Suppress("MatchingDeclarationName", "Filename")
 
-package com.woocommerce.android.ui.woopos.util
+package com.woocommerce.android.ui.woopos.common.composeui
 
 import android.content.res.Configuration
 import androidx.compose.ui.tooling.preview.Devices
