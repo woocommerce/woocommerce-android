@@ -8,8 +8,8 @@ import javax.inject.Inject
 class WooPosRootViewModel @Inject constructor() : ViewModel() {
     fun onUiEvent(event: WooPosRootUIEvents) {
         when (event) {
-            WooPosRootUIEvents.ConnectToAReader -> TODO()
-            WooPosRootUIEvents.ExitPOS -> TODO()
+            WooPosRootUIEvents.ConnectToAReaderClicked -> TODO()
+            WooPosRootUIEvents.ExitPOSClicked -> TODO()
         }
     }
 }

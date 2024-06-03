@@ -37,14 +37,14 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvents) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ExitPOS) }) {
+            TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ExitPOSClicked) }) {
                 Text(
                     text = stringResource(id = R.string.woopos_exit_pos),
                     color = MaterialTheme.colors.onSurface,
                     style = MaterialTheme.typography.button
                 )
             }
-            TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ExitPOS) }) {
+            TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ExitPOSClicked) }) {
                 Text(
                     text = stringResource(id = R.string.woopos_reader_connected),
                     color = MaterialTheme.colors.secondaryVariant,

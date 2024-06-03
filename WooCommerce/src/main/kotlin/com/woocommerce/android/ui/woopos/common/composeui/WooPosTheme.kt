@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package com.woocommerce.android.ui.woopos.common.composeui
 
 import androidx.compose.foundation.isSystemInDarkTheme
