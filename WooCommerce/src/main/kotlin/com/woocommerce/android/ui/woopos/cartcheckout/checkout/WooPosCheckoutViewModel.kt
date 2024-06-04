@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.checkout
+package com.woocommerce.android.ui.woopos.cartcheckout.checkout
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
