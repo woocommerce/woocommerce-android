@@ -1236,7 +1236,10 @@ class ProductDetailViewModel @Inject constructor(
         downloadExpiry: Int? = null,
         isDownloadable: Boolean? = null,
         attributes: List<ProductAttribute>? = null,
-        numVariation: Int? = null
+        numVariation: Int? = null,
+        minAllowedQuantity: Int? = null,
+        maxAllowedQuantity: Int? = null,
+        groupOfQuantity: Int? = null
     ) {
         viewState.productDraft?.let { product ->
             val updatedProduct = product.copy(
@@ -1292,7 +1295,10 @@ class ProductDetailViewModel @Inject constructor(
                 downloadExpiry = downloadExpiry ?: product.downloadExpiry,
                 isDownloadable = isDownloadable ?: product.isDownloadable,
                 attributes = attributes ?: product.attributes,
-                numVariations = numVariation ?: product.numVariations
+                numVariations = numVariation ?: product.numVariations,
+                minAllowedQuantity = minAllowedQuantity ?: product.minAllowedQuantity,
+                maxAllowedQuantity = maxAllowedQuantity ?: product.maxAllowedQuantity,
+                groupOfQuantity = groupOfQuantity ?: product.groupOfQuantity,
             )
             viewState = viewState.copy(productDraft = updatedProduct)
         }

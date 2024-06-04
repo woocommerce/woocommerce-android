@@ -13,12 +13,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductQuantityRulesViewModel @Inject constructor(
-    savedState: SavedStateHandle) : ScopedViewModel(savedState) {
+    savedState: SavedStateHandle
+) : ScopedViewModel(savedState) {
 
     private val navArgs: ProductQuantityRulesFragmentArgs by savedState.navArgs()
     val viewStateData = LiveDataDelegate(
         savedState,
-        ProductQuantityRulesViewModel.ViewState(
+        ViewState(
             quantityRules = navArgs.quantityRules
         )
     )

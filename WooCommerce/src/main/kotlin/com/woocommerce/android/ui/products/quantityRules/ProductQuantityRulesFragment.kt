@@ -8,8 +8,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductQuantityRulesBinding
+import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductQuantityRules
+import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,18 +35,29 @@ class ProductQuantityRulesFragment : BaseProductEditorFragment(R.layout.fragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProductQuantityRulesBinding.bind(view)
-        viewModel.event.observe(viewLifecycleOwner, Observer(::onEventReceived))
+        //viewModel.event.observe(viewLifecycleOwner, Observer(::onEventReceived))
+        setupObservers(viewModel)
         initializeViews()
 
         setupViews()
-
-
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
-    private fun onEventReceived(event: MultiLiveEvent.Event) {
-        when (event) {
-            is ExitProductQuantityRules -> findNavController().navigateUp()
-            else -> event.isHandled = false
+    private fun setupObservers(viewModel: ProductQuantityRulesViewModel) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is MultiLiveEvent.Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
+                is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithResult(
+                    KEY_QUANTITY_RULES_DIALOG_RESULT,
+                    event.data
+                )
+                is MultiLiveEvent.Event.Exit -> findNavController().navigateUp()
+                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
+                else -> event.isHandled = false
+            }
         }
     }
 
