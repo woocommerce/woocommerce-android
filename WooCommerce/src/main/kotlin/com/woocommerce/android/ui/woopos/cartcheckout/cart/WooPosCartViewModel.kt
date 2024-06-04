@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCartViewModel @Inject constructor() : ViewModel() {
-    private val _state = MutableLiveData<WooPosCartState>()
+    private val _state = MutableLiveData<WooPosCartState>(WooPosCartState.Cart)
     val state: LiveData<WooPosCartState> = _state
 
     fun onUIEvent(event: WooPosCartUIEvent) {

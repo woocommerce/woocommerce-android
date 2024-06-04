@@ -8,15 +8,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCartCheckoutViewModel @Inject constructor() : ViewModel() {
-    val state: LiveData<WooPosCartCheckoutState> = MutableLiveData(WooPosCartCheckoutState.Cart)
+    private val _state = MutableLiveData<WooPosCartCheckoutState>(WooPosCartCheckoutState.Cart)
+    val state: LiveData<WooPosCartCheckoutState> = _state
 
     fun onUIEvent(event: WooPosCartCheckoutUIEvent) {
         when (event) {
             is WooPosCartCheckoutUIEvent.CheckoutClicked -> {
-                // Handle checkout clicked event
+                _state.value = WooPosCartCheckoutState.Checkout
             }
+
             is WooPosCartCheckoutUIEvent.BackFromCheckoytToCartClicked -> {
-                // Handle back from cart to checkout clicked event
+                _state.value = WooPosCartCheckoutState.Cart
             }
         }
     }

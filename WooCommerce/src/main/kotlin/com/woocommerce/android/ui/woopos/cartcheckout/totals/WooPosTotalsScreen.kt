@@ -12,21 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.ui.woopos.cartcheckout.WooPosCartCheckoutUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
 @Composable
-@Suppress("UNUSED_PARAMETER")
-fun WooPosTotalsScreen(
-    viewModel: WooPosTotalsViewModel,
-    onUIEvent: (WooPosCartCheckoutUIEvent) -> Unit
-) {
-    WooPosTotalsScreen(onUIEvent)
-}
-
-@Composable
-@Suppress("UNUSED_PARAMETER")
-private fun WooPosTotalsScreen(onUIEvent: (WooPosCartCheckoutUIEvent) -> Unit) {
+fun WooPosTotalsScreen() {
     Card(
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.surface,
@@ -51,5 +40,5 @@ private fun WooPosTotalsScreen(onUIEvent: (WooPosCartCheckoutUIEvent) -> Unit) {
 @Composable
 @WooPosPreview
 fun WooPosCartScreenPreview() {
-    WooPosTotalsScreen {}
+    WooPosTotalsScreen()
 }

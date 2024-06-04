@@ -15,13 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
 @Composable
-@Suppress("UNUSED_PARAMETER")
-fun WooPosProductsScreen(viewModel: WooPosProductsViewModel) {
-    WooPosProductsScreen()
-}
-
-@Composable
-private fun WooPosProductsScreen() {
+fun WooPosProductsScreen() {
     Card(
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.surface,
