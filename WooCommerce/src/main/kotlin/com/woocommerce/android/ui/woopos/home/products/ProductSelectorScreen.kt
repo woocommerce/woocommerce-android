@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.products
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement.spacedBy
