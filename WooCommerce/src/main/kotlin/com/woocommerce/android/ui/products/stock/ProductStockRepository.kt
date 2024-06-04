@@ -12,14 +12,12 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
 import org.wordpress.android.fluxc.store.ProductStockItems
-import org.wordpress.android.fluxc.store.WCLeaderboardsStore
-import org.wordpress.android.fluxc.store.WCProductStockReportStore
+import org.wordpress.android.fluxc.store.WCProductReportsStore
 import java.util.Date
 import javax.inject.Inject
 
 class ProductStockRepository @Inject constructor(
-    private val stockReportStore: WCProductStockReportStore,
-    private val leaderboardsStore: WCLeaderboardsStore,
+    private val stockReportStore: WCProductReportsStore,
     private val selectedSite: SelectedSite,
     private val dateUtils: DateUtils
 ) {
@@ -81,7 +79,7 @@ class ProductStockRepository @Inject constructor(
     private suspend fun getProductSales(productIds: List<Long>, startDate: String, endDate: String) =
         when {
             productIds.isEmpty() -> WooResult(emptyArray())
-            else -> leaderboardsStore.fetchProductSalesReport(
+            else -> stockReportStore.fetchProductSalesReport(
                 site = selectedSite.get(),
                 startDate = startDate,
                 endDate = endDate,
@@ -90,7 +88,7 @@ class ProductStockRepository @Inject constructor(
         }
 
     private suspend fun getVariationsSales(variationIds: List<Long>, startDate: String, endDate: String) =
-        leaderboardsStore.fetchProductVariationsSalesReport(
+        stockReportStore.fetchProductVariationsSalesReport(
             site = selectedSite.get(),
             startDate = startDate,
             endDate = endDate,
