@@ -60,7 +60,7 @@ class ProductStockRepository @Inject constructor(
                 getProductSales(
                     stockReport
                         .filter { it.parentId == 0L }
-                        .map { it.productId!! },
+                        .mapNotNull { it.productId },
                     startDate,
                     endDate
                 )
@@ -69,7 +69,7 @@ class ProductStockRepository @Inject constructor(
                 getVariationsSales(
                     stockReport
                         .filter { it.parentId != 0L }
-                        .map { it.productId!! },
+                        .mapNotNull { it.productId },
                     startDate,
                     endDate
                 )
