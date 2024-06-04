@@ -30,7 +30,6 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private val orderId: Long = navArgs.orderId
     private val siteParameters = parameterRepository.getParameters()
 
-
     data class UiState(
         val amountDue: BigDecimal = BigDecimal.ZERO,
         val change: BigDecimal = BigDecimal.ZERO,
@@ -123,7 +122,6 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         }
     }
 
-
     private fun getCurrencySymbolPosition(): WCSettingsModel.CurrencyPosition {
         val siteParameters = parameterRepository.getParameters()
         var position = WCSettingsModel.CurrencyPosition.LEFT
@@ -141,7 +139,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     }
 
     private fun getNumberOfDecimals(): Int {
-        if (siteParameters.currencyFormattingParameters == null){
+        if (siteParameters.currencyFormattingParameters == null) {
             return 2
         }
         return siteParameters.currencyFormattingParameters.currencyDecimalNumber
