@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -38,6 +39,7 @@ fun ProductSelector(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth(0.7f)
+            .fillMaxHeight()
             .background(MaterialTheme.colors.surface, RoundedCornerShape(8.dp))
             .padding(16.dp)
     ) {
