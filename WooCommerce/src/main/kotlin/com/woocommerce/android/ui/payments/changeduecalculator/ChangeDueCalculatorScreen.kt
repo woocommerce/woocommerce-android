@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import org.wordpress.android.fluxc.model.WCSettingsModel
 import java.math.BigDecimal
 
 @Composable
@@ -228,9 +229,10 @@ fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("666.00"),
             loading = false,
+            recordTransactionDetailsChecked = false,
             canCompleteOrder = true,
             currencySymbol = "$",
-            recordTransactionDetailsChecked = false,
+            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},
@@ -248,9 +250,10 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("666.00"),
             loading = true,
+            recordTransactionDetailsChecked = true,
             canCompleteOrder = true,
             currencySymbol = "€",
-            recordTransactionDetailsChecked = true,
+            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},
@@ -268,9 +271,10 @@ fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("666.00"),
             loading = false,
+            recordTransactionDetailsChecked = true,
             canCompleteOrder = false,
             currencySymbol = "€",
-            recordTransactionDetailsChecked = true,
+            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},

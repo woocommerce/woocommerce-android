@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.WCSettingsModel
 import java.math.BigDecimal
 import javax.inject.Inject
 
@@ -36,13 +37,15 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         val recordTransactionDetailsChecked: Boolean = false,
         val canCompleteOrder: Boolean,
         val currencySymbol: String,
+        val currencyPosition: WCSettingsModel.CurrencyPosition,
     )
 
     private val _uiState = MutableStateFlow(
         UiState(
             loading = true,
-            currencySymbol = getCurrencySymbol(),
             canCompleteOrder = false,
+            currencySymbol = getCurrencySymbol(),
+            currencyPosition = getCurrencySymbolPosition(),
         )
     )
     val uiState: StateFlow<UiState> = _uiState
@@ -60,7 +63,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 amountReceived = order.total,
                 canCompleteOrder = true,
                 currencySymbol = getCurrencySymbol(),
-            )
+                currencyPosition = getCurrencySymbolPosition()
+                )
         }
     }
 
@@ -114,6 +118,15 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private fun getCurrencySymbol(): String {
         val siteParameters = parameterRepository.getParameters()
         return siteParameters.currencySymbol.orEmpty()
+    }
+
+    private fun getCurrencySymbolPosition(): WCSettingsModel.CurrencyPosition {
+        val siteParameters = parameterRepository.getParameters()
+        var position = WCSettingsModel.CurrencyPosition.LEFT
+        if (siteParameters.currencyFormattingParameters != null) {
+            position = siteParameters.currencyFormattingParameters.currencyPosition
+        }
+        return position
     }
 
     private fun generateOrderNoteString(noteStringTemplate: String): String {
