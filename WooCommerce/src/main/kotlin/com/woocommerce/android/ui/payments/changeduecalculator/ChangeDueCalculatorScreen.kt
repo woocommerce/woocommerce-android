@@ -117,7 +117,10 @@ fun ChangeDueCalculatorScreen(
                             inputText = newValue
                             onAmountReceivedChanged(newValue)
                         },
-                        visualTransformation = CurrencyVisualTransformation(uiState.currencySymbol),
+                        visualTransformation = CurrencyVisualTransformation(
+                            uiState.currencySymbol,
+                            uiState.currencyPosition
+                        ),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal
