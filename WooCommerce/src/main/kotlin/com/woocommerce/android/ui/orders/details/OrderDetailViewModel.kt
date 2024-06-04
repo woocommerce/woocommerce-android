@@ -7,11 +7,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SHIPPING_LINES_COUNT
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
@@ -50,6 +52,10 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsF
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
+import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
@@ -70,6 +76,12 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
@@ -100,7 +112,9 @@ class OrderDetailViewModel @Inject constructor(
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val refreshShippingMethods: RefreshShippingMethods,
+    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -156,6 +170,35 @@ class OrderDetailViewModel @Inject constructor(
     private val _orderAttributionInfo = MutableLiveData<OrderAttributionInfo>()
     val orderAttributionInfo: LiveData<OrderAttributionInfo> = _orderAttributionInfo
 
+    private val _shippingLineList = MutableStateFlow<List<Order.ShippingLine>>(emptyList())
+    val shippingLineList =
+        combine(
+            _shippingLineList.filter { it.isNotEmpty() },
+            getShippingMethodsWithOtherValue().withIndex()
+        ) { shippingLines, shippingMethods ->
+            val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
+            var shouldRefreshShippingMethods = false
+            val result = shippingLines.map { shippingLine ->
+                val method = shippingLine.methodId?.let {
+                    if (it == " ") {
+                        shippingMethodsMap[ShippingMethodsRepository.NA_ID]
+                    } else {
+                        shippingMethodsMap[it]
+                    }
+                }
+                shouldRefreshShippingMethods = shouldRefreshShippingMethods ||
+                    shippingLine.methodId.isNullOrEmpty().not() && method == null && shippingMethods.index == 0
+                ShippingLineDetails(
+                    id = shippingLine.itemId,
+                    name = shippingLine.methodTitle,
+                    shippingMethod = method,
+                    amount = shippingLine.total
+                )
+            }
+            if (shouldRefreshShippingMethods) launch { refreshShippingMethods() }
+            result
+        }.asLiveData()
+
     private var isFetchingData = false
 
     private val productListObserver = Observer<List<OrderProduct>> { products ->
@@ -187,6 +230,15 @@ class OrderDetailViewModel @Inject constructor(
                     paymentTypeFlow = CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType.ORDER_CREATION
                 )
             )
+        }
+        launch {
+            val shippingLines = _shippingLineList.drop(1).filter { it.isNotEmpty() }.first()
+            if (shippingLines.isNotEmpty()) {
+                analyticsTracker.track(
+                    AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
+                    mapOf(KEY_SHIPPING_LINES_COUNT to shippingLines.size)
+                )
+            }
         }
     }
 
@@ -578,6 +630,7 @@ class OrderDetailViewModel @Inject constructor(
                             is OptimisticUpdateResult -> {
                                 // no-op. We reload order details in any case
                             }
+
                             is RemoteUpdateResult -> {
                                 if (result.event.isError) {
                                     triggerEvent(ShowSnackbar(string.order_error_update_general))
@@ -811,6 +864,8 @@ class OrderDetailViewModel @Inject constructor(
         if (shipmentTracking.isVisible) {
             _shipmentTrackings.value = shipmentTracking.list
         }
+
+        _shippingLineList.value = order.shippingLines
 
         _orderAttributionInfo.value = orderDetailRepository.getOrderAttributionInfo(navArgs.orderId)
 

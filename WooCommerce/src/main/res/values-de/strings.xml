@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-13 14:54:10+0000
+Translation-Revision-Date: 2024-05-28 11:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="cash_payments_change_due">Fälliges Wechselgeld</string>
+    <string name="cash_payments_cash_received">Bargeld erhalten</string>
+    <string name="my_store_widget_coupons_title">Aktivste Gutscheine</string>
+    <string name="more_menu_button_woo_pos_description">Temporärer Einstiegspunkt in POS-Modus</string>
+    <string name="more_menu_button_woo_pos">Woo-POS</string>
+    <string name="cash_payments_take_payment_title">Zahlung erhalten (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Alle Bewertungen anzeigen</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Keine Bewertungen stimmen mit dem ausgewählten Filter überein; bitte ändere den Filter</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Keine Bewertungen gefunden</string>
+    <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="my_store_widget_reviews_title">Neueste Bewertungen</string>
+    <string name="my_store_widget_orders_title">Neueste Bestellungen</string>
+    <string name="dashboard_action_view_all_orders">Alle Bestellungen anzeigen</string>
+    <string name="dashboard_filter_menu_content_description">Filter-Dropdown-Menü öffnen</string>
     <string name="product_category_clear_parent">Übergeordnete Kategorie löschen</string>
     <string name="product_list_fetch_error">Fehler beim Produktabruf!</string>
     <string name="order_creation_add_shipping_method_select_hint">Eine Versandart auswählen</string>
@@ -25,8 +39,6 @@ Language: de
     <string name="dynamic_dashboard_widget_menu_item_hide">%s ausblenden</string>
     <string name="my_store_widget_onboarding_completed">Abgeschlossen</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Du benötigst dennoch Hilfe? Kontaktiere uns</string>
-    <string name="my_store_stats_plugin_inactive_description">Achte darauf, dass auf deiner Website die neueste Version von WooCommerce ausgeführt wird und WooCommerce Admin aktiviert ist.</string>
     <string name="my_store_stats_plugin_inactive_title">Wir können die\n Analysen deines Shops nicht anzeigen</string>
     <string name="store_onboarding_task_view_all_tasks">Alle Aufgaben anzeigen</string>
     <string name="analytics_session_no_available_description">Analysedaten für Sitzungen basieren auf Besucherzahlen, die für individuelle Zeiträume nicht verfügbar sind</string>

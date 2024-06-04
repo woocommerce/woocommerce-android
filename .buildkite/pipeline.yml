@@ -21,6 +21,16 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
+  - label: "☢️ Danger - PR Check"
+    command: danger
+    key: danger
+    if: "build.pull_request.id != null"
+    retry:
+      manual:
+        permit_on_passed: true
+    agents:
+      queue: "linter"
+
   - label: "detekt"
     command: |
       echo "--- 🧹 Linting"

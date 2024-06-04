@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-15 10:54:04+0000
+Translation-Revision-Date: 2024-05-28 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
+    <string name="cash_payments_change_due">העודף הנדרש</string>
+    <string name="cash_payments_cash_received">התקבל מזומן</string>
+    <string name="my_store_widget_coupons_title">הקופונים הפעילים ביותר</string>
+    <string name="more_menu_button_woo_pos_description">נקודת כניסה זמנית למצב POS</string>
+    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="cash_payments_take_payment_title">לגבות תשלום (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">להציג את כל הביקורות</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">אין ביקורות שמתאימות למסנן שנבחר, כדאי לשנות את המסנן</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">לא נמצאו ביקורות</string>
+    <string name="dashboard_reviews_card_header_title">סטטוס</string>
+    <string name="my_store_widget_reviews_title">הביקורות האחרונות ביותר</string>
+    <string name="my_store_widget_orders_title">ההזמנות האחרונות ביותר</string>
+    <string name="dashboard_action_view_all_orders">להציג את כל ההזמנות</string>
+    <string name="dashboard_filter_menu_content_description">לפתוח את התפריט הנפתח של המסננים</string>
     <string name="product_category_clear_parent">למחוק קטגוריית אם</string>
     <string name="product_list_fetch_error">שגיאה בהבאת המוצרים!</string>
     <string name="order_creation_add_shipping_method_select_hint">לבחור שיטת משלוח</string>
@@ -25,8 +39,6 @@ Language: he_IL
     <string name="dynamic_dashboard_widget_menu_item_hide">להסתיר את %s</string>
     <string name="my_store_widget_onboarding_completed">הושלם</string>
     <string name="my_store_widget_feedback_title">משוב</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">עדיין דרושה לך עזרה? ליצירת קשר</string>
-    <string name="my_store_stats_plugin_inactive_description">עליך לוודא שמותקנת באתר שלך הגרסה האחרונה של WooCommerce ושהתוסף של WooCommerce Admin מופעל.</string>
     <string name="my_store_stats_plugin_inactive_title">אנחנו לא יכולים להציג את \n הנתונים האנליטיים של החנות</string>
     <string name="store_onboarding_task_view_all_tasks">להציג את כל המשימות</string>
     <string name="analytics_session_no_available_description">נתונים אנליטיים של הפעלות מסתמכים על מספר המבקרים הייחודיים, והם לא זמינים בטווח תאריכים מותאם אישית</string>

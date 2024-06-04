@@ -1,0 +1,2 @@
+18.8:
+I den här versionen har vi fokuserat på att förbättra appens effektivitet genom att åtgärda buggar och implementera viktiga förbättringar. Målet med uppdateringarna är att förbättra resan för ditt företag. Vi ber dig att fortsätta skicka in din återkoppling eftersom det är vår vägvisare för fortsatt utveckling.

@@ -1,0 +1,2 @@
+18.8:
+Bu sürümde hataları gidererek ve önemli iyileştirmeler yürüterek uygulamanın verimliliğini geliştirmeye odaklandık. Bu güncellemeler, işletme yolculuğunuzu güçlendirmeyi hedefler. Geri bildirimleriniz sürekli gelişmemiz için yol haritamız olduğundan lütfen bunları göndermeye devam edin.

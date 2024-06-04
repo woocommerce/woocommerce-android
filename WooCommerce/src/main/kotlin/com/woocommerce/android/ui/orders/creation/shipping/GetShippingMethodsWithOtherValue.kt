@@ -12,7 +12,10 @@ class GetShippingMethodsWithOtherValue @Inject constructor(
         return shippingMethodsRepository.observeShippingMethods()
             .map { list ->
                 val withOtherValue = list.toMutableList()
-                    .also { it.add(shippingMethodsRepository.getOtherShippingMethod()) }
+                    .also {
+                        it.add(0, shippingMethodsRepository.getNAShippingMethod())
+                        it.add(shippingMethodsRepository.getOtherShippingMethod())
+                    }
                 withOtherValue
             }
     }

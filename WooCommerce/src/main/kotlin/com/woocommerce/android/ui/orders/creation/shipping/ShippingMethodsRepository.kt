@@ -24,6 +24,7 @@ class ShippingMethodsRepository @Inject constructor(
 ) {
     companion object {
         const val OTHER_ID = "other"
+        const val NA_ID = ""
     }
 
     suspend fun fetchShippingMethodsAndSaveResults(
@@ -84,6 +85,13 @@ class ShippingMethodsRepository @Inject constructor(
         return ShippingMethod(
             id = OTHER_ID,
             title = resourceProvider.getString(R.string.other)
+        )
+    }
+
+    fun getNAShippingMethod(): ShippingMethod {
+        return ShippingMethod(
+            id = NA_ID,
+            title = resourceProvider.getString(R.string.na)
         )
     }
 }

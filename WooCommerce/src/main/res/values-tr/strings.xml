@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 13:54:03+0000
+Translation-Revision-Date: 2024-05-28 09:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="cash_payments_change_due">Ödenmesi gereken para üstü</string>
+    <string name="cash_payments_cash_received">Nakit alındı</string>
+    <string name="my_store_widget_coupons_title">En çok etkin olan kuponlar</string>
+    <string name="more_menu_button_woo_pos_description">POS moduna geçici giriş noktası</string>
+    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="cash_payments_take_payment_title">Ödeme Al (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Tüm incelemeleri görüntüle</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Seçilen filtreyle eşleşen inceleme yok, lütfen filtreyi değiştirmeyi deneyin</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Hiç inceleme bulunamadı</string>
+    <string name="dashboard_reviews_card_header_title">Durum</string>
+    <string name="my_store_widget_reviews_title">En son incelemeler</string>
+    <string name="my_store_widget_orders_title">En son siparişler</string>
+    <string name="dashboard_action_view_all_orders">Tüm siparişleri görüntüle</string>
+    <string name="dashboard_filter_menu_content_description">Filtre açılır menüsünü açın</string>
     <string name="product_category_clear_parent">Üst kategoriyi temizle</string>
     <string name="product_list_fetch_error">Ürünler getirilirken hata oluştu!</string>
     <string name="order_creation_add_shipping_method_select_hint">Gönderim yöntemi seç</string>
@@ -25,8 +39,6 @@ Language: tr
     <string name="dynamic_dashboard_widget_menu_item_hide">Şunu Gizle: %s</string>
     <string name="my_store_widget_onboarding_completed">Tamamlandı</string>
     <string name="my_store_widget_feedback_title">Geri bildirim</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Hâlâ yardıma ihtiyacınız mı var? Bizimle iletişim kurun</string>
-    <string name="my_store_stats_plugin_inactive_description">Sitenizde en son WooCommerce sürümünü çalıştırdığınızdan ve WooCommerce Admin\'i etkinleştirdiğinizden emin olun.</string>
     <string name="my_store_stats_plugin_inactive_title">Mağazanızın analizlerini\n gösteremiyoruz</string>
     <string name="store_onboarding_task_view_all_tasks">Tüm görevleri görüntüle</string>
     <string name="analytics_session_no_available_description">Oturum analizleri, özel tarih aralıklarında kullanılamayan benzersiz ziyaretçi sayılarına dayanır</string>

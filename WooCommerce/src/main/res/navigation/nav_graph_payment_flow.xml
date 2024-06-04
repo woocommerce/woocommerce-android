@@ -13,6 +13,10 @@
             android:name="cardReaderFlowParam"
             app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
             app:nullable="false" />
+        <argument
+            android:name="isOrderPaid"
+            app:argType="boolean"
+            android:defaultValue="false" />
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderPaymentFlow"
             app:destination="@id/cardReaderStatusCheckerDialogFragment" />
@@ -65,8 +69,12 @@
 
     <fragment
         android:id="@+id/changeDueCalculatorFragment"
-        android:name="com.woocommerce.android.ui.payments.methodselection.ChangeDueCalculatorFragment"
-        android:label="ChangeDueCalculatorFragment" />
+        android:name="com.woocommerce.android.ui.payments.changeduecalculator.ChangeDueCalculatorFragment"
+        android:label="ChangeDueCalculatorFragment" >
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+    </fragment>
 
 
     <!-- Onboarding flow -->

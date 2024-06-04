@@ -11,16 +11,16 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
-msgctxt "release_note_187"
+msgctxt "release_note_189"
 msgid ""
-"18.7:\n"
-"We've fixed an issue that caused the app to crash during screen rotation, ensuring a smoother shopping experience. Update now to enjoy a more stable and reliable app!\n"
+"18.9:\n"
+"Exciting updates are here! Now, you can manage orders more efficiently with multiple shipping lines per order. Enjoy a smoother navigation with the redesigned More Menu. Plus, we've added a handy feature to calculate change for cash payments. Update your WooCommerce app now for a seamless and enhanced experience!\n"
 msgstr ""
 
-msgctxt "release_note_186"
+msgctxt "release_note_188"
 msgid ""
-"18.6:\n"
-"Enjoy enhanced functionality in our latest app update! We've improved the 'Tap To Pay' feature, introducing a new navigation path from the summary to the 'About Tap To Pay' screen, and revised its description for better clarity. Additionally, selecting shipping methods has been made more flexible, allowing you to choose specific options directly when adding or editing shipping details on an order. Update your app today for a smoother and more efficient experience!\n"
+"18.8:\n"
+"In this release, we've honed in on enhancing the app's efficiency by ironing out bugs and executing vital improvements. These updates aim to empower your business journey. Your feedback is our roadmap to continuous development, so please, keep it flowing.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

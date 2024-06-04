@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-14 11:54:03+0000
+Translation-Revision-Date: 2024-05-27 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="cash_payments_change_due">Kembalian terutang</string>
+    <string name="cash_payments_cash_received">Uang tunai diterima</string>
+    <string name="my_store_widget_coupons_title">Kupon paling aktif</string>
+    <string name="more_menu_button_woo_pos_description">Entry point sementara ke mode POS</string>
+    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="cash_payments_take_payment_title">Terima pembayaran (%s)</string>
+    <string name="dashboard_reviews_card_view_all_button">Lihat semua ulasan</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">Tidak ada ulasan yang memenuhi penyaring yang dipilih, silakan ganti penyaring</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">Tidak ada ulasan yang ditemukan</string>
+    <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="my_store_widget_reviews_title">Ulasan terbaru</string>
+    <string name="my_store_widget_orders_title">Pesanan terbaru</string>
+    <string name="dashboard_action_view_all_orders">Lihat semua pesanan</string>
+    <string name="dashboard_filter_menu_content_description">Buka menu tarik-turun penyaring</string>
     <string name="product_category_clear_parent">Hapus kategori induk</string>
     <string name="product_list_fetch_error">Terjadi error saat mengambil produk!</string>
     <string name="order_creation_add_shipping_method_select_hint">Pilih metode pengiriman</string>
@@ -25,8 +39,6 @@ Language: id
     <string name="dynamic_dashboard_widget_menu_item_hide">Sembunyikan %s</string>
     <string name="my_store_widget_onboarding_completed">Selesai</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">Masih butuh bantuan? Hubungi kami</string>
-    <string name="my_store_stats_plugin_inactive_description">Pastikan Anda mengoperasikan WooCommerce versi terbaru di situs Anda dan telah mengaktifkan WooCommerce Admin.</string>
     <string name="my_store_stats_plugin_inactive_title">Kami tidak dapat menampilkan \n Anda analitik toko</string>
     <string name="store_onboarding_task_view_all_tasks">Lihat semua tugas</string>
     <string name="analytics_session_no_available_description">Analitik sesi bergantung pada jumlah pengunjung unik yang tidak tersedia untuk rentang tanggal kustom</string>

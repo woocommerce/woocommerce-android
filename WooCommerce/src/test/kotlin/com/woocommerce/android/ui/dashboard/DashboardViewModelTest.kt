@@ -42,7 +42,7 @@ class DashboardViewModelTest : BaseUnitTest() {
         onBlocking { invoke() } doReturn true
     }
     private val dashboardRepository: DashboardRepository = mock {
-        onBlocking { widgets } doReturn flowOf(
+        on { widgets } doReturn flowOf(
             DashboardWidget.Type.entries.map {
                 DashboardWidget(
                     it,
@@ -51,6 +51,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                 )
             }
         )
+        on { hasNewWidgets } doReturn flowOf(false)
     }
     private val feedbackPrefs: FeedbackPrefs = mock {
         onBlocking { userFeedbackIsDueObservable } doReturn flowOf(false)
@@ -249,9 +250,8 @@ class DashboardViewModelTest : BaseUnitTest() {
 
         val event = viewModel.event.runAndCaptureValues {
             val widgets = viewModel.dashboardWidgets.captureValues().last()
-            val feedbackCard = widgets.filterIsInstance(
-                DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget::class.java
-            ).first()
+            val feedbackCard = widgets.filterIsInstance<DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget>()
+                .first()
             feedbackCard.onPositiveClick.invoke()
         }.last()
 
@@ -271,9 +271,8 @@ class DashboardViewModelTest : BaseUnitTest() {
 
         val event = viewModel.event.runAndCaptureValues {
             val widgets = viewModel.dashboardWidgets.captureValues().last()
-            val feedbackCard = widgets.filterIsInstance(
-                DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget::class.java
-            ).first()
+            val feedbackCard = widgets.filterIsInstance<DashboardViewModel.DashboardWidgetUiModel.FeedbackWidget>()
+                .first()
             feedbackCard.onNegativeClick.invoke()
         }.last()
 
@@ -283,5 +282,29 @@ class DashboardViewModelTest : BaseUnitTest() {
             AnalyticsEvent.APP_FEEDBACK_PROMPT,
             mapOf(AnalyticsTracker.KEY_FEEDBACK_ACTION to AnalyticsTracker.VALUE_FEEDBACK_NOT_LIKED)
         )
+    }
+
+    @Test
+    fun `given there are new widgets, when screen starts, then show the new widgets card`() = testBlocking {
+        setup {
+            whenever(dashboardRepository.hasNewWidgets).thenReturn(flowOf(true))
+        }
+
+        val widgets = viewModel.dashboardWidgets.getOrAwaitValue()
+
+        val newWidgetsCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard }
+        assertThat(newWidgetsCard.isVisible).isTrue()
+    }
+
+    @Test
+    fun `given there are no new widgets, when screen starts, then hide the new widgets card`() = testBlocking {
+        setup {
+            whenever(dashboardRepository.hasNewWidgets).thenReturn(flowOf(false))
+        }
+
+        val widgets = viewModel.dashboardWidgets.getOrAwaitValue()
+
+        val newWidgetsCard = widgets.first { it is DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard }
+        assertThat(newWidgetsCard.isVisible).isFalse()
     }
 }
