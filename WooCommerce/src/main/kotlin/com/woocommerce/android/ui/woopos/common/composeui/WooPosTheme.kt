@@ -11,23 +11,27 @@ import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.ui.compose.theme.WooTypography
 
 private val DarkColorPalette = darkColors(
-    primary = Color(0xFF1E88E5),
+    primary = Color(0xFFAD86E9),
+    primaryVariant = Color(0xFF1565C0),
+    secondary = Color(0xFFD32F2F),
+    onPrimary = Color.White,
+    secondaryVariant = Color(0xFFB39DDB),
+    surface = Color.Black,
+    onSurface = Color.White,
+    background = Color.Black,
+    onBackground = Color.White,
+)
+
+private val LightColorPalette = lightColors(
+    primary = Color(0xFFAD86E9),
     primaryVariant = Color(0xFF1565C0),
     secondary = Color(0xFFD32F2F),
     onPrimary = Color.White,
     secondaryVariant = Color(0xFFB39DDB),
     surface = Color.White,
     onSurface = Color.Black,
-)
-
-private val LightColorPalette = lightColors(
-    primary = Color(0xFF1E88E5),
-    primaryVariant = Color(0xFF1565C0),
-    secondary = Color(0xFFD32F2F),
-    onPrimary = Color.White,
-    secondaryVariant = Color(0xFFB39DDB),
-    surface = Color.Black,
-    onSurface = Color.White
+    background = Color.Black,
+    onBackground = Color.White,
 )
 
 @Composable
