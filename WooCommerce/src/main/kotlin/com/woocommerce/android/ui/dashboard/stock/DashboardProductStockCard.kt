@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -98,9 +99,9 @@ private fun DashboardProductStockCard(
     onHideClicked: () -> Unit,
     onFilterSelected: (ProductStockStatus) -> Unit,
     onProductClicked: (ProductStockItem) -> Unit,
-    modifier: Modifier = Modifier,
     onContactSupportClicked: () -> Unit,
     onRetryClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     WidgetCard(
         titleResource = DashboardWidget.Type.PRODUCT_STOCK.titleResource,
@@ -228,7 +229,8 @@ fun ProductStockRow(
             imageUrl = product.imageUrl ?: "",
             contentDescription = stringResource(id = R.string.product_image_content_description),
         )
-        Column(modifier = Modifier.padding(start = 8.dp, top = 8.dp)) {
+        Column(modifier = Modifier.padding(start = 8.dp)) {
+            Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(
                     modifier = Modifier.weight(1f),
