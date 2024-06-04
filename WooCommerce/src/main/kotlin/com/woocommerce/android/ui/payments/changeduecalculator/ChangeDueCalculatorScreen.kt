@@ -47,6 +47,7 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import java.math.BigDecimal
 
@@ -56,13 +57,14 @@ fun ChangeDueCalculatorScreen(
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit,
     onAmountReceivedChanged: (BigDecimal?) -> Unit,
-    onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit
+    onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit,
+    currencyFormatter: CurrencyFormatter
 ) {
     WooThemeWithBackground {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = getTitleText(uiState)) },
+                    title = { Text(text = getTitleText(uiState, currencyFormatter)) },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {
                             Icon(
@@ -138,14 +140,10 @@ fun ChangeDueCalculatorScreen(
                         text = if (uiState.change < BigDecimal.ZERO) {
                             "-"
                         } else {
-                            val changeString = uiState.change.toPlainString()
-                            when (uiState.currencyPosition) {
-                                WCSettingsModel.CurrencyPosition.RIGHT -> "$changeString${uiState.currencySymbol}"
-                                WCSettingsModel.CurrencyPosition.RIGHT_SPACE ->
-                                    "$changeString ${uiState.currencySymbol}"
-                                WCSettingsModel.CurrencyPosition.LEFT_SPACE -> "${uiState.currencySymbol} $changeString"
-                                else -> "${uiState.currencySymbol}$changeString"
-                            }
+                            currencyFormatter.formatCurrency(
+                                uiState.change,
+                                uiState.currencySymbol
+                            )
                         },
                         style = MaterialTheme.typography.h3,
                         fontWeight = FontWeight.Bold,
@@ -223,16 +221,16 @@ fun MarkOrderAsCompleteButton(
 }
 
 @Composable
-fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
-    val amountDueString = uiState.amountDue.toPlainString()
+fun getTitleText(
+    uiState: ChangeDueCalculatorViewModel.UiState,
+    currencyFormatter: CurrencyFormatter
+): String {
     return stringResource(
         R.string.cash_payments_take_payment_title,
-        when (uiState.currencyPosition) {
-            WCSettingsModel.CurrencyPosition.RIGHT -> "$amountDueString${uiState.currencySymbol}"
-            WCSettingsModel.CurrencyPosition.RIGHT_SPACE -> "$amountDueString ${uiState.currencySymbol}"
-            WCSettingsModel.CurrencyPosition.LEFT_SPACE -> "${uiState.currencySymbol} $amountDueString"
-            else -> "${uiState.currencySymbol}$amountDueString"
-        }
+        currencyFormatter.formatCurrency(
+            uiState.amountDue,
+            uiState.currencySymbol
+        )
     )
 }
 
