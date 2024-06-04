@@ -26,7 +26,8 @@ fun WooPosCartScreen(onCartCheckoutUIEvent: (WooPosCartCheckoutUIEvent) -> Unit)
     viewModel.state.observeAsState().value?.let { state ->
         WooPosCartScreen(
             state = state,
-            { onCartCheckoutUIEvent(it) }, viewModel::onUIEvent
+            { onCartCheckoutUIEvent(it) },
+            viewModel::onUIEvent
         )
     }
 }
