@@ -227,7 +227,8 @@ fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
     val amountDueString = uiState.amountDue.toPlainString()
     return stringResource(
         R.string.cash_payments_take_payment_title,
-        if (uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT || uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT_SPACE) {
+        if (uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT
+            || uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT_SPACE) {
             "$amountDueString${uiState.currencySymbol}"
         } else {
             "${uiState.currencySymbol}$amountDueString"

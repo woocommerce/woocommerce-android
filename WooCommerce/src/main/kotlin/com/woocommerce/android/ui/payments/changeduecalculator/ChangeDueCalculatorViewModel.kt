@@ -64,7 +64,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 canCompleteOrder = true,
                 currencySymbol = getCurrencySymbol(),
                 currencyPosition = getCurrencySymbolPosition()
-                )
+            )
         }
     }
 
