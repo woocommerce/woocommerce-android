@@ -139,12 +139,11 @@ fun ChangeDueCalculatorScreen(
                             "-"
                         } else {
                             val changeString = uiState.change.toPlainString()
-                            if (uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT ||
-                                uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT_SPACE
-                            ) {
-                                "$changeString${uiState.currencySymbol}"
-                            } else {
-                                "${uiState.currencySymbol}$changeString"
+                            when (uiState.currencyPosition) {
+                                WCSettingsModel.CurrencyPosition.RIGHT -> "$changeString${uiState.currencySymbol}"
+                                WCSettingsModel.CurrencyPosition.RIGHT_SPACE -> "$changeString ${uiState.currencySymbol}"
+                                WCSettingsModel.CurrencyPosition.LEFT_SPACE -> "${uiState.currencySymbol} $changeString"
+                                else -> "${uiState.currencySymbol}$changeString"
                             }
                         },
                         style = MaterialTheme.typography.h3,
@@ -227,11 +226,11 @@ fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
     val amountDueString = uiState.amountDue.toPlainString()
     return stringResource(
         R.string.cash_payments_take_payment_title,
-        if (uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT
-            || uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT_SPACE) {
-            "$amountDueString${uiState.currencySymbol}"
-        } else {
-            "${uiState.currencySymbol}$amountDueString"
+        when (uiState.currencyPosition) {
+            WCSettingsModel.CurrencyPosition.RIGHT -> "$amountDueString${uiState.currencySymbol}"
+            WCSettingsModel.CurrencyPosition.RIGHT_SPACE -> "$amountDueString ${uiState.currencySymbol}"
+            WCSettingsModel.CurrencyPosition.LEFT_SPACE -> "${uiState.currencySymbol} $amountDueString"
+            else -> "${uiState.currencySymbol}$amountDueString"
         }
     )
 }
@@ -269,7 +268,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
             recordTransactionDetailsChecked = true,
             canCompleteOrder = true,
             currencySymbol = "€",
-            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT_SPACE,
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},
