@@ -12,11 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
+import com.woocommerce.android.ui.woopos.home.products.ProductSelectorViewModel
 
 @Composable
 @Suppress("UNUSED_PARAMETER")
 fun WooPosCartScreen(
     viewModel: WooPosCartViewModel,
+    productSelectorViewModel: ProductSelectorViewModel,
     onCheckoutClick: () -> Unit,
 ) {
     WooPosCartScreen(onCheckoutClick = onCheckoutClick)
