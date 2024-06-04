@@ -88,12 +88,15 @@ class ProductStockRepository @Inject constructor(
         }
 
     private suspend fun getVariationsSales(variationIds: List<Long>, startDate: String, endDate: String) =
-        stockReportStore.fetchProductVariationsSalesReport(
-            site = selectedSite.get(),
-            startDate = startDate,
-            endDate = endDate,
-            productVariationIds = variationIds,
-        )
+        when {
+            variationIds.isEmpty() -> WooResult(emptyArray())
+            else -> stockReportStore.fetchProductVariationsSalesReport(
+                site = selectedSite.get(),
+                startDate = startDate,
+                endDate = endDate,
+                productVariationIds = variationIds,
+            )
+        }
 
     private fun mapToProductStockItems(
         stockReport: ProductStockItems,
