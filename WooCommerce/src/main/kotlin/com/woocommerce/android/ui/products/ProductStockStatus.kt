@@ -11,18 +11,23 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 
 sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {
-    @Parcelize object InStock : ProductStockStatus(R.string.product_stock_status_instock)
+    @Parcelize
+    data object InStock : ProductStockStatus(R.string.product_stock_status_instock)
 
     @Parcelize
-    object LowStock : ProductStockStatus(R.string.product_stock_status_low_stock)
+    data object LowStock : ProductStockStatus(R.string.product_stock_status_low_stock)
 
-    @Parcelize object OutOfStock : ProductStockStatus(R.string.product_stock_status_out_of_stock)
+    @Parcelize
+    data object OutOfStock : ProductStockStatus(R.string.product_stock_status_out_of_stock)
 
-    @Parcelize object OnBackorder : ProductStockStatus(R.string.product_stock_status_on_backorder)
+    @Parcelize
+    data object OnBackorder : ProductStockStatus(R.string.product_stock_status_on_backorder)
 
-    @Parcelize object InsufficientStock : ProductStockStatus(R.string.product_stock_status_insufficient_stock)
+    @Parcelize
+    data object InsufficientStock : ProductStockStatus(R.string.product_stock_status_insufficient_stock)
 
-    @Parcelize object NotAvailable : ProductStockStatus()
+    @Parcelize
+    data object NotAvailable : ProductStockStatus()
     class Custom(value: String) : ProductStockStatus(value = value)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
