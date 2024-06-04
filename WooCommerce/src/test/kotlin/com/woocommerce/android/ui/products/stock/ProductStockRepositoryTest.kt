@@ -22,15 +22,13 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ProductStockItemApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
 import org.wordpress.android.fluxc.store.ProductStockItems
-import org.wordpress.android.fluxc.store.WCLeaderboardsStore
-import org.wordpress.android.fluxc.store.WCProductStockReportStore
+import org.wordpress.android.fluxc.store.WCProductReportsStore
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProductStockRepositoryTest : BaseUnitTest() {
-    private val stockReportStock: WCProductStockReportStore = mock()
-    private val leaderboardsStore: WCLeaderboardsStore = mock()
+    private val stockReportStock: WCProductReportsStore = mock()
     private val selectedSite: SelectedSite = mock {
         on { get() } doReturn SiteModel().apply {
             url = "https://woosite.com"
@@ -42,7 +40,6 @@ class ProductStockRepositoryTest : BaseUnitTest() {
 
     private var productStockRepository = ProductStockRepository(
         stockReportStore = stockReportStock,
-        leaderboardsStore = leaderboardsStore,
         selectedSite = selectedSite,
         dateUtils = dateUtils
     )
@@ -53,8 +50,8 @@ class ProductStockRepositoryTest : BaseUnitTest() {
 
         val result = productStockRepository.fetchProductStockReport(LOW_STOCK_STATUS)
 
-        verify(leaderboardsStore, never()).fetchProductSalesReport(any(), any(), any(), any())
-        verify(leaderboardsStore, never()).fetchProductVariationsSalesReport(any(), any(), any(), any())
+        verify(stockReportStock, never()).fetchProductSalesReport(any(), any(), any(), any())
+        verify(stockReportStock, never()).fetchProductVariationsSalesReport(any(), any(), any(), any())
         assertTrue(result.isFailure)
     }
 
@@ -77,8 +74,8 @@ class ProductStockRepositoryTest : BaseUnitTest() {
 
             productStockRepository.fetchProductStockReport(LOW_STOCK_STATUS)
 
-            verify(leaderboardsStore).fetchProductSalesReport(any(), any(), any(), any())
-            verify(leaderboardsStore, never()).fetchProductVariationsSalesReport(any(), any(), any(), any())
+            verify(stockReportStock).fetchProductSalesReport(any(), any(), any(), any())
+            verify(stockReportStock, never()).fetchProductVariationsSalesReport(any(), any(), any(), any())
         }
 
     @Test
@@ -89,8 +86,8 @@ class ProductStockRepositoryTest : BaseUnitTest() {
 
             productStockRepository.fetchProductStockReport(LOW_STOCK_STATUS)
 
-            verify(leaderboardsStore).fetchProductVariationsSalesReport(any(), any(), any(), any())
-            verify(leaderboardsStore, never()).fetchProductSalesReport(any(), any(), any(), any())
+            verify(stockReportStock).fetchProductVariationsSalesReport(any(), any(), any(), any())
+            verify(stockReportStock, never()).fetchProductSalesReport(any(), any(), any(), any())
         }
 
     @Test
@@ -102,8 +99,8 @@ class ProductStockRepositoryTest : BaseUnitTest() {
 
             val result = productStockRepository.fetchProductStockReport(LOW_STOCK_STATUS)
 
-            verify(leaderboardsStore).fetchProductSalesReport(any(), any(), any(), any())
-            verify(leaderboardsStore).fetchProductVariationsSalesReport(any(), any(), any(), any())
+            verify(stockReportStock).fetchProductSalesReport(any(), any(), any(), any())
+            verify(stockReportStock).fetchProductVariationsSalesReport(any(), any(), any(), any())
             assertEquals(STOCK_AND_SALES_REPORT_WITH_VARIATION, result.getOrNull())
         }
 
@@ -127,7 +124,7 @@ class ProductStockRepositoryTest : BaseUnitTest() {
 
     private suspend fun givenFetchProductSalesSuccess() {
         whenever(
-            leaderboardsStore.fetchProductSalesReport(
+            stockReportStock.fetchProductSalesReport(
                 any(),
                 any(),
                 any(),
@@ -138,7 +135,7 @@ class ProductStockRepositoryTest : BaseUnitTest() {
 
     private suspend fun givenFetchProductVariationSalesSuccess() {
         whenever(
-            leaderboardsStore.fetchProductVariationsSalesReport(
+            stockReportStock.fetchProductVariationsSalesReport(
                 any(),
                 any(),
                 any(),
