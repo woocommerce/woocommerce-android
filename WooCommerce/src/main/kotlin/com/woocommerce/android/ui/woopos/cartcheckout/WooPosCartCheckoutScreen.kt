@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.cartcheckout
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,10 @@ private fun WooPosCartCheckoutScreen(
     state: WooPosCartCheckoutState,
     onCartCheckoutUIEvent: (WooPosCartCheckoutUIEvent) -> Unit,
 ) {
+    BackHandler {
+        onCartCheckoutUIEvent(WooPosCartCheckoutUIEvent.SystemBackClicked)
+    }
+
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
     val cartWidth = (screenWidthDp / 3)
     val totalsProductsWidth = (screenWidthDp / 3 * 2)

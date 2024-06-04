@@ -17,8 +17,20 @@ class WooPosCartCheckoutViewModel @Inject constructor() : ViewModel() {
                 _state.value = WooPosCartCheckoutState.Checkout
             }
 
-            is WooPosCartCheckoutUIEvent.BackFromCheckoytToCartClicked -> {
+            is WooPosCartCheckoutUIEvent.BackFromCheckoutToCartClicked -> {
                 _state.value = WooPosCartCheckoutState.Cart
+            }
+
+            WooPosCartCheckoutUIEvent.SystemBackClicked -> {
+                when (_state.value) {
+                    WooPosCartCheckoutState.Checkout -> {
+                        _state.value = WooPosCartCheckoutState.Cart
+                    }
+
+                    WooPosCartCheckoutState.Cart -> {
+                        TODO("exit from the POS is not implemented yet")
+                    }
+                }
             }
         }
     }

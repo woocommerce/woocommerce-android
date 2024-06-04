@@ -67,7 +67,7 @@ private fun WooPosCartScreen(
 
                     WooPosCartState.Checkout -> {
                         Button(onClick = {
-                            onCartCheckoutUIEvent(WooPosCartCheckoutUIEvent.BackFromCheckoytToCartClicked)
+                            onCartCheckoutUIEvent(WooPosCartCheckoutUIEvent.BackFromCheckoutToCartClicked)
                             onUIEvent(WooPosCartUIEvent.BackFromCheckoutToCartClicked)
                         }) {
                             Text("To Products")

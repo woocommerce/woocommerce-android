@@ -10,7 +10,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 @ExperimentalCoroutinesApi
-class SendResultOnNavigateBackStrategyTest : SimpleTextEditorViewModelTe() {
+class SendResultOnNavigateSystemBackStrategyTestClicked : SimpleTextEditorViewModelTe() {
 
     override val defaultArgs = super.defaultArgs.copy(strategy = SEND_RESULT_ON_NAVIGATE_BACK)
 
