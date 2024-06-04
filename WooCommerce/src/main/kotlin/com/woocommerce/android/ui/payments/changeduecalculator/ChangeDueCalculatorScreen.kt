@@ -58,7 +58,7 @@ fun ChangeDueCalculatorScreen(
     onCompleteOrderClick: () -> Unit,
     onAmountReceivedChanged: (BigDecimal?) -> Unit,
     onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit,
-    currencyFormatter: CurrencyFormatter
+    currencyFormatter: CurrencyFormatter?
 ) {
     WooThemeWithBackground {
         Scaffold(
@@ -137,7 +137,7 @@ fun ChangeDueCalculatorScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Text(
-                        text = if (uiState.change < BigDecimal.ZERO) {
+                        text = if ((uiState.change < BigDecimal.ZERO) || currencyFormatter == null) {
                             "-"
                         } else {
                             currencyFormatter.formatCurrency(
@@ -223,8 +223,12 @@ fun MarkOrderAsCompleteButton(
 @Composable
 fun getTitleText(
     uiState: ChangeDueCalculatorViewModel.UiState,
-    currencyFormatter: CurrencyFormatter
+    currencyFormatter: CurrencyFormatter?
 ): String {
+    if (currencyFormatter == null) {
+        return stringResource(R.string.cash_payments_take_payment_title)
+    }
+
     return stringResource(
         R.string.cash_payments_take_payment_title,
         currencyFormatter.formatCurrency(
@@ -251,7 +255,8 @@ fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
         onNavigateUp = {},
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
-        onRecordTransactionDetailsCheckedChanged = {}
+        onRecordTransactionDetailsCheckedChanged = {},
+        currencyFormatter = null
     )
 }
 
@@ -272,7 +277,8 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
         onNavigateUp = {},
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
-        onRecordTransactionDetailsCheckedChanged = {}
+        onRecordTransactionDetailsCheckedChanged = {},
+        currencyFormatter = null
     )
 }
 
@@ -293,6 +299,7 @@ fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
         onNavigateUp = {},
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
-        onRecordTransactionDetailsCheckedChanged = {}
+        onRecordTransactionDetailsCheckedChanged = {},
+        currencyFormatter = null
     )
 }
