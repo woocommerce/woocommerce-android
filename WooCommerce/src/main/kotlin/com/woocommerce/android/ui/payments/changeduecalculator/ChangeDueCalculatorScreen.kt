@@ -141,7 +141,8 @@ fun ChangeDueCalculatorScreen(
                             val changeString = uiState.change.toPlainString()
                             when (uiState.currencyPosition) {
                                 WCSettingsModel.CurrencyPosition.RIGHT -> "$changeString${uiState.currencySymbol}"
-                                WCSettingsModel.CurrencyPosition.RIGHT_SPACE -> "$changeString ${uiState.currencySymbol}"
+                                WCSettingsModel.CurrencyPosition.RIGHT_SPACE ->
+                                    "$changeString ${uiState.currencySymbol}"
                                 WCSettingsModel.CurrencyPosition.LEFT_SPACE -> "${uiState.currencySymbol} $changeString"
                                 else -> "${uiState.currencySymbol}$changeString"
                             }
