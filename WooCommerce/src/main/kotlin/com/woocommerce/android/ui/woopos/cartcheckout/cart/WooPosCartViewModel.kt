@@ -17,7 +17,7 @@ class WooPosCartViewModel @Inject constructor() : ViewModel() {
                 _state.value = WooPosCartState.Checkout
             }
 
-            is WooPosCartUIEvent.BackFromCheckoytToCartClicked -> {
+            is WooPosCartUIEvent.BackFromCheckoutToCartClicked -> {
                 _state.value = WooPosCartState.Cart
             }
         }
