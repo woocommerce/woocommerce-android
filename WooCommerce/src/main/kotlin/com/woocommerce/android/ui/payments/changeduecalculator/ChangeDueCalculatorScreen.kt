@@ -135,7 +135,14 @@ fun ChangeDueCalculatorScreen(
                         text = if (uiState.change < BigDecimal.ZERO) {
                             "-"
                         } else {
-                            "${uiState.currencySymbol}${uiState.change.toPlainString()}"
+                            val changeString = uiState.change.toPlainString()
+                            if (uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT ||
+                                uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT_SPACE
+                            ) {
+                                "$changeString${uiState.currencySymbol}"
+                            } else {
+                                "${uiState.currencySymbol}$changeString"
+                            }
                         },
                         style = MaterialTheme.typography.h3,
                         fontWeight = FontWeight.Bold,
@@ -213,10 +220,15 @@ fun MarkOrderAsCompleteButton(
 }
 
 @Composable
-private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
+fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
+    val amountDueString = uiState.amountDue.toPlainString()
     return stringResource(
         R.string.cash_payments_take_payment_title,
-        "${uiState.currencySymbol}${uiState.amountDue}"
+        if (uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT || uiState.currencyPosition == WCSettingsModel.CurrencyPosition.RIGHT_SPACE) {
+            "$amountDueString${uiState.currencySymbol}"
+        } else {
+            "${uiState.currencySymbol}$amountDueString"
+        }
     )
 }
 
