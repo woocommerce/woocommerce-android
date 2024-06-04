@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.cartcheckout
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.cartcheckout.cart.WooPosCartScreen
@@ -32,34 +33,43 @@ private fun WooPosCartCheckoutScreen(
     state: WooPosCartCheckoutState,
     onCartCheckoutUIEvent: (WooPosCartCheckoutUIEvent) -> Unit,
 ) {
-    val halfScreen = (LocalConfiguration.current.screenWidthDp / 2).dp
-//    val halfScreenWidthPx = with(LocalDensity.current) { getHalfScreenWidth().toPx() }
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
+    val cartWidth = (screenWidthDp / 3)
+    val totalsProductsWidth = (screenWidthDp / 3 * 2)
+    val halfScreenWidthPx = with(LocalDensity.current) { totalsProductsWidth.roundToPx() }
 
     val scrollState = rememberScrollState()
 
     LaunchedEffect(state) {
+        val animationSpec = spring<Float>(
+            dampingRatio = 0.8f,
+            stiffness = 200f
+        )
         when (state) {
-            WooPosCartCheckoutState.Cart -> scrollState.animateScrollTo(0)
-            WooPosCartCheckoutState.Checkout -> scrollState.animateScrollTo(10000)
+            WooPosCartCheckoutState.Cart -> scrollState.animateScrollTo(
+                0,
+                animationSpec = animationSpec
+            )
+
+            WooPosCartCheckoutState.Checkout -> scrollState.animateScrollTo(
+                halfScreenWidthPx,
+                animationSpec = animationSpec
+            )
         }
     }
 
     Row(
         modifier = Modifier
-            .scrollable(
-                scrollState,
-                orientation = Orientation.Horizontal,
-                enabled = true
-            )
+            .horizontalScroll(scrollState, enabled = false)
             .fillMaxWidth()
     ) {
-        Box(modifier = Modifier.width(halfScreen)) {
+        Box(modifier = Modifier.width(totalsProductsWidth)) {
             WooPosProductsScreen()
         }
-        Box(modifier = Modifier.width(halfScreen)) {
+        Box(modifier = Modifier.width(cartWidth)) {
             WooPosCartScreen(onCartCheckoutUIEvent = onCartCheckoutUIEvent)
         }
-        Box(modifier = Modifier.width(halfScreen)) {
+        Box(modifier = Modifier.width(totalsProductsWidth)) {
             WooPosTotalsScreen()
         }
     }
