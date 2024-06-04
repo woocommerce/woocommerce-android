@@ -116,8 +116,10 @@ fun ChangeDueCalculatorScreen(
                             numberOfDecimals = 2
                         ),
                         onValueChange = { newValue ->
-                            inputText = newValue
-                            onAmountReceivedChanged(newValue)
+                            if (newValue == null || newValue.toPlainString().length <= 15) {
+                                inputText = newValue
+                                onAmountReceivedChanged(newValue)
+                            }
                         },
                         visualTransformation = CurrencyVisualTransformation(
                             uiState.currencySymbol,
