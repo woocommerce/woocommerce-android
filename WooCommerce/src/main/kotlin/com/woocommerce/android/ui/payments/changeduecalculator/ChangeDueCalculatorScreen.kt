@@ -112,8 +112,8 @@ fun ChangeDueCalculatorScreen(
                         value = inputText,
                         label = stringResource(R.string.cash_payments_cash_received),
                         valueMapper = NullableCurrencyTextFieldValueMapper.create(
-                            decimalSeparator = ".",
-                            numberOfDecimals = 2
+                            decimalSeparator = uiState.decimalSeparator,
+                            numberOfDecimals = uiState.numberOfDecimals
                         ),
                         onValueChange = { newValue ->
                             if (newValue == null || newValue.toPlainString().length <= 15) {
@@ -253,6 +253,8 @@ fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
             canCompleteOrder = true,
             currencySymbol = "$",
             currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+            decimalSeparator = ".",
+            numberOfDecimals = 2
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},
@@ -275,6 +277,8 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
             canCompleteOrder = true,
             currencySymbol = "€",
             currencyPosition = WCSettingsModel.CurrencyPosition.LEFT_SPACE,
+            decimalSeparator = ".",
+            numberOfDecimals = 2
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},
@@ -297,6 +301,8 @@ fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
             canCompleteOrder = false,
             currencySymbol = "€",
             currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+            decimalSeparator = ".",
+            numberOfDecimals = 2
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},
