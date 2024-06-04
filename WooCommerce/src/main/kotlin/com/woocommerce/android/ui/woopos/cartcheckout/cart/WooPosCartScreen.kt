@@ -12,7 +12,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -23,13 +23,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 @Composable
 fun WooPosCartScreen(onCartCheckoutUIEvent: (WooPosCartCheckoutUIEvent) -> Unit) {
     val viewModel: WooPosCartViewModel = hiltViewModel()
-    viewModel.state.observeAsState().value?.let { state ->
-        WooPosCartScreen(
-            state = state,
-            { onCartCheckoutUIEvent(it) },
-            viewModel::onUIEvent
-        )
-    }
+    WooPosCartScreen(
+        state = viewModel.state.collectAsState().value,
+        { onCartCheckoutUIEvent(it) },
+        viewModel::onUIEvent
+    )
 }
 
 @Composable

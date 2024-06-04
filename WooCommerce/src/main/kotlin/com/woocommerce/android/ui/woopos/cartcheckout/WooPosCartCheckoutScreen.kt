@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -23,9 +23,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 @Composable
 fun WooPosCartCheckoutScreen() {
     val viewModel: WooPosCartCheckoutViewModel = hiltViewModel()
-    viewModel.state.observeAsState().value?.let { state ->
-        WooPosCartCheckoutScreen(state, viewModel::onUIEvent)
-    }
+    WooPosCartCheckoutScreen(
+        viewModel.state.collectAsState().value,
+        viewModel::onUIEvent
+    )
 }
 
 @Composable
