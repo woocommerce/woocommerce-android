@@ -442,6 +442,8 @@
     <string name="dashboard_product_stock_status_header_title">Status</string>
     <string name="dashboard_product_stock_levels">Stock levels</string>
     <string name="dashboard_product_stock_products">Products</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d items sold in last 30 days</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">No items sold in the last 30 days</string>
 
     <string name="dashboard_new_widgets_card_title">Looking for more insights?</string>
     <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>

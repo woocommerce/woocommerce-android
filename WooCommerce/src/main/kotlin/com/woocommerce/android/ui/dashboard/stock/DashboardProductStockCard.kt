@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,19 +14,26 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.ProductThumbnail
+import com.woocommerce.android.ui.compose.rememberNavController
 import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
@@ -33,8 +41,11 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMe
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.OpenProductDetail
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.details.ProductDetailFragment.Mode.ShowProduct
 import com.woocommerce.android.ui.products.stock.ProductStockItem
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 @Composable
 fun DashboardProductStockCard(
@@ -44,14 +55,41 @@ fun DashboardProductStockCard(
         f.create(parentViewModel = parentViewModel)
     }
 ) {
+    HandleEvents(viewModel.event)
+
     viewModel.productStockState.observeAsState().value?.let { viewState ->
         DashboardProductStockCard(
             viewState = viewState,
             onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.PRODUCT_STOCK) },
             onFilterSelected = viewModel::onFilterSelected,
-            onProductClicked = { },
+            onProductClicked = viewModel::onProductClicked,
+            onRetryClicked = viewModel::onRetryClicked,
+            onContactSupportClicked = parentViewModel::onContactSupportClicked,
             modifier = modifier
         )
+    }
+}
+
+@Composable
+private fun HandleEvents(event: LiveData<Event>) {
+    val navController = rememberNavController()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(event, navController, lifecycleOwner) {
+        val observer = Observer { event: Event ->
+            when (event) {
+                is OpenProductDetail -> navController.navigateSafely(
+                    NavGraphMainDirections.actionGlobalProductDetailFragment(
+                        mode = ShowProduct(event.productId),
+                        isTrashEnabled = false
+                    )
+                )
+            }
+        }
+        event.observe(lifecycleOwner, observer)
+        onDispose {
+            event.removeObserver(observer)
+        }
     }
 }
 
@@ -61,7 +99,9 @@ private fun DashboardProductStockCard(
     onHideClicked: () -> Unit,
     onFilterSelected: (ProductStockStatus) -> Unit,
     onProductClicked: (ProductStockItem) -> Unit,
-    modifier: Modifier = Modifier
+    onContactSupportClicked: () -> Unit,
+    onRetryClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     WidgetCard(
         titleResource = DashboardWidget.Type.PRODUCT_STOCK.titleResource,
@@ -93,8 +133,8 @@ private fun DashboardProductStockCard(
 
             is DashboardProductStockViewModel.ViewState.Error -> {
                 WidgetError(
-                    onContactSupportClicked = { },
-                    onRetryClicked = { }
+                    onContactSupportClicked = onContactSupportClicked,
+                    onRetryClicked = onRetryClicked
                 )
             }
         }
@@ -182,14 +222,16 @@ fun ProductStockRow(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onItemClicked(product) }
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp),
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         ProductThumbnail(
             imageUrl = product.imageUrl ?: "",
             contentDescription = stringResource(id = R.string.product_image_content_description),
         )
         Column(modifier = Modifier.padding(start = 8.dp)) {
-            Row(modifier = Modifier.padding(bottom = 4.dp, end = 16.dp)) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = product.name,
@@ -200,10 +242,15 @@ fun ProductStockRow(
                 Text(
                     text = product.stockQuantity.toString(),
                     style = MaterialTheme.typography.subtitle1,
+                    color = colorResource(id = R.color.color_error)
                 )
             }
             Text(
-                text = product.itemsSold.toString(),
+                modifier = Modifier.padding(bottom = 8.dp),
+                text = when {
+                    product.itemsSold == 0 -> stringResource(R.string.dashboard_product_stock_no_sales_last_30_days)
+                    else -> stringResource(R.string.dashboard_product_stock_sales_last_30_days, product.itemsSold)
+                },
                 style = MaterialTheme.typography.body2,
                 color = colorResource(id = R.color.color_on_surface_medium_selector)
             )
