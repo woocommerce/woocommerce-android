@@ -101,15 +101,6 @@ class SelectedSite @Inject constructor(
             .build()
     }
 
-    fun exists(): Boolean {
-        val siteModel = siteStore.getSiteByLocalId(getSelectedSiteId())
-        return siteModel != null
-    }
-
-    fun getIfExists(): SiteModel? = if (exists()) get() else null
-
-    fun getSelectedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
-
     @Synchronized
     fun reset() {
         wasReset = true
@@ -118,6 +109,15 @@ class SelectedSite @Inject constructor(
         siteComponent = null
         siteCoroutineScope?.cancel()
     }
+
+    fun exists(): Boolean {
+        val siteModel = siteStore.getSiteByLocalId(getSelectedSiteId())
+        return siteModel != null
+    }
+
+    fun getIfExists(): SiteModel? = if (exists()) get() else null
+
+    fun getSelectedSiteId() = PreferenceUtils.getInt(getPreferences(), SELECTED_SITE_LOCAL_ID, -1)
 
     private fun getPreferences() = PreferenceManager.getDefaultSharedPreferences(context)
 
