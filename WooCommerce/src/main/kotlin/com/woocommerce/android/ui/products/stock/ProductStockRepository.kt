@@ -18,7 +18,7 @@ import java.util.Date
 import javax.inject.Inject
 
 class ProductStockRepository @Inject constructor(
-    private val stockReportStock: WCProductStockReportStore,
+    private val stockReportStore: WCProductStockReportStore,
     private val leaderboardsStore: WCLeaderboardsStore,
     private val selectedSite: SelectedSite,
     private val dateUtils: DateUtils
@@ -28,7 +28,7 @@ class ProductStockRepository @Inject constructor(
     }
 
     suspend fun fetchProductStockReport(stockStatus: ProductStockStatus): Result<List<ProductStockItem>> {
-        return stockReportStock.fetchProductStockReport(
+        return stockReportStore.fetchProductStockReport(
             site = selectedSite.get(),
             stockStatus = stockStatus.toCoreProductStockStatus()
         ).let { stockReportResult ->
