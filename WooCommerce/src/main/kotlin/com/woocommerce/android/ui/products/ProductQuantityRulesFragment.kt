@@ -9,6 +9,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductQuantityRulesBinding
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductQuantityRules
 import com.woocommerce.android.ui.products.models.QuantityRules
+import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,9 +50,9 @@ class ProductQuantityRulesFragment : BaseProductFragment(R.layout.fragment_produ
     }
 
     private fun initializeViews(quantityRules: QuantityRules) {
-        binding.minQuantityValue.text = quantityRules.min?.toString() ?: getString(R.string.empty_min_quantity)
-        binding.maxQuantityValue.text = quantityRules.max?.toString() ?: getString(R.string.empty_max_quantity)
-        binding.groupOfValue.text = quantityRules.groupOf?.toString() ?: getString(R.string.empty_group_of)
+        binding.minQuantity.text = quantityRules.min?.toString() ?: getString(R.string.empty_min_quantity)
+        binding.maxQuantity.text = quantityRules.max?.toString() ?: getString(R.string.empty_max_quantity)
+        binding.groupOf.text = quantityRules.groupOf?.toString() ?: getString(R.string.empty_group_of)
     }
 
     override fun onRequestAllowBackPress(): Boolean {
