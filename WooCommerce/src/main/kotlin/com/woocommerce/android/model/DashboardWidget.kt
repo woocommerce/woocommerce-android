@@ -27,15 +27,47 @@ data class DashboardWidget(
         val trackingIdentifier: String,
         private val isSupported: Boolean = true,
     ) {
-        ONBOARDING(R.string.my_store_widget_onboarding_title, "store_setup"),
-        STATS(R.string.my_store_widget_stats_title, "performance"),
-        POPULAR_PRODUCTS(R.string.my_store_widget_top_products_title, "top_performers"),
-        BLAZE(R.string.my_store_widget_blaze_title, "blaze"),
-        REVIEWS(R.string.my_store_widget_reviews_title, "reviews", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()),
-        ORDERS(R.string.my_store_widget_orders_title, "orders", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()),
-        COUPONS(R.string.my_store_widget_coupons_title, "coupons", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()),
-        INBOX(R.string.inbox_screen_title, "inbox", isSupported = FeatureFlag.INBOX.isEnabled()),
-        PRODUCT_STOCK(R.string.my_store_widget_product_stock_title, "product_stock", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled());
+        ONBOARDING(
+            titleResource = R.string.my_store_widget_onboarding_title,
+            trackingIdentifier = "store_setup"
+        ),
+        STATS(
+            titleResource = R.string.my_store_widget_stats_title,
+            trackingIdentifier = "performance"
+        ),
+        POPULAR_PRODUCTS(
+            titleResource = R.string.my_store_widget_top_products_title,
+            trackingIdentifier = "top_performers"
+        ),
+        BLAZE(
+            titleResource = R.string.my_store_widget_blaze_title,
+            trackingIdentifier = "blaze"
+        ),
+        REVIEWS(
+            titleResource = R.string.my_store_widget_reviews_title,
+            trackingIdentifier = "reviews",
+            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
+        ),
+        ORDERS(
+            titleResource = R.string.my_store_widget_orders_title,
+            trackingIdentifier = "orders",
+            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
+        ),
+        COUPONS(
+            titleResource = R.string.my_store_widget_coupons_title,
+            trackingIdentifier = "coupons",
+            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
+        ),
+        INBOX(
+            titleResource = R.string.inbox_screen_title,
+            trackingIdentifier = "inbox",
+            isSupported = FeatureFlag.INBOX.isEnabled()
+        ),
+        PRODUCT_STOCK(
+            titleResource = R.string.my_store_widget_product_stock_title,
+            trackingIdentifier = "product_stock",
+            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
+        );
 
         companion object {
             val supportedWidgets: List<Type> = Type.entries.filter { it.isSupported }
