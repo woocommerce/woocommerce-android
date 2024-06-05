@@ -34,7 +34,7 @@ data class DashboardWidget(
         REVIEWS(R.string.my_store_widget_reviews_title, "reviews", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()),
         ORDERS(R.string.my_store_widget_orders_title, "orders", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()),
         COUPONS(R.string.my_store_widget_coupons_title, "coupons", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()),
-        INBOX(R.string.inbox_screen_title, "inbox", isSupported = FeatureFlag.MORE_MENU_INBOX.isEnabled()),
+        INBOX(R.string.inbox_screen_title, "inbox", isSupported = FeatureFlag.INBOX.isEnabled()),
         PRODUCT_STOCK(R.string.my_store_widget_product_stock_title, "product_stock", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled());
 
         companion object {
