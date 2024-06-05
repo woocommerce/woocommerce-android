@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-APP_TO_BUILD="${1:-WooCommerce}" # WooCommerce or WooCommerce-Wear
+APP_TO_BUILD="${1?You need to specify the app to build, WooCommerce or WooCommerce-Wear}"
 
 echo "--- :rubygems: Setting up Gems"
 install_gems
