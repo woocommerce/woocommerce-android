@@ -132,6 +132,7 @@ class DashboardInboxViewModel @AssistedInject constructor(
     }
 
     private fun onNoteDismissed(noteId: Long) {
+        parentViewModel.trackCardInteracted(INBOX.trackingIdentifier)
         viewModelScope.launch {
             inboxRepository.dismissNote(noteId)
                 .onFailure { showSyncError() }
@@ -139,6 +140,7 @@ class DashboardInboxViewModel @AssistedInject constructor(
     }
 
     private fun onNoteAction(actionId: Long, noteId: Long) {
+        parentViewModel.trackCardInteracted(INBOX.trackingIdentifier)
         val clickedNote = (viewState.value as? ViewState.Content)?.notes?.firstOrNull { noteId == it.id }
         clickedNote?.let {
             when {
@@ -171,6 +173,7 @@ class DashboardInboxViewModel @AssistedInject constructor(
     }
 
     private fun onNavigateToInbox() {
+        parentViewModel.trackCardInteracted(INBOX.trackingIdentifier)
         triggerEvent(NavigateToInbox)
     }
 
