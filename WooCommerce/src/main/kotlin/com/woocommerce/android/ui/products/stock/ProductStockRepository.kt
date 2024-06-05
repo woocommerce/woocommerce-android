@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.products.stock
 
 import android.os.Parcelable
+import com.woocommerce.android.WooException
 import com.woocommerce.android.extensions.formatToYYYYmmDDhhmmss
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -31,12 +32,12 @@ class ProductStockRepository @Inject constructor(
             stockStatus = stockStatus.toCoreProductStockStatus()
         ).let { stockReportResult ->
             if (stockReportResult.isError) {
-                Result.failure(Exception(stockReportResult.error.message))
+                Result.failure(WooException(stockReportResult.error!!))
             } else {
                 val (productSalesResult, variationSalesResult) = getProductSalesReports(stockReportResult.model!!)
-                return when {
-                    productSalesResult.isError -> Result.failure(Exception(productSalesResult.error.message))
-                    variationSalesResult.isError -> Result.failure(Exception(variationSalesResult.error.message))
+                when {
+                    productSalesResult.isError -> Result.failure(WooException(productSalesResult.error))
+                    variationSalesResult.isError -> Result.failure(WooException(variationSalesResult.error))
                     else ->
                         Result.success(
                             mapToProductStockItems(
