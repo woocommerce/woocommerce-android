@@ -119,6 +119,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     }.asLiveData()
 
     fun onTabSelected(selectionType: SelectionType) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
         if (selectionType != SelectionType.CUSTOM) {
             appPrefs.setActiveCouponsTab(selectionType.name)
         } else {
@@ -131,6 +132,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     }
 
     fun onEditCustomRangeTapped() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
         triggerEvent(
             OpenDatePicker(
                 fromDate = dateRangeState.value?.customRange?.start ?: Date(),
@@ -149,10 +151,12 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     }
 
     fun onViewAllClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
         triggerEvent(ViewAllCoupons)
     }
 
     fun onCouponClicked(couponId: Long) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
         triggerEvent(ViewCouponDetails(couponId))
     }
 
