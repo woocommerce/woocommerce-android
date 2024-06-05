@@ -13,6 +13,9 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +26,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
-fun WooPosBottomToolbar(state: BottomToolbarState, onUIEvent: (WooPosRootUIEvent) -> Unit) {
+fun WooPosBottomToolbar(state: State<BottomToolbarState>, onUIEvent: (WooPosRootUIEvent) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,7 +50,7 @@ fun WooPosBottomToolbar(state: BottomToolbarState, onUIEvent: (WooPosRootUIEvent
             }
             TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }) {
                 Text(
-                    text = state.cardReaderStatus.title,
+                    text = state.value.cardReaderStatus.title,
                     color = MaterialTheme.colors.secondaryVariant,
                     style = MaterialTheme.typography.button
                 )
@@ -59,7 +62,9 @@ fun WooPosBottomToolbar(state: BottomToolbarState, onUIEvent: (WooPosRootUIEvent
 @WooPosPreview
 @Composable
 fun PreviewWooPosBottomToolbar() {
-    val state = BottomToolbarState(BottomToolbarState.CardReaderStatus("Connected"))
+    val state = remember {
+        mutableStateOf(BottomToolbarState(BottomToolbarState.CardReaderStatus("Connected")))
+    }
     WooPosTheme {
         Column {
             Spacer(modifier = Modifier.weight(1f))

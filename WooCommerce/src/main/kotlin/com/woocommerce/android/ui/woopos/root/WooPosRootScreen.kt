@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -24,7 +25,7 @@ private fun WooPosRootScreen(state: State<BottomToolbarState>, onUIEvent: (WooPo
     WooPosTheme {
         Column(modifier = Modifier.background(MaterialTheme.colors.background)) {
             WooPosRootHost(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar(state.value, onUIEvent)
+            WooPosBottomToolbar(state, onUIEvent)
         }
     }
 }
@@ -32,7 +33,9 @@ private fun WooPosRootScreen(state: State<BottomToolbarState>, onUIEvent: (WooPo
 @WooPosPreview
 @Composable
 fun PreviewWooPosRootScreen() {
-    val state = mutableStateOf(BottomToolbarState(BottomToolbarState.CardReaderStatus("Connected")))
+    val state = remember {
+        mutableStateOf(BottomToolbarState(BottomToolbarState.CardReaderStatus("Connected")))
+    }
     WooPosTheme {
         WooPosRootScreen(state) {}
     }
