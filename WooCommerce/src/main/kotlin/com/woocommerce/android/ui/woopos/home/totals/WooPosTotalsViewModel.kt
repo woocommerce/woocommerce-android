@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.cartcheckout.totals
+package com.woocommerce.android.ui.woopos.home.totals
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

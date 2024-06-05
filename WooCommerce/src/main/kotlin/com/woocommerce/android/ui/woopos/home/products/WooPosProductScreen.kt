@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.cartcheckout.products
+package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

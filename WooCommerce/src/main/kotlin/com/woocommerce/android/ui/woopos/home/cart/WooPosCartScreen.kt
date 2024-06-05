@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.cartcheckout.cart
+package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

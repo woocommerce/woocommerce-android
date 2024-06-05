@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.cartcheckout.cart
+package com.woocommerce.android.ui.woopos.home.cart
 
 sealed class WooPosCartState {
     data object Cart : WooPosCartState()

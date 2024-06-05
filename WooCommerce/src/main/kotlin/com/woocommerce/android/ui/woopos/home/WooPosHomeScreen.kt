@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.cartcheckout
+package com.woocommerce.android.ui.woopos.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.spring
@@ -16,27 +16,27 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.woocommerce.android.ui.woopos.cartcheckout.cart.WooPosCartScreen
-import com.woocommerce.android.ui.woopos.cartcheckout.products.WooPosProductsScreen
-import com.woocommerce.android.ui.woopos.cartcheckout.totals.WooPosTotalsScreen
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 
 @Composable
-fun WooPosCartCheckoutScreen() {
-    val viewModel: WooPosCartCheckoutViewModel = hiltViewModel()
-    WooPosCartCheckoutScreen(
+fun WooPosHomeScreen() {
+    val viewModel: WooPosHomeViewModel = hiltViewModel()
+    WooPosHomeScreen(
         viewModel.state.collectAsState().value,
         viewModel::onUIEvent
     )
 }
 
 @Composable
-private fun WooPosCartCheckoutScreen(
-    state: WooPosCartCheckoutState,
-    onCartCheckoutUIEvent: (WooPosCartCheckoutUIEvent) -> Unit,
+private fun WooPosHomeScreen(
+    state: WooPosHomeState,
+    onCartCheckoutUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
     BackHandler {
-        onCartCheckoutUIEvent(WooPosCartCheckoutUIEvent.SystemBackClicked)
+        onCartCheckoutUIEvent(WooPosHomeUIEvent.SystemBackClicked)
     }
 
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
@@ -52,12 +52,12 @@ private fun WooPosCartCheckoutScreen(
             stiffness = 200f
         )
         when (state) {
-            WooPosCartCheckoutState.Cart -> scrollState.animateScrollTo(
+            WooPosHomeState.Cart -> scrollState.animateScrollTo(
                 0,
                 animationSpec = animationSpec
             )
 
-            WooPosCartCheckoutState.Checkout -> scrollState.animateScrollTo(
+            WooPosHomeState.Checkout -> scrollState.animateScrollTo(
                 halfScreenWidthPx,
                 animationSpec = animationSpec
             )
@@ -83,12 +83,12 @@ private fun WooPosCartCheckoutScreen(
 
 @Composable
 @WooPosPreview
-fun WooPosCartCheckoutCartScreenPreview() {
-    WooPosCartCheckoutScreen(state = WooPosCartCheckoutState.Cart, onCartCheckoutUIEvent = {})
+fun WooPosHomeCartScreenPreview() {
+    WooPosHomeScreen(state = WooPosHomeState.Cart, onCartCheckoutUIEvent = {})
 }
 
 @Composable
 @WooPosPreview
-fun WooPosCartCheckoutCheckoutScreenPreview() {
-    WooPosCartCheckoutScreen(state = WooPosCartCheckoutState.Checkout, onCartCheckoutUIEvent = {})
+fun WooPosHomeCheckoutScreenPreview() {
+    WooPosHomeScreen(state = WooPosHomeState.Checkout, onCartCheckoutUIEvent = {})
 }

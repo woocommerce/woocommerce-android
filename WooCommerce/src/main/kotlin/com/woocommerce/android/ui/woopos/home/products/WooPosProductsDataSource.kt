@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.cartcheckout.products
+package com.woocommerce.android.ui.woopos.home.products
 
 import com.woocommerce.android.model.Product
 import kotlinx.coroutines.flow.Flow
