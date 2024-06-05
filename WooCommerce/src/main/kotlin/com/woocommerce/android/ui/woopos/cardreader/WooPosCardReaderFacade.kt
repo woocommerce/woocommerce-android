@@ -9,12 +9,14 @@ import androidx.lifecycle.LifecycleOwner
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.util.parcelable
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
+@ActivityRetainedScoped
 class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderManager) : DefaultLifecycleObserver {
     private var paymentContinuation: Continuation<WooPosCardReaderPaymentResult>? = null
     private var paymentResultLauncher: ActivityResultLauncher<Intent>? = null

@@ -44,7 +44,7 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvents) -> Unit) {
                     style = MaterialTheme.typography.button
                 )
             }
-            TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ExitPOSClicked) }) {
+            TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ConnectToAReaderClicked) }) {
                 Text(
                     text = stringResource(id = R.string.woopos_reader_connected),
                     color = MaterialTheme.colors.secondaryVariant,
