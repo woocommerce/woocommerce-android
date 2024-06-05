@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 
-const val HOME_ROUTE = "cart-checkout"
+const val HOME_ROUTE = "home"
 
 fun NavController.navigateToCartCheckoutScreen() {
     navigate(HOME_ROUTE)
