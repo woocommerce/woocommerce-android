@@ -165,7 +165,10 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun onEditWidgetsClicked() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.DYNAMIC_DASHBOARD_EDIT_LAYOUT_BUTTON_TAPPED)
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_EDIT_LAYOUT_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_NEW_CARD_AVAILABLE to hasNewWidgets.value.toString())
+        )
         triggerEvent(OpenEditWidgets)
     }
 
