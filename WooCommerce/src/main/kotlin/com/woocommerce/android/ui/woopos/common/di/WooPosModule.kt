@@ -10,7 +10,7 @@ import dagger.hilt.components.SingletonComponent
 
 @InstallIn(SingletonComponent::class)
 @Module
-class POSModule {
+class WooPosModule {
     @Provides
     fun provideProductList(
         handler: ProductListHandler
