@@ -1,9 +1,9 @@
 package com.woocommerce.android.ui.woopos.root
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
@@ -22,24 +22,21 @@ class WooPosRootViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
-    val viewState: StateFlow<ViewState> = cardReaderFacade.readerStatus.map {
-        ViewState(cardReaderStatus = getCardReaderStatusText(status = it))
-    }.toStateFlow(viewModelScope, ViewState(CardReaderStatus("")))
+    val bottomToolbarState: StateFlow<BottomToolbarState> = cardReaderFacade.readerStatus.map {
+        BottomToolbarState(cardReaderStatus = getCardReaderStatusText(status = it))
+    }.toStateFlow(viewModelScope, BottomToolbarState(BottomToolbarState.CardReaderStatus("")))
 
-    private fun getCardReaderStatusText(status: com.woocommerce.android.cardreader.connection.CardReaderStatus) =
-        when (status) {
-            is NotConnected -> CardReaderStatus(
-                title = resourceProvider.getString(R.string.woopos_reader_disconnected)
-            )
-
-            is Connecting -> CardReaderStatus(
-                title = resourceProvider.getString(R.string.woopos_reader_connecting)
-            )
-
-            is Connected -> CardReaderStatus(
-                title = resourceProvider.getString(R.string.woopos_reader_connected)
-            )
-        }
+    private fun getCardReaderStatusText(status: CardReaderStatus) = when (status) {
+        is NotConnected -> BottomToolbarState.CardReaderStatus(
+            title = resourceProvider.getString(R.string.woopos_reader_disconnected)
+        )
+        is Connecting -> BottomToolbarState.CardReaderStatus(
+            title = resourceProvider.getString(R.string.woopos_reader_connecting)
+        )
+        is Connected -> BottomToolbarState.CardReaderStatus(
+            title = resourceProvider.getString(R.string.woopos_reader_connected)
+        )
+    }
 
     fun onUiEvent(event: WooPosRootUIEvent) {
         when (event) {
@@ -47,12 +44,4 @@ class WooPosRootViewModel @Inject constructor(
             ExitPOSClicked -> TODO()
         }
     }
-
-    data class ViewState(
-        val cardReaderStatus: CardReaderStatus
-    )
-
-    data class CardReaderStatus(
-        val title: String,
-    )
 }
