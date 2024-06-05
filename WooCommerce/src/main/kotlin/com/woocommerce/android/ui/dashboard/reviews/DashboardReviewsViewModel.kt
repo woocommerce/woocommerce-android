@@ -80,14 +80,17 @@ class DashboardReviewsViewModel @AssistedInject constructor(
         .asLiveData()
 
     fun onFilterSelected(status: ProductReviewStatus) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.REVIEWS.trackingIdentifier)
         this.status.value = status
     }
 
     fun onViewAllClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.REVIEWS.trackingIdentifier)
         triggerEvent(OpenReviewsList)
     }
 
     fun onReviewClicked(review: ProductReview) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.REVIEWS.trackingIdentifier)
         triggerEvent(OpenReviewDetail(review))
     }
 
