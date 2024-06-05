@@ -73,7 +73,7 @@ private fun WooPosCartCheckoutScreen(
             WooPosProductsScreen()
         }
         Box(modifier = Modifier.width(cartWidth)) {
-            WooPosCartScreen(onCartCheckoutUIEvent = onCartCheckoutUIEvent)
+            WooPosCartScreen()
         }
         Box(modifier = Modifier.width(totalsProductsWidth)) {
             WooPosTotalsScreen()

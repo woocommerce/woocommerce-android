@@ -17,15 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.woocommerce.android.ui.woopos.cartcheckout.WooPosCartCheckoutUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
 @Composable
-fun WooPosCartScreen(onCartCheckoutUIEvent: (WooPosCartCheckoutUIEvent) -> Unit) {
+fun WooPosCartScreen() {
     val viewModel: WooPosCartViewModel = hiltViewModel()
     WooPosCartScreen(
         state = viewModel.state.collectAsState().value,
-        { onCartCheckoutUIEvent(it) },
         viewModel::onUIEvent
     )
 }
@@ -33,7 +31,6 @@ fun WooPosCartScreen(onCartCheckoutUIEvent: (WooPosCartCheckoutUIEvent) -> Unit)
 @Composable
 private fun WooPosCartScreen(
     state: WooPosCartState,
-    onCartCheckoutUIEvent: (WooPosCartCheckoutUIEvent) -> Unit,
     onUIEvent: (WooPosCartUIEvent) -> Unit
 ) {
     Card(
@@ -58,7 +55,6 @@ private fun WooPosCartScreen(
                 when (state) {
                     WooPosCartState.Cart -> {
                         Button(onClick = {
-                            onCartCheckoutUIEvent(WooPosCartCheckoutUIEvent.CheckoutClicked)
                             onUIEvent(WooPosCartUIEvent.CheckoutClicked)
                         }) {
                             Text("To Checkout")
@@ -67,7 +63,6 @@ private fun WooPosCartScreen(
 
                     WooPosCartState.Checkout -> {
                         Button(onClick = {
-                            onCartCheckoutUIEvent(WooPosCartCheckoutUIEvent.BackFromCheckoutToCartClicked)
                             onUIEvent(WooPosCartUIEvent.BackFromCheckoutToCartClicked)
                         }) {
                             Text("To Products")
@@ -82,5 +77,5 @@ private fun WooPosCartScreen(
 @Composable
 @WooPosPreview
 fun WooPosCartScreenPreview() {
-    WooPosCartScreen {}
+    WooPosCartScreen()
 }
