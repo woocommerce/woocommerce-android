@@ -62,6 +62,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         }.asLiveData()
 
     fun onFilterSelected(productStockStatus: ProductStockStatus) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STOCK.trackingIdentifier)
         this.status.value = productStockStatus
     }
 
@@ -76,6 +77,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
     }
 
     fun onProductClicked(product: ProductStockItem) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STOCK.trackingIdentifier)
         val id = when {
             product.parentProductId != 0L -> product.parentProductId
             else -> product.productId
