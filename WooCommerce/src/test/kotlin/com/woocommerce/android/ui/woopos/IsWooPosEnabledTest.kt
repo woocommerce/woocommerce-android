@@ -30,7 +30,7 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin = mock()
     private val isWindowSizeExpandedAndBigger: IsWindowClassExpandedAndBigger = mock()
     private val isWooPosFFEnabled: IsWooPosFFEnabled = mock()
-    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock() {
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
         on { invoke() }.thenReturn("6.6.0")
     }
 
