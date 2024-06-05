@@ -2,6 +2,7 @@ package com.woocommerce.android.notifications.push
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -57,6 +58,7 @@ class FCMRefreshWorker @AssistedInject constructor(
                 .build()
             val work = PeriodicWorkRequestBuilder<FCMRefreshWorker>(7, TimeUnit.DAYS)
                 .setConstraints(constraints)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.HOURS)
                 .build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
