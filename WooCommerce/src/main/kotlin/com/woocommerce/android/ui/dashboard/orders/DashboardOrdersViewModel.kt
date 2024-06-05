@@ -159,6 +159,7 @@ class DashboardOrdersViewModel @AssistedInject constructor(
         }
 
     private fun onNavigateToOrders() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.ORDERS.trackingIdentifier)
         triggerEvent(NavigateToOrders)
     }
 
@@ -173,10 +174,12 @@ class DashboardOrdersViewModel @AssistedInject constructor(
     }
 
     fun onFilterSelected(filter: OrderStatusOption) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.ORDERS.trackingIdentifier)
         selectedFilter.value = filter.key
     }
 
     fun onOrderClicked(orderId: Long) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.ORDERS.trackingIdentifier)
         triggerEvent(NavigateToOrderDetails(orderId))
     }
 
