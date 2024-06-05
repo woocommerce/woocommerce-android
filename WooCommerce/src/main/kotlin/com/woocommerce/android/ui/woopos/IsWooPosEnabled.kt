@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
 import com.woocommerce.android.util.IsWindowClassExpandedAndBigger
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 import javax.inject.Inject
@@ -33,7 +34,12 @@ class IsWooPosEnabled @Inject constructor(
             countryCode.lowercase() == "us" &&
                 ippPlugin == WOOCOMMERCE_PAYMENTS &&
                 paymentAccount.storeCurrencies.default.lowercase() == "usd" &&
-                isWindowSizeExpandedAndBigger()
+                isWindowSizeExpandedAndBigger() &&
+                isPluginSetupEnabled(paymentAccount)
             ).also { cachedResult = it }
     }
+
+    private fun isPluginSetupEnabled(paymentAccount: WCPaymentAccountResult): Boolean =
+        paymentAccount.status == WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE ||
+            paymentAccount.status == WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
 }

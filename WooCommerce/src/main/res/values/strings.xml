@@ -442,6 +442,8 @@
     <string name="dashboard_product_stock_status_header_title">Status</string>
     <string name="dashboard_product_stock_levels">Stock levels</string>
     <string name="dashboard_product_stock_products">Products</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d items sold in last 30 days</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">No items sold in the last 30 days</string>
 
     <string name="dashboard_new_widgets_card_title">Looking for more insights?</string>
     <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>
@@ -4110,4 +4112,11 @@
     <string name="login_app_password_exit_dialog_message">It seems that you have not approved the app connection yet. Are you sure you want to exit?</string>
     <string name="login_app_password_exit_dialog_confirmation">Exit Anyway</string>
     <string name="login_app_password_exit_dialog_cancel">Cancel</string>
+
+    <!--
+    Woo POS
+    -->
+    <string name="woopos_exit_pos">Exit POS</string>
+    <string name="woopos_reader_connected">Reader Connected</string>
+    <string name="woopos_checkout">Checkout</string>
 </resources>

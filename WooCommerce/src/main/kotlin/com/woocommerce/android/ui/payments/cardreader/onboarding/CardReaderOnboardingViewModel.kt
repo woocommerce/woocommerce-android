@@ -438,6 +438,9 @@ class CardReaderOnboardingViewModel @Inject constructor(
                     CardReaderOnboardingEvent.ContinueToConnection(params, requireNotNull(arguments.cardReaderType))
                 )
             }
+            is CardReaderFlowParam.WooPosConnection -> {
+                error("Unsupported flow param: $params")
+            }
         }
     }
 
