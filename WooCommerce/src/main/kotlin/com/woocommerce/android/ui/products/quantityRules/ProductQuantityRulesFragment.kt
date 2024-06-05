@@ -62,9 +62,9 @@ class ProductQuantityRulesFragment : BaseProductEditorFragment(R.layout.fragment
     }
 
     private fun initializeViews() {
-        binding.minQuantity.text = quantityToString(viewModel.quantityRules.min) ?: getString(R.string.empty_min_quantity)
-        binding.maxQuantity.text = quantityToString(viewModel.quantityRules.max) ?: getString(R.string.empty_max_quantity)
-        binding.groupOf.text = quantityToString(viewModel.quantityRules.groupOf) ?: getString(R.string.empty_group_of)
+        binding.minQuantity.text = quantityToString(viewModel.quantityRules.min) ?: ""
+        binding.maxQuantity.text = quantityToString(viewModel.quantityRules.max) ?: ""
+        binding.groupOf.text = quantityToString(viewModel.quantityRules.groupOf) ?: ""
     }
 
     private fun quantityToString(quantity: Int?): String? {
