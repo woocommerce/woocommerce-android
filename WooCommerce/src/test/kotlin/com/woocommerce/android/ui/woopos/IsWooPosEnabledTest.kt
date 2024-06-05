@@ -12,6 +12,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult.WCPaymentAccountStatus.StoreCurrencies
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
@@ -87,8 +88,22 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given woo payments setup not completed or enabled, then return false`() = testBlocking {
+        val result = buildPaymentAccountResult(status = WCPaymentAccountResult.WCPaymentAccountStatus.NO_ACCOUNT)
+        whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
+        assertFalse(sut())
+    }
+
+    @Test
     fun `given big enough screen, woo payments enabled, USD currency and store in the US, then return true`() = testBlocking {
         val result = buildPaymentAccountResult(defaultCurrency = "USD", countryCode = "US", status = COMPLETE)
+        whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
+        assertTrue(sut())
+    }
+
+    @Test
+    fun `given big enough screen, woo payments enabled, USD currency, store in the US, and status enabled, then return true`() = testBlocking {
+        val result = buildPaymentAccountResult(defaultCurrency = "USD", countryCode = "US", status = ENABLED)
         whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
         assertTrue(sut())
     }

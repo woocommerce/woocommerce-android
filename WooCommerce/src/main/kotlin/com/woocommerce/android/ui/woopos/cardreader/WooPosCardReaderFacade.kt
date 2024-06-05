@@ -22,6 +22,8 @@ class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderMa
     private var paymentResultLauncher: ActivityResultLauncher<Intent>? = null
     private var activity: AppCompatActivity? = null
 
+    val readerStatus: Flow<CardReaderStatus> = cardReaderManager.readerStatus
+
     override fun onCreate(owner: LifecycleOwner) {
         activity = owner as AppCompatActivity
         paymentResultLauncher = activity!!.registerForActivityResult(
@@ -35,13 +37,10 @@ class WooPosCardReaderFacade @Inject constructor(cardReaderManager: CardReaderMa
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
-        super.onDestroy(owner)
         activity = null
         paymentContinuation = null
         paymentResultLauncher = null
     }
-
-    val readerStatus: Flow<CardReaderStatus> = cardReaderManager.readerStatus
 
     fun connectToReader() {
         activity!!.startActivity(WooPosCardReaderActivity.buildIntentForCardReaderConnection(activity!!))
