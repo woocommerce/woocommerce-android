@@ -3,6 +3,10 @@ package com.woocommerce.android.ui.dashboard.stock
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.ViewState.Loading
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -29,6 +33,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     @Assisted private val parentViewModel: DashboardViewModel,
     private val productStockRepository: ProductStockRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         val supportedFilters = listOf(
@@ -61,6 +66,12 @@ class DashboardProductStockViewModel @AssistedInject constructor(
     }
 
     fun onRetryClicked() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STOCK.trackingIdentifier
+            )
+        )
         _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
     }
 

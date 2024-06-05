@@ -34,7 +34,7 @@ data class DashboardWidget(
         ORDERS(R.string.my_store_widget_orders_title, "orders"),
         COUPONS(R.string.my_store_widget_coupons_title, "coupons"),
         INBOX(R.string.inbox_screen_title, "inbox"),
-        PRODUCT_STOCK(R.string.my_store_widget_product_stock_title, "stock");
+        STOCK(R.string.my_store_widget_product_stock_title, "stock");
 
         companion object {
             // Use the feature flag [DYNAMIC_DASHBOARD_M2] to filter out unsupported widgets during development
@@ -44,7 +44,7 @@ data class DashboardWidget(
                         it != DashboardWidget.Type.ORDERS &&
                             it != DashboardWidget.Type.REVIEWS &&
                             it != DashboardWidget.Type.COUPONS &&
-                            it != DashboardWidget.Type.PRODUCT_STOCK &&
+                            it != DashboardWidget.Type.STOCK &&
                             it != DashboardWidget.Type.INBOX
                         )
                 }

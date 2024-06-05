@@ -160,7 +160,7 @@ private fun ConfigurableWidgetCard(
             modifier = modifier
         )
 
-        DashboardWidget.Type.PRODUCT_STOCK -> DashboardProductStockCard(
+        DashboardWidget.Type.STOCK -> DashboardProductStockCard(
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )
