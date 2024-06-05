@@ -932,7 +932,6 @@ class ProductDetailCardBuilder(
     }
 
     private suspend fun Product.quantityRules(): ProductProperty? {
-        //val rules = viewModel.getQuantityRules(this.remoteId) ?: return null
         val rules = QuantityRules(this.minAllowedQuantity, this.maxAllowedQuantity, this.groupOfQuantity)
 
         val properties = buildMap {
