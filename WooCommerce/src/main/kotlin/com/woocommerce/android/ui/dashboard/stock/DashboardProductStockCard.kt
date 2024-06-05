@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
+import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
@@ -131,10 +132,17 @@ private fun DashboardProductStockCard(
                 )
             }
 
-            is DashboardProductStockViewModel.ViewState.Error -> {
+            DashboardProductStockViewModel.ViewState.Error.WCAnalyticsDisabled -> {
+                WCAnalyticsNotAvailableErrorView(
+                    title = stringResource(id = R.string.dashboard_product_stock_wcanalytics_inactive_title),
+                    onContactSupportClick = onContactSupportClicked
+                )
+            }
+
+            DashboardProductStockViewModel.ViewState.Error.Generic -> {
                 WidgetError(
-                    onContactSupportClicked = onContactSupportClicked,
-                    onRetryClicked = onRetryClicked
+                    onRetryClicked = onRetryClicked,
+                    onContactSupportClicked = onContactSupportClicked
                 )
             }
         }

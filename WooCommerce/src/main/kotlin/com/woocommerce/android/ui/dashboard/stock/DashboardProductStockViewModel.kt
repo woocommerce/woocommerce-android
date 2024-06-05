@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
+import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.ViewState.Loading
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = DashboardProductStockViewModel.Factory::class)
@@ -57,7 +59,12 @@ class DashboardProductStockViewModel @AssistedInject constructor(
             productStockRepository.fetchProductStockReport(status)
                 .fold(
                     onSuccess = { emit(ViewState.Success(it, status)) },
-                    onFailure = { emit(ViewState.Error) }
+                    onFailure = {
+                        when ((it as? WooException)?.error?.type) {
+                            WooErrorType.API_NOT_FOUND -> emit(ViewState.Error.WCAnalyticsDisabled)
+                            else -> emit(ViewState.Error.Generic)
+                        }
+                    }
                 )
         }.asLiveData()
 
@@ -92,7 +99,9 @@ class DashboardProductStockViewModel @AssistedInject constructor(
             val selectedFilter: ProductStockStatus
         ) : ViewState
 
-        data object Error : ViewState
+        enum class Error : ViewState {
+            Generic, WCAnalyticsDisabled
+        }
     }
 
     data class OpenProductDetail(val productId: Long) : MultiLiveEvent.Event()

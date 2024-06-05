@@ -111,7 +111,8 @@ class DashboardOrdersViewModel @AssistedInject constructor(
                         Content(
                             orders = orders.map { order ->
                                 val status = statusOptions
-                                    .first { option -> option.key == order.status.value }.label
+                                    .firstOrNull { option -> option.key == order.status.value }?.label
+                                    ?: order.status.value
 
                                 ViewState.OrderItem(
                                     id = order.id,
@@ -192,7 +193,8 @@ class DashboardOrdersViewModel @AssistedInject constructor(
             val selectedFilter: OrderStatusOption
         ) : ViewState()
 
-        @StringRes val title: Int = ORDERS.titleResource
+        @StringRes
+        val title: Int = ORDERS.titleResource
 
         data class OrderItem(
             val id: Long,
