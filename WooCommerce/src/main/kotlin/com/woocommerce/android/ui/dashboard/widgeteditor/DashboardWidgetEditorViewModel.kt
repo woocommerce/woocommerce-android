@@ -79,7 +79,12 @@ class DashboardWidgetEditorViewModel @Inject constructor(
         viewModelScope.launch {
             analyticsTracker.track(
                 AnalyticsEvent.DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED,
-                mapOf("cards" to editedWidgets.filter { it.isVisible }.joinToString(","))
+                mapOf("cards" to editedWidgets
+                    .filter { it.isVisible }
+                    .map { it.type.trackingIdentifier }
+                    .sorted()
+                    .joinToString(",")
+                )
             )
             dashboardRepository.updateWidgets(editedWidgets)
             triggerEvent(Exit)
