@@ -19,6 +19,7 @@ import com.woocommerce.android.util.isGooglePlayServicesAvailable
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.tasks.await
+import java.time.Duration
 import java.util.concurrent.TimeUnit
 
 @HiltWorker
@@ -51,12 +52,13 @@ class FCMRefreshWorker @AssistedInject constructor(
     }
 
     companion object {
+        @Suppress("MagicNumber")
         fun schedule(context: Context) {
             val workRequest = FCMRefreshWorker::class.java
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
-            val work = PeriodicWorkRequestBuilder<FCMRefreshWorker>(7, TimeUnit.DAYS)
+            val work = PeriodicWorkRequestBuilder<FCMRefreshWorker>(Duration.ofDays(7))
                 .setConstraints(constraints)
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 1, TimeUnit.HOURS)
                 .build()
