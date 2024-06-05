@@ -21,9 +21,11 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.root.WooPosRootViewModel.CardReaderStatus
+import com.woocommerce.android.ui.woopos.root.WooPosRootViewModel.ViewState
 
 @Composable
-fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvent) -> Unit) {
+fun WooPosBottomToolbar(state: ViewState, onUIEvent: (WooPosRootUIEvent) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,7 +49,7 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvent) -> Unit) {
             }
             TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }) {
                 Text(
-                    text = stringResource(id = R.string.woopos_reader_connected),
+                    text = state.cardReaderStatus.title,
                     color = MaterialTheme.colors.secondaryVariant,
                     style = MaterialTheme.typography.button
                 )
@@ -59,10 +61,11 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvent) -> Unit) {
 @WooPosPreview
 @Composable
 fun PreviewWooPosBottomToolbar() {
+    val state = ViewState(CardReaderStatus("Connected"))
     WooPosTheme {
         Column {
             Spacer(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar {}
+            WooPosBottomToolbar(state) {}
         }
     }
 }
