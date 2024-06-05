@@ -24,30 +24,21 @@ data class DashboardWidget(
 
     enum class Type(
         @StringRes val titleResource: Int,
-        val trackingIdentifier: String
+        val trackingIdentifier: String,
+        private val isSupported: Boolean = true,
     ) {
         ONBOARDING(R.string.my_store_widget_onboarding_title, "store_setup"),
         STATS(R.string.my_store_widget_stats_title, "performance"),
         POPULAR_PRODUCTS(R.string.my_store_widget_top_products_title, "top_performers"),
         BLAZE(R.string.my_store_widget_blaze_title, "blaze"),
-        REVIEWS(R.string.my_store_widget_reviews_title, "reviews"),
-        ORDERS(R.string.my_store_widget_orders_title, "orders"),
-        COUPONS(R.string.my_store_widget_coupons_title, "coupons"),
-        INBOX(R.string.inbox_screen_title, "inbox"),
-        PRODUCT_STOCK(R.string.my_store_widget_product_stock_title, "product_stock");
+        REVIEWS(R.string.my_store_widget_reviews_title, "reviews", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()),
+        ORDERS(R.string.my_store_widget_orders_title, "orders", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()),
+        COUPONS(R.string.my_store_widget_coupons_title, "coupons", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()),
+        INBOX(R.string.inbox_screen_title, "inbox", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()),
+        PRODUCT_STOCK(R.string.my_store_widget_product_stock_title, "product_stock", isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled());
 
         companion object {
-            // Use the feature flag [DYNAMIC_DASHBOARD_M2] to filter out unsupported widgets during development
-            val supportedWidgets: List<Type> = Type.entries
-                .filter {
-                    FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled() || (
-                        it != DashboardWidget.Type.ORDERS &&
-                            it != DashboardWidget.Type.REVIEWS &&
-                            it != DashboardWidget.Type.COUPONS &&
-                            it != DashboardWidget.Type.PRODUCT_STOCK &&
-                            it != DashboardWidget.Type.INBOX
-                        )
-                }
+            val supportedWidgets: List<Type> = Type.entries.filter { it.isSupported }
         }
     }
 
