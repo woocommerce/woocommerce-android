@@ -142,10 +142,7 @@ fun ChangeDueCalculatorScreen(
                         text = if ((uiState.change < BigDecimal.ZERO) || currencyFormatter == null) {
                             "-"
                         } else {
-                            currencyFormatter.formatCurrency(
-                                uiState.change,
-                                uiState.currencySymbol
-                            )
+                            currencyFormatter.formatCurrency(uiState.change)
                         },
                         style = MaterialTheme.typography.h3,
                         fontWeight = FontWeight.Bold,
@@ -233,10 +230,7 @@ fun getTitleText(
 
     return stringResource(
         R.string.cash_payments_take_payment_title,
-        currencyFormatter.formatCurrency(
-            uiState.amountDue,
-            uiState.currencySymbol
-        )
+        currencyFormatter.formatCurrency(uiState.amountDue)
     )
 }
 
