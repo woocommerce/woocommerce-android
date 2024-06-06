@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 
 sealed class WooPosHomeState {
     data class Cart(
-        val exitConfirmationDialog: WooPosExitConfirmationDialog?
+        val exitConfirmationDialog: WooPosExitConfirmationDialog? = null,
     ) : WooPosHomeState()
 
     data object Checkout : WooPosHomeState()
