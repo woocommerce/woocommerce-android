@@ -9,10 +9,11 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnect
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.ConnectToAReaderClicked
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.ExitPOSClicked
-import com.woocommerce.android.ui.woopos.util.toStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +22,7 @@ class WooPosRootViewModel @Inject constructor(
 ) : ViewModel() {
     val bottomToolbarState: StateFlow<WooPosBottomToolbarState> = cardReaderFacade.readerStatus.map {
         WooPosBottomToolbarState(cardReaderStatus = mapCardReaderStatusToUiState(it))
-    }.toStateFlow(viewModelScope, WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown))
+    }.stateIn(viewModelScope, WhileSubscribed(), WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown))
 
     fun onUiEvent(event: WooPosRootUIEvent) {
         when (event) {
