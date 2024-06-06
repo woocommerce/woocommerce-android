@@ -127,7 +127,7 @@ class DashboardRepository @Inject constructor(
 
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
-                    DashboardWidget.Type.PRODUCT_STOCK -> stockWidgetStatus
+                    DashboardWidget.Type.STOCK -> stockWidgetStatus
 
                     else -> DashboardWidget.Status.Available
                 }
