@@ -106,7 +106,7 @@ class ProductStockRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given stock is cached, when fetching stock again, don't fetch sales if stock report hasn not changed`() =
+    fun `given stock is cached, when fetching stock again, don't fetch sales if stock report has not changed`() =
         testBlocking {
             givenFetchProductStockReturns(LOW_STOCK_STATUS, PRODUCT_STOCK_ITEMS_WITH_VARIATIONS)
             givenFetchProductSalesSuccess()
