@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,16 +32,14 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is WooPosHomeState.Cart -> {
                         _state.value = value.copy(
-                            exitConfirmationDialog = WooPosExitConfirmationDialog(
-                                title = R.string.woopos_exit_confirmation_title,
-                                message = R.string.woopos_exit_confirmation_message,
-                                positiveButton = R.string.woopos_exit_confirmation_positive_button,
-                                negativeButton = R.string.woopos_exit_confirmation_negative_button,
-                            )
+                            exitConfirmationDialog = WooPosExitConfirmationDialog
                         )
                     }
                 }
             }
+
+            WooPosHomeUIEvent.ExitConfirmationDialogConfirmed -> TODO()
+            WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> TODO()
         }
     }
 

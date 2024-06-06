@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.home
 
-import androidx.annotation.StringRes
+import com.woocommerce.android.R
 
 sealed class WooPosHomeState {
     data class Cart(
@@ -10,9 +10,9 @@ sealed class WooPosHomeState {
     data object Checkout : WooPosHomeState()
 }
 
-data class WooPosExitConfirmationDialog(
-    @StringRes val title: Int,
-    @StringRes val message: Int,
-    @StringRes val positiveButton: Int,
-    @StringRes val negativeButton: Int,
-)
+data object WooPosExitConfirmationDialog {
+    val title: Int = R.string.woopos_exit_confirmation_title
+    val message: Int = R.string.woopos_exit_confirmation_message
+    val positiveButton: Int = R.string.woopos_exit_confirmation_positive_button
+    val negativeButton: Int = R.string.woopos_exit_confirmation_negative_button
+}

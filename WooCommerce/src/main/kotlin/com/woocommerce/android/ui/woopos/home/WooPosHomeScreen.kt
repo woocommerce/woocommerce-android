@@ -9,16 +9,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -106,38 +102,6 @@ private fun WooPosHomeScreen(
             WooPosTotalsScreen()
         }
     }
-}
-
-@Composable
-private fun PosExitConfirmationDialog(
-    dialog: WooPosExitConfirmationDialog,
-    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = {
-            onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed)
-        },
-        title = { Text(text = stringResource(id = dialog.title)) },
-        text = { Text(text = stringResource(id = dialog.message)) },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed)
-                }
-            ) {
-                Text(text = stringResource(id = dialog.positiveButton))
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogConfirmed)
-                }
-            ) {
-                Text(text = stringResource(id = dialog.negativeButton))
-            }
-        },
-    )
 }
 
 @Composable
