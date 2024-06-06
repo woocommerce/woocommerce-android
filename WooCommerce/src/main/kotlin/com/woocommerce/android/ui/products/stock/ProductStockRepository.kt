@@ -11,6 +11,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ProductStockItemApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
 import org.wordpress.android.fluxc.store.ProductStockItems
 import org.wordpress.android.fluxc.store.WCProductReportsStore
@@ -26,6 +27,8 @@ class ProductStockRepository @Inject constructor(
         private const val DAYS_TO_FETCH = 30
     }
 
+    private val cachedStockReport: MutableMap<ProductStockStatus, List<ProductStockItem>> = mutableMapOf()
+
     suspend fun fetchProductStockReport(stockStatus: ProductStockStatus): Result<List<ProductStockItem>> {
         return stockReportStore.fetchProductStockReport(
             site = selectedSite.get(),
@@ -34,21 +37,39 @@ class ProductStockRepository @Inject constructor(
             if (stockReportResult.isError) {
                 Result.failure(WooException(stockReportResult.error!!))
             } else {
+                if (isCachedStockTheSame(stockReportResult.model, stockStatus))
+                    return Result.success(cachedStockReport[stockStatus]!!)
+
                 val (productSalesResult, variationSalesResult) = getProductSalesReports(stockReportResult.model!!)
                 when {
                     productSalesResult.isError -> Result.failure(WooException(productSalesResult.error))
                     variationSalesResult.isError -> Result.failure(WooException(variationSalesResult.error))
-                    else ->
-                        Result.success(
-                            mapToProductStockItems(
-                                stockReportResult.model!!,
-                                productSalesResult.model!! + variationSalesResult.model!!
-                            )
+                    else -> {
+                        val report = mapToProductStockItems(
+                            stockReportResult.model!!,
+                            productSalesResult.model!! + variationSalesResult.model!!
                         )
+                        cachedStockReport[stockStatus] = report
+                        Result.success(report)
+                    }
                 }
             }
         }
     }
+
+    private fun isCachedStockTheSame(
+        fetchedStock: Array<ProductStockItemApiResponse>?,
+        stockStatus: ProductStockStatus
+    ): Boolean =
+        fetchedStock?.let { fetchedStockItems ->
+            val cachedStock = cachedStockReport[stockStatus] ?: return false
+            return cachedStock.all { cachedItem ->
+                fetchedStockItems.any { fetchedItem ->
+                    cachedItem.productId == fetchedItem.productId &&
+                        cachedItem.stockQuantity == fetchedItem.stockQuantity
+                }
+            }
+        } ?: false
 
     private suspend fun getProductSalesReports(stockReport: ProductStockItems):
         Pair<WooResult<Array<ReportsProductApiResponse>>, WooResult<Array<ReportsProductApiResponse>>> {

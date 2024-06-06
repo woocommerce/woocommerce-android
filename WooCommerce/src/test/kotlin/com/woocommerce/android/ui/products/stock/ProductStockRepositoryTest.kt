@@ -12,6 +12,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -102,6 +103,21 @@ class ProductStockRepositoryTest : BaseUnitTest() {
             verify(stockReportStock).fetchProductSalesReport(any(), any(), any(), any())
             verify(stockReportStock).fetchProductVariationsSalesReport(any(), any(), any(), any())
             assertEquals(STOCK_AND_SALES_REPORT_WITH_VARIATION, result.getOrNull())
+        }
+
+    @Test
+    fun `given stock is cached, when fetching stock again, don't fetch sales if stock report hasn not changed`() =
+        testBlocking {
+            givenFetchProductStockReturns(LOW_STOCK_STATUS, PRODUCT_STOCK_ITEMS_WITH_VARIATIONS)
+            givenFetchProductSalesSuccess()
+            givenFetchProductVariationSalesSuccess()
+
+            productStockRepository.fetchProductStockReport(LOW_STOCK_STATUS) // First fetch to cache stock
+            productStockRepository.fetchProductStockReport(LOW_STOCK_STATUS)
+
+            verify(stockReportStock, times(2)).fetchProductStockReport(any(), any(), any(), any())
+            verify(stockReportStock, times(1)).fetchProductSalesReport(any(), any(), any(), any())
+            verify(stockReportStock, times(1)).fetchProductVariationsSalesReport(any(), any(), any(), any())
         }
 
     private suspend fun givenFetchProductStockReturnsError(stockStatus: ProductStockStatus, wooError: WooError) {
