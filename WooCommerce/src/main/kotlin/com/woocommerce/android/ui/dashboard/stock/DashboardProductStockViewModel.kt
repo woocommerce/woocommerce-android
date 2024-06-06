@@ -3,11 +3,13 @@ package com.woocommerce.android.ui.dashboard.stock
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.ViewState.Loading
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.stock.ProductStockItem
 import com.woocommerce.android.ui.products.stock.ProductStockRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.assisted.Assisted
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.transformLatest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = DashboardProductStockViewModel.Factory::class)
@@ -51,12 +54,29 @@ class DashboardProductStockViewModel @AssistedInject constructor(
             productStockRepository.fetchProductStockReport(status)
                 .fold(
                     onSuccess = { emit(ViewState.Success(it, status)) },
-                    onFailure = { emit(ViewState.Error) }
+                    onFailure = {
+                        when ((it as? WooException)?.error?.type) {
+                            WooErrorType.API_NOT_FOUND -> emit(ViewState.Error.WCAnalyticsDisabled)
+                            else -> emit(ViewState.Error.Generic)
+                        }
+                    }
                 )
         }.asLiveData()
 
     fun onFilterSelected(productStockStatus: ProductStockStatus) {
         this.status.value = productStockStatus
+    }
+
+    fun onRetryClicked() {
+        _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
+    }
+
+    fun onProductClicked(product: ProductStockItem) {
+        val id = when {
+            product.parentProductId != 0L -> product.parentProductId
+            else -> product.productId
+        }
+        triggerEvent(OpenProductDetail(id))
     }
 
     sealed interface ViewState {
@@ -66,8 +86,12 @@ class DashboardProductStockViewModel @AssistedInject constructor(
             val selectedFilter: ProductStockStatus
         ) : ViewState
 
-        data object Error : ViewState
+        enum class Error : ViewState {
+            Generic, WCAnalyticsDisabled
+        }
     }
+
+    data class OpenProductDetail(val productId: Long) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {
