@@ -25,8 +25,14 @@ class WooPosRootViewModel @Inject constructor(
 
     fun onUiEvent(event: WooPosRootUIEvent) {
         when (event) {
-            ConnectToAReaderClicked -> cardReaderFacade.connectToReader()
+            ConnectToAReaderClicked -> handleConnectToReaderButtonClicked()
             ExitPOSClicked -> TODO()
+        }
+    }
+
+    private fun handleConnectToReaderButtonClicked() {
+        if (bottomToolbarState.value.cardReaderStatus != WooPosBottomToolbarState.CardReaderStatus.Connected) {
+            cardReaderFacade.connectToReader()
         }
     }
 
