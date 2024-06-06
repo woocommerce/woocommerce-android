@@ -24,8 +24,8 @@ class WooPosProductsViewModel @Inject constructor(
 
     private var loadMoreProductsJob: Job? = null
 
-    private val selectedItems: MutableStateFlow<Set<WooPosProductsListItem>> =
-        savedState.getStateFlow(scope = viewModelScope, initialValue = emptySet(), key = "selectedItems")
+    private val selectedItems: MutableStateFlow<List<WooPosProductsListItem>> =
+        savedState.getStateFlow(scope = viewModelScope, initialValue = emptyList(), key = "selectedItems")
 
     val viewState: StateFlow<WooPosProductsViewState> = productsDataSource.products.map { products ->
         WooPosProductsViewState(

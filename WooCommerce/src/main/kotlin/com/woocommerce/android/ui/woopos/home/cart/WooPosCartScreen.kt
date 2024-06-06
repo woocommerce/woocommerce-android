@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
@@ -53,15 +55,20 @@ private fun WooPosCartScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 when (state) {
-                    WooPosCartState.Cart -> {
+                    is WooPosCartState.Cart -> {
                         Button(onClick = {
                             onUIEvent(WooPosCartUIEvent.CheckoutClicked)
                         }) {
+                            LazyColumn {
+                                items(state.itemsInCart) { item ->
+                                    Text(item.title)
+                                }
+                            }
                             Text("To Checkout")
                         }
                     }
 
-                    WooPosCartState.Checkout -> {
+                    is WooPosCartState.Checkout -> {
                         Button(onClick = {
                             onUIEvent(WooPosCartUIEvent.BackFromCheckoutToCartClicked)
                         }) {
