@@ -35,7 +35,7 @@ class FCMRefreshWorker @AssistedInject constructor(
         WooLog.d(WooLog.T.NOTIFICATIONS, "Refreshing FCM token")
 
         return runCatching { Firebase.messaging.token.await() }
-            .map { token ->
+            .mapCatching { token ->
                 require(token.isNotNullOrEmpty()) { "Retrieved FCM token is null or empty" }
                 token
             }
