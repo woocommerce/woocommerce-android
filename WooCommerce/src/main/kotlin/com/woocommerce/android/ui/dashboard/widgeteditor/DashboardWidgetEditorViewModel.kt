@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
@@ -78,20 +78,25 @@ class DashboardWidgetEditorViewModel @Inject constructor(
 
     fun onSaveClicked() {
         viewModelScope.launch {
-            analyticsTracker.track(
-                AnalyticsEvent.DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED,
-                mapOf(
-                    AnalyticsTracker.KEY_FIRST_CARD_TYPE to editedWidgets.first().type.trackingIdentifier,
-                    AnalyticsTracker.KEY_SELECTED_CARDS to editedWidgets
-                        .filter { it.isVisible }
-                        .map { it.type.trackingIdentifier }
-                        .sorted()
-                        .joinToString(",")
-                )
-            )
+            trackSelectedCards()
             dashboardRepository.updateWidgets(editedWidgets)
             triggerEvent(Exit)
         }
+    }
+
+    private fun trackSelectedCards() {
+        val visibleCardTrackingIdentifiers = editedWidgets
+            .filter { it.isSelected }
+            .map { it.type.trackingIdentifier }
+        analyticsTracker.track(
+            DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_SORTED_CARDS to visibleCardTrackingIdentifiers.joinToString(","),
+                AnalyticsTracker.KEY_DASHBOARD_ENABLED_CARDS to visibleCardTrackingIdentifiers
+                    .sorted()
+                    .joinToString(",")
+            )
+        )
     }
 
     fun onSelectionChange(dashboardWidget: DashboardWidget, selected: Boolean) {
