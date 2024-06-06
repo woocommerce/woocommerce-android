@@ -4119,7 +4119,10 @@
     -->
     <string name="woopos_exit_pos">Exit POS</string>
     <string name="woopos_reader_connected">Reader Connected</string>
+    <string name="woopos_reader_connecting">Reader Connecting</string>
+    <string name="woopos_reader_disconnected">Reader Disconnected</string>
     <string name="woopos_checkout">Checkout</string>
+    <string name="woopos_reader_unknown">Reader Status Unknown</string>
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
