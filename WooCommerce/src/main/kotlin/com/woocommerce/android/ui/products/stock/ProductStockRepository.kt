@@ -64,7 +64,7 @@ class ProductStockRepository @Inject constructor(
     ): Boolean =
         fetchedStock?.let { fetchedStockItems ->
             val cachedStock = cachedStockReport[stockStatus] ?: return false
-            if (cachedStock.isEmpty()) return false
+            if (cachedStock.isEmpty() || fetchedStockItems.size != cachedStock.size) return false
             return cachedStock.all { cachedItem ->
                 fetchedStockItems.any { fetchedItem ->
                     cachedItem.productId == fetchedItem.productId &&
