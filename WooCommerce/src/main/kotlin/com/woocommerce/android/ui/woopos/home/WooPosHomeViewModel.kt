@@ -48,6 +48,8 @@ class WooPosHomeViewModel @Inject constructor(
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = WooPosHomeState.Cart
                     }
+
+                    is ChildToParentEvent.ProductSelectionChanged -> TODO()
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -41,6 +42,7 @@ fun WooPosProductsScreen() {
     val productsViewModel: WooPosProductsViewModel = hiltViewModel()
     WooPosProductsScreen(
         productsState = productsViewModel.viewState,
+        onItemClicked = productsViewModel::onItemClicked,
         onEndOfProductsGridReached = productsViewModel::onEndOfProductsGridReached,
     )
 }
@@ -48,6 +50,7 @@ fun WooPosProductsScreen() {
 @Composable
 private fun WooPosProductsScreen(
     productsState: StateFlow<WooPosProductsViewState>,
+    onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
 ) {
     Card(
@@ -60,7 +63,7 @@ private fun WooPosProductsScreen(
             Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            ProductSelector(productsState, onEndOfProductsGridReached)
+            ProductSelector(productsState, onItemClicked, onEndOfProductsGridReached)
         }
     }
 }
@@ -68,6 +71,7 @@ private fun WooPosProductsScreen(
 @Composable
 fun ProductSelector(
     productsState: StateFlow<WooPosProductsViewState>,
+    onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
 ) {
     ConstraintLayout(
@@ -86,7 +90,7 @@ fun ProductSelector(
             state = gridState
         ) {
             itemsIndexed(state.value.products) { _, product ->
-                ProductItem(product = product)
+                ProductItem(product = product, onItemClicked = onItemClicked)
             }
         }
         InfiniteGridHandler(gridState) {
@@ -96,12 +100,13 @@ fun ProductSelector(
 }
 
 @Composable
-private fun ProductItem(product: WooPosProductsListItem) {
+private fun ProductItem(product: WooPosProductsListItem, onItemClicked: (item: WooPosProductsListItem) -> Unit) {
     ConstraintLayout(
         modifier = Modifier
             .border(1.dp, Color.Gray, shape = RoundedCornerShape(4.dp))
             .padding(16.dp)
             .fillMaxWidth(0.5f)
+            .clickable { onItemClicked(product) }
     ) {
         Text(
             text = product.title,
@@ -151,6 +156,7 @@ fun WooPosHomeScreenPreview() {
     )
     WooPosProductsScreen(
         productsState = productState,
+        onItemClicked = {},
         onEndOfProductsGridReached = {}
     )
 }
