@@ -10,24 +10,24 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductSelectorViewModel @Inject constructor(
-    private val productsDataSource: ProductsDataSource,
+class WooPosProductsViewModel @Inject constructor(
+    private val productsDataSource: WooPosProductsDataSource,
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
 
     private var loadMoreProductsJob: Job? = null
 
-    val viewState: StateFlow<ViewState> = productsDataSource.products.map { products ->
-        ViewState(
+    val viewState: StateFlow<WooPosProductsViewState> = productsDataSource.products.map { products ->
+        WooPosProductsViewState(
             products = products.map { product ->
-                ListItem(
+                WooPosProductsListItem(
                     productId = product.remoteId,
                     title = product.name,
                     imageUrl = product.firstImageUrl
                 )
             }
         )
-    }.toStateFlow(ViewState(products = emptyList()))
+    }.toStateFlow(WooPosProductsViewState(products = emptyList()))
 
     init {
         launch {

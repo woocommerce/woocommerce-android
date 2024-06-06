@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
+import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
@@ -60,7 +61,7 @@ fun DashboardProductStockCard(
     viewModel.productStockState.observeAsState().value?.let { viewState ->
         DashboardProductStockCard(
             viewState = viewState,
-            onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.PRODUCT_STOCK) },
+            onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.STOCK) },
             onFilterSelected = viewModel::onFilterSelected,
             onProductClicked = viewModel::onProductClicked,
             onRetryClicked = viewModel::onRetryClicked,
@@ -104,10 +105,10 @@ private fun DashboardProductStockCard(
     modifier: Modifier = Modifier,
 ) {
     WidgetCard(
-        titleResource = DashboardWidget.Type.PRODUCT_STOCK.titleResource,
+        titleResource = DashboardWidget.Type.STOCK.titleResource,
         menu = DashboardWidgetMenu(
             listOf(
-                DashboardWidget.Type.PRODUCT_STOCK.defaultHideMenuEntry(onHideClicked)
+                DashboardWidget.Type.STOCK.defaultHideMenuEntry(onHideClicked)
             )
         ),
         isError = viewState is DashboardProductStockViewModel.ViewState.Error,
@@ -131,10 +132,17 @@ private fun DashboardProductStockCard(
                 )
             }
 
-            is DashboardProductStockViewModel.ViewState.Error -> {
+            DashboardProductStockViewModel.ViewState.Error.WCAnalyticsDisabled -> {
+                WCAnalyticsNotAvailableErrorView(
+                    title = stringResource(id = R.string.dashboard_product_stock_wcanalytics_inactive_title),
+                    onContactSupportClick = onContactSupportClicked
+                )
+            }
+
+            DashboardProductStockViewModel.ViewState.Error.Generic -> {
                 WidgetError(
-                    onContactSupportClicked = onContactSupportClicked,
-                    onRetryClicked = onRetryClicked
+                    onRetryClicked = onRetryClicked,
+                    onContactSupportClicked = onContactSupportClicked
                 )
             }
         }

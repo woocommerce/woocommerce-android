@@ -5,8 +5,8 @@ import com.woocommerce.android.ui.products.selector.ProductListHandler
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ProductsDataSourceImpl @Inject constructor(private val handler: ProductListHandler) :
-    ProductsDataSource {
+class WooPosProductsDataSourceImpl @Inject constructor(private val handler: ProductListHandler) :
+    WooPosProductsDataSource {
     override val products: Flow<List<Product>> = handler.productsFlow
 
     override suspend fun loadProducts() {

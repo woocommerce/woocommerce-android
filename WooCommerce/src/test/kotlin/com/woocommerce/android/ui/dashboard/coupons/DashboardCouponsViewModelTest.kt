@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard.coupons
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
@@ -92,6 +93,7 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
         on { dateRange } doReturn rangeFlow
         onBlocking { updateDateRange(any()) } doAnswer { rangeFlow.value = it.arguments[0] as StatsTimeRange }
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: DashboardCouponsViewModel
 
@@ -114,6 +116,7 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
             coroutineDispatchers = coroutinesTestRule.testDispatchers,
             dateRangeFormatter = dateRangeFormatter,
             customDateRangeDataStore = customDateRangeDataStore,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 

@@ -19,7 +19,7 @@ class MoreMenuRepository @Inject constructor(
 
     suspend fun isInboxEnabled(): Boolean =
         withContext(Dispatchers.IO) {
-            if (!selectedSite.exists() || !FeatureFlag.MORE_MENU_INBOX.isEnabled()) return@withContext false
+            if (!selectedSite.exists() || !FeatureFlag.INBOX.isEnabled()) return@withContext false
 
             val currentWooCoreVersion = getWooVersion() ?: return@withContext false
             currentWooCoreVersion.semverCompareTo(INBOX_MINIMUM_SUPPORTED_VERSION) >= 0

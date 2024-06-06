@@ -4,6 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -13,15 +17,15 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosRootHost
 @Composable
 fun WooPosRootScreen() {
     val viewModel: WooPosRootViewModel = hiltViewModel()
-    WooPosRootScreen(viewModel::onUiEvent)
+    WooPosRootScreen(viewModel.bottomToolbarState.collectAsState(), viewModel::onUiEvent)
 }
 
 @Composable
-private fun WooPosRootScreen(onUIEvent: (WooPosRootUIEvents) -> Unit) {
+private fun WooPosRootScreen(state: State<WooPosBottomToolbarState>, onUIEvent: (WooPosRootUIEvent) -> Unit) {
     WooPosTheme {
         Column(modifier = Modifier.background(MaterialTheme.colors.background)) {
             WooPosRootHost(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar(onUIEvent)
+            WooPosBottomToolbar(state, onUIEvent)
         }
     }
 }
@@ -29,7 +33,10 @@ private fun WooPosRootScreen(onUIEvent: (WooPosRootUIEvents) -> Unit) {
 @WooPosPreview
 @Composable
 fun PreviewWooPosRootScreen() {
+    val state = remember {
+        mutableStateOf(WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown))
+    }
     WooPosTheme {
-        WooPosRootScreen({})
+        WooPosRootScreen(state) {}
     }
 }

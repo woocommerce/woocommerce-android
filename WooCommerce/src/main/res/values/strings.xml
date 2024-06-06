@@ -444,6 +444,7 @@
     <string name="dashboard_product_stock_products">Products</string>
     <string name="dashboard_product_stock_sales_last_30_days">%d items sold in last 30 days</string>
     <string name="dashboard_product_stock_no_sales_last_30_days">No items sold in the last 30 days</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Unable to load product stock reports</string>
 
     <string name="dashboard_new_widgets_card_title">Looking for more insights?</string>
     <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>
@@ -4118,5 +4119,8 @@
     -->
     <string name="woopos_exit_pos">Exit POS</string>
     <string name="woopos_reader_connected">Reader Connected</string>
+    <string name="woopos_reader_connecting">Reader Connecting</string>
+    <string name="woopos_reader_disconnected">Reader Disconnected</string>
     <string name="woopos_checkout">Checkout</string>
+    <string name="woopos_reader_unknown">Reader Status Unknown</string>
 </resources>
