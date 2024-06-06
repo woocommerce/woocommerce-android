@@ -26,7 +26,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
-fun WooPosBottomToolbar(state: State<BottomToolbarState>, onUIEvent: (WooPosRootUIEvent) -> Unit) {
+fun WooPosBottomToolbar(state: State<WooPosBottomToolbarState>, onUIEvent: (WooPosRootUIEvent) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -63,7 +63,7 @@ fun WooPosBottomToolbar(state: State<BottomToolbarState>, onUIEvent: (WooPosRoot
 @Composable
 fun PreviewWooPosBottomToolbar() {
     val state = remember {
-        mutableStateOf(BottomToolbarState(BottomToolbarState.CardReaderStatus.Unknown))
+        mutableStateOf(WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown))
     }
     WooPosTheme {
         Column {

@@ -3,7 +3,7 @@ package com.woocommerce.android.ui.woopos.root
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 
-data class BottomToolbarState(
+data class WooPosBottomToolbarState(
     val cardReaderStatus: CardReaderStatus
 ) {
     sealed class CardReaderStatus(@StringRes val title: Int) {

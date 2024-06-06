@@ -19,9 +19,9 @@ import javax.inject.Inject
 class WooPosRootViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
 ) : ViewModel() {
-    val bottomToolbarState: StateFlow<BottomToolbarState> = cardReaderFacade.readerStatus.map {
-        BottomToolbarState(cardReaderStatus = mapCardReaderStatusToUiState(it))
-    }.toStateFlow(viewModelScope, BottomToolbarState(BottomToolbarState.CardReaderStatus.Unknown))
+    val bottomToolbarState: StateFlow<WooPosBottomToolbarState> = cardReaderFacade.readerStatus.map {
+        WooPosBottomToolbarState(cardReaderStatus = mapCardReaderStatusToUiState(it))
+    }.toStateFlow(viewModelScope, WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown))
 
     fun onUiEvent(event: WooPosRootUIEvent) {
         when (event) {
@@ -30,11 +30,11 @@ class WooPosRootViewModel @Inject constructor(
         }
     }
 
-    private fun mapCardReaderStatusToUiState(status: CardReaderStatus): BottomToolbarState.CardReaderStatus {
+    private fun mapCardReaderStatusToUiState(status: CardReaderStatus): WooPosBottomToolbarState.CardReaderStatus {
         return when (status) {
-            is Connected -> BottomToolbarState.CardReaderStatus.Connected
-            is Connecting -> BottomToolbarState.CardReaderStatus.Connecting
-            is NotConnected -> BottomToolbarState.CardReaderStatus.NotConnected
+            is Connected -> WooPosBottomToolbarState.CardReaderStatus.Connected
+            is Connecting -> WooPosBottomToolbarState.CardReaderStatus.Connecting
+            is NotConnected -> WooPosBottomToolbarState.CardReaderStatus.NotConnected
         }
     }
 }

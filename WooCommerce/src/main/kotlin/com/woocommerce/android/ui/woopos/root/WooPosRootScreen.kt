@@ -21,7 +21,7 @@ fun WooPosRootScreen() {
 }
 
 @Composable
-private fun WooPosRootScreen(state: State<BottomToolbarState>, onUIEvent: (WooPosRootUIEvent) -> Unit) {
+private fun WooPosRootScreen(state: State<WooPosBottomToolbarState>, onUIEvent: (WooPosRootUIEvent) -> Unit) {
     WooPosTheme {
         Column(modifier = Modifier.background(MaterialTheme.colors.background)) {
             WooPosRootHost(modifier = Modifier.weight(1f))
@@ -34,7 +34,7 @@ private fun WooPosRootScreen(state: State<BottomToolbarState>, onUIEvent: (WooPo
 @Composable
 fun PreviewWooPosRootScreen() {
     val state = remember {
-        mutableStateOf(BottomToolbarState(BottomToolbarState.CardReaderStatus.Unknown))
+        mutableStateOf(WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown))
     }
     WooPosTheme {
         WooPosRootScreen(state) {}
