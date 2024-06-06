@@ -43,14 +43,14 @@ data class DashboardWidget(
             titleResource = R.string.my_store_widget_blaze_title,
             trackingIdentifier = "blaze"
         ),
+        INBOX(
+            titleResource = R.string.inbox_screen_title,
+            trackingIdentifier = "inbox",
+            isSupported = FeatureFlag.INBOX.isEnabled()
+        ),
         REVIEWS(
             titleResource = R.string.my_store_widget_reviews_title,
             trackingIdentifier = "reviews",
-            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
-        ),
-        ORDERS(
-            titleResource = R.string.my_store_widget_orders_title,
-            trackingIdentifier = "orders",
             isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
         ),
         COUPONS(
@@ -58,14 +58,14 @@ data class DashboardWidget(
             trackingIdentifier = "coupons",
             isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
         ),
-        INBOX(
-            titleResource = R.string.inbox_screen_title,
-            trackingIdentifier = "inbox",
-            isSupported = FeatureFlag.INBOX.isEnabled()
-        ),
         STOCK(
             titleResource = R.string.my_store_widget_product_stock_title,
             trackingIdentifier = "stock",
+            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
+        ),
+        ORDERS(
+            titleResource = R.string.my_store_widget_orders_title,
+            trackingIdentifier = "orders",
             isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
         );
 
