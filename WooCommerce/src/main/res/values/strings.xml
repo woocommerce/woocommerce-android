@@ -4123,6 +4123,6 @@
 
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
-    <string name="woopos_exit_confirmation_positive_button">Exit</string>
+    <string name="woopos_exit_confirmation_positive_button">EXIT</string>
     <string name="woopos_exit_confirmation_negative_button">Cancel</string>
 </resources>

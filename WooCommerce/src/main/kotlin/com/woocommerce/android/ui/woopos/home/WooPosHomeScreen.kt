@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
@@ -107,7 +106,12 @@ private fun WooPosHomeScreen(
 @Composable
 @WooPosPreview
 fun WooPosHomeCartScreenPreview() {
-    WooPosHomeScreen(state = WooPosHomeState.Cart(), onHomeUIEvent = {})
+    WooPosHomeScreen(
+        state = WooPosHomeState.Cart(
+            exitConfirmationDialog = null
+        ),
+        onHomeUIEvent = {}
+    )
 }
 
 @Composable
@@ -115,12 +119,7 @@ fun WooPosHomeCartScreenPreview() {
 fun WooPosHomeCartWithExitPOSConfirmationScreenPreview() {
     WooPosHomeScreen(
         state = WooPosHomeState.Cart(
-            exitConfirmationDialog = WooPosExitConfirmationDialog(
-                title = R.string.woopos_exit_confirmation_title,
-                message = R.string.woopos_exit_confirmation_message,
-                positiveButton = R.string.woopos_exit_confirmation_positive_button,
-                negativeButton = R.string.woopos_exit_confirmation_negative_button,
-            )
+            exitConfirmationDialog = WooPosExitConfirmationDialog
         ),
         onHomeUIEvent = {}
     )

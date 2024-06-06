@@ -13,7 +13,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
 ) : ViewModel() {
-    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart())
+    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart(exitConfirmationDialog = null))
     val state: StateFlow<WooPosHomeState> = _state
 
     init {
@@ -23,23 +23,25 @@ class WooPosHomeViewModel @Inject constructor(
     fun onUIEvent(event: WooPosHomeUIEvent) {
         when (event) {
             WooPosHomeUIEvent.SystemBackClicked -> {
-                val value = _state.value
-                when (value) {
+                when (val value = _state.value) {
                     WooPosHomeState.Checkout -> {
-                        _state.value = WooPosHomeState.Cart()
+                        _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                     }
 
                     is WooPosHomeState.Cart -> {
-                        _state.value = value.copy(
-                            exitConfirmationDialog = WooPosExitConfirmationDialog
-                        )
+                        _state.value = value.copy(exitConfirmationDialog = WooPosExitConfirmationDialog)
                     }
                 }
             }
 
-            WooPosHomeUIEvent.ExitConfirmationDialogConfirmed -> TODO()
-            WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> TODO()
+            WooPosHomeUIEvent.ExitConfirmationDialogConfirmed -> {
+
+            }
+
+            WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
+                _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
+            }
         }
     }
 
@@ -52,7 +54,7 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = WooPosHomeState.Cart()
+                        _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
                     }
                 }
             }

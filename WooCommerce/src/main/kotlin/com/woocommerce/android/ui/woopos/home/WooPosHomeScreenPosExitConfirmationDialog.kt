@@ -16,15 +16,19 @@ fun PosExitConfirmationDialog(
         onDismissRequest = {
             onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed)
         },
-        title = { Text(text = stringResource(id = dialog.title)) },
-        text = { Text(text = stringResource(id = dialog.message)) },
+        title = {
+            Text(text = stringResource(id = dialog.title))
+        },
+        text = {
+            Text(text = stringResource(id = dialog.message))
+        },
         confirmButton = {
             TextButton(
                 onClick = {
                     onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed)
                 }
             ) {
-                Text(text = stringResource(id = dialog.positiveButton))
+                Text(text = stringResource(id = dialog.positiveButton).uppercase())
             }
         },
         dismissButton = {
@@ -33,7 +37,9 @@ fun PosExitConfirmationDialog(
                     onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogConfirmed)
                 }
             ) {
-                Text(text = stringResource(id = dialog.negativeButton))
+                Text(
+                    text = stringResource(id = dialog.negativeButton).uppercase(),
+                )
             }
         },
     )
