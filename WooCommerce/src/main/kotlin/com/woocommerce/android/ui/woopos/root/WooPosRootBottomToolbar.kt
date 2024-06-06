@@ -50,7 +50,7 @@ fun WooPosBottomToolbar(state: State<BottomToolbarState>, onUIEvent: (WooPosRoot
             }
             TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }) {
                 Text(
-                    text = state.value.cardReaderStatus.title,
+                    text = stringResource(id = state.value.cardReaderStatus.title),
                     color = MaterialTheme.colors.secondaryVariant,
                     style = MaterialTheme.typography.button
                 )
@@ -63,7 +63,7 @@ fun WooPosBottomToolbar(state: State<BottomToolbarState>, onUIEvent: (WooPosRoot
 @Composable
 fun PreviewWooPosBottomToolbar() {
     val state = remember {
-        mutableStateOf(BottomToolbarState(BottomToolbarState.CardReaderStatus("Connected")))
+        mutableStateOf(BottomToolbarState(BottomToolbarState.CardReaderStatus.Unknown))
     }
     WooPosTheme {
         Column {

@@ -4119,4 +4119,5 @@
     <string name="woopos_reader_connecting">Reader Connecting</string>
     <string name="woopos_reader_disconnected">Reader Disconnected</string>
     <string name="woopos_checkout">Checkout</string>
+    <string name="woopos_reader_unknown">Reader Status Unknown</string>
 </resources>
