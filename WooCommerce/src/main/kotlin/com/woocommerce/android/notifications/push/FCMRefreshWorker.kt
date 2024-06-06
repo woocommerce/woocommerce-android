@@ -32,6 +32,8 @@ class FCMRefreshWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         if (!context.isGooglePlayServicesAvailable()) return Result.success()
 
+        WooLog.d(WooLog.T.NOTIFICATIONS, "Refreshing FCM token")
+
         return runCatching { Firebase.messaging.token.await() }
             .map { token ->
                 require(token.isNotNullOrEmpty()) { "Retrieved FCM token is null or empty" }
@@ -39,7 +41,7 @@ class FCMRefreshWorker @AssistedInject constructor(
             }
             .fold(
                 onSuccess = { token ->
-                    WooLog.d(WooLog.T.NOTIFICATIONS, "FCM token retrieved: $token")
+                    WooLog.d(WooLog.T.NOTIFICATIONS, "FCM token retrieved")
                     appPrefs.setFCMToken(token)
                     registerDevice(RegisterDevice.Mode.FORCEFULLY)
                     Result.success()
