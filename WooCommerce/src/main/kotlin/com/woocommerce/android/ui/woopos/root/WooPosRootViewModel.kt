@@ -6,10 +6,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosRootViewModel @Inject constructor() : ViewModel() {
-    fun onUiEvent(event: WooPosRootUIEvents) {
+    fun onUiEvent(event: WooPosRootUIEvent) {
         when (event) {
-            WooPosRootUIEvents.ConnectToAReaderClicked -> TODO()
-            WooPosRootUIEvents.ExitPOSClicked -> TODO()
+            WooPosRootUIEvent.ConnectToAReaderClicked -> TODO()
+            WooPosRootUIEvent.ExitPOSClicked -> TODO()
         }
     }
 }

@@ -17,7 +17,7 @@ fun WooPosRootScreen() {
 }
 
 @Composable
-private fun WooPosRootScreen(onUIEvent: (WooPosRootUIEvents) -> Unit) {
+private fun WooPosRootScreen(onUIEvent: (WooPosRootUIEvent) -> Unit) {
     WooPosTheme {
         Column(modifier = Modifier.background(MaterialTheme.colors.background)) {
             WooPosRootHost(modifier = Modifier.weight(1f))

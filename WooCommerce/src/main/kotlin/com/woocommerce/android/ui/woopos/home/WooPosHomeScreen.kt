@@ -1,71 +1,94 @@
 package com.woocommerce.android.ui.woopos.home
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.home.cart.Cart
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
-import com.woocommerce.android.ui.woopos.home.products.ListItem
-import com.woocommerce.android.ui.woopos.home.products.ProductSelector
-import com.woocommerce.android.ui.woopos.home.products.ProductSelectorViewModel
-import com.woocommerce.android.ui.woopos.home.products.ViewState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
 
 @Composable
-@Suppress("UNUSED_PARAMETER")
-fun WooPosHomeScreen(
-    cartViewModel: WooPosCartViewModel,
-    productsViewModel: ProductSelectorViewModel,
-    onCheckoutClick: () -> Unit,
-) {
+fun WooPosHomeScreen() {
+    val viewModel: WooPosHomeViewModel = hiltViewModel()
     WooPosHomeScreen(
-        onCheckoutClick = onCheckoutClick,
-        productsState = productsViewModel.viewState,
-        onEndOfProductsGridReached = productsViewModel::onEndOfProductsGridReached,
+        viewModel.state.collectAsState().value,
+        viewModel::onUIEvent
     )
 }
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 private fun WooPosHomeScreen(
-    onCheckoutClick: () -> Unit,
-    productsState: StateFlow<ViewState>,
-    onEndOfProductsGridReached: () -> Unit,
+    state: WooPosHomeState,
+    onCartCheckoutUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
+    BackHandler {
+        onCartCheckoutUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+    }
+
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
+    val cartWidth = (screenWidthDp / 3)
+    val totalsProductsWidth = (screenWidthDp / 3 * 2)
+    val halfScreenWidthPx = with(LocalDensity.current) { totalsProductsWidth.roundToPx() }
+
+    val scrollState = rememberScrollState()
+
+    LaunchedEffect(state) {
+        val animationSpec = spring<Float>(
+            dampingRatio = 0.8f,
+            stiffness = 200f
+        )
+        when (state) {
+            WooPosHomeState.Cart -> scrollState.animateScrollTo(
+                0,
+                animationSpec = animationSpec
+            )
+
+            WooPosHomeState.Checkout -> scrollState.animateScrollTo(
+                halfScreenWidthPx,
+                animationSpec = animationSpec
+            )
+        }
+    }
+
     Row(
         modifier = Modifier
-            .background(MaterialTheme.colors.background)
-            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 0.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+            .horizontalScroll(scrollState, enabled = false)
+            .fillMaxWidth()
     ) {
-        ProductSelector(productsState, onEndOfProductsGridReached)
-        Cart(onCheckoutClick)
+        Box(modifier = Modifier.width(totalsProductsWidth)) {
+            WooPosProductsScreen()
+        }
+        Box(modifier = Modifier.width(cartWidth)) {
+            WooPosCartScreen()
+        }
+        Box(modifier = Modifier.width(totalsProductsWidth)) {
+            WooPosTotalsScreen()
+        }
     }
 }
 
 @Composable
 @WooPosPreview
-fun WooPosHomeScreenPreview() {
-    val productState = MutableStateFlow(
-        ViewState(
-            products = listOf(
-                ListItem(1, "Product 1"),
-                ListItem(2, "Product 2"),
-                ListItem(3, "Product 3"),
-            )
-        )
-    )
-    WooPosHomeScreen(
-        onCheckoutClick = {},
-        productsState = productState,
-        onEndOfProductsGridReached = {}
-    )
+fun WooPosHomeCartScreenPreview() {
+    WooPosHomeScreen(state = WooPosHomeState.Cart, onCartCheckoutUIEvent = {})
+}
+
+@Composable
+@WooPosPreview
+fun WooPosHomeCheckoutScreenPreview() {
+    WooPosHomeScreen(state = WooPosHomeState.Checkout, onCartCheckoutUIEvent = {})
 }

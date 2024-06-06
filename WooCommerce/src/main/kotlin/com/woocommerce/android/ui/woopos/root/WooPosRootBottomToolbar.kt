@@ -23,7 +23,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
-fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvents) -> Unit) {
+fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvent) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,14 +38,14 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvents) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ExitPOSClicked) }) {
+            TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }) {
                 Text(
                     text = stringResource(id = R.string.woopos_exit_pos),
                     color = Color.White,
                     style = MaterialTheme.typography.button
                 )
             }
-            TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ExitPOSClicked) }) {
+            TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }) {
                 Text(
                     text = stringResource(id = R.string.woopos_reader_connected),
                     color = MaterialTheme.colors.secondaryVariant,
