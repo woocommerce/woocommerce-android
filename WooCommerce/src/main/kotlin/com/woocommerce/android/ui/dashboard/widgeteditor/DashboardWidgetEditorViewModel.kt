@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
@@ -80,7 +81,8 @@ class DashboardWidgetEditorViewModel @Inject constructor(
             analyticsTracker.track(
                 AnalyticsEvent.DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED,
                 mapOf(
-                    "cards" to editedWidgets
+                    AnalyticsTracker.KEY_FIRST_CARD_TYPE to editedWidgets.first().type.trackingIdentifier,
+                    AnalyticsTracker.KEY_SELECTED_CARDS to editedWidgets
                         .filter { it.isVisible }
                         .map { it.type.trackingIdentifier }
                         .sorted()
