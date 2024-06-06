@@ -72,9 +72,15 @@ object UiHelpers {
         }
     }
 
-    fun setImageOrHideInLandscape(imageView: ImageView, @DrawableRes resId: Int?, setInvisible: Boolean = false) {
+    fun setImageOrHideInLandscapeOnNonExpandedScreenSizes(
+        imageView: ImageView,
+        @DrawableRes resId: Int?,
+        setInvisible: Boolean = false
+    ) {
         val isLandscape = DisplayUtils.isLandscape(imageView.context)
-        updateVisibility(imageView, resId != null && !isLandscape, setInvisible)
+        val isExpandedOrBigger = imageView.context.windowSizeClass == WindowSizeClass.ExpandedAndBigger
+        val showImage = resId != null && (!isLandscape || isExpandedOrBigger)
+        updateVisibility(imageView, showImage, setInvisible)
         resId?.let {
             imageView.setImageResource(resId)
         }
