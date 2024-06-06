@@ -22,7 +22,11 @@ class WooPosRootViewModel @Inject constructor(
 ) : ViewModel() {
     val bottomToolbarState: StateFlow<WooPosBottomToolbarState> = cardReaderFacade.readerStatus.map {
         WooPosBottomToolbarState(cardReaderStatus = mapCardReaderStatusToUiState(it))
-    }.stateIn(viewModelScope, WhileSubscribed(), WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown))
+    }.stateIn(
+        viewModelScope,
+        WhileSubscribed(),
+        WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown)
+    )
 
     fun onUiEvent(event: WooPosRootUIEvent) {
         when (event) {

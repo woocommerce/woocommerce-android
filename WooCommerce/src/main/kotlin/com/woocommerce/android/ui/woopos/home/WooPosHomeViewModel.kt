@@ -36,7 +36,7 @@ class WooPosHomeViewModel @Inject constructor(
             }
 
             WooPosHomeUIEvent.ExitConfirmationDialogConfirmed -> {
-
+                TODO()
             }
 
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
