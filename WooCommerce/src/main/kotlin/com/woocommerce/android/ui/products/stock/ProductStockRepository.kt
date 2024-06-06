@@ -29,7 +29,10 @@ class ProductStockRepository @Inject constructor(
 
     private val cachedStockReport: MutableMap<ProductStockStatus, List<ProductStockItem>> = mutableMapOf()
 
-    suspend fun fetchProductStockReport(stockStatus: ProductStockStatus): Result<List<ProductStockItem>> {
+    suspend fun fetchProductStockReport(
+        stockStatus: ProductStockStatus,
+        isForced: Boolean = false
+    ): Result<List<ProductStockItem>> {
         return stockReportStore.fetchProductStockReport(
             site = selectedSite.get(),
             stockStatus = stockStatus.toCoreProductStockStatus()
@@ -37,7 +40,7 @@ class ProductStockRepository @Inject constructor(
             if (stockReportResult.isError) {
                 Result.failure(WooException(stockReportResult.error!!))
             } else {
-                if (isCachedStockTheSame(stockReportResult.model, stockStatus)) {
+                if (!isForced && isCachedStockTheSame(stockReportResult.model, stockStatus)) {
                     return Result.success(cachedStockReport[stockStatus]!!)
                 }
 
