@@ -26,7 +26,7 @@ class WooPosHomeViewModel @Inject constructor(
                 when (_state.value) {
                     WooPosHomeState.Checkout -> {
                         _state.value = WooPosHomeState.Cart
-                        sendEventDown(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+                        sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                     }
 
                     WooPosHomeState.Cart -> {
@@ -53,7 +53,7 @@ class WooPosHomeViewModel @Inject constructor(
         }
     }
 
-    private fun sendEventDown(event: ParentToChildrenEvent) {
+    private fun sendEventToChildren(event: ParentToChildrenEvent) {
         viewModelScope.launch {
             upBottomCommunication.sendToChildren(event)
         }
