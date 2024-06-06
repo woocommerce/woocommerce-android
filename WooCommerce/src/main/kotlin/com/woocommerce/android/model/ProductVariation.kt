@@ -316,8 +316,8 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         height = this.height.toFloatOrNull() ?: 0f,
         weight = this.weight.toFloatOrNull() ?: 0f,
         minAllowedQuantity = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null,
-        maxAllowedQuantity = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null,
-        groupOfQuantity = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null,
+        maxAllowedQuantity = if (this.maxAllowedQuantity >= 0) this.maxAllowedQuantity else null,
+        groupOfQuantity = if (this.groupOfQuantity >= 0) this.groupOfQuantity else null,
         overrideProductQuantities = this.overrideProductQuantities
     )
 }
