@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.ui.woopos.home.WooPosBottomUpEvent
-import com.woocommerce.android.ui.woopos.home.WooPosHomeBottomUpCommunication
-import com.woocommerce.android.ui.woopos.home.WooPosHomeUpBottomCommunication
-import com.woocommerce.android.ui.woopos.home.WooPosUpBottomEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildToParentCommunication
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenCommunication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,8 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCartViewModel @Inject constructor(
-    private val bottomUpCommunication: WooPosHomeBottomUpCommunication,
-    private val upBottomCommunication: WooPosHomeUpBottomCommunication,
+    private val bottomUpCommunication: WooPosChildToParentCommunication,
+    private val upBottomCommunication: WooPosParentToChildrenCommunication,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosCartState>(WooPosCartState.Cart)
     val state: StateFlow<WooPosCartState> = _state
@@ -27,12 +27,12 @@ class WooPosCartViewModel @Inject constructor(
     fun onUIEvent(event: WooPosCartUIEvent) {
         when (event) {
             is WooPosCartUIEvent.CheckoutClicked -> {
-                sendEventUp(WooPosBottomUpEvent.CheckoutClicked)
+                sendEventToParent(ChildToParentEvent.CheckoutClicked)
                 _state.value = WooPosCartState.Checkout
             }
 
             is WooPosCartUIEvent.BackFromCheckoutToCartClicked -> {
-                sendEventUp(WooPosBottomUpEvent.BackFromCheckoutToCartClicked)
+                sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
                 _state.value = WooPosCartState.Cart
             }
         }
@@ -40,9 +40,9 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun listenUpEvents() {
         viewModelScope.launch {
-            upBottomCommunication.upBottomEventsFlow.collect { event ->
+            upBottomCommunication.parentToChildEventsFlow.collect { event ->
                 when (event) {
-                    is WooPosUpBottomEvent.BackFromCheckoutToCartClicked -> {
+                    is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = WooPosCartState.Cart
                     }
                 }
@@ -50,9 +50,9 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun sendEventUp(event: WooPosBottomUpEvent) {
+    private fun sendEventToParent(event: ChildToParentEvent) {
         viewModelScope.launch {
-            bottomUpCommunication.sendEventUp(event)
+            bottomUpCommunication.sendToParent(event)
         }
     }
 }

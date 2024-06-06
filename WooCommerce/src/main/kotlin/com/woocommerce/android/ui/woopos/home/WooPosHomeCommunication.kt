@@ -6,30 +6,30 @@ import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 
 @ActivityRetainedScoped
-class WooPosHomeBottomUpCommunication @Inject constructor() {
-    private val _bottomUpEventsFlow = MutableSharedFlow<WooPosBottomUpEvent>()
-    val bottomUpEventsFlow = _bottomUpEventsFlow.asSharedFlow()
+class WooPosChildToParentCommunication @Inject constructor() {
+    private val _childToParentEventsFlow = MutableSharedFlow<ChildToParentEvent>()
+    val childToParentEventsFlow = _childToParentEventsFlow.asSharedFlow()
 
-    suspend fun sendEventUp(event: WooPosBottomUpEvent) {
-        _bottomUpEventsFlow.emit(event)
+    suspend fun sendToParent(event: ChildToParentEvent) {
+        _childToParentEventsFlow.emit(event)
     }
 }
 
 @ActivityRetainedScoped
-class WooPosHomeUpBottomCommunication @Inject constructor() {
-    private val _upBottomEventsFlow = MutableSharedFlow<WooPosUpBottomEvent>()
-    val upBottomEventsFlow = _upBottomEventsFlow.asSharedFlow()
+class WooPosParentToChildrenCommunication @Inject constructor() {
+    private val _parentToChildrenEventsFlow = MutableSharedFlow<ParentToChildrenEvent>()
+    val parentToChildEventsFlow = _parentToChildrenEventsFlow.asSharedFlow()
 
-    suspend fun sendEventDown(event: WooPosUpBottomEvent) {
-        _upBottomEventsFlow.emit(event)
+    suspend fun sendToChildren(event: ParentToChildrenEvent) {
+        _parentToChildrenEventsFlow.emit(event)
     }
 }
 
-sealed class WooPosBottomUpEvent {
-    data object CheckoutClicked : WooPosBottomUpEvent()
-    data object BackFromCheckoutToCartClicked : WooPosBottomUpEvent()
+sealed class ChildToParentEvent {
+    data object CheckoutClicked : ChildToParentEvent()
+    data object BackFromCheckoutToCartClicked : ChildToParentEvent()
 }
 
-sealed class WooPosUpBottomEvent {
-    data object BackFromCheckoutToCartClicked : WooPosUpBottomEvent()
+sealed class ParentToChildrenEvent {
+    data object BackFromCheckoutToCartClicked : ParentToChildrenEvent()
 }
