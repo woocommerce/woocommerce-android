@@ -92,7 +92,7 @@ class DashboardWidgetEditorViewModel @Inject constructor(
             DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED,
             mapOf(
                 AnalyticsTracker.KEY_SORTED_CARDS to visibleCardTrackingIdentifiers.joinToString(","),
-                AnalyticsTracker.KEY_DASHBOARD_ENABLED_CARDS to visibleCardTrackingIdentifiers
+                AnalyticsTracker.KEY_CARDS to visibleCardTrackingIdentifiers
                     .sorted()
                     .joinToString(",")
             )

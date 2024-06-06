@@ -665,7 +665,7 @@ class AnalyticsTracker private constructor(
 
         // Dynamic Dashboard
         const val KEY_NEW_CARD_AVAILABLE = "new_card_available"
-        const val KEY_DASHBOARD_ENABLED_CARDS = "enabled_cards"
+        const val KEY_CARDS = "cards"
         const val KEY_SORTED_CARDS = "sorted_cards"
 
         var sendUsageStats: Boolean = true
