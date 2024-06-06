@@ -124,6 +124,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     }
 
     fun onTabSelected(selectionType: SelectionType) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
         usageTracksEventEmitter.interacted()
         if (selectionType != SelectionType.CUSTOM) {
             appPrefsWrapper.setActiveStatsTab(selectionType.name)
@@ -156,6 +157,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     }
 
     fun onAddCustomRangeClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
         triggerEvent(
             OpenDatePicker(
                 fromDate = dateRangeState.value?.customRange?.start ?: Date(),
@@ -172,6 +174,7 @@ class DashboardStatsViewModel @AssistedInject constructor(
     }
 
     fun onViewAnalyticsClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STATS.trackingIdentifier)
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SEE_MORE_ANALYTICS_TAPPED)
         dateRangeState.value?.rangeSelection?.let {
             triggerEvent(OpenAnalytics(it))

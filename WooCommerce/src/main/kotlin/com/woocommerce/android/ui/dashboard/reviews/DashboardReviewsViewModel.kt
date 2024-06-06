@@ -4,6 +4,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.reviews.ProductReviewStatus
@@ -35,7 +39,8 @@ class DashboardReviewsViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     @Assisted private val parentViewModel: DashboardViewModel,
     private val reviewListRepository: ReviewListRepository,
-    private val reviewModerationHandler: ReviewModerationHandler
+    private val reviewModerationHandler: ReviewModerationHandler,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         val supportedFilters = listOf(
@@ -75,18 +80,27 @@ class DashboardReviewsViewModel @AssistedInject constructor(
         .asLiveData()
 
     fun onFilterSelected(status: ProductReviewStatus) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.REVIEWS.trackingIdentifier)
         this.status.value = status
     }
 
     fun onViewAllClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.REVIEWS.trackingIdentifier)
         triggerEvent(OpenReviewsList)
     }
 
     fun onReviewClicked(review: ProductReview) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.REVIEWS.trackingIdentifier)
         triggerEvent(OpenReviewDetail(review))
     }
 
     fun onRetryClicked() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.REVIEWS.trackingIdentifier
+            )
+        )
         _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
     }
 
