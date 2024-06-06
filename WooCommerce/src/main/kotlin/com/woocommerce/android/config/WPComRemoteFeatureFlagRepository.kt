@@ -1,9 +1,11 @@
 package com.woocommerce.android.config
 
+import android.os.Build
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsRestClient
 import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,11 +27,14 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
     suspend fun fetchFeatureFlags(appVersion: String = ""): Result<Unit> {
         // Empty string are parameters not used by this app.
         val result = featureFlagsStore.fetchFeatureFlags(
-            buildNumber = "",
-            deviceId = "",
-            identifier = "",
-            marketingVersion = appVersion,
-            platform = PLATFORM_NAME
+            FeatureFlagsRestClient.FeatureFlagsPayload(
+                buildNumber = "",
+                deviceId = "",
+                identifier = "",
+                marketingVersion = appVersion,
+                platform = PLATFORM_NAME,
+                osVersion = Build.VERSION.RELEASE,
+            )
         )
         return if (result.isError) {
             WooLog.e(WooLog.T.UTILS, "Error fetching WPCom remote feature flags: ${result.error}")

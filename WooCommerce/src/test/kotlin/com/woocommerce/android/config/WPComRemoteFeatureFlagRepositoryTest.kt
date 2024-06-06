@@ -28,7 +28,7 @@ class WPComRemoteFeatureFlagRepositoryTest : BaseUnitTest() {
     @Test
     fun `given fetching success, when fetchFeatureFlags is called, then get success Result`() = testBlocking {
         val fetchResult = mapOf("key" to true)
-        whenever(featureFlagStore.fetchFeatureFlags(any(), any(), any(), any(), any()))
+        whenever(featureFlagStore.fetchFeatureFlags(any()))
             .thenReturn(FeatureFlagsStore.FeatureFlagsResult(fetchResult))
 
         val result = sut.fetchFeatureFlags()
@@ -37,7 +37,7 @@ class WPComRemoteFeatureFlagRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `given fetching failure, when fetchFeatureFlags is called, then get failure Result`() = testBlocking {
-        whenever(featureFlagStore.fetchFeatureFlags(any(), any(), any(), any(), any()))
+        whenever(featureFlagStore.fetchFeatureFlags(any()))
             .thenReturn(FeatureFlagsStore.FeatureFlagsResult(FeatureFlagsError(FeatureFlagsErrorType.GENERIC_ERROR)))
 
         val result = sut.fetchFeatureFlags()
