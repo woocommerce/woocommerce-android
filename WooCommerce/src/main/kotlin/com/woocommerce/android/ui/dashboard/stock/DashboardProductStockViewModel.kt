@@ -3,11 +3,11 @@ package com.woocommerce.android.ui.dashboard.stock
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.ViewState.Loading
 import com.woocommerce.android.ui.products.ProductStockStatus
