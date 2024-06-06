@@ -8,6 +8,7 @@
 - [**] Shipping: Merchants can now use multiple shipping lines for a single order. [https://github.com/woocommerce/woocommerce-android/pull/11580]
 - [*] More Menu: UI improvements for the More Menu screen [https://github.com/woocommerce/woocommerce-android/pull/11566]
 - [**] Cash Payments: Added the option for users to calculate change due when receiving cash for the order. [https://github.com/woocommerce/woocommerce-android/pull/11594]
+- [***] Login: fixed a bug that caused some intermittent failures when signing in using Application Passwords [https://github.com/woocommerce/woocommerce-android/pull/11650]
 
 18.8
 -----

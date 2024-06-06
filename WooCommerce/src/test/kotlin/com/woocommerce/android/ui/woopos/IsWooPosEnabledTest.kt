@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.IsWindowClassExpandedAndBigger
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +30,9 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     private val getActivePaymentsPlugin: GetActivePaymentsPlugin = mock()
     private val isWindowSizeExpandedAndBigger: IsWindowClassExpandedAndBigger = mock()
     private val isWooPosFFEnabled: IsWooPosFFEnabled = mock()
+    private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock {
+        on { invoke() }.thenReturn("6.6.0")
+    }
 
     private lateinit var sut: IsWooPosEnabled
 
@@ -46,6 +50,7 @@ class IsWooPosEnabledTest : BaseUnitTest() {
             getActivePaymentsPlugin = getActivePaymentsPlugin,
             isWindowSizeExpandedAndBigger = isWindowSizeExpandedAndBigger,
             isWooPosFFEnabled = isWooPosFFEnabled,
+            getWooCoreVersion = getWooCoreVersion,
         )
     }
 
@@ -105,6 +110,38 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     fun `given big enough screen, woo payments enabled, USD currency, store in the US, and status enabled, then return true`() = testBlocking {
         val result = buildPaymentAccountResult(defaultCurrency = "USD", countryCode = "US", status = ENABLED)
         whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
+        assertTrue(sut())
+    }
+
+    @Test
+    fun `given woo version 6_5_0, when invoked, then return false`() = testBlocking {
+        val result = buildPaymentAccountResult(defaultCurrency = "USD", countryCode = "US", status = ENABLED)
+        whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
+        whenever(getWooCoreVersion.invoke()).thenReturn("6.5.0")
+        assertFalse(sut())
+    }
+
+    @Test
+    fun `given woo version 6_6_0, when invoked, then return true`() = testBlocking {
+        val result = buildPaymentAccountResult(defaultCurrency = "USD", countryCode = "US", status = ENABLED)
+        whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
+        whenever(getWooCoreVersion.invoke()).thenReturn("6.6.0")
+        assertTrue(sut())
+    }
+
+    @Test
+    fun `given woo version 6_6_0_1, when invoked, then return true`() = testBlocking {
+        val result = buildPaymentAccountResult(defaultCurrency = "USD", countryCode = "US", status = ENABLED)
+        whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
+        whenever(getWooCoreVersion.invoke()).thenReturn("6.6.0.1")
+        assertTrue(sut())
+    }
+
+    @Test
+    fun `given woo version 10_0_1, when invoked, then return true`() = testBlocking {
+        val result = buildPaymentAccountResult(defaultCurrency = "USD", countryCode = "US", status = ENABLED)
+        whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.1")
         assertTrue(sut())
     }
 
