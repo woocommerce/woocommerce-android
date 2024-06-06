@@ -63,9 +63,9 @@ data class DashboardWidget(
             trackingIdentifier = "inbox",
             isSupported = FeatureFlag.INBOX.isEnabled()
         ),
-        PRODUCT_STOCK(
+        STOCK(
             titleResource = R.string.my_store_widget_product_stock_title,
-            trackingIdentifier = "product_stock",
+            trackingIdentifier = "stock",
             isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
         );
 

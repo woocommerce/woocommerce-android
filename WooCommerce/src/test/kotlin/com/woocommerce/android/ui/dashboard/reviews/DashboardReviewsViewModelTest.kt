@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.dashboard.reviews
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
@@ -50,6 +51,7 @@ class DashboardReviewsViewModelTest : BaseUnitTest() {
     private val parentViewModel: DashboardViewModel = mock {
         on { refreshTrigger } doReturn emptyFlow()
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: DashboardReviewsViewModel
 
@@ -60,7 +62,8 @@ class DashboardReviewsViewModelTest : BaseUnitTest() {
             savedStateHandle = SavedStateHandle(),
             parentViewModel = parentViewModel,
             reviewListRepository = reviewListRepository,
-            reviewModerationHandler = reviewModerationHandler
+            reviewModerationHandler = reviewModerationHandler,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 

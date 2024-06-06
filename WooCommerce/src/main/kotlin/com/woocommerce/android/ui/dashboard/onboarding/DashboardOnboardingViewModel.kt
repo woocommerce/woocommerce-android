@@ -104,14 +104,17 @@ class DashboardOnboardingViewModel @AssistedInject constructor(
         }.asLiveData()
 
     private fun viewAllClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.ONBOARDING.trackingIdentifier)
         triggerEvent(NavigateToOnboardingFullScreen)
     }
 
     private fun onShareFeedbackClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.ONBOARDING.trackingIdentifier)
         triggerEvent(NavigateToSurvey)
     }
 
     fun onTaskClicked(task: OnboardingTaskUi) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.ONBOARDING.trackingIdentifier)
         when (task.taskUiResources) {
             AboutYourStoreTaskRes -> triggerEvent(NavigateToAboutYourStore)
             AddProductTaskRes -> triggerEvent(NavigateToAddProduct)

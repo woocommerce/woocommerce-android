@@ -13,6 +13,9 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +26,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
-fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvent) -> Unit) {
+fun WooPosBottomToolbar(state: State<WooPosBottomToolbarState>, onUIEvent: (WooPosRootUIEvent) -> Unit) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,9 +48,9 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvent) -> Unit) {
                     style = MaterialTheme.typography.button
                 )
             }
-            TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }) {
+            TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }) {
                 Text(
-                    text = stringResource(id = R.string.woopos_reader_connected),
+                    text = stringResource(id = state.value.cardReaderStatus.title),
                     color = MaterialTheme.colors.secondaryVariant,
                     style = MaterialTheme.typography.button
                 )
@@ -59,10 +62,13 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvent) -> Unit) {
 @WooPosPreview
 @Composable
 fun PreviewWooPosBottomToolbar() {
+    val state = remember {
+        mutableStateOf(WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown))
+    }
     WooPosTheme {
         Column {
             Spacer(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar {}
+            WooPosBottomToolbar(state) {}
         }
     }
 }

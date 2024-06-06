@@ -157,6 +157,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     }
 
     fun onTabSelected(selectionType: SelectionType) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier)
         usageTracksEventEmitter.interacted()
         if (selectionType != SelectionType.CUSTOM) {
             appPrefsWrapper.setActiveTopPerformersTab(selectionType.name)
@@ -171,6 +172,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     }
 
     fun onEditCustomRangeTapped() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier)
         val event = if (selectedDateRange.value?.customRange == null) {
             AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
         } else {
@@ -198,6 +200,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     private fun onTopPerformerTapped(productId: Long) {
         triggerEvent(OpenTopPerformer(productId))
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier)
         analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         usageTracksEventEmitter.interacted()
     }

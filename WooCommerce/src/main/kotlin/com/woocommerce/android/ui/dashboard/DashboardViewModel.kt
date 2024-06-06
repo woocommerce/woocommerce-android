@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_INTERACTED
 import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -165,7 +166,10 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun onEditWidgetsClicked() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.DYNAMIC_DASHBOARD_EDIT_LAYOUT_BUTTON_TAPPED)
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_EDIT_LAYOUT_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_NEW_CARD_AVAILABLE to hasNewWidgets.value.toString())
+        )
         triggerEvent(OpenEditWidgets)
     }
 
@@ -187,6 +191,13 @@ class DashboardViewModel @Inject constructor(
 
     fun onShowSnackbar(@StringRes message: Int) {
         triggerEvent(Event.ShowSnackbar(message))
+    }
+
+    fun trackCardInteracted(type: String) {
+        analyticsTrackerWrapper.track(
+            DYNAMIC_DASHBOARD_CARD_INTERACTED,
+            mapOf(AnalyticsTracker.KEY_TYPE to type)
+        )
     }
 
     private fun mapWidgetsToUiModels(
@@ -240,6 +251,7 @@ class DashboardViewModel @Inject constructor(
             NewWidgetsCard(
                 isVisible = hasNewWidgets,
                 onShowCardsClick = {
+                    analyticsTrackerWrapper.track(AnalyticsEvent.DYNAMIC_DASHBOARD_ADD_NEW_SECTIONS_TAPPED)
                     triggerEvent(OpenEditWidgets)
                 }
             )
