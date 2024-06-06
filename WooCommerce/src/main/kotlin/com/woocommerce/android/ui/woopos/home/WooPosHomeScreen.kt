@@ -33,10 +33,10 @@ fun WooPosHomeScreen() {
 @Composable
 private fun WooPosHomeScreen(
     state: WooPosHomeState,
-    onCartCheckoutUIEvent: (WooPosHomeUIEvent) -> Unit,
+    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
     BackHandler {
-        onCartCheckoutUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+        onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
     }
 
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
@@ -84,11 +84,11 @@ private fun WooPosHomeScreen(
 @Composable
 @WooPosPreview
 fun WooPosHomeCartScreenPreview() {
-    WooPosHomeScreen(state = WooPosHomeState.Cart, onCartCheckoutUIEvent = {})
+    WooPosHomeScreen(state = WooPosHomeState.Cart, onHomeUIEvent = {})
 }
 
 @Composable
 @WooPosPreview
 fun WooPosHomeCheckoutScreenPreview() {
-    WooPosHomeScreen(state = WooPosHomeState.Checkout, onCartCheckoutUIEvent = {})
+    WooPosHomeScreen(state = WooPosHomeState.Checkout, onHomeUIEvent = {})
 }
