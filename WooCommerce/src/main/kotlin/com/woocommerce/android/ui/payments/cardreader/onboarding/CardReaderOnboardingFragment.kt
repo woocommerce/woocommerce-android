@@ -363,7 +363,10 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     ) {
         val binding = FragmentCardReaderOnboardingUnsupportedBinding.bind(view)
         UiHelpers.setTextOrHide(binding.unsupportedCountryHeader, state.headerLabel)
-        UiHelpers.setImageOrHideInLandscapeOnNonExpandedScreenSizes(binding.unsupportedCountryIllustration, state.illustration)
+        UiHelpers.setImageOrHideInLandscapeOnNonExpandedScreenSizes(
+            binding.unsupportedCountryIllustration,
+            state.illustration
+        )
         UiHelpers.setTextOrHide(binding.unsupportedCountryHint, state.hintLabel)
         UiHelpers.setTextOrHide(binding.unsupportedCountryHelp, state.contactSupportLabel)
         UiHelpers.setTextOrHide(binding.unsupportedCountryLearnMoreContainer.learnMore, state.learnMoreLabel)
