@@ -10,8 +10,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosHomeViewModel @Inject constructor(
-    private val bottomUpCommunication: WooPosChildToParentCommunication,
-    private val upBottomCommunication: WooPosParentToChildrenCommunication,
+    private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
+    private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart)
     val state: StateFlow<WooPosHomeState> = _state
@@ -39,7 +39,7 @@ class WooPosHomeViewModel @Inject constructor(
 
     private fun listenBottomEvents() {
         viewModelScope.launch {
-            bottomUpCommunication.childToParentEventsFlow.collect { event ->
+            childrenToParentEventReceiver.events.collect { event ->
                 when (event) {
                     is ChildToParentEvent.CheckoutClicked -> {
                         _state.value = WooPosHomeState.Checkout
@@ -55,7 +55,7 @@ class WooPosHomeViewModel @Inject constructor(
 
     private fun sendEventToChildren(event: ParentToChildrenEvent) {
         viewModelScope.launch {
-            upBottomCommunication.sendToChildren(event)
+            parentToChildrenEventSender.sendToChildren(event)
         }
     }
 }

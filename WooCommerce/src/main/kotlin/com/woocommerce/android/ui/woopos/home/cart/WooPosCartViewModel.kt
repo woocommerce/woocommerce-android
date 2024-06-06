@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
-import com.woocommerce.android.ui.woopos.home.WooPosChildToParentCommunication
-import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenCommunication
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,8 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCartViewModel @Inject constructor(
-    private val bottomUpCommunication: WooPosChildToParentCommunication,
-    private val upBottomCommunication: WooPosParentToChildrenCommunication,
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosCartState>(WooPosCartState.Cart)
     val state: StateFlow<WooPosCartState> = _state
@@ -40,7 +40,7 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun listenUpEvents() {
         viewModelScope.launch {
-            upBottomCommunication.parentToChildEventsFlow.collect { event ->
+            parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = WooPosCartState.Cart
@@ -52,7 +52,7 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun sendEventToParent(event: ChildToParentEvent) {
         viewModelScope.launch {
-            bottomUpCommunication.sendToParent(event)
+            childrenToParentEventSender.sendToParent(event)
         }
     }
 }
