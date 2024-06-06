@@ -61,7 +61,6 @@ class VariationDetailViewModel @Inject constructor(
     private val parameterRepository: ParameterRepository,
     private val mediaFileUploadHandler: MediaFileUploadHandler,
     private val resources: ResourceProvider,
-    private val getProductVariationQuantityRules: GetProductVariationQuantityRules,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_VARIATION_PARAMETERS = "key_variation_parameters"
@@ -227,7 +226,10 @@ class VariationDetailViewModel @Inject constructor(
         length: Float? = null,
         width: Float? = null,
         height: Float? = null,
-        weight: Float? = null
+        weight: Float? = null,
+        minAllowedQuantity: Int? = null,
+        maxAllowedQuantity: Int? = null,
+        groupOfQuantity: Int? = null
     ) {
         viewState.variation?.let { variation ->
             showVariation(
@@ -256,7 +258,10 @@ class VariationDetailViewModel @Inject constructor(
                     length = length ?: variation.length,
                     width = width ?: variation.width,
                     height = height ?: variation.height,
-                    weight = weight ?: variation.weight
+                    weight = weight ?: variation.weight,
+                    minAllowedQuantity = minAllowedQuantity ?: variation.minAllowedQuantity,
+                    maxAllowedQuantity = maxAllowedQuantity ?: variation.maxAllowedQuantity,
+                    groupOfQuantity = groupOfQuantity ?: variation.groupOfQuantity,
                 )
             )
         }
@@ -462,10 +467,6 @@ class VariationDetailViewModel @Inject constructor(
                 }
             }
             .launchIn(this)
-    }
-
-    suspend fun getQuantityRules(remoteProductId: Long, remoteVariationId: Long): QuantityRules? {
-        return getProductVariationQuantityRules(remoteProductId, remoteVariationId)
     }
 
     fun onSubscriptionExpirationChanged(selectedExpirationValue: Int) {
