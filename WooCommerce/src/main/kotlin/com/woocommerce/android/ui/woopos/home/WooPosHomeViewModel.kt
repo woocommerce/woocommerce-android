@@ -22,14 +22,6 @@ class WooPosHomeViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosHomeUIEvent) {
         when (event) {
-            is WooPosHomeUIEvent.CheckoutClicked -> {
-                _state.value = WooPosHomeState.Checkout
-            }
-
-            is WooPosHomeUIEvent.BackFromCheckoutToCartClicked -> {
-                _state.value = WooPosHomeState.Cart
-            }
-
             WooPosHomeUIEvent.SystemBackClicked -> {
                 when (_state.value) {
                     WooPosHomeState.Checkout -> {
