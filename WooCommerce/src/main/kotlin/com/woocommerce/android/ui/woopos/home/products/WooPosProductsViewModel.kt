@@ -62,7 +62,7 @@ class WooPosProductsViewModel @Inject constructor(
         }
         viewModelScope.launch {
             fromChildToParentEventSender.sendToParent(
-                ChildToParentEvent.ProductSelectionChanged(selectedItems.value)
+                ChildToParentEvent.ProductSelectionChangedInProductSelector(selectedItems.value)
             )
         }
     }

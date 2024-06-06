@@ -49,7 +49,7 @@ class WooPosHomeViewModel @Inject constructor(
                         _state.value = WooPosHomeState.Cart
                     }
 
-                    is ChildToParentEvent.ProductSelectionChanged -> TODO()
+                    is ChildToParentEvent.ProductSelectionChangedInProductSelector -> TODO()
                 }
             }
         }
