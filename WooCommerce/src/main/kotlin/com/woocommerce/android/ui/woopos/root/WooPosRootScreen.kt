@@ -34,7 +34,7 @@ private fun WooPosRootScreen(state: State<BottomToolbarState>, onUIEvent: (WooPo
 @Composable
 fun PreviewWooPosRootScreen() {
     val state = remember {
-        mutableStateOf(BottomToolbarState(BottomToolbarState.CardReaderStatus("Connected")))
+        mutableStateOf(BottomToolbarState(BottomToolbarState.CardReaderStatus.Unknown))
     }
     WooPosTheme {
         WooPosRootScreen(state) {}
