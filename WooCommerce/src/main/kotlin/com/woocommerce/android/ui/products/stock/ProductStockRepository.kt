@@ -37,8 +37,9 @@ class ProductStockRepository @Inject constructor(
             if (stockReportResult.isError) {
                 Result.failure(WooException(stockReportResult.error!!))
             } else {
-                if (isCachedStockTheSame(stockReportResult.model, stockStatus))
+                if (isCachedStockTheSame(stockReportResult.model, stockStatus)) {
                     return Result.success(cachedStockReport[stockStatus]!!)
+                }
 
                 val (productSalesResult, variationSalesResult) = getProductSalesReports(stockReportResult.model!!)
                 when {

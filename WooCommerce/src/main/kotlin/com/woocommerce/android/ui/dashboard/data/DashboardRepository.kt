@@ -58,7 +58,6 @@ class DashboardRepository @Inject constructor(
             initialValue = DashboardWidget.Status.Hidden
         )
 
-
     val widgets = combine(
         dashboardDataStore.widgets,
         siteOrdersState,
