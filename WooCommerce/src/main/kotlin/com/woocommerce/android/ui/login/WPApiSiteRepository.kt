@@ -199,7 +199,7 @@ class WPApiSiteRepository @Inject constructor(
         INVALID_RESPONSE -> UiStringRes(string.login_site_credentials_invalid_response)
         CUSTOM_LOGIN_URL -> UiStringRes(string.login_site_credentials_custom_login_url)
         CUSTOM_ADMIN_URL -> UiStringRes(string.login_site_credentials_custom_admin_url)
-        else -> message?.let { UiStringText(it) }
+        else -> message?.takeIf { it.isNotEmpty() }?.let { UiStringText(it) }
     }
 
     data class CookieNonceAuthenticationException(
