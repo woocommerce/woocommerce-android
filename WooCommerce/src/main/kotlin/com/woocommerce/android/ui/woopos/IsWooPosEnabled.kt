@@ -11,6 +11,9 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPayment
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private typealias LocalSiteId = Int
+private typealias PosEnabled = Boolean
+
 @Singleton
 class IsWooPosEnabled @Inject constructor(
     private val selectedSite: SelectedSite,
@@ -20,15 +23,16 @@ class IsWooPosEnabled @Inject constructor(
     private val isWooPosFFEnabled: IsWooPosFFEnabled,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
 ) {
-    private var cachedResult: Boolean? = null
+    private var cachedResult: HashMap<LocalSiteId, PosEnabled> = hashMapOf()
 
     @Suppress("ReturnCount")
     suspend operator fun invoke(): Boolean {
-        cachedResult?.let { return it }
+        val selectedSite = selectedSite.getOrNull() ?: return false
+
+        cachedResult[selectedSite.id]?.let { return it }
 
         if (!isWooPosFFEnabled()) return false
 
-        val selectedSite = selectedSite.getOrNull() ?: return false
         val ippPlugin = getActivePaymentsPlugin() ?: return false
         val paymentAccount = ippStore.loadAccount(ippPlugin, selectedSite).model ?: return false
         val countryCode = paymentAccount.country
@@ -40,7 +44,7 @@ class IsWooPosEnabled @Inject constructor(
                 isWindowSizeExpandedAndBigger() &&
                 isPluginSetupEnabled(paymentAccount) &&
                 isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()
-            ).also { cachedResult = it }
+            ).also { cachedResult[selectedSite.id] = it }
     }
 
     private fun isPluginSetupEnabled(paymentAccount: WCPaymentAccountResult): Boolean =
