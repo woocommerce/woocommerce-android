@@ -101,19 +101,18 @@ fun ProductSelector(
 
 @Composable
 private fun ProductItem(
-    item: WooPosProductsViewState.ProductSelectorListItem,
+    item: WooPosProductsListItem,
     onItemClicked: (item: WooPosProductsListItem) -> Unit
 ) {
-    val borderColor = if (item.isSelected) MaterialTheme.colors.primary else Color.Gray
     ConstraintLayout(
         modifier = Modifier
-            .border(2.dp, borderColor, shape = RoundedCornerShape(4.dp))
-            .clickable { onItemClicked(item.product) }
+            .border(2.dp, Color.Gray, shape = RoundedCornerShape(4.dp))
+            .clickable { onItemClicked(item) }
             .padding(16.dp)
             .fillMaxWidth(0.5f)
     ) {
         Text(
-            text = item.product.title,
+            text = item.title,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.onSurface,
         )
@@ -152,18 +151,9 @@ fun WooPosHomeScreenPreview() {
     val productState = MutableStateFlow(
         WooPosProductsViewState(
             products = listOf(
-                WooPosProductsViewState.ProductSelectorListItem(
-                    WooPosProductsListItem(1, "Product 1"),
-                    isSelected = false,
-                ),
-                WooPosProductsViewState.ProductSelectorListItem(
-                    WooPosProductsListItem(2, "Product 2"),
-                    isSelected = true,
-                ),
-                WooPosProductsViewState.ProductSelectorListItem(
-                    WooPosProductsListItem(3, "Product 3"),
-                    isSelected = false,
-                ),
+                WooPosProductsListItem(1, "Product 1"),
+                WooPosProductsListItem(2, "Product 2"),
+                WooPosProductsListItem(3, "Product 3"),
             )
         )
     )

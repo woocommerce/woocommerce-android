@@ -63,11 +63,12 @@ class WooPosCartViewModel @Inject constructor(
                         }
                     }
 
-                    is ParentToChildrenEvent.ProductSelectionChangedInProductSelector -> {
+                    is ParentToChildrenEvent.ItemClickedInProductSelector -> {
                         _state.update { state ->
+                            val itemsInCart = state.itemsInCart + event.selectedItem
                             when (state) {
-                                is WooPosCartState.Cart -> state.copy(itemsInCart = event.selectedItems)
-                                is WooPosCartState.Checkout -> state.copy(itemsInCart = event.selectedItems)
+                                is WooPosCartState.Cart -> state.copy(itemsInCart = itemsInCart)
+                                is WooPosCartState.Checkout -> state.copy(itemsInCart = itemsInCart)
                             }
                         }
                     }

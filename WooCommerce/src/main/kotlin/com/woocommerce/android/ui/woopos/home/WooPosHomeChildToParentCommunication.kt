@@ -21,8 +21,8 @@ class WooPosChildrenToParentCommunication @Inject constructor() :
 sealed class ChildToParentEvent {
     data object CheckoutClicked : ChildToParentEvent()
     data object BackFromCheckoutToCartClicked : ChildToParentEvent()
-    data class ProductSelectionChangedInProductSelector(
-        val selectedItems: List<WooPosProductsListItem>
+    data class ItemClickedInProductSelector(
+        val selectedItem: WooPosProductsListItem
     ) : ChildToParentEvent()
     data class ItemRemovedFromCart(val item: WooPosProductsListItem) : ChildToParentEvent()
 }

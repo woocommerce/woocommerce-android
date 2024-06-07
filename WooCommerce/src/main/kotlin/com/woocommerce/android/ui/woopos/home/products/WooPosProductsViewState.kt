@@ -4,13 +4,8 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 data class WooPosProductsViewState(
-    val products: List<ProductSelectorListItem>,
-) {
-    data class ProductSelectorListItem(
-        val product: WooPosProductsListItem,
-        val isSelected: Boolean,
-    )
-}
+    val products: List<WooPosProductsListItem>,
+)
 
 @Parcelize
 data class WooPosProductsListItem(
