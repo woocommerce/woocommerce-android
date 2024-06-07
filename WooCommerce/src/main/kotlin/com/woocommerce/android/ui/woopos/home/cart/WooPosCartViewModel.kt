@@ -48,7 +48,13 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
-                sendEventToParent(ChildToParentEvent.ItemRemovedFromCart(event.item))
+                _state.update { state ->
+                    val itemsInCart = state.itemsInCart - event.item
+                    when (state) {
+                        is WooPosCartState.Cart -> state.copy(itemsInCart = itemsInCart)
+                        is WooPosCartState.Checkout -> state.copy(itemsInCart = itemsInCart)
+                    }
+                }
             }
         }
     }
