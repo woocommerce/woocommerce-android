@@ -1,2 +1,0 @@
-18.8:
-In questo rilascio ci siamo concentrati sul miglioramento dell'efficienza dell'app, eliminando i bug e apportando miglioramenti fondamentali. L'obiettivo di questi aggiornamenti è quello di potenziare il tuo percorso lavorativo. Il tuo feedback è parte integrante del nostro percorso di sviluppo continuo, quindi ti chiediamo di non smettere mai di darci il tuo contributo.
