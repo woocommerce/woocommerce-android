@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.woopos.home
 
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 
@@ -22,7 +22,7 @@ sealed class ParentToChildrenEvent {
 }
 
 interface WooPosParentToChildrenEventReceiver {
-    val events: SharedFlow<ParentToChildrenEvent>
+    val events: Flow<ParentToChildrenEvent>
 }
 
 interface WooPosParentToChildrenEventSender {

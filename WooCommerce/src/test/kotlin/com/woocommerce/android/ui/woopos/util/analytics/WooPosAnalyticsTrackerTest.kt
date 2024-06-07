@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.util.analytics
 
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IAnalyticsEvent
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -9,7 +11,8 @@ import org.mockito.kotlin.whenever
 import kotlin.test.Test
 import kotlin.test.assertFails
 
-class WooPosAnalyticsTrackerTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class WooPosAnalyticsTrackerTest : BaseUnitTest() {
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val commonPropertiesProvider: WooPosAnalyticsCommonPropertiesProvider = mock()
 
