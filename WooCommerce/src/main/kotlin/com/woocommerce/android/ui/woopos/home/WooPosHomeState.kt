@@ -13,6 +13,6 @@ sealed class WooPosHomeState {
 data object WooPosExitConfirmationDialog {
     val title: Int = R.string.woopos_exit_confirmation_title
     val message: Int = R.string.woopos_exit_confirmation_message
-    val confirmButton: Int = R.string.woopos_exit_confirmation_dismiss_button
-    val dismissButton: Int = R.string.woopos_exit_confirmation_confirm_button
+    val confirmButton: Int = R.string.woopos_exit_confirmation_confirm_button
+    val dismissButton: Int = R.string.woopos_exit_confirmation_dismiss_button
 }

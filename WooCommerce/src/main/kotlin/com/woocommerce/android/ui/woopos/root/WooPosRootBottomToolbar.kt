@@ -24,13 +24,11 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
-import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
 fun WooPosBottomToolbar(
-    state: State<WooPosBottomToolbarState>,
-    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    onUIEvent: (WooPosRootUIEvent) -> Unit
+    state: State<WooPosRootScreenState>,
+    onUIEvent: (WooPosRootUIEvent) -> Unit,
 ) {
     Surface(
         modifier = Modifier
@@ -68,12 +66,17 @@ fun WooPosBottomToolbar(
 @Composable
 fun PreviewWooPosBottomToolbar() {
     val state = remember {
-        mutableStateOf(WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown))
+        mutableStateOf(
+            WooPosRootScreenState(
+                WooPosRootScreenState.CardReaderStatus.Unknown,
+                null
+            )
+        )
     }
     WooPosTheme {
         Column {
             Spacer(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar(state, {}, {})
+            WooPosBottomToolbar(state, {})
         }
     }
 }

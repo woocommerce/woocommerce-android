@@ -3,8 +3,9 @@ package com.woocommerce.android.ui.woopos.root
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 
-data class WooPosBottomToolbarState(
-    val cardReaderStatus: CardReaderStatus
+data class WooPosRootScreenState(
+    val cardReaderStatus: CardReaderStatus,
+    val exitConfirmationDialog: WooPosExitConfirmationDialog?,
 ) {
     sealed class CardReaderStatus(@StringRes val title: Int) {
         data object NotConnected : CardReaderStatus(title = R.string.woopos_reader_disconnected)
@@ -12,4 +13,11 @@ data class WooPosBottomToolbarState(
         data object Connected : CardReaderStatus(title = R.string.woopos_reader_connected)
         data object Unknown : CardReaderStatus(title = R.string.woopos_reader_unknown)
     }
+}
+
+data object WooPosExitConfirmationDialog {
+    val title: Int = R.string.woopos_exit_confirmation_title
+    val message: Int = R.string.woopos_exit_confirmation_message
+    val confirmButton: Int = R.string.woopos_exit_confirmation_confirm_button
+    val dismissButton: Int = R.string.woopos_exit_confirmation_dismiss_button
 }
