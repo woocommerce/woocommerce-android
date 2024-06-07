@@ -10,7 +10,11 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.mockito.kotlin.any
+import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
@@ -152,6 +156,32 @@ class IsWooPosEnabledTest : BaseUnitTest() {
     fun `given woo version 10_0_1, when invoked, then return true`() = testBlocking {
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.1")
         assertTrue(sut())
+    }
+
+    @Test
+    fun `given payment account cached, when invoked, then do not send remote request`() = testBlocking {
+        sut() // ensure it is cached
+        verify(ippStore, times(1)).loadAccount(any(), any())
+        clearInvocations(ippStore)
+
+        sut()
+        sut()
+        sut()
+        sut()
+        sut()
+
+        verify(ippStore, never()).loadAccount(any(), any())
+    }
+
+    @Test
+    fun `given cached for siteA, when switched to siteB, then send remote request`() = testBlocking {
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().also { it.id = 1 })
+        sut()
+
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().also { it.id = 2 })
+        sut()
+
+        verify(ippStore, times(2)).loadAccount(any(), any())
     }
 
     private fun buildPaymentAccountResult(
