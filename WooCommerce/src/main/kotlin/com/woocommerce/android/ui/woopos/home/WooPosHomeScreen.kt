@@ -79,8 +79,8 @@ private fun WooPosHomeScreen(
                 WooPosConfirmationDialog(
                     title = stringResource(id = dialog.title),
                     message = stringResource(id = dialog.message),
-                    confirmButtonText = stringResource(id = dialog.positiveButton),
-                    dismissButtonText = stringResource(id = dialog.negativeButton),
+                    confirmButtonText = stringResource(id = dialog.confirmButton),
+                    dismissButtonText = stringResource(id = dialog.dismissButton),
                     onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
                     onConfirm = { onNavigationEvent(WooPosNavigationEvent.ExitPosClicked) }
                 )
