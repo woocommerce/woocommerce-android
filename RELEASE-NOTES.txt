@@ -4,6 +4,7 @@
 - [*] Payments: Slightly bigger dialog sizes on bigger screens for better user experience [https://github.com/woocommerce/woocommerce-android/pull/11638]
 - [*] Fixed an issue that could cause push notifications to stop working after long periods [https://github.com/woocommerce/woocommerce-android/pull/11672]
 - [*] Login: fixed a bug where the error message was not displayed when the login fails [https://github.com/woocommerce/woocommerce-android/pull/11682]
+- [***] You can now add more sections to the My Store screen including contents for the last orders, top products with low stock, top active coupons and more! [https://github.com/woocommerce/woocommerce-android/issues/11460]
 
 18.9
 -----
