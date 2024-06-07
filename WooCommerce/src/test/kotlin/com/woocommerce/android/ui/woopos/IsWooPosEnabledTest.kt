@@ -38,7 +38,7 @@ class IsWooPosEnabledTest : BaseUnitTest() {
 
     @Before
     fun setup() = testBlocking {
-        whenever(selectedSite.getOrNull()).thenReturn(SiteModel())
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().also { it.id = 1 })
         whenever(getActivePaymentsPlugin()).thenReturn(WOOCOMMERCE_PAYMENTS)
         whenever(isWindowSizeExpandedAndBigger()).thenReturn(true)
         whenever(ippStore.loadAccount(any(), any())).thenReturn(buildPaymentAccountResult())
@@ -143,6 +143,19 @@ class IsWooPosEnabledTest : BaseUnitTest() {
         whenever(ippStore.loadAccount(any(), any())).thenReturn(result)
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.1")
         assertTrue(sut())
+    }
+
+    @Test
+    fun `given siteA's cached, when switched to siteB, then cached value for siteA is not used`() = testBlocking {
+        // ensure the value is cached for siteA
+        sut()
+        // switch to a non-eligible site
+        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().also { it.id = 2 })
+        whenever(getActivePaymentsPlugin()).thenReturn(STRIPE)
+        whenever(isWindowSizeExpandedAndBigger()).thenReturn(false)
+        whenever(ippStore.loadAccount(any(), any())).thenReturn(buildPaymentAccountResult(countryCode = "AU"))
+
+        assertFalse(sut())
     }
 
     private fun buildPaymentAccountResult(
