@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-28 15:54:05+0000
+Translation-Revision-Date: 2024-06-04 13:54:04+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Пользуйтесь приложением как кассовым аппаратом</string>
+    <string name="more_menu_button_woo_pos">Режим «Пункт продажи»</string>
+    <string name="product_stock_status_low_stock">Малый запас</string>
+    <string name="order_detail_shipping_header">ДОСТАВКА</string>
+    <string name="order_creation_feedback_action">Поделитесь своим мнением</string>
+    <string name="order_creation_shipping_feedback_message">Как вы считаете, Woo делает доставку проще?</string>
+    <string name="order_creation_shipping_feedback_title">Доставка добавлена!</string>
+    <string name="order_creation_shipping_edit">Изменить доставку</string>
+    <string name="order_creation_shipping_title_edit">Изменить доставку</string>
+    <string name="cash_payments_order_note_adding_error">При добавлении примечания к заказу возникла ошибка</string>
+    <string name="cash_payments_order_note_text">Заказ оплачен наличными. Клиент уплатил %s. Сумма сдачи составила %s.</string>
+    <string name="cash_payments_mark_order_as_complete">Отметить заказ как выполненный</string>
+    <string name="cash_payments_record_transaction_details">Записывать данные транзакции в примечаниях к заказам</string>
+    <string name="dashboard_new_widgets_card_description">Добавьте новые разделы, чтобы вам было удобнее управлять магазином</string>
+    <string name="dashboard_new_widgets_card_title">Хотите узнать больше?</string>
+    <string name="dashboard_product_stock_products">Товары</string>
+    <string name="dashboard_product_stock_levels">Уровни запасов</string>
+    <string name="dashboard_product_stock_status_header_title">Статус</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Вам по-прежнему требуется помощь? Свяжитесь с нами</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Не удалось загрузить отчёт о применении купонов</string>
+    <string name="dashboard_coupons_card_empty_view_message">В этот период купоны не применялись</string>
+    <string name="dashboard_coupons_view_all_button">Просмотреть все купоны</string>
+    <string name="dashboard_coupons_card_header_uses">Использовано</string>
+    <string name="dashboard_coupons_card_header_coupons">Купоны</string>
+    <string name="my_store_widget_product_stock_title">В наличии</string>
+    <string name="dashboard_action_view_all_messages">Просмотреть все сообщения</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Не удалось загрузить самые продаваемые товары</string>
+    <string name="na">Н/Д</string>
     <string name="cash_payments_change_due">Сумма сдачи</string>
     <string name="cash_payments_cash_received">Полученные наличные</string>
     <string name="my_store_widget_coupons_title">Самые активные купоны</string>
-    <string name="more_menu_button_woo_pos_description">Временная точка входа в режим POS</string>
-    <string name="more_menu_button_woo_pos">Woo Pos</string>
     <string name="cash_payments_take_payment_title">Получить оплату (%s)</string>
     <string name="dashboard_reviews_card_view_all_button">Посмотреть все отзывы</string>
     <string name="dashboard_reviews_card_empty_message_filtered">Не найдено ни одного отзыва, соответствующего выбранному фильтру. Попробуйте изменить фильтр.</string>
@@ -39,6 +65,7 @@ Language: ru
     <string name="dynamic_dashboard_widget_menu_item_hide">Скрыть %s</string>
     <string name="my_store_widget_onboarding_completed">Завершено</string>
     <string name="my_store_widget_feedback_title">Обратная связь</string>
+    <string name="dashboard_wcanalytics_inactive_description">Убедитесь, что на сайте используется последняя версия WooCommerce и аналитика WooCommerce активирована.</string>
     <string name="my_store_stats_plugin_inactive_title">Не удалось отобразить\n аналитику вашего магазина</string>
     <string name="store_onboarding_task_view_all_tasks">Посмотреть все задачи</string>
     <string name="analytics_session_no_available_description">Аналитические данные сеанса основываются на количестве уникальных посетителей, которое невозможно определить для произвольных временных промежутков.</string>
