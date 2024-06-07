@@ -54,6 +54,8 @@ class WooPosHomeViewModel @Inject constructor(
                             ParentToChildrenEvent.ProductSelectionChangedInProductSelector(event.selectedItems)
                         )
                     }
+
+                    is ChildToParentEvent.ItemRemovedFromCart -> TODO()
                 }
             }
         }

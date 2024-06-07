@@ -28,7 +28,10 @@ class WooPosProductsViewModel @Inject constructor(
     private val selectedItems: MutableStateFlow<List<WooPosProductsListItem>> =
         savedState.getStateFlow(scope = viewModelScope, initialValue = emptyList(), key = "selectedItems")
 
-    val viewState: StateFlow<WooPosProductsViewState> = combine(productsDataSource.products, selectedItems) { products, selectedItems ->
+    val viewState: StateFlow<WooPosProductsViewState> = combine(
+        productsDataSource.products,
+        selectedItems
+    ) { products, selectedItems ->
         calculateViewState(products, selectedItems)
     }.toStateFlow(WooPosProductsViewState(products = emptyList()))
 

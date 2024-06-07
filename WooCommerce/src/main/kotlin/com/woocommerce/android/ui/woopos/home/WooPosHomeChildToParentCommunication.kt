@@ -24,6 +24,7 @@ sealed class ChildToParentEvent {
     data class ProductSelectionChangedInProductSelector(
         val selectedItems: List<WooPosProductsListItem>
     ) : ChildToParentEvent()
+    data class ItemRemovedFromCart(val item: WooPosProductsListItem) : ChildToParentEvent()
 }
 
 interface WooPosChildrenToParentEventReceiver {

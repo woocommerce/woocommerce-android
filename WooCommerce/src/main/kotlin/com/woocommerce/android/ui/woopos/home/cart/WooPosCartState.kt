@@ -6,11 +6,18 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 sealed class WooPosCartState(
-    open val itemsInCart: List<WooPosProductsListItem>
+    open val itemsInCart: List<WooPosProductsListItem>,
+    val areItemsRemovable: Boolean,
 ) : Parcelable {
     data class Cart(override val itemsInCart: List<WooPosProductsListItem>) :
-        WooPosCartState(itemsInCart)
+        WooPosCartState(
+            itemsInCart = itemsInCart,
+            areItemsRemovable = true,
+        )
 
     data class Checkout(override val itemsInCart: List<WooPosProductsListItem>) :
-        WooPosCartState(itemsInCart)
+        WooPosCartState(
+            itemsInCart = itemsInCart,
+            areItemsRemovable = false,
+        )
 }

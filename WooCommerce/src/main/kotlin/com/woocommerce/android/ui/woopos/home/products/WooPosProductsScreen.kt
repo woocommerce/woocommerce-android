@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -101,7 +100,10 @@ fun ProductSelector(
 }
 
 @Composable
-private fun ProductItem(item: WooPosProductsViewState.ProductSelectorListItem, onItemClicked: (item: WooPosProductsListItem) -> Unit) {
+private fun ProductItem(
+    item: WooPosProductsViewState.ProductSelectorListItem,
+    onItemClicked: (item: WooPosProductsListItem) -> Unit
+) {
     val borderColor = if (item.isSelected) MaterialTheme.colors.primary else Color.Gray
     ConstraintLayout(
         modifier = Modifier
@@ -151,11 +153,17 @@ fun WooPosHomeScreenPreview() {
         WooPosProductsViewState(
             products = listOf(
                 WooPosProductsViewState.ProductSelectorListItem(
-                    WooPosProductsListItem(1, "Product 1"), isSelected = false,),
+                    WooPosProductsListItem(1, "Product 1"),
+                    isSelected = false,
+                ),
                 WooPosProductsViewState.ProductSelectorListItem(
-                    WooPosProductsListItem(2, "Product 2"), isSelected = true,),
+                    WooPosProductsListItem(2, "Product 2"),
+                    isSelected = true,
+                ),
                 WooPosProductsViewState.ProductSelectorListItem(
-                    WooPosProductsListItem(3, "Product 3"), isSelected = false,),
+                    WooPosProductsListItem(3, "Product 3"),
+                    isSelected = false,
+                ),
             )
         )
     )

@@ -7,10 +7,8 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.products.WooPosProductsListItem
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,14 +20,12 @@ class WooPosCartViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     savedState: SavedStateHandle,
 ) : ViewModel() {
-    private val _state = MutableStateFlow<WooPosCartState>(WooPosCartState.Cart(emptyList()))
-    val state: StateFlow<WooPosCartState> = _state
-
-    private val itemsInCart: MutableStateFlow<List<WooPosProductsListItem>> = savedState.getStateFlow(
+    private val _state = savedState.getStateFlow<WooPosCartState>(
         scope = viewModelScope,
-        initialValue = emptyList(),
-        key = "itemsInCart"
+        initialValue = WooPosCartState.Cart(emptyList()),
+        key = "cartViewState"
     )
+    val state: StateFlow<WooPosCartState> = _state
 
     init {
         listenUpEvents()
@@ -39,12 +35,20 @@ class WooPosCartViewModel @Inject constructor(
         when (event) {
             is WooPosCartUIEvent.CheckoutClicked -> {
                 sendEventToParent(ChildToParentEvent.CheckoutClicked)
-                _state.value = WooPosCartState.Checkout(itemsInCart.value)
+                _state.update { state ->
+                    WooPosCartState.Checkout(state.itemsInCart)
+                }
             }
 
             is WooPosCartUIEvent.BackFromCheckoutToCartClicked -> {
                 sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
-                _state.value = WooPosCartState.Cart(itemsInCart.value)
+                _state.update { state ->
+                    WooPosCartState.Cart(state.itemsInCart)
+                }
+            }
+
+            is WooPosCartUIEvent.ItemRemovedFromCart -> {
+                sendEventToParent(ChildToParentEvent.ItemRemovedFromCart(event.item))
             }
         }
     }
@@ -54,11 +58,18 @@ class WooPosCartViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = WooPosCartState.Cart(itemsInCart.value)
+                        _state.update { state ->
+                            WooPosCartState.Cart(state.itemsInCart)
+                        }
                     }
 
                     is ParentToChildrenEvent.ProductSelectionChangedInProductSelector -> {
-                        itemsInCart.update { event.selectedItems }
+                        _state.update { state ->
+                            when (state) {
+                                is WooPosCartState.Cart -> state.copy(itemsInCart = event.selectedItems)
+                                is WooPosCartState.Checkout -> state.copy(itemsInCart = event.selectedItems)
+                            }
+                        }
                     }
                 }
             }
