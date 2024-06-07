@@ -56,47 +56,45 @@ class WooPosAnalyticsTrackerTest {
     }
 
     @Test
-    fun `given an event and common properties, when track is called, then it should track the event with common properties`() =
-        runTest {
-            // GIVEN
-            val event = WooPosAnalytics.Event.Test
-            val commonProperties = mapOf("test" to "test")
-            whenever(commonPropertiesProvider.commonProperties).thenReturn(commonProperties)
+    fun `given an event and common properties, when track is called, then it should track the event with common properties`() = runTest {
+        // GIVEN
+        val event = WooPosAnalytics.Event.Test
+        val commonProperties = mapOf("test" to "test")
+        whenever(commonPropertiesProvider.commonProperties).thenReturn(commonProperties)
 
-            // WHEN
-            tracker.track(event)
+        // WHEN
+        tracker.track(event)
 
-            // THEN
-            verify(analyticsTrackerWrapper).track(
-                event,
-                event.properties + commonProperties
-            )
-        }
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            event,
+            event.properties + commonProperties
+        )
+    }
 
     @Test
-    fun `given an error and common properties, when track is called, then it should track the event with common properties`() =
-        runTest {
-            // GIVEN
-            val error = WooPosAnalytics.Error.Test(
-                errorContext = Any::class,
-                errorType = "test",
-                errorDescription = "test",
-            )
-            val commonProperties = mapOf("test" to "test")
-            whenever(commonPropertiesProvider.commonProperties).thenReturn(commonProperties)
+    fun `given an error and common properties, when track is called, then it should track the event with common properties`() = runTest {
+        // GIVEN
+        val error = WooPosAnalytics.Error.Test(
+            errorContext = Any::class,
+            errorType = "test",
+            errorDescription = "test",
+        )
+        val commonProperties = mapOf("test" to "test")
+        whenever(commonPropertiesProvider.commonProperties).thenReturn(commonProperties)
 
-            // WHEN
-            tracker.track(error)
+        // WHEN
+        tracker.track(error)
 
-            // THEN
-            verify(analyticsTrackerWrapper).track(
-                error,
-                error.properties + commonProperties,
-                error.errorContext.simpleName,
-                error.errorType,
-                error.errorDescription
-            )
-        }
+        // THEN
+        verify(analyticsTrackerWrapper).track(
+            error,
+            error.properties + commonProperties,
+            error.errorContext.simpleName,
+            error.errorType,
+            error.errorDescription
+        )
+    }
 
     @Test
     fun `given an non woopos event, when track is called, then it throw an exception`() = runTest {
