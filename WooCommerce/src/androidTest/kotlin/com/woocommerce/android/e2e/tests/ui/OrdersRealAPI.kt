@@ -72,7 +72,7 @@ class OrdersRealAPI : TestBase() {
     @After
     fun tearDown() {
         OrderListScreen()
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
 
         WelcomeScreen
             .logoutIfNeeded(composeTestRule)
@@ -110,13 +110,13 @@ class OrdersRealAPI : TestBase() {
             .enterSearchTerm(pendingOrder.customerName)
             .assertOrderCard(pendingOrder)
             .assertOrdersCount(1)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
             // Search for non-existing order
             .openSearchPane()
             .enterAbsentSearchTerm("Absent Order")
             .assertSearchResultsAbsent("Absent Order")
             // Leave search and make sure all orders are listed
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
             .assertOrderCard(pendingOrder)
             .assertOrderCard(completedOrder)
             .assertOrdersCount(2)

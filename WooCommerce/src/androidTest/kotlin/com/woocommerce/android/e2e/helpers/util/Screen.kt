@@ -75,6 +75,9 @@ open class Screen {
 
         // also hide AI description tooltip to make test more simple
         AppPrefs.isAIProductDescriptionTooltipDismissed = true
+
+        // hide notification as it blocks the product button on tablet mode
+        AppPrefs.isNotificationsPermissionBarDismissed = true
     }
 
     open fun recover() = Unit
@@ -95,6 +98,19 @@ open class Screen {
 
         fun isElementDisplayed(text: String): Boolean {
             return isElementDisplayed(onView(withText(text)))
+        }
+
+        fun isElementFocused(elementID: Int): Boolean {
+            return isElementFocused(onView(withId(elementID)))
+        }
+
+        private fun isElementFocused(element: ViewInteraction): Boolean {
+            return try {
+                element.check(matches(isDisplayed()))
+                true
+            } catch (e: Throwable) {
+                false
+            }
         }
 
         private fun isElementDisplayed(element: ViewInteraction): Boolean {
@@ -507,5 +523,11 @@ open class Screen {
         } catch (ex: Exception) {
             // do nothing
         }
+    }
+
+    fun clearSearchBar(searchBarId: Int) {
+        onView(withId(searchBarId))
+            .perform(ViewActions.click())
+            .perform(ViewActions.replaceText(""))
     }
 }
