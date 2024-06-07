@@ -114,7 +114,10 @@ class ProductListScreen : Screen {
     }
 
     fun leaveSearchMode(): ProductListScreen {
-        if (Screen.isElementDisplayed(R.id.productDetailsErrorImage) && (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text))) {
+        var isProductDetailsErrorDisplayed = Screen.isElementDisplayed(R.id.productDetailsErrorImage)
+        var isSearchTextBarDisplayed = Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)
+
+        if (isProductDetailsErrorDisplayed && isSearchTextBarDisplayed) {
             clearSearchBar(androidx.appcompat.R.id.search_src_text)
 
             // this is to click the back button on search bar to go back to products list
@@ -127,7 +130,7 @@ class ProductListScreen : Screen {
                     )
                 )
             ).perform(click())
-        } else if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
+        } else if (isSearchTextBarDisplayed) {
             // Double pressBack is needed because first one only removes the focus
             // from search field, while the second one leaves the search mode.
             pressBack()
