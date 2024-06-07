@@ -3,9 +3,10 @@ package com.woocommerce.android.ui.woopos
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.GetActivePaymentsPlugin
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.IsWindowClassExpandedAndBigger
-import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 import javax.inject.Inject
@@ -22,6 +23,7 @@ class IsWooPosEnabled @Inject constructor(
     private val isWindowSizeExpandedAndBigger: IsWindowClassExpandedAndBigger,
     private val isWooPosFFEnabled: IsWooPosFFEnabled,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
+    private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
 ) {
     private var cachedResult: HashMap<LocalSiteId, PosEnabled> = hashMapOf()
 
@@ -29,11 +31,10 @@ class IsWooPosEnabled @Inject constructor(
     suspend operator fun invoke(): Boolean {
         val selectedSite = selectedSite.getOrNull() ?: return false
 
-        cachedResult[selectedSite.id]?.let { return it }
-
         if (!isWooPosFFEnabled()) return false
 
         val ippPlugin = getActivePaymentsPlugin() ?: return false
+        val onboardingStatus = cardReaderOnboardingChecker.getOnboardingState()
         val paymentAccount = ippStore.loadAccount(ippPlugin, selectedSite).model ?: return false
         val countryCode = paymentAccount.country
 
@@ -42,14 +43,32 @@ class IsWooPosEnabled @Inject constructor(
                 ippPlugin == WOOCOMMERCE_PAYMENTS &&
                 paymentAccount.storeCurrencies.default.lowercase() == "usd" &&
                 isWindowSizeExpandedAndBigger() &&
-                isPluginSetupEnabled(paymentAccount) &&
+                isIPPOnboardingCompleted(onboardingStatus) &&
                 isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()
             ).also { cachedResult[selectedSite.id] = it }
     }
 
-    private fun isPluginSetupEnabled(paymentAccount: WCPaymentAccountResult): Boolean =
-        paymentAccount.status == WCPaymentAccountResult.WCPaymentAccountStatus.COMPLETE ||
-            paymentAccount.status == WCPaymentAccountResult.WCPaymentAccountStatus.ENABLED
+    private fun isIPPOnboardingCompleted(onboardingStatus: CardReaderOnboardingState): Boolean =
+        when (onboardingStatus) {
+            CardReaderOnboardingState.ChoosePaymentGatewayProvider,
+            is CardReaderOnboardingState.CashOnDeliveryDisabled,
+            CardReaderOnboardingState.GenericError,
+            CardReaderOnboardingState.NoConnectionError,
+            is CardReaderOnboardingState.PluginInTestModeWithLiveStripeAccount,
+            is CardReaderOnboardingState.PluginIsNotSupportedInTheCountry,
+            is CardReaderOnboardingState.PluginUnsupportedVersion,
+            is CardReaderOnboardingState.SetupNotCompleted,
+            is CardReaderOnboardingState.StoreCountryNotSupported,
+            is CardReaderOnboardingState.StripeAccountCountryNotSupported,
+            is CardReaderOnboardingState.StripeAccountOverdueRequirement,
+            is CardReaderOnboardingState.StripeAccountRejected,
+            is CardReaderOnboardingState.StripeAccountUnderReview,
+            CardReaderOnboardingState.WcpayNotActivated,
+            CardReaderOnboardingState.WcpayNotInstalled -> false
+
+            is CardReaderOnboardingState.StripeAccountPendingRequirement,
+            is CardReaderOnboardingState.OnboardingCompleted -> true
+        }
 
     private fun isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps(): Boolean {
         val wooCoreVersion = getWooCoreVersion() ?: return false
