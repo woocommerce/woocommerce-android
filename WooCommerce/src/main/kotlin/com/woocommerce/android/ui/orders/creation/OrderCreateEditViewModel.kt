@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefs
@@ -83,12 +84,14 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.runWithContext
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Address.Companion.EMPTY
+import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.OrderStatus
 import com.woocommerce.android.model.Order.ShippingLine
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tracker.OrderDurationRecorder
 import com.woocommerce.android.ui.barcodescanner.BarcodeScanningTracker
+import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
 import com.woocommerce.android.ui.orders.creation.CreateUpdateOrder.OrderUpdateStatus
@@ -154,6 +157,7 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -164,6 +168,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.flow.withIndex
@@ -205,6 +210,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val mapFeeLineToCustomAmountUiModel: MapFeeLineToCustomAmountUiModel,
     private val currencySymbolFinder: CurrencySymbolFinder,
     private val totalsHelper: OrderCreateEditTotalsHelper,
+    private val feedbackRepository: FeedbackRepository,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -217,6 +223,8 @@ class OrderCreateEditViewModel @Inject constructor(
         const val DELAY_BEFORE_SHOWING_SIMPLE_PAYMENTS_MIGRATION_BOTTOM_SHEET = 500L
         private const val PARAMETERS_KEY = "parameters_key"
         private const val ORDER_CUSTOM_FEE_NAME = "order_custom_fee"
+        const val DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK = 1000L
+        const val DAYS_BEFORE_SHOWING_SHIPPING_FEEDBACK = 7
     }
 
     val viewStateData = LiveDataDelegate(savedState, ViewState())
@@ -404,6 +412,7 @@ class OrderCreateEditViewModel @Inject constructor(
 
     init {
         monitorPluginAvailabilityChanges()
+        shouldDisplayShippingFeedback()
 
         when (mode) {
             is Mode.Creation -> {
@@ -461,6 +470,20 @@ class OrderCreateEditViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun shouldDisplayShippingFeedback() {
+        launch {
+            shippingLineList
+                .asFlow()
+                .drop(1)
+                .take(1)
+                .takeIf { shouldDisplayShippingLinesFeedback() }
+                ?.collect {
+                    delay(DELAY_BEFORE_SHOWING_SHIPPING_FEEDBACK)
+                    viewState = viewState.copy(showShippingFeedback = true)
+                }
         }
     }
 
@@ -1277,6 +1300,33 @@ class OrderCreateEditViewModel @Inject constructor(
         }
     }
 
+    private fun shouldDisplayShippingLinesFeedback(): Boolean {
+        val settings =
+            feedbackRepository.getFeatureFeedbackSetting(FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES)
+        return settings.feedbackState == FeatureFeedbackSettings.FeedbackState.UNANSWERED ||
+            settings.isFeedbackMoreThanDaysAgo(DAYS_BEFORE_SHOWING_SHIPPING_FEEDBACK)
+    }
+
+    fun onSendShippingFeedback() {
+        launch {
+            feedbackRepository.saveFeatureFeedback(
+                FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
+                FeatureFeedbackSettings.FeedbackState.GIVEN
+            )
+            viewState = viewState.copy(showShippingFeedback = false)
+            triggerEvent(ShippingLinesFeedback)
+        }
+    }
+    fun onCloseShippingFeedback() {
+        launch {
+            feedbackRepository.saveFeatureFeedback(
+                FeatureFeedbackSettings.Feature.ORDER_SHIPPING_LINES,
+                FeatureFeedbackSettings.FeedbackState.DISMISSED
+            )
+            viewState = viewState.copy(showShippingFeedback = false)
+        }
+    }
+
     private fun onExpandCollapseTotalsClicked() {
         val newTotalsExpandedState = !viewState.isTotalsExpanded
         viewState = viewState.copy(isTotalsExpanded = newTotalsExpandedState)
@@ -2033,6 +2083,7 @@ class OrderCreateEditViewModel @Inject constructor(
         val customAmountSectionState: CustomAmountSectionState = CustomAmountSectionState(),
         val windowSizeClass: WindowSizeClass = WindowSizeClass.Compact,
         val isRecalculateNeeded: Boolean = false,
+        val showShippingFeedback: Boolean = false,
     ) : Parcelable {
         @IgnoredOnParcel
         val canCreateOrder: Boolean =
@@ -2105,6 +2156,8 @@ data class OnCustomAmountTypeSelected(
 ) : Event()
 
 object OnSelectedProductsSyncRequested : Event()
+
+object ShippingLinesFeedback : Event()
 
 @Parcelize
 data class CustomAmountUIModel(

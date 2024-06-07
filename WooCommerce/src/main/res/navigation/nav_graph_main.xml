@@ -93,6 +93,9 @@
         <action
             android:id="@+id/action_dashboard_to_couponListFragment"
             app:destination="@id/nav_graph_coupons" />
+        <action
+            android:id="@+id/action_dashboard_to_inboxFragment"
+            app:destination="@id/inboxFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"

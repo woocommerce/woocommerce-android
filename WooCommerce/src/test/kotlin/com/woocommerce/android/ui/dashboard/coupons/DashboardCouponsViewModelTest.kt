@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard.coupons
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Coupon
 import com.woocommerce.android.model.CouponPerformanceReport
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
@@ -92,6 +93,7 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
         on { dateRange } doReturn rangeFlow
         onBlocking { updateDateRange(any()) } doAnswer { rangeFlow.value = it.arguments[0] as StatsTimeRange }
     }
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: DashboardCouponsViewModel
 
@@ -114,6 +116,7 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
             coroutineDispatchers = coroutinesTestRule.testDispatchers,
             dateRangeFormatter = dateRangeFormatter,
             customDateRangeDataStore = customDateRangeDataStore,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
@@ -202,5 +205,27 @@ class DashboardCouponsViewModelTest : BaseUnitTest() {
         val dateRangeState = viewModel.dateRangeState.getOrAwaitValue()
 
         assertThat(dateRangeState.rangeFormatted).isEqualTo("Formatted date range")
+    }
+
+    @Test
+    fun `when tapping on a coupon, then open coupon details`() = testBlocking {
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onCouponClicked(sampleCoupons.first().id)
+        }.last()
+
+        assertThat(event).isEqualTo(DashboardCouponsViewModel.ViewCouponDetails(sampleCoupons.first().id))
+    }
+
+    @Test
+    fun `when tapping view all, then open coupons list`() = testBlocking {
+        setup()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onViewAllClicked()
+        }.last()
+
+        assertThat(event).isEqualTo(DashboardCouponsViewModel.ViewAllCoupons)
     }
 }

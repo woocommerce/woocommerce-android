@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -23,16 +24,54 @@ data class DashboardWidget(
 
     enum class Type(
         @StringRes val titleResource: Int,
-        val trackingIdentifier: String
+        val trackingIdentifier: String,
+        private val isSupported: Boolean = true,
     ) {
-        ONBOARDING(R.string.my_store_widget_onboarding_title, "store_setup"),
-        STATS(R.string.my_store_widget_stats_title, "performance"),
-        POPULAR_PRODUCTS(R.string.my_store_widget_top_products_title, "top_performers"),
-        BLAZE(R.string.my_store_widget_blaze_title, "blaze"),
-        REVIEWS(R.string.my_store_widget_reviews_title, "reviews"),
-        ORDERS(R.string.my_store_widget_orders_title, "orders"),
-        COUPONS(R.string.my_store_widget_coupons_title, "coupons"),
-        PRODUCT_STOCK(R.string.my_store_widget_product_stock_title, "product_stock"),
+        ONBOARDING(
+            titleResource = R.string.my_store_widget_onboarding_title,
+            trackingIdentifier = "store_setup"
+        ),
+        STATS(
+            titleResource = R.string.my_store_widget_stats_title,
+            trackingIdentifier = "performance"
+        ),
+        POPULAR_PRODUCTS(
+            titleResource = R.string.my_store_widget_top_products_title,
+            trackingIdentifier = "top_performers"
+        ),
+        BLAZE(
+            titleResource = R.string.my_store_widget_blaze_title,
+            trackingIdentifier = "blaze"
+        ),
+        REVIEWS(
+            titleResource = R.string.my_store_widget_reviews_title,
+            trackingIdentifier = "reviews",
+            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
+        ),
+        ORDERS(
+            titleResource = R.string.my_store_widget_orders_title,
+            trackingIdentifier = "orders",
+            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
+        ),
+        COUPONS(
+            titleResource = R.string.my_store_widget_coupons_title,
+            trackingIdentifier = "coupons",
+            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
+        ),
+        INBOX(
+            titleResource = R.string.inbox_screen_title,
+            trackingIdentifier = "inbox",
+            isSupported = FeatureFlag.INBOX.isEnabled()
+        ),
+        STOCK(
+            titleResource = R.string.my_store_widget_product_stock_title,
+            trackingIdentifier = "stock",
+            isSupported = FeatureFlag.DYNAMIC_DASHBOARD_M2.isEnabled()
+        );
+
+        companion object {
+            val supportedWidgets: List<Type> = Type.entries.filter { it.isSupported }
+        }
     }
 
     sealed interface Status : Parcelable {

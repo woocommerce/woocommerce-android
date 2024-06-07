@@ -1,2 +1,0 @@
-18.7:
-Corrigimos um problema que fazia o aplicativo travar durante a rotação da tela, garantindo uma experiência de compra mais tranquila. Atualize agora para desfrutar de um aplicativo mais estável e confiável!

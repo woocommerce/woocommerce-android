@@ -51,7 +51,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.ProductSorting
 @Suppress("LongParameterList")
 class DashboardBlazeViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
-    @Assisted parentViewModel: DashboardViewModel,
+    @Assisted private val parentViewModel: DashboardViewModel,
     observeMostRecentBlazeCampaign: ObserveMostRecentBlazeCampaign,
     private val productListRepository: ProductListRepository,
     private val blazeUrlsHelper: BlazeUrlsHelper,
@@ -144,6 +144,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
                 )
             ),
             onCampaignClicked = {
+                parentViewModel.trackCardInteracted(DashboardWidget.Type.BLAZE.trackingIdentifier)
                 analyticsTrackerWrapper.track(
                     stat = BLAZE_CAMPAIGN_DETAIL_SELECTED,
                     properties = mapOf(
@@ -169,6 +170,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     }
 
     private fun viewAllCampaigns() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.BLAZE.trackingIdentifier)
         analyticsTrackerWrapper.track(
             stat = BLAZE_CAMPAIGN_LIST_ENTRY_POINT_SELECTED,
             properties = mapOf(
@@ -208,6 +210,7 @@ class DashboardBlazeViewModel @AssistedInject constructor(
     )
 
     private fun launchCampaignCreation(productId: Long?) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.BLAZE.trackingIdentifier)
         triggerEvent(LaunchBlazeCampaignCreation(productId))
     }
 

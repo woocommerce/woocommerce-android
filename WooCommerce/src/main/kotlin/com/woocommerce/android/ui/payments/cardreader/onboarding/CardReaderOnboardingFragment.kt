@@ -413,6 +413,9 @@ sealed class CardReaderFlowParam : Parcelable {
         }
     }
 
+    @Parcelize
+    data object WooPosConnection : CardReaderFlowParam()
+
     sealed class PaymentOrRefund : CardReaderFlowParam() {
         abstract val orderId: Long
 
@@ -426,6 +429,7 @@ sealed class CardReaderFlowParam : Parcelable {
                 ORDER,
                 ORDER_CREATION,
                 TRY_TAP_TO_PAY,
+                WOO_POS,
             }
         }
 

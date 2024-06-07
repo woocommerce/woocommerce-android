@@ -5,7 +5,11 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.CouponPerformanceReport
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
@@ -56,6 +60,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     private val appPrefs: AppPrefsWrapper,
     private val couponUtils: CouponUtils,
     private val parameterRepository: ParameterRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
@@ -114,6 +119,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     }.asLiveData()
 
     fun onTabSelected(selectionType: SelectionType) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
         if (selectionType != SelectionType.CUSTOM) {
             appPrefs.setActiveCouponsTab(selectionType.name)
         } else {
@@ -126,6 +132,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     }
 
     fun onEditCustomRangeTapped() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
         triggerEvent(
             OpenDatePicker(
                 fromDate = dateRangeState.value?.customRange?.start ?: Date(),
@@ -144,14 +151,22 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     }
 
     fun onViewAllClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
         triggerEvent(ViewAllCoupons)
     }
 
     fun onCouponClicked(couponId: Long) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
         triggerEvent(ViewCouponDetails(couponId))
     }
 
     fun onRetryClicked() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.COUPONS.trackingIdentifier
+            )
+        )
         _refreshTrigger.tryEmit(RefreshEvent())
     }
 
