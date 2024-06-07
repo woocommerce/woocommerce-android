@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.home
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.Cart
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitConfirmationDialogDismissed
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -11,7 +13,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
 
-class WooPosHomeViewModelTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class WooPosHomeViewModelTest : BaseUnitTest() {
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
 
