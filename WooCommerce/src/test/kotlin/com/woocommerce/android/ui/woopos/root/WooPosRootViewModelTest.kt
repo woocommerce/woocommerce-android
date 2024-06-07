@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.root
 
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -49,6 +51,45 @@ class WooPosRootViewModelTest : BaseUnitTest() {
 
         verify(cardReaderFacade, never()).connectToReader()
         job.cancel()
+    }
+
+    @Test
+    fun `when exit confirmation dialog dismissed, then dialog should be null`() {
+        // GIVEN
+        val sut = createSut()
+        sut.onUiEvent(WooPosRootUIEvent.ExitPOSClicked)
+
+        // WHEN
+        sut.onUiEvent(WooPosRootUIEvent.ExitConfirmationDialogDismissed)
+
+        // THEN
+        assertThat(sut.rootScreenState.value.exitConfirmationDialog).isNull()
+    }
+
+    @Test
+    fun `when exit confirmation dialog clicked, then dialog should be shown`() {
+        // GIVEN
+        val sut = createSut()
+
+        // WHEN
+        sut.onUiEvent(WooPosRootUIEvent.ExitPOSClicked)
+
+        // THEN
+        assertThat(sut.rootScreenState.value.exitConfirmationDialog).isEqualTo(
+            WooPosRootScreenState.WooPosExitConfirmationDialog
+        )
+        assertThat(sut.rootScreenState.value.exitConfirmationDialog?.confirmButton).isEqualTo(
+            R.string.woopos_exit_confirmation_confirm_button
+        )
+        assertThat(sut.rootScreenState.value.exitConfirmationDialog?.dismissButton).isEqualTo(
+            R.string.woopos_exit_confirmation_dismiss_button
+        )
+        assertThat(sut.rootScreenState.value.exitConfirmationDialog?.message).isEqualTo(
+            R.string.woopos_exit_confirmation_message
+        )
+        assertThat(sut.rootScreenState.value.exitConfirmationDialog?.title).isEqualTo(
+            R.string.woopos_exit_confirmation_title
+        )
     }
 
     private fun createSut() = WooPosRootViewModel(cardReaderFacade)
