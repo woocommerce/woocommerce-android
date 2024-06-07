@@ -35,10 +35,6 @@ class WooPosHomeViewModel @Inject constructor(
                 }
             }
 
-            WooPosHomeUIEvent.ExitConfirmationDialogConfirmed -> {
-                TODO()
-            }
-
             WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
                 _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
             }

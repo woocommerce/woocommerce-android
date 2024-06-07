@@ -15,16 +15,27 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosRootHost
 
 @Composable
-fun WooPosRootScreen() {
+fun WooPosRootScreen(onPosExitClicked: () -> Unit) {
     val viewModel: WooPosRootViewModel = hiltViewModel()
-    WooPosRootScreen(viewModel.bottomToolbarState.collectAsState(), viewModel::onUiEvent)
+    WooPosRootScreen(
+        viewModel.bottomToolbarState.collectAsState(),
+        onPosExitClicked = onPosExitClicked,
+        viewModel::onUiEvent
+    )
 }
 
 @Composable
-private fun WooPosRootScreen(state: State<WooPosBottomToolbarState>, onUIEvent: (WooPosRootUIEvent) -> Unit) {
+private fun WooPosRootScreen(
+    state: State<WooPosBottomToolbarState>,
+    onPosExitClicked: () -> Unit,
+    onUIEvent: (WooPosRootUIEvent) -> Unit
+) {
     WooPosTheme {
         Column(modifier = Modifier.background(MaterialTheme.colors.background)) {
-            WooPosRootHost(modifier = Modifier.weight(1f))
+            WooPosRootHost(
+                modifier = Modifier.weight(1f),
+                onPosExitClicked = onPosExitClicked,
+            )
             WooPosBottomToolbar(state, onUIEvent)
         }
     }
@@ -37,6 +48,6 @@ fun PreviewWooPosRootScreen() {
         mutableStateOf(WooPosBottomToolbarState(WooPosBottomToolbarState.CardReaderStatus.Unknown))
     }
     WooPosTheme {
-        WooPosRootScreen(state) {}
+        WooPosRootScreen(state, {}, {})
     }
 }

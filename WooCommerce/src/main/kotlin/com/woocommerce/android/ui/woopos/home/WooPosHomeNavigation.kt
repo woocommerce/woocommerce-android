@@ -10,8 +10,8 @@ fun NavController.navigateToCartCheckoutScreen() {
     navigate(HOME_ROUTE)
 }
 
-fun NavGraphBuilder.cartCheckoutScreen() {
+fun NavGraphBuilder.cartCheckoutScreen(onPosExitClicked: () -> Unit) {
     composable(HOME_ROUTE) {
-        WooPosHomeScreen()
+        WooPosHomeScreen(onPosExitClicked)
     }
 }

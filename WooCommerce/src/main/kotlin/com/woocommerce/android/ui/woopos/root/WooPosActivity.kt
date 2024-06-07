@@ -20,7 +20,9 @@ class WooPosActivity : AppCompatActivity() {
         lifecycle.addObserver(wooPosCardReaderFacade)
 
         setContent {
-            WooPosRootScreen()
+            WooPosRootScreen(
+                onPosExitClicked = { finish() }
+            )
         }
     }
 }

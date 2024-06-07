@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun WooPosRootHost(modifier: Modifier = Modifier) {
+fun WooPosRootHost(modifier: Modifier = Modifier, onPosExitClicked: () -> Unit) {
     val rootController = rememberNavController()
 
     NavHost(
@@ -18,6 +18,9 @@ fun WooPosRootHost(modifier: Modifier = Modifier) {
         popEnterTransition = { screenFadeIn() },
         popExitTransition = { screenSlideOut() },
     ) {
-        checkoutGraph(navController = rootController)
+        checkoutGraph(
+            navController = rootController,
+            onPosExitClicked = onPosExitClicked,
+        )
     }
 }
