@@ -119,13 +119,14 @@ class ProductListScreen : Screen {
 
             // this is to click the back button on search bar to go back to products list
             // using the content description matcher as there isn't an ID for the button
-            Espresso.onView(allOf(
-                Matchers.allOf(
-                    ViewMatchers.withContentDescription("Collapse"),
-                    ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+            Espresso.onView(
+                allOf(
+                    Matchers.allOf(
+                        ViewMatchers.withContentDescription("Collapse"),
+                        ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+                    )
                 )
-            )).perform(click())
-
+            ).perform(click())
         } else if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
             // Double pressBack is needed because first one only removes the focus
             // from search field, while the second one leaves the search mode.
