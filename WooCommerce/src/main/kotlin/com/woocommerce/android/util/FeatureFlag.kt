@@ -30,15 +30,15 @@ enum class FeatureFlag {
             WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE,
-            DYNAMIC_DASHBOARD_M2 -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
 
             OTHER_PAYMENT_METHODS,
             CONNECTIVITY_TOOL,
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,
             EOSL_M1,
-            EOSL_M3 -> true
+            EOSL_M3,
+            DYNAMIC_DASHBOARD_M2 -> true
         }
     }
 }
