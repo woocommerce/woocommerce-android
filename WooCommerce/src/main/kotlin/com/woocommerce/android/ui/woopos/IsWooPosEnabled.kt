@@ -7,13 +7,14 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.IsWindowClassExpandedAndBigger
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private typealias LocalSiteId = Int
-private typealias PosEnabled = Boolean
 
 @Singleton
 class IsWooPosEnabled @Inject constructor(
@@ -25,7 +26,7 @@ class IsWooPosEnabled @Inject constructor(
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val cardReaderOnboardingChecker: CardReaderOnboardingChecker,
 ) {
-    private var cachedResult: HashMap<LocalSiteId, PosEnabled> = hashMapOf()
+    private var paymentAccountCache: HashMap<LocalSiteId, WCPaymentAccountResult> = hashMapOf()
 
     @Suppress("ReturnCount")
     suspend operator fun invoke(): Boolean {
@@ -35,7 +36,7 @@ class IsWooPosEnabled @Inject constructor(
 
         val ippPlugin = getActivePaymentsPlugin() ?: return false
         val onboardingStatus = cardReaderOnboardingChecker.getOnboardingState()
-        val paymentAccount = ippStore.loadAccount(ippPlugin, selectedSite).model ?: return false
+        val paymentAccount = getOrFetchPaymentAccount(selectedSite, ippPlugin) ?: return false
         val countryCode = paymentAccount.country
 
         return (
@@ -45,7 +46,21 @@ class IsWooPosEnabled @Inject constructor(
                 isWindowSizeExpandedAndBigger() &&
                 isIPPOnboardingCompleted(onboardingStatus) &&
                 isWooCoreSupportsOrderAutoDraftsAndExtraPaymentsProps()
-            ).also { cachedResult[selectedSite.id] = it }
+            )
+    }
+
+    private suspend fun getOrFetchPaymentAccount(
+        selectedSite: SiteModel,
+        ippPlugin: WCInPersonPaymentsStore.InPersonPaymentsPluginType
+    ): WCPaymentAccountResult? {
+        paymentAccountCache[selectedSite.id]?.let { return it }
+
+        val paymentsAccount = ippStore.loadAccount(
+            ippPlugin,
+            selectedSite
+        )
+
+        return paymentsAccount.model?.also { paymentAccountCache[selectedSite.id] = it }
     }
 
     private fun isIPPOnboardingCompleted(onboardingStatus: CardReaderOnboardingState): Boolean =
