@@ -73,7 +73,7 @@ fun PreviewWooPosBottomToolbar() {
     WooPosTheme {
         Column {
             Spacer(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar(state) {}
+            WooPosBottomToolbar(state, {}, {})
         }
     }
 }

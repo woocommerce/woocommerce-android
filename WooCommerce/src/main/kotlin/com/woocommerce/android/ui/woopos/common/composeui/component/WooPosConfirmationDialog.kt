@@ -4,10 +4,12 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
 @Composable
 fun WooPosConfirmationDialog(
+    modifier: Modifier = Modifier,
     title: String,
     message: String,
     confirmButtonText: String,
@@ -16,6 +18,7 @@ fun WooPosConfirmationDialog(
     onConfirm: () -> Unit,
 ) {
     AlertDialog(
+        modifier = modifier,
         onDismissRequest = { onDismiss() },
         title = { Text(text = title) },
         text = { Text(text = message) },
