@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -90,7 +91,7 @@ fun ProductSelector(
             state = gridState
         ) {
             itemsIndexed(state.value.products) { _, product ->
-                ProductItem(product = product, onItemClicked = onItemClicked)
+                ProductItem(item = product, onItemClicked = onItemClicked)
             }
         }
         InfiniteGridHandler(gridState) {
@@ -100,16 +101,17 @@ fun ProductSelector(
 }
 
 @Composable
-private fun ProductItem(product: WooPosProductsListItem, onItemClicked: (item: WooPosProductsListItem) -> Unit) {
+private fun ProductItem(item: WooPosProductsViewState.ProductSelectorListItem, onItemClicked: (item: WooPosProductsListItem) -> Unit) {
+    val borderColor = if (item.isSelected) MaterialTheme.colors.primary else Color.Gray
     ConstraintLayout(
         modifier = Modifier
-            .border(1.dp, Color.Gray, shape = RoundedCornerShape(4.dp))
+            .border(2.dp, borderColor, shape = RoundedCornerShape(4.dp))
+            .clickable { onItemClicked(item.product) }
             .padding(16.dp)
             .fillMaxWidth(0.5f)
-            .clickable { onItemClicked(product) }
     ) {
         Text(
-            text = product.title,
+            text = item.product.title,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.onSurface,
         )
@@ -148,9 +150,12 @@ fun WooPosHomeScreenPreview() {
     val productState = MutableStateFlow(
         WooPosProductsViewState(
             products = listOf(
-                WooPosProductsListItem(1, "Product 1"),
-                WooPosProductsListItem(2, "Product 2"),
-                WooPosProductsListItem(3, "Product 3"),
+                WooPosProductsViewState.ProductSelectorListItem(
+                    WooPosProductsListItem(1, "Product 1"), isSelected = false,),
+                WooPosProductsViewState.ProductSelectorListItem(
+                    WooPosProductsListItem(2, "Product 2"), isSelected = true,),
+                WooPosProductsViewState.ProductSelectorListItem(
+                    WooPosProductsListItem(3, "Product 3"), isSelected = false,),
             )
         )
     )
