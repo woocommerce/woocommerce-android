@@ -40,7 +40,6 @@ class WooPosHomeViewModelTest : BaseUnitTest() {
             // GIVEN
             val viewModel = createViewModel()
 
-
             // WHEN
             viewModel.onUIEvent(SystemBackClicked)
 
