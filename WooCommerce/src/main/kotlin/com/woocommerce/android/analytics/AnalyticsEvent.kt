@@ -188,6 +188,8 @@ sealed class AnalyticsEvent(override val siteless: Boolean = false) : IAnalytics
     object DYNAMIC_DASHBOARD_HIDE_CARD_TAPPED : AnalyticsEvent()
     object DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED : AnalyticsEvent()
     object DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED : AnalyticsEvent()
+    object DYNAMIC_DASHBOARD_ADD_NEW_SECTIONS_TAPPED : AnalyticsEvent()
+    object DYNAMIC_DASHBOARD_CARD_INTERACTED : AnalyticsEvent()
 
     // -- Analytics Hub
     object ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED : AnalyticsEvent()

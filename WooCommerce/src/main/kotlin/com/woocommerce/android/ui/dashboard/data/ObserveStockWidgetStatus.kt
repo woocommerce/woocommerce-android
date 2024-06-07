@@ -1,26 +1,29 @@
 package com.woocommerce.android.ui.dashboard.data
 
+import com.woocommerce.android.R
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.blaze.IsBlazeEnabled
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class ObserveBlazeWidgetStatus @Inject constructor(
+@OptIn(ExperimentalCoroutinesApi::class)
+class ObserveStockWidgetStatus @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val isBlazeEnabled: IsBlazeEnabled,
     private val observePublishedProductsCount: ObservePublishedProductsCount
 ) {
     operator fun invoke() = selectedSite.observe()
         .filterNotNull()
-        .map { isBlazeEnabled() }
-        .combine(observePublishedProductsCount()) { isBlazeEnabled, hasPublishedProducts ->
-            if (isBlazeEnabled && hasPublishedProducts) {
+        .flatMapLatest { observePublishedProductsCount() }
+        .map { hasPublishedProducts ->
+            if (hasPublishedProducts) {
                 DashboardWidget.Status.Available
             } else {
-                DashboardWidget.Status.Hidden
+                DashboardWidget.Status.Unavailable(
+                    badgeText = R.string.my_store_widget_unavailable
+                )
             }
         }
 }

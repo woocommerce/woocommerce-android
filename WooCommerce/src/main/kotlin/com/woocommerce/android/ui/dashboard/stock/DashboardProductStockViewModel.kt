@@ -4,6 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockViewModel.ViewState.Loading
 import com.woocommerce.android.ui.products.ProductStockStatus
@@ -31,6 +35,7 @@ class DashboardProductStockViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     @Assisted private val parentViewModel: DashboardViewModel,
     private val productStockRepository: ProductStockRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         val supportedFilters = listOf(
@@ -49,9 +54,9 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         .flatMapLatest {
             refreshTrigger.map { refresh -> Pair(refresh, it) }
         }
-        .transformLatest { (_, status) ->
+        .transformLatest { (refresh, status) ->
             emit(Loading(status))
-            productStockRepository.fetchProductStockReport(status)
+            productStockRepository.fetchProductStockReport(status, refresh.isForced)
                 .fold(
                     onSuccess = { emit(ViewState.Success(it, status)) },
                     onFailure = {
@@ -64,14 +69,22 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         }.asLiveData()
 
     fun onFilterSelected(productStockStatus: ProductStockStatus) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STOCK.trackingIdentifier)
         this.status.value = productStockStatus
     }
 
     fun onRetryClicked() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.STOCK.trackingIdentifier
+            )
+        )
         _refreshTrigger.tryEmit(DashboardViewModel.RefreshEvent())
     }
 
     fun onProductClicked(product: ProductStockItem) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.STOCK.trackingIdentifier)
         val id = when {
             product.parentProductId != 0L -> product.parentProductId
             else -> product.productId
