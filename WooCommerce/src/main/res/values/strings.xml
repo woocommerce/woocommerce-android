@@ -449,6 +449,7 @@
 
     <string name="dashboard_new_widgets_card_title">Looking for more insights?</string>
     <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>
+    <string name="dashboard_new_widgets_card_button">Add new Sections</string>
     <!--
         Sign Up Flow
     -->
