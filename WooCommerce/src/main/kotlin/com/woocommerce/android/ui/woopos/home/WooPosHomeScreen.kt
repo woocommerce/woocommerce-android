@@ -24,13 +24,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConfir
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
-fun WooPosHomeScreen(onPosExitClicked: () -> Unit) {
+fun WooPosHomeScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val viewModel: WooPosHomeViewModel = hiltViewModel()
     WooPosHomeScreen(
         viewModel.state.collectAsState().value,
-        onPosExitClicked,
+        onNavigationEvent,
         viewModel::onUIEvent
     )
 }
@@ -38,7 +39,7 @@ fun WooPosHomeScreen(onPosExitClicked: () -> Unit) {
 @Composable
 private fun WooPosHomeScreen(
     state: WooPosHomeState,
-    onPosExitClicked: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
 ) {
     BackHandler {
@@ -81,7 +82,7 @@ private fun WooPosHomeScreen(
                     confirmButtonText = stringResource(id = dialog.positiveButton),
                     dismissButtonText = stringResource(id = dialog.negativeButton),
                     onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
-                    onConfirm = { onPosExitClicked() }
+                    onConfirm = { onNavigationEvent(WooPosNavigationEvent.ExitPosClicked) }
                 )
             }
             WooPosHomeScreen(scrollState, totalsProductsWidth, cartWidth)
@@ -122,7 +123,7 @@ fun WooPosHomeCartScreenPreview() {
             exitConfirmationDialog = null
         ),
         onHomeUIEvent = {},
-        onPosExitClicked = {},
+        onNavigationEvent = {},
     )
 }
 
@@ -134,7 +135,7 @@ fun WooPosHomeCartWithExitPOSConfirmationScreenPreview() {
             exitConfirmationDialog = WooPosExitConfirmationDialog
         ),
         onHomeUIEvent = {},
-        onPosExitClicked = {},
+        onNavigationEvent = {},
     )
 }
 
@@ -144,6 +145,6 @@ fun WooPosHomeCheckoutScreenPreview() {
     WooPosHomeScreen(
         state = WooPosHomeState.Checkout,
         onHomeUIEvent = {},
-        onPosExitClicked = {},
+        onNavigationEvent = {},
     )
 }

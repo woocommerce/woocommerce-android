@@ -1,13 +1,17 @@
 package com.woocommerce.android.ui.woopos.root.navigation
 
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun WooPosRootHost(modifier: Modifier = Modifier, onPosExitClicked: () -> Unit) {
+fun WooPosRootHost(modifier: Modifier = Modifier) {
     val rootController = rememberNavController()
+    val activity = LocalContext.current as ComponentActivity
 
     NavHost(
         modifier = modifier,
@@ -19,8 +23,18 @@ fun WooPosRootHost(modifier: Modifier = Modifier, onPosExitClicked: () -> Unit) 
         popExitTransition = { screenSlideOut() },
     ) {
         checkoutGraph(
-            navController = rootController,
-            onPosExitClicked = onPosExitClicked,
+            onNavigationEvent = { event ->
+                rootController.handleNavigationEvent(event, activity)
+            }
         )
+    }
+}
+
+private fun NavHostController.handleNavigationEvent(
+    event: WooPosNavigationEvent,
+    activity: ComponentActivity
+) {
+    when (event) {
+        is WooPosNavigationEvent.ExitPosClicked -> activity.finish()
     }
 }
