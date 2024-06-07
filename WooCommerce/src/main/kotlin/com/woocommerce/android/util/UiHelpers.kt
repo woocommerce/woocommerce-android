@@ -79,7 +79,8 @@ object UiHelpers {
     ) {
         val isLandscape = DisplayUtils.isLandscape(imageView.context)
         val isExpandedOrBigger = imageView.context.windowSizeClass == WindowSizeClass.ExpandedAndBigger
-        val showImage = resId != null && (!isLandscape || isExpandedOrBigger)
+        val shouldShowBasedOnOrientationAndSize = !isLandscape || isExpandedOrBigger
+        val showImage = resId != null && shouldShowBasedOnOrientationAndSize
         updateVisibility(imageView, showImage, setInvisible)
         resId?.let {
             imageView.setImageResource(resId)
