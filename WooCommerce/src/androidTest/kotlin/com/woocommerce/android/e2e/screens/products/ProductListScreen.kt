@@ -117,8 +117,8 @@ class ProductListScreen : Screen {
         if (Screen.isElementDisplayed(R.id.productDetailsErrorImage) && (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text))) {
             clearSearchBar(androidx.appcompat.R.id.search_src_text)
 
-            // to click the back button on search bar to back to products list
-            // using content description matcher as there isn't an ID for the button
+            // this is to click the back button on search bar to go back to products list
+            // using the content description matcher as there isn't an ID for the button
             Espresso.onView(allOf(
                 Matchers.allOf(
                     ViewMatchers.withContentDescription("Collapse"),
