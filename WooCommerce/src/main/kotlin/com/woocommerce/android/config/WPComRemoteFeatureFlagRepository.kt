@@ -1,7 +1,6 @@
 package com.woocommerce.android.config
 
 import com.woocommerce.android.OnChangedException
-import com.woocommerce.android.util.DeviceInfoWrapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,8 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class WPComRemoteFeatureFlagRepository @Inject constructor(
-    private val featureFlagsStore: FeatureFlagsStore,
-    private val deviceInfo: DeviceInfoWrapper,
+    private val featureFlagsStore: FeatureFlagsStore
 ) {
     companion object {
         private const val PLATFORM_NAME = "android"
@@ -34,7 +32,6 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
                 identifier = "",
                 marketingVersion = appVersion,
                 platform = PLATFORM_NAME,
-                osVersion = deviceInfo.osName,
             )
         )
         return if (result.isError) {

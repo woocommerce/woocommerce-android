@@ -1,6 +1,5 @@
 package com.woocommerce.android.config
 
-import com.woocommerce.android.util.DeviceInfoWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -17,16 +16,13 @@ import org.wordpress.android.fluxc.store.mobile.FeatureFlagsStore
 @OptIn(ExperimentalCoroutinesApi::class)
 class WPComRemoteFeatureFlagRepositoryTest : BaseUnitTest() {
     private val featureFlagStore: FeatureFlagsStore = mock()
-    private val deviceInfo: DeviceInfoWrapper = mock()
     private lateinit var sut: WPComRemoteFeatureFlagRepository
 
     @Before
     fun setup() {
         sut = WPComRemoteFeatureFlagRepository(
             featureFlagStore,
-            deviceInfo,
         )
-        whenever(deviceInfo.osName).thenReturn("14.0")
     }
 
     @Test
