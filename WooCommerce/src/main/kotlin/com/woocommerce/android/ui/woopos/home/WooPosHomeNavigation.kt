@@ -7,11 +7,11 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 const val HOME_ROUTE = "home"
 
-fun NavController.navigateToCartCheckoutScreen() {
+fun NavController.navigateToHomeScreen() {
     navigate(HOME_ROUTE)
 }
 
-fun NavGraphBuilder.cartCheckoutScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
+fun NavGraphBuilder.homeScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     composable(HOME_ROUTE) {
         WooPosHomeScreen(onNavigationEvent)
     }

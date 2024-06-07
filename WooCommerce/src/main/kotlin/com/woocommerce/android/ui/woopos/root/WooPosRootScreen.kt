@@ -12,14 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosRootHost
 
 @Composable
-fun WooPosRootScreen(onPosExitClicked: () -> Unit) {
+fun WooPosRootScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val viewModel: WooPosRootViewModel = hiltViewModel()
     WooPosRootScreen(
         viewModel.bottomToolbarState.collectAsState(),
-        onPosExitClicked = onPosExitClicked,
+        onNavigationEvent = onNavigationEvent,
         viewModel::onUiEvent
     )
 }
@@ -27,16 +28,19 @@ fun WooPosRootScreen(onPosExitClicked: () -> Unit) {
 @Composable
 private fun WooPosRootScreen(
     state: State<WooPosBottomToolbarState>,
-    onPosExitClicked: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     onUIEvent: (WooPosRootUIEvent) -> Unit
 ) {
     WooPosTheme {
         Column(modifier = Modifier.background(MaterialTheme.colors.background)) {
             WooPosRootHost(
                 modifier = Modifier.weight(1f),
-                onPosExitClicked = onPosExitClicked,
             )
-            WooPosBottomToolbar(state, onUIEvent)
+            WooPosBottomToolbar(
+                state,
+                onNavigationEvent,
+                onUIEvent,
+            )
         }
     }
 }

@@ -24,9 +24,14 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
-fun WooPosBottomToolbar(state: State<WooPosBottomToolbarState>, onUIEvent: (WooPosRootUIEvent) -> Unit) {
+fun WooPosBottomToolbar(
+    state: State<WooPosBottomToolbarState>,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    onUIEvent: (WooPosRootUIEvent) -> Unit
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
