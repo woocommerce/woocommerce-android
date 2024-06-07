@@ -4,7 +4,7 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.CardReaderStatus
+import com.woocommerce.android.ui.woopos.root.WooPosRootScreenState.WooPosCardReaderStatus
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.drop
@@ -27,7 +27,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     fun `given reader disconnected, when status button clicked, then should connect`() {
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
-        assertNotEquals(CardReaderStatus.Connected, sut.bottomToolbarState.value.cardReaderStatus)
+        assertNotEquals(WooPosCardReaderStatus.Connected, sut.bottomToolbarState.value.cardReaderStatus)
 
         sut.onUiEvent(WooPosRootUIEvent.ConnectToAReaderClicked)
 
@@ -41,7 +41,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
         val sut = createSut()
         val job = launch {
             sut.bottomToolbarState.drop(1).collect {
-                assertEquals(CardReaderStatus.Connected, it.cardReaderStatus)
+                assertEquals(WooPosCardReaderStatus.Connected, it.cardReaderStatus)
             }
         }
 

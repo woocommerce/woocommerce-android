@@ -72,7 +72,7 @@ fun PreviewWooPosRootScreen() {
     val state = remember {
         mutableStateOf(
             WooPosRootScreenState(
-                WooPosRootScreenState.CardReaderStatus.Unknown,
+                WooPosRootScreenState.WooPosCardReaderStatus.Unknown,
                 null,
             )
         )

@@ -22,7 +22,7 @@ class WooPosRootViewModel @Inject constructor(
 ) : ViewModel() {
     private val _rootScreenState = MutableStateFlow(
         WooPosRootScreenState(
-            cardReaderStatus = WooPosRootScreenState.CardReaderStatus.Unknown,
+            cardReaderStatus = WooPosRootScreenState.WooPosCardReaderStatus.Unknown,
             exitConfirmationDialog = null,
         )
     )
@@ -47,23 +47,23 @@ class WooPosRootViewModel @Inject constructor(
 
             ExitPOSClicked -> {
                 _rootScreenState.value = _rootScreenState.value.copy(
-                    exitConfirmationDialog = WooPosExitConfirmationDialog
+                    exitConfirmationDialog = WooPosRootScreenState.WooPosExitConfirmationDialog
                 )
             }
         }
     }
 
     private fun handleConnectToReaderButtonClicked() {
-        if (_rootScreenState.value.cardReaderStatus != WooPosRootScreenState.CardReaderStatus.Connected) {
+        if (_rootScreenState.value.cardReaderStatus != WooPosRootScreenState.WooPosCardReaderStatus.Connected) {
             cardReaderFacade.connectToReader()
         }
     }
 
-    private fun mapCardReaderStatusToUiState(status: CardReaderStatus): WooPosRootScreenState.CardReaderStatus {
+    private fun mapCardReaderStatusToUiState(status: CardReaderStatus): WooPosRootScreenState.WooPosCardReaderStatus {
         return when (status) {
-            is Connected -> WooPosRootScreenState.CardReaderStatus.Connected
-            is Connecting -> WooPosRootScreenState.CardReaderStatus.Connecting
-            is NotConnected -> WooPosRootScreenState.CardReaderStatus.NotConnected
+            is Connected -> WooPosRootScreenState.WooPosCardReaderStatus.Connected
+            is Connecting -> WooPosRootScreenState.WooPosCardReaderStatus.Connecting
+            is NotConnected -> WooPosRootScreenState.WooPosCardReaderStatus.NotConnected
         }
     }
 }
