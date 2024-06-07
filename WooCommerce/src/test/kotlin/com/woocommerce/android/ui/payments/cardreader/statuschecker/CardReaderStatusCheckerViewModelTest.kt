@@ -23,7 +23,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class WooPosCardReaderStatusCheckerViewModelTest : BaseUnitTest() {
+class CardReaderStatusCheckerViewModelTest : BaseUnitTest() {
     private val cardReaderManager: CardReaderManager = mock()
     private val cardReaderChecker: CardReaderOnboardingChecker = mock()
     private val paymentsFlowTracker: PaymentsFlowTracker = mock()
