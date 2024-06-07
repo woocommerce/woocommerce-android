@@ -27,7 +27,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
     fun `given reader disconnected, when status button clicked, then should connect`() {
         whenever(cardReaderFacade.readerStatus).thenReturn(flowOf(NotConnected()))
         val sut = createSut()
-        assertNotEquals(WooPosCardReaderStatus.Connected, sut.bottomToolbarState.value.cardReaderStatus)
+        assertNotEquals(WooPosCardReaderStatus.Connected, sut.rootScreenState.value.cardReaderStatus)
 
         sut.onUiEvent(WooPosRootUIEvent.ConnectToAReaderClicked)
 
@@ -40,7 +40,7 @@ class WooPosRootViewModelTest : BaseUnitTest() {
         whenever(cardReaderFacade.readerStatus).thenReturn(flow { emit(Connected(cardReader)) })
         val sut = createSut()
         val job = launch {
-            sut.bottomToolbarState.drop(1).collect {
+            sut.rootScreenState.drop(1).collect {
                 assertEquals(WooPosCardReaderStatus.Connected, it.cardReaderStatus)
             }
         }
