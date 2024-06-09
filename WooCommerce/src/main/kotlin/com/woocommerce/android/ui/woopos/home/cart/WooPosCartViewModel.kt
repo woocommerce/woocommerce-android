@@ -22,7 +22,7 @@ import javax.inject.Inject
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val orderCreateService: OrderCreateService, // Inject the new service
+    private val orderCreateService: OrderCreateService,
     savedState: SavedStateHandle
 ) : ViewModel() {
     private val _state = savedState.getStateFlow<WooPosCartState>(
@@ -132,7 +132,7 @@ class WooPosCartViewModel @Inject constructor(
             status = Order.Status.Pending,
             total = calculateTotal(products),
             productsTotal = calculateSubtotal(products),
-            totalTax = BigDecimal.ZERO, // Placeholder, needs to be updated by API response
+            totalTax = BigDecimal.ZERO, // Placeholder
             shippingTotal = BigDecimal.ZERO, // Placeholder
             discountTotal = BigDecimal.ZERO, // Placeholder
             refundTotal = BigDecimal.ZERO, // Placeholder
@@ -149,11 +149,11 @@ class WooPosCartViewModel @Inject constructor(
             items = products,
             shippingLines = listOf(),
             feesLines = listOf(),
-            couponLines = listOf(), // Populate
-            taxLines = listOf(), // Populate
-            chargeId = null, // Populate
-            shippingPhone = "", // Populate
-            paymentUrl = "", // Populate
+            couponLines = listOf(), // Placeholder
+            taxLines = listOf(), // Placeholder
+            chargeId = null, // Placeholder
+            shippingPhone = "", // Placeholder
+            paymentUrl = "", // Placeholder
             isEditable = true,
             selectedGiftCard = null,
             giftCardDiscountedAmount = null,
