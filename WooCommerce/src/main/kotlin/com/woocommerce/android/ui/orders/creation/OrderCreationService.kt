@@ -1,7 +1,6 @@
-package com.woocommerce.android.ui.common
+package com.woocommerce.android.ui.orders.creation
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
