@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.common.OrderCreateService
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
+    private val orderCreateService: OrderCreateService, // Inject the new service
     savedState: SavedStateHandle
 ) : ViewModel() {
     private val _state = savedState.getStateFlow<WooPosCartState>(
@@ -102,7 +104,7 @@ class WooPosCartViewModel @Inject constructor(
                 name = cartItem.title,
                 price = 0.toBigDecimal(),
                 sku = "",
-                quantity = 01f,
+                quantity = 1f,
                 subtotal = 1.toBigDecimal(),
                 totalTax = BigDecimal.ZERO,
                 total = 10.toBigDecimal(),
@@ -112,11 +114,9 @@ class WooPosCartViewModel @Inject constructor(
         }
         val order = buildOrder(products)
 
-        viewModelScope.launch {
-            if (!order.isEmpty()) {
-                // orderCreateEditViewModel.onCreateOrderClicked(order)
-            }
-        }
+        orderCreateService.createOrder(order, viewModelScope,
+            onSuccess = { /* Handle success */ },
+            onFailure = { /* Handle error */ })
     }
 
     private fun buildOrder(products: List<Order.Item>): Order {
