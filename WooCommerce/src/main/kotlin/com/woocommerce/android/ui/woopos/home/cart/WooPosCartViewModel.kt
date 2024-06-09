@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.common.OrderCreateService
+import com.woocommerce.android.ui.common.OrderCreationService
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val orderCreateService: OrderCreateService,
+    private val orderCreationService: OrderCreationService,
     savedState: SavedStateHandle
 ) : ViewModel() {
     private val _state = savedState.getStateFlow<WooPosCartState>(
@@ -114,7 +114,7 @@ class WooPosCartViewModel @Inject constructor(
         }
         val order = buildOrder(products)
 
-        orderCreateService.createOrder(
+        orderCreationService.createOrder(
             order,
             viewModelScope,
             onSuccess = { /* Handle success */ },

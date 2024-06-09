@@ -6,7 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class OrderCreateService @Inject constructor(
+class OrderCreationService @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository
 ) {
 
