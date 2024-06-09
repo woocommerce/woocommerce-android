@@ -114,9 +114,12 @@ class WooPosCartViewModel @Inject constructor(
         }
         val order = buildOrder(products)
 
-        orderCreateService.createOrder(order, viewModelScope,
+        orderCreateService.createOrder(
+            order,
+            viewModelScope,
             onSuccess = { /* Handle success */ },
-            onFailure = { /* Handle error */ })
+            onFailure = { /* Handle error */ }
+        )
     }
 
     private fun buildOrder(products: List<Order.Item>): Order {

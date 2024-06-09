@@ -7,7 +7,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class OrderCreateService @Inject constructor(
-    private val orderCreateEditRepository: OrderCreateEditRepository) {
+    private val orderCreateEditRepository: OrderCreateEditRepository
+) {
 
     fun createOrder(order: Order, scope: CoroutineScope, onSuccess: (Order) -> Unit, onFailure: (Throwable) -> Unit) {
         scope.launch {
@@ -22,4 +23,3 @@ class OrderCreateService @Inject constructor(
         }
     }
 }
-
