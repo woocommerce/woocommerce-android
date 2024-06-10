@@ -30,10 +30,7 @@ class WooPosCartViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = savedState.getStateFlow<WooPosCartState>(
         scope = viewModelScope,
-        initialValue = WooPosCartState.Cart(
-            itemsInCart = emptyList(),
-            isLoading = false
-        ),
+        initialValue = WooPosCartState.Cart(itemsInCart = emptyList()),
         key = "cartViewState"
     )
     val state: StateFlow<WooPosCartState> = _state
@@ -52,7 +49,7 @@ class WooPosCartViewModel @Inject constructor(
             is WooPosCartUIEvent.BackFromCheckoutToCartClicked -> {
                 sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
                 _state.value = WooPosCartState.Cart(
-                    itemsInCart = state.itemsInCart,
+                    itemsInCart = state.value.itemsInCart,
                     isLoading = false
                 )
             }
@@ -65,6 +62,7 @@ class WooPosCartViewModel @Inject constructor(
                             itemsInCart = itemsInCart,
                             isLoading = false,
                         )
+
                         is WooPosCartState.Checkout -> state.copy(
                             itemsInCart = itemsInCart,
                             isLoading = false,
@@ -109,25 +107,20 @@ class WooPosCartViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = WooPosCartState.Cart(
-                            itemsInCart = state.itemsInCart,
-                            isLoading = false,
-                        )
+                        _state.value = WooPosCartState.Cart(itemsInCart = state.value.itemsInCart)
                     }
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
-                        _state.update { state ->
-                            val site = site.getOrNull() ?: return@collect
-                            val itemClicked = viewModelScope.async {
-                                productStore.getProductByRemoteId(site, event.productId)
-                                    ?.toCartListItem()
-                            }.await() ?: return@collect
+                        val site = site.getOrNull() ?: return@collect
+                        val itemClicked = viewModelScope.async {
+                            productStore.getProductByRemoteId(site, event.productId)
+                                ?.toCartListItem()
+                        }.await() ?: return@collect
 
-                            val itemsInCart = state.itemsInCart + itemClicked
-                            when (state) {
-                                is WooPosCartState.Cart -> state.copy(itemsInCart = itemsInCart)
-                                is WooPosCartState.Checkout -> state.copy(itemsInCart = itemsInCart)
-                            }
+                        val itemsInCart = _state.value.itemsInCart + itemClicked
+                        _state.value = when (val state = _state.value) {
+                            is WooPosCartState.Cart -> state.copy(itemsInCart = itemsInCart)
+                            is WooPosCartState.Checkout -> state.copy(itemsInCart = itemsInCart)
                         }
                     }
                 }

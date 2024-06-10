@@ -11,7 +11,7 @@ sealed class WooPosCartState(
 ) : Parcelable {
     data class Cart(
         override val itemsInCart: List<WooPosCartListItem>,
-        override val isLoading: Boolean,
+        override val isLoading: Boolean = false,
     ) :
         WooPosCartState(
             itemsInCart = itemsInCart,
@@ -21,7 +21,7 @@ sealed class WooPosCartState(
 
     data class Checkout(
         override val itemsInCart: List<WooPosCartListItem>,
-        override val isLoading: Boolean,
+        override val isLoading: Boolean = false,
     ) :
         WooPosCartState(
             itemsInCart = itemsInCart,
