@@ -40,7 +40,6 @@ class IsWooPosEnabled @Inject constructor(
         if (onboardingStatus.preferredPlugin != PluginType.WOOCOMMERCE_PAYMENTS) return false
         if (!isIPPOnboardingCompleted(onboardingStatus)) return false
 
-
         val paymentAccount = getOrFetchPaymentAccount(selectedSite, WOOCOMMERCE_PAYMENTS) ?: return false
         if (paymentAccount.country.lowercase() != "us") return false
         return paymentAccount.storeCurrencies.default.lowercase() == "usd"
