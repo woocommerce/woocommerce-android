@@ -33,6 +33,17 @@ class WooPosProductsViewModel @Inject constructor(
         }
     }
 
+    fun onUIEvent(event: WooPosProductsUIEvent) {
+        when (event) {
+            is WooPosProductsUIEvent.EndOfProductsGridReached -> {
+                onEndOfProductsGridReached()
+            }
+            is WooPosProductsUIEvent.ItemClicked -> {
+                onItemClicked(event.item)
+            }
+        }
+    }
+
     private fun calculateViewState(
         products: List<Product>
     ) = WooPosProductsViewState(
@@ -45,14 +56,14 @@ class WooPosProductsViewModel @Inject constructor(
         }
     )
 
-    fun onEndOfProductsGridReached() {
+    private fun onEndOfProductsGridReached() {
         loadMoreProductsJob?.cancel()
         loadMoreProductsJob = launch {
             productsDataSource.loadMore()
         }
     }
 
-    fun onItemClicked(item: WooPosProductsListItem) {
+    private fun onItemClicked(item: WooPosProductsListItem) {
         viewModelScope.launch {
             fromChildToParentEventSender.sendToParent(
                 ChildToParentEvent.ItemClickedInProductSelector(item)
