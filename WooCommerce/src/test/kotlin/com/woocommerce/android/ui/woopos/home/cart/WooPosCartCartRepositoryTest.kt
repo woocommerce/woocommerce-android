@@ -67,5 +67,4 @@ class WooPosCartCartRepositoryTest {
         assertThat(orderCapture.lastValue.items.size).isEqualTo(3)
         assertThat(orderCapture.lastValue.items.map { it.quantity }).containsExactly(2f, 1f, 3f)
     }
-
 }
