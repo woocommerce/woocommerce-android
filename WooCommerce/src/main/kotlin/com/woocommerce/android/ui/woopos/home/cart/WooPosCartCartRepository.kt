@@ -19,19 +19,18 @@ class WooPosCartCartRepository @Inject constructor(
         val order = Order.getEmptyOrder(
             dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
             dateModified = dateUtils.getCurrentDateInSiteTimeZone() ?: Date()
-        ).apply {
-            copy(
-                status = Order.Status.Custom(Order.Status.AUTO_DRAFT),
-                items = productIds.map { productId ->
-                    productId to productIds.count { it == productId }
-                }.map { productIdWithQuantity ->
+        ).copy(
+            status = Order.Status.Custom(Order.Status.AUTO_DRAFT),
+            items = productIds
+                .groupingBy { it }
+                .eachCount()
+                .map { (productId, quantity) ->
                     Order.Item.EMPTY.copy(
-                        productId = productIdWithQuantity.first,
-                        quantity = productIdWithQuantity.second.toFloat(),
+                        productId = productId,
+                        quantity = quantity.toFloat(),
                     )
                 }
-            )
-        }
+        )
 
         orderCreateEditRepository.createOrUpdateOrder(order).fold(
             onSuccess = { onSuccess(it) },
