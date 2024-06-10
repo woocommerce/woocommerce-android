@@ -41,16 +41,12 @@ class WooPosCartViewModel @Inject constructor(
         when (event) {
             is WooPosCartUIEvent.CheckoutClicked -> {
                 sendEventToParent(ChildToParentEvent.CheckoutClicked)
-                _state.update { state ->
-                    WooPosCartState.Checkout(state.itemsInCart)
-                }
+                _state.value = WooPosCartState.Checkout(state.value.itemsInCart)
             }
 
             is WooPosCartUIEvent.BackFromCheckoutToCartClicked -> {
                 sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
-                _state.update { state ->
-                    WooPosCartState.Cart(state.itemsInCart)
-                }
+                _state.value = WooPosCartState.Cart(state.value.itemsInCart)
             }
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
@@ -70,9 +66,7 @@ class WooPosCartViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
-                        _state.update { state ->
-                            WooPosCartState.Cart(state.itemsInCart)
-                        }
+                        _state.value = WooPosCartState.Cart(state.value.itemsInCart)
                     }
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
