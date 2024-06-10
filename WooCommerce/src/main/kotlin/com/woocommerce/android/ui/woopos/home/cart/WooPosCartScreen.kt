@@ -100,7 +100,8 @@ private fun WooPosCartScreen(
                         enabled = !state.isLoading,
                         onClick = {
                             onUIEvent(WooPosCartUIEvent.BackFromCheckoutToCartClicked)
-                        }) {
+                        }
+                    ) {
                         Text("To Products")
                     }
                 }
