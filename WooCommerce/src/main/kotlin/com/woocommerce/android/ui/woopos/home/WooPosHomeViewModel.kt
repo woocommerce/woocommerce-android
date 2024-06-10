@@ -51,7 +51,7 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {
                         sendEventToChildren(
-                            ParentToChildrenEvent.ItemClickedInProductSelector(event.selectedItem)
+                            ParentToChildrenEvent.ItemClickedInProductSelector(event.productId)
                         )
                     }
                 }

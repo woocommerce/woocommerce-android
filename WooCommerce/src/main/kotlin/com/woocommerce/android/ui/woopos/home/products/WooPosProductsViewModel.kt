@@ -66,7 +66,7 @@ class WooPosProductsViewModel @Inject constructor(
     private fun onItemClicked(item: WooPosProductsListItem) {
         viewModelScope.launch {
             fromChildToParentEventSender.sendToParent(
-                ChildToParentEvent.ItemClickedInProductSelector(item)
+                ChildToParentEvent.ItemClickedInProductSelector(item.productId)
             )
         }
     }

@@ -32,7 +32,6 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.home.products.WooPosProductsListItem
 
 @Composable
 fun WooPosCartScreen() {
@@ -112,9 +111,9 @@ private fun WooPosCartScreen(
 
 @Composable
 private fun ProductItem(
-    product: WooPosProductsListItem,
+    product: WooPosCartListItem,
     canRemoveItems: Boolean,
-    onRemoveClicked: (item: WooPosProductsListItem) -> Unit
+    onRemoveClicked: (item: WooPosCartListItem) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -158,7 +157,7 @@ private fun ProductItem(
 @Composable
 @WooPosPreview
 fun ProductItemPreview() {
-    val item = WooPosProductsListItem(1L, "VW California", "https://example.com/image.jpg")
+    val item = WooPosCartListItem(1L, "VW California")
     ProductItem(item, true) {}
 }
 
