@@ -71,13 +71,11 @@ class WooPosCartViewModel @Inject constructor(
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
                         _state.update { state ->
-                            val site = site.getOrNull() ?: return@collect
+                            val site = requireNotNull(site.getOrNull())
                             val itemClicked = viewModelScope.async {
-                                productStore.getProductByRemoteId(site, event.productId)
-                                    ?.toCartListItem()
-                            }.await() ?: return@collect
-
-                            val itemsInCart = state.itemsInCart + itemClicked
+                                productStore.getProductByRemoteId(site, event.productId)!!.toCartListItem()
+                            }
+                            val itemsInCart = state.itemsInCart + itemClicked.await()
                             when (state) {
                                 is WooPosCartState.Cart -> state.copy(itemsInCart = itemsInCart)
                                 is WooPosCartState.Checkout -> state.copy(itemsInCart = itemsInCart)
