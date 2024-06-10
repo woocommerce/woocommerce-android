@@ -1,10 +1,9 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.common.OrderCreationService
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -14,20 +13,21 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val orderCreationService: OrderCreationService,
+    private val repository: WooPosCartCartRepository,
     savedState: SavedStateHandle
 ) : ViewModel() {
     private val _state = savedState.getStateFlow<WooPosCartState>(
         scope = viewModelScope,
-        initialValue = WooPosCartState.Cart(emptyList()),
+        initialValue = WooPosCartState.Cart(
+            itemsInCart = emptyList(),
+            isLoading = false
+        ),
         key = "cartViewState"
     )
     val state: StateFlow<WooPosCartState> = _state
@@ -40,16 +40,39 @@ class WooPosCartViewModel @Inject constructor(
         when (event) {
             is WooPosCartUIEvent.CheckoutClicked -> {
                 sendEventToParent(ChildToParentEvent.CheckoutClicked)
-                _state.update { state ->
-                    WooPosCartState.Checkout(state.itemsInCart)
+                val itemsInCart = _state.value.itemsInCart
+                _state.update {
+                    WooPosCartState.Checkout(
+                        itemsInCart,
+                        isLoading = true
+                    )
                 }
-                createOrder()
+
+                viewModelScope.launch {
+                    repository.createOrderWithProducts(
+                        productIds = itemsInCart.map { it.productId },
+                        onSuccess = { order ->
+                            _state.update { state ->
+                                WooPosCartState.Checkout(
+                                    itemsInCart,
+                                    isLoading = false
+                                )
+                            }
+                        },
+                        onFailure = { throwable ->
+                            Log.e("WooPosCartViewModel", "Failed to create order", throwable)
+                        }
+                    )
+                }
             }
 
             is WooPosCartUIEvent.BackFromCheckoutToCartClicked -> {
                 sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
                 _state.update { state ->
-                    WooPosCartState.Cart(state.itemsInCart)
+                    WooPosCartState.Cart(
+                        itemsInCart = state.itemsInCart,
+                        isLoading = false
+                    )
                 }
             }
 
@@ -71,7 +94,10 @@ class WooPosCartViewModel @Inject constructor(
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
                         _state.update { state ->
-                            WooPosCartState.Cart(state.itemsInCart)
+                            WooPosCartState.Cart(
+                                itemsInCart = state.itemsInCart,
+                                isLoading = false,
+                            )
                         }
                     }
 
@@ -93,81 +119,5 @@ class WooPosCartViewModel @Inject constructor(
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(event)
         }
-    }
-
-    private fun createOrder() {
-        val itemsInCart = (state.value as? WooPosCartState)?.itemsInCart ?: return
-        val products = itemsInCart.map { cartItem ->
-            Order.Item(
-                itemId = 0,
-                productId = cartItem.productId,
-                name = cartItem.title,
-                price = 0.toBigDecimal(),
-                sku = "",
-                quantity = 1f,
-                subtotal = 1.toBigDecimal(),
-                totalTax = BigDecimal.ZERO,
-                total = 10.toBigDecimal(),
-                variationId = 0,
-                attributesList = listOf()
-            )
-        }
-        val order = buildOrder(products)
-
-        orderCreationService.createOrder(
-            order,
-            viewModelScope,
-            onSuccess = { /* Handle success */ },
-            onFailure = { /* Handle error */ }
-        )
-    }
-
-    private fun buildOrder(products: List<Order.Item>): Order {
-        return Order(
-            id = 0,
-            number = "",
-            dateCreated = Date(),
-            dateModified = Date(),
-            datePaid = null,
-            status = Order.Status.Pending,
-            total = calculateTotal(products),
-            productsTotal = calculateSubtotal(products),
-            totalTax = BigDecimal.ZERO, // Placeholder
-            shippingTotal = BigDecimal.ZERO, // Placeholder
-            discountTotal = BigDecimal.ZERO, // Placeholder
-            refundTotal = BigDecimal.ZERO, // Placeholder
-            currency = "USD", // Placeholder
-            orderKey = "",
-            customerNote = "",
-            discountCodes = "",
-            paymentMethod = "direct", // Placeholder
-            paymentMethodTitle = "Direct Bank Transfer", // Placeholder
-            isCashPayment = false,
-            pricesIncludeTax = false,
-            customer = null,
-            shippingMethods = listOf(),
-            items = products,
-            shippingLines = listOf(),
-            feesLines = listOf(),
-            couponLines = listOf(), // Placeholder
-            taxLines = listOf(), // Placeholder
-            chargeId = null, // Placeholder
-            shippingPhone = "", // Placeholder
-            paymentUrl = "", // Placeholder
-            isEditable = true,
-            selectedGiftCard = null,
-            giftCardDiscountedAmount = null,
-            shippingTax = BigDecimal.ZERO
-        )
-    }
-
-    private fun calculateSubtotal(products: List<Order.Item>): BigDecimal {
-        return products.fold(BigDecimal.ZERO) { acc, product ->
-            acc + product.subtotal
-        }
-    }
-
-    private fun calculateTotal(products: List<Order.Item>): BigDecimal {
-        return calculateSubtotal(products)
     }
 }
