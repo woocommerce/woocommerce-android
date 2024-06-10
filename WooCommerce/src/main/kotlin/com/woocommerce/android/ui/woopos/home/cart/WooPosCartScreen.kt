@@ -57,7 +57,8 @@ private fun WooPosCartScreen(
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp)) {
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
             Text(
                 text = stringResource(R.string.woo_pos_car_pane_title),
                 style = MaterialTheme.typography.h3,
