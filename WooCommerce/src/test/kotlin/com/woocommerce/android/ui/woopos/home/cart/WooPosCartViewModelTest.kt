@@ -34,7 +34,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given items in cart, when item remove button clicked in cart, then should be cart`() = testBlocking {
+    fun `given items in cart, when item remove button clicked in cart, then should remove item from cart`() = testBlocking {
         val product = WooPosProductsListItem(productId = 1L, title = "", imageUrl = "")
         whenever(
             parentToChildrenEventReceiver.events
