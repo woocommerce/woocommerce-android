@@ -19,7 +19,7 @@ import javax.inject.Inject
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val repository: WooPosCartCartRepository,
+    private val repository: WooPosCartRepository,
     savedState: SavedStateHandle
 ) : ViewModel() {
     private val _state = savedState.getStateFlow<WooPosCartState>(
@@ -66,28 +66,31 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun createOrderDraft() {
-        val itemsInCart = _state.value.itemsInCart
-        _state.update {
-            WooPosCartState.Checkout(
-                itemsInCart,
-                isLoading = true
-            )
-        }
-
         viewModelScope.launch {
-            repository.createOrderWithProducts(
-                productIds = itemsInCart.map { it.productId },
+            val itemsInCart = _state.value.itemsInCart
+            _state.update {
+                WooPosCartState.Checkout(
+                    itemsInCart,
+                    isLoading = true
+                )
+            }
+
+            val productIds = itemsInCart.map { it.productId }
+            val result = repository.createOrderWithProducts(productIds = productIds)
+
+            _state.update {
+                WooPosCartState.Checkout(
+                    itemsInCart,
+                    isLoading = false
+                )
+            }
+
+            result.fold(
                 onSuccess = { order ->
-                    Log.d("WooPosCartViewModel", "Order created: $order")
-                    _state.update {
-                        WooPosCartState.Checkout(
-                            itemsInCart,
-                            isLoading = false
-                        )
-                    }
+                    Log.d("WooPosCartViewModel", "Order created successfully - $order")
                 },
-                onFailure = { throwable ->
-                    Log.e("WooPosCartViewModel", "Failed to create order", throwable)
+                onFailure = { error ->
+                    Log.e("WooPosCartViewModel", "Order creation failed - $error")
                 }
             )
         }

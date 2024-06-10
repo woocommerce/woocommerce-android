@@ -17,6 +17,7 @@ import kotlin.test.assertEquals
 class WooPosCartViewModelTest : BaseUnitTest() {
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
+    private val repository: WooPosCartRepository = mock()
     private val savedState: SavedStateHandle = SavedStateHandle()
 
     @Test
@@ -55,6 +56,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
         return WooPosCartViewModel(
             childrenToParentEventSender,
             parentToChildrenEventReceiver,
+            repository,
             savedState
         )
     }

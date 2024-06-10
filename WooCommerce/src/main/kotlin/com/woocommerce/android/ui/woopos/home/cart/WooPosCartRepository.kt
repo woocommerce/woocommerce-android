@@ -6,15 +6,11 @@ import com.woocommerce.android.util.DateUtils
 import java.util.Date
 import javax.inject.Inject
 
-class WooPosCartCartRepository @Inject constructor(
+class WooPosCartRepository @Inject constructor(
     private val orderCreateEditRepository: OrderCreateEditRepository,
     private val dateUtils: DateUtils,
 ) {
-    suspend fun createOrderWithProducts(
-        productIds: List<Long>,
-        onSuccess: (Order) -> Unit,
-        onFailure: (Throwable) -> Unit,
-    ) {
+    suspend fun createOrderWithProducts(productIds: List<Long>): Result<Order> {
         check(productIds.isNotEmpty()) { "Cart is empty" }
         val order = Order.getEmptyOrder(
             dateCreated = dateUtils.getCurrentDateInSiteTimeZone() ?: Date(),
@@ -34,15 +30,12 @@ class WooPosCartCartRepository @Inject constructor(
                 }
         )
 
-        orderCreateEditRepository.createOrUpdateOrder(order).fold(
-            onSuccess = { onSuccess(it) },
-            onFailure = { onFailure(it) }
-        )
+        return orderCreateEditRepository.createOrUpdateOrder(order)
     }
 
     private companion object {
         /**
-         * This magic value to indicate that we don't want to send subtotals and totals
+         * This magic value used to indicate that we don't want to send subtotals and totals
          * And let the backend to calculate them.
          */
         val EMPTY_TOTALS_SUBTOTAL_VALUE = -Double.MAX_VALUE.toBigDecimal()
