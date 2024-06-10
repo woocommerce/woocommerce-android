@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductsGridReached
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ItemClicked
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -42,8 +44,8 @@ fun WooPosProductsScreen() {
     val productsViewModel: WooPosProductsViewModel = hiltViewModel()
     WooPosProductsScreen(
         productsState = productsViewModel.viewState,
-        onItemClicked = productsViewModel::onItemClicked,
-        onEndOfProductsGridReached = productsViewModel::onEndOfProductsGridReached,
+        onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
+        onEndOfProductsGridReached = { productsViewModel.onUIEvent(EndOfProductsGridReached) },
     )
 }
 
