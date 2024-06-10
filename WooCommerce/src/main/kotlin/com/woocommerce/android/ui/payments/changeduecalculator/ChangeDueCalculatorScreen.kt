@@ -47,7 +47,6 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.util.CurrencyFormatter
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import java.math.BigDecimal
 
@@ -57,8 +56,7 @@ fun ChangeDueCalculatorScreen(
     onNavigateUp: () -> Unit,
     onCompleteOrderClick: () -> Unit,
     onAmountReceivedChanged: (BigDecimal?) -> Unit,
-    onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit,
-    currencyFormatter: CurrencyFormatter?
+    onRecordTransactionDetailsCheckedChanged: (Boolean) -> Unit
 ) {
     WooThemeWithBackground {
         Scaffold(
@@ -139,11 +137,7 @@ fun ChangeDueCalculatorScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Text(
-                        text = if ((uiState.change < BigDecimal.ZERO) || currencyFormatter == null) {
-                            "-"
-                        } else {
-                            currencyFormatter.formatCurrency(uiState.change)
-                        },
+                        text = uiState.changeDueText,
                         style = MaterialTheme.typography.h3,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
@@ -239,7 +233,6 @@ fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
         onRecordTransactionDetailsCheckedChanged = {},
-        currencyFormatter = null
     )
 }
 
@@ -263,7 +256,6 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
         onRecordTransactionDetailsCheckedChanged = {},
-        currencyFormatter = null
     )
 }
 
@@ -287,6 +279,5 @@ fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
         onRecordTransactionDetailsCheckedChanged = {},
-        currencyFormatter = null
     )
 }

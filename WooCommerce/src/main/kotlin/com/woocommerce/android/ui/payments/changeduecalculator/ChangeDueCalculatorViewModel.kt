@@ -43,7 +43,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         val currencyPosition: WCSettingsModel.CurrencyPosition,
         val decimalSeparator: String,
         val numberOfDecimals: Int,
-        val title: String = ""
+        val title: String = "",
+        val changeDueText: String = ""
     )
 
     private val _uiState = MutableStateFlow(
@@ -74,7 +75,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 currencyPosition = getCurrencySymbolPosition(),
                 decimalSeparator = getDecimalSeparator(),
                 numberOfDecimals = getNumberOfDecimals(),
-                title = getTitleText(order.total)
+                title = getTitleText(order.total),
+                changeDueText = "-"
             )
         }
     }
@@ -90,6 +92,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             amountReceived = amount,
             change = newChange,
             canCompleteOrder = newChange >= BigDecimal.ZERO,
+            changeDueText = getChangeDueText(newChange)
         )
     }
 
@@ -160,13 +163,17 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     }
 
     private fun getTitleText(total: BigDecimal): String {
-        if (currencyFormatter == null) {
-            return resourceProvider.getString(R.string.cash_payments_take_payment_title)
-        }
-
         return resourceProvider.getString(
             R.string.cash_payments_take_payment_title,
-            currencyFormatter.formatCurrency(total)
+            currencyFormatter!!.formatCurrency(total)
         )
+    }
+
+    private fun getChangeDueText(newChange: BigDecimal): String {
+        return if ((newChange < BigDecimal.ZERO)) {
+            "-"
+        } else {
+            currencyFormatter!!.formatCurrency(newChange)
+        }
     }
 }

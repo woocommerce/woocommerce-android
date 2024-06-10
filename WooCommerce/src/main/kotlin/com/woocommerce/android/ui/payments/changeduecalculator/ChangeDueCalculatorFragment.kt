@@ -73,8 +73,7 @@ class ChangeDueCalculatorFragment : BaseFragment() {
                     },
                     onRecordTransactionDetailsCheckedChanged = {
                         viewModel.updateRecordTransactionDetailsChecked(it)
-                    },
-                    currencyFormatter = currencyFormatter
+                    }
                 )
             }
         }
