@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.stock
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -21,8 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LiveData
@@ -38,6 +42,7 @@ import com.woocommerce.android.ui.compose.viewModelWithFactory
 import com.woocommerce.android.ui.dashboard.DashboardFilterableCardHeader
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
+import com.woocommerce.android.ui.dashboard.WCAnalyticsNotAvailableErrorView
 import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
@@ -60,7 +65,7 @@ fun DashboardProductStockCard(
     viewModel.productStockState.observeAsState().value?.let { viewState ->
         DashboardProductStockCard(
             viewState = viewState,
-            onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.PRODUCT_STOCK) },
+            onHideClicked = { parentViewModel.onHideWidgetClicked(DashboardWidget.Type.STOCK) },
             onFilterSelected = viewModel::onFilterSelected,
             onProductClicked = viewModel::onProductClicked,
             onRetryClicked = viewModel::onRetryClicked,
@@ -104,10 +109,10 @@ private fun DashboardProductStockCard(
     modifier: Modifier = Modifier,
 ) {
     WidgetCard(
-        titleResource = DashboardWidget.Type.PRODUCT_STOCK.titleResource,
+        titleResource = DashboardWidget.Type.STOCK.titleResource,
         menu = DashboardWidgetMenu(
             listOf(
-                DashboardWidget.Type.PRODUCT_STOCK.defaultHideMenuEntry(onHideClicked)
+                DashboardWidget.Type.STOCK.defaultHideMenuEntry(onHideClicked)
             )
         ),
         isError = viewState is DashboardProductStockViewModel.ViewState.Error,
@@ -131,10 +136,17 @@ private fun DashboardProductStockCard(
                 )
             }
 
-            is DashboardProductStockViewModel.ViewState.Error -> {
+            DashboardProductStockViewModel.ViewState.Error.WCAnalyticsDisabled -> {
+                WCAnalyticsNotAvailableErrorView(
+                    title = stringResource(id = R.string.dashboard_product_stock_wcanalytics_inactive_title),
+                    onContactSupportClick = onContactSupportClicked
+                )
+            }
+
+            DashboardProductStockViewModel.ViewState.Error.Generic -> {
                 WidgetError(
-                    onContactSupportClicked = onContactSupportClicked,
-                    onRetryClicked = onRetryClicked
+                    onRetryClicked = onRetryClicked,
+                    onContactSupportClicked = onContactSupportClicked
                 )
             }
         }
@@ -201,13 +213,41 @@ private fun ProductReviewsCardContent(
                 fontWeight = FontWeight.SemiBold,
             )
         }
-        productStockItems.forEachIndexed { index, product ->
-            ProductStockRow(
-                product = product,
-                onItemClicked = onProductClicked,
-                displayDivider = index != productStockItems.size - 1
-            )
+        when {
+            productStockItems.isEmpty() -> StockEmptyView()
+            else -> productStockItems.forEachIndexed { index, product ->
+                ProductStockRow(
+                    product = product,
+                    onItemClicked = onProductClicked,
+                    displayDivider = index != productStockItems.size - 1
+                )
+            }
         }
+    }
+}
+
+@Composable
+fun StockEmptyView(modifier: Modifier = Modifier) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_products),
+            contentDescription = null,
+            modifier = Modifier
+                .sizeIn(maxWidth = 160.dp, maxHeight = 160.dp)
+                .padding(vertical = 16.dp)
+        )
+
+        Text(
+            text = stringResource(id = R.string.dashboard_product_stock_empty_products),
+            style = MaterialTheme.typography.body1,
+            textAlign = TextAlign.Center
+        )
     }
 }
 

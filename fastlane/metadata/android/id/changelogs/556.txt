@@ -1,2 +1,0 @@
-18.8:
-Dalam rilis ini, kami berfokus pada peningkatan efisiensi aplikasi dengan mengatasi bug dan melakukan perbaikan penting. Pembaruan ini bertujuan mendukung perjalanan bisnis Anda. Umpan balik Anda adalah peta jalan agar kami terus berkembang. Jadi, teruslah memberi masukan.

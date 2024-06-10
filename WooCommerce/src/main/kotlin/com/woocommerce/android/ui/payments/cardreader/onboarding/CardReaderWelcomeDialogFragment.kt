@@ -23,7 +23,7 @@ class CardReaderWelcomeDialogFragment : PaymentsBaseDialogFragment(R.layout.card
 
     private fun initObservers(binding: CardReaderWelcomeDialogBinding) {
         viewModel.viewState.observe(viewLifecycleOwner) { viewState ->
-            UiHelpers.setImageOrHideInLandscape(binding.illustration, viewState.img)
+            UiHelpers.setImageOrHideInLandscapeOnNonExpandedScreenSizes(binding.illustration, viewState.img)
             UiHelpers.setTextOrHide(binding.headerLabel, viewState.header)
             UiHelpers.setTextOrHide(binding.text, viewState.text)
             UiHelpers.setTextOrHide(binding.actionBtn, viewState.buttonLabel)
