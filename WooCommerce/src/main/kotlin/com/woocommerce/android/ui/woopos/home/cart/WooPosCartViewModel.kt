@@ -40,30 +40,7 @@ class WooPosCartViewModel @Inject constructor(
         when (event) {
             is WooPosCartUIEvent.CheckoutClicked -> {
                 sendEventToParent(ChildToParentEvent.CheckoutClicked)
-                val itemsInCart = _state.value.itemsInCart
-                _state.update {
-                    WooPosCartState.Checkout(
-                        itemsInCart,
-                        isLoading = true
-                    )
-                }
-
-                viewModelScope.launch {
-                    repository.createOrderWithProducts(
-                        productIds = itemsInCart.map { it.productId },
-                        onSuccess = { order ->
-                            _state.update { state ->
-                                WooPosCartState.Checkout(
-                                    itemsInCart,
-                                    isLoading = false
-                                )
-                            }
-                        },
-                        onFailure = { throwable ->
-                            Log.e("WooPosCartViewModel", "Failed to create order", throwable)
-                        }
-                    )
-                }
+                createOrderDraft()
             }
 
             is WooPosCartUIEvent.BackFromCheckoutToCartClicked -> {
@@ -85,6 +62,34 @@ class WooPosCartViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun createOrderDraft() {
+        val itemsInCart = _state.value.itemsInCart
+        _state.update {
+            WooPosCartState.Checkout(
+                itemsInCart,
+                isLoading = true
+            )
+        }
+
+        viewModelScope.launch {
+            repository.createOrderWithProducts(
+                productIds = itemsInCart.map { it.productId },
+                onSuccess = { order ->
+                    Log.d("WooPosCartViewModel", "Order created: $order")
+                    _state.update {
+                        WooPosCartState.Checkout(
+                            itemsInCart,
+                            isLoading = false
+                        )
+                    }
+                },
+                onFailure = { throwable ->
+                    Log.e("WooPosCartViewModel", "Failed to create order", throwable)
+                }
+            )
         }
     }
 
