@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home
 
-import com.woocommerce.android.ui.woopos.home.products.WooPosProductsListItem
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,8 +19,7 @@ class WooPosParentToChildrenCommunication @Inject constructor() :
 
 sealed class ParentToChildrenEvent {
     data object BackFromCheckoutToCartClicked : ParentToChildrenEvent()
-    data class ItemClickedInProductSelector(val selectedItem: WooPosProductsListItem) :
-        ParentToChildrenEvent()
+    data class ItemClickedInProductSelector(val productId: Long) : ParentToChildrenEvent()
 }
 
 interface WooPosParentToChildrenEventReceiver {

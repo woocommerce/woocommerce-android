@@ -1,15 +1,22 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
-import com.woocommerce.android.ui.woopos.home.products.WooPosProductsListItem
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
+import org.junit.Before
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.store.WCProductStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -17,44 +24,64 @@ import kotlin.test.assertEquals
 class WooPosCartViewModelTest : BaseUnitTest() {
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
+    private val productStore: WCProductStore = mock()
+    private val site: SelectedSite = mock()
     private val savedState: SavedStateHandle = SavedStateHandle()
 
+    @Before
+    fun setup() = testBlocking {
+        whenever(site.getOrNull()).thenReturn(SiteModel())
+    }
+
     @Test
-    fun `given empty cart, when product clicked in product selector, then should add product to cart`() {
-        val product = WooPosProductsListItem(productId = 1L, title = "", imageUrl = "")
+    fun `given empty cart, when product clicked in product selector, then should add product to cart`() = testBlocking {
+        val product = WooPosCartListItem(productId = 23L, title = "title")
         whenever(parentToChildrenEventReceiver.events).thenReturn(
-            flowOf(ParentToChildrenEvent.ItemClickedInProductSelector(product))
+            flowOf(ParentToChildrenEvent.ItemClickedInProductSelector(product.productId))
 
         )
+        whenever(productStore.getProductByRemoteId(any(), eq(product.productId))).thenReturn(
+            WCProductModel(product.productId.toInt()).apply {
+                name = product.title
+            }
+        )
         val sut = createSut()
+        advanceUntilIdle()
 
         val itemsInCart = sut.state.value.itemsInCart
         assertEquals(1, itemsInCart.size)
-        assertEquals(product, itemsInCart.first())
+        assertEquals(product.productId, itemsInCart.first().productId)
     }
 
     @Test
-    fun `given items in cart, when item remove button clicked in cart, then should remove item from cart`() = testBlocking {
-        val product = WooPosProductsListItem(productId = 1L, title = "", imageUrl = "")
-        whenever(
-            parentToChildrenEventReceiver.events
-        ).thenReturn(flowOf(ParentToChildrenEvent.ItemClickedInProductSelector(product)))
+    fun `given items in cart, when item remove button clicked in cart, then should remove item from cart`() =
+        testBlocking {
+            val product = WooPosCartListItem(productId = 23L, title = "title")
+            whenever(parentToChildrenEventReceiver.events)
+                .thenReturn(flowOf(ParentToChildrenEvent.ItemClickedInProductSelector(product.productId)))
+            whenever(productStore.getProductByRemoteId(any(), eq(product.productId))).thenReturn(
+                WCProductModel(product.productId.toInt()).apply {
+                    name = product.title
+                }
+            )
+            val sut = createSut()
+            advanceUntilIdle()
+            val itemsInCart = sut.state.value.itemsInCart
+            assertEquals(1, itemsInCart.size)
+            assertEquals(product.productId, itemsInCart.first().productId)
 
-        val sut = createSut()
-        val itemsInCart = sut.state.value.itemsInCart
-        assertEquals(1, itemsInCart.size)
-        assertEquals(product, itemsInCart.first())
+            sut.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(product))
 
-        sut.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(product))
-
-        val itemsInCartAfterRemoveClicked = sut.state.value.itemsInCart
-        assertEquals(0, itemsInCartAfterRemoveClicked.size)
-    }
+            val itemsInCartAfterRemoveClicked = sut.state.value.itemsInCart
+            assertEquals(0, itemsInCartAfterRemoveClicked.size)
+        }
 
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
             childrenToParentEventSender,
             parentToChildrenEventReceiver,
+            productStore,
+            site,
             savedState
         )
     }
