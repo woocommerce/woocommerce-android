@@ -7,6 +7,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.OrderNote
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -25,6 +26,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val parameterRepository: ParameterRepository,
     private val resourceProvider: ResourceProvider,
+    private val currencyFormatter: CurrencyFormatter?
 ) : ScopedViewModel(savedStateHandle) {
     val navArgs: ChangeDueCalculatorFragmentArgs by savedStateHandle.navArgs()
     private val orderId: Long = navArgs.orderId
@@ -40,7 +42,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         val currencySymbol: String,
         val currencyPosition: WCSettingsModel.CurrencyPosition,
         val decimalSeparator: String,
-        val numberOfDecimals: Int
+        val numberOfDecimals: Int,
+        val title: String = ""
     )
 
     private val _uiState = MutableStateFlow(
@@ -50,7 +53,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             currencySymbol = siteParameters.currencySymbol.orEmpty(),
             currencyPosition = getCurrencySymbolPosition(),
             decimalSeparator = getDecimalSeparator(),
-            numberOfDecimals = getNumberOfDecimals()
+            numberOfDecimals = getNumberOfDecimals(),
         )
     )
     val uiState: StateFlow<UiState> = _uiState
@@ -70,7 +73,8 @@ class ChangeDueCalculatorViewModel @Inject constructor(
                 currencySymbol = siteParameters.currencySymbol.orEmpty(),
                 currencyPosition = getCurrencySymbolPosition(),
                 decimalSeparator = getDecimalSeparator(),
-                numberOfDecimals = getNumberOfDecimals()
+                numberOfDecimals = getNumberOfDecimals(),
+                title = getTitleText(order.total)
             )
         }
     }
@@ -152,6 +156,17 @@ class ChangeDueCalculatorViewModel @Inject constructor(
             noteStringTemplate,
             "$currencySymbol${state.amountReceived.toPlainString()}",
             "$currencySymbol${state.change.toPlainString()}"
+        )
+    }
+
+    private fun getTitleText(total: BigDecimal): String {
+        if (currencyFormatter == null) {
+            return resourceProvider.getString(R.string.cash_payments_take_payment_title)
+        }
+
+        return resourceProvider.getString(
+            R.string.cash_payments_take_payment_title,
+            currencyFormatter.formatCurrency(total)
         )
     }
 }

@@ -64,7 +64,7 @@ fun ChangeDueCalculatorScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = getTitleText(uiState, currencyFormatter)) },
+                    title = { Text(text = uiState.title) },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {
                             Icon(
@@ -217,21 +217,6 @@ fun MarkOrderAsCompleteButton(
             Text(text = stringResource(R.string.cash_payments_mark_order_as_complete))
         }
     }
-}
-
-@Composable
-fun getTitleText(
-    uiState: ChangeDueCalculatorViewModel.UiState,
-    currencyFormatter: CurrencyFormatter?
-): String {
-    if (currencyFormatter == null) {
-        return stringResource(R.string.cash_payments_take_payment_title)
-    }
-
-    return stringResource(
-        R.string.cash_payments_take_payment_title,
-        currencyFormatter.formatCurrency(uiState.amountDue)
-    )
 }
 
 @Composable
