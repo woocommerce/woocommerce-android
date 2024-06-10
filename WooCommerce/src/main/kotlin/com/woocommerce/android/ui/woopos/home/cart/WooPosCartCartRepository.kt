@@ -28,6 +28,8 @@ class WooPosCartCartRepository @Inject constructor(
                     Order.Item.EMPTY.copy(
                         productId = productId,
                         quantity = quantity.toFloat(),
+                        total = EMPTY_TOTALS_SUBTOTAL_VALUE,
+                        subtotal = EMPTY_TOTALS_SUBTOTAL_VALUE,
                     )
                 }
         )
@@ -36,5 +38,13 @@ class WooPosCartCartRepository @Inject constructor(
             onSuccess = { onSuccess(it) },
             onFailure = { onFailure(it) }
         )
+    }
+
+    private companion object {
+        /**
+         * This magic value to indicate that we don't want to send subtotals and totals
+         * And let the backend to calculate them.
+         */
+        val EMPTY_TOTALS_SUBTOTAL_VALUE = -Double.MAX_VALUE.toBigDecimal()
     }
 }
