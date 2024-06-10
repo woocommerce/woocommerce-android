@@ -33,6 +33,25 @@ class WooPosCartViewModelTest : BaseUnitTest() {
         assertEquals(product, itemsInCart.first())
     }
 
+    @Test
+    fun `given items in cart, when item remove button clicked in cart, then should be cart`() = testBlocking {
+        // Arrange
+        val product = WooPosProductsListItem(productId = 1L, title = "", imageUrl = "")
+        whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf(ParentToChildrenEvent.ItemClickedInProductSelector(product)))
+
+        val sut = createSut()
+        val itemsInCart = sut.state.value.itemsInCart
+        assertEquals(1, itemsInCart.size)
+        assertEquals(product, itemsInCart.first())
+
+        // Act
+        sut.onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(product))
+
+        // Assert
+        val itemsInCartAfterRemoveClicked = sut.state.value.itemsInCart
+        assertEquals(0, itemsInCartAfterRemoveClicked.size)
+    }
+
     private fun createSut(): WooPosCartViewModel {
         return WooPosCartViewModel(
             childrenToParentEventSender,
