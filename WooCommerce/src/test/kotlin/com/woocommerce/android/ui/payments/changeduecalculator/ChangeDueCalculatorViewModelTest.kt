@@ -5,6 +5,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.models.SiteParameters
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -37,7 +38,11 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private val savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("orderId" to 1L))
 
-    private val resourceProvider: ResourceProvider = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getString(any(), any()) }.thenReturn("Payment Title")
+    }
+
+    private val currencyFormatter: CurrencyFormatter = mock()
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
@@ -45,32 +50,40 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
         // GIVEN
         whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any(), any())).thenReturn("$100.00")
 
         // WHEN
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
             parameterRepository = parameterRepository,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            currencyFormatter = currencyFormatter
         )
 
         // THEN
         val uiState = viewModel.uiState.value
         assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
-        assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
-        assertThat(uiState.amountReceived).isEqualTo(ORDER_TOTAL)
+        assertThat(uiState.changeDueText).isEqualTo("$100.00")
+        assertThat(uiState.title).isEqualTo("Payment Title")
     }
 
     @Test
     fun `when updateAmountReceived is called, then amountReceived and change are updated`() = runTest {
         // Given
         whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { invocation ->
+            val amount = invocation.getArgument<BigDecimal>(0)
+            "$${amount.toPlainString()}"
+        }
+
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
             parameterRepository = parameterRepository,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            currencyFormatter = currencyFormatter
         )
 
         // WHEN
@@ -82,6 +95,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         val uiState = viewModel.uiState.value
         assertThat(uiState.amountReceived).isEqualTo(amountReceived)
         assertThat(uiState.change).isEqualTo(BigDecimal("50.00"))
+        assertThat(uiState.changeDueText).isEqualTo("$150.00")
+        assertThat(uiState.title).isEqualTo("Payment Title")
     }
 
     @Test
@@ -91,13 +106,16 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
             on { total }.thenReturn(BigDecimal.ZERO)
         }
         whenever(orderDetailRepository.getOrderById(any())).thenReturn(emptyOrder)
+        // Mock the formatCurrency method for BigDecimal type
+        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any(), any())).thenReturn("$0.00")
 
         // WHEN
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
             parameterRepository = parameterRepository,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            currencyFormatter = currencyFormatter
         )
         viewModel.updateAmountReceived(BigDecimal.ZERO)
         advanceUntilIdle()
@@ -107,12 +125,19 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         assertThat(uiState.amountDue).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.amountReceived).isEqualTo(BigDecimal.ZERO)
         assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
+        assertThat(uiState.changeDueText).isEqualTo("$0.00")
+        assertThat(uiState.title).isEqualTo("Payment Title")
     }
 
     @Test
     fun `when amount received is less than amount due, then change is negative`() = runTest {
         // GIVEN
         whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { invocation ->
+            val amount = invocation.getArgument<BigDecimal>(0)
+            "$${amount.toPlainString()}"
+        }
+
         val amountReceived = BigDecimal("50.00")
 
         // WHEN
@@ -120,7 +145,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
             parameterRepository = parameterRepository,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            currencyFormatter = currencyFormatter
         )
         viewModel.updateAmountReceived(amountReceived)
         advanceUntilIdle()
@@ -130,17 +156,25 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
         assertThat(uiState.amountReceived).isEqualTo(amountReceived)
         assertThat(uiState.change).isEqualTo(BigDecimal("-50.00"))
+        assertThat(uiState.changeDueText).isEqualTo("$50.00")
+        assertThat(uiState.title).isEqualTo("Payment Title")
     }
 
     @Test
     fun `when amount received is greater than or equal to amount due, then order can be completed`() = runTest {
         // GIVEN
         whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { invocation ->
+            val amount = invocation.getArgument<BigDecimal>(0)
+            "$${amount.toPlainString()}"
+        }
+
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
             parameterRepository = parameterRepository,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            currencyFormatter = currencyFormatter
         )
 
         // WHEN
@@ -154,6 +188,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
         assertThat(uiState.amountReceived).isEqualTo(amountReceived)
         assertThat(uiState.change).isEqualTo(BigDecimal("0.00"))
+        assertThat(uiState.changeDueText).isEqualTo("$100.00")
+        assertThat(uiState.title).isEqualTo("Payment Title")
         assertThat(canCompleteOrder).isTrue
     }
 
@@ -166,7 +202,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
                 savedStateHandle = savedStateHandle,
                 orderDetailRepository = orderDetailRepository,
                 parameterRepository = parameterRepository,
-                resourceProvider = resourceProvider
+                resourceProvider = resourceProvider,
+                currencyFormatter = currencyFormatter
             )
 
             // WHEN
@@ -190,7 +227,8 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
             savedStateHandle = savedStateHandle,
             orderDetailRepository = orderDetailRepository,
             parameterRepository = parameterRepository,
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            currencyFormatter = currencyFormatter
         )
 
         // WHEN
