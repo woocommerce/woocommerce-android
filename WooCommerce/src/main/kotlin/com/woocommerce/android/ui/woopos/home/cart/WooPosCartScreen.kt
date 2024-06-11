@@ -86,7 +86,7 @@ private fun WooPosCartScreen(
                 is WooPosCartState.Cart -> {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = state.itemsInCart.isNotEmpty() && !state.isLoading,
+                        enabled = state.itemsInCart.isNotEmpty() && !state.isOrderCreationInProgress,
                         onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
                     ) {
                         Text(stringResource(R.string.woo_pos_checkout_button))
@@ -96,7 +96,7 @@ private fun WooPosCartScreen(
                 is WooPosCartState.Checkout -> {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = !state.isLoading,
+                        enabled = !state.isOrderCreationInProgress,
                         onClick = {
                             onUIEvent(WooPosCartUIEvent.BackFromCheckoutToCartClicked)
                         }

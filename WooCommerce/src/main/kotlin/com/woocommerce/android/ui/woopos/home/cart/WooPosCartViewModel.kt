@@ -13,7 +13,6 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -28,9 +27,9 @@ class WooPosCartViewModel @Inject constructor(
     private val repository: WooPosCartRepository,
     savedState: SavedStateHandle,
 ) : ViewModel() {
-    private val _state = savedState.getStateFlow<WooPosCartState>(
+    private val _state = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = WooPosCartState.Cart(itemsInCart = emptyList()),
+        initialValue = WooPosCartState(),
         key = "cartViewState"
     )
     val state: StateFlow<WooPosCartState> = _state
@@ -46,50 +45,25 @@ class WooPosCartViewModel @Inject constructor(
                 createOrderDraft()
             }
 
-            is WooPosCartUIEvent.BackFromCheckoutToCartClicked -> {
-                sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
-                _state.value = WooPosCartState.Cart(
-                    itemsInCart = state.value.itemsInCart,
-                    isLoading = state.value.isLoading
-                )
-            }
-
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
-                if (state.value.isLoading) return
+                val currentState = state.value
+                if (currentState.isOrderCreationInProgress) return
 
-                _state.update { state ->
-                    val itemsInCart = state.itemsInCart - event.item
-                    when (state) {
-                        is WooPosCartState.Cart -> state.copy(
-                            itemsInCart = itemsInCart,
-                            isLoading = false,
-                        )
-
-                        is WooPosCartState.Checkout -> state.copy(
-                            itemsInCart = itemsInCart,
-                            isLoading = false,
-                        )
-                    }
-                }
+                _state.value = currentState.copy(itemsInCart = currentState.itemsInCart - event.item)
             }
         }
     }
 
     private fun createOrderDraft() {
         viewModelScope.launch {
-            val itemsInCart = _state.value.itemsInCart
-            _state.value = WooPosCartState.Checkout(
-                state.value.itemsInCart,
-                isLoading = true,
+            val currentState = state.value
+            _state.value = currentState.copy(isOrderCreationInProgress = true)
+
+            val result = repository.createOrderWithProducts(
+                productIds = currentState.itemsInCart.map { it.productId }
             )
 
-            val productIds = itemsInCart.map { it.productId }
-            val result = repository.createOrderWithProducts(productIds = productIds)
-
-            _state.value = WooPosCartState.Checkout(
-                itemsInCart,
-                isLoading = false
-            )
+            _state.value = currentState.copy(isOrderCreationInProgress = false)
 
             result.fold(
                 onSuccess = { order ->
@@ -107,24 +81,21 @@ class WooPosCartViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = WooPosCartState.Cart(
-                            itemsInCart = state.value.itemsInCart,
-                            isLoading = state.value.isLoading
-                        )
+                        _state.value = _state.value.copy(isCheckoutButtonVisible = true)
                     }
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
-                        if (state.value.isLoading) return@collect
+                        if (state.value.isOrderCreationInProgress) return@collect
 
-                        val site = requireNotNull(site.getOrNull())
+                        val siteModel = site.get()
                         val itemClicked = viewModelScope.async {
-                            productStore.getProductByRemoteId(site, event.productId)!!.toCartListItem()
+                            productStore.getProductByRemoteId(siteModel, event.productId)!!.toCartListItem()
                         }
-                        val itemsInCart = _state.value.itemsInCart + itemClicked.await()
-                        _state.value = when (val state = _state.value) {
-                            is WooPosCartState.Cart -> state.copy(itemsInCart = itemsInCart)
-                            is WooPosCartState.Checkout -> state.copy(itemsInCart = itemsInCart)
-                        }
+
+                        val currentState = _state.value
+                        _state.value = currentState.copy(
+                            itemsInCart = currentState.itemsInCart + itemClicked.await()
+                        )
                     }
                 }
             }
