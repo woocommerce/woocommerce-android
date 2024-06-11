@@ -12,22 +12,20 @@ sealed class WooPosCartState(
     data class Cart(
         override val itemsInCart: List<WooPosCartListItem>,
         override val isLoading: Boolean = false,
-    ) :
-        WooPosCartState(
-            itemsInCart = itemsInCart,
-            areItemsRemovable = true,
-            isLoading = isLoading,
-        )
+    ) : WooPosCartState(
+        itemsInCart = itemsInCart,
+        areItemsRemovable = true,
+        isLoading = isLoading,
+    )
 
     data class Checkout(
         override val itemsInCart: List<WooPosCartListItem>,
         override val isLoading: Boolean = false,
-    ) :
-        WooPosCartState(
-            itemsInCart = itemsInCart,
-            areItemsRemovable = false,
-            isLoading = isLoading,
-        )
+    ) : WooPosCartState(
+        itemsInCart = itemsInCart,
+        areItemsRemovable = false,
+        isLoading = isLoading,
+    )
 }
 
 @Parcelize

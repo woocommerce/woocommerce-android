@@ -36,7 +36,7 @@ class WooPosCartViewModel @Inject constructor(
     val state: StateFlow<WooPosCartState> = _state
 
     init {
-        listenUpEvents()
+        listenEventsFromParent()
     }
 
     fun onUIEvent(event: WooPosCartUIEvent) {
@@ -50,11 +50,13 @@ class WooPosCartViewModel @Inject constructor(
                 sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
                 _state.value = WooPosCartState.Cart(
                     itemsInCart = state.value.itemsInCart,
-                    isLoading = false
+                    isLoading = state.value.isLoading
                 )
             }
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
+                if (state.value.isLoading) return
+
                 _state.update { state ->
                     val itemsInCart = state.itemsInCart - event.item
                     when (state) {
@@ -84,12 +86,10 @@ class WooPosCartViewModel @Inject constructor(
             val productIds = itemsInCart.map { it.productId }
             val result = repository.createOrderWithProducts(productIds = productIds)
 
-            _state.update {
-                WooPosCartState.Checkout(
-                    itemsInCart,
-                    isLoading = false
-                )
-            }
+            _state.value = WooPosCartState.Checkout(
+                itemsInCart,
+                isLoading = false
+            )
 
             result.fold(
                 onSuccess = { order ->
@@ -102,15 +102,20 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private fun listenUpEvents() {
+    private fun listenEventsFromParent() {
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = WooPosCartState.Cart(itemsInCart = state.value.itemsInCart)
+                        _state.value = WooPosCartState.Cart(
+                            itemsInCart = state.value.itemsInCart,
+                            isLoading = state.value.isLoading
+                        )
                     }
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
+                        if (state.value.isLoading) return@collect
+
                         val site = requireNotNull(site.getOrNull())
                         val itemClicked = viewModelScope.async {
                             productStore.getProductByRemoteId(site, event.productId)!!.toCartListItem()
