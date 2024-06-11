@@ -44,7 +44,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
-        // Mock currencyFormatter with explicit values and argument matchers
         whenever(
             currencyFormatter.formatCurrency(eq(BigDecimal(ORDER_TOTAL)), eq("$"), eq(true))
         ).thenReturn("$0.00")
@@ -59,7 +58,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
             currencyFormatter.formatCurrency(eq(BigDecimal("-50.00")), eq("$"), eq(true))
         ).thenReturn("-$50.00")
 
-        // Mock resourceProvider with explicit values and argument matchers
         whenever(resourceProvider.getString(any(), any())).thenReturn("Payment Title")
     }
 
