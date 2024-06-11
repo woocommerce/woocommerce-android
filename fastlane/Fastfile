@@ -180,17 +180,15 @@ platform :android do
     )
   end
 
-  #####################################################################################
-  # complete_code_freeze
+  # This lane executes the last steps planned on code freeze, creating a new release branch from the current trunk
   #
-  # This lane executes the last steps planned on code freeze
+  # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
+  # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
+  # 
+  # @example Running the lane
+  #          bundle exec fastlane complete_code_freeze skip_confirm:true include_wear_app:true
   #
-  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
-  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
-  #
-  desc 'Creates a new release branch from the current trunk'
-  lane :complete_code_freeze do |options|
-    # Ensure we use the latest version of the toolkit
+  lane :complete_code_freeze do |skip_confirm: false, include_wear_app: false|
     check_for_toolkit_updates unless is_ci || ENV['FASTLANE_SKIP_TOOLKIT_UPDATE_CHECK']
 
     # Verify that there's nothing in progress in the working copy
@@ -199,7 +197,7 @@ platform :android do
     ensure_git_branch_is_release_branch
 
     UI.important("Completing code freeze for: #{release_version_current}")
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
+    unless skip_confirm || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
 
@@ -209,7 +207,6 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    include_wear_app = options.fetch(:include_wear_app, false)
     trigger_release_build(branch_to_build: "release/#{release_version_current}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
@@ -392,17 +389,15 @@ platform :android do
     push_to_git_remote(tags: false)
   end
 
-  #####################################################################################
-  # finalize_hotfix_release
+  # This lane finalizes the hotfix branch, triggering a release build.
   #
-  # This lane finalizes the hotfix branch.
+  # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
+  # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
+  # 
+  # @example Running the lane
+  #          bundle exec fastlane finalize_hotfix_release skip_confirm:true include_wear_app:true
   #
-  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
-  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
-  #
-  desc 'Finalizes a hotfix release by triggering a release build'
-  lane :finalize_hotfix_release do |options|
-    # Verify that there's nothing in progress in the working copy
+  lane :finalize_hotfix_release do |skip_confirm: false, include_wear_app: false|
     ensure_git_status_clean
 
     ensure_git_branch_is_release_branch
@@ -410,11 +405,10 @@ platform :android do
     hotfix_version = release_version_current
 
     UI.important("Triggering hotfix build for version: #{hotfix_version}")
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
+    unless skip_confirm || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
 
-    include_wear_app = options.fetch(:include_wear_app, false)
     trigger_release_build(branch_to_build: "release/#{hotfix_version}", include_wear_app: include_wear_app)
 
     # Retrieve the current non-hotfix release version
@@ -453,16 +447,15 @@ platform :android do
     )
   end
 
-  #####################################################################################
-  # finalize_release
+  # This lane finalizes a release: updates store metadata and runs the release checks.
   #
-  # This lane finalize a release: updates store metadata and runs the release checks
+  # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
+  # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
+  # 
+  # @example Running the lane
+  #          bundle exec fastlane finalize_release skip_confirm:true include_wear_app:true
   #
-  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
-  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
-  #
-  desc 'Updates store metadata and runs the release checks'
-  lane :finalize_release do |options|
+  lane :finalize_release do |skip_confirm: false, include_wear_app: false|
     UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix(version_properties_path: VERSION_PROPERTIES_PATH)
 
     # Verify that there's nothing in progress in the working copy
@@ -471,7 +464,7 @@ platform :android do
     ensure_git_branch_is_release_branch
 
     UI.important("Finalizing release: #{release_version_current}")
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
+    unless skip_confirm || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
 
@@ -520,13 +513,12 @@ platform :android do
 
     # Start the build
     UI.important('Pushing changes to remote and triggering the release build')
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
+    unless skip_confirm || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
 
     push_to_git_remote(tags: false)
 
-    include_wear_app = options.fetch(:include_wear_app, false)
     trigger_release_build(branch_to_build: "release/#{version}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
@@ -692,23 +684,19 @@ platform :android do
     create_gh_release(version: version, prerelease: true) if options[:create_release]
   end
 
-  #####################################################################################
-  # trigger_release_build
+  # This lane triggers a stable release build on CI.
   #
-  # This lane triggers a stable release build on CI
+  # @param [String] branch_to_build The git branch the CI build should run on. Defaults to the current branch at the time of calling the lane.
+  # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
+  # 
+  # @example Running the lane
+  #          bundle exec fastlane trigger_release_build branch_to_build:main include_wear_app:true
   #
-  # @param [String] branch_to_build The git branch the CI build should run on. Defaults to the current branch at the time of calling that lane.
-  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
-  #
-  desc 'Tell Buildkite to trigger a release build'
-  lane :trigger_release_build do |options|
-    branch = options.fetch(:branch_to_build, git_branch)
-    include_wear_app = options.fetch(:include_wear_app)
-
+  lane :trigger_release_build do |branch_to_build: nil, include_wear_app: false|
     buildkite_trigger_build(
       buildkite_organization: 'automattic',
       buildkite_pipeline: 'woocommerce-android',
-      branch: branch,
+      branch: branch_to_build || git_branch,
       pipeline_file: 'release-builds.yml',
       environment: { INCLUDE_WEAR_APP: include_wear_app }
     )
