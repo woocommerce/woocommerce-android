@@ -50,6 +50,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import org.wordpress.android.fluxc.model.WCSettingsModel
 import java.math.BigDecimal
 
+private const val MAX_INPUT_CHARS = 30
+
 @Composable
 fun ChangeDueCalculatorScreen(
     uiState: ChangeDueCalculatorViewModel.UiState,
@@ -114,7 +116,7 @@ fun ChangeDueCalculatorScreen(
                             numberOfDecimals = uiState.numberOfDecimals
                         ),
                         onValueChange = { newValue ->
-                            if (newValue == null || newValue.toPlainString().length <= 15) {
+                            if (newValue == null || newValue.toPlainString().length <= MAX_INPUT_CHARS) {
                                 inputText = newValue
                                 onAmountReceivedChanged(newValue)
                             }
