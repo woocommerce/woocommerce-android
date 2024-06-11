@@ -82,27 +82,13 @@ private fun WooPosCartScreen(
                 }
             }
 
-            when (state) {
-                is WooPosCartState.Cart -> {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = state.itemsInCart.isNotEmpty() && !state.isOrderCreationInProgress,
-                        onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
-                    ) {
-                        Text(stringResource(R.string.woo_pos_checkout_button))
-                    }
-                }
-
-                is WooPosCartState.Checkout -> {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = !state.isOrderCreationInProgress,
-                        onClick = {
-                            onUIEvent(WooPosCartUIEvent.BackFromCheckoutToCartClicked)
-                        }
-                    ) {
-                        Text("To Products")
-                    }
+            if (state.isCheckoutButtonVisible) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = state.itemsInCart.isNotEmpty() && !state.isOrderCreationInProgress,
+                    onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
+                ) {
+                    Text(stringResource(R.string.woo_pos_checkout_button))
                 }
             }
         }
@@ -164,5 +150,16 @@ fun ProductItemPreview() {
 @Composable
 @WooPosPreview
 fun WooPosCartScreenPreview() {
-    WooPosCartScreen()
+    WooPosCartScreen(
+        state = WooPosCartState(
+            itemsInCart = listOf(
+                WooPosCartListItem(1L, "VW California"),
+                WooPosCartListItem(2L, "VW Multivan"),
+                WooPosCartListItem(3L, "VW Transporter")
+            ),
+            areItemsRemovable = true,
+            isOrderCreationInProgress = true,
+            isCheckoutButtonVisible = true
+        )
+    ) {}
 }
