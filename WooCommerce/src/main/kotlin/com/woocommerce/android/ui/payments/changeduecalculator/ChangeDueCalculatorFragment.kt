@@ -13,7 +13,6 @@ import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -23,9 +22,6 @@ class ChangeDueCalculatorFragment : BaseFragment() {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
-
-    @Inject
-    lateinit var currencyFormatter: CurrencyFormatter
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
