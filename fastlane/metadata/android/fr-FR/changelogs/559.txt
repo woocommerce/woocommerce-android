@@ -1,0 +1,2 @@
+18.9 :
+De formidables mises à jour sont là ! Vous pouvez désormais gérer des commandes plus efficacement avec plusieurs lignes d’expédition par commande. Naviguez de manière plus fluide avec le nouveau menu Plus. Par ailleurs, nous avons ajouté une fonctionnalité pratique pour calculer le rendu des paiements en espèces. Mettez à jour votre application WooCommerce dès à présent pour une expérience fluide et améliorée !

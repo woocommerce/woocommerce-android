@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-28 09:54:04+0000
+Translation-Revision-Date: 2024-06-04 09:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ko_KR
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">앱을 금전 등록기처럼 사용</string>
+    <string name="more_menu_button_woo_pos">판매 지점 모드</string>
+    <string name="product_stock_status_low_stock">재고 부족</string>
+    <string name="order_detail_shipping_header">배송</string>
+    <string name="order_creation_feedback_action">피드백 공유</string>
+    <string name="order_creation_shipping_feedback_message">Woo를 사용하면 배송이 쉬워질까요?</string>
+    <string name="order_creation_shipping_feedback_title">배송이 추가되었습니다!</string>
+    <string name="order_creation_shipping_edit">배송 수정</string>
+    <string name="order_creation_shipping_title_edit">배송 수정</string>
+    <string name="cash_payments_order_note_adding_error">주문 메모를 추가하는 중 오류 발생</string>
+    <string name="cash_payments_order_note_text">주문이 현금으로 결제되었습니다. 고객이 %s을(를) 결제했습니다. %s이(가) 거슬러줄 잔돈이었습니다.</string>
+    <string name="cash_payments_mark_order_as_complete">주문을 완료로 표시</string>
+    <string name="cash_payments_record_transaction_details">주문 메모에 거래 상세 정보 기록</string>
+    <string name="dashboard_new_widgets_card_description">새 섹션을 추가하여 스토어 관리 환경을 사용자 정의하세요.</string>
+    <string name="dashboard_new_widgets_card_title">인사이트가 더 필요하신가요?</string>
+    <string name="dashboard_product_stock_products">상품</string>
+    <string name="dashboard_product_stock_levels">재고 수준</string>
+    <string name="dashboard_product_stock_status_header_title">상태</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">여전히 도움이 필요하신가요? 문의하기</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">쿠폰 사용 보고서를 로드할 수 없음</string>
+    <string name="dashboard_coupons_card_empty_view_message">이 기간에 사용된 쿠폰 없음</string>
+    <string name="dashboard_coupons_view_all_button">모든 쿠폰 보기</string>
+    <string name="dashboard_coupons_card_header_uses">사용</string>
+    <string name="dashboard_coupons_card_header_coupons">쿠폰</string>
+    <string name="my_store_widget_product_stock_title">재고</string>
+    <string name="dashboard_action_view_all_messages">모든 메시지 보기</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">최고 인기 상품을 로드할 수 없음</string>
+    <string name="na">해당 없음</string>
     <string name="cash_payments_change_due">거슬러줄 잔돈</string>
     <string name="cash_payments_cash_received">현금 받음</string>
     <string name="my_store_widget_coupons_title">가장 많이 사용된 쿠폰</string>
-    <string name="more_menu_button_woo_pos_description">POS 모드에 대한 임시 진입점</string>
-    <string name="more_menu_button_woo_pos">Woo POS</string>
     <string name="cash_payments_take_payment_title">결제하기(%s)</string>
     <string name="dashboard_reviews_card_view_all_button">모든 리뷰 보기</string>
     <string name="dashboard_reviews_card_empty_message_filtered">선택한 필터와 일치하는 리뷰가 없습니다. 필터를 변경해 보세요.</string>
@@ -40,6 +66,7 @@ Language: ko_KR
     <string name="my_store_widget_onboarding_completed">완료됨</string>
     <string name="my_store_widget_feedback_title">피드백</string>
     <string name="my_store_stats_plugin_inactive_title">스토어 분석을\n 표시할 수 없음</string>
+    <string name="dashboard_wcanalytics_inactive_description">사이트에서 우커머스 최신 버전을 실행하고 있으며 우커머스 분석이 활성화되어 있는지 확인하세요.</string>
     <string name="store_onboarding_task_view_all_tasks">모든 작업 보기</string>
     <string name="analytics_session_no_available_description">세션 분석에서는 사용자 정의 범위에 사용할 수 없는 고유 방문자 수를 이용합니다</string>
     <string name="analytics_session_no_available">세션 데이터 사용 불가</string>

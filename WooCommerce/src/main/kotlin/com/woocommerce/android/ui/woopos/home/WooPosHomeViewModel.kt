@@ -52,6 +52,12 @@ class WooPosHomeViewModel @Inject constructor(
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
                     }
+
+                    is ChildToParentEvent.ItemClickedInProductSelector -> {
+                        sendEventToChildren(
+                            ParentToChildrenEvent.ItemClickedInProductSelector(event.productId)
+                        )
+                    }
                 }
             }
         }

@@ -20,6 +20,7 @@ class WooPosChildrenToParentCommunication @Inject constructor() :
 sealed class ChildToParentEvent {
     data object CheckoutClicked : ChildToParentEvent()
     data object BackFromCheckoutToCartClicked : ChildToParentEvent()
+    data class ItemClickedInProductSelector(val productId: Long) : ChildToParentEvent()
 }
 
 interface WooPosChildrenToParentEventReceiver {

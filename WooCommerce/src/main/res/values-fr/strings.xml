@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-27 13:54:03+0000
+Translation-Revision-Date: 2024-06-04 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Utiliser l’application comme caisse enregistreuse</string>
+    <string name="more_menu_button_woo_pos">Mode point de vente</string>
+    <string name="product_stock_status_low_stock">Stock faible</string>
+    <string name="order_detail_shipping_header">LIVRAISON</string>
+    <string name="order_creation_feedback_action">Donner votre avis</string>
+    <string name="order_creation_shipping_feedback_message">Woo facilite-t-elle l’expédition ?</string>
+    <string name="order_creation_shipping_feedback_title">Expédition ajoutée !</string>
+    <string name="order_creation_shipping_edit">Modifier l’expédition</string>
+    <string name="order_creation_shipping_title_edit">Modifier l’expédition</string>
+    <string name="cash_payments_order_note_adding_error">Erreur lors de l’ajout de la note de commande</string>
+    <string name="cash_payments_order_note_text">La commande a été payée en espèces. Le client a payé %s. Le rendu s’élevait à %s.</string>
+    <string name="cash_payments_mark_order_as_complete">Marquer la commande comme terminée</string>
+    <string name="cash_payments_record_transaction_details">Enregistrer les détails de la transaction dans la note de commande</string>
+    <string name="dashboard_new_widgets_card_description">Ajouter de nouvelles sections pour personnaliser la gestion de votre boutique</string>
+    <string name="dashboard_new_widgets_card_title">À la recherche d’autres tendances ?</string>
+    <string name="dashboard_product_stock_products">Produits</string>
+    <string name="dashboard_product_stock_levels">Niveaux de stock</string>
+    <string name="dashboard_product_stock_status_header_title">État</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Besoin d’une aide supplémentaire ? Nous contacter</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Impossible de charger le rapport sur l’utilisation des codes promo</string>
+    <string name="dashboard_coupons_card_empty_view_message">Pas d’utilisation de code promo pendant cette période</string>
+    <string name="dashboard_coupons_view_all_button">Voir tous les codes promo</string>
+    <string name="dashboard_coupons_card_header_uses">Utilisations</string>
+    <string name="dashboard_coupons_card_header_coupons">Codes promo</string>
+    <string name="my_store_widget_product_stock_title">Stock</string>
+    <string name="dashboard_action_view_all_messages">Voir tous les messages</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Impossible de charger les produits les plus performants</string>
+    <string name="na">N/A</string>
     <string name="cash_payments_change_due">Rendu</string>
     <string name="cash_payments_cash_received">Espèces reçues</string>
     <string name="my_store_widget_coupons_title">Codes promo les plus actifs</string>
-    <string name="more_menu_button_woo_pos_description">Point d’entrée temporaire vers le mode Point de vente</string>
-    <string name="more_menu_button_woo_pos">Woo POS</string>
     <string name="cash_payments_take_payment_title">Accepter le paiement (%s)</string>
     <string name="dashboard_reviews_card_view_all_button">Voir tous les avis</string>
     <string name="dashboard_reviews_card_empty_message_filtered">Aucun avis ne correspond au filtre sélectionné, veuillez essayer un autre filtre</string>
@@ -39,6 +65,7 @@ Language: fr
     <string name="dynamic_dashboard_widget_menu_item_hide">Masquer %s</string>
     <string name="my_store_widget_onboarding_completed">Terminé</string>
     <string name="my_store_widget_feedback_title">Commentaire</string>
+    <string name="dashboard_wcanalytics_inactive_description">Veillez à exécuter la dernière version de WooCommerce sur votre site et à ce que WooCommerce Analytics soit activé.</string>
     <string name="my_store_stats_plugin_inactive_title">Nous ne sommes pas en mesure d’afficher\n les statistiques de votre boutique</string>
     <string name="store_onboarding_task_view_all_tasks">Voir toutes les tâches</string>
     <string name="analytics_session_no_available_description">Les analyses de session se basent sur le nombre de visites uniques indisponibles pour les plages de dates personnalisées</string>

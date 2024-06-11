@@ -1,4 +1,8 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+19.1
+-----
+
+
 19.0
 -----
 - [*] Payments: Slightly bigger dialog sizes on bigger screens for better user experience [https://github.com/woocommerce/woocommerce-android/pull/11638]
