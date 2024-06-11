@@ -41,12 +41,12 @@ class WooPosCartViewModel @Inject constructor(
     fun onUIEvent(event: WooPosCartUIEvent) {
         when (event) {
             is WooPosCartUIEvent.CheckoutClicked -> {
-                sendEventToParent(ChildToParentEvent.CheckoutClicked)
+                goToTotals()
                 createOrderDraft()
             }
 
             is WooPosCartUIEvent.ItemRemovedFromCart -> {
-                val currentState = state.value
+                val currentState = _state.value
                 if (currentState.isOrderCreationInProgress) return
 
                 _state.value = currentState.copy(itemsInCart = currentState.itemsInCart - event.item)
@@ -54,16 +54,26 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
+    private fun goToTotals() {
+        sendEventToParent(ChildToParentEvent.CheckoutClicked)
+        _state.value = _state.value.copy(
+            isCheckoutButtonVisible = false,
+            areItemsRemovable = false,
+        )
+    }
+
     private fun createOrderDraft() {
         viewModelScope.launch {
-            val currentState = state.value
+            val currentState = _state.value
             _state.value = currentState.copy(isOrderCreationInProgress = true)
 
             val result = repository.createOrderWithProducts(
-                productIds = currentState.itemsInCart.map { it.productId }
+                productIds = currentState.itemsInCart.map {
+                    it.productId
+                }
             )
 
-            _state.value = currentState.copy(isOrderCreationInProgress = false)
+            _state.value = _state.value.copy(isOrderCreationInProgress = false)
 
             result.fold(
                 onSuccess = { order ->
@@ -81,7 +91,10 @@ class WooPosCartViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = _state.value.copy(isCheckoutButtonVisible = true)
+                        _state.value = _state.value.copy(
+                            isCheckoutButtonVisible = true,
+                            areItemsRemovable = true,
+                        )
                     }
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
