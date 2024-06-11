@@ -53,7 +53,11 @@ private fun WooPosCartScreen(
         elevation = 4.dp,
         modifier = Modifier.padding(16.dp)
     ) {
-        Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
             Text(
                 text = stringResource(R.string.woo_pos_car_pane_title),
                 style = MaterialTheme.typography.h3,
@@ -63,7 +67,10 @@ private fun WooPosCartScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(
-                modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -79,6 +86,7 @@ private fun WooPosCartScreen(
                 is WooPosCartState.Cart -> {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
+                        enabled = state.itemsInCart.isNotEmpty() && !state.isLoading,
                         onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
                     ) {
                         Text(stringResource(R.string.woo_pos_checkout_button))
@@ -86,9 +94,13 @@ private fun WooPosCartScreen(
                 }
 
                 is WooPosCartState.Checkout -> {
-                    Button(onClick = {
-                        onUIEvent(WooPosCartUIEvent.BackFromCheckoutToCartClicked)
-                    }) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !state.isLoading,
+                        onClick = {
+                            onUIEvent(WooPosCartUIEvent.BackFromCheckoutToCartClicked)
+                        }
+                    ) {
                         Text("To Products")
                     }
                 }
