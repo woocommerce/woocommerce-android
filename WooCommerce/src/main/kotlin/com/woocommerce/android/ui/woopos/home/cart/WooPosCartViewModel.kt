@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -77,10 +76,10 @@ class WooPosCartViewModel @Inject constructor(
 
             result.fold(
                 onSuccess = { order ->
-                    Log.d("WooPosCartViewModel", "Order created successfully - $order")
+                    println("Order created successfully - $order")
                 },
                 onFailure = { error ->
-                    Log.e("WooPosCartViewModel", "Order creation failed - $error")
+                    println("Order creation failed - $error")
                 }
             )
         }
