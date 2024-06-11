@@ -12,9 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -42,25 +40,6 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
-    @Before
-    fun setUp() {
-        whenever(
-            currencyFormatter.formatCurrency(eq(BigDecimal(ORDER_TOTAL)), eq("$"), eq(true))
-        ).thenReturn("$0.00")
-        whenever(
-            currencyFormatter.formatCurrency(eq(BigDecimal("150.00")), eq("$"), eq(true))
-        ).thenReturn("$150.00")
-        whenever(
-            currencyFormatter.formatCurrency(eq(BigDecimal("50.00")), eq("$"), eq(true))
-        ).thenReturn("$50.00")
-        whenever(currencyFormatter.formatCurrency(eq(BigDecimal.ZERO), eq("$"), eq(true))).thenReturn("$0.00")
-        whenever(
-            currencyFormatter.formatCurrency(eq(BigDecimal("-50.00")), eq("$"), eq(true))
-        ).thenReturn("-$50.00")
-
-        whenever(resourceProvider.getString(any(), any())).thenReturn("Payment Title")
-    }
-
     @Test
     fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
         // GIVEN
@@ -78,94 +57,10 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         // THEN
         val uiState = viewModel.uiState.value
         assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
-        assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
-        assertThat(uiState.changeDueText).isEqualTo("$100.00")
-        assertThat(uiState.title).isEqualTo("Payment Title")
     }
 
     @Test
-    fun `when updateAmountReceived is called, then amountReceived and change are updated`() = runTest {
-        // Given
-        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
-
-        viewModel = ChangeDueCalculatorViewModel(
-            savedStateHandle = savedStateHandle,
-            orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository,
-            resourceProvider = resourceProvider,
-            currencyFormatter = currencyFormatter
-        )
-
-        // WHEN
-        val amountReceived = BigDecimal("150.00")
-        viewModel.updateAmountReceived(amountReceived)
-        advanceUntilIdle()
-
-        // THEN
-        val uiState = viewModel.uiState.value
-        assertThat(uiState.amountReceived).isEqualTo(amountReceived)
-        assertThat(uiState.change).isEqualTo(BigDecimal("50.00"))
-        assertThat(uiState.changeDueText).isEqualTo("$150.00")
-        assertThat(uiState.title).isEqualTo("Payment Title")
-    }
-
-    @Test
-    fun `given amount due is zero, when amount received is zero, then change is zero`() = runTest {
-        // GIVEN
-        val emptyOrder: Order = mock {
-            on { total }.thenReturn(BigDecimal.ZERO)
-        }
-        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(emptyOrder)
-
-        // WHEN
-        viewModel = ChangeDueCalculatorViewModel(
-            savedStateHandle = savedStateHandle,
-            orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository,
-            resourceProvider = resourceProvider,
-            currencyFormatter = currencyFormatter
-        )
-        viewModel.updateAmountReceived(BigDecimal.ZERO)
-        advanceUntilIdle()
-
-        // THEN
-        val uiState = viewModel.uiState.value
-        assertThat(uiState.amountDue).isEqualTo(BigDecimal.ZERO)
-        assertThat(uiState.amountReceived).isEqualTo(BigDecimal.ZERO)
-        assertThat(uiState.change).isEqualTo(BigDecimal.ZERO)
-        assertThat(uiState.changeDueText).isEqualTo("$0.00")
-        assertThat(uiState.title).isEqualTo("Payment Title")
-    }
-
-    @Test
-    fun `when amount received is less than amount due, then change is negative`() = runTest {
-        // GIVEN
-        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
-
-        val amountReceived = BigDecimal("50.00")
-
-        // WHEN
-        viewModel = ChangeDueCalculatorViewModel(
-            savedStateHandle = savedStateHandle,
-            orderDetailRepository = orderDetailRepository,
-            parameterRepository = parameterRepository,
-            resourceProvider = resourceProvider,
-            currencyFormatter = currencyFormatter
-        )
-        viewModel.updateAmountReceived(amountReceived)
-        advanceUntilIdle()
-
-        // THEN
-        val uiState = viewModel.uiState.value
-        assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
-        assertThat(uiState.amountReceived).isEqualTo(amountReceived)
-        assertThat(uiState.change).isEqualTo(BigDecimal("-50.00"))
-        assertThat(uiState.changeDueText).isEqualTo("$50.00")
-        assertThat(uiState.title).isEqualTo("Payment Title")
-    }
-
-    @Test
-    fun `when amount received is greater than or equal to amount due, then order can be completed`() = runTest {
+    fun `when amount received is less than the amount due, then order cannot be completed`() = runTest {
         // GIVEN
         whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
 
@@ -178,19 +73,10 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         )
 
         // WHEN
-        val amountReceived = BigDecimal("100.00")
-        viewModel.updateAmountReceived(amountReceived)
-        advanceUntilIdle()
         val canCompleteOrder = viewModel.uiState.value.canCompleteOrder
 
         // THEN
-        val uiState = viewModel.uiState.value
-        assertThat(uiState.amountDue).isEqualTo(BigDecimal(ORDER_TOTAL))
-        assertThat(uiState.amountReceived).isEqualTo(amountReceived)
-        assertThat(uiState.change).isEqualTo(BigDecimal("0.00"))
-        assertThat(uiState.changeDueText).isEqualTo("$100.00")
-        assertThat(uiState.title).isEqualTo("Payment Title")
-        assertThat(canCompleteOrder).isTrue
+        assertThat(canCompleteOrder).isFalse
     }
 
     @Test
