@@ -26,7 +26,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private val orderDetailRepository: OrderDetailRepository,
     private val parameterRepository: ParameterRepository,
     private val resourceProvider: ResourceProvider,
-    private val currencyFormatter: CurrencyFormatter?
+    private val currencyFormatter: CurrencyFormatter
 ) : ScopedViewModel(savedStateHandle) {
     val navArgs: ChangeDueCalculatorFragmentArgs by savedStateHandle.navArgs()
     private val orderId: Long = navArgs.orderId
@@ -165,7 +165,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
     private fun getTitleText(total: BigDecimal): String {
         return resourceProvider.getString(
             R.string.cash_payments_take_payment_title,
-            currencyFormatter!!.formatCurrency(total)
+            currencyFormatter.formatCurrency(total)
         )
     }
 
@@ -173,7 +173,7 @@ class ChangeDueCalculatorViewModel @Inject constructor(
         return if ((newChange < BigDecimal.ZERO)) {
             "-"
         } else {
-            currencyFormatter!!.formatCurrency(newChange)
+            currencyFormatter.formatCurrency(newChange)
         }
     }
 }
