@@ -76,7 +76,7 @@ class CardReaderUpdateDialogFragment : PaymentsBaseDialogFragment(R.layout.card_
                     UiHelpers.updateVisibility(this, state.progress != null)
                     currentProgressPercentage = state.progress ?: 0
                 }
-                UiHelpers.setImageOrHideInLandscape(progressImageView, state.illustration)
+                UiHelpers.setImageOrHideInLandscapeOnNonExpandedScreenSizes(progressImageView, state.illustration)
                 actionButton.setOnClickListener { state.button?.onActionClicked?.invoke() }
             }
         }

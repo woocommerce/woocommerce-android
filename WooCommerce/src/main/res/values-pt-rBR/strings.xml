@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-27 19:54:03+0000
+Translation-Revision-Date: 2024-06-03 20:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources>
+    <string name="more_menu_button_woo_pos_description">Use o aplicativo como caixa registradora</string>
+    <string name="more_menu_button_woo_pos">Modo de ponto de venda</string>
+    <string name="product_stock_status_low_stock">Estoque baixo</string>
+    <string name="order_detail_shipping_header">ENVIO</string>
+    <string name="order_creation_feedback_action">Compartilhe seu feedback</string>
+    <string name="order_creation_shipping_feedback_message">O Woo facilita os envios?</string>
+    <string name="order_creation_shipping_feedback_title">Envio adicionado!</string>
+    <string name="order_creation_shipping_edit">Editar envio</string>
+    <string name="order_creation_shipping_title_edit">Editar envio</string>
+    <string name="cash_payments_order_note_adding_error">Ocorreu um erro ao adicionar a observação do pedido</string>
+    <string name="cash_payments_order_note_text">O pedido foi pago em dinheiro. O cliente pagou %s. O troco foi de %s.</string>
+    <string name="cash_payments_mark_order_as_complete">Marcar pedido como concluído</string>
+    <string name="cash_payments_record_transaction_details">Registrar os dados da transação nas anotações do pedido</string>
+    <string name="dashboard_new_widgets_card_description">Adicione novas seções para personalizar sua experiência de gerenciamento de loja</string>
+    <string name="dashboard_product_stock_products">Produtos</string>
+    <string name="dashboard_product_stock_levels">Níveis de estoque</string>
+    <string name="dashboard_product_stock_status_header_title">Status</string>
+    <string name="dashboard_new_widgets_card_title">Procurando mais informações?</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Ainda precisa de ajuda? Fale conosco</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Não foi possível carregar o relatório de uso de cupom</string>
+    <string name="dashboard_coupons_card_empty_view_message">Nenhum cupom foi usado durante este período</string>
+    <string name="dashboard_coupons_view_all_button">Ver todos os cupons</string>
+    <string name="dashboard_coupons_card_header_uses">Usos</string>
+    <string name="dashboard_coupons_card_header_coupons">Cupons</string>
+    <string name="my_store_widget_product_stock_title">Estoque</string>
+    <string name="dashboard_action_view_all_messages">Ver todas as mensagens</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Não foi possível carregar os melhores desempenhos</string>
+    <string name="na">N/D</string>
     <string name="cash_payments_change_due">Troco</string>
     <string name="cash_payments_cash_received">Dinheiro recebido</string>
     <string name="my_store_widget_coupons_title">Cupons mais ativos</string>
-    <string name="more_menu_button_woo_pos_description">Ponto de entrada temporário para modo POS</string>
-    <string name="more_menu_button_woo_pos">Woo POS</string>
     <string name="cash_payments_take_payment_title">Aceitar pagamento (%s)</string>
     <string name="dashboard_reviews_card_view_all_button">Ver todas as avaliações</string>
     <string name="dashboard_reviews_card_empty_message_filtered">Nenhuma avaliação corresponde ao filtro selecionado. Tente alterar o filtro</string>
@@ -40,6 +66,7 @@ Language: pt_BR
     <string name="my_store_widget_onboarding_completed">Concluída</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
     <string name="my_store_stats_plugin_inactive_title">Não podemos exibir\n a análise do seu site</string>
+    <string name="dashboard_wcanalytics_inactive_description">Use a versão mais recente do WooCommerce no seu site e certifique-se de que o WooCommerce Analytics esteja ativado.</string>
     <string name="store_onboarding_task_view_all_tasks">Visualizar todas as tarefas</string>
     <string name="analytics_session_no_available_description">A análise da sessão depende da contagem de visitantes diferentes, não disponíveis para datas personalizadas</string>
     <string name="analytics_session_no_available">Dados da sessão indisponíveis</string>
