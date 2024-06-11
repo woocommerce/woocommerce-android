@@ -12,8 +12,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -28,29 +30,43 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     }
 
     private val orderDetailRepository: OrderDetailRepository = mock()
-
     private val parameters: SiteParameters = mock {
         on { currencySymbol }.thenReturn("$")
     }
     private val parameterRepository: ParameterRepository = mock {
         on { getParameters() }.thenReturn(parameters)
     }
-
     private val savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("orderId" to 1L))
-
-    private val resourceProvider: ResourceProvider = mock {
-        on { getString(any(), any()) }.thenReturn("Payment Title")
-    }
-
+    private val resourceProvider: ResourceProvider = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
 
     private lateinit var viewModel: ChangeDueCalculatorViewModel
 
+    @Before
+    fun setUp() {
+        // Mock currencyFormatter with explicit values and argument matchers
+        whenever(
+            currencyFormatter.formatCurrency(eq(BigDecimal(ORDER_TOTAL)), eq("$"), eq(true))
+        ).thenReturn("$0.00")
+        whenever(
+            currencyFormatter.formatCurrency(eq(BigDecimal("150.00")), eq("$"), eq(true))
+        ).thenReturn("$150.00")
+        whenever(
+            currencyFormatter.formatCurrency(eq(BigDecimal("50.00")), eq("$"), eq(true))
+        ).thenReturn("$50.00")
+        whenever(currencyFormatter.formatCurrency(eq(BigDecimal.ZERO), eq("$"), eq(true))).thenReturn("$0.00")
+        whenever(
+            currencyFormatter.formatCurrency(eq(BigDecimal("-50.00")), eq("$"), eq(true))
+        ).thenReturn("-$50.00")
+
+        // Mock resourceProvider with explicit values and argument matchers
+        whenever(resourceProvider.getString(any(), any())).thenReturn("Payment Title")
+    }
+
     @Test
     fun `given valid order details, when order details are requested, then success state is emitted`() = runTest {
         // GIVEN
-        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
-        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any(), any())).thenReturn("$100.00")
+        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
 
         // WHEN
         viewModel = ChangeDueCalculatorViewModel(
@@ -72,11 +88,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     @Test
     fun `when updateAmountReceived is called, then amountReceived and change are updated`() = runTest {
         // Given
-        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
-        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { invocation ->
-            val amount = invocation.getArgument<BigDecimal>(0)
-            "$${amount.toPlainString()}"
-        }
+        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
 
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
@@ -105,9 +117,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
         val emptyOrder: Order = mock {
             on { total }.thenReturn(BigDecimal.ZERO)
         }
-        whenever(orderDetailRepository.getOrderById(any())).thenReturn(emptyOrder)
-        // Mock the formatCurrency method for BigDecimal type
-        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any(), any())).thenReturn("$0.00")
+        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(emptyOrder)
 
         // WHEN
         viewModel = ChangeDueCalculatorViewModel(
@@ -132,11 +142,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     @Test
     fun `when amount received is less than amount due, then change is negative`() = runTest {
         // GIVEN
-        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
-        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { invocation ->
-            val amount = invocation.getArgument<BigDecimal>(0)
-            "$${amount.toPlainString()}"
-        }
+        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
 
         val amountReceived = BigDecimal("50.00")
 
@@ -163,11 +169,7 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     @Test
     fun `when amount received is greater than or equal to amount due, then order can be completed`() = runTest {
         // GIVEN
-        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
-        whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any(), any())).thenAnswer { invocation ->
-            val amount = invocation.getArgument<BigDecimal>(0)
-            "$${amount.toPlainString()}"
-        }
+        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
 
         viewModel = ChangeDueCalculatorViewModel(
             savedStateHandle = savedStateHandle,
@@ -194,32 +196,31 @@ class ChangeDueCalculatorViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when updateRecordTransactionDetailsChecked is called, then recordTransactionDetailsChecked state is updated`() =
-        runTest {
-            // GIVEN
-            whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
-            viewModel = ChangeDueCalculatorViewModel(
-                savedStateHandle = savedStateHandle,
-                orderDetailRepository = orderDetailRepository,
-                parameterRepository = parameterRepository,
-                resourceProvider = resourceProvider,
-                currencyFormatter = currencyFormatter
-            )
+    fun `when updateRecordTransactionDetailsChecked is called, then recordTransactionDetailsChecked state is updated`() = runTest {
+        // GIVEN
+        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
+        viewModel = ChangeDueCalculatorViewModel(
+            savedStateHandle = savedStateHandle,
+            orderDetailRepository = orderDetailRepository,
+            parameterRepository = parameterRepository,
+            resourceProvider = resourceProvider,
+            currencyFormatter = currencyFormatter
+        )
 
-            // WHEN
-            viewModel.updateRecordTransactionDetailsChecked(true)
-            advanceUntilIdle()
+        // WHEN
+        viewModel.updateRecordTransactionDetailsChecked(true)
+        advanceUntilIdle()
 
-            // THEN
-            val isChecked = viewModel.uiState.value.recordTransactionDetailsChecked
-            assertThat(isChecked).isTrue
-        }
+        // THEN
+        val isChecked = viewModel.uiState.value.recordTransactionDetailsChecked
+        assertThat(isChecked).isTrue
+    }
 
     @Test
     fun `when getCurrencySymbol is called, then currency symbol from parameter repository is returned`() = runTest {
         // GIVEN
         val currencySymbol = "$"
-        whenever(orderDetailRepository.getOrderById(any())).thenReturn(order)
+        whenever(orderDetailRepository.getOrderById(eq(1L))).thenReturn(order)
         val siteParameters: SiteParameters = mock()
         whenever(siteParameters.currencySymbol).thenReturn(currencySymbol)
         whenever(parameterRepository.getParameters()).thenReturn(siteParameters)
