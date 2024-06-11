@@ -4,31 +4,12 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-sealed class WooPosCartState(
-    open val itemsInCart: List<WooPosCartListItem>,
-    val areItemsRemovable: Boolean,
-    open val isLoading: Boolean,
-) : Parcelable {
-    data class Cart(
-        override val itemsInCart: List<WooPosCartListItem>,
-        override val isLoading: Boolean = false,
-    ) :
-        WooPosCartState(
-            itemsInCart = itemsInCart,
-            areItemsRemovable = true,
-            isLoading = isLoading,
-        )
-
-    data class Checkout(
-        override val itemsInCart: List<WooPosCartListItem>,
-        override val isLoading: Boolean = false,
-    ) :
-        WooPosCartState(
-            itemsInCart = itemsInCart,
-            areItemsRemovable = false,
-            isLoading = isLoading,
-        )
-}
+data class WooPosCartState(
+    val itemsInCart: List<WooPosCartListItem> = emptyList(),
+    val areItemsRemovable: Boolean = true,
+    val isOrderCreationInProgress: Boolean = false,
+    val isCheckoutButtonVisible: Boolean = true,
+) : Parcelable
 
 @Parcelize
 data class WooPosCartListItem(

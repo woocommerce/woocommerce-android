@@ -9,7 +9,6 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
-import org.junit.Before
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -26,13 +25,10 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val repository: WooPosCartRepository = mock()
     private val productStore: WCProductStore = mock()
-    private val site: SelectedSite = mock()
-    private val savedState: SavedStateHandle = SavedStateHandle()
-
-    @Before
-    fun setup() = testBlocking {
-        whenever(site.getOrNull()).thenReturn(SiteModel())
+    private val site: SelectedSite = mock {
+        onBlocking { get() }.thenReturn(SiteModel())
     }
+    private val savedState: SavedStateHandle = SavedStateHandle()
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = testBlocking {
