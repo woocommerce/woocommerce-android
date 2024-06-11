@@ -776,7 +776,7 @@ platform :android do
   # This lane downloads the translated metadata (release notes, app store strings, title, etc.) from GlotPress and updates the local files.
   #
   # @param [String] version the version for which to download metadata
-  # 
+  #
   # @example Running the lane
   #          fastlane download_metadata_strings version:10.3 build_number:573
   #
