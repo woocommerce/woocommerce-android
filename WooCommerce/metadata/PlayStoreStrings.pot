@@ -11,16 +11,17 @@ msgstr ""
 "Project-Id-Version: Release Notes & Play Store Descriptions\n"
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_190"
+msgid ""
+"19.0:\n"
+"Discover the latest improvements in our WooCommerce mobile app! We've enhanced payment dialogs for a better experience on larger screens, resolved issues with push notifications, and fixed a login bug that prevented error messages from displaying. Plus, our new dashboard cards give merchants deeper insights into their stores. Update now for a smoother, more informative experience!\n"
+"\n"
+msgstr ""
+
 msgctxt "release_note_189"
 msgid ""
 "18.9:\n"
 "Exciting updates are here! Now, you can manage orders more efficiently with multiple shipping lines per order. Enjoy a smoother navigation with the redesigned More Menu. Plus, we've added a handy feature to calculate change for cash payments. Update your WooCommerce app now for a seamless and enhanced experience!\n"
-msgstr ""
-
-msgctxt "release_note_188"
-msgid ""
-"18.8:\n"
-"In this release, we've honed in on enhancing the app's efficiency by ironing out bugs and executing vital improvements. These updates aim to empower your business journey. Your feedback is our roadmap to continuous development, so please, keep it flowing.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

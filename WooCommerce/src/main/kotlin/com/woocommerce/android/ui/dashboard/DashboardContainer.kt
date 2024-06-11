@@ -282,7 +282,7 @@ private fun NewWidgetsCard(
         Spacer(modifier = Modifier.height(16.dp))
         WCColoredButton(
             onClick = state.onShowCardsClick,
-            text = "Add new sections"
+            text = stringResource(id = R.string.dashboard_new_widgets_card_button)
         )
     }
 }

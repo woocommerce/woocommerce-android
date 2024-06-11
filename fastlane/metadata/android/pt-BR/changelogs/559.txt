@@ -1,0 +1,2 @@
+18.9:
+Temos atualizações incríveis! Agora, você pode gerenciar os pedidos de forma mais eficiente com diversas linhas de remessa por pedido. Aproveite uma navegação simplificada com o novo menu "Mais". Além disso, adicionamos uma funcionalidade útil para calcular o troco de pagamentos em dinheiro. Atualize seu aplicativo do WooCommerce agora para ter uma experiência simplificada e aprimorada!

@@ -249,7 +249,7 @@ class DashboardViewModel @Inject constructor(
 
         add(
             NewWidgetsCard(
-                isVisible = hasNewWidgets,
+                isVisible = hasNewWidgets && !shouldShowShareCard,
                 onShowCardsClick = {
                     analyticsTrackerWrapper.track(AnalyticsEvent.DYNAMIC_DASHBOARD_ADD_NEW_SECTIONS_TAPPED)
                     triggerEvent(OpenEditWidgets)

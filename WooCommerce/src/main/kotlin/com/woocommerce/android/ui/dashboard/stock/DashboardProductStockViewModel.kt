@@ -54,9 +54,9 @@ class DashboardProductStockViewModel @AssistedInject constructor(
         .flatMapLatest {
             refreshTrigger.map { refresh -> Pair(refresh, it) }
         }
-        .transformLatest { (_, status) ->
+        .transformLatest { (refresh, status) ->
             emit(Loading(status))
-            productStockRepository.fetchProductStockReport(status)
+            productStockRepository.fetchProductStockReport(status, refresh.isForced)
                 .fold(
                     onSuccess = { emit(ViewState.Success(it, status)) },
                     onFailure = {

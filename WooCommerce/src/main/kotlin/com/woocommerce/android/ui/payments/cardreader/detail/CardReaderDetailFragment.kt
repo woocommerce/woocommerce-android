@@ -135,7 +135,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                 is NotConnectedState -> {
                     with(binding.readerDisconnectedState) {
                         UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
-                        UiHelpers.setImageOrHideInLandscape(cardReaderDetailIllustration, state.illustration)
+                        UiHelpers.setImageOrHideInLandscapeOnNonExpandedScreenSizes(
+                            cardReaderDetailIllustration,
+                            state.illustration
+                        )
                         UiHelpers.setTextOrHide(cardReaderDetailFirstHintLabel, state.firstHintLabel)
                         UiHelpers.setTextOrHide(cardReaderDetailFirstHintNumberLabel, state.firstHintNumber)
                         UiHelpers.setTextOrHide(cardReaderDetailSecondHintLabel, state.secondHintLabel)

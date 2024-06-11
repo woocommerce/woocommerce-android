@@ -22,7 +22,8 @@ class DashboardRepository @Inject constructor(
     private val dashboardDataStore: DashboardDataStore,
     observeSiteOrdersState: ObserveSiteOrdersState,
     observeBlazeWidgetStatus: ObserveBlazeWidgetStatus,
-    observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus
+    observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus,
+    observeStockWidgetStatus: ObserveStockWidgetStatus
 ) {
     private val siteCoroutineScope = EntryPoints.get(
         selectedSite.siteComponent!!,
@@ -50,13 +51,26 @@ class DashboardRepository @Inject constructor(
             initialValue = DashboardWidget.Status.Hidden
         )
 
+    private val stockWidgetStatus = observeStockWidgetStatus()
+        .stateIn(
+            scope = siteCoroutineScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = DashboardWidget.Status.Hidden
+        )
+
     val widgets = combine(
         dashboardDataStore.widgets,
         siteOrdersState,
         blazeWidgetStatus,
-        onboardingWidgetStatus
-    ) { widgets, siteOrdersState, blazeWidgetStatus, onboardingWidgetStatus ->
-        widgets.toDomainModel(siteOrdersState, blazeWidgetStatus, onboardingWidgetStatus)
+        onboardingWidgetStatus,
+        stockWidgetStatus
+    ) { widgets, siteOrdersState, blazeWidgetStatus, onboardingWidgetStatus, stockWidgetStatus ->
+        widgets.toDomainModel(
+            siteOrdersState,
+            blazeWidgetStatus,
+            onboardingWidgetStatus,
+            stockWidgetStatus
+        )
     }
 
     val hasNewWidgets = dashboardDataStore.widgets.map { widgets ->
@@ -98,7 +112,8 @@ class DashboardRepository @Inject constructor(
     private fun List<DashboardWidgetDataModel>.toDomainModel(
         siteOrdersState: DashboardWidget.Status,
         blazeWidgetStatus: DashboardWidget.Status,
-        onboardingWidgetStatus: DashboardWidget.Status
+        onboardingWidgetStatus: DashboardWidget.Status,
+        stockWidgetStatus: DashboardWidget.Status
     ): List<DashboardWidget> {
         return map { widget ->
             val type = DashboardWidget.Type.valueOf(widget.type)
@@ -109,8 +124,10 @@ class DashboardRepository @Inject constructor(
                     DashboardWidget.Type.STATS,
                     DashboardWidget.Type.ORDERS,
                     DashboardWidget.Type.POPULAR_PRODUCTS -> siteOrdersState
+
                     DashboardWidget.Type.BLAZE -> blazeWidgetStatus
                     DashboardWidget.Type.ONBOARDING -> onboardingWidgetStatus
+                    DashboardWidget.Type.STOCK -> stockWidgetStatus
 
                     else -> DashboardWidget.Status.Available
                 }
