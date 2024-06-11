@@ -16,35 +16,31 @@
     <include app:graph="@navigation/nav_graph_site_picker" />
     <include app:graph="@navigation/nav_graph_domain_change" />
     <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
-    <include app:graph="@navigation/nav_graph_order_creations"/>
+    <include app:graph="@navigation/nav_graph_order_creations" />
 
     <fragment
         android:id="@+id/dashboard"
-        android:name="com.woocommerce.android.ui.mystore.MyStoreFragment"
-        android:label="fragment_my_store"
-        tools:layout="@layout/fragment_my_store">
+        android:name="com.woocommerce.android.ui.dashboard.DashboardFragment"
+        android:label="fragment_dashboard"
+        tools:layout="@layout/fragment_dashboard">
         <action
-            android:id="@+id/action_myStore_to_jetpackBenefitsDialog"
+            android:id="@+id/action_dashboard_to_jetpackBenefitsDialog"
             app:destination="@id/nav_graph_jetpack_install" />
         <action
-            android:id="@+id/action_myStore_to_analytics"
+            android:id="@+id/action_dashboard_to_analytics"
             app:destination="@id/analytics"
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out">
-            <argument
-                android:name="targetGranularity"
-                app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection$SelectionType" />
-        </action>
+            app:popExitAnim="@anim/activity_fade_out" />
         <action
-            android:id="@+id/action_myStore_to_onboardingFragment"
+            android:id="@+id/action_dashboard_to_onboardingFragment"
             app:destination="@id/storeOnboardingFragment" />
         <action
-            android:id="@+id/action_myStore_to_launchStoreFragment"
+            android:id="@+id/action_dashboard_to_launchStoreFragment"
             app:destination="@id/launchStoreFragment" />
         <action
-            android:id="@+id/action_myStore_to_nav_graph_domain_change"
+            android:id="@+id/action_dashboard_to_nav_graph_domain_change"
             app:destination="@id/nav_graph_domain_change">
             <argument
                 android:name="source"
@@ -52,7 +48,7 @@
                 app:argType="com.woocommerce.android.ui.prefs.domain.DomainFlowSource" />
         </action>
         <action
-            android:id="@+id/action_myStore_to_productTypesBottomSheet"
+            android:id="@+id/action_dashboard_to_productTypesBottomSheet"
             app:destination="@id/productTypesBottomSheetFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
@@ -68,26 +64,38 @@
                 app:argType="com.woocommerce.android.ui.products.AddProductSource" />
         </action>
         <action
-            android:id="@+id/action_myStore_to_paymentsPreSetupFragment"
+            android:id="@+id/action_dashboard_to_paymentsPreSetupFragment"
             app:destination="@id/paymentsPreSetupFragment" />
         <action
-            android:id="@+id/action_myStore_to_wooPaymentsSetupInstructionsFragment"
+            android:id="@+id/action_dashboard_to_wooPaymentsSetupInstructionsFragment"
             app:destination="@id/wooPaymentsSetupInstructionsFragment" />
         <action
-            android:id="@+id/action_myStore_to_aboutYourStoreFragment"
+            android:id="@+id/action_dashboard_to_aboutYourStoreFragment"
             app:destination="@id/aboutYourStoreFragment" />
         <action
             android:id="@+id/action_dashboard_to_AIProductDescriptionDialogFragment"
             app:destination="@id/AIProductDescriptionDialogFragment" />
         <action
-            android:id="@+id/action_myStore_to_nameYourStoreDialogFragment"
+            android:id="@+id/action_dashboard_to_nameYourStoreDialogFragment"
             app:destination="@id/nameYourStoreDialogFragment" />
         <action
             android:id="@+id/action_dashboard_to_addProductWithAIBottomSheet"
             app:destination="@id/addProductWithAIBottomSheet" />
         <action
-            android:id="@+id/action_myStore_to_blazeCampaignListFragment"
+            android:id="@+id/action_dashboard_to_blazeCampaignListFragment"
             app:destination="@id/blazeCampaignListFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_editWidgetsFragment"
+            app:destination="@id/dashboardWidgetEditorFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_reviews"
+            app:destination="@id/reviews" />
+        <action
+            android:id="@+id/action_dashboard_to_couponListFragment"
+            app:destination="@id/nav_graph_coupons" />
+        <action
+            android:id="@+id/action_dashboard_to_inboxFragment"
+            app:destination="@id/inboxFragment" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -96,8 +104,12 @@
         tools:layout="@layout/fragment_order_list">
         <argument
             android:name="orderId"
-            app:argType="long"
-            android:defaultValue="-1L"/>
+            android:defaultValue="-1L"
+            app:argType="long" />
+        <argument
+            android:name="mode"
+            android:defaultValue="STANDARD"
+            app:argType="com.woocommerce.android.ui.orders.list.OrderListViewModel$Mode" />
         <action
             android:id="@+id/action_orderListFragment_to_orderDetailFragment"
             app:destination="@id/nav_graph_orders">
@@ -155,7 +167,7 @@
         tools:layout="@layout/fragment_barcode_scanning" />
     <fragment
         android:id="@+id/products"
-        android:name="com.woocommerce.android.ui.products.ProductListFragment"
+        android:name="com.woocommerce.android.ui.products.list.ProductListFragment"
         android:label="fragment_product_list"
         tools:layout="@layout/fragment_product_list">
         <action
@@ -204,7 +216,22 @@
         <action
             android:id="@+id/action_productListFragment_to_scanToUpdateInventory"
             app:destination="@id/scanToUpdateInventory" />
+        <action
+            android:id="@+id/action_productListFragment_to_UpdateProductStockStatusFragment"
+            app:destination="@id/updateStockStatusFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
+    <dialog
+        android:id="@+id/updateStockStatusFragment"
+        android:name="com.woocommerce.android.ui.products.UpdateProductStockStatusFragment"
+        android:label="UpdateProductStockStatusFragment">
+        <argument
+            android:name="selectedProductIds"
+            app:argType="long[]" />
+    </dialog>
     <fragment
         android:id="@+id/scanToUpdateInventory"
         android:name="com.woocommerce.android.ui.products.inventory.ScanToUpdateInventoryBarcodeScannerFragment"
@@ -213,7 +240,7 @@
         android:id="@+id/reviews"
         android:name="com.woocommerce.android.ui.reviews.ReviewListFragment"
         android:label="fragment_reviews_list"
-        tools:layout="@layout/fragment_reviews_list">
+        tools:layout="@layout/fragment_product_reviews_list">
         <action
             android:id="@+id/action_reviewListFragment_to_reviewDetailFragment"
             app:destination="@id/reviewDetailFragment" />
@@ -224,8 +251,8 @@
         android:label="fragment_analytics"
         tools:layout="@layout/fragment_analytics">
         <argument
-            android:name="targetGranularity"
-            app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection$SelectionType" />
+            android:name="rangeSelection"
+            app:argType="com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection" />
         <action
             android:id="@+id/action_AnalyticsFragment_to_DateRangeSelector"
             app:destination="@id/analyticsDateRangeSelectorDialog" />
@@ -236,8 +263,7 @@
     <fragment
         android:id="@+id/analyticsSettings"
         android:name="com.woocommerce.android.ui.analytics.hub.settings.AnalyticsHubSettingFragment"
-        android:label="fragment_analytics_settings"
-        />
+        android:label="fragment_analytics_settings" />
     <dialog
         android:id="@+id/analyticsDateRangeSelectorDialog"
         android:name="com.woocommerce.android.ui.ItemSelectorDialog"
@@ -266,7 +292,7 @@
         app:destination="@id/itemSelectorDialog" />
     <fragment
         android:id="@+id/subscriptions"
-        android:name="com.woocommerce.android.ui.upgrades.UpgradesFragment"
+        android:name="com.woocommerce.android.ui.plansubscriptions.PlanSubscriptionFragment"
         android:label="fragment_subscriptions" />
     <fragment
         android:id="@+id/moreMenu"
@@ -333,34 +359,36 @@
     </fragment>
 
     <action
-        android:id="@+id/action_global_to_ordercreationfragment"
+        android:id="@+id/action_global_to_orderCreationFragment"
         app:destination="@id/nav_graph_order_creations">
         <argument
             android:name="mode"
             app:argType="com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel$Mode" />
         <argument
             android:name="sku"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"/>
+            app:nullable="true" />
         <argument
             android:name="barcodeFormat"
+            android:defaultValue="@null"
             app:argType="com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper$BarcodeFormat"
-            app:nullable="true"/>
+            app:nullable="true" />
         <argument
             android:name="couponEditResult"
+            android:defaultValue="@null"
             app:argType="com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponDetailsViewModel$CouponEditResult"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
         <argument
             android:name="giftCardCode"
+            android:defaultValue="@null"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
         <argument
             android:name="giftCardAmount"
+            android:defaultValue="@null"
             app:argType="java.math.BigDecimal"
-            app:nullable="true"
-            android:defaultValue="@null"/>
+            app:nullable="true" />
 
     </action>
 
@@ -369,7 +397,7 @@
         app:destination="@id/nav_graph_products">
         <argument
             android:name="mode"
-            app:argType="com.woocommerce.android.ui.products.ProductDetailFragment$Mode" />
+            app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
         <argument
             android:name="isTrashEnabled"
             android:defaultValue="false"
@@ -397,7 +425,7 @@
             app:argType="long" />
         <argument
             android:name="tempStatus"
-            android:defaultValue="null"
+            android:defaultValue="@null"
             app:argType="string"
             app:nullable="true" />
         <argument
@@ -503,7 +531,7 @@
     </action>
     <dialog
         android:id="@+id/productTypesBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ProductTypesBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.typesbottomsheet.ProductTypesBottomSheetFragment"
         tools:layout="@layout/dialog_product_detail_bottom_sheet_list">
         <argument
             android:name="remoteProductId"
@@ -579,7 +607,7 @@
         app:destination="@id/simpleTextEditorFragment" />
     <fragment
         android:id="@+id/storeOnboardingFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.StoreOnboardingFragment"
+        android:name="com.woocommerce.android.ui.onboarding.StoreOnboardingFragment"
         android:label="StoreOnboardingFragment">
         <action
             android:id="@+id/action_onboardingFragment_to_launchStoreFragment"
@@ -631,11 +659,11 @@
         android:name="com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragment" />
     <fragment
         android:id="@+id/launchStoreFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.launchstore.LaunchStoreFragment"
+        android:name="com.woocommerce.android.ui.onboarding.launchstore.LaunchStoreFragment"
         android:label="LaunchStoreFragment" />
     <fragment
         android:id="@+id/getPaidFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.GetPaidFragment"
+        android:name="com.woocommerce.android.ui.onboarding.payments.GetPaidFragment"
         android:label="GetPaidFragment">
         <argument
             android:name="taskId"
@@ -648,11 +676,11 @@
     </fragment>
     <dialog
         android:id="@+id/wooPaymentsSetupCelebrationDialog"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupCelebrationDialog"
+        android:name="com.woocommerce.android.ui.onboarding.payments.WooPaymentsSetupCelebrationDialog"
         android:label="WooPaymentsSetupCelebrationDialog" />
     <fragment
         android:id="@+id/wooPaymentsSetupInstructionsFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.WooPaymentsSetupInstructionsFragment"
+        android:name="com.woocommerce.android.ui.onboarding.payments.WooPaymentsSetupInstructionsFragment"
         android:label="WooPaymentsSetupInstructionsFragment">
         <action
             android:id="@+id/action_wooPaymentsSetupInstructionsFragment_to_paymentsPreSetupFragment"
@@ -660,7 +688,7 @@
     </fragment>
     <fragment
         android:id="@+id/paymentsPreSetupFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.payments.PaymentsPreSetupFragment"
+        android:name="com.woocommerce.android.ui.onboarding.payments.PaymentsPreSetupFragment"
         android:label="PaymentsPreSetupFragment">
         <argument
             android:name="taskId"
@@ -672,54 +700,14 @@
     </fragment>
     <fragment
         android:id="@+id/aboutYourStoreFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.aboutyourstore.AboutYourStoreFragment"
+        android:name="com.woocommerce.android.ui.onboarding.aboutyourstore.AboutYourStoreFragment"
         android:label="AboutYourStoreFragment" />
-    <fragment
-        android:id="@+id/planUpgradeStartFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment"
-        android:label="PlanUpgradeStartFragment">
-        <argument
-            android:name="source"
-            app:argType="com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment$PlanUpgradeStartSource"
-            app:nullable="false" />
-    </fragment>
-    <fragment
-        android:id="@+id/blazeCampaignCreationFragment"
-        android:name="com.woocommerce.android.ui.blaze.BlazeCampaignCreationFragment"
-        android:label="BlazeWebViewFragment">
-        <argument
-            android:name="urlToLoad"
-            app:argType="string" />
-        <argument
-            android:name="source"
-            app:argType="com.woocommerce.android.ui.blaze.BlazeUrlsHelper$BlazeFlowSource"
-            app:nullable="false" />
-        <action
-            android:id="@+id/action_blazeCampaignCreationFragment_to_blazeCampaignListFragment"
-            app:destination="@id/blazeCampaignListFragment"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/blazeCampaignCreationFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
-    <fragment
-        android:id="@+id/freeTrialSurveyFragment"
-        android:name="com.woocommerce.android.ui.feedback.freetrial.FreeTrialSurveyFragment"
-        android:label="FreeTrialSurveyFragment" />
-    <action
-        android:id="@+id/action_global_blazeCampaignCreationFragment"
-        app:destination="@id/blazeCampaignCreationFragment" />
-    <action
-        android:id="@+id/action_global_planUpgradeStartFragment"
-        app:destination="@id/planUpgradeStartFragment" />
     <action
         android:id="@+id/action_global_privacyBannerFragment"
         app:destination="@id/privacyBannerFragment" />
-    <action
-        android:id="@+id/action_global_freeTrialSurveyFragment"
-        app:destination="@id/freeTrialSurveyFragment" />
     <dialog
         android:id="@+id/AIProductDescriptionDialogFragment"
-        android:name="com.woocommerce.android.ui.mystore.AIProductDescriptionDialogFragment"
+        android:name="com.woocommerce.android.ui.dashboard.AIProductDescriptionDialogFragment"
         android:label="AIProductDescriptionDialogFragment" />
     <dialog
         android:id="@+id/createTestOrderDialogFragment"
@@ -732,7 +720,7 @@
     </dialog>
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
+        android:name="com.woocommerce.android.ui.onboarding.NameYourStoreDialogFragment"
         android:label="NameYourStoreDialogFragment">
         <argument
             android:name="fromOnboarding"
@@ -791,19 +779,12 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </fragment>
-    <dialog
-        android:id="@+id/themeActivationFragmentDialog"
-        android:name="com.woocommerce.android.ui.login.storecreation.theme.ThemeActivationFragmentDialog"
-        android:label="ThemeActivationFragmentDialog">
-        <argument
-            android:name="themeId"
-            app:argType="string" />
-    </dialog>
-    <action
-        android:id="@+id/action_global_themeActivationFragmentDialog"
-        app:destination="@id/themeActivationFragmentDialog" />
     <fragment
         android:id="@+id/orderConnectivityToolFragment"
         android:name="com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolFragment"
-        android:label="OrderConnectivityToolFragment"/>
+        android:label="OrderConnectivityToolFragment" />
+    <fragment
+        android:id="@+id/dashboardWidgetEditorFragment"
+        android:name="com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorFragment"
+        android:label="DashboardWidgetEditorFragment" />
 </navigation>

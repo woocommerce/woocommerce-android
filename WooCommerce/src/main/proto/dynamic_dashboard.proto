@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.woocommerce.android.ui.mystore.data";
+option java_multiple_files = true;
+
+message DashboardWidgetDataModel {
+  string title = 1;
+  string type = 2;
+  bool isAdded = 3;
+}
+
+message DashboardDataModel {
+  repeated DashboardWidgetDataModel widgets = 1;
+}

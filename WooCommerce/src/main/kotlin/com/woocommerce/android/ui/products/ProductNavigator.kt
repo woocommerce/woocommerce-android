@@ -13,9 +13,11 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.orders.creation.configuration.Flow
 import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
-import com.woocommerce.android.ui.products.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.categories.ProductCategoriesFragmentDirections
+import com.woocommerce.android.ui.products.details.ProductDetailFragment
+import com.woocommerce.android.ui.products.details.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.products.downloads.ProductDownloadsFragmentDirections
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType.GROUPED
 import com.woocommerce.android.ui.products.selector.ProductSelectorFragmentDirections
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
 import com.woocommerce.android.ui.products.settings.ProductSettingsFragmentDirections
@@ -209,6 +211,14 @@ class ProductNavigator @Inject constructor() {
                 fragment.findNavController().navigateSafely(action)
             }
 
+            is ProductNavigationTarget.EditCategory -> {
+                val action = ProductCategoriesFragmentDirections
+                    .actionProductCategoriesFragmentToEditProductCategoryFragment(
+                        productCategory = target.category
+                    )
+                fragment.findNavController().navigateSafely(action)
+            }
+
             is ProductNavigationTarget.ViewProductTags -> {
                 val action = ProductDetailFragmentDirections
                     .actionGlobalProductTagsFragment(target.remoteId)
@@ -355,11 +365,22 @@ class ProductNavigator @Inject constructor() {
                             variationIds = target.selectedVariationIds.toLongArray(),
                             productSelectorFlow = target.productSelectorFlow,
                             productSource = target.productSourceForTracking,
+                            screenMode = target.screenMode
                         )
                     }
+
                     ProductSelectorViewModel.SelectionMode.SINGLE -> {
                         ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationPickerFragment(
                             productId = target.productId
+                        )
+                    }
+                    ProductSelectorViewModel.SelectionMode.LIVE -> {
+                        ProductSelectorFragmentDirections.actionProductSelectorFragmentToVariationSelectorFragment(
+                            productId = target.productId,
+                            variationIds = target.selectedVariationIds.toLongArray(),
+                            productSelectorFlow = target.productSelectorFlow,
+                            productSource = target.productSourceForTracking,
+                            screenMode = target.screenMode
                         )
                     }
                 }

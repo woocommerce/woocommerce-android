@@ -70,6 +70,7 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
             layoutManager = LinearLayoutManager(context)
             itemAnimator = DefaultItemAnimator()
             adapter = AnalyticsHubListAdapter(viewState.items)
+            visibility = VISIBLE
         }
         binding.analyticsItemsTag.isVisible = viewState.delta != null
         binding.analyticsCardTitle.visibility = VISIBLE
@@ -101,6 +102,8 @@ class AnalyticsHubListCardView @JvmOverloads constructor(
         binding.analyticsListLeftHeader.visibility = GONE
         binding.analyticsListRightHeader.visibility = GONE
         binding.noDataText.visibility = VISIBLE
+        binding.reportGroup.visibility = GONE
+        binding.analyticsItemsList.visibility = GONE
     }
 
     private fun getDeltaTagText(viewState: AnalyticsHubListViewState.DataViewState) =

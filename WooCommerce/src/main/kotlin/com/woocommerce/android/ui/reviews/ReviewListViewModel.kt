@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
+import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
 import com.woocommerce.android.model.RequestResult.SUCCESS
@@ -156,14 +157,31 @@ class ReviewListViewModel @Inject constructor(
                 if (viewState.isUnreadFilterEnabled) {
                     fetchUnreadReviews(loadMore = loadMore)
                 } else {
-                    when (reviewRepository.fetchProductReviews(loadMore)) {
-                        SUCCESS,
-                        NO_ACTION_NEEDED -> {
-                            val productReviews = reviewRepository.getCachedProductReviews()
-                            _reviewList.value = productReviews
-                        }
+                    reviewRepository.fetchProductReviews(loadMore).collect { result ->
+                        when (result) {
+                            ReviewListRepository.FetchReviewsResult.NothingFetched -> {
+                                // No action needed
+                            }
+                            is ReviewListRepository.FetchReviewsResult.NotificationsFetched -> {
+                                if (result.requestResult == SUCCESS) {
+                                    val reviews = reviewRepository.getCachedProductReviews()
+                                    if (reviews.isNotEmpty()) {
+                                        _reviewList.value = reviews
+                                    }
+                                }
+                            }
 
-                        else -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                            is ReviewListRepository.FetchReviewsResult.ReviewsFetched -> {
+                                when (result.requestResult) {
+                                    SUCCESS,
+                                    NO_ACTION_NEEDED -> _reviewList.value = reviewRepository.getCachedProductReviews()
+
+                                    ERROR,
+                                    RequestResult.API_ERROR,
+                                    RequestResult.RETRY -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                                }
+                            }
+                        }
                     }
                 }
                 checkForUnreadReviews()

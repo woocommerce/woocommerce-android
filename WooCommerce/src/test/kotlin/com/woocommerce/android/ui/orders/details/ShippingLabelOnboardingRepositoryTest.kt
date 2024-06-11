@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingReposito
 import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingRepository.Companion.SUPPORTED_WCS_CURRENCY
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -45,12 +46,13 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
 
     @Before
     fun setup() {
+        givenWCShippingPlugin(installed = false, active = false)
         whenever(selectedSite.getSelectedSiteId()).thenReturn(SITE_ID)
     }
 
     @Test
     fun `Given WC shipping not ready, when order is eligible for shipping label, then show shipping banner is true`() {
-        givenWcShippingPlugin(installed = false, active = false)
+        givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
         assertTrue {
@@ -60,7 +62,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `Given WC shipping is active, when order is eligible for shipping label, then show shipping banner is false`() {
-        givenWcShippingPlugin(installed = true, active = true)
+        givenWCLegacyShippingPlugin(installed = true, active = true)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
         assertFalse {
@@ -70,7 +72,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `Given WC shipping not ready, when site is not in the US, then show shipping banner is false`() {
-        givenWcShippingPlugin(installed = false, active = false)
+        givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode("ES")
 
         assertFalse {
@@ -80,7 +82,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `Given WC shipping not ready, when order is not in USD, then show shipping banner is false`() {
-        givenWcShippingPlugin(installed = false, active = false)
+        givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
         assertFalse {
@@ -90,7 +92,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `Given WC shipping not ready, when order has only virtual products, then show shipping banner is false`() {
-        givenWcShippingPlugin(installed = false, active = false)
+        givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
         givenOrderHasVirtualProductsOnly()
 
@@ -101,7 +103,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `Given WC shipping not ready, when order is eligible for SL and IPP, then show shipping banner is false`() {
-        givenWcShippingPlugin(installed = false, active = false)
+        givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
 
         assertFalse {
@@ -111,7 +113,7 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `Given WC shipping not ready, when install WCS banner is dismissed, then show shipping banner is false`() {
-        givenWcShippingPlugin(installed = false, active = false)
+        givenWCLegacyShippingPlugin(installed = false, active = false)
         givenStoreCountryCode(SUPPORTED_WCS_COUNTRY)
         givenWcShippingBannerIsDismissed(dismissed = true)
 
@@ -120,12 +122,60 @@ class ShippingLabelOnboardingRepositoryTest : BaseUnitTest() {
         }
     }
 
-    private fun givenWcShippingPlugin(
+    @Test
+    fun `Given WC legacy shipping is ready, then isShippingPluginReady is true`() {
+        // Given
+        givenWCLegacyShippingPlugin(installed = true, active = true)
+        givenWCShippingPlugin(installed = false, active = false)
+
+        // When
+        val isShippingPluginReady = sut.isShippingPluginReady
+
+        // Then
+        assertThat(isShippingPluginReady).isTrue
+    }
+
+    @Test
+    fun `Given WC legacy shipping is not ready and Shipping plugin is, then isShippingPluginReady is true`() {
+        // Given
+        givenWCLegacyShippingPlugin(installed = false, active = false)
+        givenWCShippingPlugin(installed = true, active = true)
+
+        // When
+        val isShippingPluginReady = sut.isShippingPluginReady
+
+        // Then
+        assertThat(isShippingPluginReady).isTrue
+    }
+
+    @Test
+    fun `Given both WC legacy and shipping plugins are not ready, then isShippingPluginReady is false`() {
+        // Given
+        givenWCLegacyShippingPlugin(installed = false, active = false)
+        givenWCShippingPlugin(installed = false, active = false)
+
+        // When
+        val isShippingPluginReady = sut.isShippingPluginReady
+
+        // Then
+        assertThat(isShippingPluginReady).isFalse
+    }
+
+    private fun givenWCLegacyShippingPlugin(
         installed: Boolean,
         active: Boolean,
         version: String = DEFAULT_SUPPORTED_WCS_VERSION
     ) {
         whenever(orderDetailRepository.getWooServicesPluginInfo())
+            .thenReturn(WooPlugin(installed, active, version))
+    }
+
+    private fun givenWCShippingPlugin(
+        installed: Boolean,
+        active: Boolean,
+        version: String = DEFAULT_SUPPORTED_WCS_VERSION
+    ) {
+        whenever(orderDetailRepository.getWooShippingPluginInfo())
             .thenReturn(WooPlugin(installed, active, version))
     }
 

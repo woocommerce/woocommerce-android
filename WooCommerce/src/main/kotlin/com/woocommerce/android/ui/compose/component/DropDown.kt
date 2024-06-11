@@ -8,11 +8,14 @@ import androidx.compose.material.ExposedDropdownMenuDefaults
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -22,13 +25,16 @@ fun <T> WcExposedDropDown(
     modifier: Modifier = Modifier,
     currentValue: T = items.first(),
     mapper: (T) -> String = { it.toString() },
+    focusRequester: FocusRequester = FocusRequester()
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedText by remember { mutableStateOf(currentValue) }
 
-    Box(
-        modifier = modifier
-    ) {
+    LaunchedEffect(currentValue) {
+        selectedText = currentValue
+    }
+
+    Box(modifier = modifier) {
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = {
@@ -40,6 +46,7 @@ fun <T> WcExposedDropDown(
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.focusRequester(focusRequester)
             )
 
             ExposedDropdownMenu(

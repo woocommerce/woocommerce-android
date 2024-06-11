@@ -45,7 +45,7 @@ class RollingLogEntries(private val limit: Int) : LinkedList<LogEntry>() {
 
         override fun toString(): String {
             val logText = if (text.isNullOrEmpty()) "null" else text
-            val logDateStr = SimpleDateFormat("MMM-dd kk:mm", Locale.US).format(logDate)
+            val logDateStr = SimpleDateFormat("MMM-dd kk:mm:ss:SSS", Locale.US).format(logDate)
             return "[$logDateStr ${tag.name} ${level.name}] $logText"
         }
     }

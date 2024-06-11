@@ -6,7 +6,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent.BLAZE_CREATION_EDIT_DEST
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.blaze.BlazeRepository.DestinationParameters
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.viewmodel.ScopedViewModel

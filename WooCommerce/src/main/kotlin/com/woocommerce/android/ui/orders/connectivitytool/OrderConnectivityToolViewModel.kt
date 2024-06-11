@@ -28,9 +28,12 @@ import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreConnecti
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.StoreOrdersCheckUseCase
 import com.woocommerce.android.ui.orders.connectivitytool.useCases.WordPressConnectionCheckUseCase
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -54,27 +57,40 @@ class OrderConnectivityToolViewModel @Inject constructor(
 
     private val internetCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = InternetConnectivityCheckData()
+        initialValue = InternetConnectivityCheckData(
+            retryConnectionAction = { handleRetryConnectionClick(InternetCheck) }
+        )
     )
-    val internetCheckData = internetCheckFlow.asLiveData()
 
     private val wordpressCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = WordPressConnectivityCheckData()
+        initialValue = WordPressConnectivityCheckData(
+            retryConnectionAction = { handleRetryConnectionClick(WordPressCheck) }
+        )
     )
-    val wordpressCheckData = wordpressCheckFlow.asLiveData()
 
     private val storeCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = StoreConnectivityCheckData()
+        initialValue = StoreConnectivityCheckData(
+            retryConnectionAction = { handleRetryConnectionClick(StoreCheck) }
+        )
     )
-    val storeCheckData = storeCheckFlow.asLiveData()
 
     private val ordersCheckFlow = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = StoreOrdersConnectivityCheckData()
+        initialValue = StoreOrdersConnectivityCheckData(
+            retryConnectionAction = { handleRetryConnectionClick(StoreOrdersCheck) }
+        )
     )
-    val storeOrdersCheckData = ordersCheckFlow.asLiveData()
+
+    val viewState = combine(
+        internetCheckFlow,
+        wordpressCheckFlow,
+        storeCheckFlow,
+        ordersCheckFlow
+    ) { internet, wordpress, store, orders ->
+        ViewState(internet, wordpress, store, orders)
+    }.distinctUntilChanged().asLiveData()
 
     val isCheckFinished = stateMachine.map { it == Finished }.asLiveData()
 
@@ -104,6 +120,21 @@ class OrderConnectivityToolViewModel @Inject constructor(
     fun onContactSupportClicked() {
         analyticsTrackerWrapper.track(AnalyticsEvent.CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED)
         triggerEvent(OpenSupportRequest)
+    }
+
+    fun onReturnClicked() {
+        triggerEvent(Exit)
+    }
+
+    private fun handleRetryConnectionClick(step: ConnectivityCheckStep) {
+        when (step) {
+            InternetCheck -> internetCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
+            WordPressCheck -> wordpressCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
+            StoreCheck -> storeCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
+            StoreOrdersCheck -> ordersCheckFlow.update { it.copy(connectivityCheckStatus = NotStarted) }
+            Finished -> { /* No-op */ }
+        }
+        stateMachine.update { step }
     }
 
     private fun handleReadMoreClick(failureType: FailureType) {
@@ -139,9 +170,10 @@ class OrderConnectivityToolViewModel @Inject constructor(
             status.startNextCheck()
             storeCheckFlow.update {
                 if (status is Failure) {
-                    it.copy(connectivityCheckStatus = status, readMoreAction = {
-                        handleReadMoreClick(status.error ?: FailureType.GENERIC)
-                    })
+                    it.copy(
+                        connectivityCheckStatus = status,
+                        readMoreAction = { handleReadMoreClick(status.error ?: FailureType.GENERIC) }
+                    )
                 } else {
                     it.copy(connectivityCheckStatus = status)
                 }
@@ -156,9 +188,10 @@ class OrderConnectivityToolViewModel @Inject constructor(
             status.startNextCheck()
             ordersCheckFlow.update {
                 if (status is Failure) {
-                    it.copy(connectivityCheckStatus = status, readMoreAction = {
-                        handleReadMoreClick(status.error ?: FailureType.GENERIC)
-                    })
+                    it.copy(
+                        connectivityCheckStatus = status,
+                        readMoreAction = { handleReadMoreClick(status.error ?: FailureType.GENERIC) }
+                    )
                 } else {
                     it.copy(connectivityCheckStatus = status)
                 }
@@ -198,6 +231,19 @@ class OrderConnectivityToolViewModel @Inject constructor(
     object OpenSupportRequest : MultiLiveEvent.Event()
     data class OpenWebView(val url: String) : MultiLiveEvent.Event()
 
+    data class ViewState(
+        val internetCheckData: InternetConnectivityCheckData,
+        val wordPressCheckData: WordPressConnectivityCheckData,
+        val storeCheckData: StoreConnectivityCheckData,
+        val ordersCheckData: StoreOrdersConnectivityCheckData
+    ) {
+        val shouldDisplaySummary: Boolean
+            get() = internetCheckData.connectivityCheckStatus is Success &&
+                wordPressCheckData.connectivityCheckStatus is Success &&
+                storeCheckData.connectivityCheckStatus is Success &&
+                ordersCheckData.connectivityCheckStatus is Success
+    }
+
     enum class ConnectivityCheckStep {
         InternetCheck,
         WordPressCheck,
@@ -210,6 +256,6 @@ class OrderConnectivityToolViewModel @Inject constructor(
         const val jetpackTroubleshootingUrl =
             "https://jetpack.com/support/reconnecting-reinstalling-jetpack/"
         const val genericTroubleshootingUrl =
-            "https://woo.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
+            "https://woocommerce.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
     }
 }

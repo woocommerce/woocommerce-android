@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.blaze
 
 import android.os.Parcelable
+import com.woocommerce.android.AppUrls.FETCH_PAYMENT_METHOD_URL_PATH
+import com.woocommerce.android.AppUrls.WPCOM_ADD_PAYMENT_METHOD
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.joinToUrl
 import kotlinx.coroutines.flow.catch
@@ -19,6 +21,7 @@ import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.blaze.BlazeAdForecast
 import org.wordpress.android.fluxc.model.blaze.BlazeAdSuggestion
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequest
+import org.wordpress.android.fluxc.model.blaze.BlazeCampaignCreationRequestBudget
 import org.wordpress.android.fluxc.model.blaze.BlazeCampaignType
 import org.wordpress.android.fluxc.model.blaze.BlazePaymentMethod.PaymentMethodInfo
 import org.wordpress.android.fluxc.model.blaze.BlazeTargetingParameters
@@ -41,6 +44,8 @@ class BlazeRepository @Inject constructor(
         const val CAMPAIGN_MINIMUM_DAILY_SPEND = 5f // USD
         const val CAMPAIGN_MAXIMUM_DAILY_SPEND = 50f // USD
         const val CAMPAIGN_MAX_DURATION = 28 // Days
+        const val DEFAULT_CAMPAIGN_BUDGET_MODE = "total" // "total" or "daily" for campaigns that run without end date
+        const val BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS = 400 // Must be at least 400 x 400 pixels
     }
 
     fun observeLanguages() = blazeCampaignsStore.observeBlazeTargetingLanguages()
@@ -147,7 +152,7 @@ class BlazeRepository @Inject constructor(
             tagLine = "",
             description = "",
             campaignImage = product.images.firstOrNull().let {
-                if (it != null) {
+                if (it != null && isValidAdImage(it.source)) {
                     BlazeCampaignImage.RemoteImage(it.id, it.source)
                 } else {
                     BlazeCampaignImage.None
@@ -223,15 +228,18 @@ class BlazeRepository @Inject constructor(
                                 }
                             )
                         },
-                        addPaymentMethodUrls = PaymentMethodUrls(
-                            formUrl = paymentMethods.addPaymentMethodUrls.formUrl,
-                            successUrl = paymentMethods.addPaymentMethodUrls.successUrl,
-                            idUrlParameter = paymentMethods.addPaymentMethodUrls.idUrlParameter
-                        )
+                        addPaymentMethodUrls = createPaymentMethodUrls()
                     )
                 )
             } ?: Result.failure(NullPointerException("API response is null"))
         }
+    }
+
+    private fun createPaymentMethodUrls(): PaymentMethodUrls {
+        return PaymentMethodUrls(
+            formUrl = WPCOM_ADD_PAYMENT_METHOD,
+            successUrl = FETCH_PAYMENT_METHOD_URL_PATH
+        )
     }
 
     suspend fun createCampaign(
@@ -260,7 +268,11 @@ class BlazeRepository @Inject constructor(
                 description = campaignDetails.description,
                 startDate = campaignDetails.budget.startDate,
                 endDate = campaignDetails.budget.endDate,
-                budget = campaignDetails.budget.totalBudget.toDouble(),
+                budget = BlazeCampaignCreationRequestBudget(
+                    mode = DEFAULT_CAMPAIGN_BUDGET_MODE,
+                    amount = campaignDetails.budget.totalBudget.toDouble(),
+                    currency = BLAZE_DEFAULT_CURRENCY_CODE // To be replaced when more currencies are supported
+                ),
                 targetUrl = campaignDetails.destinationParameters.targetUrl,
                 urlParams = campaignDetails.destinationParameters.parameters,
                 mainImage = image,
@@ -312,6 +324,19 @@ class BlazeRepository @Inject constructor(
 
         return result.onFailure {
             WooLog.w(WooLog.T.BLAZE, "Failed to prepare campaign image: ${it.message}")
+        }
+    }
+
+    suspend fun isValidAdImage(uri: String): Boolean {
+        val (width, height) = mediaFilesRepository.getImageDimensions(uri)
+        return when {
+            width == 0 || height == 0 -> {
+                WooLog.w(WooLog.T.BLAZE, "isValidAdImage uri: Failed to get image dimens from uri: $uri")
+                false
+            }
+
+            width < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS || height < BLAZE_IMAGE_MINIMUM_SIZE_IN_PIXELS -> false
+            else -> true
         }
     }
 
@@ -404,8 +429,7 @@ class BlazeRepository @Inject constructor(
     @Parcelize
     data class PaymentMethodUrls(
         val formUrl: String,
-        val successUrl: String,
-        val idUrlParameter: String
+        val successUrl: String
     ) : Parcelable
 
     sealed class CampaignCreationError(message: String?) : Exception(message) {

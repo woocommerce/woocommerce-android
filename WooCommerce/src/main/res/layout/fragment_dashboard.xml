@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dashboardStats_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_surface"
+    tools:context="com.woocommerce.android.ui.dashboard.DashboardFragment">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
+            android:id="@+id/my_store_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/stats_scroll_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:transitionGroup="true">
+
+                <LinearLayout
+                    android:id="@+id/my_store_stats_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
+                    android:descendantFocusability="blocksDescendants"
+                    android:orientation="vertical">
+
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/jitmFragment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/minor_100" />
+
+                    <!-- Dynamic dashboard container -->
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/dashboard_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+        </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
+
+        <include
+            android:id="@+id/jetpack_benefits_banner"
+            layout="@layout/view_jetpack_benefits_bottom_banner" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</RelativeLayout>

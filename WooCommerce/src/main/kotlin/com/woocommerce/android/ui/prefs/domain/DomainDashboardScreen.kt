@@ -60,7 +60,6 @@ import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewStat
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState.ErrorType
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState.ErrorType.ACCESS_ERROR
-import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.ErrorState.ErrorType.GENERIC_ERROR
 import com.woocommerce.android.ui.prefs.domain.DomainDashboardViewModel.ViewState.LoadingState
 
 @Composable

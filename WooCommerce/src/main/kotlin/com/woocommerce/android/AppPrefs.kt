@@ -29,11 +29,9 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.WC_STORE_ID
 import com.woocommerce.android.AppPrefs.DeletableSitePrefKey.AUTO_TAX_RATE_ID
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.APPLICATION_STORE_SNAPSHOT_TRACKED_FOR_SITE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.ONBOARDING_CAROUSEL_DISPLAYED
-import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SETTING_VISIBILITY
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_ONBOARDING_TASKS_COMPLETED
 import com.woocommerce.android.AppPrefs.UndeletablePrefKey.STORE_PHONE_NUMBER
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.extensions.packageInfo
 import com.woocommerce.android.notifications.NotificationChannelType
@@ -104,9 +102,9 @@ object AppPrefs {
         CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER,
         CARD_READER_DO_NOT_SHOW_CASH_ON_DELIVERY_DISABLED_ONBOARDING_STATE,
         ACTIVE_STATS_GRANULARITY,
+        ACTIVE_TOP_PERFORMERS_GRANULARITY,
+        DASHBOARD_COUPONS_CARD_TAB,
         USE_SIMULATED_READER,
-        NEW_SIGN_UP,
-        STORE_CREATION_SOURCE,
         UPDATE_SIMULATED_READER_OPTION,
         ENABLE_SIMULATED_INTERAC,
         CUSTOM_DOMAINS_SOURCE,
@@ -121,10 +119,7 @@ object AppPrefs {
         AI_CONTENT_GENERATION_TONE,
         AI_PRODUCT_CREATION_IS_FIRST_ATTEMPT,
         BLAZE_CELEBRATION_SCREEN_SHOWN,
-        MY_STORE_BLAZE_VIEW_DISMISSED,
         WC_STORE_ID,
-        CREATED_STORE_SITE_ID,
-        CREATED_STORE_THEME_ID,
         CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED,
         TIMES_AI_PRODUCT_CREATION_SURVEY_DISPLAYED,
         AI_PRODUCT_CREATION_SURVEY_DISMISSED,
@@ -193,9 +188,6 @@ object AppPrefs {
 
         // Was store onboarding shown at least once
         STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE,
-
-        // User preference in regards to show store onboarding or not
-        STORE_ONBOARDING_SETTING_VISIBILITY,
 
         // Time when the last successful payment was made with a card reader
         CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME,
@@ -267,24 +259,6 @@ object AppPrefs {
     var isEUShippingNoticeDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, false)
         set(value) = setBoolean(DeletablePrefKey.IS_EU_SHIPPING_NOTICE_DISMISSED, value)
-
-    var storeCreationProfilerAnswers: String?
-        get() = getString(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS, "")
-        set(value) {
-            if (value != null) {
-                setString(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS, value)
-            } else {
-                remove(DeletablePrefKey.STORE_CREATION_PROFILER_ANSWERS)
-            }
-        }
-
-    /**
-     * Persists the ID of the last created site in case the app was closed while the site was being created.
-     * This allows to switch to the newly created site when the app is opened again.
-     */
-    var createdStoreSiteId: Long?
-        get() = getLong(DeletablePrefKey.CREATED_STORE_SITE_ID, -1).takeIf { it != -1L }
-        set(value) = setLong(DeletablePrefKey.CREATED_STORE_SITE_ID, value ?: -1)
 
     var chaChingSoundIssueDialogDismissed: Boolean
         get() = getBoolean(DeletablePrefKey.CHA_CHING_SOUND_ISSUE_DIALOG_DISMISSED, false)
@@ -882,23 +856,23 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.USER_CLICKED_ON_PAYMENTS_MORE_SCREEN, true)
     }
 
-    fun setActiveStatsGranularity(activeStatsGranularity: String) {
-        setString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY, activeStatsGranularity)
+    fun setActiveStatsTab(selectionName: String) {
+        setString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY, selectionName)
     }
 
-    fun getActiveStatsGranularity() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
+    fun getActiveStatsTab() = getString(DeletablePrefKey.ACTIVE_STATS_GRANULARITY)
 
-    fun markAsNewSignUp(newSignUp: Boolean) {
-        setBoolean(DeletablePrefKey.NEW_SIGN_UP, newSignUp)
+    fun setActiveTopPerformersTab(selectionName: String) {
+        setString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY, selectionName)
     }
 
-    fun getIsNewSignUp() = getBoolean(DeletablePrefKey.NEW_SIGN_UP, false)
+    fun getActiveCouponsTab() = getString(DeletablePrefKey.DASHBOARD_COUPONS_CARD_TAB)
 
-    fun setStoreCreationSource(source: String) {
-        setString(DeletablePrefKey.STORE_CREATION_SOURCE, source)
+    fun setActiveCouponsTab(selectionName: String) {
+        setString(DeletablePrefKey.DASHBOARD_COUPONS_CARD_TAB, selectionName)
     }
 
-    fun getStoreCreationSource() = getString(DeletablePrefKey.STORE_CREATION_SOURCE, AnalyticsTracker.VALUE_OTHER)
+    fun getActiveTopPerformersTab() = getString(DeletablePrefKey.ACTIVE_TOP_PERFORMERS_GRANULARITY)
 
     fun setCustomDomainsSource(source: String) {
         setString(DeletablePrefKey.CUSTOM_DOMAINS_SOURCE, source)
@@ -947,10 +921,10 @@ object AppPrefs {
         setBoolean(UndeletablePrefKey.TTP_WAS_USED_AT_LEAST_ONCE, true)
     }
 
-    fun markOnboardingTaskCompletedFor(siteId: Int) {
+    fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
         setBoolean(
             key = getStoreOnboardingKeyFor(siteId),
-            value = true
+            value = completed
         )
     }
 
@@ -974,19 +948,6 @@ object AppPrefs {
             key = PrefKeyString("$STORE_ONBOARDING_SHOWN_AT_LEAST_ONCE:$siteId"),
             default = false
         )
-
-    fun getOnboardingSettingVisibility(siteId: Int): Boolean =
-        getBoolean(
-            key = PrefKeyString("$STORE_ONBOARDING_SETTING_VISIBILITY:$siteId"),
-            default = true
-        )
-
-    fun setOnboardingSettingVisibility(siteId: Int, visible: Boolean) {
-        setBoolean(
-            key = PrefKeyString("$STORE_ONBOARDING_SETTING_VISIBILITY:$siteId"),
-            value = visible
-        )
-    }
 
     fun getCardReaderLastSuccessfulPaymentTime() =
         getLong(UndeletablePrefKey.CARD_READER_LAST_SUCCESSFUL_PAYMENT_TIME, 0L)
@@ -1049,16 +1010,6 @@ object AppPrefs {
         )
         set(value) = setBoolean(
             key = DeletablePrefKey.BLAZE_CELEBRATION_SCREEN_SHOWN,
-            value = value
-        )
-
-    var isMyStoreBlazeViewDismissed: Boolean
-        get() = getBoolean(
-            key = DeletablePrefKey.MY_STORE_BLAZE_VIEW_DISMISSED,
-            default = false
-        )
-        set(value) = setBoolean(
-            key = DeletablePrefKey.MY_STORE_BLAZE_VIEW_DISMISSED,
             value = value
         )
 
@@ -1171,25 +1122,6 @@ object AppPrefs {
 
     fun disableAutoTaxRate() {
         remove(AUTO_TAX_RATE_ID)
-    }
-
-    fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) {
-        setString(DeletablePrefKey.CREATED_STORE_THEME_ID, "$siteId:$themeId")
-    }
-
-    fun clearThemeIdForStoreCreation() {
-        remove(DeletablePrefKey.CREATED_STORE_THEME_ID)
-    }
-
-    fun getThemeIdForStoreCreation(siteId: Long): String? {
-        return getString(DeletablePrefKey.CREATED_STORE_THEME_ID).orNullIfEmpty()?.let {
-            val split = it.split(":")
-            if (split.size == 2 && split[0].toLong() == siteId) {
-                split[1]
-            } else {
-                null
-            }
-        }
     }
 
     fun incrementNotificationChannelTypeSuffix(channel: NotificationChannelType) {

@@ -9,6 +9,7 @@ import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.VariantOption
 import com.woocommerce.android.tools.NetworkStatus
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationListFragmentArgs
 import com.woocommerce.android.ui.products.variations.VariationListViewModel
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState

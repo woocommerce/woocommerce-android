@@ -3,6 +3,8 @@
     android:id="@+id/paymentFlow"
     app:startDestination="@id/selectPaymentMethodFragment">
 
+    <include app:graph="@navigation/nav_graph_order_creations" />
+
     <fragment
         android:id="@+id/selectPaymentMethodFragment"
         android:name="com.woocommerce.android.ui.payments.methodselection.SelectPaymentMethodFragment"
@@ -11,6 +13,10 @@
             android:name="cardReaderFlowParam"
             app:argType="com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam"
             app:nullable="false" />
+        <argument
+            android:name="isOrderPaid"
+            app:argType="boolean"
+            android:defaultValue="false" />
         <action
             android:id="@+id/action_selectPaymentMethodFragment_to_cardReaderPaymentFlow"
             app:destination="@id/cardReaderStatusCheckerDialogFragment" />
@@ -45,6 +51,13 @@
                 app:argType="long" />
         </action>
         <action
+            android:id="@+id/action_selectPaymentMethodFragment_to_changeDueCalculatorFragment"
+            app:destination="@+id/changeDueCalculatorFragment">
+            <argument
+                android:name="orderId"
+                app:argType="long" />
+        </action>
+        <action
             android:id="@+id/action_selectPaymentMethodFragment_to_tapToPaySummaryFragment"
             app:destination="@id/tapToPaySummaryFragment"
             app:popUpTo="@+id/tapToPaySummaryFragment"
@@ -53,6 +66,16 @@
             android:id="@+id/action_selectPaymentMethodFragment_to_scanToPayDialogFragment"
             app:destination="@id/scanToPayDialogFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/changeDueCalculatorFragment"
+        android:name="com.woocommerce.android.ui.payments.changeduecalculator.ChangeDueCalculatorFragment"
+        android:label="ChangeDueCalculatorFragment" >
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+    </fragment>
+
 
     <!-- Onboarding flow -->
     <dialog
@@ -137,19 +160,21 @@
             android:id="@+id/action_cardReaderHubFragment_to_tapToPayAboutFragment"
             app:destination="@id/tapToPayAboutFragment" />
         <action
-            android:id="@+id/action_cardReaderHubFragment_to_simplePayments"
-            app:destination="@id/simplePaymentsDialog"
-            app:enterAnim="@anim/activity_fade_in"
-            app:exitAnim="@null"
-            app:popEnterAnim="@null"
-            app:popExitAnim="@anim/activity_fade_out" />
-        <action
             android:id="@+id/action_cardReaderHubFragment_to_cardReaderUpdateDialogFragment"
             app:destination="@id/cardReaderUpdateDialogFragment"
             app:enterAnim="@anim/activity_fade_in"
             app:exitAnim="@null"
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
+        <action
+            android:id="@+id/action_cardReaderHubFragment_to_orderListFragment"
+            app:destination="@+id/orders"
+            app:popUpTo="@+id/moreMenu"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="mode"
+                app:argType="com.woocommerce.android.ui.orders.list.OrderListViewModel$Mode"/>
+        </action>
     </fragment>
     <fragment
         android:id="@+id/cardReaderDetailFragment"
@@ -276,19 +301,6 @@
             app:argType="com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry"
             app:nullable="false" />
     </fragment>
-
-    <dialog
-        android:id="@+id/simplePaymentsDialog"
-        android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsDialog"
-        android:label="SimplePaymentsDialog">
-        <action
-            android:id="@+id/action_simplePaymentDialog_to_simplePaymentFragment"
-            app:destination="@+id/simplePaymentsFragment"
-            app:enterAnim="@anim/default_enter_anim"
-            app:exitAnim="@anim/default_exit_anim"
-            app:popEnterAnim="@anim/default_pop_enter_anim"
-            app:popExitAnim="@anim/default_pop_exit_anim" />
-    </dialog>
     <fragment
         android:id="@+id/simplePaymentsFragment"
         android:name="com.woocommerce.android.ui.payments.simplepayments.SimplePaymentsFragment"
@@ -340,6 +352,10 @@
                 android:name="orderId"
                 app:argType="long" />
         </action>
+
+        <action
+            android:id="@+id/action_tapToPaySummaryFragment_to_tapToPayAboutFragment"
+            app:destination="@id/tapToPayAboutFragment" />
 
         <argument
             android:name="testTapToPayFlow"

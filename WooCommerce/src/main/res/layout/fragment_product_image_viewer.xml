@@ -1,48 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    tools:context=".ui.products.ProductImageViewerFragment">
+    android:orientation="vertical"
+    tools:context=".ui.products.images.ProductImageViewerFragment">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="@string/app_name" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
-        android:layout_marginVertical="@dimen/major_375"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <FrameLayout
-        android:id="@+id/fakeToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:orientation="horizontal">
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/iconBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="start|center_vertical"
-            android:background="@drawable/ripple_grey_oval"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="8dp"
-            app:srcCompat="@drawable/ic_back_24dp" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/iconTrash"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="end|center_vertical"
-            android:background="@drawable/ripple_grey_oval"
-            android:clickable="true"
-            android:contentDescription="@string/product_remove_photo"
-            android:focusable="true"
-            android:padding="8dp"
-            app:srcCompat="@drawable/ic_gridicons_trash" />
-
-    </FrameLayout>
-
-</FrameLayout>
+</LinearLayout>

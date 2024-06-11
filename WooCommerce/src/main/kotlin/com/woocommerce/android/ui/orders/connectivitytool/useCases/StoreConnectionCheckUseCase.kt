@@ -30,7 +30,7 @@ class StoreConnectionCheckUseCase @Inject constructor(
     private fun WooResult<WCSSRModel>.parseError() =
         when (error.type) {
             WooErrorType.TIMEOUT -> Failure(FailureType.TIMEOUT)
-            WooErrorType.PLUGIN_NOT_ACTIVE -> Failure(FailureType.JETPACK)
+            WooErrorType.API_NOT_FOUND -> Failure(FailureType.JETPACK)
             WooErrorType.INVALID_RESPONSE -> Failure(FailureType.PARSE)
             else -> Failure(FailureType.GENERIC)
         }

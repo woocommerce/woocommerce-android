@@ -18,7 +18,7 @@ import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.Revenue
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsRepository.RevenueResult.RevenueError
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
-import com.woocommerce.android.ui.mystore.data.StatsRepository
+import com.woocommerce.android.ui.dashboard.data.StatsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -34,8 +34,15 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCBundleStats
+import org.wordpress.android.fluxc.model.WCGiftCardStats
+import org.wordpress.android.fluxc.model.WCProductBundleItemReport
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCRevenueStatsModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.text.SimpleDateFormat
@@ -856,6 +863,213 @@ class AnalyticsRepositoryTest : BaseUnitTest() {
                 any(),
                 any()
             )
+        }
+
+    @Test
+    fun `given fetch bundle stats fails, then result is error`() =
+        runTest {
+            // Given
+            val error = WooError(
+                type = WooErrorType.INVALID_RESPONSE,
+                original = BaseRequest.GenericErrorType.INVALID_RESPONSE,
+                message = "something fails"
+            )
+
+            val report = listOf(
+                WCProductBundleItemReport(
+                    name = "item 1",
+                    image = null,
+                    itemsSold = 35,
+                    netRevenue = 1000.00
+                ),
+                WCProductBundleItemReport(
+                    name = "item 2",
+                    image = null,
+                    itemsSold = 15,
+                    netRevenue = 300.00
+                )
+            )
+
+            val bundleStatsResponse = WooResult<WCBundleStats>(error)
+            val bundleReportResponse = WooResult(report)
+
+            whenever(statsRepository.fetchProductBundlesStats(any(), any(), any())).thenReturn(bundleStatsResponse)
+            whenever(statsRepository.fetchBundleReport(any(), any(), any())).thenReturn(bundleReportResponse)
+            // When
+            val result = sut.fetchProductBundlesStats(testSelectionData)
+
+            // Then
+            assertThat(result).isInstanceOf(AnalyticsRepository.BundlesResult.BundlesError::class.java)
+        }
+
+    @Test
+    fun `given fetch bundle report fails, then result is error`() =
+        runTest {
+            // Given
+            val error = WooError(
+                type = WooErrorType.INVALID_RESPONSE,
+                original = BaseRequest.GenericErrorType.INVALID_RESPONSE,
+                message = "something fails"
+            )
+
+            val stats = WCBundleStats(
+                itemsSold = 50,
+                netRevenue = 1300.00
+            )
+
+            val bundleStatsResponse = WooResult(stats)
+            val bundleReportResponse = WooResult<List<WCProductBundleItemReport>>(error)
+
+            whenever(statsRepository.fetchProductBundlesStats(any(), any(), any())).thenReturn(bundleStatsResponse)
+            whenever(statsRepository.fetchBundleReport(any(), any(), any())).thenReturn(bundleReportResponse)
+            // When
+            val result = sut.fetchProductBundlesStats(testSelectionData)
+
+            // Then
+            assertThat(result).isInstanceOf(AnalyticsRepository.BundlesResult.BundlesError::class.java)
+        }
+
+    @Test
+    fun `given fetch bundle report succeed, then result is bundle data`() =
+        runTest {
+            // Given
+            val stats = WCBundleStats(
+                itemsSold = 50,
+                netRevenue = 1300.00
+            )
+            val report = listOf(
+                WCProductBundleItemReport(
+                    name = "item 1",
+                    image = null,
+                    itemsSold = 35,
+                    netRevenue = 1000.00
+                ),
+                WCProductBundleItemReport(
+                    name = "item 2",
+                    image = null,
+                    itemsSold = 15,
+                    netRevenue = 300.00
+                )
+            )
+
+            val bundleStatsResponse = WooResult(stats)
+            val bundleReportResponse = WooResult(report)
+
+            whenever(statsRepository.fetchProductBundlesStats(any(), any(), any())).thenReturn(bundleStatsResponse)
+            whenever(statsRepository.fetchBundleReport(any(), any(), any())).thenReturn(bundleReportResponse)
+            // When
+            val result = sut.fetchProductBundlesStats(testSelectionData)
+
+            // Then
+            assertThat(result).isInstanceOf(AnalyticsRepository.BundlesResult.BundlesData::class.java)
+        }
+
+    @Test
+    fun `given fetch gift cards stats succeed, then result is gift card data`() =
+        runTest {
+            // Given
+            val stats = WCGiftCardStats(
+                usedValue = 45L,
+                netValue = 300.89,
+                intervals = emptyList()
+            )
+
+            val giftCardsStatsResponse = WooResult(stats)
+
+            whenever(statsRepository.fetchGiftCardStats(any(), any(), any())).thenReturn(giftCardsStatsResponse)
+
+            // When
+            val result = sut.fetchGiftCardsStats(testSelectionData)
+
+            // Then
+            assertThat(result).isInstanceOf(AnalyticsRepository.GiftCardResult.GiftCardData::class.java)
+        }
+
+    @Test
+    fun `given fetch gift cards stats fails, then result is gift card error`() =
+        runTest {
+            // Given
+            val error = WooError(
+                type = WooErrorType.INVALID_RESPONSE,
+                original = BaseRequest.GenericErrorType.INVALID_RESPONSE,
+                message = "something fails"
+            )
+
+            val giftCardsStatsResponse = WooResult<WCGiftCardStats>(error)
+
+            whenever(statsRepository.fetchGiftCardStats(any(), any(), any())).thenReturn(giftCardsStatsResponse)
+
+            // When
+            val result = sut.fetchGiftCardsStats(testSelectionData)
+
+            // Then
+            assertThat(result).isInstanceOf(AnalyticsRepository.GiftCardResult.GiftCardError::class.java)
+        }
+
+    @Test
+    fun `given fetch session stats is call with a last quarter granularity, then visitors stats is called`() =
+        runTest {
+            val latQuarterRangeSelection = StatsTimeRangeSelection.SelectionType.LAST_QUARTER.generateSelectionData(
+                referenceStartDate = "2024-01-01".dayStartFrom(),
+                referenceEndDate = "2024-03-31".dayEndFrom(),
+                calendar = testCalendar,
+                locale = testLocale
+            )
+
+            val result = Result.success(mapOf("2024-01-05" to 5))
+            whenever(statsRepository.fetchVisitorStats(any(), any(), any())).thenReturn(result)
+
+            sut.fetchVisitorsData(rangeSelection = latQuarterRangeSelection, ForceNew)
+            verify(statsRepository).fetchVisitorStats(any(), any(), any())
+        }
+
+    @Test
+    fun `given fetch session stats is call with a quarter to date granularity, then visitors stats is called`() =
+        runTest {
+            val quarterToDateRangeSelection =
+                StatsTimeRangeSelection.SelectionType.QUARTER_TO_DATE.generateSelectionData(
+                    referenceStartDate = "2024-04-01".dayStartFrom(),
+                    referenceEndDate = "2024-04-14".dayEndFrom(),
+                    calendar = testCalendar,
+                    locale = testLocale
+                )
+
+            val result = Result.success(mapOf("2024-01-05" to 5))
+            whenever(statsRepository.fetchVisitorStats(any(), any(), any())).thenReturn(result)
+
+            sut.fetchVisitorsData(rangeSelection = quarterToDateRangeSelection, ForceNew)
+            verify(statsRepository).fetchVisitorStats(any(), any(), any())
+        }
+
+    @Test
+    fun `given fetch session stats is call with a summary supported granularity, then visitors summary stats is called`() =
+        runTest {
+            val todayRangeSelection = StatsTimeRangeSelection.SelectionType.TODAY.generateSelectionData(
+                referenceStartDate = "2024-04-17".dayStartFrom(),
+                referenceEndDate = "2024-04-17".dayEndFrom(),
+                calendar = testCalendar,
+                locale = testLocale
+            )
+
+            val result = Result.success(5)
+            whenever(statsRepository.fetchTotalVisitorStats(any(), any(), any())).thenReturn(result)
+
+            sut.fetchVisitorsData(rangeSelection = todayRangeSelection, ForceNew)
+            verify(statsRepository).fetchTotalVisitorStats(any(), any(), any())
+        }
+
+    @Test
+    fun `given fetch session stats is call with a non supported granularity, then result is VisitorsNotSupported`() =
+        runTest {
+            val todayRangeSelection = StatsTimeRangeSelection.SelectionType.CUSTOM.generateSelectionData(
+                referenceStartDate = "2024-01-17".dayStartFrom(),
+                referenceEndDate = "2024-04-17".dayEndFrom(),
+                calendar = testCalendar,
+                locale = testLocale
+            )
+
+            val result = sut.fetchVisitorsData(rangeSelection = todayRangeSelection, ForceNew)
+            assertThat(result).isInstanceOf(AnalyticsRepository.VisitorsResult.VisitorsNotSupported::class.java)
         }
 
     private fun givenARevenue(totalSales: Double?, netValue: Double?, itemsSold: Int?): WCRevenueStatsModel {

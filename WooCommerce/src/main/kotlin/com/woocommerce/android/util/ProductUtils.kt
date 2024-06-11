@@ -46,18 +46,6 @@ fun OrderCreationProduct.getStockText(context: Context): String {
     }
 }
 
-fun OrderCreationProduct.getStockText(resourceProvider: ResourceProvider): String {
-    return getStockText(
-        this.productInfo.stockStatus,
-        null,
-        this.productInfo.stockQuantity
-    ) { resId: Int, param: Any? ->
-        param?.let {
-            resourceProvider.getString(resId, it)
-        } ?: resourceProvider.getString(resId)
-    }
-}
-
 private fun getStockText(
     stockStatus: ProductStockStatus,
     productType: ProductType?,

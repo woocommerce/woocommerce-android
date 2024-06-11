@@ -7,10 +7,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.distinctUntilChanged
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_SHIPPING_LINES_COUNT
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.whenNotNullNorEmpty
@@ -48,13 +52,17 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintCustomsF
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewPrintingInstructions
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewRefundedProducts
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
+import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingMethodsRepository
 import com.woocommerce.android.ui.orders.details.customfields.CustomOrderFieldsHelper
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
@@ -68,6 +76,12 @@ import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
@@ -98,6 +112,9 @@ class OrderDetailViewModel @Inject constructor(
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val refreshShippingMethods: RefreshShippingMethods,
+    getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
 ) : ScopedViewModel(savedState), OnProductFetchedListener {
     private val navArgs: OrderDetailFragmentArgs by savedState.navArgs()
 
@@ -153,6 +170,35 @@ class OrderDetailViewModel @Inject constructor(
     private val _orderAttributionInfo = MutableLiveData<OrderAttributionInfo>()
     val orderAttributionInfo: LiveData<OrderAttributionInfo> = _orderAttributionInfo
 
+    private val _shippingLineList = MutableStateFlow<List<Order.ShippingLine>>(emptyList())
+    val shippingLineList =
+        combine(
+            _shippingLineList.filter { it.isNotEmpty() },
+            getShippingMethodsWithOtherValue().withIndex()
+        ) { shippingLines, shippingMethods ->
+            val shippingMethodsMap = shippingMethods.value.associateBy { it.id }
+            var shouldRefreshShippingMethods = false
+            val result = shippingLines.map { shippingLine ->
+                val method = shippingLine.methodId?.let {
+                    if (it == " ") {
+                        shippingMethodsMap[ShippingMethodsRepository.NA_ID]
+                    } else {
+                        shippingMethodsMap[it]
+                    }
+                }
+                shouldRefreshShippingMethods = shouldRefreshShippingMethods ||
+                    shippingLine.methodId.isNullOrEmpty().not() && method == null && shippingMethods.index == 0
+                ShippingLineDetails(
+                    id = shippingLine.itemId,
+                    name = shippingLine.methodTitle,
+                    shippingMethod = method,
+                    amount = shippingLine.total
+                )
+            }
+            if (shouldRefreshShippingMethods) launch { refreshShippingMethods() }
+            result
+        }.asLiveData()
+
     private var isFetchingData = false
 
     private val productListObserver = Observer<List<OrderProduct>> { products ->
@@ -185,6 +231,15 @@ class OrderDetailViewModel @Inject constructor(
                 )
             )
         }
+        launch {
+            val shippingLines = _shippingLineList.drop(1).filter { it.isNotEmpty() }.first()
+            if (shippingLines.isNotEmpty()) {
+                analyticsTracker.track(
+                    AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
+                    mapOf(KEY_SHIPPING_LINES_COUNT to shippingLines.size)
+                )
+            }
+        }
     }
 
     fun start() {
@@ -197,9 +252,7 @@ class OrderDetailViewModel @Inject constructor(
                 } ?: fetchOrder(showSkeleton = true)
             }
         } else {
-            viewState = viewState.copy(
-                isOrderDetailSkeletonShown = true
-            )
+            viewState = viewState.copy(isOrderDetailSkeletonShown = true)
         }
     }
 
@@ -577,6 +630,7 @@ class OrderDetailViewModel @Inject constructor(
                             is OptimisticUpdateResult -> {
                                 // no-op. We reload order details in any case
                             }
+
                             is RemoteUpdateResult -> {
                                 if (result.event.isError) {
                                     triggerEvent(ShowSnackbar(string.order_error_update_general))
@@ -614,6 +668,20 @@ class OrderDetailViewModel @Inject constructor(
                 navArgs.orderId,
                 orderItem.itemId,
                 orderItem.productId
+            )
+        )
+    }
+
+    fun onTrashOrderClicked() {
+        triggerEvent(
+            MultiLiveEvent.Event.ShowDialog(
+                messageId = string.order_detail_trash_order_dialog_message,
+                positiveButtonId = string.order_detail_move_to_trash,
+                positiveBtnAction = { _, _ ->
+                    analyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
+                    triggerEvent(TrashOrder(navArgs.orderId))
+                },
+                negativeButtonId = string.cancel
             )
         )
     }
@@ -731,9 +799,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        val plugin = pluginsInformation[WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName]
-
-        if (plugin == null || plugin.isOperational) {
+        if (shippingLabelOnboardingRepository.isShippingPluginReady) {
             orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId)
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
@@ -798,6 +864,8 @@ class OrderDetailViewModel @Inject constructor(
         if (shipmentTracking.isVisible) {
             _shipmentTrackings.value = shipmentTracking.list
         }
+
+        _shippingLineList.value = order.shippingLines
 
         _orderAttributionInfo.value = orderDetailRepository.getOrderAttributionInfo(navArgs.orderId)
 
@@ -883,5 +951,21 @@ class OrderDetailViewModel @Inject constructor(
         }
     }
 
+    fun showEmptyView() {
+        viewState = viewState.copy(
+            isOrderDetailEmpty = true,
+            isRefreshing = false,
+            isOrderDetailSkeletonShown = false
+        )
+    }
+
+    fun showLoadingView() {
+        viewState = viewState.copy(
+            isOrderDetailEmpty = false,
+            isOrderDetailSkeletonShown = true
+        )
+    }
+
     data class ListInfo<T>(val isVisible: Boolean = true, val list: List<T> = emptyList())
+    data class TrashOrder(val orderId: Long) : MultiLiveEvent.Event()
 }

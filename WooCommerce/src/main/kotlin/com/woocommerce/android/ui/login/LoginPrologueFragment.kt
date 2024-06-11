@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
@@ -16,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
+class LoginPrologueFragment : Fragment(R.layout.fragment_login_prologue) {
     companion object {
         const val TAG = "login-prologue-fragment"
     }
@@ -25,10 +24,7 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
         fun onPrimaryButtonClicked()
         fun onSecondaryButtonClicked()
         fun onNewToWooButtonClicked()
-        fun onGetStartedClicked()
     }
-
-    constructor() : this(R.layout.fragment_login_prologue)
 
     @Inject
     lateinit var unifiedLoginTracker: UnifiedLoginTracker
@@ -42,27 +38,20 @@ open class LoginPrologueFragment(@LayoutRes layout: Int) : Fragment(layout) {
         with(FragmentLoginPrologueBinding.bind(view)) {
             buttonLoginStore.setOnClickListener {
                 // Login with site address
-                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
                 prologueFinishedListener?.onPrimaryButtonClicked()
             }
 
             buttonLoginWpcom.setOnClickListener {
                 // Login with WordPress.com account
-                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
                 prologueFinishedListener?.onSecondaryButtonClicked()
             }
 
-            buttonGetStarted.setOnClickListener {
-                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_PROLOGUE)
-
+            buttonStartNewStore.setOnClickListener {
                 AnalyticsTracker.track(
-                    AnalyticsEvent.LOGIN_PROLOGUE_CREATE_SITE_TAPPED,
-                    mapOf(AnalyticsTracker.KEY_IS_FREE_TRIAL to true)
+                    AnalyticsEvent.LOGIN_PROLOGUE_STARTING_A_NEW_STORE_TAPPED
                 )
 
-                appPrefsWrapper.removeLoginSiteAddress()
-
-                prologueFinishedListener?.onGetStartedClicked()
+                prologueFinishedListener?.onNewToWooButtonClicked()
             }
         }
 

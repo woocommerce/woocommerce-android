@@ -5,16 +5,42 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/loadingProgress"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/two_pane_mode_toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_constraintEnd_toStartOf="@+id/two_pane_layout_guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"/>
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/product_selector_nav_container"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:defaultNavHost="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/two_pane_layout_guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/two_pane_mode_toolbar" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/two_pane_layout_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:layout_constraintGuide_percent="0.5"/>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/main_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/appbar_elevation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
@@ -23,8 +49,8 @@
         android:clipToPadding="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loadingProgress">
+        app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/main_toolbar">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/order_creation_root"
@@ -64,9 +90,11 @@
                 app:header="@string/custom_amounts"
                 app:keepAddButtons="true" />
 
-            <include
-                android:id="@+id/multiple_lines_warning_section"
-                layout="@layout/multiple_lines_warning" />
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/shipping_lines"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/shipping" />
 
             <include
                 android:id="@+id/additional_info_collection_section"
@@ -108,15 +136,41 @@
     </androidx.core.widget.NestedScrollView>
 
     <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/totals_section"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
+        tools:composableName="com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsFullViewKt" />
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/feedback_section"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/two_pane_layout_guideline"
+        tools:composableName="com.woocommerce.android.ui.compose.component.FeedbackDialogKt" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/loadingProgress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:id="@+id/totals_section"
-        tools:composableName="com.woocommerce.android.ui.orders.creation.totals.OrderCreateEditTotalsFullViewKt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:background="@color/divider_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/product_selector_nav_container"
+        app:layout_constraintTop_toBottomOf="@id/two_pane_mode_toolbar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-

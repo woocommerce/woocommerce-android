@@ -110,7 +110,7 @@ class JetpackActivationSiteCredentialsViewModel @Inject constructor(
                 analyticsTrackerWrapper.track(
                     stat = AnalyticsEvent.LOGIN_JETPACK_SITE_CREDENTIAL_DID_SHOW_ERROR_ALERT,
                     errorContext = exception.javaClass.simpleName,
-                    errorType = authenticationError?.errorType ?: siteError?.type?.name,
+                    errorType = authenticationError?.errorType?.name ?: siteError?.type?.name,
                     errorDescription = exception.message
                 )
             }

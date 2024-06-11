@@ -7,7 +7,7 @@ pluginManagement {
     gradle.ext.kspVersion = '1.9.22-1.0.17'
     gradle.ext.measureBuildsVersion = '2.1.2'
     gradle.ext.navigationVersion = '2.7.7'
-    gradle.ext.sentryVersion = '3.5.0'
+    gradle.ext.sentryVersion = '4.3.1'
     gradle.ext.violationCommentsVersion = '1.69.0'
     gradle.ext.protobufVersion = '0.9.4'
 
@@ -46,7 +46,7 @@ pluginManagement {
 }
 
 plugins {
-    id 'com.gradle.enterprise' version '3.15.1'
+    id 'com.gradle.enterprise' version '3.17.2'
 }
 
 rootProject.name = 'WCAndroid'
@@ -62,6 +62,7 @@ gradle.ext.loginFlowBinaryPath = "org.wordpress:login"
 gradle.ext.mediaPickerBinaryPath = "org.wordpress:mediapicker"
 gradle.ext.mediaPickerDomainBinaryPath = "org.wordpress.mediapicker:domain"
 gradle.ext.mediaPickerSourceCameraBinaryPath = "org.wordpress.mediapicker:source-camera"
+gradle.ext.mediaPickerSourceDeviceBinaryPath = "org.wordpress.mediapicker:source-device"
 gradle.ext.mediaPickerSourceGifBinaryPath = "org.wordpress.mediapicker:source-gif"
 gradle.ext.mediaPickerSourceWordPressBinaryPath = "org.wordpress.mediapicker:source-wordpress"
 

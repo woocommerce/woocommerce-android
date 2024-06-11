@@ -419,7 +419,6 @@ private fun BlazeCampaignPaymentSummaryScreenPreview() {
                         BlazeRepository.PaymentMethodUrls(
                             formUrl = "https://example.com/form",
                             successUrl = "https://example.com/success",
-                            idUrlParameter = "id"
                         )
                     ),
                     onClick = {}

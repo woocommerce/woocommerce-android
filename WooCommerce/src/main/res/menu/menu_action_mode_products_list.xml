@@ -10,6 +10,10 @@
             android:id="@+id/menu_update_price"
             android:title="@string/product_selection_menu_update_price"
             app:showAsAction="never" />
+        <item
+            android:id="@+id/menu_update_stock_status"
+            android:title="@string/product_selection_menu_update_stock_status"
+            app:showAsAction="never" />
     </group>
     <group android:id="@+id/group_select">
         <item

@@ -39,7 +39,8 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             productId = 1L,
             variationIds = longArrayOf(2L, 3L),
-            productSource = ProductSourceForTracking.ALPHABETICAL
+            productSource = ProductSourceForTracking.ALPHABETICAL,
+            screenMode = VariationSelectorViewModel.ScreenMode.FULLSCREEN
         ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)
@@ -56,7 +57,8 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             productId = 1L,
             variationIds = longArrayOf(2L, 3L),
-            productSource = ProductSourceForTracking.ALPHABETICAL
+            productSource = ProductSourceForTracking.ALPHABETICAL,
+            screenMode = VariationSelectorViewModel.ScreenMode.FULLSCREEN
         ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)
@@ -72,7 +74,8 @@ class VariationSelectorViewModelTest : BaseUnitTest() {
             productSelectorFlow = ProductSelectorViewModel.ProductSelectorFlow.OrderCreation,
             productId = 1L,
             variationIds = longArrayOf(2L, 3L),
-            productSource = ProductSourceForTracking.ALPHABETICAL
+            productSource = ProductSourceForTracking.ALPHABETICAL,
+            screenMode = VariationSelectorViewModel.ScreenMode.FULLSCREEN
         ).toSavedStateHandle()
 
         val sut = createViewModel(navArgs)

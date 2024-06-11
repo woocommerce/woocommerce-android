@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.orders.creation.configuration
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -74,6 +71,7 @@ import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.formatToString
 import com.woocommerce.android.model.VariantOption
+import com.woocommerce.android.ui.compose.component.SelectionCheck
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -482,52 +480,6 @@ fun OptionalChildrenPreview() {
             isIncluded = true,
             onSwitchChanged = {}
         )
-    }
-}
-
-@Composable
-fun SelectionCheck(
-    isSelected: Boolean,
-    onSelectionChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    isEnabled: Boolean = true
-) {
-    val selectionDrawable = if (isSelected) {
-        R.drawable.ic_rounded_chcekbox_checked
-    } else {
-        R.drawable.ic_rounded_chcekbox_unchecked
-    }
-
-    val colorFilter = if (isEnabled) null else ColorFilter.tint(Color.Gray)
-
-    val description = stringResource(id = R.string.order_configuration_product_selection_control)
-    val state = if (!isEnabled) stringResource(id = R.string.disabled) else ""
-
-    val controlModifier = if (isEnabled) {
-        modifier.clickable { onSelectionChange(!isSelected) }
-    } else {
-        modifier
-    }
-
-    Box(
-        modifier = controlModifier
-            .semantics {
-                contentDescription = description
-                stateDescription = state
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Crossfade(
-            targetState = selectionDrawable,
-            modifier = modifier.wrapContentSize(),
-            label = "itemSelection"
-        ) { icon ->
-            Image(
-                painter = painterResource(id = icon),
-                colorFilter = colorFilter,
-                contentDescription = null
-            )
-        }
     }
 }
 

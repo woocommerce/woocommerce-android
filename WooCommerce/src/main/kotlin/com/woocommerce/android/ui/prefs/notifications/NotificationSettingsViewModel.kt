@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.prefs.notifications
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.ShowTestNotification
@@ -20,18 +23,23 @@ class NotificationSettingsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val notificationChannelsHandler: NotificationChannelsHandler,
-    private val showTestNotification: ShowTestNotification
+    private val showTestNotification: ShowTestNotification,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    private val _isChaChingSoundEnabled = MutableStateFlow(
-        notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER)
+    private val _newOrderNotificationSoundStatus = MutableStateFlow(
+        notificationChannelsHandler.checkNewOrderNotificationSound()
     )
-    val isChaChingSoundEnabled = _isChaChingSoundEnabled.asLiveData()
+    val newOrderNotificationSoundStatus = _newOrderNotificationSoundStatus.asLiveData()
 
     fun onManageNotificationsClicked() {
         triggerEvent(OpenDeviceNotificationSettings)
     }
 
     fun onEnableChaChingSoundClicked() {
+        analyticsTracker.track(
+            AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_TAPPED,
+            mapOf(AnalyticsTracker.KEY_SOURCE to "settings")
+        )
         notificationChannelsHandler.recreateNotificationChannel(NotificationChannelType.NEW_ORDER)
         triggerEvent(
             MultiLiveEvent.Event.ShowActionSnackbar(
@@ -51,8 +59,7 @@ class NotificationSettingsViewModel @Inject constructor(
                 }
             )
         )
-        _isChaChingSoundEnabled.value = notificationChannelsHandler
-            .checkNotificationChannelSound(NotificationChannelType.NEW_ORDER)
+        _newOrderNotificationSoundStatus.value = notificationChannelsHandler.checkNewOrderNotificationSound()
     }
 
     object OpenDeviceNotificationSettings : MultiLiveEvent.Event()

@@ -5,7 +5,6 @@ import androidx.lifecycle.asLiveData
 import com.woocommerce.android.model.ActionStatus
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.viewmodel.combineWith
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 
 interface ReviewModerationConsumer {

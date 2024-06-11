@@ -9,55 +9,65 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 typealias OnReadMoreClicked = () -> Unit
+typealias OnRetryConnection = () -> Unit
 
 sealed class ConnectivityCheckCardData(
     @StringRes val title: Int,
     @StringRes val suggestion: Int,
     @DrawableRes val icon: Int,
     open val connectivityCheckStatus: ConnectivityCheckStatus,
+    @IgnoredOnParcel open val retryConnectionAction: OnRetryConnection? = null,
     @IgnoredOnParcel open val readMoreAction: OnReadMoreClicked? = null
 ) {
     @Parcelize
     data class InternetConnectivityCheckData(
-        override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted
+        override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
+        @IgnoredOnParcel override val retryConnectionAction: OnRetryConnection? = null
     ) : Parcelable, ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_internet_check_title,
         suggestion = R.string.orderlist_connectivity_tool_internet_check_suggestion,
         icon = R.drawable.ic_wifi,
-        connectivityCheckStatus = connectivityCheckStatus
+        connectivityCheckStatus = connectivityCheckStatus,
+        retryConnectionAction = retryConnectionAction
     )
 
     @Parcelize
     data class WordPressConnectivityCheckData(
-        override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted
+        override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
+        @IgnoredOnParcel override val retryConnectionAction: OnRetryConnection? = null
     ) : Parcelable, ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_wordpress_check_title,
         suggestion = R.string.orderlist_connectivity_tool_wordpress_check_suggestion,
         icon = R.drawable.ic_storage,
-        connectivityCheckStatus = connectivityCheckStatus
+        connectivityCheckStatus = connectivityCheckStatus,
+        retryConnectionAction = retryConnectionAction
     )
 
     @Parcelize
     data class StoreConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
+        @IgnoredOnParcel override val retryConnectionAction: OnRetryConnection? = null,
         @IgnoredOnParcel override val readMoreAction: OnReadMoreClicked? = null
     ) : Parcelable, ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_check_title,
         suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
         icon = R.drawable.ic_more_menu_store,
         connectivityCheckStatus = connectivityCheckStatus,
+        retryConnectionAction = retryConnectionAction,
         readMoreAction = readMoreAction
     )
 
     @Parcelize
     data class StoreOrdersConnectivityCheckData(
         override val connectivityCheckStatus: ConnectivityCheckStatus = NotStarted,
+        @IgnoredOnParcel override val retryConnectionAction: OnRetryConnection? = null,
         @IgnoredOnParcel override val readMoreAction: OnReadMoreClicked? = null
     ) : Parcelable, ConnectivityCheckCardData(
         title = R.string.orderlist_connectivity_tool_store_orders_check_title,
         suggestion = R.string.orderlist_connectivity_tool_generic_error_suggestion,
         icon = R.drawable.ic_clipboard,
         connectivityCheckStatus = connectivityCheckStatus,
+        retryConnectionAction = retryConnectionAction,
         readMoreAction = readMoreAction
     )
 }

@@ -37,14 +37,21 @@ open class WCBottomSheetDialogFragment : BottomSheetDialogFragment {
 
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (DisplayUtils.isLandscape(requireContext())) {
-            dialog?.setOnShowListener {
-                val dialog = it as BottomSheetDialog
-                dialog.findViewById<View>(org.wordpress.aztec.R.id.design_bottom_sheet)?.let { sheet ->
-                    dialog.behavior.peekHeight = DisplayUtils.getWindowPixelHeight(requireContext()) / 2
-                    sheet.parent.parent.requestLayout()
+        dialog?.setOnShowListener {
+            val dialog = it as BottomSheetDialog
+            dialog.findViewById<View>(org.wordpress.aztec.R.id.design_bottom_sheet)?.let { sheet ->
+                // if device height is 32dp bigger than sheet height, show full sheet
+                val heightPixels = view.context.resources.displayMetrics.heightPixels
+                val topPadding = DisplayUtils.dpToPx(context, TOP_OFFSET_BEFORE_SHOWING_FULL_SHEET_DP)
+                if (heightPixels - topPadding > sheet.height) {
+                    dialog.behavior.peekHeight = DisplayUtils.getWindowPixelHeight(requireContext())
                 }
+                sheet.parent.parent.requestLayout()
             }
         }
+    }
+
+    private companion object {
+        private const val TOP_OFFSET_BEFORE_SHOWING_FULL_SHEET_DP = 32
     }
 }

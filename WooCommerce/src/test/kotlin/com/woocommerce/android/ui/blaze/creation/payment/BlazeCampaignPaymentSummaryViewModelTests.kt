@@ -60,7 +60,8 @@ class BlazeCampaignPaymentSummaryViewModelTests : BaseUnitTest() {
             ).toSavedStateHandle(),
             blazeRepository = blazeRepository,
             currencyFormatter = currencyFormatter,
-            analyticsTrackerWrapper = mock()
+            analyticsTrackerWrapper = mock(),
+            dashboardRepository = mock()
         )
     }
 

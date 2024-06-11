@@ -54,9 +54,6 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_themePickerFragment"
             app:destination="@id/nav_graph_themes" >
-            <argument
-                android:name="isFromStoreCreation"
-                app:argType="boolean" />
         </action>
         <action
             android:id="@+id/action_mainSettingsFragment_to_notificationSettingsFragment"
@@ -187,7 +184,7 @@
         android:label="CloseAccountDialogFragment" />
     <dialog
         android:id="@+id/nameYourStoreDialogFragment"
-        android:name="com.woocommerce.android.ui.login.storecreation.onboarding.NameYourStoreDialogFragment"
+        android:name="com.woocommerce.android.ui.onboarding.NameYourStoreDialogFragment"
         android:label="NameYourStoreDialogFragment">
         <argument
             android:name="fromOnboarding"

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.products
 
 import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.woocommerce.android.ui.products.list.ProductListAdapter
 
 /**
  * Class provides the selection library access to stable selection keys and identifying items

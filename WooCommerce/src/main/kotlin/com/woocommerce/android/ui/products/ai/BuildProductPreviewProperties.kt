@@ -4,9 +4,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.capitalize
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.ProductDetailCardBuilder
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ai.ProductPreviewSubViewModel.ProductPropertyCard
+import com.woocommerce.android.ui.products.details.ProductDetailCardBuilder
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider

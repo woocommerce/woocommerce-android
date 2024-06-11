@@ -21,10 +21,10 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -100,7 +100,7 @@ private fun BlazeCampaignCreationEditAdScreen(
             Toolbar(
                 title = stringResource(id = string.blaze_campaign_preview_edit_ad),
                 onNavigationButtonClick = onBackButtonTapped,
-                navigationIcon = Filled.ArrowBack,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onActionButtonClick = onSaveTapped,
                 actionButtonText = stringResource(id = string.save).uppercase()
             )
@@ -253,12 +253,12 @@ private fun AdDataSection(
                 SuggestionButton(
                     onClick = onPreviousSuggestionTapped,
                     isEnabled = viewState.isPreviousSuggestionButtonEnabled,
-                    icon = Filled.ArrowBackIosNew
+                    icon = Icons.AutoMirrored.Filled.ArrowBackIos
                 )
                 SuggestionButton(
                     onClick = onNextSuggestionTapped,
                     isEnabled = viewState.isNextSuggestionButtonEnabled,
-                    icon = Filled.ArrowForwardIos,
+                    icon = Icons.AutoMirrored.Filled.ArrowForwardIos,
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_150))
                 )
             }

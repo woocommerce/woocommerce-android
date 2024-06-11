@@ -91,7 +91,6 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         }
     }
 
-    @Suppress("NestedBlockDepth")
     private fun setDetailsMargins(rootView: View) {
         if (rootView !is ViewGroup) return
 
@@ -102,7 +101,9 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         }
 
         val windowWidth = DisplayUtils.getWindowPixelWidth(context)
-        rootView.children.filter { it !is Toolbar }.forEach { viewToApplyMargins ->
+        rootView.children.filter {
+            it !is Toolbar
+        }.forEach { viewToApplyMargins ->
             val layoutParams = viewToApplyMargins.layoutParams
             if (layoutParams is MarginLayoutParams) {
                 val marginHorizontal = (windowWidth * marginPart).toInt()
@@ -151,6 +152,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
             WindowSizeClass.Medium -> {
                 screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_PORTRAIT_WIDTH_RATIO)
             }
+
             WindowSizeClass.ExpandedAndBigger -> {
                 screen.twoPaneLayoutGuideline.setGuidelinePercent(TABLET_LANDSCAPE_WIDTH_RATIO)
             }
@@ -173,7 +175,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         screen.listPaneContainer.visibility = View.GONE
     }
 
-    private fun displayListPaneOnly(screen: Screen) {
+    fun displayListPaneOnly(screen: Screen) {
         screen.detailPaneContainer.visibility = View.GONE
         screen.listPaneContainer.visibility = View.VISIBLE
         screen.twoPaneLayoutGuideline.setGuidelinePercent(1f)

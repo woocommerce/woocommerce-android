@@ -344,7 +344,7 @@ class PaymentsHubViewModel @Inject constructor(
 
     private fun onCollectPaymentClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_COLLECT_PAYMENT_TAPPED)
-        triggerEvent(PaymentsHubEvents.NavigateToPaymentCollectionScreen)
+        triggerEvent(PaymentsHubEvents.NavigateToOrderCreationScreen)
     }
 
     private fun onManageCardReaderClicked() {
@@ -507,6 +507,7 @@ class PaymentsHubViewModel @Inject constructor(
             is PaymentOrRefund -> {
                 // no-op
             }
+            is CardReaderFlowParam.WooPosConnection -> error("Unsupported card reader flow param $params")
         }
     }
 
@@ -565,9 +566,9 @@ class PaymentsHubViewModel @Inject constructor(
             @StringRes val titleRes: Int
         ) : PaymentsHubEvents()
 
-        object NavigateToPaymentCollectionScreen : PaymentsHubEvents()
-        object NavigateToTapTooPaySummaryScreen : PaymentsHubEvents()
-        object NavigateToTapTooPaySurveyScreen : PaymentsHubEvents()
+        data object NavigateToOrderCreationScreen : PaymentsHubEvents()
+        data object NavigateToTapTooPaySummaryScreen : PaymentsHubEvents()
+        data object NavigateToTapTooPaySurveyScreen : PaymentsHubEvents()
         data class NavigateToCardReaderManualsScreen(
             val countryConfig: CardReaderConfigForSupportedCountry
         ) : PaymentsHubEvents()

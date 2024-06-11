@@ -25,13 +25,15 @@ data class FeatureFeedbackSettings(
 
     enum class Feature {
         SHIPPING_LABEL_M4,
-        PRODUCT_VARIATIONS,
         PRODUCT_ADDONS,
         SIMPLE_PAYMENTS_AND_ORDER_CREATION,
         COUPONS,
         ANALYTICS_HUB,
         TAP_TO_PAY,
+        ORDER_SHIPPING_LINES
     }
+
+    fun isFeedbackMoreThanDaysAgo(days: Int) = Date(settingChangeDate).pastTimeDeltaFromNowInDays greaterThan days
 
     fun isFeedbackGivenMoreThanDaysAgo(days: Int) =
         feedbackState == FeedbackState.GIVEN &&

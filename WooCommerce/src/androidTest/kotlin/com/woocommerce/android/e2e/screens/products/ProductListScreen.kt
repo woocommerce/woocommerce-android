@@ -57,6 +57,7 @@ class ProductListScreen : Screen {
 
     fun enterSearchTerm(term: String): ProductListScreen {
         typeTextInto(androidx.appcompat.R.id.search_src_text, term)
+        idleFor(1000) // allow for UI transitions
         waitForAtLeastOneElementToBeDisplayed(R.id.productInfoContainer)
         return this
     }
@@ -96,8 +97,8 @@ class ProductListScreen : Screen {
         if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
             // Double pressBack is needed because first one only removes the focus
             // from search field, while the second one leaves the search mode.
-            Espresso.pressBack()
-            Espresso.pressBack()
+            pressBack()
+            pressBack()
         }
         return this
     }
@@ -120,9 +121,9 @@ class ProductListScreen : Screen {
                     Matchers.allOf(
                         ViewMatchers.withId(R.id.productStockAndStatus),
                         ViewMatchers.withText(
-                            "${product.stockStatus}${product.variations} • \$${product.priceDiscountedRaw}.00"
-
-                        )
+                            Matchers.containsString("${product.stockStatus}${product.variations} • ")
+                        ),
+                        ViewMatchers.withText(Matchers.containsString(product.priceDiscountedRaw))
                     )
                 ),
                 ViewMatchers.withChild(

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.analytics.ranges
 
 import android.os.Parcelable
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_QUARTER
@@ -31,13 +32,13 @@ import java.util.Date
 import java.util.Locale
 
 @Parcelize
-data class AnalyticsHubTimeRange(
+data class StatsTimeRange(
     val start: Date,
     val end: Date
 ) : Parcelable
 
 /**
- * This class represents the date range selection for the Analytics Hub
+ * This class represents the date range selection for the Analytics Hub and the Stats screen
  *
  * You can create it through the [StatsTimeRangeSelection.SelectionType.generateSelectionData]
  * function since it will return the correct data for the given selection type
@@ -47,8 +48,8 @@ data class AnalyticsHubTimeRange(
 @Parcelize
 class StatsTimeRangeSelection private constructor(
     val selectionType: SelectionType,
-    val currentRange: AnalyticsHubTimeRange,
-    val previousRange: AnalyticsHubTimeRange,
+    val currentRange: StatsTimeRange,
+    val previousRange: StatsTimeRange,
     val currentRangeDescription: String,
     val previousRangeDescription: String,
 ) : Parcelable {
@@ -177,4 +178,15 @@ class StatsTimeRangeSelection private constructor(
                 get() = values().map { it.name }.toTypedArray()
         }
     }
+}
+
+fun SelectionType.toDashBoardTrackingGranularityString(): String {
+    return when (this) {
+        TODAY -> StatsGranularity.DAYS.name
+        WEEK_TO_DATE -> StatsGranularity.WEEKS.name
+        MONTH_TO_DATE -> StatsGranularity.MONTHS.name
+        YEAR_TO_DATE -> StatsGranularity.YEARS.name
+        CUSTOM -> this.identifier
+        else -> error("My Store tracking granularity unsupported range")
+    }.lowercase()
 }

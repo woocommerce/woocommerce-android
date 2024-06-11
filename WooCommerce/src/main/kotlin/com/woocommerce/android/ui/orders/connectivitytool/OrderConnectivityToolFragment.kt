@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.R
+import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
 import com.woocommerce.android.ui.base.BaseFragment
@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenSupportRequest
 import com.woocommerce.android.ui.orders.connectivitytool.OrderConnectivityToolViewModel.OpenWebView
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -38,17 +39,18 @@ class OrderConnectivityToolFragment : BaseFragment() {
             when (it) {
                 is OpenSupportRequest -> openSupportRequestScreen()
                 is OpenWebView -> openWebView(it.url)
+                is Exit -> findNavController().popBackStack()
             }
         }
         viewModel.startConnectionChecks()
     }
 
-    override fun getFragmentTitle() = getString(R.string.orderlist_connectivity_tool_title)
+    override fun getFragmentTitle() = ""
 
     private fun openSupportRequestScreen() {
         SupportRequestFormActivity.createIntent(
             context = requireContext(),
-            origin = HelpOrigin.ORDERS_LIST,
+            origin = HelpOrigin.CONNECTIVITY_TOOL,
             extraTags = ArrayList()
         ).let { activity?.startActivity(it) }
     }

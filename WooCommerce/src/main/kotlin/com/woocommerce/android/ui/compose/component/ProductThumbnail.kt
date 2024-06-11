@@ -8,11 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
-import com.woocommerce.android.R.dimen
 
 @Composable
 fun ProductThumbnail(
@@ -34,7 +33,7 @@ fun ProductThumbnail(
         contentDescription = contentDescription,
         contentScale = ContentScale.Crop,
         modifier = modifier
-            .size(dimensionResource(id = dimen.major_275))
-            .clip(shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
+            .size(42.dp)
+            .clip(shape = RoundedCornerShape(4.dp))
     )
 }

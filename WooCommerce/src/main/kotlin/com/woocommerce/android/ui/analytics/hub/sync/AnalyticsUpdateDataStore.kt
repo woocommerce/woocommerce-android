@@ -135,6 +135,8 @@ class AnalyticsUpdateDataStore @Inject constructor(
         VISITORS,
         TOP_PERFORMERS,
         ORDERS,
+        BUNDLES,
+        GIFT_CARDS,
         ALL
     }
 }

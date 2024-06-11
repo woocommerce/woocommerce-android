@@ -26,8 +26,15 @@
 
         <View
             android:id="@+id/app_bar_divider"
-            android:layout_gravity="bottom"
-            style="@style/Woo.Divider" />
+            style="@style/Woo.Divider"
+            android:layout_gravity="bottom" />
+
+
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scrollView"
@@ -72,15 +79,6 @@
                         android:visibility="gone"
                         tools:visibility="visible" />
 
-                    <!-- Order Shipping method warning card -->
-                    <com.woocommerce.android.ui.orders.OrderDetailShippingMethodNoticeCard
-                        android:id="@+id/orderDetail_shippingMethodNotice"
-                        style="@style/Woo.Card.WithoutPadding"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-
                     <!-- Product List -->
                     <com.woocommerce.android.ui.orders.details.views.OrderDetailProductListView
                         android:id="@+id/orderDetail_productList"
@@ -100,6 +98,12 @@
                         android:layout_height="wrap_content"
                         android:clipToPadding="false"
                         android:contentDescription="@string/custom_amounts" />
+
+                    <androidx.compose.ui.platform.ComposeView
+                        android:id="@+id/orderDetail_shippingLines"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/shipping" />
 
                     <!-- Custom fields button -->
                     <com.woocommerce.android.ui.orders.details.views.OrderDetailCustomFieldsCard
@@ -192,6 +196,26 @@
                         style="@style/Woo.Card.WithoutPadding"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
+
+                    <!-- Trash button -->
+                    <androidx.cardview.widget.CardView
+                        style="@style/Woo.Card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/major_100"
+                        app:contentPadding="@dimen/major_100" >
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/orderDetail_trash"
+                            style="@style/Woo.Button.TextButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/order_detail_move_to_trash"
+                            android:textAllCaps="false"
+                            android:textColor="@color/color_error" />
+                    </androidx.cardview.widget.CardView>
+
+
                 </LinearLayout>
             </FrameLayout>
         </androidx.core.widget.NestedScrollView>

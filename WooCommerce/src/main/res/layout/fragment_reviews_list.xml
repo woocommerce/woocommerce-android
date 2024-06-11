@@ -1,96 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/notifsRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    tools:context=".ui.reviews.ReviewListFragment"
+    tools:showIn="@layout/fragment_reviews_list">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        style="@style/Widget.Woo.Toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_height"
-        android:elevation="@dimen/appbar_elevation"
-        tools:title="@string/app_name" />
-
-    <com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout
-        android:id="@+id/notifsRefreshLayout"
+    <RelativeLayout
+        android:id="@+id/notifsContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.reviews.ReviewListFragment">
+        android:clickable="true"
+        android:focusable="true">
 
         <RelativeLayout
-            android:id="@+id/notifsContainer"
+            android:id="@+id/unread_reviews_filter_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clickable="true"
-            android:focusable="true">
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/major_75">
 
-            <RelativeLayout
-                android:id="@+id/unread_reviews_filter_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/major_75">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="@dimen/major_100"
-                    android:text="@string/product_review_list_unread_reviews_filter"
-                    android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
-                    tools:text="Filter by unread reviews" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/unread_filter_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true" />
-
-                <View
-                    style="@style/Woo.Divider"
-                    android:layout_width="match_parent"
-                    android:layout_below="@+id/unread_filter_switch" />
-
-            </RelativeLayout>
-
-            <!-- Notifications List View -->
-            <LinearLayout
-                android:id="@+id/notifsView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/unread_reviews_filter_layout"
-                android:orientation="vertical"
-                tools:visibility="visible">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/reviewsList"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:itemCount="5"
-                    tools:listitem="@layout/notifs_list_item" />
-            </LinearLayout>
-
-            <com.woocommerce.android.widgets.WCEmptyView
-                android:id="@+id/empty_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/unread_reviews_filter_layout"
-                android:visibility="gone"
-                tools:visibility="gone" />
-
-            <ProgressBar
-                android:id="@+id/notifsLoadMoreProgress"
-                style="?android:attr/progressBarStyle"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="@dimen/major_75"
-                android:visibility="gone"
-                tools:visibility="gone" />
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="@dimen/major_100"
+                android:text="@string/product_review_list_unread_reviews_filter"
+                android:textAppearance="@style/TextAppearance.Woo.Subtitle1"
+                tools:text="Filter by unread reviews" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/unread_filter_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true" />
+
+            <View
+                style="@style/Woo.Divider"
+                android:layout_width="match_parent"
+                android:layout_below="@+id/unread_filter_switch" />
+
         </RelativeLayout>
-    </com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>
-</LinearLayout>
+
+        <!-- Notifications List View -->
+        <LinearLayout
+            android:id="@+id/notifsView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/unread_reviews_filter_layout"
+            android:orientation="vertical"
+            tools:visibility="visible">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/reviewsList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:itemCount="5"
+                tools:listitem="@layout/notifs_list_item" />
+        </LinearLayout>
+
+        <com.woocommerce.android.widgets.WCEmptyView
+            android:id="@+id/empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/unread_reviews_filter_layout"
+            android:visibility="gone"
+            tools:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/notifsLoadMoreProgress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/major_75"
+            android:visibility="gone"
+            tools:visibility="gone" />
+    </RelativeLayout>
+</com.woocommerce.android.widgets.ScrollChildSwipeRefreshLayout>

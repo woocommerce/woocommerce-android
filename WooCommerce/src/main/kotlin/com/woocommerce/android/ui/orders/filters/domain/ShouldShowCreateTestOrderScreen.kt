@@ -3,8 +3,8 @@ package com.woocommerce.android.ui.orders.filters.domain
 import com.woocommerce.android.extensions.isSitePublic
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.list.OrderListRepository
-import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -27,7 +27,7 @@ class ShouldShowCreateTestOrderScreen @Inject constructor(
 
         val productList = localProductList.ifEmpty {
             withContext(Dispatchers.IO) {
-                productListRepository.fetchProductList()
+                productListRepository.fetchProductList().getOrNull() ?: productListRepository.getProductList()
             }
         }
 

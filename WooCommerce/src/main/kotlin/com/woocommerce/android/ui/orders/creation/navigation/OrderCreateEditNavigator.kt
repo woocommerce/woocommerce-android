@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavi
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.util.FeatureFlag
 
 object OrderCreateEditNavigator {
     @Suppress("LongMethod", "ComplexMethod")
@@ -36,7 +37,8 @@ object OrderCreateEditNavigator {
 
             is SelectItems -> {
                 val flow = when (target.mode) {
-                    OrderCreateEditViewModel.Mode.Creation -> ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
+                    is OrderCreateEditViewModel.Mode.Creation ->
+                        ProductSelectorViewModel.ProductSelectorFlow.OrderCreation
                     is OrderCreateEditViewModel.Mode.Edit -> ProductSelectorViewModel.ProductSelectorFlow.OrderEditing
                 }
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToProductSelectorFragment(
@@ -56,9 +58,17 @@ object OrderCreateEditNavigator {
                     .actionOrderCreationFragmentToOrderDetailFragment(target.orderId, target.startPaymentFlow)
             }
 
-            is EditShipping ->
-                OrderCreateEditFormFragmentDirections
-                    .actionOrderCreationFragmentToOrderCreationShippingFragment(target.currentShippingLine)
+            is EditShipping -> {
+                if (FeatureFlag.EOSL_M1.isEnabled()) {
+                    OrderCreateEditFormFragmentDirections
+                        .actionOrderCreationFragmentToOrderCreateEditUpdateShippingFragment(
+                            target.currentShippingLine
+                        )
+                } else {
+                    OrderCreateEditFormFragmentDirections
+                        .actionOrderCreationFragmentToOrderCreationShippingFragment(target.currentShippingLine)
+                }
+            }
 
             is EditCoupon ->
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToOrderCreationCouponEditFragment(
@@ -93,6 +103,11 @@ object OrderCreateEditNavigator {
                 OrderCreateEditFormFragmentDirections.actionOrderCreationFragmentToAutoTaxRateDetailsFragment(
                     target.state
                 )
+            }
+
+            is OrderCreateEditNavigationTarget.SimplePaymentsMigrationBottomSheet -> {
+                OrderCreateEditFormFragmentDirections
+                    .actionOrderCreationFragmentToSimplePaymentsMigrationBottomSheetFragment()
             }
 
             is OrderCreateEditNavigationTarget.EditDiscount -> {

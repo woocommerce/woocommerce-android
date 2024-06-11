@@ -7,7 +7,7 @@ import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUpload
 import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import kotlinx.coroutines.*

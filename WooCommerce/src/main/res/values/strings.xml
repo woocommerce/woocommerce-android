@@ -134,6 +134,7 @@
     <string name="selection_count">%d selected</string>
     <string name="please_wait">Please wait…</string>
     <string name="other">Other</string>
+    <string name="na">N/A</string>
     <string name="free">free</string>
     <string name="and">and</string>
     <string name="generic_string" translatable="false">%s</string>
@@ -158,6 +159,7 @@
     <string name="last_update">Last update: %s</string>
     <string name="last_update_with_frequency">Last update %s (Updates every 30 minutes)</string>
     <string name="receipt_fetching_error">Sorry, we couldn\'t load a receipt for this order</string>
+    <string name="store_name_default">Store name</string>
 
     <!--
         Date/Time Labels
@@ -180,6 +182,7 @@
     <string name="date_timeframe_older_month">Older than a month</string>
     <string name="date_at_time">%1$s at %2$s</string>
     <string name="date_compared_to">Compared to</string>
+    <string name="images_unavailable_notice">The images are unavailable because your site is marked Private. You can change this by switching to Coming Soon mode.\n<a href="">Tap to learn more.</a></string>
     <!--
         Error Strings
     -->
@@ -214,7 +217,8 @@
     <string name="login_with_store_address">Log in with your store address</string>
     <string name="login_configure_link">Read the %1$sconfiguration instructions%2$s.</string>
     <string name="login_with_qr_code">Scan QR code to login</string>
-
+    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
+    <string name="login_application_passwords_help">What are Application Passwords?</string>
     <string name="login_prologue_label_analytics">Track sales and high performing products</string>
     <string name="login_prologue_label_orders">Manage and edit orders on the go</string>
     <string name="login_prologue_label_products">Edit and add new products from anywhere</string>
@@ -230,6 +234,8 @@
     <string name="login_prologue_survey_button_edit_products">Create or update my products</string>
     <string name="login_prologue_survey_button_manage_orders">Manage my orders</string>
     <string name="login_prologue_survey_button_switch_stores">Switch between multiple stores</string>
+
+    <string name="login_prologue_start_new_store">Starting a new store?</string>
 
     <string name="login_pick_store">Select store to connect</string>
     <string name="login_non_woo_stores_label">Other sites</string>
@@ -285,7 +291,7 @@
     <string name="user_role_access_error_retry">You don\'t have the correct user role</string>
     <string name="user_access_verifying">Verifying role…</string>
     <string name="login_site_picker_enter_site_address">Enter a site address</string>
-    <string name="login_site_picker_add_a_store">Add a Store</string>
+    <string name="login_site_picker_add_a_store">Connect another store</string>
     <string name="site_discovery_postlogin_failure">A failure occurred, please contact support</string>
     <string name="login_site_picker_new_to_woo">New to WooCommerce</string>
     <string name="login_simple_wpcom_site">The site %1$s is currently on a WordPress.com plan that does not support plugin installation. Please upgrade your plan to use WooCommerce.</string>
@@ -298,7 +304,6 @@
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
     <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
-    <string name="login_create_an_account">Create An Account</string>
     <string name="site_picker_create_new_store">Create a new store</string>
     <string name="site_picker_connect_existing_store">Connect an existing store</string>
     <string name="login_jetpack_installation_screen_title">Connect store</string>
@@ -366,6 +371,8 @@
     <string name="dashboard_stats_granularity_weeks">Weeks</string>
     <string name="dashboard_stats_granularity_months">Months</string>
     <string name="dashboard_stats_granularity_years">Years</string>
+    <string name="dashboard_stats_edit_granularity_content_description">Change date range button</string>
+    <string name="dashboard_filter_menu_content_description">Open filter dropdown</string>
 
     <string name="dashboard_stats_visitors">Visitors</string>
     <string name="dashboard_stats_orders">Orders</string>
@@ -375,27 +382,77 @@
     <string name="dashboard_stats_error">Error fetching data</string>
     <string name="dashboard_stats_error_content_description">Error image</string>
     <string name="dashboard_stats_todays_stats">Today\'s Stats</string>
+    <string name="dashboard_stats_custom_range_label">Custom</string>
 
-    <string name="dashboard_top_performers_title">Top performers</string>
     <string name="dashboard_top_performers_items_sold">Items Sold</string>
     <string name="dashboard_top_performers_total_orders">Total orders: %s</string>
     <string name="dashboard_top_performers_empty">No activity this period</string>
     <string name="dashboard_top_performers_net_sales">Net sales: %s</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Unable to load the top performers</string>
 
     <string name="dashboard_action_view_order">View Order</string>
     <string name="dashboard_action_view_orders">View Orders</string>
+    <string name="dashboard_action_view_all_orders">View all orders</string>
 
-    <string name="my_store_stats_reverted_title">Upgrade to keep seeing your stats</string>
-    <string name="my_store_stats_reverted_message">We\'ve rolled out improvements to our analytics. Upgrade to WooCommerce 4.0 or above or install WooCommerce Admin plugin to keep seeing your stats after September 1, 2020.</string>
-    <string name="my_store_stats_availability_title">We can\'t display your\n store\'s analytics</string>
-    <string name="my_store_stats_availability_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Admin activated.\n\nStill need help? %1$s</string>
-    <string name="my_store_stats_availability_contact_us">Contact us</string>
+    <string name="dashboard_action_view_all_messages">View all messages</string>
+
+    <string name="my_store_stats_plugin_inactive_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
+    <string name="my_store_custom_range_granularity_label">%s interval</string>
+    <string name="my_store_custom_range_granularity_hour">Hourly</string>
+    <string name="my_store_custom_range_granularity_day">Daily</string>
+    <string name="my_store_custom_range_granularity_week">Weekly</string>
+    <string name="my_store_custom_range_granularity_month">Monthly</string>
+    <string name="my_store_custom_range_granularity_year">Yearly</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_title">Visitors and conversion data not available</string>
+    <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
+    <string name="my_store_edit_screen_widgets">Customize</string>
 
+    <string name="my_store_widget_onboarding_title">Store setup</string>
+    <string name="my_store_widget_stats_title">Performance</string>
+    <string name="my_store_widget_top_products_title">Top performers</string>
+    <string name="my_store_widget_blaze_title">Blaze campaigns</string>
+    <string name="my_store_widget_feedback_title">Feedback</string>
+    <string name="my_store_widget_orders_title">Most recent orders</string>
+    <string name="my_store_widget_reviews_title">Most recent reviews</string>
+    <string name="my_store_widget_coupons_title">Most active coupons</string>
+    <string name="my_store_widget_product_stock_title">Stock</string>
+
+    <string name="my_store_widget_unavailable">Unavailable</string>
+    <string name="my_store_widget_onboarding_completed">Completed</string>
+
+    <string name="dynamic_dashboard_widget_menu_item_hide">Hide %s</string>
+    <string name="dynamic_dashboard_widget_error_title">Unable to load data</string>
+    <string name="dynamic_dashboard_widget_error_description"><![CDATA[Try reloading this card. If the issue persists, please <a href="support">contact support</a>.]]></string>
+
+    <string name="dashboard_reviews_card_header_title">Status</string>
+    <string name="dashboard_reviews_card_empty_title_filtered">No reviews found</string>
+    <string name="dashboard_reviews_card_empty_message_filtered">No reviews match the selected filter, please try changing the filter</string>
+    <string name="dashboard_reviews_card_view_all_button">View all reviews</string>
+
+    <string name="dashboard_coupons_card_header_coupons">Coupons</string>
+    <string name="dashboard_coupons_card_header_uses">Uses</string>
+    <string name="dashboard_coupons_view_all_button">View all coupons</string>
+    <string name="dashboard_coupons_card_empty_view_message">No coupon usage during this period</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Unable to load coupon usage report</string>
+
+    <string name="dashboard_wcanalytics_inactive_description">Make sure you are running the latest version of WooCommerce on your site and that you have WooCommerce Analytics activated.</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Still need help? Contact us</string>
+
+    <string name="dashboard_product_stock_status_header_title">Status</string>
+    <string name="dashboard_product_stock_levels">Stock levels</string>
+    <string name="dashboard_product_stock_products">Products</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d items sold in last 30 days</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">No items sold in the last 30 days</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Unable to load product stock reports</string>
+    <string name="dashboard_product_stock_empty_products">No products found for the selected stock status</string>
+
+    <string name="dashboard_new_widgets_card_title">Looking for more insights?</string>
+    <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>
+    <string name="dashboard_new_widgets_card_button">Add new Sections</string>
     <!--
         Sign Up Flow
     -->
-    <string name="signup_get_started_button">Create a new store</string>
     <string name="signup_get_started_label">Get started in minutes</string>
     <string name="signup_create_password_label">Create your password</string>
     <string name="signup_get_started_create_account_label">First, let’s create your account. </string>
@@ -412,7 +469,7 @@
     <!--
         Analytics View
     -->
-    <string name="analytics_see_more">See more</string>
+    <string name="analytics_section_see_all">View all store analytics</string>
     <string name="analytics_date_range_to_date">%1$s (%2$s)</string>
     <string name="analytics_date_range_from_date">vs Previous Period (%1$s)</string>
     <string name="analytics_date_range_custom">%1$s - %2$s</string>
@@ -434,19 +491,28 @@
     <string name="analytics_revenue_no_data">No revenue this period</string>
     <string name="analytics_orders_no_data">No orders this period</string>
     <string name="analytics_products_no_data">No products this period</string>
+    <string name="analytics_gift_cards_no_data">No gift cards this period</string>
     <string name="analytics_session_no_data">No sessions this period</string>
+    <string name="analytics_session_no_available">Session data unavailable</string>
+    <string name="analytics_session_no_available_description">Session analytics rely on unique visitor counts not available for custom date ranges</string>
     <string name="analytics_total_sales_title">Total sales</string>
+    <string name="analytics_used_title">Used</string>
     <string name="analytics_net_sales_title">Net sales</string>
     <string name="analytics_information_card_delta" translatable="false">%1$s%2$d%%</string>
     <string name="analytics_orders_card_title">Orders</string>
     <string name="analytics_total_orders_title">Total Orders</string>
     <string name="analytics_avg_orders_title">Average Order Value</string>
     <string name="analytics_products_list_items_sold">Items sold</string>
+    <string name="analytics_bundles_list_items_sold">Bundles sold</string>
     <string name="analytics_products_card_title">Products</string>
     <string name="analytics_products_list_header_title">Products</string>
+    <string name="analytics_bundles_list_header_title">Bundles</string>
     <string name="analytics_products_list_header_subtitle">Items sold</string>
+    <string name="analytics_bundles_list_header_subtitle">Bundles sold</string>
     <string name="analytics_products_list_item_description">Net sales: %1$s</string>
     <string name="analytics_session_card_title">Sessions</string>
+    <string name="analytics_bundles_card_title">Bundles</string>
+    <string name="analytics_gift_cards_card_title">Gift Cards</string>
     <string name="analytics_conversion_subtitle">Conversion Rate</string>
     <string name="analytics_visitors_subtitle">Visitors</string>
     <string name="analytics_item">item</string>
@@ -487,19 +553,26 @@
     <string name="error_troubleshooting">Troubleshooting</string>
     <string name="orderlist_timeout_error_title">Your site is taking a long time to respond</string>
     <string name="orderlist_timeout_error_message">Please try again later or reach out to us and we\'ll be happy to assist you</string>
-    <string name="orderlist_connectivity_tool_title">Connectivity Test</string>
-    <string name="orderlist_connectivity_tool_internet_check_title">Internet Connection</string>
+    <string name="orderlist_connectivity_tool_title">Troubleshoot Connection</string>
+    <string name="orderlist_connectivity_tool_subtitle">Please wait while we attempt to identify your connection issue.</string>
+    <string name="orderlist_connectivity_tool_internet_check_title">Internet connection</string>
     <string name="orderlist_connectivity_tool_internet_check_suggestion">It looks like you\'re not connected to the internet.\n\nEnsure your Wi-Fi is turned on. If you\'re using mobile data, make sure it\'s enabled in your device settings.</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_title">WordPress.com servers</string>
-    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">Oops! It seems we can\'t connect to WordPress.com at the moment.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
-    <string name="orderlist_connectivity_tool_store_check_title">Your site</string>
-    <string name="orderlist_connectivity_tool_store_orders_check_title">Your site orders</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_title">Connecting to WordPress.com servers</string>
+    <string name="orderlist_connectivity_tool_wordpress_check_suggestion">We can\'t connect to WordPress.com right now.\n\nTry again in a few minutes, or contact our support team and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_store_check_title">Connecting to your site</string>
+    <string name="orderlist_connectivity_tool_store_orders_check_title">Fetching your site orders</string>
     <string name="orderlist_connectivity_tool_contact_support_action">Contact Support</string>
     <string name="orderlist_connectivity_tool_read_more_action">Read More</string>
-    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Oops! Your site seems to be taking too long to respond.\n\nContact your hosting provider for further assistance.</string>
-    <string name="orderlist_connectivity_tool_parsing_error_suggestion">Oops! It seems we can\'t work properly with your site\'s response.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
-    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">Oops! There seems to be a problem with your jetpack connection.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
-    <string name="orderlist_connectivity_tool_generic_error_suggestion">Oops! There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_retry_action">Retry connection</string>
+    <string name="orderlist_connectivity_tool_return_action">Return to the previous screen</string>
+    <string name="orderlist_connectivity_tool_timeout_error_suggestion">Your site seems to be taking too long to respond.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_parsing_error_suggestion">It seems we can\'t work properly with your site\'s response.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_jetpack_error_suggestion">There seems to be a problem with your jetpack connection.\n\nBut don\'t worry, our support team is here to help. Contact us and we will happily assist you.</string>
+    <string name="orderlist_connectivity_tool_generic_error_suggestion">There seems to be a problem with your site.\n\nContact your hosting provider for further assistance.</string>
+    <string name="orderlist_connectivity_tool_summary_title">No connection issues</string>
+    <string name="orderlist_connectivity_tool_summary_suggestion">If your data still isn\'t loading, contact our support team for assistance.</string>
+    <string name="orderlist_order_trashed">Order trashed</string>
+    <string name="orderlist_order_trashed_error">Error trashing order</string>
 
     <!--
          Simple Payments
@@ -524,6 +597,17 @@
     <string name="simple_payments_share_payment_dialog_title">Checkout - %s</string>
 
     <!--
+     Cash Payments
+    -->
+    <string name="cash_payments_take_payment_title">Take payment (%s)</string>
+    <string name="cash_payments_cash_received">Cash received</string>
+    <string name="cash_payments_change_due">Change due</string>
+    <string name="cash_payments_record_transaction_details">Record transaction details in order note</string>
+    <string name="cash_payments_mark_order_as_complete">Mark Order as Complete</string>
+    <string name="cash_payments_order_note_text">The order was paid by cash. Customer paid %s. The change due was %s.</string>
+    <string name="cash_payments_order_note_adding_error">Error adding order note</string>
+
+    <!--
          Custom Amounts
     -->
     <string name="custom_amounts_dialog_title">Custom Amount</string>
@@ -540,6 +624,7 @@
     <string name="custom_amounts_bottom_sheet_percentage_amount_option">A percentage of the order total</string>
     <string name="custom_amounts_percentage_hint">0</string>
     <string name="custom_amounts_percentage_symbol">%</string>
+    <string name="custom_amounts_percentage_invalid_value">Invalid value</string>
 
     <!--
          Taxes
@@ -558,6 +643,7 @@
     <string name="orderlist_bottom_sheet_simple_payments_moved_button">Got it!</string>
     <string name="order_list_barcode_scanning_scanning_failed">Scanning failed. Please try again later</string>
     <string name="order_creation_fragment_title">New order</string>
+    <string name="order_creation_tablet_mode_fragment_title">Order Summary</string>
     <string name="order_creation_price_after_discount">Price after discount</string>
     <string name="order_creation_products_order_count">Order count</string>
     <string name="order_creation_status_edit_content_description">Edit order status</string>
@@ -572,6 +658,7 @@
     <string name="order_creation_add_products">Add products</string>
     <string name="order_creation_add_custom_amounts">Add custom amount</string>
     <string name="order_creation_add_product_via_barcode_scanning">Add products via scanner</string>
+    <string name="order_creation_scan_products">Scan products</string>
     <string name="order_creation_set_tax_rate">Set New Tax Rate</string>
     <string name="order_creation_edit_tax_rate">Edit Tax Rate Setting</string>
     <string name="order_creation_add_fee">Add fee</string>
@@ -625,7 +712,17 @@
     <string name="order_creation_payment_tax_label">Taxes</string>
     <string name="order_creation_shipping_name">Name</string>
     <string name="order_creation_shipping_title_add">Add Shipping</string>
+    <string name="order_creation_shipping_title_edit">Edit Shipping</string>
+    <string name="order_creation_shipping_methods_title">Method</string>
+    <string name="order_creation_shipping_methods_error">Error while fetching your shipping methods. Please try again</string>
+    <string name="order_creation_shipping_add">Add Shipping</string>
+    <string name="order_creation_shipping_edit">Edit Shipping</string>
     <string name="order_creation_add_shipping">Add shipping</string>
+    <string name="order_creation_add_shipping_method">Method</string>
+    <string name="order_creation_add_shipping_amount">Amount</string>
+    <string name="order_creation_add_shipping_name">Name</string>
+    <string name="order_creation_add_shipping_name_hint">Shipping</string>
+    <string name="order_creation_add_shipping_method_select_hint">Select a shipping method</string>
     <string name="order_creation_edit_shipping">Shipping</string>
     <string name="order_creation_remove_shipping">Remove shipping from order</string>
     <string name="order_creation_add_fee_removal_hint">Remove fee from order</string>
@@ -659,10 +756,19 @@
     <string name="order_creation_gift_card_text_field_hint">Enter code</string>
     <string name="order_creation_gift_card_text_error">The code should be in XXXX-XXXX-XXXX-XXXX format</string>
     <string name="order_creation_collect_payment_button">Collect Payment</string>
+    <string name="order_creation_recalculate_button">Recalculate</string>
     <string name="order_creation_expand_collapse_order_totals">Expand collapse order totals</string>
     <string name="order_creation_payment_shipping_tax_label">Shipping Tax</string>
+    <string name="order_creation_simple_payment_migration_title">Collect Payment \nhas moved</string>
+    <string name="order_creation_simple_payment_migration_message_one">We’ve combined payment collection with\norder creation, making it more accessible\nand more powerful.</string>
+    <string name="order_creation_simple_payment_migration_message_two">To set a payment amount, add\na custom amount to your new order.</string>
+    <string name="order_creation_simple_payment_migration_button">Add a Custom Amount</string>
     <string name="customer_picker_guest_customer_not_allowed_message">This user is a guest, and guests can\'t be used for filtering orders.</string>
     <string name="customer_picker_guest">Guest</string>
+
+    <string name="order_creation_shipping_feedback_title">Shipping added!</string>
+    <string name="order_creation_shipping_feedback_message">Does Woo make shipping easy?</string>
+    <string name="order_creation_feedback_action">Share your feedback</string>
 
     <!--
          Barcode Scanning
@@ -724,6 +830,12 @@
     <string name="domain_registration_country_picker_dialog_title">Select Country</string>
     <string name="domain_registration_state_picker_dialog_title">Select State</string>
     <string name="domain_registration_generic_error">An error occurred during domain registration</string>
+    <string name="domain_picker_title">Choose a domain</string>
+    <string name="domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
+    <string name="domain_picker_hint">Type a domain</string>
+    <string name="domain_picker_suggestions_title">Suggestions</string>
+    <string name="domain_picker_empty_suggestions">No available domains for this search</string>
+    <string name="domain_picker_suggestions_error">Unable to load domain suggestions</string>
 
     <!--
         Order Editing
@@ -907,6 +1019,7 @@
     <string name="order_detail_use_as_shipping_address">Use as Shipping Address</string>
     <string name="order_detail_payment_header">PAYMENT TOTALS</string>
     <string name="order_detail_custom_amounts_header">CUSTOM AMOUNTS</string>
+    <string name="order_detail_shipping_header">SHIPPING</string>
     <string name="order_detail_attribution_header">Order attribution</string>
     <string name="order_detail_attribution_origin">Origin</string>
     <string name="order_detail_attribution_organic_origin">Organic: %1$s</string>
@@ -922,6 +1035,8 @@
     <string name="order_detail_attribution_campaign">Medium</string>
     <string name="order_detail_attribution_device_type">Device type</string>
     <string name="order_detail_attribution_session_page_views">Session page views</string>
+    <string name="order_detail_move_to_trash">Move to trash</string>
+    <string name="order_detail_trash_order_dialog_message">Do you want to move this order to the trash?</string>
 
     <!--
         Shipping label Refunds
@@ -1423,9 +1538,7 @@
     <string name="card_reader_tap_to_pay_about_important_info_description_3">To accept payments above this limit, consider purchasing a card reader that accepts PIN entry.</string>
     <string name="card_reader_tap_to_pay_about_important_info_button">Learn more about card readers</string>
     <string name="card_reader_tap_to_pay_about_how_works_title">How it works</string>
-    <string name="card_reader_tap_to_pay_about_how_works_1">1. %1$s or %2$s</string>
-    <string name="card_reader_tap_to_pay_about_how_works_create_order">Create an order</string>
-    <string name="card_reader_tap_to_pay_about_how_works_collect_payment">collect a payment</string>
+    <string name="card_reader_tap_to_pay_about_how_works_1_updated">1. Create an order</string>
     <string name="card_reader_tap_to_pay_about_how_works_2">2. Tap “Collect Payment” and choose “Tap to Pay”.</string>
     <string name="card_reader_tap_to_pay_about_how_works_3">3. Present your phone to the customer.</string>
     <string name="card_reader_tap_to_pay_about_how_works_4">4. Your customer holds their card horizontally at the top of your phone, over the contactless symbol.</string>
@@ -1873,6 +1986,7 @@
     <string name="product_view_in_store">View product on store</string>
     <string name="product_view_affiliate">View affiliate product</string>
     <string name="product_stock_status_instock">In stock</string>
+    <string name="product_stock_status_low_stock">Low stock</string>
     <string name="product_stock_status_instock_quantified">%s in stock</string>
     <string name="product_stock_status_instock_with_variations">In stock \u2022 %d variations</string>
     <string name="product_stock_status_out_of_stock">Out of stock</string>
@@ -1899,6 +2013,9 @@
     <string name="product_list_filters_selected">Filters \u2022 %d</string>
     <string name="product_list_filters_show_products">Show products</string>
     <string name="product_list_filters_list_item">Selected filter option</string>
+    <string name="product_list_unsaved_product_unselected_title">You about to discard changes to %s</string>
+    <string name="product_list_unsaved_product_unselected_message">Are you sure you want to discard the changes you made to this product?</string>
+    <string name="product_list_fetch_error">Error fetching products!</string>
     <string name="product_search_hint">Search products</string>
     <string name="product_search_hint_active_filters">Search filtered products</string>
     <string name="product_search_all">All products</string>
@@ -1984,16 +2101,22 @@
     <string name="product_variation_no_price_set">No price set</string>
     <string name="product_categories">Categories</string>
     <string name="product_category_empty">Add category</string>
+    <string name="product_category_clear_parent">Clear parent category</string>
     <string name="product_category_list_empty_title">Add your first category</string>
     <string name="product_category_list_empty_message">Organise your products in categories</string>
     <string name="product_add_category">Add category</string>
     <string name="add_product_category_success">Product category added</string>
+    <string name="update_product_category_success">Product category updated</string>
+    <string name="delete_product_category_success">Product category deleted</string>
     <string name="add_product_category_duplicate">Error creating category - Name already exists on your site.</string>
     <string name="add_product_category_failed">Error creating category</string>
+    <string name="delete_product_category_failed">Error deleting category</string>
     <string name="add_product_category_empty">Enter a category name</string>
     <string name="product_category_name">Category name</string>
     <string name="product_category_parent">Parent category</string>
     <string name="product_add_category_dialog_title">Adding category</string>
+    <string name="product_update_category_dialog_title">Updating category</string>
+    <string name="product_removing_category_dialog_title">Removing category</string>
     <string name="product_add_category_dialog_message">Please wait…</string>
     <string name="product_tag_empty">Add tag</string>
     <string name="product_tags">Tags</string>
@@ -2010,6 +2133,7 @@
     <string name="product_selection_count_single">%d product selected</string>
     <string name="product_selection_menu_update_status">Update status</string>
     <string name="product_selection_menu_update_price">Update price</string>
+    <string name="product_selection_menu_update_stock_status">Update stock status</string>
     <string name="product_selection_menu_select_all">Select all</string>
     <string name="product_detail_save_as_draft">Save as draft</string>
     <string name="product_detail_linked_products">Linked products</string>
@@ -2273,7 +2397,7 @@
     <string name="settings_tracking_analytics_error_update">There was an error updating your privacy settings</string>
     <string name="settings_more_privacy_options_header">More privacy options</string>
     <string name="settings_web_options">Web Options</string>
-    <string name="settings_web_options_description">More privacy options available for woo.com users. Check here to learn more.</string>
+    <string name="settings_web_options_description">More privacy options available for woocommerce.com users. Check here to learn more.</string>
     <string name="settings_usage_tracking">Usage Tracking</string>
     <string name="settings_usage_tracking_description">Learn more about the data we collect about your store and your options to control this data sharing.</string>
     <string name="settings_privacy_header">Privacy</string>
@@ -2305,10 +2429,12 @@
     <string name="settings_card_reader_manuals">Card Reader Manuals</string>
     <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
+    <string name="settings_store_name">Store name</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
     <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
     <string name="settings_notifs_enable_chaching_sound_description">Orders notifications sound has been disabled, turn it back on to hear the \'cha-ching\' with every new sale.</string>
+    <string name="settings_notifs_restore_chaching_sound_description">Orders notifications sound has been modified, use this button to restore the \'cha-ching\' sound.</string>
     <string name="settings_image_optimization_title">Image optimization</string>
     <string name="settings_image_optimization_message">Resize and compress images for faster uploading</string>
     <string name="settings_about">About the app</string>
@@ -2336,6 +2462,11 @@
     <string name="settings_plugins">Plugins</string>
     <string name="settings_option_installed_plugins">Installed Plugins</string>
     <string name="settings_woo_plugin_version">WooCommerce Version</string>
+    <string name="plugin_state_up_to_date">Up-to-date</string>
+    <string name="plugin_state_update_available">Update available (%s)</string>
+    <string name="plugin_state_inactive">Inactive</string>
+    <string name="plugin_state_auto_managed">Auto-managed</string>
+    <string name="plugins_error_message">An error occurred while loading installed plugins</string>
 
     <!--
         Developer Options Screen
@@ -2496,6 +2627,7 @@
 
     <string name="google_error_timeout">Google took too long to respond. You may need to wait until you have a stronger internet connection.</string>
 
+    <string name="login_invalid_credentials_message">It seems the username or password you entered doesn\'t quite match. Double-check your credentials and try again.</string>
     <string name="username_or_password_incorrect">The username or password you entered is incorrect</string>
     <string name="cannot_add_duplicate_site">This site already exists in the app, you can\'t add it.</string>
     <string name="duplicate_site_detected">A duplicate site has been detected.</string>
@@ -3190,7 +3322,7 @@
     <string name="get_started">Get Started</string>
     <string name="lets_get_started">Let\'s get started!</string>
     <string name="simplified_login_prologue_intro">The ecommerce platform that grows with you</string>
-    <string name="simplified_login_prologue_title">Start with our 15-day free trial, no credit card needed. Join 3.4M stores thriving with Woo, from first sale to millions.</string>
+    <string name="simplified_login_prologue_title">From your first sale to millions in revenue, Woo is with you. See why merchants trust us to power 3.4 million online stores.</string>
     <string name="check_email">Check email</string>
     <string name="login_text_otp">Text me a code instead</string>
     <string name="login_text_otp_another">Text me another code instead</string>
@@ -3322,132 +3454,6 @@
     <string name="stats_widget_last_updated_message">As of %1$s</string>
 
     <!--
-    Store creation
-    -->
-    <string name="store_creation_iap_eligibility_loading_title">We are getting ready for your store creation</string>
-    <string name="store_creation_iap_eligibility_loading_subtitle">Please remain connected.</string>
-    <string name="store_creation_iap_eligibility_check_error_title">Store Creation Unavailable </string>
-    <string name="store_creation_iap_eligibility_check_error_not_available_for_country">Store creation from the mobile app is currently unavailable for your country.</string>
-    <string name="store_creation_iap_eligibility_check_error_existing_subscription">You can only purchase the eCommerce plan from the mobile app once. To create additional sites visit our website.</string>
-    <string name="store_creation_iap_eligibility_check_generic_error">Store creation is currently unavailable. Please, try again later.</string>
-    <string name="store_creation_iap_eligibility_network_error">A network error occurred. Please check your connection and try again.</string>
-    <string name="store_creation_iap_eligibility_existing_purchase_not_acknowledged">You already have an active eCommerce subscription, please contact support if you are experiencing issues with your current subscription not linked to your new site.</string>
-    <string name="store_creation_create_new_store_label">Create a new store</string>
-    <string name="store_creation_cannot_load_store">Couldn\'t load your store.\nPlease try again…</string>
-    <string name="store_creation_in_progress">Creating your store…</string>
-    <string name="store_creation_exit_dialog_title">Do you want to leave?</string>
-    <string name="store_creation_exit_dialog_message">You will lose all your store information.</string>
-    <string name="store_creation_confirm_and_leave">Confirm and leave</string>
-    <string name="store_creation_in_progress_title_1">Almost there! Your store\nis taking shape </string>
-    <string name="store_creation_in_progress_title_2">Extending your store\'s \ncapabilities</string>
-    <string name="store_creation_in_progress_title_3">Turning on the lights</string>
-    <string name="store_creation_in_progress_title_4">Opening the doors</string>
-    <string name="store_creation_in_progress_description_1">You will be notified once the store is ready! Sit back, relax, and let us work our magic while sharing helpful tips. 🔮</string>
-    <string name="store_creation_in_progress_description_2">&lt;b&gt;#Track sales and popular products:&lt;/b&gt; Stay on top of real-time sales and popular products to boost your store\'s profitability.</string>
-    <string name="store_creation_in_progress_description_3">&lt;b&gt;#Manage and create orders:&lt;/b&gt; Search, update, or create new orders instantly. Simplify your order process.</string>
-    <string name="store_creation_in_progress_description_4">&lt;b&gt;#Take payments in person:&lt;/b&gt; Enhance sales with in-person payments. Secure card transactions with our app or compatible readers.</string>
-
-    <string name="store_creation_domain_picker_title">Choose a domain</string>
-    <string name="store_creation_domain_picker_subtitle">This is where people will find you on the Internet. Don\'t worry, you can change it later.</string>
-    <string name="store_creation_domain_picker_hint">Type a domain</string>
-    <string name="store_creation_domain_picker_suggestions_title">Suggestions</string>
-    <string name="store_creation_domain_picker_empty_suggestions">No available domains for this search</string>
-    <string name="store_creation_domain_picker_suggestions_error">Unable to load domain suggestions</string>
-
-    <string name="store_creation_summary_title">My Store</string>
-    <string name="store_creation_summary_subtitle">Your store will be created based on the options of your choice!</string>
-    <string name="store_creation_summary_primary_button">Continue to payment</string>
-
-    <string name="store_creation_ecommerce_plan_error">Couldn\'t load the plan information…</string>
-    <string name="store_creation_ecommerce_plan_purchase_error">Couldn\'t complete the purchase…</string>
-    <string name="store_creation_ecommerce_store_loading_error">Couldn\'t load your new store. Please wait a bit and try again…</string>
-    <string name="store_creation_ecommerce_store_loading_permanent_error">Something went wrong during store installation…</string>
-    <string name="store_creation_ecommerce_plan_features_tagline">All the features you need, already built in.</string>
-    <string name="store_creation_ecommerce_plan_powered_by">Powered by</string>
-    <string name="store_creation_ecommerce_plan_wordpress" translatable="false">WordPress.com</string>
-    <string name="store_creation_ecommerce_plan_purchase_button_title">Create Store for %1$s</string>
-    <string name="store_creation_ecommerce_plan_refund_reminder">There\'s no risk, you can cancel for a full refund within 30 days.</string>
-    <string name="store_creation_ecommerce_plan_period_month">month</string>
-    <string name="store_creation_ecommerce_plan_period_year">year</string>
-    <string name="store_creation_ecommerce_plan_period_two_years">2 years</string>
-    <string name="store_creation_ecommerce_plan_feature_themes">Premium themes</string>
-    <string name="store_creation_ecommerce_plan_feature_products">Unlimited products</string>
-    <string name="store_creation_ecommerce_plan_feature_subscriptions">Subscriptions &amp; giftcards</string>
-    <string name="store_creation_ecommerce_plan_feature_reports">Ecommerce reports</string>
-    <string name="store_creation_ecommerce_plan_feature_payments">Multiple payment options</string>
-    <string name="store_creation_ecommerce_plan_feature_shipping_labels">Shipping labels</string>
-    <string name="store_creation_ecommerce_plan_feature_sales">Sales channels</string>
-    <string name="store_creation_installation_error">An error occurred during installation, please try again…</string>
-    <string name="store_creation_installation_success">Your store has been created!</string>
-    <string name="store_creation_installation_manage_store_button">Manage my store</string>
-    <string name="store_creation_installation_show_preview_button">Store preview</string>
-    <string name="store_creation_installation_rendering_preview_label">Rendering preview…</string>
-    <string name="store_creation_installation_async_dialog_title">Your new store is ready</string>
-    <string name="store_creation_installation_async_dialog_message">Do you want to start managing it now?</string>
-    <string name="store_creation_installation_async_dialog_switch_store">Switch Store</string>
-    <string name="store_creation_store_name_caption">About your store</string>
-    <string name="store_creation_store_name_title">What’s your store name?</string>
-    <string name="store_creation_store_name_subtitle">Don’t worry, you can always change it later. </string>
-    <string name="store_creation_store_name_hint">Store name</string>
-    <string name="store_creation_store_name_default">Store name</string>
-    <string name="store_creation_store_name_settings_option">Store name</string>
-
-    <string name="store_creation_store_profiler_industries_header">About your store</string>
-    <string name="store_creation_store_profiler_industries_title">What do you plan to sell\nin your store?</string>
-    <string name="store_creation_store_profiler_industries_description">Choose a category that defines\nyour business the best.</string>
-    <string name="store_creation_store_profiler_industries_search_hint">Type a category</string>
-    <string name="store_creation_profiler_options_search_empty">No available results for this search</string>
-    <string name="store_creation_store_profiler_journey_title">Which one of these best\ndescribes you?</string>
-    <string name="store_creation_store_profiler_journey_description">Let us know where you are in your\ncommerce journey so that we can tailor\nyour Woo experience for you.</string>
-    <string name="store_creation_store_profiler_platforms_title">Which platform(s) are\nyou currently using?</string>
-    <string name="store_creation_store_profiler_platforms_description">You can choose multiple ones.</string>
-    <string name="store_profiler_challenge_title">What challenges you in\nstarting or running an\nonline Store?</string>
-    <string name="store_profiler_challenge_description">Choose your concerns or difficulties below. You can select more than one option.</string>
-    <string name="store_profiler_challenge_setting_up_online_store">Setting up the online store</string>
-    <string name="store_profiler_challenge_finding_customers">Finding customers</string>
-    <string name="store_profiler_challenge_managing_inventory">Managing inventory</string>
-    <string name="store_profiler_challenge_shipping_and_logistics">Shipping and logistics</string>
-    <string name="store_profiler_challenge_other">Other</string>
-
-    <string name="store_profiler_features_title">Which features are you\nmost interested in?</string>
-    <string name="store_profiler_features_description">Let us know what you are looking\nforward to using in our app.</string>
-    <string name="store_profiler_features_main_button">Create my store</string>
-    <string name="store_profiler_features_product_management">Easy product management and inventory tracking</string>
-    <string name="store_profiler_features_sales_analytics">Comprehensive sales and analytics reports</string>
-    <string name="store_profiler_features_payment_options">Flexible and secure payment options</string>
-    <string name="store_profiler_features_ipp">In-person payment</string>
-    <string name="store_profiler_features_scale_business">Ability to scale as my business grows</string>
-    <string name="store_profiler_features_store_customization">Customization options for my store design</string>
-    <string name="store_profiler_features_plugins_and_extensions">Access to a wide range of plugins and extensions</string>
-    <string name="store_profiler_features_other">Other</string>
-
-    <string name="store_creation_country_picker_title">Where is your business located?</string>
-    <string name="store_creation_country_picker_description">We will use this information to set up payments, shipping, and taxes.</string>
-    <string name="store_creation_country_picker_current_location">Current location</string>
-    <string name="store_creation_country_picker_current_location_description">We\'ve detected your location automatically. Please change it here if it\'s incorrect.</string>
-    <string name="store_creation_country_picker_countries_header">Countries</string>
-    <string name="store_creation_country_list_picker_toolbar_title">Select a country</string>
-
-    <string name="not_a_valid_qr_code">Scanned Qr code is not a WooCommerce code</string>
-    <string name="login_application_passwords_help">What are Application Passwords?</string>
-
-    <!-- Store profiler industries. To be removed when API is available to fetch these items localized
-     TODO Github issue https://github.com/woocommerce/woocommerce-android/issues/8218  -->
-    <string name="store_creation_profiler_industry_clothing_accessories">Clothing and accessories</string>
-    <string name="store_creation_profiler_industry_health_beauty">Health and beauty</string>
-    <string name="store_creation_profiler_industry_food_drink">Food and drink</string>
-    <string name="store_creation_profiler_industry_home_furniture_garden">Home, furniture, and garden</string>
-    <string name="store_creation_profiler_industry_education_learning">Education and learning</string>
-    <string name="store_creation_profiler_industry_electronic_computers">Electronics and computers</string>
-    <string name="store_creation_profiler_industry_other">Other</string>
-
-    <string name="store_creation_profiler_merchant_journey_starting_business">I\'m just starting my business</string>
-    <string name="store_creation_profiler_merchant_journey_selling_not_online">I\'m already selling, but not online</string>
-    <string name="store_creation_profiler_merchant_journey_selling_online">I\'m already selling online</string>
-    <string name="store_creation_theme_activation_loading">Activating your store\'s theme…</string>
-    <string name="store_creation_theme_activation_error">An error occurred while activating the theme you selected, please retry again!</string>
-
-    <!--
     Store theme
     -->
     <string name="theme_picker_title">Choose a theme</string>
@@ -3455,7 +3461,6 @@
     <string name="theme_picker_current_theme_title">Current theme</string>
     <string name="theme_picker_description">You can always change it later in the settings.</string>
     <string name="theme_picker_carousel_info_item_title">Looking for more?</string>
-    <string name="theme_picker_carousel_info_item_description">Once your store is set up, find your perfect theme in the WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_info_item_description_settings">You can find your perfect theme in the WooCommerce Theme Store.</string>
     <string name="theme_picker_carousel_error_placeholder_message">Sorry, it seems there is an issue with the template loading. Please %1$s for a live demo.</string>
     <string name="theme_picker_carousel_error_placeholder_message_cta">tap here</string>
@@ -3469,7 +3474,6 @@
     <string name="theme_preview_type_mobile">Mobile</string>
     <string name="theme_preview_type_tablet">Tablet</string>
     <string name="theme_preview_type_desktop">Desktop</string>
-    <string name="theme_preview_activate_theme_button_store_creation">Start with %1$s</string>
     <string name="theme_preview_activate_theme_button_settings">Use %1$s</string>
     <string name="theme_activation_failed">Theme activation failed, please try again!</string>
 
@@ -3495,6 +3499,7 @@
     <string name="store_onboarding_task_name_store_description">Customizing your store name can also help your store\'s search engine optimization.</string>
     <string name="store_onboarding_completed_tasks_status">%1$d/%2$d completed</string>
     <string name="store_onboarding_completed_tasks_full_screen_status">%1$d of %2$d tasks completed</string>
+    <string name="store_onboarding_task_view_all_tasks">View all tasks</string>
     <string name="store_onboarding_task_view_all">View all (%1$d)</string>
     <string name="store_onboarding_task_product_description_ai_generator_text">AI content generator available</string>
     <string name="store_onboarding_full_screen_transition_name">Onboarding full screen</string>
@@ -3539,6 +3544,7 @@
     <string name="store_onboarding_payments_pre_setup_title_generic">Payment Methods</string>
     <string name="store_onboarding_wcpay_setup_description">By using WooCommerce Payments you agree to be bound by our &lt;a href=\'termsOfService\'&gt;&lt;u&gt;Terms of Service&lt;/u&gt;&lt;/a&gt; and acknowledge that you have read our &lt;a href=\'privacyPolicy\'&gt;&lt;u&gt;Privacy Policy&lt;/u&gt;&lt;/a&gt;.</string>
     <string name="store_onboarding_payments_setup_description">Discover other payment providers and \nchoose a payment provider.</string>
+    <string name="store_onboarding_launch_store_rendering_preview_label">Rendering preview…</string>
 
     <!--
     Support Request
@@ -3575,37 +3581,12 @@
     <string name="free_trial_days_left_plural">%1$d days</string>
 
     <!--
-    Free trial Summary
-    -->
-    <string name="free_trial_summary_title">Launch in days,\ngrow for years</string>
-    <string name="free_trial_summary_advertise">We offer everything you need to build\nand grow an online store, powered by\nWooCommerce and hosted on\nWordPress.com.</string>
-    <string name="free_trial_summary_try_it">Try it free for 14 days.</string>
-    <string name="free_trial_summary_start_selling_quickly">Start selling quickly</string>
-    <string name="free_trial_summary_grow_your_business">Grow your business</string>
-    <string name="free_trial_summary_hassle_free_store_ownership">Hassle-free store ownership</string>
-    <string name="free_trial_summary_try_button">Try for free</string>
-    <string name="free_trial_summary_credit_card_message">No credit card required.</string>
-    <string name="free_trial_feature_premium_themes">Premium themes</string>
-    <string name="free_trial_feature_store_management">Store management tools</string>
-    <string name="free_trial_feature_design_editing">Code-free design and editing</string>
-    <string name="free_trial_feature_built_in_seo">Built-in SEO</string>
-    <string name="free_trial_feature_social_advertising">Social advertising</string>
-    <string name="free_trial_feature_automated_customer_emails">Automated customer emails</string>
-    <string name="free_trial_feature_hosting">Best-in-class hosting</string>
-    <string name="free_trial_feature_backups">Automated site backups</string>
-    <string name="free_trial_feature_support">24/7 priority support</string>
-    <string name="free_trial_summary_store_creation_error_title">Something went wrong</string>
-    <string name="free_trial_summary_store_creation_error_message">Sorry, we cannot create your store right now, please try again later.</string>
-    <string name="free_trial_summary_store_creation_error_dialog_action">Got It!</string>
-
-    <!--
     Upgrades
     -->
     <string name="upgrades_report_subscription_issue">Report subscription issue</string>
-    <string name="upgrades_upgrade_now">Upgrade now</string>
     <string name="upgrades_current_plan">Current: %s</string>
     <string name="upgrades_troubleshooting">Troubleshooting</string>
-    <string name="upgrades_title">Upgrades</string>
+    <string name="upgrades_title">Subscriptions</string>
     <string name="upgrades_subscription_status">Subscription status</string>
     <string name="upgrades_upgradeable_caption">You are in the %1$d-day free trial. The free trial will end in %2$s. Upgrade to unlock new features and keep your store running.</string>
     <string name="upgrades_trial_ended_caption">Your free trial has ended and have limited access to all the features. Subscribe to %1$s now.</string>
@@ -3723,11 +3704,14 @@
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
 
-    <string name="more_menu_button_upgrades">Upgrades</string>
-    <string name="more_menu_button_upgrades_description">Manage your plans</string>
+    <string name="more_menu_button_subscriptions">Subscriptions</string>
+    <string name="more_menu_button_subscriptions_description">Manage your subscription</string>
 
     <string name="more_menu_button_settings">Settings</string>
     <string name="more_menu_button_settings_description">Update your preferences</string>
+
+    <string name="more_menu_button_woo_pos">Point of Sale Mode</string>
+    <string name="more_menu_button_woo_pos_description">Use the app as a cash register</string>
 
     <!--
     Composite products
@@ -3750,22 +3734,6 @@
     <string name="shipping_notice_learn_more">Learn More</string>
     <string name="shipping_notice_dismiss">Dismiss</string>
 
-    <!--
-    Local Notifications
-    -->
-    <string name="local_notification_store_creation_complete_title">🎉 Your store is ready!</string>
-    <string name="local_notification_store_creation_complete_description">Hi %1$s! Welcome to your 14-day free trial of Woo Express – everything you need to start and grow a successful online business, all in one place. Ready to explore?</string>
-    <string name="local_notification_one_day_before_free_trial_expires_title">⏰ Time’s running out on your free trial!</string>
-    <string name="local_notification_one_day_before_free_trial_expires_description">Your free trial of Woo Express ends tomorrow (%1$s). Now’s the time to own your future – pick a plan and get ready to grow.</string>
-    <string name="local_notification_one_day_after_free_trial_expires_title">🌟 Keep your business going with our plan!</string>
-    <string name="local_notification_one_day_after_free_trial_expires_description">%1$s, we have paused your store, but you can continue by picking a plan that suits you best.</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_title">🌟 Keep your business going!</string>
-    <string name="local_notification_upgrade_to_paid_plan_after_6_hours_description">Discover advanced features and personalized recommendations for your store! Tap to pick a plan that suits you best.</string>
-    <string name="local_notification_survey_after_24_hours_title">💡Help Us Understand Your Subscription Decision</string>
-    <string name="local_notification_survey_after_24_hours_description">We’re interested in your decision-making journey. Could you please tell us about your current status?</string>
-    <string name="free_trial_survey_screen_title">Help Us Understand Your Subscription Decision</string>
-    <string name="local_notification_still_exploring_title">🧭 Still Exploring WooCommerce?</string>
-    <string name="local_notification_still_exploring_description">No rush, take your time! If you have any questions or need assistance, we\'re always here to help. Happy exploring!</string>
     <!--
     First product published congratulatory feature
     -->
@@ -3838,7 +3806,8 @@
     <string name="blaze_campaign_title">Blaze campaign</string>
     <string name="blaze_campaign_subtitle">Increase visibility and get your products sold quickly.</string>
     <string name="blaze_campaign_create_campaign_button">Create campaign</string>
-    <string name="blaze_campaign_show_all_button">Show all</string>
+    <string name="blaze_campaign_suggested_product_caption">Suggested product</string>
+    <string name="blaze_campaign_show_all_button">View all campaigns</string>
     <string name="blaze_campaign_status_in_moderation">In moderation</string>
     <string name="blaze_campaign_status_active">Active</string>
     <string name="blaze_campaign_status_completed">Completed</string>
@@ -3927,6 +3896,8 @@
     <string name="blaze_campaign_edit_ad_change_description_title">Description</string>
     <string name="blaze_campaign_edit_ad_characters_remaining">%d characters remaining</string>
     <string name="blaze_campaign_edit_ad_suggested_by_ai">Suggested by AI</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_title">Invalid image</string>
+    <string name="blaze_campaign_edit_ad_invalid_image_description">Please select an image with a minimum size of 400x400 pixels</string>
 
     <!--
     Blaze campaign payment
@@ -4105,6 +4076,56 @@
 
     <string name="order_configuration_product_selection">Select product %s</string>
     <string name="order_configuration_product_selection_control">Product selection</string>
+    <string name="card_selection_control">Analytic card selection</string>
     <string name="disabled">Disabled</string>
-    <string name="see_report">See Report</string>
+    <string name="see_report">See report</string>
+
+    <string name="product_update_stock_status_title">Update Stock Status</string>
+    <string name="product_update_stock_status_done">DONE</string>
+    <string name="product_update_stock_status_current_status_mixed">Current stock statuses are mixed</string>
+    <string name="product_update_stock_status_current_status_single">Current stock status is %1$s</string>
+    <string name="product_update_stock_status_update_count">Stock status will be updated for %1$d products.</string>
+    <string name="product_update_stock_status_ignored_count">%1$d products with managed stock quantity will be ignored.</string>
+    <string name="product_update_stock_status_variable_ignored_count">%1$d variable products will be ignored.</string>
+    <string name="product_update_stock_status_update_count_singular">Stock status will be updated for 1 product.</string>
+    <string name="product_update_stock_status_ignored_count_singular">1 product with managed stock quantity will be ignored.</string>
+    <string name="product_update_stock_status_variable_ignored_count_singular">1 variable product will be ignored.</string>
+    <string name="product_update_stock_status_managed_products">Managed products can\'t be updated</string>
+    <string name="product_update_stock_status_variable_products">Variable products can\'t be updated</string>
+    <string name="product_update_stock_status_completed">Updated stock statuses</string>
+    <string name="product_update_stock_status_error">Something went wrong. Please try again.</string>
+    <string name="product_update_stock_status_dialog_title">Updating stock statuses</string>
+    <string name="product_update_stock_status_dialog_subtitle">Please wait…</string>
+
+    <string name="empty_order_detail_title">No Order Details Yet</string>
+    <string name="empty_order_detail_message">Your order details will show here when you\'ve made an order.</string>
+
+    <!--
+    Application Password Tutorial
+    -->
+    <string name="login_app_password_title">We couldn\'t log in into your store</string>
+    <string name="login_app_password_subtitle">This could because your store has some extra security steps in place.</string>
+    <string name="login_app_password_instructions_title">Follow these steps to connect the Woo app directly to your store using an application password.</string>
+    <string name="login_app_password_instructions_step_1">1. First, log in using your site credentials.</string>
+    <string name="login_app_password_instructions_step_2">2. When prompted, approve the connection by tapping the confirmation button.</string>
+    <string name="login_app_password_instructions_step_3">3. When the connection is complete, you will be logged in to your store.</string>
+    <string name="login_app_password_instructions_footer">If you run into any issues, please contact our support team.</string>
+    <string name="login_app_password_continue_button">Continue</string>
+    <string name="login_app_password_support_button">Contact Support</string>
+    <string name="login_app_password_exit_dialog_message">It seems that you have not approved the app connection yet. Are you sure you want to exit?</string>
+    <string name="login_app_password_exit_dialog_confirmation">Exit Anyway</string>
+    <string name="login_app_password_exit_dialog_cancel">Cancel</string>
+
+    <!--
+    Woo POS
+    -->
+    <string name="woopos_exit_pos">Exit POS</string>
+    <string name="woopos_reader_connected">Reader Connected</string>
+    <string name="woopos_reader_connecting">Reader Connecting</string>
+    <string name="woopos_reader_disconnected">Reader Disconnected</string>
+    <string name="woopos_checkout">Checkout</string>
+    <string name="woopos_reader_unknown">Reader Status Unknown</string>
+    <string name="woo_pos_checkout_button">Checkout</string>
+    <string name="woo_pos_remove_item_from_cart_content_description">Remove item from cart</string>
+    <string name="woo_pos_car_pane_title">Cart</string>
 </resources>

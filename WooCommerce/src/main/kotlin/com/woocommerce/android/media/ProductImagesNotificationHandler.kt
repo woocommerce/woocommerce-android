@@ -14,8 +14,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaUploadErrorListFragmentArgs
-import com.woocommerce.android.ui.products.ProductDetailFragment
-import com.woocommerce.android.ui.products.ProductDetailFragmentArgs
+import com.woocommerce.android.ui.products.details.ProductDetailFragment
+import com.woocommerce.android.ui.products.details.ProductDetailFragmentArgs
 import com.woocommerce.android.util.StringUtils
 import org.wordpress.android.util.SystemServiceFactory
 import javax.inject.Inject

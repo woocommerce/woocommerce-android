@@ -11,26 +11,14 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.REVIEW_OPEN
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.extensions.isWooExpressSiteReadyToUse
 import com.woocommerce.android.model.FeatureAnnouncement
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
-import com.woocommerce.android.notifications.local.LocalNotificationType
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRED
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_EXPIRING
-import com.woocommerce.android.notifications.local.LocalNotificationType.FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED
-import com.woocommerce.android.notifications.local.LocalNotificationType.SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED
-import com.woocommerce.android.notifications.local.LocalNotificationType.STORE_CREATION_FINISHED
-import com.woocommerce.android.notifications.local.LocalNotificationType.THREE_DAYS_AFTER_STILL_EXPLORING
 import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartFragment.PlanUpgradeStartSource.NOTIFICATION
-import com.woocommerce.android.ui.login.storecreation.installation.ObserveSiteInstallation
-import com.woocommerce.android.ui.login.storecreation.profiler.StoreProfilerRepository
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.UnseenReviews
@@ -40,19 +28,18 @@ import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
 import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
+import com.woocommerce.android.ui.woopos.IsWooPosEnabled
 import com.woocommerce.android.util.BuildConfigWrapper
-import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 
@@ -60,7 +47,6 @@ import javax.inject.Inject
 @Suppress("LongParameterList")
 class MainActivityViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val dispatchers: CoroutineDispatchers,
     private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val notificationHandler: NotificationMessageHandler,
@@ -70,18 +56,19 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     private val privacyRepository: PrivacySettingsRepository,
-    private val storeProfilerRepository: StoreProfilerRepository,
-    private val observeSiteInstallation: ObserveSiteInstallation,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
+    isWooPosEnabled: IsWooPosEnabled,
 ) : ScopedViewModel(savedState) {
     init {
         launch {
             featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
         }
-
-        handlePostStoreCreationTasks()
+        launch(IO) {
+            // cache Woo POS eligibility result as soon as possible so that it doesn't block UI
+            isWooPosEnabled()
+        }
     }
 
     val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.nav_graph_site_picker
@@ -174,63 +161,6 @@ class MainActivityViewModel @Inject constructor(
 
             ResolveAppLink.Action.DoNothing -> {
                 // no-op
-            }
-        }
-    }
-
-    private fun handlePostStoreCreationTasks() = launch(dispatchers.io) {
-        suspend fun showSiteReadyDialog(siteId: Long) = withContext(dispatchers.main) {
-            analyticsTrackerWrapper.track(AnalyticsEvent.SITE_CREATION_STORE_READY_ALERT_DISPLAYED)
-            triggerEvent(
-                Event.ShowDialog(
-                    titleId = R.string.store_creation_installation_async_dialog_title,
-                    messageId = R.string.store_creation_installation_async_dialog_message,
-                    positiveButtonId = R.string.store_creation_installation_async_dialog_switch_store,
-                    positiveBtnAction = { _, _ ->
-                        analyticsTrackerWrapper.track(
-                            AnalyticsEvent.SITE_CREATION_STORE_READY_ALERT_SWITCH_STORE_TAPPED
-                        )
-                        changeSiteAndRestart(siteId, RestartActivityForStoreCreation)
-                    },
-                    negativeButtonId = R.string.cancel
-                )
-            )
-
-            prefs.createdStoreSiteId = null
-        }
-
-        val createdStoreSiteId = prefs.createdStoreSiteId
-
-        if (createdStoreSiteId != null) {
-            when {
-                selectedSite.getOrNull()?.siteId == createdStoreSiteId -> {
-                    // The user has already switched to the new store, so we can clear the createdStoreSiteId
-                    prefs.createdStoreSiteId = null
-                }
-
-                siteStore.getSiteBySiteId(createdStoreSiteId).isWooExpressSiteReadyToUse -> {
-                    showSiteReadyDialog(createdStoreSiteId)
-                    return@launch
-                }
-
-                else -> {
-                    observeSiteInstallation(createdStoreSiteId, skipInitialDelay = true)
-                        .filter { it is ObserveSiteInstallation.InstallationState.Success }
-                        .collect {
-                            showSiteReadyDialog(createdStoreSiteId)
-                        }
-                    return@launch
-                }
-            }
-        }
-
-        if (selectedSite.exists()) {
-            // Upload any pending store profiler answers
-            storeProfilerRepository.uploadAnswers()
-            prefs.getThemeIdForStoreCreation(selectedSite.get().siteId)?.let {
-                withContext(dispatchers.main) {
-                    triggerEvent(LaunchThemeActivation(it))
-                }
             }
         }
     }
@@ -344,19 +274,6 @@ class MainActivityViewModel @Inject constructor(
                 AnalyticsEvent.LOCAL_NOTIFICATION_TAPPED,
                 mapOf(AnalyticsTracker.KEY_TYPE to notification.tag)
             )
-            LocalNotificationType.fromString(notification.tag)?.let {
-                when (it) {
-                    FREE_TRIAL_EXPIRED,
-                    FREE_TRIAL_EXPIRING,
-                    SIX_HOURS_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(ViewStorePlanUpgrade(NOTIFICATION))
-
-                    FREE_TRIAL_SURVEY_24H_AFTER_FREE_TRIAL_SUBSCRIBED -> triggerEvent(OpenFreeTrialSurvey)
-
-                    STORE_CREATION_FINISHED,
-                    THREE_DAYS_AFTER_STILL_EXPLORING -> {
-                    }
-                }
-            }
         }
     }
 
@@ -405,10 +322,8 @@ class MainActivityViewModel @Inject constructor(
     ) : Event()
     object ShortcutOpenPayments : Event()
     object ShortcutOpenOrderCreation : Event()
-    data class ViewStorePlanUpgrade(val source: PlanUpgradeStartSource) : Event()
 
     sealed class RestartActivityEvent : Event()
-    object RestartActivityForStoreCreation : RestartActivityEvent()
     data class RestartActivityForLocalNotification(val notification: Notification) : RestartActivityEvent()
     data class RestartActivityForPushNotification(val pushId: Int, val notification: Notification) :
         RestartActivityEvent()
@@ -423,8 +338,6 @@ class MainActivityViewModel @Inject constructor(
     data class ShowPrivacyPreferenceUpdatedFailed(val analyticsEnabled: Boolean) : Event()
     object ShowPrivacySettings : Event()
     data class ShowPrivacySettingsWithError(val requestedAnalyticsValue: RequestedAnalyticsValue) : Event()
-    object OpenFreeTrialSurvey : Event()
-    data class LaunchThemeActivation(val themeId: String) : Event()
     sealed class MoreMenuBadgeState {
         data class UnseenReviews(val count: Int) : MoreMenuBadgeState()
         object NewFeature : MoreMenuBadgeState()

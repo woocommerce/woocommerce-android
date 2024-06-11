@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import android.os.Parcelable
 import com.woocommerce.android.model.Component
 import com.woocommerce.android.model.QueryType
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize

@@ -18,7 +18,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.tools.NetworkStatus
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Hidden
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown
 import com.woocommerce.android.ui.products.variations.VariationListViewModel.ProgressDialogState.Shown.VariationsCardinality.MULTIPLE

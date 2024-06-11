@@ -1,5 +1,3 @@
-@file:Suppress("DEPRECATION")
-
 package com.woocommerce.android.ui.orders.list
 
 import android.os.Parcelable
@@ -21,13 +19,16 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_AUTOMATIC_TIMEOUT_RETRY
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_AUTOMATIC_TIMEOUT_RETRY
+import com.woocommerce.android.analytics.AnalyticsEvent.ORDERS_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_PRODUCT_BARCODE_SCANNING_TAPPED
-import com.woocommerce.android.analytics.AnalyticsEvent.ORDER_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.analytics.IsScreenLargerThanCompactValue
+import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.extensions.NotificationReceivedEvent
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.filter
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.model.FeatureFeedbackSettings
@@ -35,6 +36,7 @@ import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -59,6 +61,7 @@ import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import com.woocommerce.android.viewmodel.navArgs
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -69,6 +72,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode.MAIN
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.WCOrderListDescriptor
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
@@ -84,7 +88,7 @@ private const val EMPTY_VIEW_THROTTLE = 250L
 
 typealias PagedOrdersList = PagedList<OrderListItemUIType>
 
-@Suppress("LeakingThis")
+@Suppress("LargeClass")
 @HiltViewModel
 class OrderListViewModel @Inject constructor(
     savedState: SavedStateHandle,
@@ -111,6 +115,8 @@ class OrderListViewModel @Inject constructor(
     private val showTestNotification: ShowTestNotification,
     private val dateUtils: DateUtils
 ) : ScopedViewModel(savedState), LifecycleOwner {
+    private val navArgs: OrderListFragmentArgs by savedState.navArgs()
+
     private val lifecycleRegistry: LifecycleRegistry by lazy {
         LifecycleRegistry(this)
     }
@@ -169,6 +175,8 @@ class OrderListViewModel @Inject constructor(
     }
     val emptyViewType: LiveData<EmptyViewType?> = _emptyViewType
 
+    private var activeWCOrderListDescriptor: WCOrderListDescriptor? = null
+
     var isSearching = false
     private var dismissListErrors = false
     var searchQuery = ""
@@ -177,7 +185,8 @@ class OrderListViewModel @Inject constructor(
         get() {
             val simplePaymentsAndOrderFeedbackDismissed =
                 simplePaymentsAndOrderCreationFeedbackState == FeatureFeedbackSettings.FeedbackState.DISMISSED
-            return !simplePaymentsAndOrderFeedbackDismissed
+            val isTroubleshootingBannerVisible = viewState.shouldDisplayTroubleshootingBanner
+            return !simplePaymentsAndOrderFeedbackDismissed && !isTroubleshootingBannerVisible
         }
 
     init {
@@ -212,9 +221,19 @@ class OrderListViewModel @Inject constructor(
                 orderListTransactionLauncher.onListFetched()
                 checkChaChingSoundSettings()
             }
+
+        when (navArgs.mode) {
+            Mode.START_ORDER_CREATION_WITH_SIMPLE_PAYMENTS_MIGRATION -> {
+                triggerEvent(OrderListEvent.OpenOrderCreationWithSimplePaymentsMigration)
+            }
+            Mode.STANDARD -> {
+                // stay on the screen
+            }
+        }
     }
 
     fun loadOrders() {
+        activeWCOrderListDescriptor = getWCOrderListDescriptorWithFilters()
         ordersPagedListWrapper = listStore.getList(getWCOrderListDescriptorWithFilters(), dataSource, lifecycle)
         viewState = viewState.copy(
             filterCount = getSelectedOrderFiltersCount(),
@@ -230,14 +249,19 @@ class OrderListViewModel @Inject constructor(
     /**
      * Creates and activates a new list with the search and filter params provided. This should only be used
      * by the search component portion of the order list view.
-     *
-     * NOTE: Although technically the "PROCESSING" tab is a filtered list, it should not use this method. The
-     * processing list will always use the same [processingPagedListWrapper].
      */
     fun submitSearchOrFilter(searchQuery: String) {
         val listDescriptor = getWCOrderListDescriptorWithFiltersAndSearchQuery(sanitizeSearchQuery(searchQuery))
+        activeWCOrderListDescriptor = listDescriptor
         val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
         activatePagedListWrapper(pagedListWrapper, isFirstInit = true)
+    }
+
+    fun changeTroubleshootingBannerVisibility(show: Boolean) {
+        viewState = viewState.copy(
+            shouldDisplayTroubleshootingBanner = show,
+            isSimplePaymentsAndOrderCreationFeedbackVisible = !show
+        )
     }
 
     /**
@@ -314,7 +338,7 @@ class OrderListViewModel @Inject constructor(
     }
 
     fun trackConnectivityTroubleshootClicked() {
-        analyticsTracker.track(ORDER_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED)
+        analyticsTracker.track(ORDERS_LIST_TOP_BANNER_TROUBLESHOOT_TAPPED)
     }
 
     fun handleBarcodeScannedStatus(status: CodeScannerStatus) {
@@ -350,7 +374,7 @@ class OrderListViewModel @Inject constructor(
      * Track user clicked to open an order and the status of that order, along with some
      * data about the order custom fields
      */
-    fun trackOrderClickEvent(orderId: Long, orderStatus: String, isTablet: Boolean = false) = launch {
+    fun trackOrderClickEvent(orderId: Long, orderStatus: String, windowSize: WindowSizeClass) = launch {
         val (customFieldsCount, customFieldsSize) =
             orderDetailRepository.getOrderMetadata(orderId)
                 .map { it.value.utf8Size() }
@@ -370,10 +394,13 @@ class OrderListViewModel @Inject constructor(
                 AnalyticsTracker.KEY_STATUS to orderStatus,
                 AnalyticsTracker.KEY_CUSTOM_FIELDS_COUNT to customFieldsCount,
                 AnalyticsTracker.KEY_CUSTOM_FIELDS_SIZE to customFieldsSize,
-                KEY_HORIZONTAL_SIZE_CLASS to isTablet
+                KEY_HORIZONTAL_SIZE_CLASS to getScreenSizeClassNameForAnalytics(windowSize)
             )
         )
     }
+
+    private fun getScreenSizeClassNameForAnalytics(windowSize: WindowSizeClass) =
+        IsScreenLargerThanCompactValue(windowSize != WindowSizeClass.Compact).deviceTypeToAnalyticsString
 
     /**
      * Activates the provided list by first removing the LiveData sources for the active list,
@@ -422,18 +449,19 @@ class OrderListViewModel @Inject constructor(
                             isSimplePaymentsAndOrderCreationFeedbackVisible = false
                         )
                     }
+
                     TIMEOUT_ERROR -> {
                         when {
                             shouldRetry && noTimeoutHappened -> {
-                                analyticsTracker.track(ORDER_LIST_AUTOMATIC_TIMEOUT_RETRY)
+                                analyticsTracker.track(ORDERS_LIST_AUTOMATIC_TIMEOUT_RETRY)
                                 triggerEvent(RetryLoadingOrders)
                             }
-                            else -> viewState = viewState.copy(
-                                shouldDisplayTroubleshootingBanner = true
-                            )
+
+                            else -> changeTroubleshootingBannerVisibility(show = true)
                         }
                         noTimeoutHappened = false
                     }
+
                     else -> triggerEvent(ShowErrorSnack(R.string.orderlist_error_fetch_generic))
                 }
             }
@@ -764,23 +792,74 @@ class OrderListViewModel @Inject constructor(
             )
         }
 
-        if (!notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER) &&
+        if (notificationChannelsHandler.checkNewOrderNotificationSound() == NewOrderNotificationSoundStatus.DISABLED &&
             !appPrefs.chaChingSoundIssueDialogDismissed
         ) {
+            analyticsTracker.track(AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_SHOWN)
             triggerEvent(
                 Event.ShowDialog(
                     titleId = R.string.cha_ching_sound_issue_dialog_title,
                     messageId = R.string.cha_ching_sound_issue_dialog_message,
                     positiveButtonId = R.string.cha_ching_sound_issue_dialog_turn_on_sound,
                     negativeButtonId = R.string.cha_ching_sound_issue_dialog_keep_silent,
-                    positiveBtnAction = { _, _ -> recreateNotificationChannel() },
+                    positiveBtnAction = { _, _ ->
+                        analyticsTracker.track(
+                            AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_TAPPED,
+                            mapOf(AnalyticsTracker.KEY_SOURCE to "order_list")
+                        )
+                        recreateNotificationChannel()
+                    },
                     negativeBtnAction = { _, _ ->
+                        analyticsTracker.track(AnalyticsEvent.NEW_ORDER_PUSH_NOTIFICATION_FIX_DISMISSED)
                         appPrefs.chaChingSoundIssueDialogDismissed = true
                     },
                     cancelable = false
                 )
             )
         }
+    }
+
+    fun trashOrder(orderId: Long) {
+        fun updateExcludedOrders(excludedOrderIds: List<Long>?) {
+            val listDescriptor = activeWCOrderListDescriptor?.copy(
+                excludedIds = excludedOrderIds?.takeIf { it.isNotEmpty() }
+            ) ?: return
+            activeWCOrderListDescriptor = listDescriptor
+            val pagedListWrapper = listStore.getList(listDescriptor, dataSource, lifecycle)
+            activatePagedListWrapper(pagedListWrapper)
+        }
+
+        fun excludeOrder() = updateExcludedOrders(
+            excludedOrderIds = (activeWCOrderListDescriptor?.excludedIds ?: emptyList()) + orderId
+        )
+
+        fun cancelExcludingOrder() = updateExcludedOrders(activeWCOrderListDescriptor?.excludedIds?.minus(orderId))
+
+        fun handleTrashing() {
+            launch {
+                orderListRepository
+                    .trashOrder(orderId)
+                    .onFailure { triggerEvent(ShowErrorSnack(R.string.orderlist_order_trashed_error)) }
+
+                cancelExcludingOrder()
+            }
+        }
+
+        excludeOrder()
+
+        triggerEvent(
+            Event.ShowUndoSnackbar(
+                message = resourceProvider.getString(R.string.orderlist_order_trashed, orderId),
+                undoAction = { cancelExcludingOrder() },
+                dismissAction = object : Snackbar.Callback() {
+                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                        if (event != DISMISS_EVENT_ACTION) {
+                            handleTrashing()
+                        }
+                    }
+                }
+            )
+        )
     }
 
     sealed class OrderListEvent : Event() {
@@ -815,6 +894,8 @@ class OrderListViewModel @Inject constructor(
         data class VMKilledWhenScanningInProgress(@StringRes val message: Int) : Event()
 
         data object RetryLoadingOrders : OrderListEvent()
+
+        data object OpenOrderCreationWithSimplePaymentsMigration : OrderListEvent()
     }
 
     @Parcelize
@@ -829,5 +910,9 @@ class OrderListViewModel @Inject constructor(
     ) : Parcelable {
         @IgnoredOnParcel
         val isFilteringActive = filterCount > 0
+    }
+
+    enum class Mode {
+        STANDARD, START_ORDER_CREATION_WITH_SIMPLE_PAYMENTS_MIGRATION
     }
 }

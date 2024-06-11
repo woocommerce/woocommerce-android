@@ -52,13 +52,14 @@ fun SelectorListItem(
     selectionState: SelectionState,
     isArrowVisible: Boolean,
     isCogwheelVisible: Boolean,
+    enabled: Boolean,
     onEditConfiguration: () -> Unit,
     onItemClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
             .clickable(
-                enabled = true,
+                enabled = enabled,
                 role = Role.Button,
                 onClick = {
                     onItemClick()
@@ -187,5 +188,6 @@ private fun SelectorListItemPreview() =
         onClickLabel = null,
         imageContentDescription = null,
         isCogwheelVisible = true,
+        enabled = true,
         onEditConfiguration = {}
     )

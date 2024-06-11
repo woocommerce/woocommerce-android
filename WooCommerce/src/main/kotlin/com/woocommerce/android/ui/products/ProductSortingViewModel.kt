@@ -6,7 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.products.ProductListViewModel.OnProductSortingChanged
+import com.woocommerce.android.ui.products.list.ProductListRepository
+import com.woocommerce.android.ui.products.list.ProductListViewModel.OnProductSortingChanged
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.products.variations.selector
 
+import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +21,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -32,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
@@ -45,15 +54,39 @@ import com.woocommerce.android.ui.products.variations.selector.VariationSelector
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.VariationListItem
 import com.woocommerce.android.ui.products.variations.selector.VariationSelectorViewModel.ViewState
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
     val viewState by viewModel.viewSate.observeAsState(ViewState())
-
-    VariationSelectorScreen(
-        state = viewState,
-        onClearButtonClick = viewModel::onClearButtonClick,
-        onVariationClick = viewModel::onVariationClick,
-        onLoadMore = viewModel::onLoadMore
+    BackHandler(onBack = viewModel::onBackPress)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = viewState.productName
+                    )
+                },
+                navigationIcon = {
+                    IconButton(viewModel::onBackPress) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = string.back)
+                        )
+                    }
+                },
+                backgroundColor = colorResource(id = R.color.color_toolbar),
+                elevation = 0.dp,
+            )
+        },
+        content = {
+            VariationSelectorScreen(
+                state = viewState,
+                onClearButtonClick = viewModel::onClearButtonClick,
+                onVariationClick = viewModel::onVariationClick,
+                onLoadMore = viewModel::onLoadMore
+            )
+        }
     )
 }
 
@@ -81,20 +114,20 @@ fun EmptyVariationList() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = dimensionResource(id = R.dimen.major_200)),
+            .padding(horizontal = dimensionResource(id = dimen.major_200)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = stringResource(id = R.string.product_list_empty),
+            text = stringResource(id = string.product_list_empty),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.h6,
             modifier = Modifier.padding(
-                start = dimensionResource(id = R.dimen.major_150),
-                end = dimensionResource(id = R.dimen.major_150)
+                start = dimensionResource(id = dimen.major_150),
+                end = dimensionResource(id = dimen.major_150)
             )
         )
-        Spacer(Modifier.size(dimensionResource(id = R.dimen.major_325)))
+        Spacer(Modifier.size(dimensionResource(id = dimen.major_325)))
         Image(
             painter = painterResource(id = R.drawable.img_empty_products),
             contentDescription = null,
@@ -122,7 +155,7 @@ private fun VariationList(
         ) {
             WCTextButton(
                 onClick = onClearButtonClick,
-                text = stringResource(id = R.string.product_selector_clear_button_title),
+                text = stringResource(id = string.product_selector_clear_button_title),
                 allCaps = false,
                 enabled = state.selectedItemsCount > 0,
                 modifier = Modifier.align(Alignment.CenterStart)
@@ -140,21 +173,22 @@ private fun VariationList(
                     imageUrl = variation.imageUrl,
                     infoLine1 = variation.stockAndPrice,
                     infoLine2 = variation.sku?.let {
-                        stringResource(R.string.product_selector_sku_value, variation.sku)
+                        stringResource(string.product_selector_sku_value, variation.sku)
                     },
                     selectionState = variation.selectionState,
                     isArrowVisible = false,
                     onClickLabel = stringResource(id = string.product_selector_select_variation_label, variation.title),
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = false,
+                    enabled = true,
                     onEditConfiguration = {}
                 ) {
                     onVariationClick(variation)
                 }
                 Divider(
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_100)),
+                    modifier = Modifier.padding(start = dimensionResource(id = dimen.major_100)),
                     color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
+                    thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
             if (state.loadingState == APPENDING) {
@@ -183,32 +217,32 @@ fun VariationListSkeleton() {
         repeat(numberOfInboxSkeletonRows) {
             item {
                 Row(
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.major_100)),
-                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_85))
+                    modifier = Modifier.padding(dimensionResource(id = dimen.major_100)),
+                    horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_85))
                 ) {
                     SkeletonView(
-                        dimensionResource(id = R.dimen.skeleton_image_dimension),
-                        dimensionResource(id = R.dimen.skeleton_image_dimension)
+                        dimensionResource(id = dimen.skeleton_image_dimension),
+                        dimensionResource(id = dimen.skeleton_image_dimension)
                     )
 
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
+                        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100))
                     ) {
                         SkeletonView(
-                            dimensionResource(id = R.dimen.skeleton_text_large_width),
-                            dimensionResource(id = R.dimen.major_200)
+                            dimensionResource(id = dimen.skeleton_text_large_width),
+                            dimensionResource(id = dimen.major_200)
                         )
                         SkeletonView(
-                            dimensionResource(id = R.dimen.skeleton_text_extra_large_width),
-                            dimensionResource(id = R.dimen.major_150)
+                            dimensionResource(id = dimen.skeleton_text_extra_large_width),
+                            dimensionResource(id = dimen.major_150)
                         )
                     }
                 }
                 Divider(
                     modifier = Modifier
-                        .offset(x = dimensionResource(id = R.dimen.major_100)),
+                        .offset(x = dimensionResource(id = dimen.major_100)),
                     color = colorResource(id = R.color.divider_color),
-                    thickness = dimensionResource(id = R.dimen.minor_10)
+                    thickness = dimensionResource(id = dimen.minor_10)
                 )
             }
         }

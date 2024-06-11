@@ -62,8 +62,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/woo_plugin_info"
-                    android:textColor="@color/color_on_surface"
-                    android:textAppearance="?attr/textAppearanceBody1"
+                    android:textAppearance="?attr/textAppearanceSubtitle1"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -109,7 +108,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="visible"
-                app:optionTitle="@string/store_creation_store_name_settings_option"
+                app:optionTitle="@string/settings_store_name"
                 tools:visibility="visible" />
 
             <!--
@@ -140,18 +139,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:optionTitle="@string/settings_themes" />
-
-            <!--
-                Store onboarding list visibility
-            -->
-            <com.woocommerce.android.ui.prefs.WCSettingsToggleOptionView
-                android:id="@+id/option_store_onboarding_list_visibility"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:toggleOptionDesc="@string/store_onboarding_setting_description"
-                app:toggleOptionTitle="@string/store_onboarding_setting_title" />
-
         </LinearLayout>
 
         <View style="@style/Woo.Divider" />

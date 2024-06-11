@@ -4,8 +4,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_MONTH
-import com.woocommerce.android.ui.mystore.domain.asRangeSelection
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -19,7 +19,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.wordpress.android.fluxc.store.WCStatsStore
 import org.wordpress.android.fluxc.utils.CurrentTimeProvider
 import java.util.Calendar
 import java.util.Date
@@ -103,7 +102,12 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             lastUpdateTimestamp = null,
             currentTimestamp = 100
         )
-        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection(dateUtils = mock())
+        val rangeSelection = SelectionType.TODAY.generateSelectionData(
+            referenceStartDate = Date(),
+            referenceEndDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault()
+        )
 
         // When
         sut.storeLastAnalyticsUpdate(
@@ -122,8 +126,13 @@ class AnalyticsUpdateDataStoreTest : BaseUnitTest() {
             lastUpdateTimestamp = null,
             currentTimestamp = 100
         )
-        val rangeSelection = WCStatsStore.StatsGranularity.DAYS.asRangeSelection(dateUtils = mock())
-        val numberOfAnalyticsDataKeys = AnalyticsUpdateDataStore.AnalyticData.values().size
+        val rangeSelection = SelectionType.TODAY.generateSelectionData(
+            referenceStartDate = Date(),
+            referenceEndDate = Date(),
+            calendar = Calendar.getInstance(),
+            locale = Locale.getDefault()
+        )
+        val numberOfAnalyticsDataKeys = AnalyticsUpdateDataStore.AnalyticData.entries.size
 
         // When
         sut.storeLastAnalyticsUpdate(

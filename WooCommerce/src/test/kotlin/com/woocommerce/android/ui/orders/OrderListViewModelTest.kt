@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.orders
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
+import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
@@ -14,6 +14,7 @@ import com.woocommerce.android.model.FeatureFeedbackSettings
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.notifications.ShowTestNotification
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -28,6 +29,7 @@ import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptor
 import com.woocommerce.android.ui.orders.filters.domain.GetWCOrderListDescriptorWithFiltersAndSearchQuery
 import com.woocommerce.android.ui.orders.filters.domain.ShouldShowCreateTestOrderScreen
 import com.woocommerce.android.ui.orders.list.FetchOrdersRepository
+import com.woocommerce.android.ui.orders.list.OrderListFragmentArgs
 import com.woocommerce.android.ui.orders.list.OrderListItemIdentifier
 import com.woocommerce.android.ui.orders.list.OrderListItemUIType
 import com.woocommerce.android.ui.orders.list.OrderListRepository
@@ -40,6 +42,7 @@ import com.woocommerce.android.util.observeForTesting
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_ERROR
 import com.woocommerce.android.widgets.WCEmptyView.EmptyViewType.NETWORK_OFFLINE
@@ -93,8 +96,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     private val orderStore: WCOrderStore = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(any()) } doAnswer { it.arguments[0].toString() }
+        on { getString(any(), any()) } doAnswer { it.arguments[0].toString() + it.arguments[1].toString() }
     }
-    private val savedStateHandle: SavedStateHandle = SavedStateHandle()
 
     private val orderStatusOptions = OrderTestUtils.generateOrderStatusOptionsMappedByStatus()
     private lateinit var viewModel: OrderListViewModel
@@ -138,8 +141,8 @@ class OrderListViewModelTest : BaseUnitTest() {
         viewModel = createViewModel()
     }
 
-    private fun createViewModel() = OrderListViewModel(
-        savedState = savedStateHandle,
+    private fun createViewModel(mode: OrderListViewModel.Mode = OrderListViewModel.Mode.STANDARD) = OrderListViewModel(
+        savedState = OrderListFragmentArgs(mode = mode).toSavedStateHandle(),
         dispatchers = coroutinesTestRule.testDispatchers,
         orderListRepository = orderListRepository,
         orderDetailRepository = orderDetailRepository,
@@ -651,6 +654,32 @@ class OrderListViewModelTest : BaseUnitTest() {
         assertThat(shouldDisplayTroubleshootingBanner).isTrue
     }
 
+    @Test
+    fun `given start order creation mode, when view model created, then OpenOrderCreationWithSimplePaymentsMigration emitted`() =
+        testBlocking {
+            // GIVEN
+            val mode = OrderListViewModel.Mode.START_ORDER_CREATION_WITH_SIMPLE_PAYMENTS_MIGRATION
+
+            // WHEN
+            viewModel = createViewModel(mode = mode)
+
+            // THEN
+            assertThat(viewModel.event.value).isEqualTo(OrderListEvent.OpenOrderCreationWithSimplePaymentsMigration)
+        }
+
+    @Test
+    fun `given standard mode, when view model created, then OpenOrderCreationWithSimplePaymentsMigration is not emitted`() =
+        testBlocking {
+            // GIVEN
+            val mode = OrderListViewModel.Mode.STANDARD
+
+            // WHEN
+            viewModel = createViewModel(mode = mode)
+
+            // THEN
+            assertThat(viewModel.event.value).isNull()
+        }
+
     // region barcode scanner
 
     @Test
@@ -809,8 +838,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given cha-ching sound disabled, when order list is loaded, then show a dialog`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -832,8 +861,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `when cha-ching dialog is shown, then clicking turn on sound should re-create notification channel`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -850,8 +879,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `when cha-ching dialog is shown, then clicking turn keep silent should mark dialog as dismissed`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(false)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -868,8 +897,8 @@ class OrderListViewModelTest : BaseUnitTest() {
     @Test
     fun `given cha-ching dialog dismissed, when order list is loaded, then don't show a dialog`() = testBlocking {
         // given
-        whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-            .thenReturn(false)
+        whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+            .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
         whenever(appPrefs.chaChingSoundIssueDialogDismissed).thenReturn(true)
         whenever(pagedListWrapper.isFetchingFirstPage).doReturn(MutableLiveData(false))
 
@@ -888,6 +917,33 @@ class OrderListViewModelTest : BaseUnitTest() {
         }
     }
 
+    @Test
+    fun `when order trash is requested, then trash order and show an undo snackbar`() = testBlocking {
+        whenever(orderListRepository.trashOrder(any())).thenReturn(Result.success(Unit))
+        viewModel.loadOrders()
+
+        val undoSnackbar = viewModel.event.runAndCaptureValues {
+            viewModel.trashOrder(1L)
+        }.last() as ShowUndoSnackbar
+        undoSnackbar.dismissAction.onDismissed(null, Snackbar.Callback.DISMISS_EVENT_TIMEOUT)
+
+        verify(orderListRepository).trashOrder(1L)
+    }
+
+    @Test
+    fun `when order trash fails, then show a snackbar`() = testBlocking {
+        whenever(orderListRepository.trashOrder(any())).thenReturn(Result.failure(Exception()))
+        viewModel.loadOrders()
+
+        val undoSnackbar = viewModel.event.runAndCaptureValues {
+            viewModel.trashOrder(1L)
+        }.last() as ShowUndoSnackbar
+        val event = viewModel.event.runAndCaptureValues {
+            undoSnackbar.dismissAction.onDismissed(null, Snackbar.Callback.DISMISS_EVENT_TIMEOUT)
+        }.last()
+
+        assertThat(event).isInstanceOf(ShowErrorSnack::class.java)
+    }
     //endregion
 
     private companion object {

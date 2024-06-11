@@ -2,13 +2,13 @@ package com.woocommerce.android.ui.prefs
 
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.login.storecreation.onboarding.ShouldShowOnboarding
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
@@ -21,7 +21,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainSettingsPresenterTest : BaseUnitTest() {
     private val accountRepository: AccountRepository = mock()
-    private val shouldShowOnboarding: ShouldShowOnboarding = mock()
     private val buildConfigWrapper: BuildConfigWrapper = mock()
     private val featureAnnouncementRepository: FeatureAnnouncementRepository = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -29,6 +28,7 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     private val selectedSite: SelectedSite = mock()
     private val notificationChannelsHandler: NotificationChannelsHandler = mock()
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
+    private val getWooVersion: GetWooCorePluginCachedVersion = mock()
 
     private val view: MainSettingsContract.View = mock()
     private lateinit var presenter: MainSettingsPresenter
@@ -41,10 +41,10 @@ class MainSettingsPresenterTest : BaseUnitTest() {
             wooCommerceStore = wooCommerceStore,
             featureAnnouncementRepository = featureAnnouncementRepository,
             buildConfigWrapper = buildConfigWrapper,
-            shouldShowOnboarding = shouldShowOnboarding,
             accountRepository = accountRepository,
             notificationChannelsHandler = notificationChannelsHandler,
-            analyticsTracker = analyticsTracker
+            analyticsTracker = analyticsTracker,
+            getWooVersion = getWooVersion,
         )
         presenter.takeView(view)
     }
@@ -53,8 +53,8 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     fun `given cha-ching sound enabled, when notifications button clicked, then open device notification settings`() =
         testBlocking {
             setup {
-                whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-                    .thenReturn(true)
+                whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+                    .thenReturn(NewOrderNotificationSoundStatus.DEFAULT)
             }
 
             presenter.onNotificationsClicked()
@@ -67,8 +67,21 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     fun `given cha-ching sound disabled, when notifications button clicked, then open notifications settings`() =
         testBlocking {
             setup {
-                whenever(notificationChannelsHandler.checkNotificationChannelSound(NotificationChannelType.NEW_ORDER))
-                    .thenReturn(false)
+                whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+                    .thenReturn(NewOrderNotificationSoundStatus.DISABLED)
+            }
+
+            presenter.onNotificationsClicked()
+
+            verify(view).showNotificationsSettingsScreen()
+        }
+
+    @Test
+    fun `given order notification sound modified, when notifications button clicked, then open notifications settings`() =
+        testBlocking {
+            setup {
+                whenever(notificationChannelsHandler.checkNewOrderNotificationSound())
+                    .thenReturn(NewOrderNotificationSoundStatus.SOUND_MODIFIED)
             }
 
             presenter.onNotificationsClicked()

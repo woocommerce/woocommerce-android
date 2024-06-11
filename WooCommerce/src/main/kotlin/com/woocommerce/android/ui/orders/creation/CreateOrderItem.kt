@@ -5,8 +5,8 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.ui.orders.creation.configuration.GetProductConfiguration
 import com.woocommerce.android.ui.orders.creation.configuration.ProductConfiguration
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
@@ -26,7 +26,7 @@ class CreateOrderItem @Inject constructor(
         productConfiguration: ProductConfiguration? = null,
     ): Order.Item {
         return withContext(coroutineDispatchers.io) {
-            val product = productDetailRepository.getProduct(remoteProductId)
+            val product = productDetailRepository.fetchProductOrLoadFromCache(remoteProductId)
             // Try to get the default configuration for not configurable bundles
             val configuration = if (product?.productType == ProductType.BUNDLE && productConfiguration == null) {
                 getProductRules.getRules(remoteProductId)?.let { getProductConfiguration(it) }
@@ -36,7 +36,7 @@ class CreateOrderItem @Inject constructor(
 
             variationId?.let {
                 if (product != null) {
-                    variationDetailRepository.getVariation(remoteProductId, it)
+                    variationDetailRepository.getVariationOrNull(remoteProductId, it)
                         ?.createItem(product, configuration)
                 } else {
                     null

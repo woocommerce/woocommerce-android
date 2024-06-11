@@ -52,10 +52,8 @@ import com.woocommerce.android.ui.login.overrides.WooLoginEmailPasswordFragment
 import com.woocommerce.android.ui.login.overrides.WooLoginSiteAddressFragment
 import com.woocommerce.android.ui.login.qrcode.QrCodeLoginListener
 import com.woocommerce.android.ui.login.qrcode.ValidateScannedValue
-import com.woocommerce.android.ui.login.signup.SignUpFragment
-import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.SITE_PICKER
-import com.woocommerce.android.ui.login.signup.SignUpFragment.NextStep.STORE_CREATION
 import com.woocommerce.android.ui.login.sitecredentials.LoginSiteCredentialsFragment
+import com.woocommerce.android.ui.login.sitecredentials.applicationpassword.ApplicationPasswordTutorialFragment
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -106,8 +104,7 @@ class LoginActivity :
     LoginNoJetpackListener,
     LoginEmailHelpDialogFragment.Listener,
     WooLoginEmailFragment.Listener,
-    LoginNoWPcomAccountFoundDialogFragment.Listener,
-    SignUpFragment.Listener,
+    LoginSiteCredentialsFragment.Listener,
     QrCodeLoginListener {
     companion object {
         private const val FORGOT_PASSWORD_URL_SUFFIX = "wp-login.php?action=lostpassword"
@@ -330,11 +327,7 @@ class LoginActivity :
     }
 
     override fun onNewToWooButtonClicked() {
-        ChromeCustomTabUtils.launchUrl(this, AppUrls.NEW_TO_WOO_DOC)
-    }
-
-    override fun onGetStartedClicked() {
-        changeFragment(SignUpFragment.newInstance(STORE_CREATION), true, SignUpFragment.TAG)
+        ChromeCustomTabUtils.launchUrl(this, AppUrls.HOSTING_OPTIONS_DOC)
     }
 
     private fun showMainActivityAndFinish() {
@@ -836,7 +829,7 @@ class LoginActivity :
         } else {
             val loginEmailFragment = getLoginEmailFragment(
                 siteCredsLayout = false
-            ) ?: WooLoginEmailFragment.newInstance()
+            ) ?: WooLoginEmailFragment.newInstance(showSiteCredentialsFallback = connectSiteInfo?.isWPCom == false)
             changeFragment(loginEmailFragment as Fragment, true, LoginEmailFragment.TAG)
         }
     }
@@ -856,6 +849,14 @@ class LoginActivity :
         shouldAddToBackStack = true,
         tag = LoginSiteCredentialsFragment.TAG
     )
+
+    override fun onApplicationPasswordHelpRequired(url: String, errorMessage: String) {
+        changeFragment(
+            fragment = ApplicationPasswordTutorialFragment.newInstance(url, errorMessage),
+            shouldAddToBackStack = true,
+            tag = ApplicationPasswordTutorialFragment.TAG
+        )
+    }
 
     override fun startJetpackInstall(siteAddress: String?) {
         siteAddress?.let {
@@ -922,26 +923,8 @@ class LoginActivity :
         loginViaSiteCredentials(appPrefsWrapper.getLoginSiteAddress())
     }
 
-    override fun onCreateAccountClicked() {
-        changeFragment(SignUpFragment.newInstance(SITE_PICKER), true, SignUpFragment.TAG)
-    }
-
     override fun onCarouselFinished() {
         showPrologueFragment()
-    }
-
-    override fun onAccountCreated() {
-        showMainActivityAndFinish()
-    }
-
-    override fun onExistingEmail(email: String?) {
-        unifiedLoginTracker.setFlow(Flow.WORDPRESS_COM.value)
-        appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN)
-        changeFragment(
-            fragment = WooLoginEmailFragment.newInstance(email) as Fragment,
-            shouldAddToBackStack = true,
-            LoginEmailFragment.TAG
-        )
     }
 
     @SuppressWarnings("unused")

@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.connectivitytool
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.map
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.Failure
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.InProgress
 import com.woocommerce.android.ui.orders.connectivitytool.ConnectivityCheckStatus.NotStarted
@@ -53,9 +55,10 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(internetConnectionCheck()).thenReturn(flowOf(Success))
-        sut.internetCheckData.observeForever {
-            stateEvents.add(it.connectivityCheckStatus)
-        }
+        sut.viewState
+            .map { it.internetCheckData }
+            .distinctUntilChanged()
+            .observeForever { stateEvents.add(it.connectivityCheckStatus) }
 
         // When
         sut.startConnectionChecks()
@@ -69,9 +72,10 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(wordPressConnectionCheck()).thenReturn(flowOf(Success))
-        sut.wordpressCheckData.observeForever {
-            stateEvents.add(it.connectivityCheckStatus)
-        }
+        sut.viewState
+            .map { it.wordPressCheckData }
+            .distinctUntilChanged()
+            .observeForever { stateEvents.add(it.connectivityCheckStatus) }
 
         // When
         sut.startConnectionChecks()
@@ -85,9 +89,10 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(storeConnectionCheck()).thenReturn(flowOf(Success))
-        sut.storeCheckData.observeForever {
-            stateEvents.add(it.connectivityCheckStatus)
-        }
+        sut.viewState
+            .map { it.storeCheckData }
+            .distinctUntilChanged()
+            .observeForever { stateEvents.add(it.connectivityCheckStatus) }
 
         // When
         sut.startConnectionChecks()
@@ -101,9 +106,10 @@ class OrderConnectivityToolViewModelTest : BaseUnitTest() {
         // Given
         val stateEvents = mutableListOf<ConnectivityCheckStatus>()
         whenever(storeOrdersCheck()).thenReturn(flowOf(Success))
-        sut.storeOrdersCheckData.observeForever {
-            stateEvents.add(it.connectivityCheckStatus)
-        }
+        sut.viewState
+            .map { it.ordersCheckData }
+            .distinctUntilChanged()
+            .observeForever { stateEvents.add(it.connectivityCheckStatus) }
 
         // When
         sut.startConnectionChecks()

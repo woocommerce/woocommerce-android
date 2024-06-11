@@ -5,7 +5,7 @@ import com.woocommerce.android.support.help.HelpOrigin.LOGIN_SITE_ADDRESS
 import com.woocommerce.android.support.help.HelpOrigin.LOGIN_USERNAME_PASSWORD
 
 object AppUrls {
-    const val APP_HELP_CENTER = "https://woo.com/document/android/"
+    const val APP_HELP_CENTER = "https://woocommerce.com/document/android/"
 
     const val AUTOMATTIC_TOS = "https://wordpress.com/tos/"
     const val AUTOMATTIC_PRIVACY_POLICY = "https://www.automattic.com/privacy"
@@ -14,22 +14,24 @@ object AppUrls {
     const val AUTOMATTIC_HIRING = "https://automattic.com/work-with-us"
     const val AUTOMATTIC_AI_GUIDELINES = "https://automattic.com/ai-guidelines/"
 
-    const val WOOCOMMERCE_UPGRADE = "https://woo.com/document/how-to-update-woocommerce/"
+    const val WOOCOMMERCE_UPGRADE = "https://woocommerce.com/document/how-to-update-woocommerce/"
     const val WOOCOMMERCE_PLUGIN = "https://wordpress.org/plugins/woocommerce/"
-    const val WOOCOMMERCE_WEB_OPTIONS = "https://woo.com/tracking-and-opt-outs/"
-    const val WOOCOMMERCE_USAGE_TRACKER = "https://woo.com/usage-tracking/"
+    const val WOOCOMMERCE_WEB_OPTIONS = "https://woocommerce.com/tracking-and-opt-outs/"
+    const val WOOCOMMERCE_USAGE_TRACKER = "https://woocommerce.com/usage-tracking/"
 
-    const val URL_LEARN_MORE_REVIEWS = "https://woo.com/document/ratings-and-reviews/"
-    const val URL_LEARN_MORE_ORDERS = "https://woo.com/blog/"
+    const val URL_LEARN_MORE_REVIEWS = "https://woocommerce.com/document/ratings-and-reviews/"
+    const val URL_LEARN_MORE_ORDERS = "https://woocommerce.com/blog/"
+
+    const val WORDPRESS_PRIVACY_SETTINGS = "https://wordpress.com/support/settings/privacy-settings/"
 
     const val JETPACK_INSTRUCTIONS =
-        "https://woo.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app//"
+        "https://woocommerce.com/document/jetpack-setup-instructions-for-the-woocommerce-mobile-app//"
     const val JETPACK_TROUBLESHOOTING =
         "https://jetpack.com/support/getting-started-with-jetpack/troubleshooting-tips/"
     const val PRODUCT_IMAGE_UPLOADS_TROUBLESHOOTING =
-        "https://woo.com/document/troubleshooting-image-upload-issues-in-the-woo-mobile-apps/"
+        "https://woocommerce.com/document/troubleshooting-image-upload-issues-in-the-woo-mobile-apps/"
     const val ORDERS_TROUBLESHOOTING =
-        "https://woo.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
+        "https://woocommerce.com/document/android-ios-apps-troubleshooting-error-fetching-orders/"
 
     const val CROWDSIGNAL_MAIN_SURVEY = "https://automattic.survey.fm/woo-app-general-feedback-user-survey"
     const val CROWDSIGNAL_PRODUCT_SURVEY = "https://automattic.survey.fm/woo-app-feature-feedback-products"
@@ -53,49 +55,57 @@ object AppUrls {
             "https://automattic.survey.fm/product-creation-with-ai-dec-2023"
         }
 
+    val CROWDSIGNAL_ORDER_SHIPPING_LINES_SURVEY = if (BuildConfig.DEBUG) {
+        "https://automattic.survey.fm/order-creation-shipping-lines-survey-testing"
+    } else {
+        "https://automattic.survey.fm/order-creation-shipping-lines-survey-production"
+    }
+
     // Will be used later when the feature is fully launched.
     const val COUPONS_SURVEY = "https://automattic.survey.fm/woo-app-coupon-management-production"
 
     const val WOOCOMMERCE_USER_ROLES =
-        "https://woo.com/posts/a-guide-to-woocommerce-user-roles-permissions-and-security/"
+        "https://woocommerce.com/posts/a-guide-to-woocommerce-user-roles-permissions-and-security/"
     const val SHIPPING_LABEL_CUSTOMS_ITN = "https://pe.usps.com/text/imm/immc5_010.htm"
     const val SHIPPING_LABEL_CUSTOMS_HS_TARIFF_NUMBER =
-        "https://woo.com/document/woocommerce-shipping-and-tax/woocommerce-shipping/#section-29"
+        "https://woocommerce.com/document/woocommerce-shipping-and-tax/woocommerce-shipping/#section-29"
 
     const val WPCOM_ADD_PAYMENT_METHOD = "https://wordpress.com/me/purchases/add-payment-method"
+    const val FETCH_PAYMENT_METHOD_URL_PATH = "me/payment-methods"
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS =
-        "https://woo.com/document/woopayments/in-person-payments/getting-started-with-in-person-payments/"
+        "https://woocommerce.com/document/woopayments/in-person-payments/getting-started-with-in-person-payments/"
     const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS =
-        "https://woo.com/document/stripe/accept-in-person-payments-with-stripe//"
+        "https://woocommerce.com/document/stripe/accept-in-person-payments-with-stripe//"
     const val STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS =
         "https://stripe.com/docs/terminal/payments/setup-reader/tap-to-pay?platform=android#supported-devices"
     const val LEARN_MORE_ABOUT_TAP_TO_PAY =
-        "https://woo.com/document/woopayments/in-person-payments/tap-to-pay-android/"
+        "https://woocommerce.com/document/woopayments/in-person-payments/tap-to-pay-android/"
 
     const val WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
-        "https://woo.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/" +
+        "https://woocommerce.com/document/getting-started-with-in-person-payments-with-woocommerce-payments/" +
             "#add-cod-payment-method"
     const val STRIPE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY =
-        "https://woo.com/document/stripe/accept-in-person-payments-with-stripe/#section-8"
+        "https://woocommerce.com/document/stripe/accept-in-person-payments-with-stripe/#section-8"
 
-    const val WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY = "https://woo.com/products/hardware/"
+    const val WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY = "https://woocommerce.com/products/hardware/"
 
     const val BBPOS_MANUAL_CARD_READER =
-        "https://woo.com/wp-content/uploads/2022/12/c2xbt_product_sheet.pdf"
-    const val M2_MANUAL_CARD_READER = "https://woo.com/wp-content/uploads/2022/12/m2_product_sheet.pdf"
-    const val WISEPAD_3_MANUAL_CARD_READER = "https://woo.com/wp-content/uploads/2022/12/wp3_product_sheet.pdf"
+        "https://woocommerce.com/wp-content/uploads/2022/12/c2xbt_product_sheet.pdf"
+    const val M2_MANUAL_CARD_READER = "https://woocommerce.com/wp-content/uploads/2022/12/m2_product_sheet.pdf"
+    const val WISEPAD_3_MANUAL_CARD_READER = "https://woocommerce.com/wp-content/uploads/2022/12/wp3_product_sheet.pdf"
 
     const val PLAY_STORE_APP_PREFIX = "http://play.google.com/store/apps/details?id="
 
     const val LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT =
-        "https://woo.com/document/what-is-a-wordpress-com-account/"
+        "https://woocommerce.com/document/what-is-a-wordpress-com-account/"
 
-    const val NEW_TO_WOO_DOC = "https://woo.com/woocommerce-features/"
+    const val NEW_TO_WOO_DOC = "https://woocommerce.com/woocommerce-features/"
+    const val HOSTING_OPTIONS_DOC = "https://woocommerce.com/hosting-solutions/"
 
     const val WORPRESS_COM_TERMS = "https://wordpress.com/tos"
     const val JETPACK_SYNC_POLICY = "https://jetpack.com/support/what-data-does-jetpack-sync"
 
-    private const val LOGIN_HELP_CENTER = "https://woo.com/document/android-ios-apps-login-help-faq/"
+    private const val LOGIN_HELP_CENTER = "https://woocommerce.com/document/android-ios-apps-login-help-faq/"
     val LOGIN_HELP_CENTER_URLS = mapOf(
         LOGIN_EMAIL to "$LOGIN_HELP_CENTER#enter-wordpress-com-email-address-login-using-store-address-flow",
         LOGIN_SITE_ADDRESS to "$LOGIN_HELP_CENTER#enter-store-address",
@@ -111,12 +121,12 @@ object AppUrls {
             "dangerous-goods-and-prohibited-items.html"
 
     const val STORE_ONBOARDING_WCPAY_INSTRUCTIONS_WPCOM_ACCOUNT =
-        "https://woo.com/document/woopayments/startup-guide/#signing-up"
+        "https://woocommerce.com/document/woopayments/startup-guide/#signing-up"
     const val STORE_ONBOARDING_WCPAY_INSTRUCTIONS_LEARN_MORE =
-        "https://woo.com/document/woopayments/our-policies/know-your-customer/"
-    const val STORE_ONBOARDING_WCPAY_SETUP_GUIDE = "https://woo.com/document/woopayments/startup-guide/"
+        "https://woocommerce.com/document/woopayments/our-policies/know-your-customer/"
+    const val STORE_ONBOARDING_WCPAY_SETUP_GUIDE = "https://woocommerce.com/document/woopayments/startup-guide/"
     const val STORE_ONBOARDING_PAYMENTS_SETUP_GUIDE =
-        "https://woo.com/documentation/woocommerce/getting-started/sell-products/core-payment-options/"
+        "https://woocommerce.com/documentation/woocommerce/getting-started/sell-products/core-payment-options/"
     const val ADVERTISING_POLICY = "https://automattic.com/advertising-policy/"
     const val BLAZE_SUPPORT = "https://wordpress.com/support/promote-a-post/"
 

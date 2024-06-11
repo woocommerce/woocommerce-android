@@ -14,9 +14,11 @@ import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.products.GroupedProductListType.CROSS_SELLS
-import com.woocommerce.android.ui.products.GroupedProductListType.UPSELLS
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitLinkedProducts
+import com.woocommerce.android.ui.products.grouped.GroupedProductListFragmentDirections
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType.CROSS_SELLS
+import com.woocommerce.android.ui.products.grouped.GroupedProductListType.UPSELLS
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import dagger.hilt.android.AndroidEntryPoint

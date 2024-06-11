@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.mystore.MyStoreUtmProvider
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -22,7 +21,7 @@ class JitmViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val jitmStoreCache: JitmStoreInMemoryCache,
     private val jitmTracker: JitmTracker,
-    private val myStoreUtmProvider: MyStoreUtmProvider,
+    private val jitmUtmProvider: JitmUtmProvider,
     private val selectedSite: SelectedSite,
 ) : ScopedViewModel(savedState) {
     private val _jitmState: MutableLiveData<JitmState> = MutableLiveData()
@@ -91,7 +90,7 @@ class JitmViewModel @Inject constructor(
         )
         triggerEvent(
             CtaClick(
-                myStoreUtmProvider.getUrlWithUtmParams(
+                jitmUtmProvider.getUrlWithUtmParams(
                     source = utmSource,
                     id = model.id,
                     featureClass = model.featureClass,

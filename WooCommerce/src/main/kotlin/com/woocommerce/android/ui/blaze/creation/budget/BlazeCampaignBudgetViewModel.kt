@@ -238,8 +238,8 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     @Parcelize
     data class ForecastUi(
         val isLoading: Boolean,
-        val impressionsMin: Int,
-        val impressionsMax: Int,
+        val impressionsMin: Long,
+        val impressionsMax: Long,
         val isError: Boolean
     ) : Parcelable
 }

@@ -20,7 +20,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/major_100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
@@ -52,6 +51,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/product_category_name" />
+
+
+        <com.google.android.material.button.MaterialButton
+            style="@style/Woo.Button.TextButton.TextStart"
+            android:id="@+id/clear_parent_category"
+            android:paddingStart="@dimen/major_100"
+            android:paddingEnd="@dimen/minor_100"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/product_category_clear_parent"/>
 
     </com.woocommerce.android.widgets.WCElevatedLinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

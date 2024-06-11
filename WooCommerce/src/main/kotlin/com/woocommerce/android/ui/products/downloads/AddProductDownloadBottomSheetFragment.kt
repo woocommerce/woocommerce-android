@@ -13,9 +13,9 @@ import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.products.ProductDetailViewModel
 import com.woocommerce.android.ui.products.ProductNavigationTarget.ViewProductDownloadDetails
 import com.woocommerce.android.ui.products.ProductNavigator
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.AddFile
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickDocumentFromDevice
 import com.woocommerce.android.ui.products.downloads.AddProductDownloadViewModel.PickFileFromMedialLibrary

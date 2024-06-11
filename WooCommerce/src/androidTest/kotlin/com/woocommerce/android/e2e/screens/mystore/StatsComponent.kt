@@ -1,7 +1,10 @@
 package com.woocommerce.android.e2e.screens.mystore
 
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
+import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
 
 class StatsComponent : Screen(R.id.dashboardStats_root) {
     override fun recover() {
@@ -19,7 +22,6 @@ class StatsComponent : Screen(R.id.dashboardStats_root) {
         // idleFor(1000)
         if (!waitForElementToBeDisplayedWithoutFailure(R.id.conversionValueTextView)) {
             recover()
-            scrollTo(R.id.stats_view_row)
             waitForElementToBeDisplayed(R.id.conversionValueTextView)
             // idle for a bit in order to load labels as well
             idleFor(3000)
@@ -29,25 +31,35 @@ class StatsComponent : Screen(R.id.dashboardStats_root) {
         }
     }
 
-    fun switchToStatsDashboardTodayTab(): MyStoreScreen {
-        return switchToStatsDashboardTab(R.string.today)
+    fun switchToStatsDashboardTodayTab(composeTestRule: ComposeTestRule): DashboardScreen {
+        return switchToStatsDashboardTab(R.string.today, composeTestRule)
     }
 
-    fun switchToStatsDashboardWeekTab(): MyStoreScreen {
-        return switchToStatsDashboardTab(R.string.this_week)
+    fun switchToStatsDashboardWeekTab(composeTestRule: ComposeTestRule): DashboardScreen {
+        return switchToStatsDashboardTab(R.string.this_week, composeTestRule)
     }
 
-    fun switchToStatsDashboardMonthTab(): MyStoreScreen {
-        return switchToStatsDashboardTab(R.string.this_month)
+    fun switchToStatsDashboardMonthTab(composeTestRule: ComposeTestRule): DashboardScreen {
+        return switchToStatsDashboardTab(R.string.this_month, composeTestRule)
     }
 
-    fun switchToStatsDashboardYearTab(): MyStoreScreen {
-        return switchToStatsDashboardTab(R.string.this_year)
+    fun switchToStatsDashboardYearTab(composeTestRule: ComposeTestRule): DashboardScreen {
+        return switchToStatsDashboardTab(R.string.this_year, composeTestRule)
     }
 
-    private fun switchToStatsDashboardTab(tabName: Int): MyStoreScreen {
-        selectItemWithTitleInTabLayout(tabName, R.id.my_store_stats_container)
+    private fun switchToStatsDashboardTab(tabName: Int, composeTestRule: ComposeTestRule): DashboardScreen {
+        composeTestRule.scrollToNodeThatMatches(
+            hasTestTag(DashboardStatsTestTags.DASHBOARD_STATS_CARD)
+        )
+
+        switchToStatsDateRange(
+            rootTag = DashboardStatsTestTags.DASHBOARD_STATS_CARD,
+            dateRangeName = tabName,
+            composeTestRule = composeTestRule
+        )
+
         waitForGraphToLoad()
-        return MyStoreScreen()
+
+        return DashboardScreen()
     }
 }

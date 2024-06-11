@@ -54,7 +54,7 @@ def detektAll = tasks.register("detektAll", Detekt) {
     baseline.set(file("$rootDir/config/detekt/baseline.xml"))
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     include("**/*.kt")
-    exclude("**/resources/**", "**/build/**")
+    exclude("**/resources/**", "**/build/**", "/vendor/**")
 
     reports {
         xml.required.set(true)
@@ -98,7 +98,7 @@ tasks.register("installGitHooks", Copy) {
 }
 
 ext {
-    fluxCVersion = 'trunk-1dd96169f7b5e67583e9bc1b459011ce3a347fcf'
+    fluxCVersion = '2.83.0'
     glideVersion = '4.16.0'
     coilVersion = '2.1.0'
     constraintLayoutVersion = '1.2.0'
@@ -116,17 +116,18 @@ ext {
     hiltJetpackVersion = '1.1.0'
     wordPressUtilsVersion = '3.5.0'
     mediapickerVersion = '0.3.0'
-    wordPressLoginVersion = '1.13.0'
+    wordPressLoginVersion = '1.15.0'
     aboutAutomatticVersion = '0.0.6'
-    automatticTracksVersion = '3.2.0'
+    automatticTracksVersion = '5.0.0'
     workManagerVersion = '2.7.1'
     billingVersion = '5.0.0'
     stripeTerminalVersion = '3.1.1'
     mlkitBarcodeScanningVersion = '17.2.0'
     mlkitTextRecognitionVersion = '16.0.0'
     androidxCameraVersion = '1.2.3'
-    guavaVersion = '31.0.1-android'
+    guavaVersion = '33.1.0-android'
     protobufVersion = '3.25.3'
+    gravatarVersion = '0.2.0'
 
     // Apache
     commonsText = '1.10.0'
@@ -134,7 +135,7 @@ ext {
     httpClientAndroidVersion = '4.3.5.1'
 
     // Compose and its module versions need to be consistent with each other (for example 'compose-theme-adapter')
-    composeBOMVersion = "2023.10.01"
+    composeBOMVersion = "2024.04.00"
     composeCompilerVersion = "1.5.9"
     composeAccompanistVersion = "0.32.0"
 

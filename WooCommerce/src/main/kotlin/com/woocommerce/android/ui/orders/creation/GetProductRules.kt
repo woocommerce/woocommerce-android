@@ -4,8 +4,8 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.orders.creation.configuration.ProductRules
 import com.woocommerce.android.ui.products.GetBundledProducts
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductType
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.model.WCMetaData
 import javax.inject.Inject

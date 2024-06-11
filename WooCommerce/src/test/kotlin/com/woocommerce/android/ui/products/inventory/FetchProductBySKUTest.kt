@@ -3,9 +3,9 @@ package com.woocommerce.android.ui.products.inventory
 import com.woocommerce.android.ui.orders.creation.CheckDigitRemover
 import com.woocommerce.android.ui.orders.creation.CheckDigitRemoverFactory
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper
-import com.woocommerce.android.ui.products.ProductListRepository
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.ProductTestUtils.generateProductList
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi

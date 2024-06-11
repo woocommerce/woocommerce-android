@@ -194,7 +194,7 @@ class VariationListFragment :
                 handleProgressDialogState(progressDialogState)
             }
             new.isVariationsOptionsMenuEnabled.takeIfNotEqualTo(old?.isVariationsOptionsMenuEnabled) {
-                requireActivity().invalidateOptionsMenu()
+                onPrepareMenu(binding.toolbar.menu)
             }
             new.isBulkUpdateProgressDialogShown.takeIfNotEqualTo(old?.isBulkUpdateProgressDialogShown) { dialogShown ->
                 if (dialogShown) {
@@ -381,7 +381,7 @@ class VariationListFragment :
             shouldBeVisible = isEmptyViewVisible,
             showButton = true
         )
-        requireActivity().invalidateOptionsMenu()
+        onPrepareMenu(binding.toolbar.menu)
     }
 
     private fun showProgressDialog(@StringRes title: Int) {

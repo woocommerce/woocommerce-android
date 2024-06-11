@@ -118,11 +118,11 @@ class OrderCreateEditTotalsHelperTest {
         whenever(bigDecimalFormatter.invoke(BigDecimal(15))).thenReturn("15.00$")
         whenever(bigDecimalFormatter.invoke(BigDecimal(16))).thenReturn("16.00$")
 
-        val onShippingClicked = mock<() -> Unit>()
         val onCouponsClicked = mock<() -> Unit>()
         val onGiftClicked = mock<() -> Unit>()
         val onTaxesLearnMore = mock<() -> Unit>()
         val onMainButtonClicked = mock<() -> Unit>()
+        val onRecalculateButtonClicked = mock<() -> Unit>()
         val onExpandCollapseClicked = mock<() -> Unit>()
         val onHeightChanged = mock<(Int) -> Unit>()
 
@@ -131,15 +131,15 @@ class OrderCreateEditTotalsHelperTest {
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
             localOrder,
-            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.Mode.Creation(),
             OrderCreateEditViewModel.ViewState(
                 taxBasedOnSettingLabel = taxBasedOnSettingLabel
             ),
-            onShippingClicked,
             onCouponsClicked,
             onGiftClicked,
             onTaxesLearnMore,
             onMainButtonClicked,
+            onRecalculateButtonClicked,
             onExpandCollapseClicked,
             onHeightChanged,
         )
@@ -160,11 +160,8 @@ class OrderCreateEditTotalsHelperTest {
         assertThat((actual.lines[1] as TotalsSectionsState.Line.Simple).label).isEqualTo("Custom Amounts")
         assertThat((actual.lines[1] as TotalsSectionsState.Line.Simple).value).isEqualTo("12.00$")
 
-        assertThat((actual.lines[2] as TotalsSectionsState.Line.Button).text).isEqualTo("Shipping")
-        assertThat((actual.lines[2] as TotalsSectionsState.Line.Button).value).isEqualTo("13.00$")
-        assertThat((actual.lines[2] as TotalsSectionsState.Line.Button).enabled).isTrue()
-        assertThat((actual.lines[2] as TotalsSectionsState.Line.Button).extraValue).isNull()
-        assertThat((actual.lines[2] as TotalsSectionsState.Line.Button).onClick == onShippingClicked).isTrue()
+        assertThat((actual.lines[2] as TotalsSectionsState.Line.Simple).label).isEqualTo("Shipping")
+        assertThat((actual.lines[2] as TotalsSectionsState.Line.Simple).value).isEqualTo("13.00$")
 
         assertThat((actual.lines[3] as TotalsSectionsState.Line.Button).text).isEqualTo("Coupons")
         assertThat((actual.lines[3] as TotalsSectionsState.Line.Button).value).isEqualTo("-14.00$")
@@ -208,7 +205,7 @@ class OrderCreateEditTotalsHelperTest {
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
             localOrder,
-            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.Mode.Creation(),
             OrderCreateEditViewModel.ViewState(),
             {},
             {},
@@ -241,7 +238,7 @@ class OrderCreateEditTotalsHelperTest {
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
             localOrder,
-            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.Mode.Creation(),
             OrderCreateEditViewModel.ViewState(),
             {},
             {},
@@ -276,7 +273,7 @@ class OrderCreateEditTotalsHelperTest {
         // WHEN
         val actual = helper.mapToPaymentTotalsState(
             localOrder,
-            OrderCreateEditViewModel.Mode.Creation,
+            OrderCreateEditViewModel.Mode.Creation(),
             OrderCreateEditViewModel.ViewState(),
             {},
             {},

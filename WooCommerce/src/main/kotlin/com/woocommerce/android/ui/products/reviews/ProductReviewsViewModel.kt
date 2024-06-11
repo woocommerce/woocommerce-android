@@ -10,8 +10,10 @@ import com.woocommerce.android.analytics.AnalyticsEvent.PRODUCT_REVIEWS_LOAD_FAI
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.RequestResult
+import com.woocommerce.android.model.RequestResult.API_ERROR
 import com.woocommerce.android.model.RequestResult.ERROR
 import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.RETRY
 import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.reviews.ReviewListRepository
@@ -122,17 +124,36 @@ class ProductReviewsViewModel @Inject constructor(
                 if (productReviewsViewState.isUnreadFilterEnabled) {
                     fetchUnreadReviews(loadMore = loadMore, productId = remoteProductId)
                 } else {
-                    val result = reviewListRepository.fetchProductReviews(
+                    reviewListRepository.fetchProductReviews(
                         loadMore,
                         remoteProductId
-                    )
-                    trackFetchProductReviewsResult(result, loadMore)
-                    when (result) {
-                        SUCCESS,
-                        NO_ACTION_NEEDED -> _reviewList.value = reviewListRepository.getCachedProductReviews()
+                    ).collect { result ->
+                        when (result) {
+                            ReviewListRepository.FetchReviewsResult.NothingFetched -> {
+                                // No action needed
+                            }
+                            is ReviewListRepository.FetchReviewsResult.NotificationsFetched -> {
+                                if (result.requestResult == SUCCESS) {
+                                    val reviews = reviewListRepository.getCachedProductReviews()
+                                    if (reviews.isNotEmpty()) {
+                                        _reviewList.value = reviews
+                                    }
+                                }
+                            }
+                            is ReviewListRepository.FetchReviewsResult.ReviewsFetched -> {
+                                trackFetchProductReviewsResult(result.requestResult, loadMore)
+                                when (result.requestResult) {
+                                    SUCCESS,
+                                    NO_ACTION_NEEDED -> {
+                                        _reviewList.value = reviewListRepository.getCachedProductReviews()
+                                    }
 
-                        ERROR -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
-                        else -> {}
+                                    ERROR,
+                                    API_ERROR,
+                                    RETRY -> triggerEvent(ShowSnackbar(R.string.review_fetch_error))
+                                }
+                            }
+                        }
                     }
                 }
             } else {

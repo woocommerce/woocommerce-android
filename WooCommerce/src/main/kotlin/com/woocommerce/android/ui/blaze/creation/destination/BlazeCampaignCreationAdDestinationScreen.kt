@@ -16,8 +16,8 @@ import androidx.compose.material.RadioButton
 import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -65,7 +65,7 @@ fun AdDestinationScreen(
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_preview_details_destination_url),
                 onNavigationButtonClick = onBackPressed,
-                navigationIcon = Filled.ArrowBack
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)

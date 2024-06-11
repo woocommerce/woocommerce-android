@@ -1404,7 +1404,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
 
             assertThat(viewModel.event.value).isInstanceOf(PurchaseCardReader::class.java)
             assertThat((viewModel.event.value as PurchaseCardReader).url).isEqualTo(
-                "https://woo.com/products/hardware/US"
+                "https://woocommerce.com/products/hardware/US"
             )
         }
 

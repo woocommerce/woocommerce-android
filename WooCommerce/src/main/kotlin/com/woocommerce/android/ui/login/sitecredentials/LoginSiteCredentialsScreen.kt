@@ -16,7 +16,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -51,7 +51,6 @@ fun LoginSiteCredentialsScreen(viewModel: LoginSiteCredentialsViewModel) {
             onBackClick = viewModel::onBackClick,
             onHelpButtonClick = viewModel::onHelpButtonClick,
             onErrorDialogDismissed = viewModel::onErrorDialogDismissed,
-            onStartWebAuthorizationClick = viewModel::onStartWebAuthorizationClick,
             onWebAuthorizationUrlLoaded = viewModel::onWebAuthorizationUrlLoaded
         )
     }
@@ -67,7 +66,6 @@ fun LoginSiteCredentialsScreen(
     onBackClick: () -> Unit,
     onHelpButtonClick: () -> Unit,
     onErrorDialogDismissed: () -> Unit,
-    onStartWebAuthorizationClick: () -> Unit,
     onWebAuthorizationUrlLoaded: (String) -> Unit
 ) {
     Scaffold(
@@ -79,7 +77,7 @@ fun LoginSiteCredentialsScreen(
                 navigationIcon = if (viewState is LoginSiteCredentialsViewModel.ViewState.WebAuthorizationViewState) {
                     Icons.Filled.Clear
                 } else {
-                    Icons.Filled.ArrowBack
+                    Icons.AutoMirrored.Filled.ArrowBack
                 }
             )
         }
@@ -93,7 +91,6 @@ fun LoginSiteCredentialsScreen(
                 onResetPasswordClick = onResetPasswordClick,
                 onErrorDialogDismissed = onErrorDialogDismissed,
                 onHelpButtonClick = onHelpButtonClick,
-                onStartWebAuthorizationClick = onStartWebAuthorizationClick,
                 modifier = Modifier.padding(paddingValues)
             )
 
@@ -119,7 +116,6 @@ private fun NativeLoginForm(
     onResetPasswordClick: () -> Unit,
     onErrorDialogDismissed: () -> Unit,
     onHelpButtonClick: () -> Unit,
-    onStartWebAuthorizationClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -187,11 +183,6 @@ private fun NativeLoginForm(
                         .fillMaxWidth()
                         .padding(horizontal = dimensionResource(id = R.dimen.major_100))
                 ) {
-                    WCTextButton(
-                        onClick = onStartWebAuthorizationClick
-                    ) {
-                        Text(text = stringResource(id = R.string.login_site_credentials_use_web_authorization))
-                    }
                     WCTextButton(
                         onClick = {
                             onErrorDialogDismissed()
@@ -270,8 +261,7 @@ private fun NativeLoginFormPreview() {
             onContinueClick = {},
             onResetPasswordClick = {},
             onErrorDialogDismissed = {},
-            onHelpButtonClick = {},
-            onStartWebAuthorizationClick = {}
+            onHelpButtonClick = {}
         )
     }
 }
@@ -290,8 +280,7 @@ private fun NativeLoginFormWithErrorDialogPreview() {
             onContinueClick = {},
             onResetPasswordClick = {},
             onErrorDialogDismissed = {},
-            onHelpButtonClick = {},
-            onStartWebAuthorizationClick = {}
+            onHelpButtonClick = {}
         )
     }
 }

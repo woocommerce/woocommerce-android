@@ -18,6 +18,8 @@ import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.lesserThan
 import com.woocommerce.android.extensions.pastTimeDeltaFromNowInDays
 import com.woocommerce.android.network.ConnectionChangeReceiver
+import com.woocommerce.android.notifications.NotificationChannelsHandler
+import com.woocommerce.android.notifications.push.FCMRefreshWorker
 import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.support.zendesk.ZendeskSettings
@@ -38,6 +40,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.util.AppThemeUtils
 import com.woocommerce.android.util.ApplicationLifecycleMonitor
 import com.woocommerce.android.util.ApplicationLifecycleMonitor.ApplicationLifecycleListener
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.REGEX_API_JETPACK_TUNNEL_METHOD
 import com.woocommerce.android.util.REGEX_API_NUMERIC_PARAM
@@ -133,6 +136,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var prefs: AppPrefs
 
+    @Inject lateinit var getWooVersion: GetWooCorePluginCachedVersion
+
     @Inject @AppCoroutineScope
     lateinit var appCoroutineScope: CoroutineScope
 
@@ -141,6 +146,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var jitmStoreInMemoryCache: JitmStoreInMemoryCache
 
     @Inject lateinit var trackStoreSnapshot: TrackStoreSnapshot
+
+    @Inject lateinit var notificationChannelsHandler: NotificationChannelsHandler
 
     private var connectionReceiverRegistered = false
 
@@ -173,6 +180,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     fun init(application: Application) {
         this.application = application
 
+        crashLogging.initialize()
         Thread.setDefaultUncaughtExceptionHandler(
             UncaughtErrorsHandler(
                 context = application,
@@ -191,6 +199,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         AppRatingDialog.init(application)
 
         initAnalytics()
+
+        notificationChannelsHandler.init()
 
         // Developers can uncomment the line below to clear the db tables at startup
         // wellSqlConfig.resetDatabase()
@@ -224,6 +234,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
 
         monitorApplicationPasswordsStatus()
+
+        // Schedule worker to refresh FCM token periodically
+        FCMRefreshWorker.schedule(application)
     }
 
     @Suppress("DEPRECATION")
@@ -345,7 +358,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     }
 
     private fun initAnalytics() {
-        AnalyticsTracker.init(application, selectedSite, prefs)
+        AnalyticsTracker.init(
+            application,
+            selectedSite,
+            prefs,
+            getWooVersion,
+            appCoroutineScope,
+        )
 
         AnalyticsTracker.refreshMetadata(accountStore.account?.userName)
     }

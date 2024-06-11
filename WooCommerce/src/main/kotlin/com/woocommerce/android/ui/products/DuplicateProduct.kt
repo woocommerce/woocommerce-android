@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products
 import com.woocommerce.android.R
 import com.woocommerce.android.WooException
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider

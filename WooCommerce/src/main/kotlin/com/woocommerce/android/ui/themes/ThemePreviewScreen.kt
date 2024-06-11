@@ -27,9 +27,9 @@ import androidx.compose.material.ModalBottomSheetValue.HalfExpanded
 import androidx.compose.material.ModalBottomSheetValue.Hidden
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Filled
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Outlined
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material.rememberModalBottomSheetState
@@ -125,7 +125,7 @@ fun ThemePreviewScreen(
                             modalSheetState
                         )
                     },
-                    navigationIcon = Filled.ArrowBack,
+                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                     onNavigationButtonClick = onBackNavigationClicked,
                     actions = {
                         ThemePreviewMenu(state.previewType, onPreviewTypeChanged)
@@ -150,7 +150,6 @@ fun ThemePreviewScreen(
                 )
 
                 ThemePreviewBottomSection(
-                    isFromStoreCreation = state.isFromStoreCreation,
                     themeName = state.themeName,
                     isActivatingTheme = state.isActivatingTheme,
                     onActivateThemeClicked = onActivateThemeClicked,
@@ -164,7 +163,6 @@ fun ThemePreviewScreen(
 
 @Composable
 private fun ThemePreviewBottomSection(
-    isFromStoreCreation: Boolean,
     themeName: String,
     isActivatingTheme: Boolean,
     onActivateThemeClicked: () -> Unit,
@@ -191,14 +189,7 @@ private fun ThemePreviewBottomSection(
                 )
             } else {
                 Text(
-                    text = stringResource(
-                        id = if (isFromStoreCreation) {
-                            R.string.theme_preview_activate_theme_button_store_creation
-                        } else {
-                            R.string.theme_preview_activate_theme_button_settings
-                        },
-                        themeName
-                    )
+                    text = stringResource(id = R.string.theme_preview_activate_theme_button_settings, themeName)
                 )
             }
         }

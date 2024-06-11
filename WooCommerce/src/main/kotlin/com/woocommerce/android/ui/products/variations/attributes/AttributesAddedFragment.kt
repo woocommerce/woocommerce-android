@@ -12,8 +12,8 @@ import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.ui.products.BaseProductFragment
-import com.woocommerce.android.ui.products.ProductDetailFragment
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
+import com.woocommerce.android.ui.products.details.ProductDetailFragment
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitAttributesAdded
 import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment
 import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion.KEY_ADD_NEW_VARIATION
 import com.woocommerce.android.ui.products.variations.GenerateVariationBottomSheetFragment.Companion.KEY_GENERATE_ALL_VARIATIONS

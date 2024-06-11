@@ -32,7 +32,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WcExposedDropDown
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.BaseProductFragment
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductSubscriptionExpiration
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductSubscriptionExpiration
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.AndroidEntryPoint
 

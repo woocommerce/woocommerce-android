@@ -12,14 +12,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class AppPrefsWrapper @Inject constructor() {
-    var storeCreationProfilerAnswers by AppPrefs::storeCreationProfilerAnswers
-
-    /**
-     * Persists the ID of the last created site in case the app was closed while the site was being created.
-     * This allows to switch to the newly created site when the app is opened again.
-     */
-    var createdStoreSiteId: Long? by AppPrefs::createdStoreSiteId
-
     var savedPrivacyBannerSettings by AppPrefs::savedPrivacySettings
 
     var wasAIProductDescriptionPromoDialogShown by AppPrefs::wasAIProductDescriptionPromoDialogShown
@@ -31,8 +23,6 @@ class AppPrefsWrapper @Inject constructor() {
     var aiProductCreationIsFirstAttempt by AppPrefs::aiProductCreationIsFirstAttempt
 
     var isBlazeCelebrationScreenShown by AppPrefs::isBlazeCelebrationScreenShown
-
-    var isMyStoreBlazeViewDismissed by AppPrefs::isMyStoreBlazeViewDismissed
 
     var wasAIProductDescriptionCelebrationShown by AppPrefs::wasAIProductDescriptionCelebrationShown
 
@@ -215,24 +205,23 @@ class AppPrefsWrapper @Inject constructor() {
 
     fun hasOnboardingCarouselBeenDisplayed(): Boolean = AppPrefs.hasOnboardingCarouselBeenDisplayed()
 
-    fun setActiveStatsGranularity(statsGranularity: String) {
-        AppPrefs.setActiveStatsGranularity(statsGranularity)
+    fun setActiveStatsTab(selectionName: String) {
+        AppPrefs.setActiveStatsTab(selectionName)
     }
 
-    fun getActiveStatsGranularity() =
-        AppPrefs.getActiveStatsGranularity()
+    fun getActiveStoreStatsTab() = AppPrefs.getActiveStatsTab()
 
-    fun markAsNewSignUp(newSignUp: Boolean) {
-        AppPrefs.markAsNewSignUp(newSignUp)
+    fun setActiveTopPerformersTab(selectionName: String) {
+        AppPrefs.setActiveTopPerformersTab(selectionName)
     }
 
-    fun getIsNewSignUp() = AppPrefs.getIsNewSignUp()
+    fun getActiveTopPerformersTab() = AppPrefs.getActiveTopPerformersTab()
 
-    fun setStoreCreationSource(source: String) {
-        AppPrefs.setStoreCreationSource(source)
+    fun getActiveCouponsTab() = AppPrefs.getActiveCouponsTab()
+
+    fun setActiveCouponsTab(selectionName: String) {
+        AppPrefs.setActiveCouponsTab(selectionName)
     }
-
-    fun getStoreCreationSource() = AppPrefs.getStoreCreationSource()
 
     fun setCustomDomainsSource(source: DomainFlowSource) {
         AppPrefs.setCustomDomainsSource(source.name)
@@ -339,8 +328,8 @@ class AppPrefsWrapper @Inject constructor() {
         }
     }
 
-    fun markAllOnboardingTasksCompleted(siteId: Int) {
-        AppPrefs.markOnboardingTaskCompletedFor(siteId)
+    fun updateOnboardingCompletedStatus(siteId: Int, completed: Boolean) {
+        AppPrefs.updateOnboardingCompletedStatus(siteId, completed)
     }
 
     fun isOnboardingCompleted(siteId: Int): Boolean = AppPrefs.areOnboardingTaskCompletedFor(siteId)
@@ -350,12 +339,6 @@ class AppPrefsWrapper @Inject constructor() {
     }
 
     fun getStoreOnboardingShown(siteId: Int): Boolean = AppPrefs.getStoreOnboardingShown(siteId)
-
-    fun getOnboardingSettingVisibility(siteId: Int): Boolean = AppPrefs.getOnboardingSettingVisibility(siteId)
-
-    fun setOnboardingSettingVisibility(siteId: Int, show: Boolean) {
-        AppPrefs.setOnboardingSettingVisibility(siteId, show)
-    }
 
     fun setStorePhoneNumber(siteId: Int, phoneNumber: String) = AppPrefs.setStorePhoneNumber(siteId, phoneNumber)
 
@@ -382,13 +365,6 @@ class AppPrefsWrapper @Inject constructor() {
     fun setWCStoreID(siteID: Long, storeID: String?) {
         AppPrefs.setWCStoreID(siteID, storeID)
     }
-
-    fun saveThemeIdForStoreCreation(siteId: Long, themeId: String) =
-        AppPrefs.saveThemeIdForStoreCreation(siteId, themeId)
-
-    fun clearThemeIdForStoreCreation() = AppPrefs.clearThemeIdForStoreCreation()
-
-    fun getThemeIdForStoreCreation(siteId: Long): String? = AppPrefs.getThemeIdForStoreCreation(siteId)
 
     fun incrementNotificationChannelTypeSuffix(channel: NotificationChannelType) =
         AppPrefs.incrementNotificationChannelTypeSuffix(channel)

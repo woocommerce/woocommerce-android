@@ -1,0 +1,2 @@
+18.9:
+Es gibt aufregende Updates! Mit mehreren Versandzeilen pro Bestellung kannst du deine Bestellungen jetzt noch effizienter verwalten. Das neu gestaltete „Mehr“-Menü bietet eine reibungslosere Navigation. Zudem haben wir eine nützliche Funktion für die Berechnung von Wechselgeld bei Barzahlungen hinzugefügt. Aktualisiere deine WooCommerce-App, um von einem nahtlosen und verbesserten Erlebnis zu profitieren!

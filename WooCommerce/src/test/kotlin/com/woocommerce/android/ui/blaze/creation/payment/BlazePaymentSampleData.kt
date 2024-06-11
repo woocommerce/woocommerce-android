@@ -25,7 +25,6 @@ object BlazePaymentSampleData {
     val paymentMethodsUrls = BlazeRepository.PaymentMethodUrls(
         formUrl = "https://example.com/form",
         successUrl = "https://example.com/success",
-        idUrlParameter = "id"
     )
     val paymentMethodsData = BlazeRepository.PaymentMethodsData(
         savedPaymentMethods = userPaymentMethods,

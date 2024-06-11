@@ -113,11 +113,6 @@ class RefundByItemsFragment :
             viewModel.onFeesRefundMainSwitchChanged(isChecked)
             binding.issueRefundFeesSection.root.isVisible = isChecked
         }
-
-        // TODO: Temporarily disabled, this will be used in a future release - do not remove
-//        issueRefund_productsTotal.setOnClickListener {
-//            viewModel.onProductRefundAmountTapped()
-//        }
     }
 
     private fun setupObservers() {

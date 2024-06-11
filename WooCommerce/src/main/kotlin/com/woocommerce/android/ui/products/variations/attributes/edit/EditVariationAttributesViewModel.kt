@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.extensions.pairMap
 import com.woocommerce.android.model.ProductAttribute
 import com.woocommerce.android.model.VariantOption
-import com.woocommerce.android.ui.products.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.variations.VariationDetailRepository
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.LiveDataDelegate

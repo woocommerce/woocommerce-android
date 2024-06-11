@@ -18,6 +18,7 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         currencyFormatter: CurrencyFormatter,
         isActivated: Boolean = false,
         isProductHighlighted: Boolean = false,
+        isLastItem: Boolean,
     ) {
         viewBinding.root.isActivated = isActivated
 
@@ -28,6 +29,8 @@ class ProductItemViewHolder(val viewBinding: ProductListItemBinding) :
         } else {
             viewBinding.root.setBackgroundColor(Color.TRANSPARENT)
         }
+
+        viewBinding.productItemView.binding.divider.isVisible = !isLastItem
 
         viewBinding.productItemView.bind(
             product = product,

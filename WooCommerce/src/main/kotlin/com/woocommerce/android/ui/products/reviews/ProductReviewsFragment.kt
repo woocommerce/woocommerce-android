@@ -11,7 +11,7 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.databinding.FragmentReviewsListBinding
+import com.woocommerce.android.databinding.FragmentProductReviewsListBinding
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.extensions.show
@@ -40,7 +40,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductReviewsFragment :
-    BaseFragment(R.layout.fragment_reviews_list),
+    BaseFragment(R.layout.fragment_product_reviews_list),
     ReviewListAdapter.OnReviewClickListener,
     ReviewModerationUi,
     BackPressListener,
@@ -59,7 +59,7 @@ class ProductReviewsFragment :
 
     private val skeletonView = SkeletonView()
 
-    private var _binding: FragmentReviewsListBinding? = null
+    private var _binding: FragmentProductReviewsListBinding? = null
     private val binding get() = _binding!!
 
     override val activityAppBarStatus: AppBarStatus
@@ -67,7 +67,7 @@ class ProductReviewsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentReviewsListBinding.bind(view)
+        _binding = FragmentProductReviewsListBinding.bind(view)
         setupViews()
         setupObservers()
     }
@@ -101,10 +101,10 @@ class ProductReviewsFragment :
             })
         }
 
-        binding.notifsRefreshLayout.apply {
+        binding.apply {
             // Set the scrolling view in the custom SwipeRefreshLayout
-            scrollUpChild = binding.reviewsList
-            setOnRefreshListener {
+            notifsRefreshLayout.scrollUpChild = reviewsList
+            notifsRefreshLayout.setOnRefreshListener {
                 AnalyticsTracker.track(AnalyticsEvent.PRODUCT_REVIEWS_PULLED_TO_REFRESH)
                 viewModel.refreshProductReviews()
             }
@@ -125,7 +125,9 @@ class ProductReviewsFragment :
     private fun setupObservers() {
         viewModel.productReviewsViewStateData.observe(viewLifecycleOwner) { old, new ->
             new.isSkeletonShown?.takeIfNotEqualTo(old?.isSkeletonShown) { showSkeleton(it) }
-            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) { binding.notifsRefreshLayout.isRefreshing = it }
+            new.isRefreshing?.takeIfNotEqualTo(old?.isRefreshing) {
+                binding.notifsRefreshLayout.isRefreshing = it
+            }
             new.isLoadingMore?.takeIfNotEqualTo(old?.isLoadingMore) { showLoadMoreProgress(it) }
             new.isEmptyViewVisible?.takeIfNotEqualTo(old?.isEmptyViewVisible) { showEmptyView(it) }
         }

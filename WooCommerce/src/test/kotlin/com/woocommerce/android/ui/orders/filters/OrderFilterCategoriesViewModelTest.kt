@@ -19,7 +19,7 @@ import com.woocommerce.android.ui.orders.filters.model.OrderFilterCategoryUiMode
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.OnShowOrders
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterEvent.ShowFilterOptionsForCategory
 import com.woocommerce.android.ui.orders.filters.model.OrderFilterOptionUiModel
-import com.woocommerce.android.ui.products.ProductListRepository
+import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest

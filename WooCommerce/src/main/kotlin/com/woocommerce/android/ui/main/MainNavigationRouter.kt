@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.main
 
 import android.view.View
 import androidx.navigation.fragment.NavHostFragment
-import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 
 interface MainNavigationRouter {
     fun isAtNavigationRoot(): Boolean
@@ -55,6 +54,4 @@ interface MainNavigationRouter {
 
     fun showFeedbackSurvey()
     fun showSettingsScreen()
-
-    fun showAnalytics(targetPeriod: StatsTimeRangeSelection.SelectionType)
 }

@@ -1,72 +1,82 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/productImages_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/color_surface"
-    tools:context="com.woocommerce.android.ui.products.ProductImagesFragment">
+    android:orientation="vertical">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
+        style="@style/Widget.Woo.Toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
         android:elevation="@dimen/appbar_elevation"
-        style="@style/Widget.Woo.Toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:title="@string/app_name"/>
+        tools:title="@string/app_name" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/addImageButton"
-        style="@style/Woo.Button.Outlined"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_extra_large"
-        android:layout_marginTop="@dimen/margin_extra_large"
-        android:layout_marginEnd="@dimen/margin_extra_large"
-        android:text="@string/product_add_photos" />
+        android:background="@color/color_surface"
+        tools:context="com.woocommerce.android.ui.products.images.ProductImagesFragment">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/learnMoreButton"
-        style="@style/Woo.ListItem.Body"
-        android:gravity="center"
-        android:background="?android:attr/selectableItemBackground"
-        android:layout_marginTop="@dimen/minor_75"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="@string/product_images_learn_more_button"/>
+        <com.woocommerce.android.widgets.WCElevatedLinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <View
-        android:id="@+id/divider"
-        style="@style/Woo.Divider"
-        android:layout_gravity="bottom"
-        android:layout_marginTop="@dimen/margin_extra_large"
-        android:layout_marginBottom="@dimen/margin_extra_large" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addImageButton"
+                style="@style/Woo.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_extra_large"
+                android:layout_marginTop="@dimen/margin_extra_large"
+                android:layout_marginEnd="@dimen/margin_extra_large"
+                android:text="@string/product_add_photos" />
 
-    <TextView
-        android:id="@+id/dragAndDropDescription"
-        style="@style/Woo.TextView.Body2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/product_images_drag_and_drop_description" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/learnMoreButton"
+                style="@style/Woo.ListItem.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/minor_75"
+                android:background="?android:attr/selectableItemBackground"
+                android:gravity="center"
+                tools:text="@string/product_images_learn_more_button" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textWarning"
-        style="@style/Woo.TextView.Body1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/product_images_image_limit_warning" />
+            <View
+                android:id="@+id/divider"
+                style="@style/Woo.Divider"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="@dimen/margin_extra_large"
+                android:layout_marginBottom="@dimen/margin_extra_large" />
 
-    <com.woocommerce.android.widgets.WCProductImageGalleryView
-        android:id="@+id/imageGallery"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:isDraggingEnabled="true"
-        app:isGridView="true"
-        app:showAddImageIcon="false" />
+            <TextView
+                android:id="@+id/dragAndDropDescription"
+                style="@style/Woo.TextView.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/product_images_drag_and_drop_description" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textWarning"
+                style="@style/Woo.TextView.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/product_images_image_limit_warning" />
+
+            <com.woocommerce.android.widgets.WCProductImageGalleryView
+                android:id="@+id/imageGallery"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:isDraggingEnabled="true"
+                app:isGridView="true"
+                app:showAddImageIcon="false" />
+        </com.woocommerce.android.widgets.WCElevatedLinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

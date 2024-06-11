@@ -6,7 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
-import com.woocommerce.android.ui.login.storecreation.countrypicker.LocalCountriesRepository
+import com.woocommerce.android.ui.common.LocalCountriesRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -29,7 +29,14 @@ class TapToPayAboutViewModel @Inject constructor(
 
     init {
         _viewState.value = UiState(
-            importantInfo = navArgs.cardReaderConfig.buildImportantInfoSection()
+            importantInfo = navArgs.cardReaderConfig.buildImportantInfoSection(),
+            onLearnMoreAboutTapToPay = {
+                triggerEvent(
+                    NavigateToUrlInGenericWebView(
+                        AppUrls.LEARN_MORE_ABOUT_TAP_TO_PAY
+                    )
+                )
+            }
         )
     }
 
@@ -64,7 +71,10 @@ class TapToPayAboutViewModel @Inject constructor(
         }
     }
 
-    data class UiState(val importantInfo: ImportantInfo?) {
+    data class UiState(
+        val importantInfo: ImportantInfo?,
+        val onLearnMoreAboutTapToPay: () -> Unit
+    ) {
         data class ImportantInfo(
             val pinDescription: String,
             val onLearnMoreAboutCardReaders: () -> Unit,

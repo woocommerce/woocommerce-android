@@ -13,7 +13,6 @@ interface MainSettingsContract {
         fun setupAnnouncementOption()
         fun setupJetpackInstallOption()
         fun setupApplicationPasswordsSettings()
-        fun setupOnboardingListVisibilitySetting()
         fun onNotificationsClicked()
 
         val isDomainOptionVisible: Boolean
@@ -28,6 +27,5 @@ interface MainSettingsContract {
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
         fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean)
         fun handleApplicationPasswordsSettings()
-        fun handleStoreSetupListSetting(enabled: Boolean, onToggleChange: (Boolean) -> Unit)
     }
 }

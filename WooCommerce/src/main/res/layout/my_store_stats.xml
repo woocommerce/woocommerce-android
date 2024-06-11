@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp">
 
-                <com.woocommerce.android.ui.mystore.DashboardStatsLineChart
+                <com.woocommerce.android.ui.dashboard.DashboardStatsLineChart
                     android:id="@+id/chart"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -71,6 +71,16 @@
 
             </FrameLayout>
 
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/custom_range_granularity_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="@color/color_on_surface_medium"
+                android:visibility="gone"
+                tools:text="Weekly intervals" />
+
             <Button
                 android:id="@+id/view_analytics_button"
                 style="@style/Woo.Button.Outlined"
@@ -78,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/major_100"
                 android:layout_marginVertical="@dimen/minor_100"
-                android:text="@string/analytics_see_more" />
+                android:text="@string/analytics_section_see_all" />
 
         </LinearLayout>
 

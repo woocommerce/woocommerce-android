@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.payments.receipt
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -11,14 +12,12 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderReceiptResponse
 import org.wordpress.android.fluxc.store.WCOrderStore
-import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class PaymentReceiptHelperTest : BaseUnitTest() {
@@ -26,12 +25,10 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
         on { get() }.thenReturn(mock())
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val wooCommerceStore: WooCommerceStore = mock()
+    private val getWooVersion: GetWooCorePluginCachedVersion = mock()
     private val orderStore: WCOrderStore = mock()
-    private val isDevSiteSupported: PaymentReceiptHelper.IsDevSiteSupported = mock()
 
-    private val helper =
-        PaymentReceiptHelper(selectedSite, wooCommerceStore, appPrefsWrapper, orderStore, isDevSiteSupported)
+    private val helper = PaymentReceiptHelper(selectedSite, appPrefsWrapper, orderStore, getWooVersion)
 
     @Test
     fun `given selected site, when storeReceiptUrl, then url is stored`() {
@@ -50,15 +47,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
         // GIVEN
         val site = selectedSite.get()
         whenever(appPrefsWrapper.getReceiptUrl(site.id, site.siteId, site.selfHostedSiteId, 1)).thenReturn("")
-        val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("3.9.9")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )
-        ).thenReturn(plugin)
+        whenever(getWooVersion()).thenReturn("3.9.9")
 
         // WHEN
         val result = helper.getReceiptUrl(1)
@@ -72,15 +61,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
         // GIVEN
         val site = selectedSite.get()
         whenever(appPrefsWrapper.getReceiptUrl(site.id, site.siteId, site.selfHostedSiteId, 1)).thenReturn("url")
-        val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("3.9.9")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )
-        ).thenReturn(plugin)
+        whenever(getWooVersion()).thenReturn("3.9.9")
 
         // WHEN
         val result = helper.getReceiptUrl(1)
@@ -93,15 +74,8 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     fun `given version 8_7_0 site and remote call success, when getReceiptUrl, then url returned`() = testBlocking {
         // GIVEN
         val site = selectedSite.get()
-        val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("8.7.0")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )
-        ).thenReturn(plugin)
+        whenever(getWooVersion()).thenReturn("8.7.0")
+
         whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
             WooPayload(OrderReceiptResponse("url", "date"))
         )
@@ -117,15 +91,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     fun `given version 8_7_0_10 site and saved url, when getReceiptUrl, then url returned`() = testBlocking {
         // GIVEN
         val site = selectedSite.get()
-        val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("8.7.0.10")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )
-        ).thenReturn(plugin)
+        whenever(getWooVersion()).thenReturn("8.7.0.10")
         whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
             WooPayload(OrderReceiptResponse("url", "date"))
         )
@@ -141,15 +107,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     fun `given version 8_7_0 site and remote call fails, when getReceiptUrl, then failure returned`() = testBlocking {
         // GIVEN
         val site = selectedSite.get()
-        val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("8.7.0")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )
-        ).thenReturn(plugin)
+        whenever(getWooVersion()).thenReturn("8.7.0.10")
         whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
             WooPayload(
                 WooError(
@@ -166,61 +124,6 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
         // THEN
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()!!.message).isEqualTo("error")
-    }
-
-    @Test
-    fun `given version dev usage enabled and 6_4_0 and remote call fails, when getReceiptUrl, then failure returned`() = testBlocking {
-        // GIVEN
-        val site = selectedSite.get()
-        val plugin = mock<SitePluginModel> {
-            on { name }.thenReturn("woocommerce-dev/woocommerce")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugins(
-                selectedSite.get(),
-            )
-        ).thenReturn(listOf(plugin))
-        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
-            WooPayload(
-                WooError(
-                    type = WooErrorType.API_ERROR,
-                    original = BaseRequest.GenericErrorType.NETWORK_ERROR,
-                    message = "error"
-                )
-            )
-        )
-        whenever(isDevSiteSupported()).thenReturn(true)
-
-        // WHEN
-        val result = helper.getReceiptUrl(1)
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()!!.message).isEqualTo("error")
-    }
-
-    @Test
-    fun `given version dev usage enabled and remote call success, when getReceiptUrl, then failure returned`() = testBlocking {
-        // GIVEN
-        val site = selectedSite.get()
-        val plugin = mock<SitePluginModel> {
-            on { name }.thenReturn("woocommerce-dev/woocommerce")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugins(
-                selectedSite.get(),
-            )
-        ).thenReturn(listOf(plugin))
-        whenever(orderStore.fetchOrdersReceipt(site, 1, expirationDays = 2)).thenReturn(
-            WooPayload(OrderReceiptResponse("url", "date"))
-        )
-        whenever(isDevSiteSupported()).thenReturn(true)
-
-        // WHEN
-        val result = helper.getReceiptUrl(1)
-
-        // THEN
-        assertThat(result.getOrThrow()).isEqualTo("url")
     }
 
     @Test
@@ -285,15 +188,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     @Test
     fun `given version 8_7_0, when isReceiptAvailable, then true returned`() = testBlocking {
         // GIVEN
-        val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("8.7.0")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )
-        ).thenReturn(plugin)
+        whenever(getWooVersion()).thenReturn("8.7.0")
 
         // WHEN
         val result = helper.isReceiptAvailable(1)
@@ -305,15 +200,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     @Test
     fun `given version empty and empty local storage, when isReceiptAvailable, then false returned`() = testBlocking {
         // GIVEN
-        val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )
-        ).thenReturn(plugin)
+        whenever(getWooVersion()).thenReturn("")
         whenever(appPrefsWrapper.getReceiptUrl(any(), any(), any(), any())).thenReturn("")
 
         // WHEN
@@ -326,15 +213,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     @Test
     fun `given version empty string and empty local storage, when isReceiptAvailable, then false returned`() = testBlocking {
         // GIVEN
-        val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )
-        ).thenReturn(plugin)
+        whenever(getWooVersion()).thenReturn("")
         whenever(appPrefsWrapper.getReceiptUrl(any(), any(), any(), any())).thenReturn("")
 
         // WHEN
@@ -347,15 +226,7 @@ class PaymentReceiptHelperTest : BaseUnitTest() {
     @Test
     fun `given version empty 6_3_9 and non empty local storage, when isReceiptAvailable, then true returned`() = testBlocking {
         // GIVEN
-        val plugin = mock<SitePluginModel> {
-            on { version }.thenReturn("")
-        }
-        whenever(
-            wooCommerceStore.getSitePlugin(
-                selectedSite.get(),
-                WooCommerceStore.WooPlugin.WOO_CORE
-            )
-        ).thenReturn(plugin)
+        whenever(getWooVersion()).thenReturn("")
         whenever(appPrefsWrapper.getReceiptUrl(any(), any(), any(), any())).thenReturn("url")
 
         // WHEN

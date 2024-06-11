@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.compose.component
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 

@@ -124,15 +124,4 @@
         android:layout_height="wrap_content"
         app:constraint_referenced_ids="issueRefund_refundNotice,issueRefund_dividerBelowList,issueRefund_dividerBelowTaxes,issueRefund_taxesTotal,issueRefund_subtotal,issueRefund_productsTotal,issueRefund_lblProductsTotal,issueRefund_lblTaxes,issueRefund_lblSubtotal" />
 
-    <!--     TODO: Temporarily disabled, this will be used in a future release - do not remove -->
-    <!--        <com.google.android.material.button.MaterialButton-->
-    <!--            android:id="@+id/issueRefund_productsTotalButton"-->
-    <!--            style="@style/Woo.Button"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:textAllCaps="false"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            app:layout_constraintTop_toBottomOf="@id/issueRefund_dividerBelowTaxes"-->
-    <!--            tools:text="$49.00" />-->
-
 </androidx.constraintlayout.widget.ConstraintLayout>

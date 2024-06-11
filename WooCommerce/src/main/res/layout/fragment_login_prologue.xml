@@ -96,29 +96,27 @@
             android:visibility="gone" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_get_started"
+            android:id="@+id/button_login_store"
             style="@style/Woo.Button.Colored.Circle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/major_100"
             android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_100"
-            android:text="@string/signup_get_started_button"
-            android:textAllCaps="false" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_login_store"
-            style="@style/Woo.Button.Colored.Circle.White"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/major_100"
-            android:layout_marginTop="@dimen/minor_25"
-            android:layout_marginEnd="@dimen/major_100"
-            android:layout_marginBottom="@dimen/major_150"
             android:text="@string/login_store_address"
             android:textAllCaps="false"
             tools:visibility="visible" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_start_new_store"
+            style="@style/Woo.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/major_100"
+            android:layout_marginTop="@dimen/minor_50"
+            android:layout_marginEnd="@dimen/major_100"
+            android:layout_marginBottom="@dimen/major_150"
+            android:text="@string/login_prologue_start_new_store"
+            android:textAllCaps="false" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

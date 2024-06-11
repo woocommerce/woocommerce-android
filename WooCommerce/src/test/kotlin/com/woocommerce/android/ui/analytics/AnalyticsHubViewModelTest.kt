@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.analytics
 
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -39,9 +40,9 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
+import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
+import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.feedback.FeedbackRepository
-import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
-import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
@@ -92,12 +93,12 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
 
     private val updateStats: UpdateAnalyticsHubStats = mock()
     private val observeLastUpdate: ObserveLastUpdate = mock()
-    private val savedState = AnalyticsHubFragmentArgs(targetGranularity = TODAY).toSavedStateHandle()
+    private lateinit var savedState: SavedStateHandle
     private val transactionLauncher = mock<AnalyticsHubTransactionLauncher>()
     private val feedbackRepository: FeedbackRepository = mock()
     private val tracker: AnalyticsTrackerWrapper = mock()
     private val dateUtils: DateUtils = mock()
-    private val trackerEventEmitter: MyStoreStatsUsageTracksEventEmitter = mock()
+    private val trackerEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
 
     private lateinit var localeProvider: LocaleProvider
@@ -127,6 +128,14 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
         localeProvider = mock {
             on { provideLocale() } doReturn testLocale
         }
+        savedState = AnalyticsHubFragmentArgs(
+            TODAY.generateSelectionData(
+                calendar = testCalendar,
+                locale = testLocale,
+                referenceStartDate = Date(),
+                referenceEndDate = Date()
+            )
+        ).toSavedStateHandle()
     }
 
     @Test
@@ -1105,7 +1114,9 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     private fun configureVisibleCards(configuration: List<AnalyticCardConfiguration> = defaultCardsConfiguration) {
-        whenever(observeAnalyticsCardsConfiguration.invoke()).doReturn(flowOf(configuration))
+        observeAnalyticsCardsConfiguration.stub {
+            onBlocking { observeAnalyticsCardsConfiguration.invoke() } doReturn flowOf(configuration)
+        }
     }
 
     companion object {

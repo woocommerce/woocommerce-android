@@ -43,7 +43,6 @@ import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponD
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -86,7 +85,7 @@ import kotlin.test.assertFalse
 
 @ExperimentalCoroutinesApi
 class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTest() {
-    override val mode: Mode = Creation
+    override val mode: Mode = Creation()
     override val sku: String = ""
     override val barcodeFormat: BarcodeFormat = BarcodeFormat.FormatUPCA
     override val tracksFlow: String = VALUE_FLOW_CREATION
@@ -168,7 +167,9 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
         whenever(selectedSite.get()).thenReturn(mockedSite)
         sut.onSetTaxRateClicked()
-        verify(tracker).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED)
+        verify(
+            tracker
+        ).track(AnalyticsEvent.ORDER_CREATION_SET_NEW_TAX_RATE_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
     }
 
     @Test
@@ -176,7 +177,12 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
         val mockedSite = SiteModel().also { it.adminUrl = "https://test.com" }
         whenever(selectedSite.get()).thenReturn(mockedSite)
         sut.onSetNewTaxRateClicked()
-        verify(tracker).track(AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED)
+        verify(
+            tracker
+        ).track(
+            AnalyticsEvent.TAX_RATE_AUTO_TAX_RATE_SET_NEW_RATE_FOR_ORDER_TAPPED,
+            mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact")
+        )
     }
 
     @Test
@@ -894,27 +900,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     }
 
     @Test
-    fun `when hitting the shipping button with an existent one, then trigger EditShipping with the expected data`() {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
-        val newFeeTotal = BigDecimal(123.5)
-        sut.onShippingEdited(newFeeTotal, "1")
-        sut.onShippingButtonClicked()
-
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? EditShipping }
-            ?.let { editFeeEvent ->
-                val currentShippingLine = editFeeEvent.currentShippingLine
-                assertThat(currentShippingLine?.total).isEqualTo(newFeeTotal)
-                assertThat(currentShippingLine?.methodTitle).isEqualTo("1")
-            } ?: fail("Last event should be of EditShipping type")
-    }
-
-    @Test
     fun `when editing a shipping fee, then reuse the existent one with different value`() {
         var orderDraft: Order? = null
         sut.orderDraft.observeForever {
@@ -1254,7 +1239,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation,
+                Creation(),
                 "123",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1282,7 +1267,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given sku, when view model init, then display progress indicator`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation,
+                Creation(),
                 "123",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1311,7 +1296,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given empty sku, when view model init, then do not fetch product information`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation,
+                Creation(),
                 "",
                 null,
             ).toSavedStateHandle()
@@ -1339,7 +1324,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku succeeds, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation,
+                Creation(),
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1373,7 +1358,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             verify(tracker).track(
                 AnalyticsEvent.PRODUCT_SEARCH_VIA_SKU_SUCCESS,
                 mapOf(
-                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list"
+                    AnalyticsTracker.KEY_SCANNING_SOURCE to "order_list",
+                    KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -1383,7 +1369,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku fails, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation,
+                Creation(),
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1421,7 +1407,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given scanning initiated from the order list screen, when product search via sku succeeds but contains no product, then track event with proper source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation,
+                Creation(),
                 "12345",
                 BarcodeFormat.FormatQRCode,
             ).toSavedStateHandle()
@@ -1459,7 +1445,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation,
+                Creation(),
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1497,7 +1483,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
-                    KEY_HAS_BUNDLE_CONFIGURATION to false
+                    KEY_HAS_BUNDLE_CONFIGURATION to false,
+                    KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -1507,7 +1494,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
     fun `given non-variable product from order list screen, when product added via scanning, then track correct source`() {
         testBlocking {
             val navArgs = OrderCreateEditFormFragmentArgs(
-                Creation,
+                Creation(),
                 "12345",
                 BarcodeFormat.FormatUPCA,
             ).toSavedStateHandle()
@@ -1543,7 +1530,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     KEY_PRODUCT_COUNT to 1,
                     AnalyticsTracker.KEY_SCANNING_SOURCE to ScanningSource.ORDER_LIST.source,
                     KEY_PRODUCT_ADDED_VIA to ProductAddedVia.SCANNING.addedVia,
-                    KEY_HAS_BUNDLE_CONFIGURATION to false
+                    KEY_HAS_BUNDLE_CONFIGURATION to false,
+                    KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -1978,14 +1966,16 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                 AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
                 mapOf(
                     KEY_FLOW to VALUE_FLOW_CREATION,
-                    KEY_EXPANDED to false
+                    KEY_EXPANDED to false,
+                    KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
             verify(tracker).track(
                 AnalyticsEvent.ORDER_FORM_TOTALS_PANEL_TOGGLED,
                 mapOf(
                     KEY_FLOW to VALUE_FLOW_CREATION,
-                    KEY_EXPANDED to true
+                    KEY_EXPANDED to true,
+                    KEY_HORIZONTAL_SIZE_CLASS to "compact"
                 )
             )
         }
@@ -2038,8 +2028,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any(),
                     any(),
-                    any(),
                     onMainButtonClickedCaptor.capture(),
+                    any(),
                     any(),
                     any(),
                 )
@@ -2077,7 +2067,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onCustomAmountUpsert(customAmountUIModel)
 
-        verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
+        verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
     }
 
     @Test
@@ -2107,7 +2097,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onCustomAmountUpsert(customAmountUIModel)
 
-        verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED)
+        verify(tracker).track(ADD_CUSTOM_AMOUNT_DONE_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
     }
 
     @Test
@@ -2177,7 +2167,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             ORDER_FEE_UPDATE,
             mapOf(
                 KEY_FLOW to VALUE_FLOW_CREATION,
-                KEY_CUSTOM_AMOUNT_TAX_STATUS to "none"
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to "none",
+                KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -2229,7 +2220,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             ORDER_FEE_ADD,
             mapOf(
                 KEY_FLOW to VALUE_FLOW_CREATION,
-                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_TAXABLE,
+                KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -2250,7 +2242,8 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             ORDER_FEE_ADD,
             mapOf(
                 KEY_FLOW to VALUE_FLOW_CREATION,
-                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE
+                KEY_CUSTOM_AMOUNT_TAX_STATUS to VALUE_CUSTOM_AMOUNT_TAX_STATUS_NONE,
+                KEY_HORIZONTAL_SIZE_CLASS to "compact"
             )
         )
     }
@@ -2310,7 +2303,7 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         sut.onCustomAmountRemoved(customAmountUIModel)
 
-        verify(tracker).track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED)
+        verify(tracker).track(ORDER_CREATION_REMOVE_CUSTOM_AMOUNT_TAPPED, mapOf(KEY_HORIZONTAL_SIZE_CLASS to "compact"))
     }
     //endregion
 }

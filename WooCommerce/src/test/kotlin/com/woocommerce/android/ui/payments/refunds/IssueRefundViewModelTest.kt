@@ -947,48 +947,4 @@ class IssueRefundViewModelTest : BaseUnitTest() {
             )
         }
     }
-
-    @Test
-    fun `when refund tab is changed to refund type amount, then proper track event is triggered`() {
-        testBlocking {
-            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                paymentMethod = "cod",
-                metaData = "[]"
-            )
-            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
-
-            initViewModel()
-            viewModel.onRefundTabChanged(IssueRefundViewModel.RefundType.AMOUNT)
-
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.CREATE_ORDER_REFUND_TAB_CHANGED,
-                mapOf(
-                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
-                    AnalyticsTracker.KEY_TYPE to "AMOUNT"
-                )
-            )
-        }
-    }
-
-    @Test
-    fun `when refund tab is changed to refund type items, then proper track event is triggered`() {
-        testBlocking {
-            val orderWithMultipleShipping = OrderTestUtils.generateOrderWithMultipleShippingLines().copy(
-                paymentMethod = "cod",
-                metaData = "[]"
-            )
-            whenever(orderStore.getOrderByIdAndSite(any(), any())).thenReturn(orderWithMultipleShipping)
-
-            initViewModel()
-            viewModel.onRefundTabChanged(IssueRefundViewModel.RefundType.ITEMS)
-
-            verify(analyticsTrackerWrapper).track(
-                AnalyticsEvent.CREATE_ORDER_REFUND_TAB_CHANGED,
-                mapOf(
-                    AnalyticsTracker.KEY_ORDER_ID to ORDER_ID,
-                    AnalyticsTracker.KEY_TYPE to "ITEMS"
-                )
-            )
-        }
-    }
 }

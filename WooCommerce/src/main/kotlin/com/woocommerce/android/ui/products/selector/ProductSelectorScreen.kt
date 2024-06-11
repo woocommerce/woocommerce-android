@@ -30,7 +30,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -64,6 +64,7 @@ import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.Lis
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.APPENDING
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.IDLE
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.LoadingState.LOADING
+import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectionMode
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.ViewState
 import com.woocommerce.android.ui.products.selector.SelectionState.PARTIALLY_SELECTED
 import com.woocommerce.android.ui.products.selector.SelectionState.SELECTED
@@ -76,28 +77,30 @@ fun ProductSelectorScreen(viewModel: ProductSelectorViewModel) {
     BackHandler(onBack = viewModel::onNavigateBack)
     viewState?.let { state ->
         Scaffold(topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = state.screenTitleOverride
-                            ?: stringResource(id = string.coupon_conditions_products_select_products_title)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(viewModel::onNavigateBack) {
-                        Icon(
-                            imageVector = if (state.searchState.isActive) {
-                                Icons.Filled.ArrowBack
-                            } else {
-                                Icons.Filled.Close
-                            },
-                            contentDescription = stringResource(id = string.back)
+            if (state.selectionMode != SelectionMode.LIVE) {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = state.screenTitleOverride
+                                ?: stringResource(id = string.coupon_conditions_products_select_products_title)
                         )
-                    }
-                },
-                backgroundColor = colorResource(id = color.color_toolbar),
-                elevation = 0.dp,
-            )
+                    },
+                    navigationIcon = {
+                        IconButton(viewModel::onNavigateBack) {
+                            Icon(
+                                imageVector = if (state.searchState.isActive) {
+                                    Icons.AutoMirrored.Filled.ArrowBack
+                                } else {
+                                    Icons.Filled.Close
+                                },
+                                contentDescription = stringResource(id = string.back)
+                            )
+                        }
+                    },
+                    backgroundColor = colorResource(id = color.color_toolbar),
+                    elevation = 0.dp,
+                )
+            }
         }) { padding ->
             ProductSelectorScreen(
                 modifier = Modifier.padding(padding),
@@ -309,6 +312,7 @@ private fun displayProductsSection(
                 onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                 imageContentDescription = stringResource(string.product_image_content_description),
                 isCogwheelVisible = product is ListItem.ConfigurableListItem,
+                enabled = state.selectionEnabled,
                 onEditConfiguration = {
                     (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                 }
@@ -353,7 +357,7 @@ private fun ProductList(
                 .padding(horizontal = dimensionResource(dimen.minor_100))
                 .fillMaxWidth()
         ) {
-            if (state.selectionMode == ProductSelectorViewModel.SelectionMode.MULTIPLE) {
+            if (state.selectionMode == SelectionMode.MULTIPLE) {
                 WCTextButton(
                     onClick = onClearButtonClick,
                     text = stringResource(id = string.product_selector_clear_button_title),
@@ -429,6 +433,7 @@ private fun ProductList(
                     onClickLabel = stringResource(id = string.product_selector_select_product_label, product.title),
                     imageContentDescription = stringResource(string.product_image_content_description),
                     isCogwheelVisible = product is ListItem.ConfigurableListItem,
+                    enabled = state.selectionEnabled,
                     onEditConfiguration = {
                         (product as? ListItem.ConfigurableListItem)?.let(onEditConfiguration)
                     }
@@ -457,29 +462,40 @@ private fun ProductList(
             onLoadMore()
         }
 
-        Divider(
-            color = colorResource(id = color.divider_color),
-            thickness = dimensionResource(id = dimen.minor_10)
-        )
-
-        WCColoredButton(
-            onClick = onDoneButtonClick,
-            text = state.ctaButtonTextOverride ?: when (state.selectionMode) {
-                ProductSelectorViewModel.SelectionMode.MULTIPLE -> StringUtils.getQuantityString(
-                    quantity = state.selectedItemsCount,
-                    default = string.product_selector_select_button_title_default,
-                    one = string.product_selector_select_button_title_one,
-                    zero = string.done
-                )
-
-                ProductSelectorViewModel.SelectionMode.SINGLE -> stringResource(id = R.string.done)
-            },
-            enabled = state.isDoneButtonEnabled,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = dimen.major_100))
-        )
+        if (state.selectionMode != SelectionMode.LIVE) {
+            SelectionConfirmButton(onDoneButtonClick, state)
+        }
     }
+}
+
+@Composable
+private fun SelectionConfirmButton(
+    onClick: () -> Unit,
+    state: ViewState
+) {
+    Divider(
+        color = colorResource(id = color.divider_color),
+        thickness = dimensionResource(id = dimen.minor_10)
+    )
+
+    WCColoredButton(
+        onClick = onClick,
+        text = state.ctaButtonTextOverride ?: when (state.selectionMode) {
+            SelectionMode.MULTIPLE -> StringUtils.getQuantityString(
+                quantity = state.selectedItemsCount,
+                default = string.product_selector_select_button_title_default,
+                one = string.product_selector_select_button_title_one,
+                zero = string.done
+            )
+
+            SelectionMode.SINGLE -> stringResource(id = string.done)
+            SelectionMode.LIVE -> ""
+        },
+        enabled = state.isDoneButtonEnabled,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(id = dimen.major_100))
+    )
 }
 
 private fun ListItem.hasVariations() =
@@ -583,7 +599,7 @@ fun PopularProductsListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = emptyList(),
-            selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
+            selectionMode = SelectionMode.MULTIPLE
         ),
         onDoneButtonClick = {},
         onClearButtonClick = {},
@@ -653,7 +669,7 @@ fun RecentProductsListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = products,
-            selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
+            selectionMode = SelectionMode.MULTIPLE
         ),
         onDoneButtonClick = {},
         onClearButtonClick = {},
@@ -731,7 +747,7 @@ fun ProductListPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = products,
             recentProducts = products,
-            selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
+            selectionMode = SelectionMode.MULTIPLE
         ),
         onDoneButtonClick = {},
         onClearButtonClick = {},
@@ -755,7 +771,7 @@ fun ProductListEmptyPreview() {
             searchState = ProductSelectorViewModel.SearchState(),
             popularProducts = emptyList(),
             recentProducts = emptyList(),
-            selectionMode = ProductSelectorViewModel.SelectionMode.MULTIPLE
+            selectionMode = SelectionMode.MULTIPLE
         ),
         onClearFiltersButtonClick = {}
     )

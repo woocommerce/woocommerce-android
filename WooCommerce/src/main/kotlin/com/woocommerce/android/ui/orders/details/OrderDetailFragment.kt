@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
@@ -72,6 +74,10 @@ import com.woocommerce.android.ui.orders.OrderNavigationTarget
 import com.woocommerce.android.ui.orders.OrderNavigator
 import com.woocommerce.android.ui.orders.OrderProductActionListener
 import com.woocommerce.android.ui.orders.OrderStatusUpdateSource
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersEmptyNotified
+import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel.CommunicationEvent.OrdersLoadingNotified
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.details.adapter.OrderDetailShippingLabelsAdapter.OnShippingLabelClickListener
 import com.woocommerce.android.ui.orders.details.editing.OrderEditingViewModel
 import com.woocommerce.android.ui.orders.details.views.OrderDetailAttributionInfoView
@@ -88,15 +94,18 @@ import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.fixedHiltNavGraphViewModels
 import com.woocommerce.android.widgets.SkeletonView
+import com.woocommerce.android.widgets.WCEmptyView
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.fluxc.model.OrderAttributionInfo
 import org.wordpress.android.util.DisplayUtils
 import javax.inject.Inject
 
+@Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderDetailFragment :
     BaseFragment(R.layout.fragment_order_detail),
@@ -109,6 +118,7 @@ class OrderDetailFragment :
 
     private val viewModel: OrderDetailViewModel by viewModels()
     private val orderEditingViewModel by fixedHiltNavGraphViewModels<OrderEditingViewModel>(R.id.nav_graph_orders)
+    private val communicationViewModel: OrdersCommunicationViewModel by activityViewModels()
 
     @Inject
     lateinit var navigator: OrderNavigator
@@ -215,6 +225,7 @@ class OrderDetailFragment :
         setupObservers(viewModel)
         setupOrderEditingObservers(orderEditingViewModel)
         setupResultHandlers(viewModel)
+        setupOrdersCommunicationObservers(communicationViewModel)
 
         binding.orderDetailOrderStatus.initView(mode = Mode.OrderEdit) {
             viewModel.onEditOrderStatusSelected()
@@ -228,6 +239,9 @@ class OrderDetailFragment :
         }
         binding.orderDetailsAICard.aiThankYouNoteButton.setOnClickListener {
             viewModel.onAIThankYouNoteButtonClicked()
+        }
+        binding.orderDetailTrash.setOnClickListener {
+            viewModel.onTrashOrderClicked()
         }
 
         ViewCompat.setTransitionName(
@@ -354,6 +368,22 @@ class OrderDetailFragment :
         (activity as? MainNavigationRouter)?.showProductVariationDetail(remoteProductId, remoteVariationId)
     }
 
+    private fun setupOrdersCommunicationObservers(ordersCommunicationViewModel: OrdersCommunicationViewModel) {
+        ordersCommunicationViewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is OrdersEmptyNotified -> {
+                    viewModel.showEmptyView()
+                }
+
+                is OrdersLoadingNotified -> {
+                    viewModel.showLoadingView()
+                }
+
+                else -> event.isHandled = false
+            }
+        }
+    }
+
     private fun setupObservers(viewModel: OrderDetailViewModel) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.orderInfo?.takeIfNotEqualTo(old?.orderInfo) {
@@ -400,6 +430,7 @@ class OrderDetailFragment :
             new.isAIThankYouNoteButtonShown.takeIfNotEqualTo(old?.isAIThankYouNoteButtonShown) {
                 binding.orderDetailsAICard.isVisible = it
             }
+            new.isOrderDetailEmpty.takeIfNotEqualTo(old?.isOrderDetailEmpty) { showEmptyView(it) }
         }
 
         viewModel.orderNotes.observe(viewLifecycleOwner) {
@@ -424,6 +455,7 @@ class OrderDetailFragment :
         viewModel.giftCards.observe(viewLifecycleOwner) {
             showGiftCards(it, viewModel.order.currency)
         }
+        showShippingLines(viewModel.shippingLineList)
 
         setupOrderAttributionInfoCard(viewModel.orderAttributionInfo)
 
@@ -441,10 +473,35 @@ class OrderDetailFragment :
                 }
                 is OrderNavigationTarget -> navigator.navigate(this, event)
                 is InstallWCShippingViewModel.InstallWcShipping -> navigateToInstallWcShippingFlow()
+                is OrderDetailViewModel.TrashOrder -> {
+                    if (findNavController().previousBackStackEntry != null) {
+                        findNavController().popBackStack()
+                    }
+
+                    communicationViewModel.trashOrder(event.orderId)
+                }
+                is MultiLiveEvent.Event.ShowDialog -> event.showDialog()
                 else -> event.isHandled = false
             }
         }
         viewModel.start()
+    }
+
+    private fun showShippingLines(shippingLineList: LiveData<List<ShippingLineDetails>>) {
+        binding.orderDetailShippingLines.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                shippingLineList.observeAsState().value?.let { shippingLines ->
+                    WooThemeWithBackground {
+                        ShippingLineSection(
+                            shippingLineDetails = shippingLines,
+                            formatCurrency = { amount -> currencyFormatter.formatCurrency(amount) },
+                            modifier = Modifier.padding(bottom = 1.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun showSubscriptions(subscriptions: List<Subscription>) {
@@ -565,7 +622,6 @@ class OrderDetailFragment :
         receiptButtonStatus: OrderDetailViewState.ReceiptButtonStatus
     ) {
         binding.orderDetailOrderStatus.updateOrder(order)
-        binding.orderDetailShippingMethodNotice.isVisible = order.hasMultipleShippingLines
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
@@ -675,12 +731,12 @@ class OrderDetailFragment :
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val feeLineState = feeLine.observeAsState(emptyList())
-                if (!feeLineState.value.isNullOrEmpty()) {
+                if (feeLineState.value.isEmpty().not()) {
                     WooThemeWithBackground {
                         Column(
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            modifier = Modifier.padding(bottom = 1.dp)
                         ) {
-                            Header()
+                            Header(text = stringResource(id = R.string.order_detail_custom_amounts_header))
                             feeLineState.value.forEachIndexed { index, feeLine ->
                                 CustomAmountCard(
                                     CustomAmountUI(
@@ -810,6 +866,15 @@ class OrderDetailFragment :
         ).also {
             it.addCallback(dismissCallback)
             it.show()
+        }
+    }
+
+    private fun showEmptyView(show: Boolean) {
+        if (show) {
+            binding.orderDetailContainer.visibility = View.GONE
+            binding.emptyView.show(WCEmptyView.EmptyViewType.ORDER_DETAILS)
+        } else {
+            binding.emptyView.hide()
         }
     }
 

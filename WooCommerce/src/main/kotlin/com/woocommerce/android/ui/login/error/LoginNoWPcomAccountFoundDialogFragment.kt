@@ -4,7 +4,6 @@ import android.os.Bundle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
-import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Click
 import com.woocommerce.android.ui.login.UnifiedLoginTracker.Step
@@ -16,10 +15,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
-    interface Listener {
-        fun onCreateAccountClicked()
-    }
-
     companion object {
         const val TAG = "LoginNoWPcomAccountFoundFragment"
     }
@@ -29,9 +24,6 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
 
     private val loginListener: LoginListener
         get() = requireActivity() as LoginListener
-    private val listener: Listener
-        get() = requireActivity() as Listener
-
     override val text: CharSequence
         get() = getString(R.string.login_no_wpcom_account_found)
 
@@ -40,17 +32,6 @@ class LoginNoWPcomAccountFoundDialogFragment : LoginBaseErrorDialogFragment() {
 
     override val helpOrigin: HelpOrigin
         get() = HelpOrigin.LOGIN_EMAIL
-
-    override val primaryButton: LoginErrorButton
-        get() = LoginErrorButton(
-            title = R.string.login_create_an_account,
-            onClick = {
-                appPrefsWrapper.setStoreCreationSource(AnalyticsTracker.VALUE_LOGIN_EMAIL_ERROR)
-                unifiedLoginTracker.trackClick(Click.CREATE_ACCOUNT)
-
-                listener.onCreateAccountClicked()
-            }
-        )
 
     override val secondaryButton: LoginErrorButton
         get() = LoginErrorButton(

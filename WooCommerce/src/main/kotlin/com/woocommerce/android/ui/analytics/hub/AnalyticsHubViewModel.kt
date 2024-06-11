@@ -10,8 +10,10 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.AnalyticCardConfiguration
 import com.woocommerce.android.model.AnalyticsCards
+import com.woocommerce.android.model.BundleStat
 import com.woocommerce.android.model.DeltaPercentage
 import com.woocommerce.android.model.FeatureFeedbackSettings
+import com.woocommerce.android.model.GiftCardsStat
 import com.woocommerce.android.model.OrdersStat
 import com.woocommerce.android.model.ProductsStat
 import com.woocommerce.android.model.RevenueStat
@@ -20,12 +22,15 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.DataViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.LoadingViewState
 import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubInformationViewState.NoSupportedState
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.NotShowIndicator
 import com.woocommerce.android.ui.analytics.hub.RefreshIndicator.ShowIndicator
 import com.woocommerce.android.ui.analytics.hub.daterangeselector.AnalyticsHubDateRangeSelectorViewState
 import com.woocommerce.android.ui.analytics.hub.informationcard.AnalyticsHubInformationSectionViewState
 import com.woocommerce.android.ui.analytics.hub.listcard.AnalyticsHubListCardItemViewState
 import com.woocommerce.android.ui.analytics.hub.sync.AnalyticsHubUpdateState.Finished
+import com.woocommerce.android.ui.analytics.hub.sync.BundlesState
+import com.woocommerce.android.ui.analytics.hub.sync.GiftCardsState
 import com.woocommerce.android.ui.analytics.hub.sync.OrdersState
 import com.woocommerce.android.ui.analytics.hub.sync.ProductsState
 import com.woocommerce.android.ui.analytics.hub.sync.RevenueState
@@ -33,9 +38,9 @@ import com.woocommerce.android.ui.analytics.hub.sync.SessionState
 import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
+import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.feedback.FeedbackRepository
-import com.woocommerce.android.ui.mystore.MyStoreStatsUsageTracksEventEmitter
-import com.woocommerce.android.ui.mystore.domain.ObserveLastUpdate
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
@@ -60,16 +65,16 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ProductsViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingProductsViewState
-import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ProductsNoDataState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState as ListViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.LoadingViewState as LoadingListViewState
+import com.woocommerce.android.ui.analytics.hub.AnalyticsHubListViewState.NoDataState as ListNoDataState
 
 @HiltViewModel
 class AnalyticsHubViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val transactionLauncher: AnalyticsHubTransactionLauncher,
-    private val usageTracksEventEmitter: MyStoreStatsUsageTracksEventEmitter,
+    private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter,
     private val updateStats: UpdateAnalyticsHubStats,
     private val observeLastUpdate: ObserveLastUpdate,
     private val localeProvider: LocaleProvider,
@@ -88,7 +93,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     private val rangeSelectionState: MutableStateFlow<StatsTimeRangeSelection> = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = navArgs.targetGranularity.generateLocalizedSelectionData()
+        initialValue = navArgs.rangeSelection
     )
 
     private val mutableState = MutableStateFlow(
@@ -126,6 +131,12 @@ class AnalyticsHubViewModel @Inject constructor(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var ordersObservationJob: Job? = null
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var bundlesObservationJob: Job? = null
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var giftCardsObservationJob: Job? = null
 
     init {
         observeConfigurationChanges()
@@ -169,11 +180,21 @@ class AnalyticsHubViewModel @Inject constructor(
 
                             AnalyticsCards.Products -> {
                                 observeProductsChanges()
-                                LoadingProductsViewState(cardConfiguration.card)
+                                LoadingListViewState(cardConfiguration.card)
                             }
 
                             AnalyticsCards.Session -> {
                                 observeSessionChanges()
+                                LoadingViewState(cardConfiguration.card)
+                            }
+
+                            AnalyticsCards.Bundles -> {
+                                observeBundlesChanges()
+                                LoadingViewState(cardConfiguration.card)
+                            }
+
+                            AnalyticsCards.GiftCards -> {
+                                observeGiftCardsChanges()
                                 LoadingViewState(cardConfiguration.card)
                             }
                         }
@@ -282,7 +303,8 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is OrdersState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_orders_no_data)
-                    updateCardStatus(AnalyticsCards.Orders, NoDataState(AnalyticsCards.Orders, message))
+                    val title = resourceProvider.getString(AnalyticsCards.Orders.resId)
+                    updateCardStatus(AnalyticsCards.Orders, NoDataState(AnalyticsCards.Orders, title, message))
                 }
 
                 is OrdersState.Loading -> {
@@ -305,11 +327,21 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is SessionState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_session_no_data)
-                    updateCardStatus(AnalyticsCards.Session, NoDataState(AnalyticsCards.Session, message))
+                    val title = resourceProvider.getString(AnalyticsCards.Session.resId)
+                    updateCardStatus(AnalyticsCards.Session, NoDataState(AnalyticsCards.Session, title, message))
                 }
 
                 is SessionState.Loading -> {
                     updateCardStatus(AnalyticsCards.Session, LoadingViewState(AnalyticsCards.Session))
+                }
+
+                is SessionState.NotSupported -> {
+                    val message = resourceProvider.getString(R.string.analytics_session_no_available)
+                    val description = resourceProvider.getString(R.string.analytics_session_no_available_description)
+                    val title = resourceProvider.getString(AnalyticsCards.Session.resId)
+                    updateCardStatus(
+                        AnalyticsCards.Session, NoSupportedState(AnalyticsCards.Session, title, message, description)
+                    )
                 }
             }
         }
@@ -328,11 +360,11 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is ProductsState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_products_no_data)
-                    updateCardStatus(AnalyticsCards.Products, ProductsNoDataState(AnalyticsCards.Products, message))
+                    updateCardStatus(AnalyticsCards.Products, ListNoDataState(AnalyticsCards.Products, message))
                 }
 
                 is ProductsState.Loading -> {
-                    updateCardStatus(AnalyticsCards.Products, LoadingProductsViewState(AnalyticsCards.Products))
+                    updateCardStatus(AnalyticsCards.Products, LoadingListViewState(AnalyticsCards.Products))
                 }
             }
         }
@@ -351,7 +383,8 @@ class AnalyticsHubViewModel @Inject constructor(
 
                 is RevenueState.Error -> {
                     val message = resourceProvider.getString(R.string.analytics_revenue_no_data)
-                    updateCardStatus(AnalyticsCards.Revenue, NoDataState(AnalyticsCards.Revenue, message))
+                    val title = resourceProvider.getString(AnalyticsCards.Revenue.resId)
+                    updateCardStatus(AnalyticsCards.Revenue, NoDataState(AnalyticsCards.Revenue, title, message))
                 }
 
                 is RevenueState.Loading -> {
@@ -362,6 +395,47 @@ class AnalyticsHubViewModel @Inject constructor(
             .drop(1)
             .filter { state -> state is RevenueState.Available }
             .onEach { transactionLauncher.onRevenueFetched() }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observeBundlesChanges() {
+        bundlesObservationJob = updateStats.bundlesState.onEach { state ->
+            when (state) {
+                is BundlesState.Available -> {
+                    updateCardStatus(AnalyticsCards.Bundles, buildBundlesDataState(state.bundles))
+                }
+
+                is BundlesState.Error -> {
+                    val message = resourceProvider.getString(R.string.analytics_products_no_data)
+                    updateCardStatus(AnalyticsCards.Bundles, ListNoDataState(AnalyticsCards.Bundles, message))
+                }
+
+                is BundlesState.Loading -> {
+                    updateCardStatus(AnalyticsCards.Bundles, LoadingListViewState(AnalyticsCards.Bundles))
+                }
+            }
+        }
+            .launchIn(viewModelScope)
+    }
+
+    private fun observeGiftCardsChanges() {
+        giftCardsObservationJob = updateStats.giftCardsState.onEach { state ->
+            when (state) {
+                is GiftCardsState.Available -> {
+                    updateCardStatus(AnalyticsCards.GiftCards, buildGiftCardsDataViewState(state.giftCardStats))
+                }
+
+                is GiftCardsState.Error -> {
+                    val message = resourceProvider.getString(R.string.analytics_gift_cards_no_data)
+                    val title = resourceProvider.getString(AnalyticsCards.GiftCards.resId)
+                    updateCardStatus(AnalyticsCards.GiftCards, NoDataState(AnalyticsCards.GiftCards, title, message))
+                }
+
+                is GiftCardsState.Loading -> {
+                    updateCardStatus(AnalyticsCards.GiftCards, LoadingViewState(AnalyticsCards.GiftCards))
+                }
+            }
+        }
             .launchIn(viewModelScope)
     }
 
@@ -474,11 +548,11 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         )
 
-    private fun buildProductsDataState(productsStat: ProductsStat): ProductsViewState.DataViewState {
+    private fun buildProductsDataState(productsStat: ProductsStat): ListViewState.DataViewState {
         val itemsSold = productsStat.itemsSold
         val delta = productsStat.itemsSoldDelta
         val products = productsStat.products
-        return ProductsViewState.DataViewState(
+        return ListViewState.DataViewState(
             card = AnalyticsCards.Products,
             title = resourceProvider.getString(R.string.analytics_products_card_title),
             subTitle = resourceProvider.getString(R.string.analytics_products_list_items_sold),
@@ -506,6 +580,61 @@ class AnalyticsHubViewModel @Inject constructor(
             )
         )
     }
+
+    private fun buildBundlesDataState(bundleStat: BundleStat): ListViewState.DataViewState {
+        val bundlesSold = bundleStat.bundlesSold
+        val delta = bundleStat.bundlesSoldDelta
+        val bundles = bundleStat.bundles
+        return ListViewState.DataViewState(
+            card = AnalyticsCards.Bundles,
+            title = resourceProvider.getString(R.string.analytics_bundles_card_title),
+            subTitle = resourceProvider.getString(R.string.analytics_bundles_list_items_sold),
+            subTitleValue = bundlesSold.toString(),
+            delta = if (delta is DeltaPercentage.Value) delta.value else null,
+            listLeftHeader = resourceProvider.getString(R.string.analytics_bundles_list_header_title),
+            listRightHeader = resourceProvider.getString(R.string.analytics_bundles_list_header_subtitle),
+            items = bundles
+                .sortedByDescending { it.quantity }
+                .mapIndexed { index, product ->
+                    AnalyticsHubListCardItemViewState(
+                        product.image,
+                        product.name,
+                        product.quantity.toString(),
+                        resourceProvider.getString(
+                            R.string.analytics_products_list_item_description,
+                            formatValue(product.netSales.toString(), product.currencyCode)
+                        ),
+                        index != bundles.size - 1
+                    )
+                },
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.Bundles
+            )
+        )
+    }
+
+    private fun buildGiftCardsDataViewState(giftCardsStat: GiftCardsStat) =
+        DataViewState(
+            card = AnalyticsCards.GiftCards,
+            title = resourceProvider.getString(R.string.analytics_gift_cards_card_title),
+            leftSection = AnalyticsHubInformationSectionViewState(
+                resourceProvider.getString(R.string.analytics_used_title),
+                giftCardsStat.usedValue.toString(),
+                if (giftCardsStat.usedDelta is DeltaPercentage.Value) giftCardsStat.usedDelta.value else null,
+                giftCardsStat.usedByInterval.map { it.toFloat() }
+            ),
+            rightSection = AnalyticsHubInformationSectionViewState(
+                resourceProvider.getString(R.string.analytics_net_sales_title),
+                formatValue(giftCardsStat.netValue.toString(), giftCardsStat.currencyCode),
+                if (giftCardsStat.netDelta is DeltaPercentage.Value) giftCardsStat.netDelta.value else null,
+                giftCardsStat.netRevenueByInterval.map { it.toFloat() }
+            ),
+            reportUrl = getReportUrl(
+                selection = ranges,
+                card = ReportCard.GiftCard
+            )
+        )
 
     private fun trackSelectedDateRange() {
         onTrackableUIInteraction()
@@ -561,6 +690,8 @@ class AnalyticsHubViewModel @Inject constructor(
         ordersObservationJob?.cancel()
         productObservationJob?.cancel()
         sessionObservationJob?.cancel()
+        bundlesObservationJob?.cancel()
+        giftCardsObservationJob?.cancel()
     }
 
     fun onOpenSettings() {
@@ -569,13 +700,15 @@ class AnalyticsHubViewModel @Inject constructor(
     }
 }
 
-enum class ReportCard { Revenue, Orders, Products }
+enum class ReportCard { Revenue, Orders, Products, Bundles, GiftCard }
 
 fun AnalyticsCards.toReportCard(): ReportCard? {
     return when (this) {
         AnalyticsCards.Revenue -> ReportCard.Revenue
         AnalyticsCards.Orders -> ReportCard.Orders
         AnalyticsCards.Products -> ReportCard.Products
+        AnalyticsCards.Bundles -> ReportCard.Bundles
+        AnalyticsCards.GiftCards -> ReportCard.GiftCard
         else -> null
     }
 }

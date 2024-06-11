@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.payments.hub.depositsummary
 
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -20,12 +22,18 @@ import org.wordpress.android.fluxc.store.WCWooPaymentsStore
 @OptIn(ExperimentalCoroutinesApi::class)
 class PaymentsHubDepositSummaryRepositoryTest : BaseUnitTest() {
     private val store: WCWooPaymentsStore = mock()
-    private val site: SiteModel = mock()
+    private val selectedSite: SelectedSite = mock()
+    private val site = SiteModel()
 
     private val repo = PaymentsHubDepositSummaryRepository(
         store = store,
-        site = site,
+        site = selectedSite,
     )
+
+    @Before
+    fun setup() {
+        whenever(selectedSite.get()).thenReturn(site)
+    }
 
     @Test
     fun `given store has cache, when retrieveDepositOverview, then cache firstly returned`() = testBlocking {

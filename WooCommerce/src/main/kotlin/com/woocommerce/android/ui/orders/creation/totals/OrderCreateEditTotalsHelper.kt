@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.orders.creation.totals
 
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.WindowSizeClass
 import com.woocommerce.android.extensions.isNotEqualTo
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.sumByBigDecimal
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel.ViewState
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import java.math.BigDecimal
@@ -19,12 +21,12 @@ class OrderCreateEditTotalsHelper @Inject constructor(
     fun mapToPaymentTotalsState(
         order: Order,
         mode: OrderCreateEditViewModel.Mode,
-        viewState: OrderCreateEditViewModel.ViewState,
-        onShippingClicked: () -> Unit,
+        viewState: ViewState,
         onCouponsClicked: () -> Unit,
         onGiftClicked: () -> Unit,
         onTaxesLearnMore: () -> Unit,
         onMainButtonClicked: () -> Unit,
+        onRecalculateButtonClicked: () -> Unit,
         onExpandCollapseClicked: () -> Unit,
         onHeightChanged: (height: Int) -> Unit
     ): TotalsSectionsState {
@@ -35,18 +37,15 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         return if (order.items.isEmpty() && order.feesLines.isEmpty()) {
             TotalsSectionsState.Minimised(
                 orderTotal = order.toOrderTotals(bigDecimalFormatter),
-                onHeightChanged = onHeightChanged
+                onHeightChanged = onHeightChanged,
+                recalculateButton = viewState.getRecalculateButton(onRecalculateButtonClicked)
             )
         } else {
             TotalsSectionsState.Full(
                 lines = listOfNotNull(
                     order.toProductsSection(bigDecimalFormatter),
                     order.toCustomAmountSection(bigDecimalFormatter),
-                    order.toShippingSection(
-                        enabled = viewState.isEditable,
-                        bigDecimalFormatter,
-                        onClick = onShippingClicked
-                    ),
+                    order.toShippingSection(bigDecimalFormatter),
                     order.toCouponsSection(
                         enabled = viewState.isCouponButtonEnabled && viewState.isIdle,
                         bigDecimalFormatter,
@@ -65,15 +64,53 @@ class OrderCreateEditTotalsHelper @Inject constructor(
                     order.toDiscountSection(bigDecimalFormatter),
                 ),
                 orderTotal = order.toOrderTotals(bigDecimalFormatter),
-                mainButton = TotalsSectionsState.Button(
-                    text = mode.toButtonText(),
-                    enabled = viewState.canCreateOrder,
-                    onClick = onMainButtonClicked,
-                ),
+                mainButton = viewState.getMainButton(mode, onMainButtonClicked, onRecalculateButtonClicked),
                 isExpanded = viewState.isTotalsExpanded,
                 onExpandCollapseClicked = onExpandCollapseClicked,
                 onHeightChanged = onHeightChanged,
             )
+        }
+    }
+
+    private fun ViewState.getRecalculateButton(
+        onRecalculateButtonClicked: () -> Unit
+    ): TotalsSectionsState.Button? {
+        return if (windowSizeClass != WindowSizeClass.Compact && isRecalculateNeeded) {
+            TotalsSectionsState.Button(
+                text = resourceProvider.getString(R.string.order_creation_recalculate_button),
+                enabled = canCreateOrder,
+                onClick = onRecalculateButtonClicked,
+            )
+        } else {
+            null
+        }
+    }
+
+    private fun ViewState.getMainButton(
+        mode: OrderCreateEditViewModel.Mode,
+        onMainButtonClicked: () -> Unit,
+        onRecalculateButtonClicked: () -> Unit
+    ): TotalsSectionsState.Button {
+        return if (windowSizeClass == WindowSizeClass.Compact) {
+            TotalsSectionsState.Button(
+                text = mode.toButtonText(),
+                enabled = canCreateOrder,
+                onClick = onMainButtonClicked,
+            )
+        } else {
+            if (!isRecalculateNeeded) {
+                TotalsSectionsState.Button(
+                    text = mode.toButtonText(),
+                    enabled = canCreateOrder,
+                    onClick = onMainButtonClicked,
+                )
+            } else {
+                TotalsSectionsState.Button(
+                    text = resourceProvider.getString(R.string.order_creation_recalculate_button),
+                    enabled = canCreateOrder,
+                    onClick = onRecalculateButtonClicked,
+                )
+            }
         }
     }
 
@@ -110,17 +147,11 @@ class OrderCreateEditTotalsHelper @Inject constructor(
         }
     }
 
-    private fun Order.toShippingSection(
-        enabled: Boolean,
-        bigDecimalFormatter: (BigDecimal) -> String,
-        onClick: () -> Unit
-    ): TotalsSectionsState.Line? =
-        if (shippingLines.firstOrNull { it.methodId != null } != null) {
-            TotalsSectionsState.Line.Button(
-                text = resourceProvider.getString(R.string.shipping),
-                value = shippingLines.sumByBigDecimal { it.total }.let(bigDecimalFormatter),
-                enabled = enabled,
-                onClick = onClick,
+    private fun Order.toShippingSection(bigDecimalFormatter: (BigDecimal) -> String): TotalsSectionsState.Line? =
+        if (shippingLines.filter { it.methodId != null }.isNotEmpty()) {
+            TotalsSectionsState.Line.Simple(
+                label = resourceProvider.getString(R.string.shipping),
+                value = shippingLines.sumByBigDecimal { it.total }.let(bigDecimalFormatter)
             )
         } else {
             null
@@ -212,7 +243,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
 
     private fun OrderCreateEditViewModel.Mode.toButtonText() =
         when (this) {
-            OrderCreateEditViewModel.Mode.Creation -> resourceProvider.getString(
+            is OrderCreateEditViewModel.Mode.Creation -> resourceProvider.getString(
                 R.string.order_creation_collect_payment_button
             )
 
@@ -232,6 +263,7 @@ sealed class TotalsSectionsState(open val onHeightChanged: (height: Int) -> Unit
 
     data class Minimised(
         val orderTotal: OrderTotal,
+        val recalculateButton: Button? = null,
         override val onHeightChanged: (height: Int) -> Unit
     ) : TotalsSectionsState(onHeightChanged)
 

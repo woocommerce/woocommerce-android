@@ -1,0 +1,2 @@
+18.9:
+Låt oss presentera några spännande uppdateringar. Du kan nu hantera beställningar mer effektivt med flera fraktrader per beställning. Ta del av smidigare navigering med den omdesignade Mer-menyn. Vi har dessutom lagt till en praktisk funktion för att beräkna växel för kontantbetalningar. Uppdatera din WooCommerce-app nu för en sömlös och förbättrad upplevelse.

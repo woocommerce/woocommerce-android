@@ -80,14 +80,6 @@
     <ID>ForbiddenComment:RefundByItemsFragment.kt$RefundByItemsFragment$// TODO: Temporarily disabled, this will be used in a future release - do not remove</ID>
     <ID>ForbiddenComment:ShippingCarrierRatesViewModel.kt$ShippingCarrierRatesViewModel$// TODO: Once we start supporting countries other than the US, we'll need to verify what currency the shipping labels purchases use</ID>
     <ID>FunctionOnlyReturningConstant:Screen.kt$Screen.Companion$fun isVisible(): Boolean</ID>
-    <ID>InvalidPackageDeclaration:DebugInterceptorModule.kt$package com.woocommerce.android.di</ID>
-    <ID>InvalidPackageDeclaration:IAPDebugLogWrapper.kt$package com.woocommerce.android.iapshowcase</ID>
-    <ID>InvalidPackageDeclaration:IAPShowcaseActivity.kt$package com.woocommerce.android.iapshowcase</ID>
-    <ID>InvalidPackageDeclaration:IAPShowcasePurchaseFragment.kt$package com.woocommerce.android.iapshowcase.purchase</ID>
-    <ID>InvalidPackageDeclaration:IAPShowcasePurchaseViewModel.kt$package com.woocommerce.android.iapshowcase.purchase</ID>
-    <ID>InvalidPackageDeclaration:IAPShowcaseSupportCheckerFragment.kt$package com.woocommerce.android.iapshowcase.supportcheck</ID>
-    <ID>InvalidPackageDeclaration:IAPShowcaseSupportCheckerViewModel.kt$package com.woocommerce.android.iapshowcase.supportcheck</ID>
-    <ID>InvalidPackageDeclaration:WooCommerceDebug.kt$package com.woocommerce.android</ID>
     <ID>KdocWrapping:AddProductCategoryViewModel.kt$AddProductCategoryViewModel$/** No action needed */</ID>
     <ID>LargeClass:ProductDetailViewModel.kt$ProductDetailViewModel : ScopedViewModel</ID>
     <ID>LongMethod:AddOrderShipmentTrackingFragment.kt$AddOrderShipmentTrackingFragment$private fun setupObservers(binding: FragmentAddShipmentTrackingBinding)</ID>

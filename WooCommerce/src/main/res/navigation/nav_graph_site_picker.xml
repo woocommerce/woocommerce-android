@@ -4,7 +4,6 @@
     android:id="@+id/nav_graph_site_picker"
     app:startDestination="@id/sitePickerFragment">
 
-    <include app:graph="@navigation/nav_graph_store_creation_native" />
     <include app:graph="@navigation/nav_graph_jetpack_activation" />
 
     <fragment
@@ -26,18 +25,6 @@
             app:exitAnim="@null"
             app:popEnterAnim="@null"
             app:popExitAnim="@anim/activity_fade_out" />
-        <action
-            android:id="@+id/action_sitePickerFragment_to_addStoreBottomSheetFragment"
-            app:destination="@id/addStoreBottomSheetFragment" />
-        <action
-            android:id="@+id/action_sitePickerFragment_to_storeCreationNativeFlow"
-            app:destination="@id/nav_graph_store_creation">
-            <argument
-                android:name="storeName"
-                android:defaultValue="@null"
-                app:argType="string"
-                app:nullable="true" />
-        </action>
         <action
             android:id="@+id/action_sitePickerFragment_to_closeAccountDialogFragment"
             app:destination="@id/closeAccountDialogFragment" />
@@ -72,17 +59,6 @@
             android:name="errorType"
             app:argType="com.woocommerce.android.ui.login.accountmismatch.AccountMismatchErrorViewModel$AccountMismatchErrorType" />
     </fragment>
-    <dialog
-        android:id="@+id/addStoreBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.sitepicker.AddStoreBottomSheetFragment"
-        android:label="AddSiteBottomSheetFragment">
-        <action
-            android:id="@+id/action_addSiteBottomSheetFragment_to_sitePickerSiteDiscoveryFragment"
-            app:destination="@id/sitePickerSiteDiscoveryFragment" />
-        <action
-            android:id="@+id/action_addStoreBottomSheetFragment_to_storeCreationNativeFlow"
-            app:destination="@id/nav_graph_store_creation" />
-    </dialog>
     <dialog
         android:id="@+id/closeAccountDialogFragment"
         android:name="com.woocommerce.android.ui.prefs.account.CloseAccountDialogFragment"

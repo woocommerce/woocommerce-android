@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.categories
 
-import com.woocommerce.android.AppConstants
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -10,8 +9,6 @@ import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.toProductCategory
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Cancellation
-import com.woocommerce.android.util.ContinuationWrapper.ContinuationResult.Success
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.dispatchAndAwait
 import org.greenrobot.eventbus.Subscribe
@@ -91,27 +88,6 @@ class ProductCategoriesRepository @Inject constructor(
         productStore.getProductCategoryByNameAndParentId(selectedSite.get(), categoryName, parentId)
             ?.toProductCategory()
 
-    /**
-     * Fires the request to add a new product category
-     *
-     * @return the result of the action as a [Boolean]
-     */
-    suspend fun addProductCategory(categoryName: String, parentId: Long): RequestResult {
-        val result = addProductCategoryContinuation.callAndWaitUntilTimeout(AppConstants.REQUEST_TIMEOUT) {
-            val productCategoryModel = WCProductCategoryModel().apply {
-                name = categoryName
-                parent = parentId
-            }
-            val payload = WCProductStore.AddProductCategoryPayload(selectedSite.get(), productCategoryModel)
-            dispatcher.dispatch(WCProductActionBuilder.newAddProductCategoryAction(payload))
-        }
-
-        return when (result) {
-            is Cancellation -> RequestResult.NO_ACTION_NEEDED
-            is Success -> result.value
-        }
-    }
-
     suspend fun addProductCategories(categories: List<ProductCategory>): Result<List<ProductCategory>> {
         val result = productStore.addProductCategories(
             site = selectedSite.get(),
@@ -133,6 +109,67 @@ class ProductCategoriesRepository @Inject constructor(
             }
 
             else -> Result.success(result.model!!.map { it.toProductCategory() })
+        }
+    }
+
+    suspend fun addProductCategory(categoryName: String, parentId: Long): Result<ProductCategory> {
+        val result = productStore.addProductCategory(
+            site = selectedSite.get(),
+            category = WCProductCategoryModel().apply {
+                name = categoryName
+                parent = parentId
+            }
+        )
+        return when {
+            result.isError -> {
+                WooLog.e(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Error adding product category: ${result.error.type}, ${result.error.message}"
+                )
+                Result.failure(WooException(result.error))
+            }
+
+            else -> Result.success(result.model!!.toProductCategory())
+        }
+    }
+
+    suspend fun updateProductCategory(remoteId: Long, categoryName: String, parentId: Long): Result<ProductCategory> {
+        val result = productStore.updateProductCategory(
+            site = selectedSite.get(),
+            category = WCProductCategoryModel().apply {
+                remoteCategoryId = remoteId
+                name = categoryName
+                parent = parentId
+            }
+        )
+        return when {
+            result.isError -> {
+                WooLog.e(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Error updating product category: ${result.error.type}, ${result.error.message}"
+                )
+                Result.failure(WooException(result.error))
+            }
+
+            else -> Result.success(result.model!!.toProductCategory())
+        }
+    }
+
+    suspend fun deleteProductCategory(remoteId: Long): Result<ProductCategory> {
+        val result = productStore.deleteProductCategory(
+            site = selectedSite.get(),
+            remoteId = remoteId
+        )
+        return when {
+            result.isError -> {
+                WooLog.e(
+                    tag = WooLog.T.PRODUCTS,
+                    message = "Error updating product category: ${result.error.type}, ${result.error.message}"
+                )
+                Result.failure(WooException(result.error))
+            }
+
+            else -> Result.success(result.model!!.toProductCategory())
         }
     }
 

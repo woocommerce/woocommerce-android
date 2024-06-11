@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.products.viewholders
 
 import android.view.ViewGroup
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.products.WCProductPropertyLinkView
 import com.woocommerce.android.ui.products.models.ProductProperty.Link
+import com.woocommerce.android.ui.products.propertyviews.WCProductPropertyLinkView
 
 class LinkViewHolder(parent: ViewGroup) : ProductPropertyViewHolder(parent, R.layout.product_property_link_view) {
     fun bind(item: Link) {

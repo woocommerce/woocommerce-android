@@ -4,12 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.blaze.BlazeUrlsHelper
 import com.woocommerce.android.ui.blaze.IsBlazeEnabled
 import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
+import com.woocommerce.android.ui.woopos.IsWooPosEnabled
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -73,6 +73,9 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     private val isBlazeEnabled: IsBlazeEnabled = mock {
         onBlocking { invoke() } doReturn true
     }
+    private val isWooPosEnabled: IsWooPosEnabled = mock {
+        onBlocking { invoke() } doReturn true
+    }
 
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
 
@@ -93,7 +96,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             blazeCampaignsStore = blazeCampaignsStore,
             tapToPayAvailabilityStatus = tapToPayAvailabilityStatus,
             isBlazeEnabled = isBlazeEnabled,
-            blazeUrlsHelper = BlazeUrlsHelper(selectedSite)
+            isWooPosEnabled = isWooPosEnabled,
         )
     }
 
@@ -113,7 +116,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(false)
 
         // THEN
-        val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
+        val paymentsButton =
+            states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.icon).isEqualTo(R.drawable.ic_more_menu_payments)
         assertThat(paymentsButton.badgeState?.textColor).isEqualTo(
             R.color.color_on_surface
@@ -146,7 +150,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(false)
 
         // THEN
-        val paymentsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_payments }
+        val paymentsButton =
+            states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_payments }
         assertThat(paymentsButton.badgeState).isNull()
     }
 
@@ -161,7 +166,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         val states = viewModel.moreMenuViewState.captureValues()
 
         // THEN
-        val reviewsButton = states.last().generalMenuItems.first { it.title == R.string.more_menu_button_reviews }
+        val reviewsButton =
+            states.last().menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_reviews }
         assertThat(reviewsButton.icon).isEqualTo(R.drawable.ic_more_menu_reviews)
         assertThat(reviewsButton.badgeState?.textColor).isEqualTo(
             R.color.color_on_primary
@@ -321,7 +327,11 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             prefsChanges.emit(false)
 
             // THEN
-            assertThat(states.last().generalMenuItems.first().badgeState).isNotNull
+            assertThat(
+                states.last().menuSections.flatMap { it.items }.first {
+                    it.title == R.string.more_menu_button_payments
+                }.badgeState
+            ).isNotNull
         }
 
     @Test
@@ -337,7 +347,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         prefsChanges.emit(true)
 
         // THEN
-        assertThat(states.last().generalMenuItems.first().badgeState).isNull()
+        assertThat(states.last().menuSections.flatMap { it.items }.first().badgeState).isNull()
     }
 
     @Test
@@ -381,7 +391,7 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         }
 
         val state = viewModel.moreMenuViewState.captureValues().last()
-        val button = state.generalMenuItems.first { it.title == R.string.more_menu_button_blaze }
+        val button = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_blaze }
         val event = viewModel.event.runAndCaptureValues {
             button.onClick()
         }.last()
@@ -397,11 +407,76 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         }
 
         val state = viewModel.moreMenuViewState.captureValues().last()
-        val button = state.generalMenuItems.first { it.title == R.string.more_menu_button_blaze }
+        val button = state.menuSections.flatMap { it.items }.first { it.title == R.string.more_menu_button_blaze }
         val event = viewModel.event.runAndCaptureValues {
             button.onClick()
         }.last()
 
         assertThat(event).isEqualTo(MoreMenuViewModel.MoreMenuEvent.OpenBlazeCampaignListEvent)
     }
+
+    @Test
+    fun `given isWooPosEnabled returns false, when building state, then WooPOS section is not displayed`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(isWooPosEnabled.invoke()).thenReturn(false)
+            }
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(
+                states.last().menuSections.flatMap { it.items }
+                    .firstOrNull { it.title == R.string.more_menu_button_woo_pos }
+            ).isNull()
+        }
+
+    @Test
+    fun `given isWooPosEnabled returns true, when building state, then WooPOS section is displayed`() = testBlocking {
+        // GIVEN
+        setup {
+            whenever(isWooPosEnabled.invoke()).thenReturn(true)
+        }
+
+        // WHEN
+        val states = viewModel.moreMenuViewState.captureValues()
+
+        // THEN
+        assertThat(states.last().menuSections.first().title).isNull()
+        assertThat(states.last().menuSections.first().items.count()).isEqualTo(1)
+        assertThat(
+            states.last().menuSections.flatMap { it.items }
+                .first { it.title == R.string.more_menu_button_woo_pos }.isVisible
+        ).isTrue()
+    }
+
+    @Test
+    fun `given isWooPosEnabled returns true, when building state, then 3 sections are shown without dividers at the end`() =
+        testBlocking {
+            // GIVEN
+            setup {
+                whenever(isWooPosEnabled.invoke()).thenReturn(true)
+                whenever(moreMenuRepository.isUpgradesEnabled()).thenReturn(true)
+            }
+
+            // WHEN
+            val states = viewModel.moreMenuViewState.captureValues()
+
+            // THEN
+            assertThat(states.last().menuSections.count()).isEqualTo(3)
+
+            assertThat(states.last().menuSections[0].title).isNull()
+            val itemsFirstSection = states.last().menuSections[0].items
+            assertThat(itemsFirstSection.count()).isEqualTo(1)
+
+            assertThat(states.last().menuSections[1].title).isEqualTo(R.string.more_menu_settings_section_title)
+            val itemsThirdSection = states.last().menuSections[1].items
+            assertThat(itemsThirdSection.count()).isEqualTo(2)
+
+            assertThat(states.last().menuSections[2].title).isEqualTo(R.string.more_menu_general_section_title)
+            val itemsSecondSection = states.last().menuSections[2].items
+            assertThat(itemsSecondSection.count()).isEqualTo(7)
+        }
 }

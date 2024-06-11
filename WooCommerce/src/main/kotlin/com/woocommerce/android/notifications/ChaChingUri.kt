@@ -6,5 +6,11 @@ import android.net.Uri
 import com.woocommerce.android.R
 
 fun Context.getChaChingUri(): Uri {
-    return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + packageName + "/" + R.raw.cha_ching)
+    val resourceId = R.raw.cha_ching
+    return Uri.Builder()
+        .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+        .authority(resources.getResourcePackageName(resourceId))
+        .appendPath(resources.getResourceTypeName(resourceId))
+        .appendPath(resources.getResourceEntryName(resourceId))
+        .build()
 }

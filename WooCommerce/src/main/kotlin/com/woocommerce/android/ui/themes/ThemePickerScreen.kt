@@ -24,9 +24,9 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -65,24 +65,9 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         Scaffold(topBar = {
             Toolbar(
-                title = {
-                    Text(
-                        if (viewState.isFromStoreCreation) {
-                            ""
-                        } else {
-                            stringResource(id = R.string.settings_themes)
-                        }
-                    )
-                },
-                navigationIcon = Filled.ArrowBack,
-                onNavigationButtonClick = viewModel::onArrowBackPressed,
-                actions = {
-                    if (viewState.isFromStoreCreation) {
-                        TextButton(onClick = viewModel::onSkipPressed) {
-                            Text(text = stringResource(id = R.string.skip))
-                        }
-                    }
-                }
+                title = stringResource(id = R.string.settings_themes),
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationButtonClick = viewModel::onArrowBackPressed
             )
         }) { padding ->
             ThemePicker(
@@ -113,7 +98,7 @@ private fun ThemePicker(
             .fillMaxSize(),
     ) {
         CurrentTheme(viewState.currentThemeState)
-        Header(viewState.isFromStoreCreation)
+        Header()
         Carousel(
             viewState.carouselState,
             onThemeTapped,
@@ -164,35 +149,17 @@ private fun CurrentTheme(
 
 @Composable
 private fun Header(
-    isFromStoreCreation: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        if (isFromStoreCreation) {
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-            Text(
-                text = stringResource(id = R.string.theme_picker_title),
-                style = MaterialTheme.typography.h5,
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            )
-            Text(
-                text = stringResource(id = R.string.theme_picker_description),
-                style = MaterialTheme.typography.subtitle1,
-                color = colorResource(id = color.color_on_surface_medium),
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_250)))
-        } else {
-            Text(
-                text = stringResource(id = R.string.theme_picker_settings_title),
-                style = MaterialTheme.typography.subtitle2,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        }
+        Text(
+            text = stringResource(id = R.string.theme_picker_settings_title),
+            style = MaterialTheme.typography.subtitle2,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+        )
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
     }
 }
 
@@ -410,7 +377,6 @@ private fun PreviewThemePickerError() {
         ThemePicker(
             modifier = Modifier,
             viewState = ThemePickerViewModel.ViewState(
-                isFromStoreCreation = true,
                 carouselState = CarouselState.Error,
                 currentThemeState = CurrentThemeState.Hidden
             ),
@@ -428,33 +394,7 @@ private fun PreviewThemePickerLoading() {
         ThemePicker(
             modifier = Modifier,
             viewState = ThemePickerViewModel.ViewState(
-                isFromStoreCreation = true,
                 carouselState = CarouselState.Loading,
-                currentThemeState = CurrentThemeState.Hidden
-            ),
-            onThemeTapped = {},
-            onThemeScreenshotFailure = { _, _ -> },
-            onRetryTapped = {}
-        )
-    }
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun PreviewThemePickerStoreCreation() {
-    WooThemeWithBackground {
-        ThemePicker(
-            modifier = Modifier,
-            viewState = ThemePickerViewModel.ViewState(
-                isFromStoreCreation = true,
-                carouselState = CarouselState.Success(
-                    carouselItems = listOf(
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),
-                        CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = "")
-                    )
-                ),
                 currentThemeState = CurrentThemeState.Hidden
             ),
             onThemeTapped = {},
@@ -472,7 +412,6 @@ private fun PreviewThemePickerSettings() {
         ThemePicker(
             modifier = Modifier,
             viewState = ThemePickerViewModel.ViewState(
-                isFromStoreCreation = false,
                 carouselState = CarouselState.Success(
                     carouselItems = listOf(
                         CarouselItem.Theme(themeId = "tsubaki", name = "Tsubaki", screenshotUrl = ""),

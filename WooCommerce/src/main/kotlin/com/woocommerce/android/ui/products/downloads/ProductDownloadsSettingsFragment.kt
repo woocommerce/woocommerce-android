@@ -7,8 +7,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductDownloadsSettingsBinding
 import com.woocommerce.android.ui.products.BaseProductFragment
-import com.woocommerce.android.ui.products.ProductDetailViewModel
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductDownloadsSettings
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductDownloadsSettings
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import dagger.hilt.android.AndroidEntryPoint
 

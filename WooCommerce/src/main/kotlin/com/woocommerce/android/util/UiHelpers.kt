@@ -72,9 +72,16 @@ object UiHelpers {
         }
     }
 
-    fun setImageOrHideInLandscape(imageView: ImageView, @DrawableRes resId: Int?, setInvisible: Boolean = false) {
+    fun setImageOrHideInLandscapeOnNonExpandedScreenSizes(
+        imageView: ImageView,
+        @DrawableRes resId: Int?,
+        setInvisible: Boolean = false
+    ) {
         val isLandscape = DisplayUtils.isLandscape(imageView.context)
-        updateVisibility(imageView, resId != null && !isLandscape, setInvisible)
+        val isExpandedOrBigger = imageView.context.windowSizeClass == WindowSizeClass.ExpandedAndBigger
+        val shouldShowBasedOnOrientationAndSize = !isLandscape || isExpandedOrBigger
+        val showImage = resId != null && shouldShowBasedOnOrientationAndSize
+        updateVisibility(imageView, showImage, setInvisible)
         resId?.let {
             imageView.setImageResource(resId)
         }
@@ -86,6 +93,10 @@ object UiHelpers {
     }
 }
 
-class IsTablet @Inject constructor(val context: Context) {
+class IsWindowClassLargeThanCompact @Inject constructor(val context: Context) {
     operator fun invoke() = context.windowSizeClass != WindowSizeClass.Compact
+}
+
+class IsWindowClassExpandedAndBigger @Inject constructor(val context: Context) {
+    operator fun invoke() = context.windowSizeClass == WindowSizeClass.ExpandedAndBigger
 }

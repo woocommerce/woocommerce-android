@@ -47,8 +47,10 @@ class OrderListScreen : Screen(R.id.ordersList) {
 
     fun enterAbsentSearchTerm(term: String): OrderListScreen {
         typeTextInto(androidx.appcompat.R.id.search_src_text, term)
-        // If we don't expect for results, we wait for "no results" situation
-        waitForElementToBeDisplayed(R.id.empty_view_title)
+        // We don't expect results, so we wait for "no results" situation
+        waitForElementToBeDisplayed(
+            Espresso.onView(ViewMatchers.withText(containsString("couldn't find")))
+        )
         return this
     }
 

@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,19 +15,7 @@ import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.Disp
 import com.woocommerce.android.ui.common.wpcomwebview.WPComWebViewViewModel.DisplayMode.REGULAR
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCWebView
-import com.woocommerce.android.ui.login.storecreation.dispatcher.PlanUpgradeStartViewModel
 import org.wordpress.android.fluxc.network.UserAgent
-
-@Composable
-fun PlanUpgradeViewScreen(viewViewModel: PlanUpgradeStartViewModel) {
-    WPComWebViewScreen(
-        viewState = viewViewModel.viewState,
-        wpcomWebViewAuthenticator = viewViewModel.wpComWebViewAuthenticator,
-        userAgent = viewViewModel.userAgent,
-        onUrlLoaded = viewViewModel::onUrlLoaded,
-        onClose = viewViewModel::onClose
-    )
-}
 
 @Composable
 fun WPComWebViewScreen(viewViewModel: WPComWebViewViewModel) {
@@ -56,7 +44,7 @@ fun WPComWebViewScreen(
                 title = viewState.title ?: stringResource(id = R.string.app_name),
                 onNavigationButtonClick = onClose,
                 navigationIcon = when (viewState.displayMode) {
-                    REGULAR -> Icons.Filled.ArrowBack
+                    REGULAR -> Icons.AutoMirrored.Filled.ArrowBack
                     MODAL -> Icons.Filled.Clear
                 }
             )

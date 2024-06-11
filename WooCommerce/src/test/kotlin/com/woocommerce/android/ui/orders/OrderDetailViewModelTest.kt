@@ -5,6 +5,9 @@ import android.content.SharedPreferences
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.R.string
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.GiftCardSummary
 import com.woocommerce.android.model.Order
@@ -15,6 +18,7 @@ import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.RequestResult
 import com.woocommerce.android.model.ShippingLabel
+import com.woocommerce.android.model.ShippingMethod
 import com.woocommerce.android.model.Subscription
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.network.giftcard.GiftCardRestClient
@@ -23,6 +27,9 @@ import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.giftcard.GiftCardRepository
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.PreviewReceipt
+import com.woocommerce.android.ui.orders.creation.shipping.GetShippingMethodsWithOtherValue
+import com.woocommerce.android.ui.orders.creation.shipping.RefreshShippingMethods
+import com.woocommerce.android.ui.orders.creation.shipping.ShippingLineDetails
 import com.woocommerce.android.ui.orders.details.GetOrderSubscriptions
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
@@ -37,18 +44,21 @@ import com.woocommerce.android.ui.orders.details.ShippingLabelOnboardingReposito
 import com.woocommerce.android.ui.payments.cardreader.payment.CardReaderPaymentCollectibilityChecker
 import com.woocommerce.android.ui.payments.receipt.PaymentReceiptHelper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowUndoSnackbar
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceTimeBy
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -89,6 +99,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         private const val ORDER_SITE_ID = 1
     }
 
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val networkStatus: NetworkStatus = mock()
     private val appPrefsWrapper: AppPrefs = mock {
         on(it.isTrackingExtensionAvailable()).thenAnswer { true }
@@ -108,7 +119,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         on { getString(any(), any()) } doAnswer { invocationOnMock -> invocationOnMock.arguments[0].toString() }
     }
     private val paymentCollectibilityChecker: CardReaderPaymentCollectibilityChecker = mock()
-    private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock()
+    private val shippingLabelOnboardingRepository: ShippingLabelOnboardingRepository = mock {
+        doReturn(true).whenever(it).isShippingPluginReady
+    }
 
     private val savedState = OrderDetailFragmentArgs(
         orderId = ORDER_ID,
@@ -166,29 +179,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         )
     )
 
+    private val getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue = mock()
+    private val refreshShippingMethods: RefreshShippingMethods = mock()
+
     private fun createViewModel() {
-        viewModel = spy(
-            OrderDetailViewModel(
-                savedState,
-                appPrefsWrapper,
-                networkStatus,
-                resources,
-                orderDetailRepository,
-                addonsRepository,
-                selectedSite,
-                productImageMap,
-                paymentCollectibilityChecker,
-                paymentsFlowTracker,
-                orderDetailTracker,
-                shippingLabelOnboardingRepository,
-                orderDetailsTransactionLauncher,
-                getOrderSubscriptions,
-                giftCardRepository,
-                orderProductMapper,
-                productDetailRepository,
-                paymentReceiptHelper,
-            )
-        )
+        createViewModel(newSavedState = savedState)
     }
 
     private fun createViewModel(newSavedState: SavedStateHandle) {
@@ -211,7 +206,10 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 giftCardRepository,
                 orderProductMapper,
                 productDetailRepository,
-                paymentReceiptHelper
+                paymentReceiptHelper,
+                analyticsTracker,
+                refreshShippingMethods,
+                getShippingMethodsWithOtherValue,
             )
         )
     }
@@ -1015,10 +1013,9 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         testBlocking {
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
-
+            doReturn(false).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1061,11 +1058,11 @@ class OrderDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `hide shipping label creation if wcs plugin is not installed`() =
         testBlocking {
+            doReturn(false).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
             doReturn(order).whenever(orderDetailRepository).getOrderById(any())
             doReturn(order).whenever(orderDetailRepository).fetchOrderById(any())
             doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
             doReturn(RequestResult.SUCCESS).whenever(orderDetailRepository).fetchOrderShipmentTrackingList(any())
-            doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).fetchOrderShippingLabels(any())
             doReturn(emptyList<Refund>()).whenever(orderDetailRepository).fetchOrderRefunds(any())
             doReturn(emptyList<Product>()).whenever(orderDetailRepository).fetchProductsByRemoteIds(any())
             doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1691,12 +1688,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when service plugin is installed and active, then fetch plugin data`() = testBlocking {
-        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
-        pluginsInfo[services] = WooPlugin(
-            isInstalled = true,
-            isActive = true,
-            version = "1.0.0"
-        )
+        doReturn(true).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1710,12 +1702,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when service plugin is NOT active, then DON'T fetch plugin data`() = testBlocking {
-        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
-        pluginsInfo[services] = WooPlugin(
-            isInstalled = true,
-            isActive = false,
-            version = "1.0.0"
-        )
+        doReturn(false).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1729,12 +1716,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when service plugin is NOT installed, then DON'T fetch plugin data`() = testBlocking {
-        val services = WooCommerceStore.WooPlugin.WOO_SERVICES.pluginName
-        pluginsInfo[services] = WooPlugin(
-            isInstalled = false,
-            isActive = false,
-            version = null
-        )
+        doReturn(false).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -1805,6 +1787,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
 
     @Test
     fun `when there is no info about the plugins, then optimistically fetch plugin data`() = testBlocking {
+        doReturn(true).whenever(shippingLabelOnboardingRepository).isShippingPluginReady
         doReturn(order).whenever(orderDetailRepository).getOrderById(any())
         doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
         doReturn(true).whenever(addonsRepository).containsAddonsFrom(any())
@@ -2168,5 +2151,239 @@ class OrderDetailViewModelTest : BaseUnitTest() {
         val attributionState = viewModel.orderAttributionInfo.getOrAwaitValue()
 
         assertThat(attributionState).isEqualTo(attribution)
+    }
+
+    @Test
+    fun `when trash button is clicked, then show an alert`() = testBlocking {
+        createViewModel()
+
+        val event = viewModel.event.runAndCaptureValues {
+            viewModel.onTrashOrderClicked()
+        }.last()
+
+        assertThat(event).isInstanceOf(MultiLiveEvent.Event.ShowDialog::class.java)
+    }
+
+    @Test
+    fun `when trash is confirmed, then communicate event to the parent fragment`() = testBlocking {
+        createViewModel()
+
+        val dialogEvent = viewModel.event.runAndCaptureValues {
+            viewModel.onTrashOrderClicked()
+        }.last() as MultiLiveEvent.Event.ShowDialog
+        val event = viewModel.event.runAndCaptureValues {
+            dialogEvent.positiveBtnAction?.onClick(mock(), 0)
+        }.last()
+
+        assertThat(event).isEqualTo(OrderDetailViewModel.TrashOrder(ORDER_ID))
+        verify(analyticsTracker).track(AnalyticsEvent.ORDER_DETAIL_TRASH_TAPPED)
+    }
+
+    @Test
+    fun `when we can get shipping titles from the cached shipping methods then refresh is NOT call`() =
+        testBlocking {
+            // Given
+            val shippingMethod = ShippingMethod(id = "free_shipping", title = "Free Shipping")
+            val orderShippingLines = listOf(
+                Order.ShippingLine(
+                    itemId = 1L,
+                    methodTitle = "Free",
+                    methodId = shippingMethod.id,
+                    total = BigDecimal.ZERO,
+                    totalTax = BigDecimal.ZERO
+                ),
+                Order.ShippingLine(
+                    itemId = 2L,
+                    methodTitle = "Another shipping",
+                    methodId = "",
+                    total = BigDecimal.TEN,
+                    totalTax = BigDecimal.ZERO
+                ),
+            )
+            val testOrder = order.copy(shippingLines = orderShippingLines)
+            val shippingMethods = listOf(shippingMethod)
+
+            doReturn(testOrder).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            doReturn(flowOf(shippingMethods)).whenever(getShippingMethodsWithOtherValue).invoke()
+
+            createViewModel()
+
+            viewModel.start()
+
+            var shippingLineDetails: List<ShippingLineDetails>? = null
+
+            // When
+            viewModel.viewStateData.observeForever { _, _ -> }
+            viewModel.shippingLineList.observeForever { shippingLines ->
+                shippingLineDetails = shippingLines
+            }
+
+            // Then
+            assertThat(shippingLineDetails).isNotNull
+            assertThat(shippingLineDetails?.size).isEqualTo(testOrder.shippingLines.size)
+
+            val details = shippingLineDetails?.firstOrNull { it.shippingMethod?.title == shippingMethod.title }
+            assertThat(details).isNotNull
+            verify(refreshShippingMethods, never()).invoke()
+        }
+
+    @Test
+    fun `when we can't get shipping titles from the cached shipping methods then refresh is call`() =
+        testBlocking {
+            // Given
+            val orderShippingLines = listOf(
+                Order.ShippingLine(
+                    itemId = 1L,
+                    methodTitle = "Free",
+                    methodId = "free_shipping",
+                    total = BigDecimal.ZERO,
+                    totalTax = BigDecimal.ZERO
+                ),
+                Order.ShippingLine(
+                    itemId = 2L,
+                    methodTitle = "Another shipping",
+                    methodId = "",
+                    total = BigDecimal.TEN,
+                    totalTax = BigDecimal.ZERO
+                ),
+            )
+            val testOrder = order.copy(shippingLines = orderShippingLines)
+            val shippingMethods = emptyList<ShippingMethod>()
+
+            doReturn(testOrder).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            doReturn(flowOf(shippingMethods)).whenever(getShippingMethodsWithOtherValue).invoke()
+
+            createViewModel()
+
+            viewModel.start()
+
+            var shippingLineDetails: List<ShippingLineDetails>? = null
+
+            // When
+            viewModel.viewStateData.observeForever { _, _ -> }
+            viewModel.shippingLineList.observeForever { shippingLines ->
+                shippingLineDetails = shippingLines
+            }
+
+            // Then
+            assertThat(shippingLineDetails).isNotNull
+            assertThat(shippingLineDetails?.size).isEqualTo(testOrder.shippingLines.size)
+
+            verify(refreshShippingMethods).invoke()
+        }
+
+    @Test
+    fun `when we can't get shipping titles from the cached shipping methods then refresh is called one time`() =
+        testBlocking {
+            // Given
+            val orderShippingLines = listOf(
+                Order.ShippingLine(
+                    itemId = 1L,
+                    methodTitle = "Free",
+                    methodId = "free_shipping",
+                    total = BigDecimal.ZERO,
+                    totalTax = BigDecimal.ZERO
+                ),
+                Order.ShippingLine(
+                    itemId = 2L,
+                    methodTitle = "Another shipping",
+                    methodId = "",
+                    total = BigDecimal.TEN,
+                    totalTax = BigDecimal.ZERO
+                ),
+            )
+            val testOrder = order.copy(shippingLines = orderShippingLines)
+            val shippingMethods = emptyList<ShippingMethod>()
+
+            doReturn(testOrder).whenever(orderDetailRepository).getOrderById(any())
+            doReturn(testOrder).whenever(orderDetailRepository).fetchOrderById(any())
+            doReturn(false).whenever(orderDetailRepository).fetchOrderNotes(any())
+            doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+            doReturn(flowOf(shippingMethods, shippingMethods)).whenever(getShippingMethodsWithOtherValue).invoke()
+
+            createViewModel()
+
+            viewModel.start()
+
+            var shippingLineDetails: List<ShippingLineDetails>? = null
+
+            // When
+            viewModel.viewStateData.observeForever { _, _ -> }
+            viewModel.shippingLineList.observeForever { shippingLines ->
+                shippingLineDetails = shippingLines
+            }
+
+            // Then
+            assertThat(shippingLineDetails).isNotNull
+            assertThat(shippingLineDetails?.size).isEqualTo(testOrder.shippingLines.size)
+
+            verify(refreshShippingMethods).invoke()
+        }
+
+    @Test
+    fun `when the order contains shipping lines then track the event`() = testBlocking {
+        val shippingLines = listOf(
+            Order.ShippingLine(
+                methodId = "other",
+                methodTitle = "Other",
+                total = BigDecimal.TEN
+            ),
+            Order.ShippingLine(
+                methodId = "free_shipping",
+                methodTitle = "Free",
+                total = BigDecimal.ZERO
+            )
+        )
+        val order = order.copy(shippingLines = shippingLines)
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
+
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
+        doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
+        doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+
+        createViewModel()
+        viewModel.start()
+
+        verify(analyticsTracker).track(
+            AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
+            mapOf(AnalyticsTracker.KEY_SHIPPING_LINES_COUNT to shippingLines.size)
+        )
+    }
+
+    @Test
+    fun `when the order DOESN'T contains shipping lines then DON'T track the event`() = testBlocking {
+        val shippingLines = emptyList<Order.ShippingLine>()
+        val order = order.copy(shippingLines = shippingLines)
+
+        doReturn(order).whenever(orderDetailRepository).getOrderById(any())
+        doReturn(flowOf(emptyList<ShippingMethod>())).whenever(getShippingMethodsWithOtherValue).invoke()
+
+        doReturn(false).whenever(paymentCollectibilityChecker).isCollectable(any())
+        doReturn(true).whenever(orderDetailRepository).fetchOrderNotes(any())
+        doReturn(testOrderNotes).whenever(orderDetailRepository).getOrderNotes(any())
+        doReturn(testOrderShipmentTrackings).whenever(orderDetailRepository).getOrderShipmentTrackings(any())
+        doReturn(emptyList<Refund>()).whenever(orderDetailRepository).getOrderRefunds(any())
+        doReturn(emptyList<ShippingLabel>()).whenever(orderDetailRepository).getOrderShippingLabels(any())
+        doReturn(false).whenever(addonsRepository).containsAddonsFrom(any())
+
+        createViewModel()
+        viewModel.start()
+
+        verify(analyticsTracker, never()).track(
+            AnalyticsEvent.ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
+            mapOf(AnalyticsTracker.KEY_SHIPPING_LINES_COUNT to shippingLines.size)
+        )
     }
 }

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.compose.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -17,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
@@ -26,19 +26,19 @@ import com.woocommerce.android.R.string
 
 @Composable
 fun <T> WCOverflowMenu(
-    items: Array<T>,
+    items: List<T>,
     onSelected: (T) -> Unit,
-    mapper: (T) -> String = { it.toString() },
     modifier: Modifier = Modifier,
+    mapper: @Composable (T) -> String = { it.toString() },
+    tint: Color = Color.Black
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    Box(
-        modifier = modifier.padding(top = dimensionResource(id = dimen.minor_100))
-    ) {
+    Box(modifier = modifier) {
         IconButton(onClick = { showMenu = !showMenu }) {
             Icon(
                 imageVector = Outlined.MoreVert,
                 contentDescription = stringResource(string.more_menu),
+                tint = tint
             )
         }
         DropdownMenu(

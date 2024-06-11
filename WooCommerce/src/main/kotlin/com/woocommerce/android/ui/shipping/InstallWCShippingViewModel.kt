@@ -26,7 +26,7 @@ class InstallWCShippingViewModel @Inject constructor(
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedState) {
     private companion object {
-        private const val WC_SHIPPING_INFO_URL = "https://woo.com/woocommerce-shipping/"
+        private const val WC_SHIPPING_INFO_URL = "https://woocommerce.com/woocommerce-shipping/"
     }
 
     private val step = savedState.getStateFlow<Step>(this, Step.Onboarding)

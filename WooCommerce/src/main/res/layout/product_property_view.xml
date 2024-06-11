@@ -1,4 +1,4 @@
-<com.woocommerce.android.ui.products.WCProductPropertyView
+<com.woocommerce.android.ui.products.propertyviews.WCProductPropertyView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

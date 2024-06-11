@@ -7,8 +7,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductExternalLinkBinding
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductDetailViewState
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductDetailViewState
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitExternalLink
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.util.ActivityUtils

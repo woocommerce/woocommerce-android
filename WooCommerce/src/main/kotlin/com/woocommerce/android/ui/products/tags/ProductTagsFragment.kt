@@ -18,8 +18,8 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.model.ProductTag
 import com.woocommerce.android.ui.products.BaseProductFragment
 import com.woocommerce.android.ui.products.OnLoadMoreListener
-import com.woocommerce.android.ui.products.ProductDetailViewModel
-import com.woocommerce.android.ui.products.ProductDetailViewModel.ProductExitEvent.ExitProductTags
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductTags
 import com.woocommerce.android.ui.products.tags.ProductTagsAdapter.OnProductTagClickListener
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
@@ -39,6 +39,7 @@ class ProductTagsFragment :
     private val skeletonView = SkeletonView()
     private var progressDialog: CustomProgressDialog? = null
     private val searchHandler = Handler(Looper.getMainLooper())
+    private var searchRunnable: Runnable? = null
 
     private var _binding: FragmentProductTagsBinding? = null
     private val binding get() = _binding!!
@@ -47,7 +48,7 @@ class ProductTagsFragment :
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentProductTagsBinding.bind(view)
-
+        initializeView()
         setupObservers(viewModel)
         viewModel.loadProductTags()
 
@@ -63,22 +64,22 @@ class ProductTagsFragment :
     }
 
     override fun onDestroyView() {
+        clearSearchRunnable()
         skeletonView.hide()
         super.onDestroyView()
+        searchRunnable = null
         _binding = null
     }
+
+    private fun clearSearchRunnable() = searchRunnable?.let { searchHandler.removeCallbacks(it) }
 
     override fun onResume() {
         super.onResume()
         AnalyticsTracker.trackViewShown(this)
     }
 
-    @Suppress("DEPRECATION")
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
+    private fun initializeView() {
         val activity = requireActivity()
-
         productTagsAdapter = ProductTagsAdapter(this, this)
         with(binding.productTagsRecycler) {
             layoutManager = LinearLayoutManager(activity)
@@ -118,14 +119,13 @@ class ProductTagsFragment :
      * perform a search while the user is typing
      */
     private fun setProductTagsFilterDelayed(filter: String) {
-        searchHandler.postDelayed(
-            {
-                if (filter == binding.addProductTagView.getEnteredTag()) {
-                    viewModel.setProductTagsFilter(filter)
-                }
-            },
-            AppConstants.SEARCH_TYPING_DELAY_MS
-        )
+        clearSearchRunnable()
+        searchRunnable = Runnable {
+            if (filter == binding.addProductTagView.getEnteredTag()) {
+                viewModel.setProductTagsFilter(filter)
+            }
+        }
+        searchHandler.postDelayed(searchRunnable!!, AppConstants.SEARCH_TYPING_DELAY_MS)
     }
 
     private fun setupObservers(viewModel: ProductDetailViewModel) {

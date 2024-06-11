@@ -5,7 +5,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmViewModel.Companion.JITM_MESSAGE_PATH_KEY
-import com.woocommerce.android.ui.mystore.MyStoreUtmProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -34,7 +33,7 @@ class JitmViewModelTest : BaseUnitTest() {
     }
     private val jitmStoreInMemoryCache: JitmStoreInMemoryCache = mock()
     private val jitmTracker: JitmTracker = mock()
-    private val utmProvider: MyStoreUtmProvider = mock()
+    private val utmProvider: JitmUtmProvider = mock()
     private val selectedSite: SelectedSite = mock()
 
     private lateinit var sut: JitmViewModel

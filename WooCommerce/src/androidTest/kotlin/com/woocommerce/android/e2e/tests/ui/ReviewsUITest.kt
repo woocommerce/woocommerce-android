@@ -10,6 +10,8 @@ import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.util.MocksReader
 import com.woocommerce.android.e2e.helpers.util.ReviewData
 import com.woocommerce.android.e2e.helpers.util.iterator
+import com.woocommerce.android.e2e.rules.Retry
+import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.reviews.ReviewsListScreen
@@ -34,6 +36,9 @@ class ReviewsUITest : TestBase() {
     @get:Rule(order = 3)
     var activityRule = ActivityTestRule(LoginActivity::class.java)
 
+    @get:Rule(order = 4)
+    var retryTestRule = RetryTestRule()
+
     @Before
     fun setUp() {
         WelcomeScreen
@@ -48,6 +53,7 @@ class ReviewsUITest : TestBase() {
             .openReviewsListScreen(composeTestRule)
     }
 
+    @Retry(numberOfTimes = 1)
     @Test
     fun e2eReviewListShowsAllReviews() {
         val reviewsJSONArray = MocksReader().readAllReviewsToArray()

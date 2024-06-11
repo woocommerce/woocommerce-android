@@ -3,9 +3,9 @@ package com.woocommerce.android.ui.orders.creation.configuration
 import com.woocommerce.android.model.BundleProductRules
 import com.woocommerce.android.model.BundledProduct
 import com.woocommerce.android.ui.products.GetBundledProducts
-import com.woocommerce.android.ui.products.ProductDetailRepository
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTestUtils
+import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
