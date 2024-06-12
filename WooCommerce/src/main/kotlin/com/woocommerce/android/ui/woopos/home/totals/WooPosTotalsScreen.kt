@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -32,6 +33,10 @@ fun WooPosTotalsScreen() {
                     style = MaterialTheme.typography.h3,
                     color = MaterialTheme.colors.primary,
                 )
+
+                Button(onClick = { /*TODO*/ }) {
+                    Text("Collect Card Payment")
+                }
             }
         }
     }

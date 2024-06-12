@@ -58,6 +58,9 @@ class WooPosHomeViewModel @Inject constructor(
                             ParentToChildrenEvent.ItemClickedInProductSelector(event.productId)
                         )
                     }
+                    is ChildToParentEvent.OrderDraftCreated -> {
+                        sendEventToChildren(ParentToChildrenEvent.OrderDraftCreated(event.orderId))
+                    }
                 }
             }
         }

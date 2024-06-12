@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderDraftCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -76,10 +78,11 @@ class WooPosCartViewModel @Inject constructor(
 
             result.fold(
                 onSuccess = { order ->
-                    println("Order created successfully - $order")
+                    Log.d("WooPosCartViewModel", "Order created successfully - $order")
+                    childrenToParentEventSender.sendToParent(OrderDraftCreated(order.id))
                 },
                 onFailure = { error ->
-                    println("Order creation failed - $error")
+                    Log.e("WooPosCartViewModel", "Order creation failed - $error")
                 }
             )
         }
@@ -99,7 +102,7 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
                         if (state.value.isOrderCreationInProgress) return@collect
 
-                        val siteModel = site.get()
+                        val siteModel = site.getOrNull()!!
                         val itemClicked = viewModelScope.async {
                             productStore.getProductByRemoteId(siteModel, event.productId)!!.toCartListItem()
                         }
@@ -109,6 +112,7 @@ class WooPosCartViewModel @Inject constructor(
                             itemsInCart = currentState.itemsInCart + itemClicked.await()
                         )
                     }
+                    else -> Unit
                 }
             }
         }
