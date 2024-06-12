@@ -485,10 +485,7 @@ platform :android do
 
     version = release_version_current
 
-    download_metadata_strings(
-      version: version,
-      build_number: build_code_current
-    )
+    download_metadata_strings(version: version)
 
     # Wrap up
     remove_branch_protection(
@@ -750,11 +747,11 @@ platform :android do
   # This lane downloads the translated metadata (release notes, app store strings, title, etc.) from GlotPress and updates the local files.
   #
   # @param [String] version the version for which to download metadata
-  #
+  # 
   # @example Running the lane
-  #          fastlane download_metadata_strings version:10.3 build_number:573
+  #          fastlane download_metadata_strings version:10.3
   #
-  lane :download_metadata_strings do |version:, build_number:|
+  lane :download_metadata_strings do |version:|
     values = version.split('.')
     files = {
       "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: 'changelogs/default.txt', max_size: 0 },
@@ -777,16 +774,6 @@ platform :android do
       source_file = key.to_s.start_with?('release_note_') ? 'release_notes.txt' : h[:desc]
       FileUtils.cp(File.join(ORIGINALS_METADATA_DIR_PATH, source_file), File.join(download_path, 'en-US', h[:desc]))
     end
-
-    android_create_xml_release_notes(
-      download_path: download_path,
-      build_number: build_number.to_s,
-      locales: SUPPORTED_LOCALES.to_h { |hsh| [hsh[:glotpress], hsh[:google_play]] }
-    )
-    add_us_release_notes(
-      release_notes_path: File.join(download_path, 'release_notes.xml'),
-      version_name: version
-    )
 
     # We need to explicitly call `git_add`, despite the path being passed to `git_commit` as well.
     # That's because we might have new files, that the commit command would otherwise miss.
@@ -1143,15 +1130,6 @@ platform :android do
   #####################################################################################
   # Private lanes
   #####################################################################################
-  private_lane :add_us_release_notes do |options|
-    en_release_notes_path = RELEASE_NOTES_PATH
-    File.open(options[:release_notes_path], 'a') do |f|
-      f.puts('<en-US>')
-      f.puts("#{options[:version_name]}:")
-      f.puts(File.read(en_release_notes_path))
-      f.puts('</en-US>')
-    end
-  end
 
   # Creates a new GitHub Release for the given version
   #
