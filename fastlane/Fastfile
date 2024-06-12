@@ -690,13 +690,18 @@ platform :android do
   #          bundle exec fastlane trigger_release_build branch_to_build:main include_wear_app:true
   #
   lane :trigger_release_build do |branch_to_build: nil, include_wear_app: false|
-    buildkite_trigger_build(
+    branch = branch_to_build || git_branch
+
+    build_url = buildkite_trigger_build(
       buildkite_organization: 'automattic',
       buildkite_pipeline: 'woocommerce-android',
-      branch: branch_to_build || git_branch,
+      branch: branch,
       pipeline_file: 'release-builds.yml',
       environment: { INCLUDE_WEAR_APP: include_wear_app }
     )
+
+    message = "This build triggered a release build on <code>#{branch}</code>:<br>- #{build_url}"
+    buildkite_annotate(style: 'info', context: 'trigger-release-build-doandroid', message: message) if is_ci
   end
 
   #####################################################################################
