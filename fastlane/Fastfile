@@ -12,9 +12,6 @@ PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 BUILD_GRADLE_PATH = File.join(PROJECT_ROOT_FOLDER, 'build.gradle')
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
 PROTOTYPE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
-ORIGINALS_METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
-RELEASE_NOTES_SOURCE_PATH = File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES.txt')
-RELEASE_NOTES_PATH = File.join(ORIGINALS_METADATA_DIR_PATH, 'release_notes.txt')
 # The `android_download_translations` action joins the `RES_DIR_PATH` with `PROJECT_ROOT_FOLDER`, so we don't want to
 # add `PROJECT_ROOT_FOLDER` to the beginning of this path
 RES_DIR_PATH = File.join('WooCommerce', 'src', 'main', 'res')
@@ -22,14 +19,13 @@ MAIN_STRINGS_PATH = File.join(PROJECT_ROOT_FOLDER, RES_DIR_PATH, 'values', 'stri
 VERSION_PROPERTIES_PATH = File.join(PROJECT_ROOT_FOLDER, 'version.properties')
 # The metadata for the Play Store live in the Fastlane folder, hence the `Dir.pwd`
 PLAY_STORE_METADATA_DIR_PATH = File.join(Dir.pwd, 'metadata', 'android')
-# Currently, the strings to use for the screenshots live in yet another metadata folder.
-# This is suboptimal and could lead to confusion.
-# See suggestions for how to improve at: https://github.com/woocommerce/woocommerce-android/pull/6907#discussion_r918144990
-SCREENSHOTS_METADATA_DIR_PATH = File.join(Dir.pwd, 'playstoreres', 'metadata')
+METADATA_SOURCE_PATH = File.join(PLAY_STORE_METADATA_DIR_PATH, 'en-US')
+METADATA_RELEASE_NOTES_PATH = File.join(METADATA_SOURCE_PATH, 'changelogs', 'default.txt')
+RELEASE_NOTES_SOURCE_PATH = File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES.txt')
 RAW_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'raw')
 RAW_SCREENSHOTS_PROCESSING_DIR = File.join(Dir.pwd, 'screenshots', 'raw_tmp')
 PROMO_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'promo_screenshots')
-FROZEN_STRINGS_DIR_PATH = './fastlane/resources/values/'
+FROZEN_STRINGS_DIR_PATH = File.join(Dir.pwd, 'resources', 'values')
 REMOTE_LIBRARIES_STRINGS_PATHS = [
   {
     name: 'Login Library',
@@ -154,7 +150,7 @@ platform :android do
     extract_release_notes_for_version(
       version: new_version,
       release_notes_file_path: RELEASE_NOTES_SOURCE_PATH,
-      extracted_notes_file_path: RELEASE_NOTES_PATH
+      extracted_notes_file_path: METADATA_RELEASE_NOTES_PATH
     )
     android_update_release_notes(
       new_version: new_version,
@@ -233,18 +229,18 @@ platform :android do
     version = options.fetch(:version, release_version_current)
 
     files = {
-      release_note: RELEASE_NOTES_PATH,
-      play_store_promo: File.join(ORIGINALS_METADATA_DIR_PATH, 'short_description.txt'),
-      play_store_desc: File.join(ORIGINALS_METADATA_DIR_PATH, 'full_description.txt'),
-      play_store_app_title: File.join(ORIGINALS_METADATA_DIR_PATH, 'title.txt'),
-      play_store_screenshot_1: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_1.txt'),
-      play_store_screenshot_2: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_2.txt'),
-      play_store_screenshot_3: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_3.txt'),
-      play_store_screenshot_4: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_4.txt'),
-      play_store_screenshot_5: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_5.txt')
+      release_note: METADATA_RELEASE_NOTES_PATH,
+      play_store_promo: File.join(METADATA_SOURCE_PATH, 'short_description.txt'),
+      play_store_desc: File.join(METADATA_SOURCE_PATH, 'full_description.txt'),
+      play_store_app_title: File.join(METADATA_SOURCE_PATH, 'title.txt'),
+      play_store_screenshot_1: File.join(METADATA_SOURCE_PATH, 'promo_screenshot_1.txt'),
+      play_store_screenshot_2: File.join(METADATA_SOURCE_PATH, 'promo_screenshot_2.txt'),
+      play_store_screenshot_3: File.join(METADATA_SOURCE_PATH, 'promo_screenshot_3.txt'),
+      play_store_screenshot_4: File.join(METADATA_SOURCE_PATH, 'promo_screenshot_4.txt'),
+      play_store_screenshot_5: File.join(METADATA_SOURCE_PATH, 'promo_screenshot_5.txt')
     }
 
-    po_path = File.join(ORIGINALS_METADATA_DIR_PATH, 'PlayStoreStrings.pot')
+    po_path = File.join(METADATA_SOURCE_PATH, 'PlayStoreStrings.pot')
 
     an_update_metadata_source(
       po_file_path: po_path,
@@ -773,13 +769,6 @@ platform :android do
       download_path: download_path
     )
 
-    # Copy the source `.txt` files (used as source of truth when we generated the `.po`) to the `fastlane/*metadata/android/en-US` dir,
-    # as `en-US` is the source language, and isn't exported from GlotPress during `gp_downloadmetadata`
-    files.each do |key, h|
-      source_file = key.to_s.start_with?('release_note_') ? 'release_notes.txt' : h[:desc]
-      FileUtils.cp(File.join(ORIGINALS_METADATA_DIR_PATH, source_file), File.join(download_path, 'en-US', h[:desc]))
-    end
-
     # We need to explicitly call `git_add`, despite the path being passed to `git_commit` as well.
     # That's because we might have new files, that the commit command would otherwise miss.
     git_add(path: download_path)
@@ -956,23 +945,7 @@ platform :android do
                         target_files: files,
                         locales: locales,
                         source_locale: 'en-US',
-                        download_path: SCREENSHOTS_METADATA_DIR_PATH)
-
-    # Copy metadata (screenshot-related) txt files into `en-US`
-    en_us_path = File.join(SCREENSHOTS_METADATA_DIR_PATH, 'en-US')
-    FileUtils.mkdir_p(en_us_path)
-
-    [
-      'promo_screenshot_1.txt',
-      'promo_screenshot_2.txt',
-      'promo_screenshot_3.txt',
-      'promo_screenshot_4.txt',
-      'promo_screenshot_5.txt'
-    ].each do |filename|
-      source = File.join(ORIGINALS_METADATA_DIR_PATH, filename)
-      destination = File.join(en_us_path, filename)
-      FileUtils.cp(source, destination)
-    end
+                        download_path: PLAY_STORE_METADATA_DIR_PATH)
   end
 
   #####################################################################################
@@ -1072,7 +1045,7 @@ platform :android do
     # Run screenshots generator tool
     promo_screenshots(
       orig_folder: RAW_SCREENSHOTS_PROCESSING_DIR,
-      metadata_folder: SCREENSHOTS_METADATA_DIR_PATH,
+      metadata_folder: PLAY_STORE_METADATA_DIR_PATH,
       output_folder: PROMO_SCREENSHOTS_DIR,
       force: options[:force]
     )
@@ -1162,7 +1135,7 @@ platform :android do
     create_release(
       repository: GITHUB_REPO,
       version: version,
-      release_notes_file_path: RELEASE_NOTES_PATH,
+      release_notes_file_path: METADATA_RELEASE_NOTES_PATH,
       prerelease: prerelease,
       release_assets: release_assets.join(',')
     )
