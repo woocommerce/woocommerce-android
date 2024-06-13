@@ -16,11 +16,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import java.math.BigDecimal
 
 @Composable
 fun WooPosTotalsScreen() {
     val viewModel: WooPosTotalsViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState()
+
+    WooPosTotalsScreen(
+        state = WooPosTotalsState(
+            orderId = state.value.orderId,
+            orderTotals = state.value.orderTotals,
+            isCollectPaymentButtonEnabled = false
+        ),
+        onCollectPaymentClick = { viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) }
+    )
+}
+
+@Composable
+fun WooPosTotalsScreen(
+    state: WooPosTotalsState,
+    onCollectPaymentClick: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.surface,
@@ -32,35 +49,29 @@ fun WooPosTotalsScreen() {
             contentAlignment = Alignment.Center,
         ) {
             Column {
-                Text(
-                    text = "Totals",
-                    style = MaterialTheme.typography.h3,
-                    color = MaterialTheme.colors.primary,
-                )
-
-                if (state.value.orderId != null) {
+                if (state.orderId != null) {
                     Text(
-                        text = "Subtotal: ${state.value.orderTotals.toPlainString()}",
+                        text = "Subtotal: ${state.orderTotals.toPlainString()}",
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.primary,
                     )
 
                     Text(
-                        text = "Taxes: " + "$0.00",
+                        text = "Taxes: $0.00",
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.primary,
                     )
 
                     Text(
-                        text = "Total: ${state.value.orderTotals.toPlainString()}",
+                        text = "Total: ${state.orderTotals.toPlainString()}",
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.primary,
                     )
                 }
 
                 Button(
-                    onClick = { viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-                    enabled = state.value.isCollectPaymentButtonEnabled
+                    onClick = { onCollectPaymentClick.invoke() },
+                    enabled = state.isCollectPaymentButtonEnabled
                 ) {
                     Text("Collect Card Payment")
                 }
@@ -71,6 +82,13 @@ fun WooPosTotalsScreen() {
 
 @Composable
 @WooPosPreview
-fun WooPosCartScreenPreview() {
-    WooPosTotalsScreen()
+fun WooPosTotalsScreenPreview() {
+    WooPosTotalsScreen(
+        state = WooPosTotalsState(
+            orderId = 1234L,
+            orderTotals = BigDecimal(100.00),
+            isCollectPaymentButtonEnabled = true
+        ),
+        onCollectPaymentClick = {}
+    )
 }
