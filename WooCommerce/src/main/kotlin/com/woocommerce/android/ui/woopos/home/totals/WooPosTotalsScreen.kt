@@ -40,6 +40,18 @@ fun WooPosTotalsScreen() {
 
                 if (state.value.orderId != null) {
                     Text(
+                        text = "Subtotal: ${state.value.orderTotals.toPlainString()}",
+                        style = MaterialTheme.typography.h4,
+                        color = MaterialTheme.colors.primary,
+                    )
+
+                    Text(
+                        text = "Taxes: " + "$0.00",
+                        style = MaterialTheme.typography.h4,
+                        color = MaterialTheme.colors.primary,
+                    )
+
+                    Text(
                         text = "Total: ${state.value.orderTotals.toPlainString()}",
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.primary,
