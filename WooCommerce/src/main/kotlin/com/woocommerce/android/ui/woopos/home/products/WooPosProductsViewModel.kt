@@ -3,12 +3,14 @@ package com.woocommerce.android.ui.woopos.home.products
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,9 +25,13 @@ class WooPosProductsViewModel @Inject constructor(
     private var loadMoreProductsJob: Job? = null
 
     val viewState: StateFlow<WooPosProductsViewState> =
-        productsDataSource.products.map { products ->
-            calculateViewState(products)
-        }.toStateFlow(WooPosProductsViewState(products = emptyList()))
+        productsDataSource.products
+            .map {
+                it.filter { product -> product.productType == ProductType.SIMPLE && product.price != null }
+            }
+            .map { products ->
+                calculateViewState(products)
+            }.toStateFlow(WooPosProductsViewState(products = emptyList()))
 
     init {
         launch {
