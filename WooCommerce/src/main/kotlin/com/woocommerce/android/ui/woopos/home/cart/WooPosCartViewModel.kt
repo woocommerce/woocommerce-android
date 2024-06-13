@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderDraftCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -22,7 +21,6 @@ import javax.inject.Inject
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val site: SelectedSite,
     private val repository: WooPosCartRepository,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -101,8 +99,7 @@ class WooPosCartViewModel @Inject constructor(
                         if (state.value.isOrderCreationInProgress) return@collect
 
                         val itemClicked = viewModelScope.async {
-                            repository.getProductById(event.productId)?.toCartListItem()
-                                ?: throw IllegalStateException("Product not found")
+                            repository.getProductById(event.productId)?.toCartListItem()!!
                         }
 
                         val currentState = _state.value
