@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.lifecycle.SavedStateHandle
-import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -13,7 +12,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.WCProductModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
