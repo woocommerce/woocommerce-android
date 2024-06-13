@@ -26,7 +26,11 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private val _state = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = WooPosTotalsState(orderId = null, isCollectPaymentButtonEnabled = false, orderTotals = BigDecimal.ZERO),
+        initialValue = WooPosTotalsState(
+            orderId = null,
+            isCollectPaymentButtonEnabled = false,
+            orderTotals = BigDecimal.ZERO
+        ),
         key = "totalsViewState"
     )
 
@@ -87,6 +91,4 @@ class WooPosTotalsViewModel @Inject constructor(
             isCollectPaymentButtonEnabled = true,
         )
     }
-
-
 }
