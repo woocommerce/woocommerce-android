@@ -87,6 +87,7 @@ fun WooPosTotalsScreenPreview() {
         WooPosTotalsState(
             orderId = 1234L,
             orderTotals = BigDecimal(100.00),
+            orderTax = BigDecimal(13.00),
             isCollectPaymentButtonEnabled = true
         )
     )

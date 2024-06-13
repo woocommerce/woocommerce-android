@@ -8,6 +8,6 @@ data class WooPosTotalsState(
     val orderId: Long?,
     val isCollectPaymentButtonEnabled: Boolean,
     var orderTotals: java.math.BigDecimal,
-    // taxAmount = updatedOrder.tax,
+    var orderTax: java.math.BigDecimal,
     // orderCalculationState = TotalsCalculationState.CALCULATED
 ) : Parcelable

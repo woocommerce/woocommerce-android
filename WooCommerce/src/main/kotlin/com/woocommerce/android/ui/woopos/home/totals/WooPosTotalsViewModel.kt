@@ -29,7 +29,8 @@ class WooPosTotalsViewModel @Inject constructor(
         initialValue = WooPosTotalsState(
             orderId = null,
             isCollectPaymentButtonEnabled = false,
-            orderTotals = BigDecimal.ZERO
+            orderTotals = BigDecimal.ZERO,
+            orderTax = BigDecimal.ZERO,
         ),
         key = "totalsViewState"
     )
@@ -78,16 +79,18 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun calculateTotals(order: Order) {
-        val subtotal = order.items.sumOf { it.subtotal }
-        val total = subtotal // + tax
+        val subtotalAmount = order.items.sumOf { it.subtotal }
+        val taxAmount = subtotalAmount.multiply(BigDecimal("0.1")) // having fixed 10% tax for testing
+        val totalAmount = subtotalAmount + taxAmount
 
         val updatedOrder = order.copy(
-            total = total,
+            total = totalAmount,
         )
 
         _state.value = _state.value.copy(
             orderId = updatedOrder.id,
             orderTotals = updatedOrder.total,
+            orderTax = taxAmount,
             isCollectPaymentButtonEnabled = true,
         )
     }
