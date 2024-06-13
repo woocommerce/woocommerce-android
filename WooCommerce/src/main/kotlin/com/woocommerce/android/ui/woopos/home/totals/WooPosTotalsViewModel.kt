@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,7 +35,8 @@ class WooPosTotalsViewModel @Inject constructor(
             is WooPosTotalsUIEvent.CollectPaymentClicked -> {
                 viewModelScope.launch {
                     val orderId = state.value.orderId!!
-                    cardReaderFacade.collectPayment(orderId)
+                    val result = cardReaderFacade.collectPayment(orderId)
+                    Log.d("WooPosTotalsViewModel", "Payment result: $result")
                 }
             }
         }
