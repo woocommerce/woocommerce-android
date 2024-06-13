@@ -29,7 +29,8 @@ class WooPosTotalsViewModel @Inject constructor(
         initialValue = WooPosTotalsState(
             orderId = null,
             isCollectPaymentButtonEnabled = false,
-            orderTotals = BigDecimal.ZERO,
+            orderSubtotal = BigDecimal.ZERO,
+            orderTotal = BigDecimal.ZERO,
             orderTax = BigDecimal.ZERO,
         ),
         key = "totalsViewState"
@@ -89,7 +90,8 @@ class WooPosTotalsViewModel @Inject constructor(
 
         _state.value = _state.value.copy(
             orderId = updatedOrder.id,
-            orderTotals = updatedOrder.total,
+            orderSubtotal = subtotalAmount,
+            orderTotal = updatedOrder.total,
             orderTax = taxAmount,
             isCollectPaymentButtonEnabled = true,
         )

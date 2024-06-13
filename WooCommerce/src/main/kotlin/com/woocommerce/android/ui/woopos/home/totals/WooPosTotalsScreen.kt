@@ -51,7 +51,7 @@ fun WooPosTotalsScreen(
             Column {
                 if (totalsState.value.orderId != null) {
                     Text(
-                        text = "Subtotal: ${totalsState.value.orderTotals.toPlainString()}",
+                        text = "Subtotal: ${totalsState.value.orderSubtotal.toPlainString()}",
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.primary,
                     )
@@ -63,7 +63,7 @@ fun WooPosTotalsScreen(
                     )
 
                     Text(
-                        text = "Total: ${totalsState.value.orderTotals.toPlainString()}",
+                        text = "Total: ${totalsState.value.orderTotal.toPlainString()}",
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.primary,
                     )
@@ -86,7 +86,8 @@ fun WooPosTotalsScreenPreview() {
     val totalsState = MutableStateFlow(
         WooPosTotalsState(
             orderId = 1234L,
-            orderTotals = BigDecimal(100.00),
+            orderSubtotal = BigDecimal(100.00),
+            orderTotal = BigDecimal(113.00),
             orderTax = BigDecimal(13.00),
             isCollectPaymentButtonEnabled = true
         )
