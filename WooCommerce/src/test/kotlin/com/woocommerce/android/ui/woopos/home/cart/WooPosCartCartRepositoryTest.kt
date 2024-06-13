@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.util.DateUtils
 import kotlinx.coroutines.test.runTest
@@ -10,6 +11,9 @@ import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.util.Date
 import kotlin.test.Test
 
@@ -25,9 +29,23 @@ class WooPosCartCartRepositoryTest {
         on { getCurrentDateInSiteTimeZone() }.thenReturn(mockedDate)
     }
 
+    private val productStore: WCProductStore = mock {
+        onBlocking { getProductByRemoteId(any(), any()) }.thenReturn(
+            WCProductModel().apply {
+                attributes = "[]"
+            }
+        )
+    }
+    private val site: SelectedSite = mock {
+        onBlocking { get() }.thenReturn(SiteModel())
+        onBlocking { getOrNull() }.thenReturn(SiteModel())
+    }
+
     val repository = WooPosCartRepository(
         orderCreateEditRepository = orderCreateEditRepository,
-        dateUtils = dateUtils
+        dateUtils = dateUtils,
+        store = productStore,
+        site = site
     )
 
     @Test
