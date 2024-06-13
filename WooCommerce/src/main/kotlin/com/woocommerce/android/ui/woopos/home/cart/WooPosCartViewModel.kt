@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderDraftCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -15,16 +15,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val productStore: WCProductStore,
-    private val site: SelectedSite,
     private val repository: WooPosCartRepository,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -102,9 +98,8 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
                         if (state.value.isOrderCreationInProgress) return@collect
 
-                        val siteModel = site.getOrNull()!!
                         val itemClicked = viewModelScope.async {
-                            productStore.getProductByRemoteId(siteModel, event.productId)!!.toCartListItem()
+                            repository.getProductById(event.productId)?.toCartListItem()!!
                         }
 
                         val currentState = _state.value
@@ -125,8 +120,8 @@ class WooPosCartViewModel @Inject constructor(
     }
 }
 
-private fun WCProductModel.toCartListItem(): WooPosCartListItem =
+private fun Product.toCartListItem(): WooPosCartListItem =
     WooPosCartListItem(
-        productId = id.toLong(),
+        productId = remoteId,
         title = name
     )
