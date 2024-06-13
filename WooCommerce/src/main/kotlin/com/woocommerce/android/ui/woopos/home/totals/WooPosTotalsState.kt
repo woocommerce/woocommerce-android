@@ -5,6 +5,11 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WooPosTotalsState(
-    val orderId: Long?,
+    val orderId: Long?,// TODO: remove. Ultimately we don't need to display order id anywhere
     val isCollectPaymentButtonEnabled: Boolean,
-) : Parcelable
+    var orderTotals: java.math.BigDecimal,
+    // taxAmount = updatedOrder.tax,
+    // orderCalculationState = TotalsCalculationState.CALCULATED
+): Parcelable {
+
+}

@@ -40,7 +40,7 @@ fun WooPosTotalsScreen() {
 
                 if (state.value.orderId != null) {
                     Text(
-                        text = "Order ID: ${state.value.orderId}",
+                        text = "Total: ${state.value.orderTotals.toPlainString()}",
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.primary,
                     )
