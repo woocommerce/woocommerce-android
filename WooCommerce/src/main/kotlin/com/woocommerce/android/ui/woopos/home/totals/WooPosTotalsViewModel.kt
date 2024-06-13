@@ -33,7 +33,8 @@ class WooPosTotalsViewModel @Inject constructor(
         when (event) {
             is WooPosTotalsUIEvent.CollectPaymentClicked -> {
                 viewModelScope.launch {
-                    cardReaderFacade.collectPayment(state.value.orderId!!)
+                    val orderId = state.value.orderId!!
+                    cardReaderFacade.collectPayment(orderId)
                 }
             }
         }
