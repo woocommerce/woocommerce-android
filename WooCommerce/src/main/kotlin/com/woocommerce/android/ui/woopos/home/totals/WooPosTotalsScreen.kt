@@ -57,7 +57,7 @@ fun WooPosTotalsScreen(
                     )
 
                     Text(
-                        text = "Taxes: $0.00",
+                        text = "Taxes: ${totalsState.value.orderTax.toPlainString()}",
                         style = MaterialTheme.typography.h4,
                         color = MaterialTheme.colors.primary,
                     )
