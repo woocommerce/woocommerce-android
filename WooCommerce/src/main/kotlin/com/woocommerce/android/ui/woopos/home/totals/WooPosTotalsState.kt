@@ -10,6 +10,4 @@ data class WooPosTotalsState(
     var orderTotals: java.math.BigDecimal,
     // taxAmount = updatedOrder.tax,
     // orderCalculationState = TotalsCalculationState.CALCULATED
-): Parcelable {
-
-}
+) : Parcelable
