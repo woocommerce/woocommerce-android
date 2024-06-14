@@ -31,15 +31,6 @@ steps:
     agents:
       queue: "linter"
 
-  - label: "dependency analysis"
-    command: |
-      echo "--- 📊 Analyzing"
-      cp gradle.properties-example gradle.properties
-      ./gradlew buildHealth
-    plugins: [*ci_toolkit]
-    artifact_paths:
-      - "build/reports/dependency-analysis/build-health-report.*"
-
   - label: "detekt"
     command: |
       echo "--- 🧹 Linting"
