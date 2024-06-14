@@ -69,6 +69,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                     description = campaignDetails.description,
                     tagLine = campaignDetails.tagLine,
                     campaignImageUrl = campaignDetails.campaignImage.uri,
+                    isContentSuggestedByAi = isAdContentGeneratedByAi(campaignDetails)
                 )
             },
             campaignDetails = campaignDetails.toCampaignDetailsUi(),
@@ -163,7 +164,9 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
     fun onConfirmClicked() {
         analyticsTrackerWrapper.track(
             stat = BLAZE_CREATION_CONFIRM_DETAILS_TAPPED,
-            properties = mapOf(AnalyticsTracker.KEY_BLAZE_IS_AI_CONTENT to isAiContentUsedForAd())
+            properties = mapOf(
+                AnalyticsTracker.KEY_BLAZE_IS_AI_CONTENT to isAdContentGeneratedByAi(campaignDetails.value)
+            )
         )
         campaignDetails.value?.let {
             val isImageMissing = it.campaignImage is BlazeRepository.BlazeCampaignImage.None
@@ -198,10 +201,10 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
         }
     }
 
-    private fun isAiContentUsedForAd(): Boolean =
+    private fun isAdContentGeneratedByAi(campaignDetails: CampaignDetails?): Boolean =
         aiSuggestions.any {
-            it.tagLine == campaignDetails.value?.tagLine &&
-                it.description == campaignDetails.value?.description
+            it.tagLine == campaignDetails?.tagLine &&
+                it.description == campaignDetails.description
         }
 
     private fun loadData() {
@@ -215,6 +218,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             blazeRepository.fetchInterests()
 
             blazeRepository.fetchAdSuggestions(productId = navArgs.productId).getOrNull().let { suggestions ->
+                aiSuggestions = suggestions.orEmpty()
                 adDetailsState.value = AdDetailsUiState.LOADED
                 campaignDetails.update {
                     it?.copy(
@@ -222,7 +226,6 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
                         description = suggestions?.firstOrNull()?.description.orEmpty(),
                     )
                 }
-                aiSuggestions = suggestions.orEmpty()
             }
         }
     }
@@ -339,6 +342,7 @@ class BlazeCampaignCreationPreviewViewModel @Inject constructor(
             val description: String,
             val tagLine: String,
             val campaignImageUrl: String?,
+            val isContentSuggestedByAi: Boolean,
         ) : AdDetailsUi
     }
 
