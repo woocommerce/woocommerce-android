@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-04 15:54:04+0000
+Translation-Revision-Date: 2024-06-11 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
+    <string name="woopos_reader_unknown">讀卡機狀態不明</string>
+    <string name="woopos_checkout">結帳</string>
+    <string name="woopos_reader_disconnected">讀卡機已中斷連結</string>
+    <string name="woopos_reader_connecting">正在連結讀卡機</string>
+    <string name="woopos_reader_connected">已連結讀卡機</string>
+    <string name="woopos_exit_pos">結束 POS</string>
+    <string name="dashboard_new_widgets_card_button">新增新的區段</string>
+    <string name="dashboard_product_stock_empty_products">選取的庫存狀態未找到任何商品</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">無法載入商品庫存報告</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">過去 30 天沒有賣出任何商品</string>
+    <string name="dashboard_product_stock_sales_last_30_days">過去 30 天賣出 %d 件商品</string>
     <string name="more_menu_button_woo_pos_description">將應用程式充當收銀機</string>
     <string name="more_menu_button_woo_pos">銷售時點情報系統模式</string>
     <string name="product_stock_status_low_stock">庫存不足</string>

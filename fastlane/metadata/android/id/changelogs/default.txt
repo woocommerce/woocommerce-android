@@ -1,2 +1,2 @@
-18.9:
-Pembaruan seru telah dirilis! Sekarang Anda dapat mengelola pesanan dengan lebih efisien menggunakan beragam jalur pengiriman per pesanan. Nikmati navigasi yang lebih lancar dengan Menu Selengkapnya yang telah didesain ulang. Selain itu, kami telah menambahkan fitur praktis guna menghitung uang kembalian untuk pembayaran tunai. Segera perbarui aplikasi WooCommerce untuk menikmati pengalaman optimal tanpa hambatan!
+19.0:
+Temukan pembaruan terkini di aplikasi seluler WooCommerce! Kami menyempurnakan dialog pembayaran untuk pengalaman lebih baik di layar yang lebih besar, menyelesaikan isu pemberitahuan push, dan memperbaiki bug login yang memuat pesan error tidak muncul. Selain itu, kartu dasbor baru menampikan data toko yang lebih lengkap untuk penjual. Perbarui sekarang untuk rasakan pengalaman yang lebih mulus dan informatif!
