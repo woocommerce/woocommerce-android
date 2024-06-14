@@ -263,11 +263,12 @@ fun ProductStockRow(
             .fillMaxWidth()
             .clickable { onItemClicked(product) }
             .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         ProductThumbnail(
             imageUrl = product.imageUrl ?: "",
             contentDescription = stringResource(id = R.string.product_image_content_description),
+            modifier = Modifier.padding(top = 12.dp)
         )
         Column(modifier = Modifier.padding(start = 8.dp)) {
             Spacer(modifier = Modifier.height(8.dp))
