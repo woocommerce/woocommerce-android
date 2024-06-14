@@ -34,10 +34,6 @@ METADATA_RELEASE_NOTES_PATH = {
   MOBILE_APP => File.join(METADATA_SOURCE_PATH[MOBILE_APP], 'changelogs', 'default.txt'),
   WEAR_APP => File.join(METADATA_SOURCE_PATH[WEAR_APP], 'changelogs', 'default.txt')
 }.freeze
-METADATA_FILES_PREFIX = {
-  MOBILE_APP => '',
-  WEAR_APP => 'wear_'
-}.freeze
 DEV_RELEASE_NOTES_PATH = {
   MOBILE_APP => File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES.txt'),
   WEAR_APP => File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES-WEAR.txt')
@@ -767,17 +763,20 @@ platform :android do
   #
   lane :download_metadata_strings do |version:, app: MOBILE_APP|
     values = version.split('.')
-    files = {
-      "#{METADATA_FILES_PREFIX[app]}release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: 'changelogs/default.txt', max_size: 0 }
-    }
 
-    metadata_files = {
-      play_store_promo: { desc: 'short_description.txt', max_size: 80 },
-      play_store_desc: { desc: 'full_description.txt', max_size: 0 },
-      play_store_app_title: { desc: 'title.txt', max_size: 50 }
-    }
-
-    files.merge!(metadata_files) if app == MOBILE_APP
+    files = case app
+            when MOBILE_APP
+              {
+                "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: 'changelogs/default.txt', max_size: 0 },
+                play_store_promo: { desc: 'short_description.txt', max_size: 80 },
+                play_store_desc: { desc: 'full_description.txt', max_size: 0 },
+                play_store_app_title: { desc: 'title.txt', max_size: 50 }
+              }
+            when WEAR_APP
+              { wear_release_note: { desc: 'changelogs/default.txt', max_size: 0 } }
+            else
+              UI.user_error!("Unknown app parameter: #{app}. Must me one of #{MOBILE_APP} or #{WEAR_APP}")
+            end
 
     download_path = METADATA_PATH[app]
     gp_downloadmetadata(
