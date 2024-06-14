@@ -248,7 +248,7 @@ private fun AdDataSection(
                     text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
                     style = MaterialTheme.typography.subtitle2,
                     color = colorResource(id = color.color_on_surface_medium),
-                    )
+                )
                 Spacer(modifier = Modifier.weight(1f))
 
                 SuggestionButton(
