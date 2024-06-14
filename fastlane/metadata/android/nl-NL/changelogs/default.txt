@@ -1,2 +1,3 @@
-18.9:
-Er staan geweldige updates voor de deur! Je kan nu bestellingen efficiënter beheren met meerdere verzendregels per bestelling. Profiteer van een soepelere navigatie met het vernieuwde menu Meer. We hebben ook een handige functie toegevoegd om wisselgeld voor contante betalingen te bereken. Update je WooCommerce-app nu voor een naadloze en verbeterde ervaring!
+19.0:
+Ontdek de nieuwste updates in onze WooCommerce-app! We hebben de dialoogvensters voor betalingen verbeterd voor een betere ervaring op grotere schermen, problemen met pushberichten opgelost en een inlogbug verholpen die ervoor zorgde dat foutmeldingen niet zichtbaar waren. Verder geven de nieuwe dashboardkaarten verkopers diepere inzichten in hun winkels. Update nu voor een soepelere en meer informatieve ervaring!
+

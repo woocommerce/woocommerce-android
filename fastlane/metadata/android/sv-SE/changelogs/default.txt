@@ -1,2 +1,3 @@
-18.9:
-Låt oss presentera några spännande uppdateringar. Du kan nu hantera beställningar mer effektivt med flera fraktrader per beställning. Ta del av smidigare navigering med den omdesignade Mer-menyn. Vi har dessutom lagt till en praktisk funktion för att beräkna växel för kontantbetalningar. Uppdatera din WooCommerce-app nu för en sömlös och förbättrad upplevelse.
+19.0:
+Upptäck de senaste förbättringarna i vår WooCommerce-mobilapp. Vi har förbättrat betalningsdialogrutorna för en bättre upplevelse på större skärmar, löst problemen med push-meddelanden och åtgärdat ett inloggningsfel som förhindrade att felmeddelanden visades. Våra nya adminpanelskort ger dessutom handlare djupare insikter rörande sina butiker. Uppdatera nu för en smidigare och mer informativ upplevelse.
+

@@ -1,2 +1,3 @@
-18.9:
-Temos atualizações incríveis! Agora, você pode gerenciar os pedidos de forma mais eficiente com diversas linhas de remessa por pedido. Aproveite uma navegação simplificada com o novo menu "Mais". Além disso, adicionamos uma funcionalidade útil para calcular o troco de pagamentos em dinheiro. Atualize seu aplicativo do WooCommerce agora para ter uma experiência simplificada e aprimorada!
+19.0:
+Conheça as mais novas melhorias no aplicativo móvel do WooCommerce. Aprimoramos as caixas de diálogo de pagamentos para telas maiores, solucionamos problemas nas notificações por push e corrigimos um bug de login que impedia a exibição de mensagens de erro. Além disso, nossos novos cartões do painel oferecem aos comerciantes informações mais detalhadas sobre suas lojas. Atualize agora e tenha uma experiência mais tranquila e informada.
+

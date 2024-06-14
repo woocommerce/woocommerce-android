@@ -1,2 +1,3 @@
-18.9 :
-De formidables mises à jour sont là ! Vous pouvez désormais gérer des commandes plus efficacement avec plusieurs lignes d’expédition par commande. Naviguez de manière plus fluide avec le nouveau menu Plus. Par ailleurs, nous avons ajouté une fonctionnalité pratique pour calculer le rendu des paiements en espèces. Mettez à jour votre application WooCommerce dès à présent pour une expérience fluide et améliorée !
+19.0 :
+Découvrez les nouvelles améliorations de notre application mobile WooCommerce ! Nous avons amélioré les boîtes de dialogue de paiement pour un meilleur rendu sur les grands écrans, résolu des problèmes de notification push et corrigé un bug de connexion empêchant l’affichage des messages d’erreur. De plus, les encarts de notre nouveau tableau de bord renseignent plus précisément les commerçants sur leur boutique. Mettez à jour dès maintenant pour une expérience plus informative et fluide !
+
