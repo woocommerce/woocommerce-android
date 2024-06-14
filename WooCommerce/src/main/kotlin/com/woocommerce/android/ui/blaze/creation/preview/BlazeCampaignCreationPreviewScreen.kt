@@ -277,7 +277,9 @@ fun CampaignHeader(
         }
         if (adDetails.isContentSuggestedByAi) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -321,6 +323,11 @@ fun CampaignDetails(
         Spacer(modifier = Modifier.height(16.dp))
 
         // Ad Audience
+        Text(
+            modifier = Modifier.padding(bottom = 8.dp),
+            text = stringResource(id = R.string.blaze_campaign_preview_audience_section_title),
+            style = MaterialTheme.typography.body2
+        )
         CampaignPropertyGroupItem(items = campaignDetails.targetDetails)
         Spacer(modifier = Modifier.height(16.dp))
 

@@ -3850,6 +3850,7 @@
     <string name="blaze_campaign_preview_edit_ad">Edit ad</string>
     <string name="blaze_campaign_preview_shop_now_button">Shop now</string>
     <string name="blaze_campaign_preview_details_section_title">Details</string>
+    <string name="blaze_campaign_preview_audience_section_title">Audience</string>
     <string name="blaze_campaign_preview_details_budget">Budget</string>
     <string name="blaze_campaign_preview_details_language">Language</string>
     <string name="blaze_campaign_preview_details_devices">Devices</string>
