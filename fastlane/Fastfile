@@ -625,6 +625,8 @@ platform :android do
       release_status: 'inProgress',
       rollout: '0.1', # Start the production rollout at 10%
       metadata_path: METADATA_PATH[app],
+      # Skip uploading Play Store listing metadata for the Wear app, as these are shared with the Mobile app and
+      # stored in its metadata folder. The Wear app only has separate changelogs.
       skip_upload_metadata: app == WEAR_APP,
       skip_upload_changelogs: false,
       skip_upload_images: true,
