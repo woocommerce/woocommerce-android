@@ -127,7 +127,7 @@ private fun DashboardProductStockCard(
             }
 
             is DashboardProductStockViewModel.ViewState.Success -> {
-                ProductReviewsCardContent(
+                ProductStockCardContent(
                     selectedFilter = viewState.selectedFilter,
                     productStockItems = viewState.productStockItems,
                     onFilterSelected = onFilterSelected,
@@ -189,7 +189,7 @@ private fun ProductStockLoading(
 }
 
 @Composable
-private fun ProductReviewsCardContent(
+private fun ProductStockCardContent(
     selectedFilter: ProductStockStatus,
     productStockItems: List<ProductStockItem>,
     onFilterSelected: (ProductStockStatus) -> Unit,
