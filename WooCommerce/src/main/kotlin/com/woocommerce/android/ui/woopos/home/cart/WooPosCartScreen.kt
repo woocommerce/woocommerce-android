@@ -53,7 +53,11 @@ private fun WooPosCartScreen(
         elevation = 4.dp,
         modifier = Modifier.padding(16.dp)
     ) {
-        Column(Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        ) {
             Text(
                 text = stringResource(R.string.woo_pos_car_pane_title),
                 style = MaterialTheme.typography.h3,
@@ -63,7 +67,10 @@ private fun WooPosCartScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(
-                modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -75,22 +82,13 @@ private fun WooPosCartScreen(
                 }
             }
 
-            when (state) {
-                is WooPosCartState.Cart -> {
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
-                    ) {
-                        Text(stringResource(R.string.woo_pos_checkout_button))
-                    }
-                }
-
-                is WooPosCartState.Checkout -> {
-                    Button(onClick = {
-                        onUIEvent(WooPosCartUIEvent.BackFromCheckoutToCartClicked)
-                    }) {
-                        Text("To Products")
-                    }
+            if (state.isCheckoutButtonVisible) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = state.itemsInCart.isNotEmpty() && !state.isOrderCreationInProgress,
+                    onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
+                ) {
+                    Text(stringResource(R.string.woo_pos_checkout_button))
                 }
             }
         }
@@ -152,5 +150,16 @@ fun ProductItemPreview() {
 @Composable
 @WooPosPreview
 fun WooPosCartScreenPreview() {
-    WooPosCartScreen()
+    WooPosCartScreen(
+        state = WooPosCartState(
+            itemsInCart = listOf(
+                WooPosCartListItem(1L, "VW California"),
+                WooPosCartListItem(2L, "VW Multivan"),
+                WooPosCartListItem(3L, "VW Transporter")
+            ),
+            areItemsRemovable = true,
+            isOrderCreationInProgress = true,
+            isCheckoutButtonVisible = true
+        )
+    ) {}
 }

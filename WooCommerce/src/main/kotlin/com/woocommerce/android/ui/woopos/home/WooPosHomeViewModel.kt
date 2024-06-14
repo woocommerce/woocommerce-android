@@ -13,7 +13,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
 ) : ViewModel() {
-    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart)
+    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart(exitConfirmationDialog = null))
     val state: StateFlow<WooPosHomeState> = _state
 
     init {
@@ -23,16 +23,20 @@ class WooPosHomeViewModel @Inject constructor(
     fun onUIEvent(event: WooPosHomeUIEvent) {
         when (event) {
             WooPosHomeUIEvent.SystemBackClicked -> {
-                when (_state.value) {
+                when (val value = _state.value) {
                     WooPosHomeState.Checkout -> {
-                        _state.value = WooPosHomeState.Cart
+                        _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
                     }
 
-                    WooPosHomeState.Cart -> {
-                        TODO("exit from the POS is not implemented yet")
+                    is WooPosHomeState.Cart -> {
+                        _state.value = value.copy(exitConfirmationDialog = WooPosExitConfirmationDialog)
                     }
                 }
+            }
+
+            WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
+                _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
             }
         }
     }
@@ -46,13 +50,16 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = WooPosHomeState.Cart
+                        _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
                     }
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {
                         sendEventToChildren(
                             ParentToChildrenEvent.ItemClickedInProductSelector(event.productId)
                         )
+                    }
+                    is ChildToParentEvent.OrderDraftCreated -> {
+                        sendEventToChildren(ParentToChildrenEvent.OrderDraftCreated(event.orderId))
                     }
                 }
             }
