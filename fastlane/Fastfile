@@ -1090,7 +1090,7 @@ platform :android do
     )
 
     install_url = "#{PROTOTYPE_BUILD_DOMAIN}/#{upload_path}"
-    platform_name = { WEAR_APP => '⌚️ Wear OS', MOBILE_APP => '📱 Mobile'}.fetch(app, '_(Unknown)_')
+    platform_name = { WEAR_APP => '⌚️ Wear OS', MOBILE_APP => '📱 Mobile' }.fetch(app, '_(Unknown)_')
     comment_body = prototype_build_details_comment(
       app_display_name: "#{app} Android",
       download_url: install_url,
@@ -1211,11 +1211,11 @@ platform :android do
   def delete_old_changelogs
     [MOBILE_APP, WEAR_APP].each do |app|
       Dir.glob(File.join(METADATA_PATH[app], '*'))
-        .select { |dir| File.directory?(dir) && File.basename(dir) != 'en-US' }
-        .each do |locale_dir|
-          changelog_path = File.join(locale_dir, 'changelogs', 'default.txt')
-          FileUtils.rm(changelog_path) if File.exist?(changelog_path)
-        end
+         .select { |dir| File.directory?(dir) && File.basename(dir) != 'en-US' }
+         .each do |locale_dir|
+        changelog_path = File.join(locale_dir, 'changelogs', 'default.txt')
+        FileUtils.rm_f(changelog_path)
+      end
     end
   end
 
