@@ -47,7 +47,10 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTypedTextField
 import com.woocommerce.android.ui.compose.component.WCSwitch
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import org.wordpress.android.fluxc.model.WCSettingsModel
 import java.math.BigDecimal
+
+private const val MAX_INPUT_CHARS = 30
 
 @Composable
 fun ChangeDueCalculatorScreen(
@@ -61,7 +64,7 @@ fun ChangeDueCalculatorScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text(text = getTitleText(uiState)) },
+                    title = { Text(text = uiState.title) },
                     navigationIcon = {
                         IconButton(onClick = onNavigateUp) {
                             Icon(
@@ -109,14 +112,19 @@ fun ChangeDueCalculatorScreen(
                         value = inputText,
                         label = stringResource(R.string.cash_payments_cash_received),
                         valueMapper = NullableCurrencyTextFieldValueMapper.create(
-                            decimalSeparator = ".",
-                            numberOfDecimals = 2
+                            decimalSeparator = uiState.decimalSeparator,
+                            numberOfDecimals = uiState.numberOfDecimals
                         ),
                         onValueChange = { newValue ->
-                            inputText = newValue
-                            onAmountReceivedChanged(newValue)
+                            if (newValue == null || newValue.toPlainString().length <= MAX_INPUT_CHARS) {
+                                inputText = newValue
+                                onAmountReceivedChanged(newValue)
+                            }
                         },
-                        visualTransformation = CurrencyVisualTransformation(uiState.currencySymbol),
+                        visualTransformation = CurrencyVisualTransformation(
+                            uiState.currencySymbol,
+                            uiState.currencyPosition
+                        ),
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Decimal
@@ -131,11 +139,7 @@ fun ChangeDueCalculatorScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Text(
-                        text = if (uiState.change < BigDecimal.ZERO) {
-                            "-"
-                        } else {
-                            "${uiState.currencySymbol}${uiState.change.toPlainString()}"
-                        },
+                        text = uiState.changeDueText,
                         style = MaterialTheme.typography.h3,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
@@ -212,14 +216,6 @@ fun MarkOrderAsCompleteButton(
 }
 
 @Composable
-private fun getTitleText(uiState: ChangeDueCalculatorViewModel.UiState): String {
-    return stringResource(
-        R.string.cash_payments_take_payment_title,
-        "${uiState.currencySymbol}${uiState.amountDue}"
-    )
-}
-
-@Composable
 @PreviewLightDark
 fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
     ChangeDueCalculatorScreen(
@@ -228,14 +224,17 @@ fun ChangeDueCalculatorScreenSuccessPreviewUnchecked() {
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("666.00"),
             loading = false,
+            recordTransactionDetailsChecked = false,
             canCompleteOrder = true,
             currencySymbol = "$",
-            recordTransactionDetailsChecked = false,
+            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+            decimalSeparator = ".",
+            numberOfDecimals = 2
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
-        onRecordTransactionDetailsCheckedChanged = {}
+        onRecordTransactionDetailsCheckedChanged = {},
     )
 }
 
@@ -248,14 +247,17 @@ fun ChangeDueCalculatorScreenSuccessPreviewChecked() {
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("666.00"),
             loading = true,
+            recordTransactionDetailsChecked = true,
             canCompleteOrder = true,
             currencySymbol = "€",
-            recordTransactionDetailsChecked = true,
+            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT_SPACE,
+            decimalSeparator = ".",
+            numberOfDecimals = 2
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
-        onRecordTransactionDetailsCheckedChanged = {}
+        onRecordTransactionDetailsCheckedChanged = {},
     )
 }
 
@@ -268,13 +270,16 @@ fun ChangeDueCalculatorScreenSuccessPreviewDisabled() {
             change = BigDecimal("0.00"),
             amountReceived = BigDecimal("666.00"),
             loading = false,
+            recordTransactionDetailsChecked = true,
             canCompleteOrder = false,
             currencySymbol = "€",
-            recordTransactionDetailsChecked = true,
+            currencyPosition = WCSettingsModel.CurrencyPosition.LEFT,
+            decimalSeparator = ".",
+            numberOfDecimals = 2
         ),
         onNavigateUp = {},
         onCompleteOrderClick = {},
         onAmountReceivedChanged = {},
-        onRecordTransactionDetailsCheckedChanged = {}
+        onRecordTransactionDetailsCheckedChanged = {},
     )
 }

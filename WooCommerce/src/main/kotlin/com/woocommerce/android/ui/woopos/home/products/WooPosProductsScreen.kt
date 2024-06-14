@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductsGridReached
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ItemClicked
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -41,13 +44,15 @@ fun WooPosProductsScreen() {
     val productsViewModel: WooPosProductsViewModel = hiltViewModel()
     WooPosProductsScreen(
         productsState = productsViewModel.viewState,
-        onEndOfProductsGridReached = productsViewModel::onEndOfProductsGridReached,
+        onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
+        onEndOfProductsGridReached = { productsViewModel.onUIEvent(EndOfProductsGridReached) },
     )
 }
 
 @Composable
 private fun WooPosProductsScreen(
     productsState: StateFlow<WooPosProductsViewState>,
+    onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
 ) {
     Card(
@@ -60,7 +65,7 @@ private fun WooPosProductsScreen(
             Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            ProductSelector(productsState, onEndOfProductsGridReached)
+            ProductSelector(productsState, onItemClicked, onEndOfProductsGridReached)
         }
     }
 }
@@ -68,6 +73,7 @@ private fun WooPosProductsScreen(
 @Composable
 fun ProductSelector(
     productsState: StateFlow<WooPosProductsViewState>,
+    onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
 ) {
     ConstraintLayout(
@@ -86,7 +92,7 @@ fun ProductSelector(
             state = gridState
         ) {
             itemsIndexed(state.value.products) { _, product ->
-                ProductItem(product = product)
+                ProductItem(item = product, onItemClicked = onItemClicked)
             }
         }
         InfiniteGridHandler(gridState) {
@@ -96,15 +102,19 @@ fun ProductSelector(
 }
 
 @Composable
-private fun ProductItem(product: WooPosProductsListItem) {
+private fun ProductItem(
+    item: WooPosProductsListItem,
+    onItemClicked: (item: WooPosProductsListItem) -> Unit
+) {
     ConstraintLayout(
         modifier = Modifier
-            .border(1.dp, Color.Gray, shape = RoundedCornerShape(4.dp))
+            .border(2.dp, Color.Gray, shape = RoundedCornerShape(4.dp))
+            .clickable { onItemClicked(item) }
             .padding(16.dp)
             .fillMaxWidth(0.5f)
     ) {
         Text(
-            text = product.title,
+            text = item.title,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.onSurface,
         )
@@ -151,6 +161,7 @@ fun WooPosHomeScreenPreview() {
     )
     WooPosProductsScreen(
         productsState = productState,
+        onItemClicked = {},
         onEndOfProductsGridReached = {}
     )
 }

@@ -1,2 +1,1 @@
 Entdecke die neuestes Updates an unserer WooCommerce-Mobil-App! Wir haben die Zahlungsdialoge optimiert, um das Erlebnis auf größeren Bildschirmen zu verbessern. Außerdem wurden Probleme mit Push-Benachrichtigungen und ein Anmeldefehler behoben, der dazu führte, dass Fehlernachrichten nicht angezeigt wurden. Verkäufer erhalten dank unserer neuen Dashboard-Karten nun umfassendere Shop-Einsichten. Führe jetzt ein Update durch und profitiere von einem reibungsloseren, informativeren Erlebnis!
-
