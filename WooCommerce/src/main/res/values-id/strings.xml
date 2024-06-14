@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-04 09:54:04+0000
+Translation-Revision-Date: 2024-06-11 09:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources>
+    <string name="woopos_reader_unknown">Status Pembaca Tidak Diketahui</string>
+    <string name="woopos_checkout">Checkout</string>
+    <string name="woopos_reader_disconnected">Sambungan Pembaca Terputus</string>
+    <string name="woopos_reader_connecting">Pembaca Mengubungkan</string>
+    <string name="woopos_reader_connected">Pembaca Terhubung</string>
+    <string name="woopos_exit_pos">Keluar POS</string>
+    <string name="dashboard_new_widgets_card_button">Tambahkan Bagian baru</string>
+    <string name="dashboard_product_stock_empty_products">Tidak tersedia produk untuk status stok yang dipilih</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Tidak dapat memuat laporan stok produk</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Tidak ada barang terjual dalam 30 hari</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d barang terjual dalam 30 hari</string>
     <string name="more_menu_button_woo_pos_description">Gunakan aplikasi sebagai mesin kasir</string>
     <string name="more_menu_button_woo_pos">Mode Titik Penjualan</string>
     <string name="product_stock_status_low_stock">Stok menipis</string>

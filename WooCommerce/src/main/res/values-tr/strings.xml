@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-04 09:54:04+0000
+Translation-Revision-Date: 2024-06-10 12:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="woopos_reader_unknown">Okuyucu Durumu Bilinmiyor</string>
+    <string name="woopos_checkout">Ödeme</string>
+    <string name="woopos_reader_disconnected">Okuyucu Bağlantısı Kesildi</string>
+    <string name="woopos_reader_connecting">Okuyucu Bağlanıyor</string>
+    <string name="woopos_reader_connected">Okuyucu Bağlandı</string>
+    <string name="woopos_exit_pos">POS\'tan çık</string>
+    <string name="dashboard_new_widgets_card_button">Yeni bölümler ekle</string>
+    <string name="dashboard_product_stock_empty_products">Seçilen stok durumu için ürün bulunamadı</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Ürün stoğu raporları yüklenemiyor</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Son 30 günde satılan ürün yok</string>
+    <string name="dashboard_product_stock_sales_last_30_days">Son 30 günde %d ürün satıldı</string>
     <string name="more_menu_button_woo_pos_description">Uygulamayı yazarkasa olarak kullanın</string>
     <string name="more_menu_button_woo_pos">Satış Noktası Modu</string>
     <string name="product_stock_status_low_stock">Düşük stok</string>

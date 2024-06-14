@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-04 09:54:04+0000
+Translation-Revision-Date: 2024-06-11 09:54:03+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources>
+    <string name="woopos_reader_unknown">État du lecteur inconnu</string>
+    <string name="woopos_checkout">Validation de la commande</string>
+    <string name="woopos_reader_disconnected">Lecteur déconnecté</string>
+    <string name="woopos_reader_connecting">Connexion du lecteur</string>
+    <string name="woopos_reader_connected">Lecteur connecté</string>
+    <string name="woopos_exit_pos">Quitter le PDV</string>
+    <string name="dashboard_new_widgets_card_button">Ajouter de nouvelles sections</string>
+    <string name="dashboard_product_stock_empty_products">Aucun produit trouvé pour l’état de stock sélectionné</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Impossible de charger les rapports de stock du produit</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Aucun article vendu dans les 30 derniers jours</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d articles vendus dans les 30 derniers jours</string>
     <string name="more_menu_button_woo_pos_description">Utiliser l’application comme caisse enregistreuse</string>
     <string name="more_menu_button_woo_pos">Mode point de vente</string>
     <string name="product_stock_status_low_stock">Stock faible</string>

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-04 11:54:04+0000
+Translation-Revision-Date: 2024-06-11 13:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources>
+    <string name="woopos_reader_unknown">Status des Lesegeräts unbekannt</string>
+    <string name="woopos_checkout">Bezahlen</string>
+    <string name="woopos_reader_disconnected">Lesegerät nicht verbunden</string>
+    <string name="woopos_reader_connecting">Lesegerät wird verbunden</string>
+    <string name="woopos_reader_connected">Lesegerät verbunden</string>
+    <string name="woopos_exit_pos">POS beenden</string>
+    <string name="dashboard_new_widgets_card_button">Neue Abschnitte hinzufügen</string>
+    <string name="dashboard_product_stock_empty_products">Für den ausgewählten Lagerbestand wurden keine Produkte gefunden</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Bestandsberichte für Produkte konnten nicht geladen werden</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Keine Artikel in den letzten 30 Tagen verkauft</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d Artikel in den letzten 30 Tagen verkauft</string>
     <string name="more_menu_button_woo_pos_description">Nutze die App als Kasse</string>
     <string name="more_menu_button_woo_pos">Modus „Verkaufsort“ (POS)</string>
     <string name="product_stock_status_low_stock">Niedriger Lagerbestand</string>

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-04 09:54:04+0000
+Translation-Revision-Date: 2024-06-11 09:54:07+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="woopos_reader_unknown">读卡器状态未知</string>
+    <string name="woopos_checkout">结账</string>
+    <string name="woopos_reader_disconnected">读卡器已断开连接</string>
+    <string name="woopos_reader_connecting">读卡器正在连接</string>
+    <string name="woopos_reader_connected">读卡器已连接</string>
+    <string name="woopos_exit_pos">退出 POS 机</string>
+    <string name="dashboard_new_widgets_card_button">添加新板块</string>
+    <string name="dashboard_product_stock_empty_products">未找到所选库存状态的产品</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">无法加载产品库存报告</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">最近 30 天内未售出任何商品</string>
+    <string name="dashboard_product_stock_sales_last_30_days">最近 30 天内售出 %d 件商品</string>
     <string name="more_menu_button_woo_pos_description">将应用程序作为收银机使用</string>
     <string name="more_menu_button_woo_pos">销售点模式</string>
     <string name="product_stock_status_low_stock">库存不足</string>

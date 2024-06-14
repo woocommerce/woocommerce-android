@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-04 13:54:04+0000
+Translation-Revision-Date: 2024-06-11 17:54:08+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources>
+    <string name="woopos_reader_unknown">Status van lezer is onbekend</string>
+    <string name="woopos_checkout">Afrekenen</string>
+    <string name="woopos_reader_disconnected">Verbinding met lezer is verbroken</string>
+    <string name="woopos_reader_connecting">Verbinden met lezer</string>
+    <string name="woopos_reader_connected">Verbonden met lezer</string>
+    <string name="woopos_exit_pos">POS verlaten</string>
+    <string name="dashboard_new_widgets_card_button">Nieuwe delen toevoegen</string>
+    <string name="dashboard_product_stock_empty_products">Geen producten gevonden voor de geselecteerde voorraadstatus</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Kan voorraadrapporten niet laden</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Geen artikelen verkocht in de afgelopen 30 dagen</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d artikelen verkocht in de afgelopen 30 dagen</string>
     <string name="more_menu_button_woo_pos_description">Gebruik de app als kassa</string>
     <string name="more_menu_button_woo_pos">Verkooppuntmodus</string>
     <string name="product_stock_status_low_stock">Lage voorraad</string>
