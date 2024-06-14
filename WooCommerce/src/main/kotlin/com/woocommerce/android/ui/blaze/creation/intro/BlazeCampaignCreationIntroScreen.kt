@@ -175,7 +175,7 @@ private fun BlazeCampaignCreationIntroContent(
 
             BlazeCampaignBenefitPoint(
                 title = stringResource(id = R.string.blaze_campaign_creation_new_intro_benefit_1_title),
-                subtitle = stringResource(id = R.string.blaze_campaign_creation_new_intro_benefit_1_subtitle),
+                subtitle = stringResource(id = R.string.blaze_campaign_creation_new_intro_benefit_1_subtitle_updated),
                 modifier = Modifier.fillMaxWidth()
             )
 
