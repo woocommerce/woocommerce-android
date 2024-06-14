@@ -259,6 +259,8 @@ platform :android do
       release_version: version
     )
 
+    delete_old_changelogs
+
     git_add(path: po_path)
     git_commit(
       path: po_path,
@@ -1206,6 +1208,17 @@ platform :android do
       branch = repo.revparse('HEAD')[0, 7]
 
       "#{branch}-#{commit}"
+    end
+  end
+
+  def delete_old_changelogs
+    [MOBILE_APP, WEAR_APP].each do |app|
+      Dir.glob(File.join(METADATA_PATH[app], '*'))
+        .select { |dir| File.directory?(dir) && File.basename(dir) != 'en-US' }
+        .each do |locale_dir|
+          changelog_path = File.join(locale_dir, 'changelogs', 'default.txt')
+          FileUtils.rm(changelog_path) if File.exist?(changelog_path)
+        end
     end
   end
 
