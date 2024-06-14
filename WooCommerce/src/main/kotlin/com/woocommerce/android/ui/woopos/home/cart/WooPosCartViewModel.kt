@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderDraftCreated
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -13,16 +15,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.WCProductModel
-import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosCartViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
-    private val productStore: WCProductStore,
-    private val site: SelectedSite,
     private val repository: WooPosCartRepository,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -76,10 +74,11 @@ class WooPosCartViewModel @Inject constructor(
 
             result.fold(
                 onSuccess = { order ->
-                    println("Order created successfully - $order")
+                    Log.d("WooPosCartViewModel", "Order created successfully - $order")
+                    childrenToParentEventSender.sendToParent(OrderDraftCreated(order.id))
                 },
                 onFailure = { error ->
-                    println("Order creation failed - $error")
+                    Log.e("WooPosCartViewModel", "Order creation failed - $error")
                 }
             )
         }
@@ -99,9 +98,8 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
                         if (state.value.isOrderCreationInProgress) return@collect
 
-                        val siteModel = site.get()
                         val itemClicked = viewModelScope.async {
-                            productStore.getProductByRemoteId(siteModel, event.productId)!!.toCartListItem()
+                            repository.getProductById(event.productId)?.toCartListItem()!!
                         }
 
                         val currentState = _state.value
@@ -109,6 +107,7 @@ class WooPosCartViewModel @Inject constructor(
                             itemsInCart = currentState.itemsInCart + itemClicked.await()
                         )
                     }
+                    else -> Unit
                 }
             }
         }
@@ -121,8 +120,8 @@ class WooPosCartViewModel @Inject constructor(
     }
 }
 
-private fun WCProductModel.toCartListItem(): WooPosCartListItem =
+private fun Product.toCartListItem(): WooPosCartListItem =
     WooPosCartListItem(
-        productId = id.toLong(),
+        productId = remoteId,
         title = name
     )
