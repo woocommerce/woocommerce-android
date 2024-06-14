@@ -2676,7 +2676,7 @@ class ProductDetailViewModel @Inject constructor(
         val searchQuery: String? = null
     ) : Parcelable {
         val isAddCategoryButtonVisible: Boolean
-            get() = isSkeletonShown == false
+            get() = isRefreshing == false
 
         val isSearchOpen: Boolean
             get() = searchQuery != null
