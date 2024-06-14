@@ -138,7 +138,10 @@ private fun BlazeCampaignCreationIntroContent(
                 .verticalScroll(rememberScrollState())
                 .padding(dimensionResource(id = R.dimen.major_100))
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_50))
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_blaze_monochrome),
                     tint = MaterialTheme.colors.primary,
@@ -220,18 +223,14 @@ private fun BlazeCampaignBenefitPoint(
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_blaze_monochrome),
-            tint = MaterialTheme.colors.primary,
-            contentDescription = null
-        )
-        Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_100)))
+        Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.minor_50)))
         Text(
             text = title,
             style = MaterialTheme.typography.subtitle2,
             fontWeight = Companion.Medium
         )
         Text(
+            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.minor_50)),
             text = subtitle,
             style = MaterialTheme.typography.body2
         )
