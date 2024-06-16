@@ -10,5 +10,5 @@ data class WooPosTotalsState(
     var orderTotal: java.math.BigDecimal,
     var orderSubtotal: java.math.BigDecimal,
     var orderTax: java.math.BigDecimal,
-    // orderCalculationState = TotalsCalculationState.CALCULATED
+    var isOrderCalculated: Boolean = false
 ) : Parcelable
