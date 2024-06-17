@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.totals
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,23 +51,48 @@ fun WooPosTotalsScreen(
         ) {
             Column {
                 if (totalsState.value.orderId != null) {
-                    Text(
-                        text = "Subtotal: ${totalsState.value.orderSubtotal.toPlainString()}",
-                        style = MaterialTheme.typography.h4,
-                        color = MaterialTheme.colors.primary,
-                    )
-
-                    Text(
-                        text = "Taxes: ${totalsState.value.orderTax.toPlainString()}",
-                        style = MaterialTheme.typography.h4,
-                        color = MaterialTheme.colors.primary,
-                    )
-
-                    Text(
-                        text = "Total: ${totalsState.value.orderTotal.toPlainString()}",
-                        style = MaterialTheme.typography.h4,
-                        color = MaterialTheme.colors.primary,
-                    )
+                    Row {
+                        Text(
+                            text = "Subtotal",
+                            style = MaterialTheme.typography.h4,
+                            color = MaterialTheme.colors.primary,
+                            modifier = Modifier.weight(1f) // Make Subtotal text occupy full width
+                        )
+                        Text(
+                            text = "${totalsState.value.orderSubtotal.toPlainString()}",
+                            style = MaterialTheme.typography.h4,
+                            color = MaterialTheme.colors.primary,
+                            modifier = Modifier.weight(1f) // Make Subtotal value occupy full width
+                        )
+                    }
+                    Row {
+                        Text(
+                            text = "Taxes",
+                            style = MaterialTheme.typography.h4,
+                            color = MaterialTheme.colors.primary,
+                            modifier = Modifier.weight(1f) // Make Taxes text occupy full width
+                        )
+                        Text(
+                            text = "${totalsState.value.orderTax.toPlainString()}",
+                            style = MaterialTheme.typography.h4,
+                            color = MaterialTheme.colors.primary,
+                            modifier = Modifier.weight(1f) // Make Taxes value occupy full width
+                        )
+                    }
+                    Row {
+                        Text(
+                            text = "Total",
+                            style = MaterialTheme.typography.h4,
+                            color = MaterialTheme.colors.primary,
+                            modifier = Modifier.weight(1f) // Make Total text occupy full width
+                        )
+                        Text(
+                            text = "${totalsState.value.orderTotal.toPlainString()}",
+                            style = MaterialTheme.typography.h4,
+                            color = MaterialTheme.colors.primary,
+                            modifier = Modifier.weight(1f) // Make Total value occupy full width
+                        )
+                    }
                 }
 
                 Button(
