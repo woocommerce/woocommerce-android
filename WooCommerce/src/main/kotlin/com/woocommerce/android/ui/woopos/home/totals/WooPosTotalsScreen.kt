@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -65,53 +66,53 @@ fun WooPosTotalsScreen(
                     width = dimensionResource(id = R.dimen.minor_10),
                     color = colorResource(id = R.color.woo_gray_5),
                     shape = RoundedCornerShape(8.dp)
-                )
+
+            ).widthIn(min = 128.dp, max = 256.dp)
             ) {
                 Column(
                     modifier = Modifier.wrapContentSize().padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     if (totalsState.value.orderId != null) {
                         Row(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = "Subtotal: ",
-                                style = MaterialTheme.typography.h4,
+                                style = MaterialTheme.typography.h6,
                                 color = MaterialTheme.colors.primary
                             )
+                            Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text = totalsState.value.orderSubtotal.toPlainString(),
-                                style = MaterialTheme.typography.h4,
+                                style = MaterialTheme.typography.h6,
                                 color = MaterialTheme.colors.primary
                             )
                         }
                         Row(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = "Taxes: ",
-                                style = MaterialTheme.typography.h4,
+                                style = MaterialTheme.typography.h6,
                                 color = MaterialTheme.colors.primary
                             )
+                            Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text = totalsState.value.orderTax.toPlainString(),
-                                style = MaterialTheme.typography.h4,
+                                style = MaterialTheme.typography.h6,
                                 color = MaterialTheme.colors.primary
                             )
                         }
                         Row(
-                            modifier = Modifier.align(Alignment.CenterHorizontally),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 text = "Total: ",
-                                style = MaterialTheme.typography.h4,
+                                style = MaterialTheme.typography.h6,
                                 color = MaterialTheme.colors.primary
                             )
+                            Spacer(modifier = Modifier.weight(1f))
                             Text(
                                 text = totalsState.value.orderTotal.toPlainString(),
                                 style = MaterialTheme.typography.h4,
