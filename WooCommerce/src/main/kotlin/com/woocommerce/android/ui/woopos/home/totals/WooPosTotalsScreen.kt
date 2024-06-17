@@ -1,9 +1,13 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -46,58 +50,71 @@ fun WooPosTotalsScreen(
         modifier = Modifier.padding(16.dp)
     ) {
         Box(
-            Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center,
         ) {
-            Column {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally, // Center all children horizontally
+                verticalArrangement = Arrangement.Center // Center content in the Column vertically
+            ) {
                 if (totalsState.value.orderId != null) {
-                    Row {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // Distribute space between children
+                    ) {
                         Text(
                             text = "Subtotal",
                             style = MaterialTheme.typography.h4,
-                            color = MaterialTheme.colors.primary,
-                            modifier = Modifier.weight(1f) // Make Subtotal text occupy full width
+                            color = MaterialTheme.colors.primary
                         )
+                        Spacer(modifier = Modifier.weight(1f)) // Add spacer between the texts
                         Text(
-                            text = "${totalsState.value.orderSubtotal.toPlainString()}",
+                            text = totalsState.value.orderSubtotal.toPlainString(),
                             style = MaterialTheme.typography.h4,
-                            color = MaterialTheme.colors.primary,
-                            modifier = Modifier.weight(1f) // Make Subtotal value occupy full width
+                            color = MaterialTheme.colors.primary
                         )
                     }
-                    Row {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // Distribute space between children
+                    ) {
                         Text(
                             text = "Taxes",
                             style = MaterialTheme.typography.h4,
-                            color = MaterialTheme.colors.primary,
-                            modifier = Modifier.weight(1f) // Make Taxes text occupy full width
+                            color = MaterialTheme.colors.primary
                         )
+                        Spacer(modifier = Modifier.weight(1f)) // Add spacer between the texts
                         Text(
-                            text = "${totalsState.value.orderTax.toPlainString()}",
+                            text = totalsState.value.orderTax.toPlainString(),
                             style = MaterialTheme.typography.h4,
-                            color = MaterialTheme.colors.primary,
-                            modifier = Modifier.weight(1f) // Make Taxes value occupy full width
+                            color = MaterialTheme.colors.primary
                         )
                     }
-                    Row {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween // Distribute space between children
+                    ) {
                         Text(
                             text = "Total",
                             style = MaterialTheme.typography.h4,
-                            color = MaterialTheme.colors.primary,
-                            modifier = Modifier.weight(1f) // Make Total text occupy full width
+                            color = MaterialTheme.colors.primary
                         )
+                        Spacer(modifier = Modifier.weight(1f)) // Add spacer between the texts
                         Text(
-                            text = "${totalsState.value.orderTotal.toPlainString()}",
+                            text = totalsState.value.orderTotal.toPlainString(),
                             style = MaterialTheme.typography.h4,
-                            color = MaterialTheme.colors.primary,
-                            modifier = Modifier.weight(1f) // Make Total value occupy full width
+                            color = MaterialTheme.colors.primary
                         )
                     }
                 }
 
+                Spacer(modifier = Modifier.height(16.dp)) // Add some vertical spacing between the rows and button
+
                 Button(
-                    onClick = { onCollectPaymentClick.invoke() },
-                    enabled = totalsState.value.isCollectPaymentButtonEnabled
+                    onClick = { onCollectPaymentClick() },
+                    enabled = totalsState.value.isCollectPaymentButtonEnabled,
+                    modifier = Modifier.align(Alignment.CenterHorizontally) // Center button horizontally
                 ) {
                     Text("Collect Card Payment")
                 }
