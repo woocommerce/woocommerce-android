@@ -8,6 +8,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsEvent.DASHBOARD_TOP_PERFORMERS_LOADED
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -52,6 +53,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.apache.commons.text.StringEscapeUtils
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.util.FormatUtils
 import org.wordpress.android.util.PhotonUtils
@@ -155,6 +157,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     }
 
     fun onTabSelected(selectionType: SelectionType) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier)
         usageTracksEventEmitter.interacted()
         if (selectionType != SelectionType.CUSTOM) {
             appPrefsWrapper.setActiveTopPerformersTab(selectionType.name)
@@ -169,6 +172,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     }
 
     fun onEditCustomRangeTapped() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier)
         val event = if (selectedDateRange.value?.customRange == null) {
             AnalyticsEvent.DASHBOARD_STATS_CUSTOM_RANGE_ADD_BUTTON_TAPPED
         } else {
@@ -196,6 +200,7 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     private fun onTopPerformerTapped(productId: Long) {
         triggerEvent(OpenTopPerformer(productId))
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.POPULAR_PRODUCTS.trackingIdentifier)
         analyticsTrackerWrapper.track(AnalyticsEvent.TOP_EARNER_PRODUCT_TAPPED)
         usageTracksEventEmitter.interacted()
     }
@@ -203,14 +208,22 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
     private suspend fun loadTopPerformersStats(selectedRange: StatsTimeRangeSelection, forceRefresh: Boolean) =
         coroutineScope {
             if (!networkStatus.isConnected()) {
-                _topPerformersState.value = _topPerformersState.value?.copy(isError = true)
+                _topPerformersState.value = _topPerformersState.value?.copy(error = ErrorType.Generic)
                 return@coroutineScope
             }
 
-            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, isError = false)
+            _topPerformersState.value = _topPerformersState.value?.copy(isLoading = true, error = null)
             val result = getTopPerformers.fetchTopPerformers(selectedRange, forceRefresh)
             result.fold(
-                onFailure = { _topPerformersState.value = _topPerformersState.value?.copy(isError = true) },
+                onFailure = {
+                    _topPerformersState.value = _topPerformersState.value?.copy(
+                        error = if ((it as? WooException)?.error?.type == WooErrorType.API_NOT_FOUND) {
+                            ErrorType.WCAnalyticsInactive
+                        } else {
+                            ErrorType.Generic
+                        },
+                    )
+                },
                 onSuccess = {
                     analyticsTrackerWrapper.track(
                         DASHBOARD_TOP_PERFORMERS_LOADED,
@@ -286,12 +299,16 @@ class DashboardTopPerformersViewModel @AssistedInject constructor(
 
     data class TopPerformersState(
         val isLoading: Boolean = false,
-        val isError: Boolean = false,
+        val error: ErrorType? = null,
         @StringRes val titleStringRes: Int,
         val topPerformers: List<TopPerformerProductUiModel> = emptyList(),
         val menu: DashboardWidgetMenu,
         val onOpenAnalyticsTapped: DashboardWidgetAction
     )
+
+    enum class ErrorType {
+        Generic, WCAnalyticsInactive
+    }
 
     data class OpenTopPerformer(
         val productId: Long

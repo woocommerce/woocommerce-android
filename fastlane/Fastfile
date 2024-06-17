@@ -378,18 +378,22 @@ platform :android do
     UI.user_error!("Version #{previous_version} is not tagged! A hotfix branch cannot be created.") unless git_tag_exists(tag: previous_version)
 
     # Create the hotfix branch
-    UI.message 'Creating hotfix branch...'
+    UI.message('Creating hotfix branch...')
     Fastlane::Helper::GitHelper.create_branch("release/#{new_version}", from: previous_version)
     UI.success("Done! New hotfix branch is: #{git_branch}")
 
     # Bump the hotfix version and build code and write it to the `version.properties` file
-    UI.message 'Bumping hotfix version and build code...'
+    UI.message('Bumping hotfix version and build code...')
     VERSION_FILE.write_version(
       version_name: new_version,
       version_code: version_code_new
     )
     commit_version_bump
     UI.success("Done! New Release Version: #{release_version_current}. New Build Code: #{build_code_current}")
+
+    UI.important('Pushing new hotfix branch to remote...')
+
+    push_to_git_remote(tags: false)
   end
 
   #####################################################################################
@@ -412,12 +416,10 @@ platform :android do
 
     hotfix_version = release_version_current
 
-    UI.important("Pushing changes to remote and triggering hotfix build for version: #{hotfix_version}")
+    UI.important("Triggering hotfix build for version: #{hotfix_version}")
     unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
       UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
     end
-
-    push_to_git_remote(tags: false)
 
     trigger_release_build(branch_to_build: "release/#{hotfix_version}")
 
@@ -771,29 +773,22 @@ platform :android do
     commit_strings(options) unless is_repo_clean
   end
 
-  #####################################################################################
-  # download_metadata_string
-  # -----------------------------------------------------------------------------------
-  # This lane downloads the translated metadata (release notes,
-  # app store strings, title, etc.) from GlotPress and updates the local files
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # fastlane download_metadata_string build_number:<build_number> version:<version>
+  # This lane downloads the translated metadata (release notes, app store strings, title, etc.) from GlotPress and updates the local files.
   #
-  # Example:
-  # fastlane download_metadata_string build_number:573 version:10.3
-  #####################################################################################
-  desc 'Downloads translated metadata from GlotPress'
-  lane :download_metadata_strings do |options|
-    values = options[:version].split('.')
+  # @param [String] version the version for which to download metadata
+  #
+  # @example Running the lane
+  #          fastlane download_metadata_strings version:10.3 build_number:573
+  #
+  lane :download_metadata_strings do |version:, build_number:|
+    values = version.split('.')
     files = {
-      "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: "changelogs/#{options[:build_number]}.txt", max_size: 0 },
+      "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: 'changelogs/default.txt', max_size: 0 },
       play_store_promo: { desc: 'short_description.txt', max_size: 80 },
       play_store_desc: { desc: 'full_description.txt', max_size: 0 },
       play_store_app_title: { desc: 'title.txt', max_size: 50 }
     }
 
-    delete_old_changelogs(build: options[:build_number])
     download_path = PLAY_STORE_METADATA_DIR_PATH
     gp_downloadmetadata(
       project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
@@ -811,12 +806,12 @@ platform :android do
 
     android_create_xml_release_notes(
       download_path: download_path,
-      build_number: options[:build_number].to_s,
+      build_number: build_number.to_s,
       locales: SUPPORTED_LOCALES.to_h { |hsh| [hsh[:glotpress], hsh[:google_play]] }
     )
     add_us_release_notes(
       release_notes_path: File.join(download_path, 'release_notes.xml'),
-      version_name: options[:version]
+      version_name: version
     )
 
     # We need to explicitly call `git_add`, despite the path being passed to `git_commit` as well.
@@ -824,7 +819,7 @@ platform :android do
     git_add(path: download_path)
     git_commit(
       path: download_path,
-      message: "Update metadata translations for #{options[:version]}",
+      message: "Update metadata translations for #{version}",
       allow_nothing_to_commit: true
     )
 
@@ -1168,16 +1163,6 @@ platform :android do
   #####################################################################################
   # Private lanes
   #####################################################################################
-  private_lane :delete_old_changelogs do |options|
-    Dir.glob('./metadata/android/*/').each do |folder|
-      Dir["#{folder}changelogs/*"].each do |file|
-        File.delete(file) if Integer(File.basename(file, '.*')) < Integer(options[:build])
-      rescue StandardError
-        puts "Cannot delete file #{file}"
-      end
-    end
-  end
-
   private_lane :add_us_release_notes do |options|
     en_release_notes_path = RELEASE_NOTES_PATH
     File.open(options[:release_notes_path], 'a') do |f|

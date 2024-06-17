@@ -43,7 +43,6 @@ import com.woocommerce.android.ui.orders.creation.coupon.edit.OrderCreateCouponD
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomer
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditCustomerNote
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditFee
-import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.EditShipping
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.SelectItems
 import com.woocommerce.android.ui.orders.creation.navigation.OrderCreateEditNavigationTarget.ShowCreatedOrder
 import com.woocommerce.android.ui.orders.creation.taxes.TaxBasedOnSetting
@@ -898,27 +897,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
 
         // then
         assertThat(orderDraft?.feesLines).hasSize(1)
-    }
-
-    @Test
-    fun `when hitting the shipping button with an existent one, then trigger EditShipping with the expected data`() {
-        var lastReceivedEvent: Event? = null
-        sut.event.observeForever {
-            lastReceivedEvent = it
-        }
-
-        val newFeeTotal = BigDecimal(123.5)
-        sut.onShippingEdited(newFeeTotal, "1")
-        sut.onShippingButtonClicked()
-
-        assertThat(lastReceivedEvent).isNotNull
-        lastReceivedEvent
-            .run { this as? EditShipping }
-            ?.let { editFeeEvent ->
-                val currentShippingLine = editFeeEvent.currentShippingLine
-                assertThat(currentShippingLine?.total).isEqualTo(newFeeTotal)
-                assertThat(currentShippingLine?.methodTitle).isEqualTo("1")
-            } ?: fail("Last event should be of EditShipping type")
     }
 
     @Test
@@ -1912,7 +1890,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any(),
                     any(),
-                    any(),
                 )
             ).thenReturn(totalsSectionsState)
 
@@ -1944,7 +1921,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any(),
                     any(),
-                    any(),
                 )
             ).thenReturn(totalsSectionsState)
             var totalsData: TotalsSectionsState? = null
@@ -1966,7 +1942,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             val onExpandCollapseClickedCaptor = argumentCaptor<() -> Unit>()
             whenever(
                 totalsHelper.mapToPaymentTotalsState(
-                    any(),
                     any(),
                     any(),
                     any(),
@@ -2022,7 +1997,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
                     any(),
                     any(),
                     any(),
-                    any(),
                     onHeightChangedCaptor.capture(),
                 )
             ).thenReturn(totalsSectionsState)
@@ -2048,7 +2022,6 @@ class CreationFocusedOrderCreateEditViewModelTest : UnifiedOrderEditViewModelTes
             val onMainButtonClickedCaptor = argumentCaptor<() -> Unit>()
             whenever(
                 totalsHelper.mapToPaymentTotalsState(
-                    any(),
                     any(),
                     any(),
                     any(),

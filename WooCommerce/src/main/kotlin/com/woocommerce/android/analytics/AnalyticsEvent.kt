@@ -1,6 +1,12 @@
 package com.woocommerce.android.analytics
 
-enum class AnalyticsEvent(val siteless: Boolean = false) {
+interface IAnalyticsEvent {
+    val siteless: Boolean
+    val name: String
+    val isPosEvent: Boolean
+}
+
+enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEvent {
     // -- General
     APPLICATION_OPENED(siteless = true),
     APPLICATION_CLOSED(siteless = true),
@@ -179,6 +185,8 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     DYNAMIC_DASHBOARD_HIDE_CARD_TAPPED,
     DYNAMIC_DASHBOARD_EDITOR_SAVE_TAPPED,
     DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+    DYNAMIC_DASHBOARD_ADD_NEW_SECTIONS_TAPPED,
+    DYNAMIC_DASHBOARD_CARD_INTERACTED,
 
     // -- Analytics Hub
     ANALYTICS_HUB_DATE_RANGE_BUTTON_TAPPED,
@@ -259,6 +267,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     ORDER_DETAILS_GIFT_CARD_SHOWN,
     ORDER_PRODUCTS_LOADED,
     ORDER_DETAIL_TRASH_TAPPED,
+    ORDER_DETAILS_SHIPPING_METHODS_SHOWN,
 
     // - Order detail editing
     ORDER_DETAIL_EDIT_FLOW_STARTED,
@@ -1053,5 +1062,7 @@ enum class AnalyticsEvent(val siteless: Boolean = false) {
     // Connectivity Tool
     CONNECTIVITY_TOOL_REQUEST_RESPONSE,
     CONNECTIVITY_TOOL_READ_MORE_TAPPED,
-    CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED
+    CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED;
+
+    override val isPosEvent: Boolean = false
 }

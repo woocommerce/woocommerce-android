@@ -1,2 +1,0 @@
-18.6:
-En yeni güncellememizdeki gelişmiş işlevselliğin keyfini çıkarın! "Tap to Pay" özelliğini iyileştirerek özet ekranından "Tap to Pay Hakkında" ekranına giden yeni bir gezinme yolu tanıttık ve daha iyi anlaşılması için bunun açıklamasını düzelttik. Ek olarak gönderim yöntemi seçmek daha esnek hale getirilerek bir siparişe gönderim ayrıntıları eklerken veya bir siparişte bunları düzenlerken belirli seçenekleri doğrudan seçmeniz sağlandı. Daha esnek ve daha verimli bir deneyim için uygulamanızı hemen güncelleyin!

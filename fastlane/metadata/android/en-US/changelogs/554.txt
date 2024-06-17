@@ -1,1 +1,0 @@
-We've fixed an issue that caused the app to crash during screen rotation, ensuring a smoother shopping experience. Update now to enjoy a more stable and reliable app!

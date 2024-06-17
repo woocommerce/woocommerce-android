@@ -54,7 +54,7 @@ class OrderShippingViewModelTest : BaseUnitTest() {
         assertThat((viewState as OrderShippingViewModel.ViewState.ShippingState).name).isNull()
         assertThat(viewState.method).isNull()
         assertThat(viewState.amount).isEqualByComparingTo(BigDecimal.ZERO)
-        assertThat(viewState.isEditFlow).isFalse
+        assertThat(viewModel.isEditFlow).isFalse
     }
 
     @Test
@@ -70,7 +70,7 @@ class OrderShippingViewModelTest : BaseUnitTest() {
         assertThat((viewState as OrderShippingViewModel.ViewState.ShippingState).name)
             .isEqualTo(editArgs.currentShippingLine?.methodTitle)
         assertThat(viewState.amount).isEqualByComparingTo(editArgs.currentShippingLine?.total)
-        assertThat(viewState.isEditFlow).isTrue
+        assertThat(viewModel.isEditFlow).isTrue
     }
 
     @Test

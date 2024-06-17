@@ -15,18 +15,22 @@ import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.TimezoneProvider
+import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.mockito.ArgumentMatchers
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -52,10 +56,11 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     }
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val prefsChangesFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     private val appPrefsWrapper: AppPrefsWrapper = mock {
-        on { observePrefs() } doReturn prefsChangesFlow
-        on { getActiveStoreStatsTab() } doReturn DEFAULT_SELECTION_TYPE.name
+        val prefsChangesFlow = MutableStateFlow(DEFAULT_SELECTION_TYPE.name)
+        on { observePrefs() } doAnswer { prefsChangesFlow.map { Unit } }
+        on { getActiveStoreStatsTab() } doAnswer { prefsChangesFlow.value }
+        on { setActiveStatsTab(any()) } doAnswer { prefsChangesFlow.value = it.getArgument(0) }
     }
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -70,6 +75,9 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
     private val dateUtils: DateUtils = mock()
     private val parentViewModel: DashboardViewModel = mock {
         on { refreshTrigger } doReturn emptyFlow()
+    }
+    private val dateRangeFormatter: DashboardDateRangeFormatter = mock {
+        on { formatRangeDate(any()) } doReturn "Jan 1"
     }
 
     private lateinit var viewModel: DashboardStatsViewModel
@@ -96,7 +104,7 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             observeLastUpdate = observeLastUpdate,
             timezoneProvider = timezoneProvider,
             wooCommerceStore = wooCommerceStore,
-            dateRangeFormatter = DashboardDateRangeFormatter(dateUtils),
+            dateRangeFormatter = dateRangeFormatter,
             usageTracksEventEmitter = usageTracksEventEmitter,
             dateUtils = dateUtils,
             currencyFormatter = mock()
@@ -145,7 +153,6 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
         }
 
         viewModel.onTabSelected(ANY_SELECTION_TYPE)
-        prefsChangesFlow.tryEmit(Unit)
 
         verify(getStats, times(2)).invoke(
             refresh = ArgumentMatchers.eq(false),
@@ -187,7 +194,6 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             }
 
             viewModel.onTabSelected(ANY_SELECTION_TYPE)
-            prefsChangesFlow.tryEmit(Unit)
 
             Assertions.assertThat(viewModel.revenueStatsState.value)
                 .isInstanceOf(DashboardStatsViewModel.RevenueStatsViewState.Content::class.java)
@@ -267,4 +273,21 @@ class DashboardStatsViewModelTest : BaseUnitTest() {
             Assertions.assertThat(viewModel.visitorStatsState.value)
                 .isInstanceOf(DashboardStatsViewModel.VisitorStatsViewState.Unavailable::class.java)
         }
+
+    @Test
+    fun `when changing tabs, clear selected date`() = testBlocking {
+        setup {
+            whenever(dateRangeFormatter.formatSelectedDate(any(), argThat { selectionType == DEFAULT_SELECTION_TYPE }))
+                .thenReturn("11:00")
+        }
+
+        val state = viewModel.dateRangeState.runAndCaptureValues {
+            viewModel.onChartDateSelected("11")
+            viewModel.onTabSelected(ANY_SELECTION_TYPE)
+        }.last()
+
+        verify(dateRangeFormatter, never())
+            .formatSelectedDate(eq("11"), argThat { selectionType == ANY_SELECTION_TYPE })
+        Assertions.assertThat(state.selectedDateFormatted).isNull()
+    }
 }

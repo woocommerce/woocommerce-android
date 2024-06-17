@@ -1,2 +1,0 @@
-18.6:
-Beim aktuellen App-Update wurden Funktionen verbessert. Bei „Tap To Pay“ wurde ein neuer Navigationspfad von der Zusammenfassung zu „Informationen zu Tap To Pay“ eingeführt und die Beschreibung vereinfacht. Zudem ist die Auswahl von Versandmethoden jetzt flexibler. Beim Hinzufügen oder Bearbeiten von Versandinformationen zu einer Bestellung können einige Optionen nun direkt ausgewählt werden. Aktualisiere deine App noch heute, um die Nutzung reibungsloser und effizienter zu gestalten.

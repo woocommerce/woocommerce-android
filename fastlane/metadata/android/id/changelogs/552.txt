@@ -1,2 +1,0 @@
-18.6:
-Nikmati peningkatan fungsi pada update terbaru kami! Kami telah tingkatkan fitur 'Ketuk untuk Bayar' dengan memperkenalkan jalur navigasi baru dari ringkasan ke tampilan 'Tentang Ketuk untuk Bayar' dan memperbaiki deskripsinya agar lebih jelas. Selain itu, pemilihan metode pengiriman juga lebih fleksibel. Anda dapat langsung memilih opsi tertentu saat menambahkan atau mengedit rincian pengiriman pada pesanan. Perbarui aplikasi Anda sekarang untuk pengalaman yang lebih mulus dan efisien!

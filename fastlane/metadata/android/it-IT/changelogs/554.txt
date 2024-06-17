@@ -1,2 +1,0 @@
-18.7:
-Abbiamo risolto un problema che causava un arresto anomalo durante la rotazione dello schermo, così da assicurare un'esperienza di acquisto più fluida. Aggiorna ora per goderti un'app più stabile e affidabile!

@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.material.textfield.TextInputLayout
+import com.woocommerce.android.R
 import com.woocommerce.android.extensions.filterNotNull
 import com.woocommerce.android.widgets.WCMaterialOutlinedCurrencyEditTextView
 import java.math.BigDecimal
@@ -28,13 +29,16 @@ fun AmountBigDecimalTextField(
                     onValueChange(it)
                 }
                 boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_NONE
-                val textSize = 24f
+                val textSize = 28f
                 editText.apply {
                     background = null
+                    setTextAppearance(R.style.TextAppearance_Woo_EditText)
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
                 }
                 prefixTextView.apply {
+                    setTextAppearance(R.style.TextAppearance_Woo_EditText)
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
+                    setTextColor(context.getColor(R.color.color_on_surface_disabled))
                 }
                 suffixTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
             }

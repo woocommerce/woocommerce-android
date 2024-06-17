@@ -5,8 +5,11 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.WooException
-import com.woocommerce.android.model.Coupon
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.CouponPerformanceReport
+import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRange
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
@@ -15,6 +18,9 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.data.CouponsCustomDateRangeDataStore
 import com.woocommerce.android.ui.dashboard.domain.DashboardDateRangeFormatter
+import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.CouponUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -23,6 +29,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -51,9 +58,16 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     private val customDateRangeDataStore: CouponsCustomDateRangeDataStore,
     private val dateRangeFormatter: DashboardDateRangeFormatter,
     private val appPrefs: AppPrefsWrapper,
+    private val couponUtils: CouponUtils,
+    private val parameterRepository: ParameterRepository,
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
+    coroutineDispatchers: CoroutineDispatchers
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        private const val COUPONS_LIMIT = 3
+        // We store double the number of coupons to account for the possibility of some coupons being deleted
+        // As the report API keeps track of the deleted ones
+        private const val INTERNAL_COUPONS_LIMIT = 6
+        private const val UI_COUPONS_LIMIT = 3
     }
 
     private val _refreshTrigger = MutableSharedFlow<RefreshEvent>(extraBufferCapacity = 1)
@@ -63,6 +77,10 @@ class DashboardCouponsViewModel @AssistedInject constructor(
 
     private val selectedDateRange = getSelectedRange()
         .shareIn(viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
+
+    private val currencyCodeTask = async(coroutineDispatchers.io) {
+        parameterRepository.getParameters().currencyCode
+    }
 
     val dateRangeState = combine(
         selectedDateRange,
@@ -89,7 +107,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                             onFailure = { error ->
                                 when {
                                     error is WooException && error.error.type == WooErrorType.API_NOT_FOUND ->
-                                        State.Error.WCAdminInactive
+                                        State.Error.WCAnalyticsInactive
 
                                     else -> State.Error.Generic
                                 }
@@ -101,6 +119,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     }.asLiveData()
 
     fun onTabSelected(selectionType: SelectionType) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
         if (selectionType != SelectionType.CUSTOM) {
             appPrefs.setActiveCouponsTab(selectionType.name)
         } else {
@@ -113,6 +132,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     }
 
     fun onEditCustomRangeTapped() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
         triggerEvent(
             OpenDatePicker(
                 fromDate = dateRangeState.value?.customRange?.start ?: Date(),
@@ -128,6 +148,26 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                 onTabSelected(SelectionType.CUSTOM)
             }
         }
+    }
+
+    fun onViewAllClicked() {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
+        triggerEvent(ViewAllCoupons)
+    }
+
+    fun onCouponClicked(couponId: Long) {
+        parentViewModel.trackCardInteracted(DashboardWidget.Type.COUPONS.trackingIdentifier)
+        triggerEvent(ViewCouponDetails(couponId))
+    }
+
+    fun onRetryClicked() {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_RETRY_TAPPED,
+            mapOf(
+                AnalyticsTracker.KEY_TYPE to DashboardWidget.Type.COUPONS.trackingIdentifier
+            )
+        )
+        _refreshTrigger.tryEmit(RefreshEvent())
     }
 
     private fun observeCouponUiModels(
@@ -147,15 +187,25 @@ class DashboardCouponsViewModel @AssistedInject constructor(
                 couponsResult.fold(
                     onSuccess = { coupons ->
                         // Map performance reports to coupons and preserve the order of mostActiveCoupons
-                        val models = mostActiveCoupons.map { performanceReport ->
-                            val coupon = coupons.firstOrNull { coupon -> coupon.id == performanceReport.couponId }
-                                ?: error("Coupon not found for id: ${performanceReport.couponId}")
-
-                            CouponUiModel(
-                                coupon = coupon,
-                                performanceReport = performanceReport
-                            )
-                        }
+                        val models = mostActiveCoupons.mapNotNull { performanceReport ->
+                            coupons.firstOrNull { coupon -> coupon.id == performanceReport.couponId }
+                                ?.let { coupon ->
+                                    CouponUiModel(
+                                        id = coupon.id,
+                                        code = coupon.code.orEmpty(),
+                                        uses = performanceReport.ordersCount,
+                                        description = couponUtils.generateSummary(coupon, currencyCodeTask.await())
+                                    )
+                                }.also {
+                                    if (it == null) {
+                                        WooLog.w(
+                                            WooLog.T.DASHBOARD,
+                                            "Coupon not found for performance report: $performanceReport," +
+                                                "it may have been deleted"
+                                        )
+                                    }
+                                }
+                        }.take(UI_COUPONS_LIMIT)
 
                         Result.success(models)
                     },
@@ -177,7 +227,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
             emit(
                 couponRepository.fetchMostActiveCoupons(
                     dateRange = dateRange,
-                    limit = COUPONS_LIMIT
+                    limit = INTERNAL_COUPONS_LIMIT
                 ).onSuccess {
                     couponsReportCache[dateRange] = it
                 }
@@ -191,7 +241,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     ) = flow {
         suspend fun fetchCoupons() = couponRepository.fetchCoupons(
             page = 1,
-            pageSize = COUPONS_LIMIT,
+            pageSize = INTERNAL_COUPONS_LIMIT,
             couponIds = couponIds
         )
 
@@ -221,7 +271,7 @@ class DashboardCouponsViewModel @AssistedInject constructor(
         data class Loaded(val coupons: List<CouponUiModel>) : State
         enum class Error : State {
             Generic,
-            WCAdminInactive
+            WCAnalyticsInactive
         }
     }
 
@@ -232,13 +282,15 @@ class DashboardCouponsViewModel @AssistedInject constructor(
     )
 
     data class CouponUiModel(
-        private val coupon: Coupon,
-        private val performanceReport: CouponPerformanceReport
-    ) {
-        val code: String = coupon.code.orEmpty()
-    }
+        val id: Long,
+        val code: String,
+        val uses: Int,
+        val description: String
+    )
 
     data class OpenDatePicker(val fromDate: Date, val toDate: Date) : MultiLiveEvent.Event()
+    data object ViewAllCoupons : MultiLiveEvent.Event()
+    data class ViewCouponDetails(val couponId: Long) : MultiLiveEvent.Event()
 
     @AssistedFactory
     interface Factory {
