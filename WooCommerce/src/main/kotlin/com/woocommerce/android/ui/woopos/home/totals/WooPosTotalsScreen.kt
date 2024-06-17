@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -89,6 +90,12 @@ fun WooPosTotalsScreen(
                                 color = MaterialTheme.colors.primary
                             )
                         }
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Divider()
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -104,6 +111,12 @@ fun WooPosTotalsScreen(
                                 color = MaterialTheme.colors.primary
                             )
                         }
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Divider()
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -120,6 +133,11 @@ fun WooPosTotalsScreen(
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Divider()
+
 
                     Spacer(modifier = Modifier.height(16.dp))
 
