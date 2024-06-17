@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
@@ -68,14 +67,12 @@ fun WooPosTotalsScreen(
                     shape = RoundedCornerShape(8.dp)
                 )
             ) {
-            Column(
-                modifier = Modifier.wrapContentSize().padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-
+                Column(
+                    modifier = Modifier.wrapContentSize().padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     if (totalsState.value.orderId != null) {
-
                         Row(
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             verticalAlignment = Alignment.CenterVertically
@@ -121,7 +118,6 @@ fun WooPosTotalsScreen(
                                 color = MaterialTheme.colors.primary
                             )
                         }
-
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
