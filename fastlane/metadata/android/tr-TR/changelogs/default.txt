@@ -1,2 +1,2 @@
-18.9:
-Heyecan verici güncellemeler burada! Artık sipariş başına birden çok sipariş satırı ile siparişleri daha verimli şekilde yönetebilirsiniz. Yeniden tasarlanan Daha Fazla Menüsüyle daha kolay bir gezinmenin tadını çıkarın. Ayrıca nakit ödemelerde para üstünü hesaplamak için kullanışlı bir özellik ekledik. Sorunsuz ve gelişmiş bir deneyim için WooCommerce uygulamanızı hemen güncelleyin!
+19.0:
+WooCommerce mobil uygulamamızda en son iyileştirmeleri keşfedin! Büyük ekranlarda daha iyi bir deneyim için ödeme kalıcı pencerelerini iyileştirdik, anlık bildirimlerle ilgili sorunları çözdük ve hata mesajlarının gösterilmesini önleyen bir oturum açma sorununu çözdük. Ayrıca yeni pano kartlarımız satıcılara mağazalarıyla ilgili daha kapsamlı içgörüler sağlıyor. Daha sorunsuz ve bilgilendirici bir deneyim için güncelleyin!

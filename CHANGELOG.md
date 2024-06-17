@@ -2,6 +2,9 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 
+## 19.1
+This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.
+
 ## 19.0
 Discover the latest improvements in our WooCommerce mobile app! We've enhanced payment dialogs for a better experience on larger screens, resolved issues with push notifications, and fixed a login bug that prevented error messages from displaying. Plus, our new dashboard cards give merchants deeper insights into their stores. Update now for a smoother, more informative experience!
 

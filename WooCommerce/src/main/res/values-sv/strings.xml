@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-06 23:54:04+0000
+Translation-Revision-Date: 2024-06-11 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
+    <string name="dashboard_new_widgets_card_button">Lägg till nya sektioner</string>
+    <string name="dashboard_product_stock_empty_products">Inga produkter hittades för den valda lagerstatusen</string>
+    <string name="woopos_reader_disconnected">Läsare frånkopplad</string>
+    <string name="woopos_reader_connecting">Läsare ansluter</string>
+    <string name="woopos_reader_connected">Läsare ansluten</string>
+    <string name="woopos_exit_pos">Avsluta POS</string>
+    <string name="woopos_reader_unknown">Läsarens status okänd</string>
+    <string name="woopos_checkout">Kassa</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Det gick inte att läsa in lagerrapporten</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Ingen vara såld de senaste 30 dagarna</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d varor sålda de senaste 30 dagarna</string>
     <string name="product_stock_status_low_stock">Lågt lager</string>
     <string name="order_creation_feedback_action">Dela din feedback</string>
     <string name="dashboard_new_widgets_card_title">Letar du efter fler insikter?</string>
