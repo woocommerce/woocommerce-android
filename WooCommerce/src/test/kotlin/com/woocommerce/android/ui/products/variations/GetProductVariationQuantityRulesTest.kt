@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.products.variations
 
-import com.woocommerce.android.model.Product
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
