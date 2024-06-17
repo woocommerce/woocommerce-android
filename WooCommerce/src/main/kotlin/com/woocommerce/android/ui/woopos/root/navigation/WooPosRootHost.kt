@@ -1,14 +1,18 @@
 package com.woocommerce.android.ui.woopos.root.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun WooPosRootHost() {
-    val rootController = rememberNavController()
-
+fun WooPosRootHost(
+    modifier: Modifier = Modifier,
+    rootController: NavHostController,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+) {
     NavHost(
+        modifier = modifier,
         navController = rootController,
         startDestination = MAIN_GRAPH_ROUTE,
         enterTransition = { screenSlideIn() },
@@ -16,8 +20,6 @@ fun WooPosRootHost() {
         popEnterTransition = { screenFadeIn() },
         popExitTransition = { screenSlideOut() },
     ) {
-        checkoutGraph(
-            navController = rootController,
-        )
+        mainGraph(onNavigationEvent = onNavigationEvent)
     }
 }

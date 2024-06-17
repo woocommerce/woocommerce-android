@@ -1,13 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-21 13:54:03+0000
+Translation-Revision-Date: 2024-06-11 13:54:04+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources>
-    <string name="more_menu_button_woo_pos_description">指向 POS 模式的臨時入口</string>
-    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="woopos_reader_unknown">讀卡機狀態不明</string>
+    <string name="woopos_checkout">結帳</string>
+    <string name="woopos_reader_disconnected">讀卡機已中斷連結</string>
+    <string name="woopos_reader_connecting">正在連結讀卡機</string>
+    <string name="woopos_reader_connected">已連結讀卡機</string>
+    <string name="woopos_exit_pos">結束 POS</string>
+    <string name="dashboard_new_widgets_card_button">新增新的區段</string>
+    <string name="dashboard_product_stock_empty_products">選取的庫存狀態未找到任何商品</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">無法載入商品庫存報告</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">過去 30 天沒有賣出任何商品</string>
+    <string name="dashboard_product_stock_sales_last_30_days">過去 30 天賣出 %d 件商品</string>
+    <string name="more_menu_button_woo_pos_description">將應用程式充當收銀機</string>
+    <string name="more_menu_button_woo_pos">銷售時點情報系統模式</string>
+    <string name="product_stock_status_low_stock">庫存不足</string>
+    <string name="order_detail_shipping_header">運送方式</string>
+    <string name="order_creation_feedback_action">請告訴我們你的想法</string>
+    <string name="order_creation_shipping_feedback_message">Woo 是否讓運送更加輕鬆？</string>
+    <string name="order_creation_shipping_feedback_title">已新增運送方式！</string>
+    <string name="order_creation_shipping_edit">編輯運送方式</string>
+    <string name="order_creation_shipping_title_edit">編輯運送方式</string>
+    <string name="cash_payments_order_note_adding_error">新增訂單備註時發生錯誤</string>
+    <string name="cash_payments_order_note_text">這筆訂單使用現金付款。 顧客支付了 %s。 找零金額為 %s。</string>
+    <string name="cash_payments_mark_order_as_complete">將訂單標示為完成</string>
+    <string name="cash_payments_record_transaction_details">在訂單備註中記錄交易詳細資料</string>
+    <string name="dashboard_new_widgets_card_description">新增新的區段，自訂你的商店管理體驗</string>
+    <string name="dashboard_new_widgets_card_title">想獲得更多洞察報告？</string>
+    <string name="dashboard_product_stock_products">商品</string>
+    <string name="dashboard_product_stock_levels">庫存量</string>
+    <string name="dashboard_product_stock_status_header_title">狀態</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">仍然需要幫助嗎？ 聯絡我們</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">無法載入優惠券使用報告</string>
+    <string name="dashboard_coupons_card_empty_view_message">此期間並未使用任何優惠券</string>
+    <string name="dashboard_coupons_view_all_button">檢視所有折價券</string>
+    <string name="dashboard_coupons_card_header_uses">使用次數</string>
+    <string name="dashboard_coupons_card_header_coupons">折價券</string>
+    <string name="my_store_widget_product_stock_title">庫存</string>
+    <string name="dashboard_action_view_all_messages">檢視所有訊息</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">無法載入成效最佳者</string>
+    <string name="na">N/A</string>
+    <string name="cash_payments_change_due">找零金額</string>
+    <string name="cash_payments_cash_received">收取現金</string>
+    <string name="my_store_widget_coupons_title">最常用的優惠券</string>
     <string name="cash_payments_take_payment_title">收取款項 (%s)</string>
     <string name="dashboard_reviews_card_view_all_button">檢視所有評論</string>
     <string name="dashboard_reviews_card_empty_message_filtered">沒有符合所選篩選條件的評論，請嘗試變更篩選條件</string>
@@ -36,8 +76,7 @@ Language: zh_TW
     <string name="dynamic_dashboard_widget_menu_item_hide">隱藏「%s」</string>
     <string name="my_store_widget_onboarding_completed">已完成</string>
     <string name="my_store_widget_feedback_title">意見回饋</string>
-    <string name="my_store_stats_plugin_inactive_contact_us">仍然需要幫助嗎？ 聯絡我們</string>
-    <string name="my_store_stats_plugin_inactive_description">請確認你的網站執行最新版本的 WooCommerce，並已啟用 WooCommerce Admin。</string>
+    <string name="dashboard_wcanalytics_inactive_description">請確認你的網站執行最新版本的 WooCommerce，並已啟用 WooCommerce Analytics。</string>
     <string name="my_store_stats_plugin_inactive_title">我們無法顯示你的\n 商店分析</string>
     <string name="store_onboarding_task_view_all_tasks">檢視所有工作項目</string>
     <string name="analytics_session_no_available_description">自訂日期範圍無法提供工作階段分析所仰賴的不重複訪客數</string>

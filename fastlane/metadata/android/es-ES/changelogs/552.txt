@@ -1,2 +1,0 @@
-18.6:
-Disfruta de una mejor funcionalidad con la última actualización de nuestra aplicación. Hemos mejorado la función "Tap to pay", con una ruta de navegación nueva desde el resumen hasta la pantalla "Acerca de Tap to Pay", y revisado su descripción para que todo quede más claro. Además, la selección de los métodos de envío es ya más flexible, para que puedas elegir opciones específicas al añadir o editar detalles de envío en un pedido. Actualiza y descubre una experiencia más fluida y eficiente.

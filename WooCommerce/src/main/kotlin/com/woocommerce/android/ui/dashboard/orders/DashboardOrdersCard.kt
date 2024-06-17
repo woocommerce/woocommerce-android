@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.dashboard.orders
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
@@ -13,11 +16,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -161,14 +167,18 @@ fun TopOrders(
             filterOptions = filterOptions,
             onFilterSelected = onFilterSelected
         )
-        orders.forEach { order ->
-            OrderListItem(order, onOrderClicked)
+        if (orders.isEmpty()) {
+            EmptyView()
+        } else {
+            orders.forEach { order ->
+                OrderListItem(order, onOrderClicked)
 
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp)
-            )
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp)
+                )
+            }
         }
     }
 }
@@ -303,7 +313,7 @@ private fun OrderListItem(order: OrderItem, onOrderClicked: (OrderItem) -> Unit)
                     end.linkTo(parent.end)
                 },
             text = order.status,
-            textColor = MaterialTheme.colors.onSurface,
+            textColor = colorResource(id = R.color.color_on_secondary),
             backgroundColor = colorResource(id = order.statusColor),
             fontWeight = FontWeight.Normal
         )
@@ -319,6 +329,39 @@ private fun OrderListItem(order: OrderItem, onOrderClicked: (OrderItem) -> Unit)
                 }
         )
     }
+}
+
+@Composable
+fun EmptyView(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.img_empty_orders_no_orders),
+            contentDescription = null,
+            modifier = Modifier.sizeIn(maxWidth = 160.dp, maxHeight = 160.dp)
+        )
+
+        Text(
+            text = stringResource(
+                R.string.orders_empty_message_for_filtered_orders
+            ),
+            style = MaterialTheme.typography.h6,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+@Preview
+fun PreviewEmptyView() {
+    EmptyView()
 }
 
 @Composable

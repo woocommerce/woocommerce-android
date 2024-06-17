@@ -7,12 +7,14 @@ class GetShippingMethodById @Inject constructor(
     private val shippingMethodsRepository: ShippingMethodsRepository
 ) {
     suspend operator fun invoke(shippingMethodId: String?): ShippingMethod {
-        val other = shippingMethodsRepository.getOtherShippingMethod()
-        if (shippingMethodId == ShippingMethodsRepository.OTHER_ID || shippingMethodId == null) {
-            return other
+        return when {
+            shippingMethodId.isNullOrEmpty() -> shippingMethodsRepository.getNAShippingMethod()
+            shippingMethodId == ShippingMethodsRepository.OTHER_ID -> shippingMethodsRepository.getOtherShippingMethod()
+            else -> {
+                val result = shippingMethodsRepository.getShippingMethodById(shippingMethodId)
+                    ?: shippingMethodsRepository.fetchShippingMethodByIdAndSaveResult(shippingMethodId).model
+                result ?: shippingMethodsRepository.getOtherShippingMethod()
+            }
         }
-        val result = shippingMethodsRepository.getShippingMethodById(shippingMethodId)
-            ?: shippingMethodsRepository.fetchShippingMethodByIdAndSaveResult(shippingMethodId).model
-        return result ?: other
     }
 }

@@ -11,15 +11,23 @@ import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStockStatus
 
 sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val value: String = "") : Parcelable {
-    @Parcelize object InStock : ProductStockStatus(R.string.product_stock_status_instock)
+    @Parcelize
+    data object InStock : ProductStockStatus(R.string.product_stock_status_instock)
 
-    @Parcelize object OutOfStock : ProductStockStatus(R.string.product_stock_status_out_of_stock)
+    @Parcelize
+    data object LowStock : ProductStockStatus(R.string.product_stock_status_low_stock)
 
-    @Parcelize object OnBackorder : ProductStockStatus(R.string.product_stock_status_on_backorder)
+    @Parcelize
+    data object OutOfStock : ProductStockStatus(R.string.product_stock_status_out_of_stock)
 
-    @Parcelize object InsufficientStock : ProductStockStatus(R.string.product_stock_status_insufficient_stock)
+    @Parcelize
+    data object OnBackorder : ProductStockStatus(R.string.product_stock_status_on_backorder)
 
-    @Parcelize object NotAvailable : ProductStockStatus()
+    @Parcelize
+    data object InsufficientStock : ProductStockStatus(R.string.product_stock_status_insufficient_stock)
+
+    @Parcelize
+    data object NotAvailable : ProductStockStatus()
     class Custom(value: String) : ProductStockStatus(value = value)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -34,6 +42,7 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
         fun fromString(value: String?): ProductStockStatus {
             return when (value) {
                 "instock" -> InStock
+                "lowstock" -> LowStock
                 "outofstock" -> OutOfStock
                 "onbackorder" -> OnBackorder
                 "insufficientstock" -> InsufficientStock
@@ -44,17 +53,28 @@ sealed class ProductStockStatus(@StringRes val stringResource: Int = 0, val valu
 
         fun fromStockStatus(stockStatus: ProductStockStatus): String {
             return when (stockStatus) {
+                LowStock -> CoreProductStockStatus.LOW_STOCK.value
                 OnBackorder -> CoreProductStockStatus.ON_BACK_ORDER.value
                 OutOfStock -> CoreProductStockStatus.OUT_OF_STOCK.value
                 else -> CoreProductStockStatus.IN_STOCK.value
             }
         }
 
+        fun ProductStockStatus.toCoreProductStockStatus(): CoreProductStockStatus {
+            return when (this) {
+                InStock -> CoreProductStockStatus.IN_STOCK
+                LowStock -> CoreProductStockStatus.LOW_STOCK
+                OutOfStock -> CoreProductStockStatus.OUT_OF_STOCK
+                OnBackorder -> CoreProductStockStatus.ON_BACK_ORDER
+                else -> CoreProductStockStatus.IN_STOCK
+            }
+        }
+
         fun toStringResource(value: String) = fromString(value).stringResource
 
-        fun toMap(context: Context) = CoreProductStockStatus.values()
-            .map { it.value to context.getString(fromString(it.value).stringResource) }
-            .toMap()
+        fun getMapForInventoryStockStatuses(context: Context) = CoreProductStockStatus.values()
+            .associate { it.value to context.getString(fromString(it.value).stringResource) }
+            .filterKeys { it != CoreProductStockStatus.LOW_STOCK.value }
 
         /**
          * returns the product's stock status formatted for display
