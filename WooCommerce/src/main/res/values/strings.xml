@@ -394,6 +394,8 @@
     <string name="dashboard_action_view_orders">View Orders</string>
     <string name="dashboard_action_view_all_orders">View all orders</string>
 
+    <string name="dashboard_action_view_all_messages">View all messages</string>
+
     <string name="my_store_stats_plugin_inactive_title">We can\'t display your\n store\'s analytics</string>
     <string name="my_store_custom_range_content_description">Add custom date range stats</string>
     <string name="my_store_custom_range_granularity_label">%s interval</string>
@@ -440,9 +442,14 @@
     <string name="dashboard_product_stock_status_header_title">Status</string>
     <string name="dashboard_product_stock_levels">Stock levels</string>
     <string name="dashboard_product_stock_products">Products</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d items sold in last 30 days</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">No items sold in the last 30 days</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Unable to load product stock reports</string>
+    <string name="dashboard_product_stock_empty_products">No products found for the selected stock status</string>
 
     <string name="dashboard_new_widgets_card_title">Looking for more insights?</string>
     <string name="dashboard_new_widgets_card_description">Add new sections to customize your store management experience</string>
+    <string name="dashboard_new_widgets_card_button">Add new Sections</string>
     <!--
         Sign Up Flow
     -->
@@ -4108,4 +4115,22 @@
     <string name="login_app_password_exit_dialog_message">It seems that you have not approved the app connection yet. Are you sure you want to exit?</string>
     <string name="login_app_password_exit_dialog_confirmation">Exit Anyway</string>
     <string name="login_app_password_exit_dialog_cancel">Cancel</string>
+
+    <!--
+    Woo POS
+    -->
+    <string name="woopos_exit_pos">Exit POS</string>
+    <string name="woopos_reader_connected">Reader Connected</string>
+    <string name="woopos_reader_connecting">Reader Connecting</string>
+    <string name="woopos_reader_disconnected">Reader Disconnected</string>
+    <string name="woopos_checkout">Checkout</string>
+    <string name="woopos_reader_unknown">Reader Status Unknown</string>
+    <string name="woo_pos_checkout_button">Checkout</string>
+    <string name="woo_pos_remove_item_from_cart_content_description">Remove item from cart</string>
+    <string name="woo_pos_car_pane_title">Cart</string>
+
+    <string name="woopos_exit_confirmation_title">Exit POS</string>
+    <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
+    <string name="woopos_exit_confirmation_confirm_button">Exit</string>
+    <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
 </resources>

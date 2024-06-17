@@ -54,10 +54,12 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.wordpress.android.util.ToastUtils
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -175,6 +177,8 @@ class DashboardFragment :
                 is FeedbackPositiveAction -> handleFeedbackRequestPositiveClick()
 
                 is FeedbackNegativeAction -> mainNavigationRouter?.showFeedbackSurvey()
+
+                is ShowSnackbar -> ToastUtils.showToast(requireContext(), event.message)
 
                 else -> event.isHandled = false
             }

@@ -1,13 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-21 11:54:03+0000
+Translation-Revision-Date: 2024-06-11 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
-    <string name="more_menu_button_woo_pos_description">Punto di accesso temporaneo alla modalità POS</string>
-    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="woopos_reader_unknown">Stato del lettore sconosciuto</string>
+    <string name="woopos_checkout">Pagamento</string>
+    <string name="woopos_reader_disconnected">Lettore disconnesso</string>
+    <string name="woopos_reader_connecting">Connessione in corso del lettore</string>
+    <string name="woopos_reader_connected">Lettore connesso</string>
+    <string name="woopos_exit_pos">Esci da POS</string>
+    <string name="dashboard_new_widgets_card_button">Aggiungi nuove sezioni</string>
+    <string name="dashboard_product_stock_empty_products">Nessun prodotto trovato per lo stato di magazzino selezionato</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Impossibile caricare i report sulle disponibilità in magazzino dei prodotti</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Nessun articolo venduto negli ultimi 30 giorni</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d articoli venduti negli ultimi 30 giorni</string>
+    <string name="more_menu_button_woo_pos_description">Usa l\'app come registratore di cassa</string>
+    <string name="more_menu_button_woo_pos">Modalità punto vendita</string>
+    <string name="product_stock_status_low_stock">In esaurimento</string>
+    <string name="order_detail_shipping_header">SPEDIZIONE</string>
+    <string name="order_creation_feedback_action">Lascia il tuo feedback</string>
+    <string name="order_creation_shipping_feedback_message">Woo semplifica la spedizione?</string>
+    <string name="order_creation_shipping_feedback_title">Spedizione aggiunta.</string>
+    <string name="order_creation_shipping_edit">Modifica spedizione</string>
+    <string name="order_creation_shipping_title_edit">Modifica spedizione</string>
+    <string name="cash_payments_order_note_adding_error">Errore durante l\'aggiunta della nota dell\'ordine</string>
+    <string name="cash_payments_order_note_text">L\'ordine è stato pagato in contanti. Il cliente ha pagato %s. Il resto dovuto era di %s.</string>
+    <string name="cash_payments_mark_order_as_complete">Contrassegna l\'ordine come completo</string>
+    <string name="cash_payments_record_transaction_details">Registra i dettagli della transazione nella nota dell\'ordine</string>
+    <string name="dashboard_new_widgets_card_description">Aggiungi nuove sezioni per personalizzare l\'esperienza di gestione del negozio</string>
+    <string name="dashboard_new_widgets_card_title">Sei alla ricerca di una panoramica più dettagliata?</string>
+    <string name="dashboard_product_stock_products">Prodotti</string>
+    <string name="dashboard_product_stock_levels">Livelli di stoccaggio</string>
+    <string name="dashboard_product_stock_status_header_title">Stato</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Hai ancora bisogno di aiuto? Contattaci</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Impossibile caricare il report sull\'utilizzo dei coupon</string>
+    <string name="dashboard_coupons_card_empty_view_message">Nessun coupon utilizzato in questo periodo</string>
+    <string name="dashboard_coupons_view_all_button">Visualizza tutti i codici promozionali</string>
+    <string name="dashboard_coupons_card_header_uses">Usi</string>
+    <string name="dashboard_coupons_card_header_coupons">Codici promozionali</string>
+    <string name="my_store_widget_product_stock_title">Magazzino</string>
+    <string name="dashboard_action_view_all_messages">Visualizza tutti i messaggi</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Impossibile caricare i prodotti più venduti</string>
+    <string name="na">N/D</string>
+    <string name="cash_payments_change_due">Resto dovuto</string>
+    <string name="cash_payments_cash_received">Contanti ricevuti</string>
+    <string name="my_store_widget_coupons_title">Codici promozionali più attivi</string>
     <string name="cash_payments_take_payment_title">Ricevi il pagamento%s</string>
     <string name="dashboard_reviews_card_view_all_button">Visualizza tutte le recensioni</string>
     <string name="dashboard_reviews_card_empty_message_filtered">Nessuna recensione corrisponde al filtro selezionato, prova a cambiare il filtro</string>
@@ -36,6 +76,7 @@ Language: it
     <string name="dynamic_dashboard_widget_menu_item_hide">Nascondi %s</string>
     <string name="my_store_widget_onboarding_completed">Completata</string>
     <string name="my_store_widget_feedback_title">Feedback</string>
+    <string name="dashboard_wcanalytics_inactive_description">Assicurati di disporre della versione più recente di WooCommerce sul tuo sito e di aver attivato Analisi WooCommerce.</string>
     <string name="my_store_stats_plugin_inactive_title">Non possiamo visualizzare il tuo\n analisi del negozio</string>
     <string name="store_onboarding_task_view_all_tasks">Visualizza tutte le attività</string>
     <string name="analytics_session_no_available_description">L\'analisi delle sessioni si basa su un numero unico di visitatori non disponibile per intervalli di date personalizzati</string>

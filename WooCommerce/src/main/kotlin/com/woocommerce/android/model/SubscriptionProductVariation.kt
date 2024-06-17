@@ -44,7 +44,11 @@ class SubscriptionProductVariation(
     override val length: Float,
     override val width: Float,
     override val height: Float,
-    override val weight: Float
+    override val weight: Float,
+    override val minAllowedQuantity: Int?,
+    override val maxAllowedQuantity: Int?,
+    override val groupOfQuantity: Int?,
+    override val overrideProductQuantities: Boolean?
 ) : ProductVariation(
     remoteProductId = remoteProductId,
     remoteVariationId = remoteVariationId,
@@ -73,7 +77,11 @@ class SubscriptionProductVariation(
     length = length,
     width = width,
     height = height,
-    weight = weight
+    weight = weight,
+    minAllowedQuantity = minAllowedQuantity,
+    maxAllowedQuantity = maxAllowedQuantity,
+    groupOfQuantity = groupOfQuantity,
+    overrideProductQuantities = overrideProductQuantities
 ) {
     constructor(model: WCProductVariationModel) :
         this(
@@ -114,7 +122,11 @@ class SubscriptionProductVariation(
             length = model.length.toFloatOrNull() ?: 0f,
             width = model.width.toFloatOrNull() ?: 0f,
             height = model.height.toFloatOrNull() ?: 0f,
-            weight = model.weight.toFloatOrNull() ?: 0f
+            weight = model.weight.toFloatOrNull() ?: 0f,
+            minAllowedQuantity = if (model.minAllowedQuantity >= 0) model.minAllowedQuantity else null,
+            maxAllowedQuantity = if (model.minAllowedQuantity >= 0) model.minAllowedQuantity else null,
+            groupOfQuantity = if (model.minAllowedQuantity >= 0) model.minAllowedQuantity else null,
+            overrideProductQuantities = model.overrideProductQuantities
         )
 
     @Suppress("ComplexMethod")
@@ -146,7 +158,11 @@ class SubscriptionProductVariation(
                 weight == variation.weight &&
                 length == variation.length &&
                 height == variation.height &&
-                width == variation.width
+                width == variation.width &&
+                minAllowedQuantity == variation.minAllowedQuantity &&
+                maxAllowedQuantity == variation.maxAllowedQuantity &&
+                groupOfQuantity == variation.groupOfQuantity &&
+                overrideProductQuantities == variation.overrideProductQuantities
         } ?: false
     }
 
@@ -181,6 +197,10 @@ class SubscriptionProductVariation(
         result = 31 * result + width.hashCode()
         result = 31 * result + height.hashCode()
         result = 31 * result + weight.hashCode()
+        result = 31 * result + minAllowedQuantity.hashCode()
+        result = 31 * result + maxAllowedQuantity.hashCode()
+        result = 31 * result + groupOfQuantity.hashCode()
+        result = 31 * result + overrideProductQuantities.hashCode()
         return result
     }
 
@@ -212,7 +232,11 @@ class SubscriptionProductVariation(
         length: Float,
         width: Float,
         height: Float,
-        weight: Float
+        weight: Float,
+        minAllowedQuantity: Int?,
+        maxAllowedQuantity: Int?,
+        groupOfQuantity: Int?,
+        overrideProductQuantities: Boolean?,
     ): ProductVariation {
         return SubscriptionProductVariation(
             remoteProductId = remoteProductId,
@@ -243,7 +267,11 @@ class SubscriptionProductVariation(
             width = width,
             height = height,
             weight = weight,
-            subscriptionDetails = subscriptionDetails
+            subscriptionDetails = subscriptionDetails,
+            minAllowedQuantity = minAllowedQuantity,
+            maxAllowedQuantity = maxAllowedQuantity,
+            groupOfQuantity = groupOfQuantity,
+            overrideProductQuantities = overrideProductQuantities
         )
     }
 
@@ -276,7 +304,11 @@ class SubscriptionProductVariation(
         length: Float = this.length,
         width: Float = this.width,
         height: Float = this.height,
-        weight: Float = this.weight
+        weight: Float = this.weight,
+        minAllowedQuantity: Int? = this.minAllowedQuantity,
+        maxAllowedQuantity: Int? = this.maxAllowedQuantity,
+        groupOfQuantity: Int? = this.groupOfQuantity,
+        overrideProductQuantities: Boolean? = this.overrideProductQuantities
     ): SubscriptionProductVariation {
         return SubscriptionProductVariation(
             subscriptionDetails = subscriptionDetails,
@@ -307,7 +339,11 @@ class SubscriptionProductVariation(
             length = length,
             width = width,
             height = height,
-            weight = weight
+            weight = weight,
+            minAllowedQuantity = minAllowedQuantity,
+            maxAllowedQuantity = maxAllowedQuantity,
+            groupOfQuantity = groupOfQuantity,
+            overrideProductQuantities = overrideProductQuantities
         )
     }
 }

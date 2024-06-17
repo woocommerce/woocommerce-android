@@ -1,13 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-21 11:54:03+0000
+Translation-Revision-Date: 2024-06-11 11:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources>
-    <string name="more_menu_button_woo_pos_description">Tillfällig ingångspunkt till POS-läge</string>
-    <string name="more_menu_button_woo_pos">Woo POS</string>
+    <string name="dashboard_new_widgets_card_button">Lägg till nya sektioner</string>
+    <string name="dashboard_product_stock_empty_products">Inga produkter hittades för den valda lagerstatusen</string>
+    <string name="woopos_reader_disconnected">Läsare frånkopplad</string>
+    <string name="woopos_reader_connecting">Läsare ansluter</string>
+    <string name="woopos_reader_connected">Läsare ansluten</string>
+    <string name="woopos_exit_pos">Avsluta POS</string>
+    <string name="woopos_reader_unknown">Läsarens status okänd</string>
+    <string name="woopos_checkout">Kassa</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Det gick inte att läsa in lagerrapporten</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Ingen vara såld de senaste 30 dagarna</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d varor sålda de senaste 30 dagarna</string>
+    <string name="product_stock_status_low_stock">Lågt lager</string>
+    <string name="order_creation_feedback_action">Dela din feedback</string>
+    <string name="dashboard_new_widgets_card_title">Letar du efter fler insikter?</string>
+    <string name="dashboard_product_stock_products">Produkter</string>
+    <string name="dashboard_product_stock_levels">Lagernivåer</string>
+    <string name="dashboard_product_stock_status_header_title">Status</string>
+    <string name="more_menu_button_woo_pos_description">Använd appen som kassaregister</string>
+    <string name="more_menu_button_woo_pos">Försäljningsplatsläge</string>
+    <string name="order_detail_shipping_header">FRAKT</string>
+    <string name="order_creation_shipping_feedback_message">Gör Woo frakt enkelt?</string>
+    <string name="order_creation_shipping_feedback_title">Frakt tillagd.</string>
+    <string name="order_creation_shipping_edit">Redigera frakt</string>
+    <string name="order_creation_shipping_title_edit">Redigera frakt</string>
+    <string name="cash_payments_order_note_adding_error">Det gick inte att lägga till beställningsanteckningen</string>
+    <string name="cash_payments_order_note_text">Beställningen betalades kontant. Kunden betalade %s. Växeln var %s</string>
+    <string name="cash_payments_mark_order_as_complete">Markera beställningen som slutförd</string>
+    <string name="cash_payments_record_transaction_details">Registrera transaktionsinformation i beställningsanteckning</string>
+    <string name="dashboard_new_widgets_card_description">Lägg till nya sektioner för att anpassa din butikshanteringsupplevelse</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">Behöver du fortfarande hjälp? Kontakta oss</string>
+    <string name="dashboard_coupons_view_all_button">Visa alla rabattkoder</string>
+    <string name="dashboard_coupons_card_header_uses">Användningar</string>
+    <string name="dashboard_coupons_card_header_coupons">Rabattkoder</string>
+    <string name="my_store_widget_product_stock_title">Lager</string>
+    <string name="dashboard_action_view_all_messages">Visa alla meddelanden</string>
+    <string name="na">N/A</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">Det går inte att hämta rapporten över användning av rabattkoder</string>
+    <string name="dashboard_coupons_card_empty_view_message">Ingen användning av rabattkoder under denna period</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">Det gick inte att läsa in toppresterande produkter</string>
+    <string name="my_store_widget_coupons_title">Mest aktiva rabattkoder</string>
+    <string name="cash_payments_cash_received">Kontanter mottagna</string>
+    <string name="cash_payments_change_due">Växel</string>
     <string name="cash_payments_take_payment_title">Ta emot betalning (%s)</string>
     <string name="dashboard_reviews_card_header_title">Status</string>
     <string name="dashboard_action_view_all_orders">Visa alla beställningar</string>
@@ -37,6 +77,7 @@ Language: sv_SE
     <string name="my_store_widget_feedback_title">Feedback</string>
     <string name="dynamic_dashboard_widget_error_title">Kan inte ladda data</string>
     <string name="my_store_stats_plugin_inactive_title">Vi kan inte visa din\n butiks analys</string>
+    <string name="dashboard_wcanalytics_inactive_description">Se till att du kör den senaste versionen av WooCommerce på din webbplats och att du har WooCommerce Analytics aktiverat.</string>
     <string name="my_store_widget_unavailable">Inte tillgänglig</string>
     <string name="dashboard_stats_custom_range_label">Anpassad</string>
     <string name="store_onboarding_task_view_all_tasks">Visa alla uppgifter</string>
@@ -975,7 +1016,6 @@ Language: sv_SE
     <string name="store_onboarding_launch_store_button">Publicera min butik</string>
     <string name="upgrades_error_fetching_data">Det gick inte att hämta paketinformationen</string>
     <string name="upgrades_non_upgradeable_caption">Du är %1$s-prenumerant. Du har tillgång till alla våra funktioner fram till %2$s. </string>
-    <string name="upgrades_trial_ended_caption">Din kostnadsfria provperiod har avslutats och du har begränsad åtkomst till alla funktionerna. Prenumerera på %1$s nu.</string>
     <string name="free_trial_trial_ended">Provperioden avslutades</string>
     <string name="free_trial_your_trial_ended">Din provperiod har avslutats.</string>
     <string name="store_onboarding_launch_store_generic_error_description">Hoppsan, det uppstod några oväntade fel.</string>
@@ -985,7 +1025,8 @@ Language: sv_SE
     <string name="store_onboarding_upgrade_plan_to_launch_store_banner_text">För att lansera din butik behöver du uppgradera till vårt paket. &lt;u&gt;Uppgradera&lt;/u&gt;</string>
     <string name="store_onboarding_store_already_launched_error_description">Vi upptäckte att butiken redan har lanserats.</string>
     <string name="upgrades_upgradeable_caption">Du har en kostnadsfri provperiod på %1$d dagar. Din kostnadsfria provperiod löper ut om %2$s. Uppgradera för att låsa upp nya funktioner och hålla igång din butik.</string>
-    <string name="free_trial_days_left">%1$s kvar på din utvärdering.</string>
+    <string name="free_trial_days_left">%1$s kvar på din provperiod.</string>
+    <string name="upgrades_trial_ended_caption">Din gratis provperiod har avslutats och har begränsad åtkomst till alla funktioner. Prenumerera på %1$s nu.</string>
     <string name="something_went_wrong_try_again">Något gick fel. Försök igen senare.</string>
     <string name="login_site_credentials_http_error">Inloggning misslyckades med statuskod %1$s</string>
     <string name="login_site_credentials_custom_admin_url">Det gick inte att logga in, eftersom vi inte kan identifiera admin-URL:en för din butik</string>

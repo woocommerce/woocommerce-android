@@ -1,2 +1,0 @@
-18.7:
-Hemos solucionado un problema que ocasionaba que la aplicación se bloqueara durante la rotación de la pantalla. Garantizamos así una experiencia de compra sin interferencias. Actualiza ahora y disfruta de una aplicación más estable y fiable.

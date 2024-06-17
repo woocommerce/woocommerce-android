@@ -507,6 +507,7 @@ class PaymentsHubViewModel @Inject constructor(
             is PaymentOrRefund -> {
                 // no-op
             }
+            is CardReaderFlowParam.WooPosConnection -> error("Unsupported card reader flow param $params")
         }
     }
 

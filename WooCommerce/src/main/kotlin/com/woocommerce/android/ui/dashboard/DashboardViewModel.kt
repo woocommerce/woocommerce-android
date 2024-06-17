@@ -10,6 +10,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsEvent.DYNAMIC_DASHBOARD_CARD_INTERACTED
 import com.woocommerce.android.analytics.AnalyticsEvent.FEATURE_JETPACK_BENEFITS_BANNER
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
@@ -30,6 +31,7 @@ import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -164,7 +166,10 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun onEditWidgetsClicked() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.DYNAMIC_DASHBOARD_EDIT_LAYOUT_BUTTON_TAPPED)
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.DYNAMIC_DASHBOARD_EDIT_LAYOUT_BUTTON_TAPPED,
+            mapOf(AnalyticsTracker.KEY_NEW_CARD_AVAILABLE to hasNewWidgets.value.toString())
+        )
         triggerEvent(OpenEditWidgets)
     }
 
@@ -182,6 +187,17 @@ class DashboardViewModel @Inject constructor(
 
     fun onContactSupportClicked() {
         triggerEvent(DashboardEvent.ContactSupport)
+    }
+
+    fun onShowSnackbar(@StringRes message: Int) {
+        triggerEvent(Event.ShowSnackbar(message))
+    }
+
+    fun trackCardInteracted(type: String) {
+        analyticsTrackerWrapper.track(
+            DYNAMIC_DASHBOARD_CARD_INTERACTED,
+            mapOf(AnalyticsTracker.KEY_TYPE to type)
+        )
     }
 
     private fun mapWidgetsToUiModels(
@@ -233,8 +249,9 @@ class DashboardViewModel @Inject constructor(
 
         add(
             NewWidgetsCard(
-                isVisible = hasNewWidgets,
+                isVisible = hasNewWidgets && !shouldShowShareCard,
                 onShowCardsClick = {
+                    analyticsTrackerWrapper.track(AnalyticsEvent.DYNAMIC_DASHBOARD_ADD_NEW_SECTIONS_TAPPED)
                     triggerEvent(OpenEditWidgets)
                 }
             )

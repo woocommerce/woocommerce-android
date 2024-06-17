@@ -384,6 +384,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_ORDER_CREATION_PAYMENTS_FLOW = "creation"
         const val VALUE_SCAN_TO_PAY_PAYMENT_FLOW = "scan_to_pay"
         const val VALUE_TTP_TRY_PAYMENT_FLOW = "tap_to_pay_try_a_payment"
+        const val VALUE_WOO_POS_PAYMENTS_FLOW = "woo_pos"
 
         const val KEY_JITM = "jitm"
         const val KEY_JITM_COUNT = "count"
@@ -661,6 +662,11 @@ class AnalyticsTracker private constructor(
         // Analytics Hub Settings
         const val KEY_ENABLED_CARDS = "enabled_cards"
         const val KEY_DISABLED_CARDS = "disabled_cards"
+
+        // Dynamic Dashboard
+        const val KEY_NEW_CARD_AVAILABLE = "new_card_available"
+        const val KEY_CARDS = "cards"
+        const val KEY_SORTED_CARDS = "sorted_cards"
 
         var sendUsageStats: Boolean = true
             set(value) {

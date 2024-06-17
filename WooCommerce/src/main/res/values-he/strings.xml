@@ -1,13 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-21 15:54:03+0000
+Translation-Revision-Date: 2024-06-10 17:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources>
-    <string name="more_menu_button_woo_pos_description">נקודת כניסה זמנית למצב POS</string>
-    <string name="more_menu_button_woo_pos">Woo Pos</string>
+    <string name="woopos_reader_unknown">הסטטוס של הקורא לא ידוע</string>
+    <string name="woopos_checkout">קופה</string>
+    <string name="woopos_reader_disconnected">הקורא מנותק</string>
+    <string name="woopos_reader_connecting">הקורא מתחבר</string>
+    <string name="woopos_reader_connected">הקורא חובר</string>
+    <string name="woopos_exit_pos">לצאת מ-POS</string>
+    <string name="dashboard_new_widgets_card_button">להוסיף מקטעים חדשים</string>
+    <string name="dashboard_product_stock_empty_products">לא נמצאו מוצרים למצב המלאי שנבחר</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">אין פריטים שנמכרו ב-30 הימים האחרונים</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">אין אפשרות לטעון את דוחות המלאי של המוצר</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d פריטים נמכרו ב-30 הימים האחרונים</string>
+    <string name="more_menu_button_woo_pos_description">להשתמש באפליקציה כקופה רושמת</string>
+    <string name="more_menu_button_woo_pos">מצב \'נקודת מכירה\'</string>
+    <string name="product_stock_status_low_stock">מלאי מוגבל</string>
+    <string name="order_detail_shipping_header">משלוח</string>
+    <string name="order_creation_feedback_action">לשלוח את המשוב שלך</string>
+    <string name="order_creation_shipping_feedback_message">האם קל לשלוח באמצעות השירות של Woo?</string>
+    <string name="order_creation_shipping_feedback_title">המשלוח נוסף!</string>
+    <string name="order_creation_shipping_edit">לערוך את המשלוח</string>
+    <string name="order_creation_shipping_title_edit">לערוך את המשלוח</string>
+    <string name="cash_payments_order_note_adding_error">שגיאה בהוספה של הערה להזמנה</string>
+    <string name="cash_payments_order_note_text">התקבל עבור ההזמנה תשלום במזומן. הלקוח שילם %s. העודף הנדרש היה %s.</string>
+    <string name="cash_payments_mark_order_as_complete">לסמן את ההזמנה כ\'הושלמה\'</string>
+    <string name="cash_payments_record_transaction_details">לרשום את פרטי העסקה בהערות ההזמנה</string>
+    <string name="dashboard_new_widgets_card_description">להוסיף מקטעים חדשים כדי להתאים אישית את חוויית הניהול בחנות שלך</string>
+    <string name="dashboard_new_widgets_card_title">רוצה לקבל תובנות נוספות?</string>
+    <string name="dashboard_product_stock_products">מוצרים</string>
+    <string name="dashboard_product_stock_levels">רמות מלאי</string>
+    <string name="dashboard_product_stock_status_header_title">מצב</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">עדיין דרושה לך עזרה? ליצירת קשר</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">לא ניתן היה להעלות את דוח השימוש בקופונים</string>
+    <string name="dashboard_coupons_card_empty_view_message">אין שימוש בקופונים במהלך התקופה הזאת</string>
+    <string name="dashboard_coupons_view_all_button">להציג את כל הקופונים</string>
+    <string name="dashboard_coupons_card_header_uses">שימושים</string>
+    <string name="dashboard_coupons_card_header_coupons">קופונים</string>
+    <string name="my_store_widget_product_stock_title">מלאי</string>
+    <string name="dashboard_action_view_all_messages">להציג את כל ההודעות</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">אין אפשרות לטעון את הביצועים הטובים ביותר</string>
+    <string name="na">לא זמין</string>
+    <string name="cash_payments_change_due">העודף הנדרש</string>
+    <string name="cash_payments_cash_received">התקבל מזומן</string>
+    <string name="my_store_widget_coupons_title">הקופונים הפעילים ביותר</string>
     <string name="cash_payments_take_payment_title">לגבות תשלום (%s)</string>
     <string name="dashboard_reviews_card_view_all_button">להציג את כל הביקורות</string>
     <string name="dashboard_reviews_card_empty_message_filtered">אין ביקורות שמתאימות למסנן שנבחר, כדאי לשנות את המסנן</string>
@@ -37,6 +77,7 @@ Language: he_IL
     <string name="my_store_widget_onboarding_completed">הושלם</string>
     <string name="my_store_widget_feedback_title">משוב</string>
     <string name="my_store_stats_plugin_inactive_title">אנחנו לא יכולים להציג את \n הנתונים האנליטיים של החנות</string>
+    <string name="dashboard_wcanalytics_inactive_description">עליך לוודא שמותקנת באתר שלך הגרסה האחרונה של WooCommerce ושהתוסף של WooCommerce Analytics מופעל.</string>
     <string name="store_onboarding_task_view_all_tasks">להציג את כל המשימות</string>
     <string name="analytics_session_no_available_description">נתונים אנליטיים של הפעלות מסתמכים על מספר המבקרים הייחודיים, והם לא זמינים בטווח תאריכים מותאם אישית</string>
     <string name="analytics_session_no_available">הנתונים של ההפעלה לא זמינים</string>
