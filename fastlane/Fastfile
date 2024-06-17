@@ -1208,6 +1208,9 @@ platform :android do
     end
   end
 
+  # Remove old `changelogs/default.txt` files for every locale except en-US.
+  # After updating the en-US copy for a new version and sending it for translation,
+  # we want to avoid having outdated translations in git in the meantime.
   def delete_old_changelogs
     [MOBILE_APP, WEAR_APP].each do |app|
       Dir.glob(File.join(METADATA_PATH[app], '*'))
