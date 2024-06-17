@@ -68,7 +68,7 @@ fun WooPosTotalsScreen(
                     color = colorResource(id = R.color.woo_gray_5),
                     shape = RoundedCornerShape(8.dp)
 
-            ).widthIn(min = 128.dp, max = 256.dp)
+                ).widthIn(min = 128.dp, max = 256.dp)
             ) {
                 Column(
                     modifier = Modifier.wrapContentSize().padding(16.dp),
@@ -137,7 +137,6 @@ fun WooPosTotalsScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Divider()
-
 
                     Spacer(modifier = Modifier.height(16.dp))
 
