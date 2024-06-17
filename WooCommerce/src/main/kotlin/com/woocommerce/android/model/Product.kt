@@ -579,12 +579,16 @@ fun WCProductModel.toAppModel(): Product {
             null
         },
         isConfigurable = isConfigurable,
-        minAllowedQuantity = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null,
-        maxAllowedQuantity = if (this.maxAllowedQuantity >= 0) this.maxAllowedQuantity else null,
-        groupOfQuantity = if (this.groupOfQuantity >= 0) this.groupOfQuantity else null,
+        minAllowedQuantity = this.getMinAllowedQuantity(),
+        maxAllowedQuantity = this.maxAllowedQuantity(),
+        groupOfQuantity = this.groupOfQuantity(),
         combineVariationQuantities = this.combineVariationQuantities
     )
 }
+
+private fun WCProductModel.getMinAllowedQuantity() = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null
+private fun WCProductModel.maxAllowedQuantity() = if (this.maxAllowedQuantity >= 0) this.maxAllowedQuantity else null
+private fun WCProductModel.groupOfQuantity() = if (this.groupOfQuantity >= 0) this.groupOfQuantity else null
 
 fun MediaModel.toAppModel(): Product.Image {
     return Product.Image(
