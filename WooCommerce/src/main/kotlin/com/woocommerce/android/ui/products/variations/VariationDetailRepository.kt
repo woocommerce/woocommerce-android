@@ -97,9 +97,11 @@ class VariationDetailRepository @Inject constructor(
         return withContext(coroutineDispatchers.io) {
             val variation = getCachedWCVariation(remoteProductId, remoteVariationId)
             variation?.let {
-                QuantityRules(if (variation.minAllowedQuantity > 0) variation.minAllowedQuantity else null,
+                QuantityRules(
+                    if (variation.minAllowedQuantity > 0) variation.minAllowedQuantity else null,
                     if (variation.maxAllowedQuantity > 0) variation.maxAllowedQuantity else null,
-                    if (variation.groupOfQuantity > 0) variation.groupOfQuantity else null)
+                    if (variation.groupOfQuantity > 0) variation.groupOfQuantity else null
+                )
             }
         }
     }
