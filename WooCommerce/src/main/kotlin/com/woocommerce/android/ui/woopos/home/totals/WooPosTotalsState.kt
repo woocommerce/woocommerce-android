@@ -10,4 +10,4 @@ data class WooPosTotalsState(
     var orderSubtotalText: String,
     var orderTaxText: String,
     var orderTotalText: String,
-    ) : Parcelable
+) : Parcelable
