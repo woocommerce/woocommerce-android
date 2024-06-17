@@ -295,9 +295,11 @@ class ProductDetailRepository @Inject constructor(
     fun getQuantityRules(remoteProductId: Long): QuantityRules? {
         val product = getCachedWCProductModel(remoteProductId)
         return product?.let {
-            QuantityRules(if (product.minAllowedQuantity > 0) product.minAllowedQuantity else null,
+            QuantityRules(
+                if (product.minAllowedQuantity > 0) product.minAllowedQuantity else null,
                 if (product.maxAllowedQuantity > 0) product.maxAllowedQuantity else null,
-                if (product.groupOfQuantity > 0) product.groupOfQuantity else null)
+                if (product.groupOfQuantity > 0) product.groupOfQuantity else null
+            )
         }
     }
 
