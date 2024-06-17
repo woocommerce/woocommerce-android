@@ -29,7 +29,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.math.BigDecimal
 
 @Composable
 fun WooPosTotalsScreen() {
@@ -85,7 +84,7 @@ fun WooPosTotalsScreen(
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = totalsState.value.orderSubtotal.toPlainString(),
+                                text = totalsState.value.orderSubtotalText,
                                 style = MaterialTheme.typography.h6,
                                 color = MaterialTheme.colors.primary
                             )
@@ -106,7 +105,7 @@ fun WooPosTotalsScreen(
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = totalsState.value.orderTax.toPlainString(),
+                                text = totalsState.value.orderTaxText,
                                 style = MaterialTheme.typography.h6,
                                 color = MaterialTheme.colors.primary
                             )
@@ -127,7 +126,7 @@ fun WooPosTotalsScreen(
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                text = totalsState.value.orderTotal.toPlainString(),
+                                text = totalsState.value.orderTotalText,
                                 style = MaterialTheme.typography.h4,
                                 color = MaterialTheme.colors.primary
                             )
@@ -159,9 +158,9 @@ fun WooPosTotalsScreenPreview() {
     val totalsState = MutableStateFlow(
         WooPosTotalsState(
             orderId = 1234L,
-            orderSubtotal = BigDecimal(100.00),
-            orderTotal = BigDecimal(113.00),
-            orderTax = BigDecimal(13.00),
+            orderSubtotalText = "$420.00",
+            orderTotalText = "$462.00",
+            orderTaxText = "$42.00",
             isCollectPaymentButtonEnabled = true
         )
     )
