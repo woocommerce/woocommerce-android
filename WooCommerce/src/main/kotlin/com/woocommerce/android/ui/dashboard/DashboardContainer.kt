@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.OpenRangePicker
 import com.woocommerce.android.ui.dashboard.blaze.DashboardBlazeCard
 import com.woocommerce.android.ui.dashboard.coupons.DashboardCouponsCard
+import com.woocommerce.android.ui.dashboard.inbox.DashboardInboxCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersCard
 import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
@@ -159,7 +160,12 @@ private fun ConfigurableWidgetCard(
             modifier = modifier
         )
 
-        DashboardWidget.Type.PRODUCT_STOCK -> DashboardProductStockCard(
+        DashboardWidget.Type.STOCK -> DashboardProductStockCard(
+            parentViewModel = dashboardViewModel,
+            modifier = modifier
+        )
+
+        DashboardWidget.Type.INBOX -> DashboardInboxCard(
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )
@@ -276,7 +282,7 @@ private fun NewWidgetsCard(
         Spacer(modifier = Modifier.height(16.dp))
         WCColoredButton(
             onClick = state.onShowCardsClick,
-            text = "Add new sections"
+            text = stringResource(id = R.string.dashboard_new_widgets_card_button)
         )
     }
 }

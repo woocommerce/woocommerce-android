@@ -3,7 +3,7 @@ GEM
   specs:
     CFPropertyList (3.0.6)
       rexml
-    activesupport (7.1.3.3)
+    activesupport (7.1.3.4)
       base64
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
@@ -240,10 +240,10 @@ GEM
     nap (1.1.0)
     naturally (2.2.1)
     no_proxy_fix (0.1.2)
-    nokogiri (1.16.2)
+    nokogiri (1.15.6)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.16.2-arm64-darwin)
+    nokogiri (1.15.6-arm64-darwin)
       racc (~> 1.4)
     octokit (6.1.1)
       faraday (>= 1, < 3)

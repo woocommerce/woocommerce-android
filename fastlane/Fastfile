@@ -759,29 +759,22 @@ platform :android do
     commit_strings(options) unless is_repo_clean
   end
 
-  #####################################################################################
-  # download_metadata_string
-  # -----------------------------------------------------------------------------------
-  # This lane downloads the translated metadata (release notes,
-  # app store strings, title, etc.) from GlotPress and updates the local files
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # fastlane download_metadata_string build_number:<build_number> version:<version>
+  # This lane downloads the translated metadata (release notes, app store strings, title, etc.) from GlotPress and updates the local files.
   #
-  # Example:
-  # fastlane download_metadata_string build_number:573 version:10.3
-  #####################################################################################
-  desc 'Downloads translated metadata from GlotPress'
-  lane :download_metadata_strings do |options|
-    values = options[:version].split('.')
+  # @param [String] version the version for which to download metadata
+  #
+  # @example Running the lane
+  #          fastlane download_metadata_strings version:10.3 build_number:573
+  #
+  lane :download_metadata_strings do |version:, build_number:|
+    values = version.split('.')
     files = {
-      "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: "changelogs/#{options[:build_number]}.txt", max_size: 0 },
+      "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: 'changelogs/default.txt', max_size: 0 },
       play_store_promo: { desc: 'short_description.txt', max_size: 80 },
       play_store_desc: { desc: 'full_description.txt', max_size: 0 },
       play_store_app_title: { desc: 'title.txt', max_size: 50 }
     }
 
-    delete_old_changelogs(build: options[:build_number])
     download_path = PLAY_STORE_METADATA_DIR_PATH
     gp_downloadmetadata(
       project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
@@ -799,12 +792,12 @@ platform :android do
 
     android_create_xml_release_notes(
       download_path: download_path,
-      build_number: options[:build_number].to_s,
+      build_number: build_number.to_s,
       locales: SUPPORTED_LOCALES.to_h { |hsh| [hsh[:glotpress], hsh[:google_play]] }
     )
     add_us_release_notes(
       release_notes_path: File.join(download_path, 'release_notes.xml'),
-      version_name: options[:version]
+      version_name: version
     )
 
     # We need to explicitly call `git_add`, despite the path being passed to `git_commit` as well.
@@ -812,7 +805,7 @@ platform :android do
     git_add(path: download_path)
     git_commit(
       path: download_path,
-      message: "Update metadata translations for #{options[:version]}",
+      message: "Update metadata translations for #{version}",
       allow_nothing_to_commit: true
     )
 
@@ -1162,16 +1155,6 @@ platform :android do
   #####################################################################################
   # Private lanes
   #####################################################################################
-  private_lane :delete_old_changelogs do |options|
-    Dir.glob('./metadata/android/*/').each do |folder|
-      Dir["#{folder}changelogs/*"].each do |file|
-        File.delete(file) if Integer(File.basename(file, '.*')) < Integer(options[:build])
-      rescue StandardError
-        puts "Cannot delete file #{file}"
-      end
-    end
-  end
-
   private_lane :add_us_release_notes do |options|
     en_release_notes_path = RELEASE_NOTES_PATH
     File.open(options[:release_notes_path], 'a') do |f|

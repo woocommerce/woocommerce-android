@@ -101,6 +101,10 @@ object ProductHelper {
             },
             isSampleProduct = false,
             parentId = 0,
+            minAllowedQuantity = null,
+            maxAllowedQuantity = null,
+            groupOfQuantity = null,
+            combineVariationQuantities = null
         )
     }
 

@@ -313,7 +313,7 @@ private fun OrderListItem(order: OrderItem, onOrderClicked: (OrderItem) -> Unit)
                     end.linkTo(parent.end)
                 },
             text = order.status,
-            textColor = MaterialTheme.colors.onSurface,
+            textColor = colorResource(id = R.color.color_on_secondary),
             backgroundColor = colorResource(id = order.statusColor),
             fontWeight = FontWeight.Normal
         )

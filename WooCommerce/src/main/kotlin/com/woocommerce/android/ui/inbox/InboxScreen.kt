@@ -1,10 +1,14 @@
 package com.woocommerce.android.ui.inbox
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,6 +35,8 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -39,15 +45,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.core.text.HtmlCompat
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.toAnnotatedString
-import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteActionUi
-import com.woocommerce.android.ui.inbox.InboxViewModel.InboxNoteUi
 import com.woocommerce.android.ui.inbox.InboxViewModel.InboxState
 
 @Composable
@@ -139,7 +145,9 @@ fun InboxNotes(
 }
 
 @Composable
-fun InboxNoteRow(note: InboxNoteUi) {
+fun InboxNoteRow(note: InboxNoteUi, limitDescription: Boolean = false) {
+    val displayShowMoreButton = remember { mutableStateOf(limitDescription && note.description.length > 100) }
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_75))
@@ -160,20 +168,34 @@ fun InboxNoteRow(note: InboxNoteUi) {
                 style = MaterialTheme.typography.subtitle1
             )
             Text(
+                modifier = Modifier.animateContentSize(),
                 text = HtmlCompat.fromHtml(note.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toAnnotatedString(),
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.body2,
+                maxLines = if (displayShowMoreButton.value) 2 else Int.MAX_VALUE,
+                overflow = TextOverflow.Ellipsis
             )
         }
-        when {
-            note.isSurvey -> InboxNoteSurveyActionsRow(note.actions)
-            else -> InboxNoteActionsRow(note.actions)
+        AnimatedContent(displayShowMoreButton.value, label = "Animated note action bar") { isMoreButtonVisible ->
+            if (isMoreButtonVisible) {
+                WCTextButton(
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.minor_100)),
+                    onClick = { displayShowMoreButton.value = false },
+                    text = stringResource(id = R.string.read_more)
+                )
+            } else {
+                when {
+                    note.isSurvey -> InboxNoteSurveyActionsRow(note.actions)
+                    else -> InboxNoteActionsRow(note.actions)
+                }
+            }
         }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
-    Row(
+    FlowRow(
         modifier = Modifier
             .padding(
                 start = dimensionResource(id = R.dimen.minor_100),
@@ -188,9 +210,10 @@ private fun InboxNoteActionsRow(actions: List<InboxNoteActionUi>) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun InboxNoteSurveyActionsRow(actions: List<InboxNoteActionUi>) {
-    Row(
+    FlowRow(
         modifier = Modifier.padding(
             start = dimensionResource(id = R.dimen.major_100),
             end = dimensionResource(id = R.dimen.major_100),
@@ -346,6 +369,12 @@ private fun InboxNoteButtonsSkeleton() {
 @Composable
 private fun InboxPreview(@PreviewParameter(SampleInboxProvider::class, 1) state: InboxState) {
     InboxScreen(state)
+}
+
+@Preview
+@Composable
+private fun EmptyInboxPreview() {
+    InboxEmptyCase()
 }
 
 class SampleInboxProvider : PreviewParameterProvider<InboxState> {

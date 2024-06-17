@@ -1,2 +1,0 @@
-18.7:
-Vi har åtgärdat ett problem som gjorde att appen kraschade när skärmen roterades, så du får en smidigare shoppingupplevelse. Uppdatera nu så får du en stabilare och mer tillförlitlig app!

@@ -8,7 +8,7 @@ import android.content.Context
 enum class FeatureFlag {
     WOO_POS,
     DB_DOWNGRADE,
-    MORE_MENU_INBOX,
+    INBOX,
     WC_SHIPPING_BANNER,
     OTHER_PAYMENT_METHODS,
     BETTER_CUSTOMER_SEARCH_M2,
@@ -26,19 +26,19 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            MORE_MENU_INBOX,
+            INBOX,
             WOO_POS,
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
-            ORDER_CREATION_AUTO_TAX_RATE,
-            DYNAMIC_DASHBOARD_M2,
-            EOSL_M3 -> PackageUtils.isDebugBuild()
+            ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
 
+            DYNAMIC_DASHBOARD_M2,
             OTHER_PAYMENT_METHODS,
             CONNECTIVITY_TOOL,
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,
-            EOSL_M1 -> true
+            EOSL_M1,
+            EOSL_M3 -> true
         }
     }
 }
