@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -106,12 +105,12 @@ fun WooPosTotalsScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp)) // Add some vertical spacing between the rows and button
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = { onCollectPaymentClick() },
                     enabled = totalsState.value.isCollectPaymentButtonEnabled,
-                    modifier = Modifier.align(Alignment.CenterHorizontally) // Center button horizontally
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
                     Text("Collect Card Payment")
                 }
