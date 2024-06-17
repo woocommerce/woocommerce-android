@@ -55,20 +55,19 @@ fun WooPosTotalsScreen(
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally, // Center all children horizontally
-                verticalArrangement = Arrangement.Center // Center content in the Column vertically
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 if (totalsState.value.orderId != null) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween // Distribute space between children
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Subtotal",
+                            text = "Subtotal: ",
                             style = MaterialTheme.typography.h4,
                             color = MaterialTheme.colors.primary
                         )
-                        Spacer(modifier = Modifier.weight(1f)) // Add spacer between the texts
                         Text(
                             text = totalsState.value.orderSubtotal.toPlainString(),
                             style = MaterialTheme.typography.h4,
@@ -76,15 +75,14 @@ fun WooPosTotalsScreen(
                         )
                     }
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween // Distribute space between children
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Taxes",
+                            text = "Taxes: ",
                             style = MaterialTheme.typography.h4,
                             color = MaterialTheme.colors.primary
                         )
-                        Spacer(modifier = Modifier.weight(1f)) // Add spacer between the texts
                         Text(
                             text = totalsState.value.orderTax.toPlainString(),
                             style = MaterialTheme.typography.h4,
@@ -92,15 +90,14 @@ fun WooPosTotalsScreen(
                         )
                     }
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween // Distribute space between children
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Total",
+                            text = "Total: ",
                             style = MaterialTheme.typography.h4,
                             color = MaterialTheme.colors.primary
                         )
-                        Spacer(modifier = Modifier.weight(1f)) // Add spacer between the texts
                         Text(
                             text = totalsState.value.orderTotal.toPlainString(),
                             style = MaterialTheme.typography.h4,
