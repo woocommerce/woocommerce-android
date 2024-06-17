@@ -767,13 +767,13 @@ platform :android do
     files = case app
             when MOBILE_APP
               {
-                "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: 'changelogs/default.txt', max_size: 0 },
+                "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: 'changelogs/default.txt', max_size: 500 },
                 play_store_promo: { desc: 'short_description.txt', max_size: 80 },
                 play_store_desc: { desc: 'full_description.txt', max_size: 0 },
                 play_store_app_title: { desc: 'title.txt', max_size: 50 }
               }
             when WEAR_APP
-              { wear_release_note: { desc: 'changelogs/default.txt', max_size: 0 } }
+              { wear_release_note: { desc: 'changelogs/default.txt', max_size: 500 } }
             else
               UI.user_error!("Unknown app parameter: #{app}. Must me one of #{MOBILE_APP} or #{WEAR_APP}")
             end
