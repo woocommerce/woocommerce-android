@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Colors
 import androidx.compose.material.Icon
@@ -22,6 +23,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Reviews
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+
 @Suppress("MagicNumber")
 val Colors.feedbackSurface: Color get() = if (isLight) Color(0xFF1C1C1E) else Color(0xFFBEA0F2)
 
@@ -82,38 +85,41 @@ fun FeedbackDialog(
                 shape = RoundedCornerShape(corner = CornerSize(8.dp))
             ) {
                 Row {
-                    Column(modifier = Modifier.weight(2f, true).padding(bottom = 16.dp)) {
-                        val fontSize = 18.sp
+                    Column(
+                        modifier = Modifier
+                            .weight(2f, true)
+                            .padding(bottom = 8.dp)
+                    ) {
+                        val fontSize = 16.sp
                         Text(
                             text = title,
                             fontSize = fontSize,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colors.onPrimary,
-                            modifier = Modifier.padding(start = 24.dp, top = 24.dp)
+                            modifier = Modifier.padding(start = 18.dp, top = 16.dp)
                         )
                         Text(
                             text = message,
                             fontSize = fontSize,
                             color = MaterialTheme.colors.onPrimary.copy(alpha = .9f),
-                            modifier = Modifier.padding(start = 24.dp, top = 8.dp)
+                            modifier = Modifier.padding(start = 18.dp, top = 8.dp)
                         )
                         WCTextButton(
                             onClick = { onAction() },
-                        ) {
-                            Text(
-                                text = action,
-                                fontSize = fontSize,
-                                color = MaterialTheme.colors.onFeedbackSurface,
-                                modifier = Modifier.padding(start = 16.dp, top = 8.dp)
-                            )
-                        }
+                            icon = Icons.Outlined.Reviews,
+                            text = action,
+                            colors = ButtonDefaults
+                                .textButtonColors(contentColor = MaterialTheme.colors.onFeedbackSurface),
+                            modifier = Modifier.padding(start = 4.dp)
+
+                        )
                     }
-                    IconButton(onClick = { onClose() },) {
+                    IconButton(onClick = { onClose() }) {
                         Icon(
                             imageVector = Icons.Filled.Close,
                             tint = MaterialTheme.colors.onPrimary.copy(alpha = .60f),
                             contentDescription = stringResource(id = R.string.close),
-                            modifier = Modifier.padding(24.dp)
+                            modifier = Modifier.padding(14.dp)
                         )
                     }
                 }
