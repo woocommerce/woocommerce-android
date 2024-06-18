@@ -56,3 +56,6 @@ tracksEnabled = false
 
 android.nonTransitiveRClass=true
 android.enableR8.fullMode=false
+
+# Dependency Analysis Plugin
+dependency.analysis.android.ignored.variants=release,vanillaDebug,vanillaRelease,wasabiDebug,wasabiRelease,jalapenoRelease
