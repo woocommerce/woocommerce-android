@@ -110,3 +110,49 @@ fun WCRefundModel.WCRefundFeeLine.toAppModel(): Refund.FeeLine {
         total = (total), // WCRefundFeeLine.total is NEGATIVE
     )
 }
+
+fun List<Refund>.getNonRefundedProducts(
+    products: List<OrderItem>
+): List<OrderItem> {
+    val leftoverProducts = getMaxRefundQuantities(products).filter { it.value > 0 }
+    return products
+        .filter { leftoverProducts.contains(it.itemId) }
+        .map {
+            val newQuantity = leftoverProducts[it.itemId]
+            if (newQuantity == it.quantity) return@map it
+            val quantity = it.quantity.toBigDecimal()
+            val individualProductTax = if (quantity > BigDecimal.ZERO) {
+                it.totalTax.divide(quantity, 2, RoundingMode.HALF_UP)
+            } else {
+                BigDecimal.ZERO
+            }
+
+            it.copy(
+                quantity = newQuantity ?: error("Missing product"),
+                total = it.price.times(newQuantity.toBigDecimal()),
+                totalTax = individualProductTax.times(newQuantity.toBigDecimal())
+            )
+        }
+}
+
+/*
+ * Calculates the max quantity for each item by subtracting the number of already-refunded items
+ */
+fun List<Refund>.getMaxRefundQuantities(
+    products: List<OrderItem>
+): Map<Long, Float> {
+    val map = mutableMapOf<Long, Float>()
+    val groupedRefunds = this.flatMap { it.items }.groupBy { it.orderItemId }
+    products.map { item ->
+        map[item.itemId] = item.quantity - (groupedRefunds[item.itemId]?.sumOf { it.quantity } ?: 0)
+    }
+    return map
+}
+
+data class OrderItem(
+    val itemId: Long,
+    val quantity: Float,
+    val totalTax: BigDecimal,
+    val price: BigDecimal,
+    val total: BigDecimal
+)
