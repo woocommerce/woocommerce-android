@@ -38,6 +38,7 @@ class OrderCreateEditTotalsHelper @Inject constructor(
             TotalsSectionsState.Minimised(
                 orderTotal = order.toOrderTotals(bigDecimalFormatter),
                 onHeightChanged = onHeightChanged,
+                onExpandCollapseClicked = onExpandCollapseClicked,
                 recalculateButton = viewState.getRecalculateButton(onRecalculateButtonClicked)
             )
         } else {
@@ -263,6 +264,7 @@ sealed class TotalsSectionsState(open val onHeightChanged: (height: Int) -> Unit
 
     data class Minimised(
         val orderTotal: OrderTotal,
+        val onExpandCollapseClicked: () -> Unit,
         val recalculateButton: Button? = null,
         override val onHeightChanged: (height: Int) -> Unit
     ) : TotalsSectionsState(onHeightChanged)
