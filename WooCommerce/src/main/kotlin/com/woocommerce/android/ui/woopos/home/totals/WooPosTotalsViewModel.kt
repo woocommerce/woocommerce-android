@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 @HiltViewModel
 class WooPosTotalsViewModel @Inject constructor(
@@ -73,7 +74,8 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             val order = orderDetailRepository.getOrderById(orderId)
             if (order == null || order.items.isEmpty()) {
-                _state.value = state.value.copy(isCollectPaymentButtonEnabled = false)
+                // this cannot happen
+                exitProcess(0)
             } else {
                 calculateTotals(order)
             }
