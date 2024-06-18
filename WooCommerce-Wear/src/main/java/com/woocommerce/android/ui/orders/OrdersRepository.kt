@@ -11,6 +11,7 @@ import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.extensions.getSiteId
 import com.woocommerce.android.extensions.toOrderEntity
 import com.woocommerce.android.extensions.toWearOrder
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.login.LoginRepository
 import com.woocommerce.commons.DataParameters.ORDERS_JSON
 import com.woocommerce.commons.DataParameters.ORDER_ID
@@ -24,12 +25,14 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCWearableStore
 import javax.inject.Inject
+import org.wordpress.android.fluxc.store.WCRefundStore
 
 class OrdersRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.ORDERS) private val ordersDataStore: DataStore<Preferences>,
     private val loginRepository: LoginRepository,
     private val wearableStore: WCWearableStore,
-    private val orderStore: WCOrderStore
+    private val orderStore: WCOrderStore,
+    private val refundStore: WCRefundStore
 ) {
     private val gson by lazy { Gson() }
 
@@ -39,6 +42,15 @@ class OrdersRepository @Inject constructor(
         site = selectedSite,
         shouldStoreData = true
     )
+
+    suspend fun fetchOrderRefunds(
+        selectedSite: SiteModel,
+        orderId: Long
+    ) = refundStore.fetchAllRefunds(selectedSite, orderId)
+        .takeUnless { it.isError }
+        ?.model
+        ?.map { it.toAppModel() }
+        ?: emptyList()
 
     suspend fun getStoredOrders(
         selectedSite: SiteModel
