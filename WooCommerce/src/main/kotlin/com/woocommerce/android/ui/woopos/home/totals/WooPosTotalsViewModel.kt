@@ -81,7 +81,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun calculateTotals(order: Order) {
         val subtotalAmount = order.items.sumOf { it.subtotal }
-        val taxAmount = subtotalAmount.multiply(BigDecimal("0.1")) // having fixed 10% tax for testing
+        val taxAmount = order.totalTax
         val totalAmount = subtotalAmount + taxAmount
 
         val updatedOrder = order.copy(
