@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductQuantityRulesBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
@@ -23,8 +22,6 @@ class ProductQuantityRulesFragment : BaseProductEditorFragment(R.layout.fragment
     companion object {
         val TAG: String = ProductQuantityRulesFragment::class.java.simpleName
     }
-
-    private val navArgs: ProductQuantityRulesFragmentArgs by navArgs()
 
     private var _binding: FragmentProductQuantityRulesBinding? = null
     private val binding get() = _binding!!
