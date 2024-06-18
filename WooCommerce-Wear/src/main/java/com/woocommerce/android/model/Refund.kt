@@ -148,11 +148,3 @@ fun List<Refund>.getMaxRefundQuantities(
     }
     return map
 }
-
-data class OrderItem(
-    val itemId: Long,
-    val quantity: Float,
-    val totalTax: BigDecimal,
-    val price: BigDecimal,
-    val total: BigDecimal
-)
