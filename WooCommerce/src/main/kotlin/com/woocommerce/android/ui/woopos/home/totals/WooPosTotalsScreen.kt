@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +38,16 @@ fun WooPosTotalsScreen(
     onCollectPaymentClick: () -> Unit
 ) {
     val totalsState = state.collectAsState()
+
+    if (totalsState.value.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -89,7 +100,8 @@ fun WooPosTotalsScreenPreview() {
             orderSubtotal = BigDecimal(100.00),
             orderTotal = BigDecimal(113.00),
             orderTax = BigDecimal(13.00),
-            isCollectPaymentButtonEnabled = true
+            isCollectPaymentButtonEnabled = true,
+            isLoading = false
         )
     )
 
