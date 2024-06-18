@@ -1,16 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-05-28 11:54:03+0000
+Translation-Revision-Date: 2024-06-10 22:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources>
+    <string name="woopos_reader_unknown">حالة القارئ مجهولة</string>
+    <string name="woopos_checkout">السداد</string>
+    <string name="woopos_reader_disconnected">تم فصل القارئ</string>
+    <string name="woopos_reader_connecting">اتصال القارئ</string>
+    <string name="woopos_reader_connected">تم اتصال القارئ</string>
+    <string name="woopos_exit_pos">إنهاء POS</string>
+    <string name="dashboard_new_widgets_card_button">إضافة أقسام جديدة</string>
+    <string name="dashboard_product_stock_empty_products">لم يتم العثور على منتجات لحالة المخزون المحددة</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">يتعذر تحميل تقارير مخزون المنتجات</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">لم يتم بيع أي عناصر في آخر 30 يومًا</string>
+    <string name="dashboard_product_stock_sales_last_30_days">تم بيع %d من العناصر في آخر 30 يومًا</string>
+    <string name="more_menu_button_woo_pos_description">استخدام التطبيق كسجل أعطال</string>
+    <string name="more_menu_button_woo_pos">وضع نقطة البيع</string>
+    <string name="product_stock_status_low_stock">مخزون منخفض</string>
+    <string name="order_detail_shipping_header">الشحن</string>
+    <string name="order_creation_feedback_action">مشاركة ملاحظاتك</string>
+    <string name="order_creation_shipping_feedback_message">هل يجعل Woo الشحن سهلاً؟</string>
+    <string name="order_creation_shipping_feedback_title">تمت إضافة الشحن!</string>
+    <string name="order_creation_shipping_edit">تحرير الشحن</string>
+    <string name="order_creation_shipping_title_edit">تحرير الشحن</string>
+    <string name="cash_payments_order_note_adding_error">خطأ في أثناء إضافة ملاحظة الطلب</string>
+    <string name="cash_payments_order_note_text">تم دفع قيمة الطلب نقدًا. دفع العميل %s. كان التغيير المستحق %s.</string>
+    <string name="cash_payments_mark_order_as_complete">وسم الطلب بأنه مكتمل</string>
+    <string name="cash_payments_record_transaction_details">تسجيل تفاصيل المعاملات في ملاحظة الطلب</string>
+    <string name="dashboard_new_widgets_card_description">إضافة أقسام جديدة لتخصيص تجربة إدارة متجرك</string>
+    <string name="dashboard_new_widgets_card_title">هل تبحث عن بعض الرؤى؟</string>
+    <string name="dashboard_product_stock_products">المنتجات</string>
+    <string name="dashboard_product_stock_levels">مستويات المخزون</string>
+    <string name="dashboard_product_stock_status_header_title">الحالة</string>
+    <string name="dashboard_wcanalytics_inactive_contact_us">هل لا تزال تحتاج إلى مساعدة؟ الاتصال بنا</string>
+    <string name="dashboard_coupons_wcanalytics_inactive_title">يتعذر تحميل تقرير استخدام القسائم</string>
+    <string name="dashboard_coupons_card_empty_view_message">لا يوجد استخدام قسائم في أثناء هذه الفترة</string>
+    <string name="dashboard_coupons_view_all_button">عرض كل القسائم</string>
+    <string name="dashboard_coupons_card_header_uses">الاستخدامات</string>
+    <string name="dashboard_coupons_card_header_coupons">القسائم</string>
+    <string name="my_store_widget_product_stock_title">المخزون</string>
+    <string name="dashboard_action_view_all_messages">عرض كل الرسائل</string>
+    <string name="dashboard_top_performers_wcanalytics_inactive_title">يتعذر تحميل أهم المؤدِّين</string>
+    <string name="na">غير محدَّد</string>
     <string name="cash_payments_change_due">التغيير المستحق</string>
     <string name="cash_payments_cash_received">تم تلقي النقد</string>
     <string name="my_store_widget_coupons_title">معظم القسائم النشطة</string>
-    <string name="more_menu_button_woo_pos_description">نقطة إدخال مؤقتة إلى وضع POS</string>
-    <string name="more_menu_button_woo_pos">Woo Pos</string>
     <string name="cash_payments_take_payment_title">تحصيل الدفع (%s)</string>
     <string name="dashboard_reviews_card_view_all_button">عرض جميع المراجعات</string>
     <string name="dashboard_reviews_card_empty_message_filtered">لا توجد مراجعات تتطابق مع عامل التصفية المحدد، يرجى محاولة تغيير عامل التصفية</string>
@@ -39,6 +76,7 @@ Language: ar
     <string name="dynamic_dashboard_widget_menu_item_hide">إخفاء %s</string>
     <string name="my_store_widget_onboarding_completed">مكتمل</string>
     <string name="my_store_widget_feedback_title">ملاحظات</string>
+    <string name="dashboard_wcanalytics_inactive_description">تأكد من أنك تقوم بتشغيل أحدث إصدار من WooCommerce على موقعك وأنك قمت بتفعيل تحليلات WooCommerce.</string>
     <string name="my_store_stats_plugin_inactive_title">يتعذر علينا عرض\n تحليلات متجرك</string>
     <string name="store_onboarding_task_view_all_tasks">عرض جميع المهام</string>
     <string name="analytics_session_no_available_description">تعتمد تحليلات الجلسة على أعداد الزائرين الفريدة غير المتاحة لنطاقات التواريخ المخصصة</string>

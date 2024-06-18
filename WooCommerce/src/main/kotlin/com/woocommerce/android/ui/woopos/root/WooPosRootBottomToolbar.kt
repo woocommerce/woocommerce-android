@@ -13,8 +13,12 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -22,12 +26,15 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
-fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvents) -> Unit) {
+fun WooPosBottomToolbar(
+    state: State<WooPosRootScreenState>,
+    onUIEvent: (WooPosRootUIEvent) -> Unit,
+) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        color = MaterialTheme.colors.surface
+        color = MaterialTheme.colors.background
     ) {
         Row(
             modifier = Modifier
@@ -37,16 +44,16 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvents) -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ExitPOSClicked) }) {
+            TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }) {
                 Text(
                     text = stringResource(id = R.string.woopos_exit_pos),
-                    color = MaterialTheme.colors.onSurface,
+                    color = Color.White,
                     style = MaterialTheme.typography.button
                 )
             }
-            TextButton(onClick = { onUIEvent(WooPosRootUIEvents.ExitPOSClicked) }) {
+            TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }) {
                 Text(
-                    text = stringResource(id = R.string.woopos_reader_connected),
+                    text = stringResource(id = state.value.cardReaderStatus.title),
                     color = MaterialTheme.colors.secondaryVariant,
                     style = MaterialTheme.typography.button
                 )
@@ -58,10 +65,18 @@ fun WooPosBottomToolbar(onUIEvent: (WooPosRootUIEvents) -> Unit) {
 @WooPosPreview
 @Composable
 fun PreviewWooPosBottomToolbar() {
+    val state = remember {
+        mutableStateOf(
+            WooPosRootScreenState(
+                WooPosRootScreenState.WooPosCardReaderStatus.Unknown,
+                null
+            )
+        )
+    }
     WooPosTheme {
         Column {
             Spacer(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar {}
+            WooPosBottomToolbar(state, {})
         }
     }
 }

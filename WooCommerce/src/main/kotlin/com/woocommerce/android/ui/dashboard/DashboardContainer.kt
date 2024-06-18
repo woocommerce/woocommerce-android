@@ -160,7 +160,7 @@ private fun ConfigurableWidgetCard(
             modifier = modifier
         )
 
-        DashboardWidget.Type.PRODUCT_STOCK -> DashboardProductStockCard(
+        DashboardWidget.Type.STOCK -> DashboardProductStockCard(
             parentViewModel = dashboardViewModel,
             modifier = modifier
         )
@@ -282,7 +282,7 @@ private fun NewWidgetsCard(
         Spacer(modifier = Modifier.height(16.dp))
         WCColoredButton(
             onClick = state.onShowCardsClick,
-            text = "Add new sections"
+            text = stringResource(id = R.string.dashboard_new_widgets_card_button)
         )
     }
 }

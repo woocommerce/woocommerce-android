@@ -213,7 +213,9 @@ class NullableCurrencyTextFieldValueMapper @VisibleForTesting constructor(
         val clearedText = newText.filter { it in acceptedChars }
         return when {
             clearedText.isEmpty() || clearedText == decimalSeparator || clearedText == "." -> clearedText
-            clearedText.hasAllowedNumberOfDecimals() && clearedText.toBigDecimalOrNull() != null -> clearedText
+            clearedText.hasAllowedNumberOfDecimals() && clearedText.replace(decimalSeparator, ".")
+                .toBigDecimalOrNull() != null -> clearedText
+
             else -> oldText
         }
     }

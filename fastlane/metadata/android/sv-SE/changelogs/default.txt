@@ -1,0 +1,2 @@
+19.0:
+Upptäck de senaste förbättringarna i vår WooCommerce-mobilapp. Vi har förbättrat betalningsdialogrutorna för en bättre upplevelse på större skärmar, löst problemen med push-meddelanden och åtgärdat ett inloggningsfel som förhindrade att felmeddelanden visades. Våra nya adminpanelskort ger dessutom handlare djupare insikter rörande sina butiker. Uppdatera nu för en smidigare och mer informativ upplevelse.
