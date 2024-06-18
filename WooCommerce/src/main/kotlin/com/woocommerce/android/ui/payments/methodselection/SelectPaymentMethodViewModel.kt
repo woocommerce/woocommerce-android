@@ -345,6 +345,9 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     source = AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
                     flow = cardReaderPaymentFlowParam.toAnalyticsFlowName(),
                 )
+                if (cardReaderPaymentFlowParam.paymentType == WOO_POS) {
+                    triggerEvent(ReturnResultToWooPos.Failure)
+                }
             }
         }
     }
@@ -453,7 +456,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 SIMPLE -> NavigateBackToHub(CardReadersHub())
                 TRY_TAP_TO_PAY -> NavigateToTapToPaySummary(order.first())
                 ORDER, ORDER_CREATION -> NavigateBackToOrderList(order.first())
-                WOO_POS -> ReturnResultToWooPos
+                WOO_POS -> ReturnResultToWooPos.Success
             }
         )
     }
