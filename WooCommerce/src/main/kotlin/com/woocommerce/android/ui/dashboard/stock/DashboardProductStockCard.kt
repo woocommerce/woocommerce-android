@@ -274,7 +274,9 @@ fun ProductStockRow(
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp),
                     text = product.name,
                     style = MaterialTheme.typography.subtitle1,
                     maxLines = 2,
