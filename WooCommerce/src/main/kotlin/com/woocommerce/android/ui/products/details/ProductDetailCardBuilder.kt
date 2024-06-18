@@ -69,6 +69,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.RatingBar
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
+import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.settings.ProductVisibility
@@ -931,7 +932,7 @@ class ProductDetailCardBuilder(
     }
 
     private suspend fun Product.quantityRules(): ProductProperty? {
-        val rules = viewModel.getQuantityRules(this.remoteId) ?: return null
+        val rules = QuantityRules(this.minAllowedQuantity, this.maxAllowedQuantity, this.groupOfQuantity)
 
         val properties = buildMap {
             putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
