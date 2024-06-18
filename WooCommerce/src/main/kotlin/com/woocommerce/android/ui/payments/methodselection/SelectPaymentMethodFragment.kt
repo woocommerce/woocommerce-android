@@ -38,6 +38,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -287,7 +288,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         Bundle().apply {
                             putParcelable(
                                 WooPosCardReaderActivity.WOO_POS_CARD_PAYMENT_RESULT_KEY,
-                                WooPosCardReaderPaymentResult.Success,
+                                event.asWooPosCardReaderPaymentResult(),
                             )
                         }
                     )
@@ -295,6 +296,13 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             }
         }
     }
+
+    private fun ReturnResultToWooPos.asWooPosCardReaderPaymentResult() =
+        if (this is ReturnResultToWooPos.Success) {
+            WooPosCardReaderPaymentResult.Success
+        } else {
+            WooPosCardReaderPaymentResult.Failure
+        }
 
     private fun setupResultHandlers() {
         handleDialogResult<Boolean>(
