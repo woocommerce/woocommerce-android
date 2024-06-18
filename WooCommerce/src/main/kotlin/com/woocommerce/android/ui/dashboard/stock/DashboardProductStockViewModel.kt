@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.stock
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -47,10 +48,14 @@ class DashboardProductStockViewModel @AssistedInject constructor(
 
     private val _refreshTrigger = MutableSharedFlow<DashboardViewModel.RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
-        .onStart { emit(DashboardViewModel.RefreshEvent()) }
+        .onStart {
+            if(productStockState.value !is ViewState.Success) {
+                emit(DashboardViewModel.RefreshEvent()) // Avoid refreshing when stock items are already loaded
+            }
+        }
     private val status = savedStateHandle.getStateFlow<ProductStockStatus>(viewModelScope, ProductStockStatus.LowStock)
 
-    val productStockState = status
+    val productStockState : LiveData<ViewState> = status
         .flatMapLatest {
             refreshTrigger.map { refresh -> Pair(refresh, it) }
         }
