@@ -1,0 +1,21 @@
+# Nodes with values to reuse in the pipeline.
+common_params:
+  # Common plugin settings to use with the `plugins` key.
+  - &ci_toolkit
+      automattic/a8c-ci-toolkit#3.0.1
+
+agents:
+  queue: "android"
+
+steps:
+  - label: "dependency analysis"
+    command: |
+      echo "--- 📊 Analyzing"
+      cp gradle.properties-example gradle.properties
+      ./gradlew buildHealth
+    plugins: [*ci_toolkit]
+    artifact_paths:
+      - "build/reports/dependency-analysis/build-health-report.*"
+    notify:
+      - slack: "#android-core-notifs"
+        if: build.state == "failed"

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-03 13:54:03+0000
+Translation-Revision-Date: 2024-06-11 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources>
+    <string name="woopos_reader_unknown">Estado del lector desconocido</string>
+    <string name="woopos_checkout">Finalizar compra</string>
+    <string name="woopos_reader_disconnected">Lector desconectado</string>
+    <string name="woopos_reader_connecting">Conectando lector</string>
+    <string name="woopos_reader_connected">Lector conectado</string>
+    <string name="woopos_exit_pos">Salir del punto de venta</string>
+    <string name="dashboard_new_widgets_card_button">Añadir nuevas secciones</string>
+    <string name="dashboard_product_stock_empty_products">No se han encontrado productos para el estado de existencias elegido</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">No se han podido cargar los informes de existencias de productos</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">No hay elementos vendidos en los últimos 30 días</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d elementos vendidos en los últimos 30 días</string>
     <string name="more_menu_button_woo_pos_description">Utilizar la aplicación como caja registradora</string>
     <string name="more_menu_button_woo_pos">Modo de punto de venta</string>
     <string name="product_stock_status_low_stock">Pocas existencias</string>

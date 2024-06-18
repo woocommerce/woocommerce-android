@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.model.WCProductModel.QuantityRulesMetadataKeys.ALLOW_COMBINATION
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
 
@@ -23,17 +22,17 @@ class GetProductVariationQuantityRules @Inject constructor(
                 plugin = WooCommerceStore.WooPlugin.WOO_MIN_MAX_QUANTITIES
             )
             val isActive = plugin != null && plugin.isActive
+            if (!isActive) return@withContext null
 
-            val isAllowCombinationDisabled =
-                productDetailRepository.getProductMetadata(remoteProductId)?.let { metadata ->
-                    metadata[ALLOW_COMBINATION] != "yes"
-                } ?: true
+            val parentProductDisablesVariationRules =
+                productDetailRepository.getProduct(remoteProductId)?.combineVariationQuantities ?: true
+            if (parentProductDisablesVariationRules) return@withContext null
 
-            if (isActive && isAllowCombinationDisabled) {
-                variationDetailRepository.getQuantityRules(remoteProductId, remoteVariationId)
-            } else {
-                null
-            }
+            val variationOverridesParentProductRules = variationDetailRepository
+                .getVariation(remoteProductId, remoteVariationId)?.overrideProductQuantities ?: false
+            if (!variationOverridesParentProductRules) return@withContext null
+
+            variationDetailRepository.getQuantityRules(remoteProductId, remoteVariationId)
         }
     }
 }

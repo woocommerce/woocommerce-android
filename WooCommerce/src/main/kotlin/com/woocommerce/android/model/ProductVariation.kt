@@ -52,7 +52,11 @@ open class ProductVariation(
     override val length: Float,
     override val width: Float,
     override val height: Float,
-    override val weight: Float
+    override val weight: Float,
+    open val minAllowedQuantity: Int?,
+    open val maxAllowedQuantity: Int?,
+    open val groupOfQuantity: Int?,
+    open val overrideProductQuantities: Boolean?
 ) : Parcelable, IProduct, Comparable<ProductVariation> {
     val isSaleInEffect: Boolean
         get() {
@@ -93,7 +97,11 @@ open class ProductVariation(
                 weight == variation.weight &&
                 length == variation.length &&
                 height == variation.height &&
-                width == variation.width
+                width == variation.width &&
+                minAllowedQuantity == variation.minAllowedQuantity &&
+                maxAllowedQuantity == variation.maxAllowedQuantity &&
+                groupOfQuantity == variation.groupOfQuantity &&
+                overrideProductQuantities == variation.overrideProductQuantities
         } ?: false
     }
 
@@ -159,6 +167,10 @@ open class ProductVariation(
             it.width = if (width == 0f) "" else width.formatToString()
             it.weight = if (weight == 0f) "" else weight.formatToString()
             it.height = if (height == 0f) "" else height.formatToString()
+            it.minAllowedQuantity = minAllowedQuantity ?: -1
+            it.maxAllowedQuantity = maxAllowedQuantity ?: -1
+            it.groupOfQuantity = groupOfQuantity ?: -1
+            it.overrideProductQuantities = overrideProductQuantities ?: false
             if (this is SubscriptionProductVariation) {
                 // Subscription details are currently the only editable metadata fields from the app.
                 it.metadata = subscriptionDetails?.toMetadataJson().toString()
@@ -201,7 +213,11 @@ open class ProductVariation(
         length: Float = this.length,
         width: Float = this.width,
         height: Float = this.height,
-        weight: Float = this.weight
+        weight: Float = this.weight,
+        minAllowedQuantity: Int? = this.minAllowedQuantity,
+        maxAllowedQuantity: Int? = this.maxAllowedQuantity,
+        groupOfQuantity: Int? = this.groupOfQuantity,
+        overrideProductQuantities: Boolean? = this.overrideProductQuantities
     ): ProductVariation {
         return ProductVariation(
             remoteProductId = remoteProductId,
@@ -231,7 +247,12 @@ open class ProductVariation(
             length = length,
             width = width,
             height = height,
-            weight = weight
+            weight = weight,
+            minAllowedQuantity = minAllowedQuantity,
+            maxAllowedQuantity = maxAllowedQuantity,
+            groupOfQuantity = groupOfQuantity,
+            overrideProductQuantities = overrideProductQuantities
+
         )
     }
 }
@@ -293,6 +314,10 @@ fun WCProductVariationModel.toAppModel(): ProductVariation {
         length = this.length.toFloatOrNull() ?: 0f,
         width = this.width.toFloatOrNull() ?: 0f,
         height = this.height.toFloatOrNull() ?: 0f,
-        weight = this.weight.toFloatOrNull() ?: 0f
+        weight = this.weight.toFloatOrNull() ?: 0f,
+        minAllowedQuantity = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null,
+        maxAllowedQuantity = if (this.maxAllowedQuantity >= 0) this.maxAllowedQuantity else null,
+        groupOfQuantity = if (this.groupOfQuantity >= 0) this.groupOfQuantity else null,
+        overrideProductQuantities = this.overrideProductQuantities
     )
 }

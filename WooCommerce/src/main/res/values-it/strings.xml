@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-04 11:54:03+0000
+Translation-Revision-Date: 2024-06-11 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: it
 -->
 <resources>
+    <string name="woopos_reader_unknown">Stato del lettore sconosciuto</string>
+    <string name="woopos_checkout">Pagamento</string>
+    <string name="woopos_reader_disconnected">Lettore disconnesso</string>
+    <string name="woopos_reader_connecting">Connessione in corso del lettore</string>
+    <string name="woopos_reader_connected">Lettore connesso</string>
+    <string name="woopos_exit_pos">Esci da POS</string>
+    <string name="dashboard_new_widgets_card_button">Aggiungi nuove sezioni</string>
+    <string name="dashboard_product_stock_empty_products">Nessun prodotto trovato per lo stato di magazzino selezionato</string>
+    <string name="dashboard_product_stock_wcanalytics_inactive_title">Impossibile caricare i report sulle disponibilità in magazzino dei prodotti</string>
+    <string name="dashboard_product_stock_no_sales_last_30_days">Nessun articolo venduto negli ultimi 30 giorni</string>
+    <string name="dashboard_product_stock_sales_last_30_days">%d articoli venduti negli ultimi 30 giorni</string>
     <string name="more_menu_button_woo_pos_description">Usa l\'app come registratore di cassa</string>
     <string name="more_menu_button_woo_pos">Modalità punto vendita</string>
     <string name="product_stock_status_low_stock">In esaurimento</string>
