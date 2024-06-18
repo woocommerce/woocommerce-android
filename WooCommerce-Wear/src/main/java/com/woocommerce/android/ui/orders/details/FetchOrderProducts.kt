@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.extensions.combineWithTimeout
 import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.phone.PhoneConnectionRepository
 import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.orders.OrdersRepository
@@ -41,17 +42,7 @@ class FetchOrderProducts @Inject constructor(
         orderId: Long
     ): Flow<List<WearOrderedProduct>> {
         return when {
-            networkStatus.isConnected() -> flow {
-                ordersRepository.fetchOrderRefunds(selectedSite, orderId)
-                    .getNonRefundedProducts(emptyList())
-                    .map {
-                        WearOrderedProduct(
-                            amount = it.quantity.toString(),
-                            total = it.total.toString(),
-                            name = it.name
-                        )
-                    }
-            }
+            networkStatus.isConnected() -> fetchOrderedProducts(selectedSite, orderId)
             phoneRepository.isPhoneConnectionAvailable() -> {
                 phoneRepository.sendMessage(
                     REQUEST_ORDER_PRODUCTS,
@@ -61,6 +52,26 @@ class FetchOrderProducts @Inject constructor(
             }
             else -> flowOf(emptyList()) // Retrieve stored data instead
         }
+    }
+
+    private suspend fun fetchOrderedProducts(
+        selectedSite: SiteModel,
+        orderId: Long
+    ) = flow<List<WearOrderedProduct>> {
+        val orderItems = ordersRepository.getOrderFromId(selectedSite, orderId)
+            ?.getLineItemList()
+            ?.map { it.toAppModel() }
+            ?: emptyList()
+
+        ordersRepository.fetchOrderRefunds(selectedSite, orderId)
+            .getNonRefundedProducts(orderItems)
+            .map {
+                WearOrderedProduct(
+                    amount = it.quantity.toString(),
+                    total = it.total.toString(),
+                    name = it.name
+                )
+            }
     }
 
     sealed class OrderProductsRequest {
