@@ -58,7 +58,7 @@ class FetchOrderProducts @Inject constructor(
         selectedSite: SiteModel,
         orderId: Long
     ) = flow<List<WearOrderedProduct>> {
-        val orderItems = ordersRepository.getOrderFromId(selectedSite, orderId)
+        val orderItems = ordersRepository.fetchSingleOrder(selectedSite, orderId)
             ?.getLineItemList()
             ?.map { it.toAppModel() }
             ?: emptyList()
