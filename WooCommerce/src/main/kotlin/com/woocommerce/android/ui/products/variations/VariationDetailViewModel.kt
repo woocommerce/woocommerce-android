@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.subscriptions.resetSubscriptionLengthIfThePeriodOrIntervalChanged
 import com.woocommerce.android.ui.products.variations.VariationNavigationTarget.ViewImageGallery

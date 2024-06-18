@@ -246,6 +246,10 @@ class VariationDetailFragment :
             viewModel.onVariationSubscriptionChanged(trialLength = freeTrial.length, trialPeriod = freeTrial.period)
         }
 
+        setupQuantityRulesHandleResult()
+    }
+
+    private fun setupQuantityRulesHandleResult() {
         handleResult<QuantityRules>(BaseProductEditorFragment.KEY_QUANTITY_RULES_DIALOG_RESULT) {
             viewModel.onVariationChanged(
                 minAllowedQuantity = it.min,

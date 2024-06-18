@@ -238,8 +238,8 @@ data class Product(
     fun hasLinkedProducts() = crossSellProductIds.size > 0 || upsellProductIds.size > 0
 
     fun hasQuantityRules() = (minAllowedQuantity ?: -1) > 0 ||
-                             (maxAllowedQuantity ?: -1) > 0 ||
-                             (groupOfQuantity ?: -1) > 0
+        (maxAllowedQuantity ?: -1) > 0 ||
+        (groupOfQuantity ?: -1) > 0
 
     /**
      * Compares this product's categories with the passed list, returns true only if both lists contain

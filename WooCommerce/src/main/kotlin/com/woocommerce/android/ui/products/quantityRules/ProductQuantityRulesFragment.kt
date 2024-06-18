@@ -3,15 +3,12 @@ package com.woocommerce.android.ui.products.quantityRules
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FragmentProductQuantityRulesBinding
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
-import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ProductExitEvent.ExitProductQuantityRules
-import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel
 import com.woocommerce.android.util.setupTabletSecondPaneToolbar
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,7 +32,6 @@ class ProductQuantityRulesFragment : BaseProductEditorFragment(R.layout.fragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProductQuantityRulesBinding.bind(view)
-        //viewModel.event.observe(viewLifecycleOwner, Observer(::onEventReceived))
         setupObservers(viewModel)
         initializeViews()
 
@@ -69,7 +65,7 @@ class ProductQuantityRulesFragment : BaseProductEditorFragment(R.layout.fragment
 
     private fun quantityToString(quantity: Int?): String? {
         return quantity?.let {
-            if ( it > 0) it.toString() else null
+            if (it > 0) it.toString() else null
         }
     }
 

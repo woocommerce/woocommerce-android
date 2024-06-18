@@ -28,6 +28,7 @@ class ProductQuantityRulesViewModelTest : BaseUnitTest() {
             )
         )
     }
+
     @Test
     fun `Test that the initial data is displayed correctly`() = testBlocking {
         var actual: QuantityRules? = null

@@ -59,5 +59,5 @@ class ProductQuantityRulesViewModel @Inject constructor(
     @Parcelize
     data class ViewState(
         val quantityRules: QuantityRules = QuantityRules()
-    ) : Parcelable { }
+    ) : Parcelable
 }
