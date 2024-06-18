@@ -29,7 +29,6 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -104,7 +103,13 @@ private fun OrderCreateEditTotalsFullView(
     modifier: Modifier = Modifier
 ) {
     PanelWithShadow {
-        TotalsView(state, modifier)
+        TotalsView(
+            state,
+            modifier.clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { state.onExpandCollapseClicked() }
+        )
     }
 }
 
@@ -116,6 +121,10 @@ private fun OrderCreateEditTotalsMinimisedView(
     PanelWithShadow {
         Column(
             modifier = modifier
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { state.onExpandCollapseClicked() }
                 .background(color = colorResource(id = R.color.color_surface))
         ) {
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
@@ -151,10 +160,6 @@ private fun PanelWithShadow(content: @Composable ColumnScope.() -> Unit) {
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .background(color = Color.Transparent)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) {}
         ) {
             val shadowHeight = dimensionResource(id = R.dimen.minor_100)
             val shadowHeightPx = with(LocalDensity.current) { shadowHeight.toPx() }
@@ -184,8 +189,6 @@ private fun TotalsView(
     state: TotalsSectionsState.Full,
     modifier: Modifier = Modifier
 ) {
-    val totalsIs = remember { MutableInteractionSource() }
-
     Column(
         modifier = modifier
             .background(color = colorResource(id = R.color.color_surface))
@@ -198,12 +201,6 @@ private fun TotalsView(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .clickable(
-                    interactionSource = totalsIs,
-                    indication = null
-                ) {
-                    state.onExpandCollapseClicked()
-                }
                 .animateContentSize()
         ) {
             Box(
@@ -216,22 +213,16 @@ private fun TotalsView(
                     targetState = state.isExpanded,
                     label = "totals_icon",
                 ) { expanded ->
-                    IconButton(
-                        interactionSource = totalsIs,
-                        onClick = {
-                            state.onExpandCollapseClicked()
+                    Icon(
+                        modifier = Modifier.padding(top = 12.dp, bottom = 16.dp),
+                        painter = if (expanded) {
+                            painterResource(R.drawable.ic_arrow_down_26)
+                        } else {
+                            painterResource(R.drawable.ic_arrow_up_26)
                         },
-                    ) {
-                        Icon(
-                            painter = if (expanded) {
-                                painterResource(R.drawable.ic_arrow_down_26)
-                            } else {
-                                painterResource(R.drawable.ic_arrow_up_26)
-                            },
-                            contentDescription = stringResource(R.string.order_creation_expand_collapse_order_totals),
-                            tint = colorResource(id = R.color.color_primary),
-                        )
-                    }
+                        contentDescription = stringResource(R.string.order_creation_expand_collapse_order_totals),
+                        tint = colorResource(id = R.color.color_primary),
+                    )
                 }
             }
 
@@ -578,6 +569,7 @@ private fun OrderCreateEditTotalsMinimisedViewPreview() {
                 value = "$143.75"
             ),
             onHeightChanged = {},
+            onExpandCollapseClicked = {}
         )
     )
 }
