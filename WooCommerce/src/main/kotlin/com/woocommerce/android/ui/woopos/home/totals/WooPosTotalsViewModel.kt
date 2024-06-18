@@ -59,7 +59,7 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.OrderDraftCreated -> {
-                        _state.value = state.value.copy(orderId = event.orderId, isCollectPaymentButtonEnabled = true)
+                        _state.value = state.value.copy(orderId = event.orderId, isCollectPaymentButtonEnabled = false)
                         loadOrderDraft(event.orderId)
                     }
                     else -> Unit
@@ -93,7 +93,7 @@ class WooPosTotalsViewModel @Inject constructor(
             orderSubtotal = subtotalAmount,
             orderTotal = updatedOrder.total,
             orderTax = taxAmount,
-            isCollectPaymentButtonEnabled = true,
+            isCollectPaymentButtonEnabled = true
         )
     }
 }
