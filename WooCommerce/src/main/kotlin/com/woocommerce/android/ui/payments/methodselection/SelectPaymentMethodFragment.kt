@@ -38,7 +38,6 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderActivity
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
-import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint

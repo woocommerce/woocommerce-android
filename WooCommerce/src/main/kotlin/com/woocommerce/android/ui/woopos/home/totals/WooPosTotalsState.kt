@@ -12,7 +12,7 @@ data class WooPosTotalsState(
 ) : Parcelable
 
 @Parcelize
-sealed class SnackbarMessage: Parcelable {
+sealed class SnackbarMessage : Parcelable {
     data class Triggered(@StringRes val message: Int) : SnackbarMessage()
-    data object Hidden: SnackbarMessage()
+    data object Hidden : SnackbarMessage()
 }
