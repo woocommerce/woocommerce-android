@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
-import kotlin.system.exitProcess
 
 @HiltViewModel
 class WooPosTotalsViewModel @Inject constructor(
@@ -61,20 +60,25 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.OrderDraftCreated -> {
-                        _state.value = state.value.copy(orderId = event.orderId, isCollectPaymentButtonEnabled = false, isLoading = true)
+                        _state.value = state.value.copy(
+                            orderId = event.orderId,
+                            isCollectPaymentButtonEnabled = false,
+                            isLoading = true
+                        )
                         loadOrderDraft(event.orderId)
                     }
+
                     else -> Unit
                 }
             }
         }
     }
 
-private fun loadOrderDraft(orderId: Long) {
+    private fun loadOrderDraft(orderId: Long) {
         viewModelScope.launch {
             val order = orderDetailRepository.getOrderById(orderId)
-            check(order != null) {"Order must not be null"}
-            check(order.items.isNotEmpty()) {"Order must have at least one item"}
+            check(order != null) { "Order must not be null" }
+            check(order.items.isNotEmpty()) { "Order must have at least one item" }
             calculateTotals(order)
         }
     }
