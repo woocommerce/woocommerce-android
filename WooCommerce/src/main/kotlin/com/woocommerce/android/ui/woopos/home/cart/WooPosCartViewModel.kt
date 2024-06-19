@@ -107,6 +107,9 @@ class WooPosCartViewModel @Inject constructor(
                             itemsInCart = currentState.itemsInCart + itemClicked.await()
                         )
                     }
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
+                        _state.value = WooPosCartState()
+                    }
                     else -> Unit
                 }
             }

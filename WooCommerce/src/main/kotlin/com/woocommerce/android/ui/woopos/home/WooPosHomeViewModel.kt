@@ -66,6 +66,8 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.OrderSuccessfullyPaid -> {
                         _events.emit(WooPosHomeEvent.OrderSuccessfullyPaid(event.orderId))
+                        sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
+                        _state.value = WooPosHomeState.Cart
                     }
                 }
             }

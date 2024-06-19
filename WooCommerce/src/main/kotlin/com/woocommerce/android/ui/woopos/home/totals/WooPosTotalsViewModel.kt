@@ -71,7 +71,9 @@ class WooPosTotalsViewModel @Inject constructor(
                             isCollectPaymentButtonEnabled = true
                         )
                     }
-
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
+                        _state.value = WooPosTotalsState(orderId = null, isCollectPaymentButtonEnabled = false)
+                    }
                     else -> Unit
                 }
             }
