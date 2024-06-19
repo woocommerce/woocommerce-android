@@ -70,15 +70,12 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    private fun loadOrderDraft(orderId: Long) {
+private fun loadOrderDraft(orderId: Long) {
         viewModelScope.launch {
             val order = orderDetailRepository.getOrderById(orderId)
-            if (order == null || order.items.isEmpty()) {
-                // this cannot happen
-                exitProcess(0)
-            } else {
-                calculateTotals(order)
-            }
+            check(order != null) {"Order must not be null"}
+            check(order.items.isNotEmpty()) {"Order must have at least one item"}
+            calculateTotals(order)
         }
     }
 
