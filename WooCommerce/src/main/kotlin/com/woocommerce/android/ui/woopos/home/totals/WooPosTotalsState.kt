@@ -7,8 +7,8 @@ import kotlinx.parcelize.Parcelize
 data class WooPosTotalsState(
     val orderId: Long?,
     val isCollectPaymentButtonEnabled: Boolean,
-    var orderTotal: java.math.BigDecimal,
-    var orderSubtotal: java.math.BigDecimal,
-    var orderTax: java.math.BigDecimal,
-    var isLoading: Boolean
+    val orderTotal: java.math.BigDecimal,
+    val orderSubtotal: java.math.BigDecimal,
+    val orderTax: java.math.BigDecimal,
+    val isLoading: Boolean
 ) : Parcelable
