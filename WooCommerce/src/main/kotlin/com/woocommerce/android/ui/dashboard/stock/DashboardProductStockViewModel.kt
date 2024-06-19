@@ -49,13 +49,13 @@ class DashboardProductStockViewModel @AssistedInject constructor(
     private val _refreshTrigger = MutableSharedFlow<DashboardViewModel.RefreshEvent>(extraBufferCapacity = 1)
     private val refreshTrigger = merge(parentViewModel.refreshTrigger, _refreshTrigger)
         .onStart {
-            if(productStockState.value !is ViewState.Success) {
+            if (productStockState.value !is ViewState.Success) {
                 emit(DashboardViewModel.RefreshEvent()) // Avoid refreshing when stock items are already loaded
             }
         }
     private val status = savedStateHandle.getStateFlow<ProductStockStatus>(viewModelScope, ProductStockStatus.LowStock)
 
-    val productStockState : LiveData<ViewState> = status
+    val productStockState: LiveData<ViewState> = status
         .flatMapLatest {
             refreshTrigger.map { refresh -> Pair(refresh, it) }
         }
