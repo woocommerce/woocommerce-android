@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -37,8 +39,15 @@ class WooPosTotalsViewModel @Inject constructor(
                     val orderId = state.value.orderId!!
                     val result = cardReaderFacade.collectPayment(orderId)
                     Log.d("WooPosTotalsViewModel", "Payment result: $result")
+                    if (result is WooPosCardReaderPaymentResult.Success) {
+                        // TODO: navigate to success screen
+                    } else {
+                        _state.value = state.value.copy(snackbarMessage = SnackbarMessage.Triggered(R.string.woopos_payment_failed_please_try_again))
+                    }
                 }
             }
+
+            WooPosTotalsUIEvent.SnackbarDismissed -> _state.value = state.value.copy(snackbarMessage = SnackbarMessage.Hidden)
         }
     }
 
