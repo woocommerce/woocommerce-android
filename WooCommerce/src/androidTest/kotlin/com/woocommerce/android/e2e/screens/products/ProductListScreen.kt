@@ -1,6 +1,8 @@
 package com.woocommerce.android.e2e.screens.products
 
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import com.woocommerce.android.R
@@ -11,6 +13,7 @@ import com.woocommerce.android.e2e.helpers.util.Screen
 import com.woocommerce.android.e2e.screens.shared.FilterScreen
 import com.woocommerce.android.ui.products.ProductItemView
 import org.hamcrest.Matchers
+import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.instanceOf
 
 class ProductListScreen : Screen {
@@ -41,7 +44,9 @@ class ProductListScreen : Screen {
     }
 
     fun openSearchPane(): ProductListScreen {
-        clickOn(R.id.menu_search)
+        if (!Screen.isElementFocused(androidx.appcompat.R.id.search_src_text)) {
+            clickOn(R.id.menu_search)
+        }
         return this
     }
 
@@ -93,8 +98,39 @@ class ProductListScreen : Screen {
         return this
     }
 
+    fun leaveOrClearSearchMode(): ProductListScreen {
+        // to support test on tablets - search bar is displayed on split screen
+        // clearing search bar so test can continue in a clean state
+        if (Screen.isElementDisplayed(R.id.productDetailsErrorImage)) {
+            clearSearchBar(androidx.appcompat.R.id.search_src_text)
+        } // to support test on phones
+        else if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
+            // Double pressBack is needed because first one only removes the focus
+            // from search field, while the second one leaves the search mode.
+            pressBack()
+            pressBack()
+        }
+        return this
+    }
+
     fun leaveSearchMode(): ProductListScreen {
-        if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
+        var isProductDetailsErrorDisplayed = Screen.isElementDisplayed(R.id.productDetailsErrorImage)
+        var isSearchTextBarDisplayed = Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)
+
+        if (isProductDetailsErrorDisplayed && isSearchTextBarDisplayed) {
+            clearSearchBar(androidx.appcompat.R.id.search_src_text)
+
+            // this is to click the back button on search bar to go back to products list
+            // using the content description matcher as there isn't an ID for the button
+            Espresso.onView(
+                allOf(
+                    Matchers.allOf(
+                        ViewMatchers.withContentDescription("Collapse"),
+                        ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
+                    )
+                )
+            ).perform(click())
+        } else if (isSearchTextBarDisplayed) {
             // Double pressBack is needed because first one only removes the focus
             // from search field, while the second one leaves the search mode.
             pressBack()
