@@ -40,14 +40,20 @@ class WooPosTotalsViewModel @Inject constructor(
                     val result = cardReaderFacade.collectPayment(orderId)
                     Log.d("WooPosTotalsViewModel", "Payment result: $result")
                     if (result is WooPosCardReaderPaymentResult.Success) {
-                        // TODO: navigate to success screen
+                        // navigate to success screen
                     } else {
-                        _state.value = state.value.copy(snackbarMessage = SnackbarMessage.Triggered(R.string.woopos_payment_failed_please_try_again))
+                        _state.value = state.value.copy(
+                            snackbarMessage = SnackbarMessage.Triggered(
+                                R.string.woopos_payment_failed_please_try_again
+                            )
+                        )
                     }
                 }
             }
 
-            WooPosTotalsUIEvent.SnackbarDismissed -> _state.value = state.value.copy(snackbarMessage = SnackbarMessage.Hidden)
+            WooPosTotalsUIEvent.SnackbarDismissed ->
+                _state.value =
+                    state.value.copy(snackbarMessage = SnackbarMessage.Hidden)
         }
     }
 
@@ -56,7 +62,10 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.OrderDraftCreated -> {
-                        _state.value = state.value.copy(orderId = event.orderId, isCollectPaymentButtonEnabled = true)
+                        _state.value = state.value.copy(
+                            orderId = event.orderId,
+                            isCollectPaymentButtonEnabled = true
+                        )
                     }
 
                     else -> Unit
