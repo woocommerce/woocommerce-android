@@ -32,6 +32,14 @@ fun WooPosHomeScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         onNavigationEvent,
         viewModel::onUIEvent
     )
+    LaunchedEffect(viewModel.events) {
+        viewModel.events.collect {
+            when (it) {
+                is WooPosHomeEvent.OrderSuccessfullyPaid ->
+                    onNavigationEvent(WooPosNavigationEvent.NavigateToPaymentSuccess(it.orderId))
+            }
+        }
+    }
 }
 
 @Composable

@@ -51,6 +51,8 @@ class WooPosRootViewModel @Inject constructor(
                     exitConfirmationDialog = WooPosRootScreenState.WooPosExitConfirmationDialog
                 )
             }
+
+            is WooPosRootUIEvent.OnSuccessfulPayment -> TODO()
         }
     }
 

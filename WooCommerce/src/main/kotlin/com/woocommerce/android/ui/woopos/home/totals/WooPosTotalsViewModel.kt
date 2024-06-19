@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaid
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosTotalsViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val cardReaderFacade: WooPosCardReaderFacade,
     savedState: SavedStateHandle,
 ) : ViewModel() {
@@ -41,6 +44,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     Log.d("WooPosTotalsViewModel", "Payment result: $result")
                     if (result is WooPosCardReaderPaymentResult.Success) {
                         // navigate to success screen
+                        childrenToParentEventSender.sendToParent(OrderSuccessfullyPaid(orderId))
                     } else {
                         _state.value = state.value.copy(
                             snackbarMessage = SnackbarMessage.Triggered(
