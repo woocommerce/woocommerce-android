@@ -58,7 +58,10 @@ class DashboardProductStockViewModel @AssistedInject constructor(
             emit(Loading(status))
             productStockRepository.fetchProductStockReport(status, refresh.isForced)
                 .fold(
-                    onSuccess = { emit(ViewState.Success(it, status)) },
+                    onSuccess = {
+                        val sortedProductStockItems = it.sortedBy { item -> item.stockQuantity }
+                        emit(ViewState.Success(sortedProductStockItems, status))
+                    },
                     onFailure = {
                         when ((it as? WooException)?.error?.type) {
                             WooErrorType.API_NOT_FOUND -> emit(ViewState.Error.WCAnalyticsDisabled)
