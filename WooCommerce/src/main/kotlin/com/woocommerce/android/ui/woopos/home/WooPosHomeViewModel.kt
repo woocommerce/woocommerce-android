@@ -13,30 +13,27 @@ class WooPosHomeViewModel @Inject constructor(
     private val childrenToParentEventReceiver: WooPosChildrenToParentEventReceiver,
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
 ) : ViewModel() {
-    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart(exitConfirmationDialog = null))
+    private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart)
     val state: StateFlow<WooPosHomeState> = _state
 
     init {
         listenBottomEvents()
     }
 
-    fun onUIEvent(event: WooPosHomeUIEvent) {
-        when (event) {
+    fun onUIEvent(event: WooPosHomeUIEvent): Boolean {
+        return when (event) {
             WooPosHomeUIEvent.SystemBackClicked -> {
-                when (val value = _state.value) {
+                when (_state.value) {
                     WooPosHomeState.Checkout -> {
-                        _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
+                        _state.value = WooPosHomeState.Cart
                         sendEventToChildren(ParentToChildrenEvent.BackFromCheckoutToCartClicked)
+                        true
                     }
 
                     is WooPosHomeState.Cart -> {
-                        _state.value = value.copy(exitConfirmationDialog = WooPosExitConfirmationDialog)
+                        false
                     }
                 }
-            }
-
-            WooPosHomeUIEvent.ExitConfirmationDialogDismissed -> {
-                _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
             }
         }
     }
@@ -50,7 +47,7 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = WooPosHomeState.Cart(exitConfirmationDialog = null)
+                        _state.value = WooPosHomeState.Cart
                     }
 
                     is ChildToParentEvent.ItemClickedInProductSelector -> {

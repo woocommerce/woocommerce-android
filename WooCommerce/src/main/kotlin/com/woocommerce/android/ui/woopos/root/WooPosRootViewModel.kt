@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.ConnectToAReaderClicked
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.ExitConfirmationDialogDismissed
 import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.ExitPOSClicked
+import com.woocommerce.android.ui.woopos.root.WooPosRootUIEvent.OnBackFromHomeClicked
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +46,7 @@ class WooPosRootViewModel @Inject constructor(
                 _rootScreenState.value = _rootScreenState.value.copy(exitConfirmationDialog = null)
             }
 
-            ExitPOSClicked -> {
+            ExitPOSClicked, OnBackFromHomeClicked -> {
                 _rootScreenState.value = _rootScreenState.value.copy(
                     exitConfirmationDialog = WooPosRootScreenState.WooPosExitConfirmationDialog
                 )

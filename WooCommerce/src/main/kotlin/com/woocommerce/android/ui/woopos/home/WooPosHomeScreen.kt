@@ -15,12 +15,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosConfirmationDialog
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
@@ -40,10 +38,13 @@ fun WooPosHomeScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
 private fun WooPosHomeScreen(
     state: WooPosHomeState,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
+    onHomeUIEvent: (WooPosHomeUIEvent) -> Boolean,
 ) {
     BackHandler {
-        onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+        val result = onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
+        if (!result) {
+            onNavigationEvent(WooPosNavigationEvent.BackFromHomeClicked)
+        }
     }
 
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
@@ -74,20 +75,7 @@ private fun WooPosHomeScreen(
     }
 
     when (state) {
-        is WooPosHomeState.Cart -> {
-            state.exitConfirmationDialog?.let { dialog ->
-                WooPosConfirmationDialog(
-                    title = stringResource(id = dialog.title),
-                    message = stringResource(id = dialog.message),
-                    confirmButtonText = stringResource(id = dialog.confirmButton),
-                    dismissButtonText = stringResource(id = dialog.dismissButton),
-                    onDismiss = { onHomeUIEvent(WooPosHomeUIEvent.ExitConfirmationDialogDismissed) },
-                    onConfirm = { onNavigationEvent(WooPosNavigationEvent.ExitPosClicked) }
-                )
-            }
-            WooPosHomeScreen(scrollState, totalsProductsWidth, cartWidth)
-        }
-
+        is WooPosHomeState.Cart -> WooPosHomeScreen(scrollState, totalsProductsWidth, cartWidth)
         WooPosHomeState.Checkout -> WooPosHomeScreen(scrollState, totalsProductsWidth, cartWidth)
     }
 }
@@ -119,10 +107,8 @@ private fun WooPosHomeScreen(
 @WooPosPreview
 fun WooPosHomeCartScreenPreview() {
     WooPosHomeScreen(
-        state = WooPosHomeState.Cart(
-            exitConfirmationDialog = null
-        ),
-        onHomeUIEvent = {},
+        state = WooPosHomeState.Cart,
+        onHomeUIEvent = { true },
         onNavigationEvent = {},
     )
 }
@@ -131,10 +117,8 @@ fun WooPosHomeCartScreenPreview() {
 @WooPosPreview
 fun WooPosHomeCartWithExitPOSConfirmationScreenPreview() {
     WooPosHomeScreen(
-        state = WooPosHomeState.Cart(
-            exitConfirmationDialog = WooPosExitConfirmationDialog
-        ),
-        onHomeUIEvent = {},
+        state = WooPosHomeState.Cart,
+        onHomeUIEvent = { true },
         onNavigationEvent = {},
     )
 }
@@ -144,7 +128,7 @@ fun WooPosHomeCartWithExitPOSConfirmationScreenPreview() {
 fun WooPosHomeCheckoutScreenPreview() {
     WooPosHomeScreen(
         state = WooPosHomeState.Checkout,
-        onHomeUIEvent = {},
+        onHomeUIEvent = { true },
         onNavigationEvent = {},
     )
 }
