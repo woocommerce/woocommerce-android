@@ -127,7 +127,7 @@ private fun DashboardProductStockCard(
             }
 
             is DashboardProductStockViewModel.ViewState.Success -> {
-                ProductReviewsCardContent(
+                ProductStockCardContent(
                     selectedFilter = viewState.selectedFilter,
                     productStockItems = viewState.productStockItems,
                     onFilterSelected = onFilterSelected,
@@ -189,7 +189,7 @@ private fun ProductStockLoading(
 }
 
 @Composable
-private fun ProductReviewsCardContent(
+private fun ProductStockCardContent(
     selectedFilter: ProductStockStatus,
     productStockItems: List<ProductStockItem>,
     onFilterSelected: (ProductStockStatus) -> Unit,
@@ -263,17 +263,20 @@ fun ProductStockRow(
             .fillMaxWidth()
             .clickable { onItemClicked(product) }
             .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         ProductThumbnail(
             imageUrl = product.imageUrl ?: "",
             contentDescription = stringResource(id = R.string.product_image_content_description),
+            modifier = Modifier.padding(top = 12.dp)
         )
         Column(modifier = Modifier.padding(start = 8.dp)) {
             Spacer(modifier = Modifier.height(8.dp))
             Row(modifier = Modifier.padding(bottom = 4.dp)) {
                 Text(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp),
                     text = product.name,
                     style = MaterialTheme.typography.subtitle1,
                     maxLines = 2,

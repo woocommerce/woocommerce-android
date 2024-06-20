@@ -14,7 +14,6 @@ import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,6 +33,7 @@ class WooPosTotalsViewModel @Inject constructor(
             orderSubtotalText = "",
             orderTaxText = "",
             orderTotalText = "",
+            isLoading = true,
         ),
         key = "totalsViewState"
     )
@@ -61,9 +61,14 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.OrderDraftCreated -> {
-                        _state.value = state.value.copy(orderId = event.orderId, isCollectPaymentButtonEnabled = true)
+                        _state.value = state.value.copy(
+                            orderId = event.orderId,
+                            isCollectPaymentButtonEnabled = false,
+                            isLoading = true
+                        )
                         loadOrderDraft(event.orderId)
                     }
+
                     else -> Unit
                 }
             }
@@ -73,17 +78,15 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun loadOrderDraft(orderId: Long) {
         viewModelScope.launch {
             val order = orderDetailRepository.getOrderById(orderId)
-            if (order == null || order.items.isEmpty()) {
-                _state.value = state.value.copy(isCollectPaymentButtonEnabled = false)
-            } else {
-                calculateTotals(order)
-            }
+            check(order != null) { "Order must not be null" }
+            check(order.items.isNotEmpty()) { "Order must have at least one item" }
+            calculateTotals(order)
         }
     }
 
     private fun calculateTotals(order: Order) {
         val subtotalAmount = order.items.sumOf { it.subtotal }
-        val taxAmount = subtotalAmount.multiply(BigDecimal("0.1")) // having fixed 10% tax for testing
+        val taxAmount = order.totalTax
         val totalAmount = subtotalAmount + taxAmount
 
         val updatedOrder = order.copy(
@@ -96,6 +99,7 @@ class WooPosTotalsViewModel @Inject constructor(
             orderTaxText = currencyFormatter.formatCurrency(taxAmount.toPlainString()),
             orderTotalText = currencyFormatter.formatCurrency(updatedOrder.total.toPlainString()),
             isCollectPaymentButtonEnabled = true,
+            isLoading = false,
         )
     }
 }
