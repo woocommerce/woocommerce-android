@@ -27,8 +27,10 @@ class ProductQuantityRulesViewModelTest : BaseUnitTest() {
         viewModel = createViewModel(initialData, exitAnalyticsEvent)
     }
 
-    private fun createViewModel(quantityRules: QuantityRules,
-                                exitAnalyticsEvent: AnalyticsEvent): ProductQuantityRulesViewModel {
+    private fun createViewModel(
+        quantityRules: QuantityRules,
+        exitAnalyticsEvent: AnalyticsEvent
+    ): ProductQuantityRulesViewModel {
         val savedState = ProductQuantityRulesFragmentArgs(quantityRules, exitAnalyticsEvent).toSavedStateHandle()
         return spy(
             ProductQuantityRulesViewModel(
