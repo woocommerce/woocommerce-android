@@ -161,7 +161,7 @@ class MoreMenuViewModel @Inject constructor(
             MoreMenuItemButton(
                 title = R.string.more_menu_button_customers,
                 description = R.string.more_menu_button_customers_description,
-                icon = R.drawable.ic_more_menu_coupons,
+                icon = R.drawable.icon_multiple_users,
                 onClick = ::onCustomersButtonClick
             ),
             MoreMenuItemButton(
