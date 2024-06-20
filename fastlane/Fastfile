@@ -255,9 +255,9 @@ platform :android do
       release_version: version
     )
 
-    delete_old_changelogs
+    deleted_files = delete_old_changelogs
 
-    git_add(path: po_path)
+    git_add(path: [po_path, *deleted_files])
     git_commit(
       path: po_path,
       message: "Update `PlayStoreStrings.po` for #{version}",
@@ -1217,15 +1217,25 @@ platform :android do
   # Remove old `changelogs/default.txt` files for every locale except en-US.
   # After updating the en-US copy for a new version and sending it for translation,
   # we want to avoid having outdated translations in git in the meantime.
+  # 
+  # @return [Array<String>] A list of file paths that were deleted.
   def delete_old_changelogs
+    deleted_files = []
+
     [MOBILE_APP, WEAR_APP].each do |app|
-      Dir.glob(File.join(METADATA_PATH[app], '*'))
+      Dir.glob(File.join(METADATA_DIR_PATH[app], '*'))
          .select { |dir| File.directory?(dir) && File.basename(dir) != 'en-US' }
          .each do |locale_dir|
         changelog_path = File.join(locale_dir, 'changelogs', 'default.txt')
-        FileUtils.rm_f(changelog_path)
+        
+        if File.exist?(changelog_path)
+          FileUtils.rm_f(changelog_path)
+          deleted_files << changelog_path
+        end
       end
     end
+
+    deleted_files
   end
 
   #####################################################################################
