@@ -947,7 +947,7 @@ class ProductDetailCardBuilder(
             showTitle = true,
             onClick = {
                 viewModel.onEditProductCardClicked(
-                    ViewProductQuantityRules(rules),
+                    ViewProductQuantityRules(rules, AnalyticsEvent.PRODUCT_DETAIL_QUANTITY_RULES_DONE_BUTTON_TAPPED),
                     AnalyticsEvent.PRODUCT_DETAIL_VIEW_QUANTITY_RULES_TAPPED
                 )
             }

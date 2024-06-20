@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.products.quantityRules
 
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -7,24 +10,32 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 
 @ExperimentalCoroutinesApi
 class ProductQuantityRulesViewModelTest : BaseUnitTest() {
+    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val initialData = QuantityRules(4, 8, 2)
     private val expectedData = QuantityRules(8, 16, 4)
+    private val exitAnalyticsEvent = AnalyticsEvent.PRODUCT_DETAIL_QUANTITY_RULES_DONE_BUTTON_TAPPED
     private lateinit var viewModel: ProductQuantityRulesViewModel
 
     @Before
     fun setup() {
-        viewModel = createViewModel(initialData)
+        viewModel = createViewModel(initialData, exitAnalyticsEvent)
     }
 
-    private fun createViewModel(quantityRules: QuantityRules): ProductQuantityRulesViewModel {
-        val savedState = ProductQuantityRulesFragmentArgs(quantityRules).toSavedStateHandle()
+    private fun createViewModel(
+        quantityRules: QuantityRules,
+        exitAnalyticsEvent: AnalyticsEvent
+    ): ProductQuantityRulesViewModel {
+        val savedState = ProductQuantityRulesFragmentArgs(quantityRules, exitAnalyticsEvent).toSavedStateHandle()
         return spy(
             ProductQuantityRulesViewModel(
-                savedState
+                savedState,
+                analyticsTracker
             )
         )
     }
@@ -80,5 +91,30 @@ class ProductQuantityRulesViewModelTest : BaseUnitTest() {
         } as MultiLiveEvent.Event.ExitWithResult<QuantityRules>
 
         Assertions.assertThat(result.data).isEqualTo(expectedData)
+    }
+
+    @Test
+    fun `Send tracks event upon exit if there was no changes`() {
+        // when
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            exitAnalyticsEvent,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to false)
+        )
+    }
+
+    @Test
+    fun `Send tracks event upon exit if there was a change`() {
+        // when
+        viewModel.onDataChanged(min = initialData.min?.plus(2))
+        viewModel.onExit()
+
+        // then
+        verify(analyticsTracker).track(
+            exitAnalyticsEvent,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to true)
+        )
     }
 }

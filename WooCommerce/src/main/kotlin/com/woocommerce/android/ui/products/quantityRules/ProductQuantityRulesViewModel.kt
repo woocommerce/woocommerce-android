@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.products.quantityRules
 
 import android.os.Parcelable
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -13,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductQuantityRulesViewModel @Inject constructor(
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val analyticsTracker: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: ProductQuantityRulesFragmentArgs by savedState.navArgs()
@@ -49,6 +52,10 @@ class ProductQuantityRulesViewModel @Inject constructor(
     }
 
     fun onExit() {
+        analyticsTracker.track(
+            navArgs.exitAnalyticsEvent,
+            mapOf(AnalyticsTracker.KEY_HAS_CHANGED_DATA to hasChanges)
+        )
         if (hasChanges) {
             triggerEvent(MultiLiveEvent.Event.ExitWithResult(quantityRules))
         } else {
