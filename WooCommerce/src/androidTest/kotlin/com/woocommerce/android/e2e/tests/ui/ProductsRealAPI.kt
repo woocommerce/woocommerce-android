@@ -91,13 +91,13 @@ class ProductsRealAPI : TestBase() {
             .enterSearchTerm(productCappuccino.name)
             .assertProductCard(productCappuccino)
             .assertProductsCount(1)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
             // Search for 'productSalad'
             .openSearchPane()
             .enterSearchTerm(productSalad.name)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
             // Search for non-existing product
             .openSearchPane()
             .enterAbsentSearchTerm("Unexisting Product")
@@ -119,7 +119,7 @@ class ProductsRealAPI : TestBase() {
             .enterSearchTerm(productSalad.sku)
             .assertProductCard(productSalad)
             .assertProductsCount(1)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
             // Search for variations sharing a part of SKU
             .openSearchPane()
             .tapSearchSKU()
@@ -127,14 +127,14 @@ class ProductsRealAPI : TestBase() {
             .assertProductCard(productCappuccinoAlmondMedium)
             .assertProductCard(productCappuccinoAlmondLarge)
             .assertProductsCount(2)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
             // Search for exact variation SKU
             .openSearchPane()
             .tapSearchSKU()
             .enterSearchTerm(productCappuccinoAlmondLarge.sku)
             .assertProductCard(productCappuccinoAlmondLarge)
             .assertProductsCount(1)
-            .leaveSearchMode()
+            .leaveOrClearSearchMode()
     }
 
     @Retry(numberOfTimes = 1)
