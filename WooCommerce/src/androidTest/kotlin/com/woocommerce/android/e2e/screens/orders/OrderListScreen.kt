@@ -34,7 +34,9 @@ class OrderListScreen : Screen(R.id.ordersList) {
     }
 
     fun openSearchPane(): OrderListScreen {
-        clickOn(R.id.menu_search)
+        if (!Screen.isElementFocused(androidx.appcompat.R.id.search_src_text)) {
+            clickOn(R.id.menu_search)
+        }
         return this
     }
 
@@ -54,8 +56,14 @@ class OrderListScreen : Screen(R.id.ordersList) {
         return this
     }
 
-    fun leaveSearchMode(): OrderListScreen {
-        if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
+    fun leaveOrClearSearchMode(): OrderListScreen {
+        // to support test on tablets - search bar is displayed on split screen
+        // clearing search bar so test can continue in a clean state
+        if (Screen.isElementDisplayed(R.id.orderDetail_container)) {
+            clearSearchBar(androidx.appcompat.R.id.search_src_text)
+            return this
+        } // to support test on phones
+        else if (Screen.isElementDisplayed(androidx.appcompat.R.id.search_src_text)) {
             // Double pressBack is needed because first one only removes the focus
             // from search field, while the second one leaves the search mode.
             Espresso.pressBack()

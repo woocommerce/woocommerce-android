@@ -33,6 +33,10 @@ fun generateVariation(): ProductVariation {
         length = 0f,
         width = 0f,
         height = 0f,
-        weight = 0f
+        weight = 0f,
+        minAllowedQuantity = null,
+        maxAllowedQuantity = null,
+        groupOfQuantity = null,
+        overrideProductQuantities = false
     )
 }
