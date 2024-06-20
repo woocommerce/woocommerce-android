@@ -9,11 +9,11 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +21,7 @@ class WooPosTotalsViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val orderDetailRepository: OrderDetailRepository,
+    private val currencyFormatter: CurrencyFormatter,
     savedState: SavedStateHandle,
 ) : ViewModel() {
 
@@ -29,9 +30,9 @@ class WooPosTotalsViewModel @Inject constructor(
         initialValue = WooPosTotalsState(
             orderId = null,
             isCollectPaymentButtonEnabled = false,
-            orderSubtotal = BigDecimal.ZERO,
-            orderTotal = BigDecimal.ZERO,
-            orderTax = BigDecimal.ZERO,
+            orderSubtotalText = "",
+            orderTaxText = "",
+            orderTotalText = "",
             isLoading = true,
         ),
         key = "totalsViewState"
@@ -94,9 +95,9 @@ class WooPosTotalsViewModel @Inject constructor(
 
         _state.value = _state.value.copy(
             orderId = updatedOrder.id,
-            orderSubtotal = subtotalAmount,
-            orderTotal = updatedOrder.total,
-            orderTax = taxAmount,
+            orderSubtotalText = currencyFormatter.formatCurrency(subtotalAmount.toPlainString()),
+            orderTaxText = currencyFormatter.formatCurrency(taxAmount.toPlainString()),
+            orderTotalText = currencyFormatter.formatCurrency(updatedOrder.total.toPlainString()),
             isCollectPaymentButtonEnabled = true,
             isLoading = false,
         )
