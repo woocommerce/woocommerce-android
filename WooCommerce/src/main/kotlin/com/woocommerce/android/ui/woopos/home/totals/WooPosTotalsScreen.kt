@@ -73,15 +73,21 @@ fun WooPosTotalsScreen(
                 shape = RoundedCornerShape(8.dp),
                 backgroundColor = MaterialTheme.colors.surface,
                 elevation = 4.dp,
-                modifier = Modifier.padding(16.dp).wrapContentSize().border(
-                    width = dimensionResource(id = R.dimen.minor_10),
-                    color = colorResource(id = R.color.woo_gray_5),
-                    shape = RoundedCornerShape(8.dp)
+                modifier = Modifier
+                    .padding(16.dp)
+                    .wrapContentSize()
+                    .border(
+                        width = dimensionResource(id = R.dimen.minor_10),
+                        color = colorResource(id = R.color.woo_gray_5),
+                        shape = RoundedCornerShape(8.dp)
 
-                ).widthIn(min = 128.dp, max = 256.dp)
+                    )
+                    .widthIn(min = 128.dp, max = 256.dp)
             ) {
                 Column(
-                    modifier = Modifier.wrapContentSize().padding(16.dp),
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(16.dp),
                     verticalArrangement = Arrangement.Center
                 ) {
                     if (totalsState.value.orderId != null) {
@@ -150,11 +156,12 @@ fun WooPosTotalsScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                Button(
-                    onClick = { onCollectPaymentClick() },
-                    enabled = totalsState.value.isCollectPaymentButtonEnabled,
-                ) {
-                    Text("Collect Card Payment")
+                    Button(
+                        onClick = { onCollectPaymentClick() },
+                        enabled = totalsState.value.isCollectPaymentButtonEnabled,
+                    ) {
+                        Text("Collect Card Payment")
+                    }
                 }
             }
         }
