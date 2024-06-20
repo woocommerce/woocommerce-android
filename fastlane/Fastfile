@@ -22,17 +22,17 @@ RES_DIR_PATH = File.join('WooCommerce', 'src', 'main', 'res')
 MAIN_STRINGS_PATH = File.join(PROJECT_ROOT_FOLDER, RES_DIR_PATH, 'values', 'strings.xml')
 VERSION_PROPERTIES_PATH = File.join(PROJECT_ROOT_FOLDER, 'version.properties')
 # The metadata for the Play Store live in the Fastlane folder, hence the `Dir.pwd`
-METADATA_PATH = {
+METADATA_DIR_PATH = {
   MOBILE_APP => File.join(Dir.pwd, 'metadata', 'android'),
   WEAR_APP => File.join(Dir.pwd, 'metadata', 'wear')
 }.freeze
-METADATA_SOURCE_PATH = {
-  MOBILE_APP => File.join(METADATA_PATH[MOBILE_APP], 'en-US'),
-  WEAR_APP => File.join(METADATA_PATH[WEAR_APP], 'en-US')
+METADATA_SOURCE_DIR_PATH = {
+  MOBILE_APP => File.join(METADATA_DIR_PATH[MOBILE_APP], 'en-US'),
+  WEAR_APP => File.join(METADATA_DIR_PATH[WEAR_APP], 'en-US')
 }.freeze
-METADATA_RELEASE_NOTES_PATH = {
-  MOBILE_APP => File.join(METADATA_SOURCE_PATH[MOBILE_APP], 'changelogs', 'default.txt'),
-  WEAR_APP => File.join(METADATA_SOURCE_PATH[WEAR_APP], 'changelogs', 'default.txt')
+METADATA_SOURCE_CHANGELOG_FILE_PATH = {
+  MOBILE_APP => File.join(METADATA_SOURCE_DIR_PATH[MOBILE_APP], 'changelogs', 'default.txt'),
+  WEAR_APP => File.join(METADATA_SOURCE_DIR_PATH[WEAR_APP], 'changelogs', 'default.txt')
 }.freeze
 DEV_RELEASE_NOTES_PATH = {
   MOBILE_APP => File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES.txt'),
@@ -156,7 +156,7 @@ platform :android do
       extract_release_notes_for_version(
         version: new_version,
         release_notes_file_path: DEV_RELEASE_NOTES_PATH[app],
-        extracted_notes_file_path: METADATA_RELEASE_NOTES_PATH[app]
+        extracted_notes_file_path: METADATA_SOURCE_CHANGELOG_FILE_PATH[app]
       )
       android_update_release_notes(
         new_version: new_version,
@@ -233,10 +233,10 @@ platform :android do
 
     version ||= release_version_current
 
-    app_metadata_source_path = METADATA_SOURCE_PATH[MOBILE_APP]
+    app_metadata_source_path = METADATA_SOURCE_DIR_PATH[MOBILE_APP]
     files = {
-      release_note: METADATA_RELEASE_NOTES_PATH[MOBILE_APP],
-      wear_release_note: METADATA_RELEASE_NOTES_PATH[WEAR_APP],
+      release_note: METADATA_SOURCE_CHANGELOG_FILE_PATH[MOBILE_APP],
+      wear_release_note: METADATA_SOURCE_CHANGELOG_FILE_PATH[WEAR_APP],
       play_store_promo: File.join(app_metadata_source_path, 'short_description.txt'),
       play_store_desc: File.join(app_metadata_source_path, 'full_description.txt'),
       play_store_app_title: File.join(app_metadata_source_path, 'title.txt'),
@@ -626,7 +626,7 @@ platform :android do
       track: track(app: app, track_name: 'production'),
       release_status: 'inProgress',
       rollout: '0.1', # Start the production rollout at 10%
-      metadata_path: METADATA_PATH[app],
+      metadata_path: METADATA_DIR_PATH[app],
       # Skip uploading Play Store listing metadata for the Wear app, as these are shared with the Mobile app and
       # stored in its metadata folder. The Wear app only has separate changelogs.
       skip_upload_metadata: app == WEAR_APP,
@@ -680,7 +680,7 @@ platform :android do
       track: track(app: app, track_name: 'beta'),
       release_status: 'completed',
       rollout: '1.0', # Rollout to 100% of testers on the beta track
-      metadata_path: METADATA_PATH[app],
+      metadata_path: METADATA_DIR_PATH[app],
       skip_upload_metadata: true,
       skip_upload_changelogs: true,
       skip_upload_images: true,
@@ -784,7 +784,7 @@ platform :android do
               UI.user_error!("Unknown app parameter: #{app}. Must me one of #{MOBILE_APP} or #{WEAR_APP}")
             end
 
-    download_path = METADATA_PATH[app]
+    download_path = METADATA_DIR_PATH[app]
     gp_downloadmetadata(
       project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
       target_files: files,
@@ -958,7 +958,7 @@ platform :android do
                         target_files: files,
                         locales: locales,
                         source_locale: 'en-US',
-                        download_path: METADATA_PATH[MOBILE_APP])
+                        download_path: METADATA_DIR_PATH[MOBILE_APP])
   end
 
   #####################################################################################
@@ -1058,7 +1058,7 @@ platform :android do
     # Run screenshots generator tool
     promo_screenshots(
       orig_folder: RAW_SCREENSHOTS_PROCESSING_DIR,
-      metadata_folder: METADATA_PATH[MOBILE_APP], # not considering wear app
+      metadata_folder: METADATA_DIR_PATH[MOBILE_APP], # not considering wear app
       output_folder: PROMO_SCREENSHOTS_DIR,
       force: options[:force]
     )
@@ -1148,7 +1148,7 @@ platform :android do
     create_release(
       repository: GITHUB_REPO,
       version: version,
-      release_notes_file_path: METADATA_RELEASE_NOTES_PATH[app],
+      release_notes_file_path: METADATA_SOURCE_CHANGELOG_FILE_PATH[app],
       prerelease: prerelease,
       release_assets: release_assets.join(',')
     )
