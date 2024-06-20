@@ -14,6 +14,8 @@ fun NavGraphBuilder.mainGraph(onNavigationEvent: (WooPosNavigationEvent) -> Unit
         route = MAIN_GRAPH_ROUTE,
     ) {
         homeScreen(onNavigationEvent = onNavigationEvent)
-        paymentSuccessScreen()
+        paymentSuccessScreen {
+            onNavigationEvent(WooPosNavigationEvent.NewTransactionClicked)
+        }
     }
 }

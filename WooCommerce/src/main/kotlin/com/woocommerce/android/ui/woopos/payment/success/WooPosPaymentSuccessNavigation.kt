@@ -11,8 +11,8 @@ fun NavController.navigateToPaymentSuccessScreen() {
     }
 }
 
-fun NavGraphBuilder.paymentSuccessScreen() {
+fun NavGraphBuilder.paymentSuccessScreen(onNewTransactionClicked: () -> Unit) {
     composable(PAYMENT_SUCCESS_ROUTE) {
-        WooPosPaymentSuccessScreen()
+        WooPosPaymentSuccessScreen(onNewTransactionClicked)
     }
 }

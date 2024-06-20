@@ -33,7 +33,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
 @Composable
-fun WooPosPaymentSuccessScreen() {
+fun WooPosPaymentSuccessScreen(
+    onNewTransactionClicked: () -> Unit,
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         backgroundColor = MaterialTheme.colors.surface,
@@ -87,7 +89,7 @@ fun WooPosPaymentSuccessScreen() {
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colors.onSurface,
                 ),
-                onClick = {}
+                onClick = onNewTransactionClicked
             ) {
                 Row(
                     modifier = Modifier.padding(8.dp),
@@ -117,5 +119,5 @@ fun WooPosPaymentSuccessScreen() {
 @WooPosPreview
 @Composable
 fun WooPosPaymentSuccessScreenPreview() {
-    WooPosPaymentSuccessScreen()
+    WooPosPaymentSuccessScreen {}
 }
