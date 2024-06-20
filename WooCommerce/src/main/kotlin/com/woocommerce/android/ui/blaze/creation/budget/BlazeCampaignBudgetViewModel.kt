@@ -36,6 +36,10 @@ class BlazeCampaignBudgetViewModel @Inject constructor(
     private val repository: BlazeRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
+    companion object {
+        const val MAX_DATE_LIMIT_IN_DAYS = 60
+    }
+
     private val navArgs: BlazeCampaignBudgetFragmentArgs by savedStateHandle.navArgs()
 
     private val budgetUiState = savedStateHandle.getStateFlow(
