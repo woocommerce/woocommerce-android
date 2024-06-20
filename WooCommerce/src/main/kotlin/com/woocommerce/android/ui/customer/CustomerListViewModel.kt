@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customerlist
+package com.woocommerce.android.ui.customer
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,16 +6,19 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_ALL
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_EMAIL
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_NAME
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes.Companion.SEARCH_MODE_VALUE_USERNAME
+import com.woocommerce.android.ui.orders.creation.customerlist.AddCustomer
+import com.woocommerce.android.ui.orders.creation.customerlist.Button
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListDisplayTextHandler
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListIsAdvancedSearchSupported
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewModelMapper
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewState
+import com.woocommerce.android.ui.orders.creation.customerlist.PaginationState
+import com.woocommerce.android.ui.orders.creation.customerlist.SearchMode
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
-import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowDialog
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -24,10 +27,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
-import javax.inject.Inject
 
-@HiltViewModel
-class CustomerListViewModel @Inject constructor(
+abstract class CustomerListViewModel(
     savedState: SavedStateHandle,
     private val repository: CustomerListRepository,
     private val mapper: CustomerListViewModelMapper,
@@ -36,28 +37,27 @@ class CustomerListViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val stringUtils: StringUtils,
 ) : ScopedViewModel(savedState) {
-    private val allowGuests = savedState.get<Boolean>("allowGuests") ?: false
-    private val allowCustomerCreation = savedState.get<Boolean>("allowCustomerCreation") ?: false
+    protected val allowGuests = savedState.get<Boolean>("allowGuests") ?: false
+    protected val allowCustomerCreation = savedState.get<Boolean>("allowCustomerCreation") ?: false
 
     @Volatile
-    private var paginationState = PaginationState(1, true)
+    protected var paginationState = PaginationState(1, true)
 
-    private var searchQuery: String
+    protected var searchQuery: String
         get() = savedState.get<String>(SEARCH_QUERY_KEY) ?: ""
         set(value) {
             savedState[SEARCH_QUERY_KEY] = value
         }
-    private var selectedSearchModeId: Int?
+    protected var selectedSearchModeId: Int?
         get() = savedState.get<Int>(SEARCH_MODE_KEY)
         set(value) {
             savedState[SEARCH_MODE_KEY] = value
         }
 
-    private val _viewState = MutableLiveData<CustomerListViewState>()
+    protected val _viewState = MutableLiveData<CustomerListViewState>()
     val viewState: LiveData<CustomerListViewState> = _viewState
 
     private var loadingFirstPageJob: Job? = null
-    private var loadingMoreInfoAboutCustomerJob: Job? = null
     private val mutex = Mutex()
 
     init {
@@ -75,26 +75,7 @@ class CustomerListViewModel @Inject constructor(
         }
     }
 
-    fun onCustomerSelected(customerModel: WCCustomerModel) {
-        analyticsTracker.track(AnalyticsEvent.ORDER_CREATION_CUSTOMER_ADDED)
-        when {
-            customerModel.remoteCustomerId > 0L -> {
-                // this customer is registered, so we may have more info on them
-                tryLoadMoreInfo(customerModel)
-            }
-            allowGuests -> {
-                exitWithCustomer(customerModel)
-            }
-            else -> {
-                triggerEvent(
-                    ShowDialog(
-                        messageId = R.string.customer_picker_guest_customer_not_allowed_message,
-                        positiveButtonId = R.string.dialog_ok
-                    )
-                )
-            }
-        }
-    }
+    abstract fun onCustomerSelected(customerModel: WCCustomerModel)
 
     fun onSearchQueryChanged(query: String) {
         with(query) {
@@ -140,22 +121,6 @@ class CustomerListViewModel @Inject constructor(
             }
         }
     }
-
-    private fun tryLoadMoreInfo(customerModel: WCCustomerModel) {
-        loadingMoreInfoAboutCustomerJob?.cancel()
-        loadingMoreInfoAboutCustomerJob = launch {
-            _viewState.value = _viewState.value!!.copy(partialLoading = true)
-            val result = repository.fetchCustomerByRemoteId(customerModel.remoteCustomerId)
-            _viewState.value = _viewState.value!!.copy(partialLoading = false)
-            if (result.isError || result.model == null) {
-                // just use what we have
-                exitWithCustomer(customerModel)
-            } else {
-                exitWithCustomer(result.model!!)
-            }
-        }
-    }
-
     private suspend fun loadCustomers(page: Int) = mutex.withLock {
         if (page != 1 && !paginationState.hasNextPage) return
 
@@ -294,52 +259,19 @@ class CustomerListViewModel @Inject constructor(
         )
     }
 
-    private fun exitWithCustomer(wcCustomer: WCCustomerModel) {
-        val billingAddress = mapper.mapFromCustomerModelToBillingAddress(wcCustomer)
-        val shippingAddress = mapper.mapFromCustomerModelToShippingAddress(wcCustomer)
-
-        val shippingCountry = repository.getCountry(shippingAddress.country)
-        val shippingState = repository.getState(shippingAddress.country, shippingAddress.state)
-
-        val billingCountry = repository.getCountry(billingAddress.country)
-        val billingState = repository.getState(billingAddress.country, billingAddress.state)
-
-        triggerEvent(
-            CustomerSelected(
-                Order.Customer(
-                    customerId = wcCustomer.remoteCustomerId,
-                    firstName = wcCustomer.firstName,
-                    lastName = wcCustomer.lastName,
-                    email = wcCustomer.email,
-                    billingAddress = mapper.mapFromOrderAddressToAddress(
-                        billingAddress,
-                        billingCountry,
-                        billingState
-                    ),
-                    shippingAddress = mapper.mapFromOrderAddressToAddress(
-                        shippingAddress,
-                        shippingCountry,
-                        shippingState
-                    ),
-                    username = wcCustomer.username
-                )
-            )
-        )
-    }
-
     private suspend fun getSearchParam() =
         if (isAdvancedSearchSupported()) {
-            SEARCH_MODE_VALUE_ALL
+            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_ALL
         } else {
             _viewState.value!!.searchModes.first { it.isSelected }.searchParam
         }
 
     private fun searchParamToSearchType(searchParam: String) =
         when (searchParam) {
-            SEARCH_MODE_VALUE_NAME -> CustomerListDisplayTextHandler.SearchType.NAME
-            SEARCH_MODE_VALUE_EMAIL -> CustomerListDisplayTextHandler.SearchType.EMAIL
-            SEARCH_MODE_VALUE_USERNAME -> CustomerListDisplayTextHandler.SearchType.USERNAME
-            SEARCH_MODE_VALUE_ALL -> CustomerListDisplayTextHandler.SearchType.ALL
+            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_NAME -> CustomerListDisplayTextHandler.SearchType.NAME
+            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_EMAIL -> CustomerListDisplayTextHandler.SearchType.EMAIL
+            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_USERNAME -> CustomerListDisplayTextHandler.SearchType.USERNAME
+            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_ALL -> CustomerListDisplayTextHandler.SearchType.ALL
             else -> error("Unknown search param: $searchParam")
         }
 

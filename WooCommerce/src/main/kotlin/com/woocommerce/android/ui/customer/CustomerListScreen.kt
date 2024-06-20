@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.orders.creation.customerlist
+package com.woocommerce.android.ui.customer
 
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
@@ -26,21 +26,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -62,45 +52,10 @@ import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParams
 import com.woocommerce.android.ui.compose.component.SearchLayoutWithParamsState
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewState.CustomerList.Item.Customer
+import com.woocommerce.android.ui.orders.creation.customerlist.Button
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewState
+import com.woocommerce.android.ui.orders.creation.customerlist.SearchMode
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
-
-@Composable
-fun CustomerListScreen(viewModel: CustomerListViewModel) {
-    val state by viewModel.viewState.observeAsState()
-
-    state?.let {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(stringResource(id = R.string.order_creation_add_customer)) },
-                    navigationIcon = {
-                        IconButton(viewModel::onNavigateBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(id = R.string.back)
-                            )
-                        }
-                    },
-                    backgroundColor = colorResource(id = R.color.color_toolbar),
-                    elevation = 0.dp,
-                )
-            },
-            floatingActionButton = {
-                if (it.showFab) CustomerListAddCustomerButton(viewModel::onAddCustomerClicked)
-            }
-        ) { padding ->
-            CustomerListScreen(
-                modifier = Modifier.padding(padding),
-                state = it,
-                onCustomerSelected = viewModel::onCustomerSelected,
-                onSearchQueryChanged = viewModel::onSearchQueryChanged,
-                onSearchTypeChanged = viewModel::onSearchTypeChanged,
-                onEndOfListReached = viewModel::onEndOfListReached,
-            )
-        }
-    }
-}
 
 @Composable
 fun CustomerListScreen(
@@ -173,20 +128,6 @@ private fun PartialLoadingIndicator(state: CustomerListViewState) {
 }
 
 @Composable
-private fun CustomerListAddCustomerButton(onClick: () -> Unit) {
-    FloatingActionButton(
-        onClick = onClick,
-        backgroundColor = colorResource(id = R.color.color_primary),
-        contentColor = colorResource(id = R.color.woo_white),
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = stringResource(id = R.string.order_creation_add_customer_content_description)
-        )
-    }
-}
-
-@Composable
 private fun CustomerListLoaded(
     body: CustomerListViewState.CustomerList.Loaded,
     onCustomerSelected: (WCCustomerModel) -> Unit,
@@ -205,7 +146,7 @@ private fun CustomerListLoaded(
             items = body.customers,
         ) { _, customer ->
             when (customer) {
-                is Customer -> {
+                is CustomerListViewState.CustomerList.Item.Customer -> {
                     CustomerListItem(
                         customer = customer,
                         showGuestChip = body.showGuestChip,
@@ -247,7 +188,7 @@ private fun CustomerListLoaded(
 
 @Composable
 private fun CustomerListItem(
-    customer: Customer,
+    customer: CustomerListViewState.CustomerList.Item.Customer,
     showGuestChip: Boolean,
     onCustomerSelected: (WCCustomerModel) -> Unit,
 ) {
@@ -310,15 +251,15 @@ private fun CustomerListItem(
 }
 
 @Composable
-private fun Customer.Text.render() =
+private fun CustomerListViewState.CustomerList.Item.Customer.Text.render() =
     when (this) {
-        is Customer.Text.Highlighted -> buildHighlightedText()
+        is CustomerListViewState.CustomerList.Item.Customer.Text.Highlighted -> buildHighlightedText()
 
-        is Customer.Text.Placeholder -> buildPlaceholder()
+        is CustomerListViewState.CustomerList.Item.Customer.Text.Placeholder -> buildPlaceholder()
     }
 
 @Composable
-private fun Customer.Text.Placeholder.buildPlaceholder() =
+private fun CustomerListViewState.CustomerList.Item.Customer.Text.Placeholder.buildPlaceholder() =
     buildAnnotatedString {
         withStyle(
             SpanStyle(
@@ -330,7 +271,7 @@ private fun Customer.Text.Placeholder.buildPlaceholder() =
     }
 
 @Composable
-private fun Customer.Text.Highlighted.buildHighlightedText() =
+private fun CustomerListViewState.CustomerList.Item.Customer.Text.Highlighted.buildHighlightedText() =
     buildAnnotatedString {
         if (start >= end) {
             append(text)
@@ -492,27 +433,39 @@ fun CustomerListScreenPreview() {
             partialLoading = true,
             body = CustomerListViewState.CustomerList.Loaded(
                 customers = listOf(
-                    Customer(
+                    CustomerListViewState.CustomerList.Item.Customer(
                         remoteId = 1,
-                        name = Customer.Text.Highlighted("John Doe", 0, 1),
-                        email = Customer.Text.Highlighted("email@email.com", 3, 10),
-                        username = Customer.Text.Highlighted("· JohnDoe", 3, 6),
+                        name = CustomerListViewState.CustomerList.Item.Customer.Text.Highlighted("John Doe", 0, 1),
+                        email = CustomerListViewState.CustomerList.Item.Customer.Text.Highlighted(
+                            "email@email.com",
+                            3,
+                            10
+                        ),
+                        username = CustomerListViewState.CustomerList.Item.Customer.Text.Highlighted("· JohnDoe", 3, 6),
 
                         payload = WCCustomerModel(),
                     ),
-                    Customer(
+                    CustomerListViewState.CustomerList.Item.Customer(
                         remoteId = 2,
-                        name = Customer.Text.Highlighted("Andrei Kdn", 5, 8),
-                        email = Customer.Text.Highlighted("blabla@email.com", 3, 10),
-                        username = Customer.Text.Highlighted("· AndreiDoe", 3, 6),
+                        name = CustomerListViewState.CustomerList.Item.Customer.Text.Highlighted("Andrei Kdn", 5, 8),
+                        email = CustomerListViewState.CustomerList.Item.Customer.Text.Highlighted(
+                            "blabla@email.com",
+                            3,
+                            10
+                        ),
+                        username = CustomerListViewState.CustomerList.Item.Customer.Text.Highlighted(
+                            "· AndreiDoe",
+                            3,
+                            6
+                        ),
 
                         payload = WCCustomerModel(),
                     ),
-                    Customer(
+                    CustomerListViewState.CustomerList.Item.Customer(
                         remoteId = 0L,
-                        name = Customer.Text.Placeholder("No name"),
-                        email = Customer.Text.Placeholder("No email"),
-                        username = Customer.Text.Placeholder(""),
+                        name = CustomerListViewState.CustomerList.Item.Customer.Text.Placeholder("No name"),
+                        email = CustomerListViewState.CustomerList.Item.Customer.Text.Placeholder("No email"),
+                        username = CustomerListViewState.CustomerList.Item.Customer.Text.Placeholder(""),
 
                         payload = WCCustomerModel(),
                     ),

@@ -18,12 +18,12 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CustomerListFragment : BaseFragment() {
+class OrderCustomerListFragment : BaseFragment() {
     companion object {
         const val KEY_CUSTOMER_RESULT = "customer_model"
     }
 
-    private val viewModel by viewModels<CustomerListViewModel>()
+    private val viewModel by viewModels<CustomerListSelectionViewModel>()
 
     override val activityAppBarStatus: AppBarStatus = AppBarStatus.Hidden
 
@@ -35,7 +35,7 @@ class CustomerListFragment : BaseFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             WooThemeWithBackground {
-                CustomerListScreen(viewModel)
+                OrderCustomerListScreen(viewModel)
             }
         }
     }
@@ -54,7 +54,7 @@ class CustomerListFragment : BaseFragment() {
 
                 is AddCustomer -> {
                     findNavController().navigateSafely(
-                        CustomerListFragmentDirections
+                        OrderCustomerListFragmentDirections
                             .actionCustomerListFragmentToOrderCreationCustomerFragment(
                                 editingOfAddedCustomer = false,
                                 initialEmail = event.email.orEmpty()

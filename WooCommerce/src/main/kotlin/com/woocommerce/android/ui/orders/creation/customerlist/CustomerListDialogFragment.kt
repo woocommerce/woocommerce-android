@@ -28,7 +28,7 @@ class CustomerListDialogFragment : DialogFragment() {
         private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.6f
     }
 
-    private val viewModel by viewModels<CustomerListViewModel>()
+    private val viewModel by viewModels<CustomerListSelectionViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +49,7 @@ class CustomerListDialogFragment : DialogFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             WooThemeWithBackground {
-                CustomerListScreen(viewModel)
+                OrderCustomerListScreen(viewModel)
             }
         }
     }
@@ -68,7 +68,7 @@ class CustomerListDialogFragment : DialogFragment() {
 
                 is AddCustomer -> {
                     findNavController().navigateSafely(
-                        CustomerListFragmentDirections
+                        OrderCustomerListFragmentDirections
                             .actionCustomerListFragmentToOrderCreationCustomerFragment(
                                 editingOfAddedCustomer = false,
                                 initialEmail = event.email.orEmpty()
