@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -39,8 +40,10 @@ class FetchOrderProductsTest : BaseUnitTest() {
     @Test
     fun `returns Error when phone connection is not available`() = testBlocking {
         whenever(phoneRepository.isPhoneConnectionAvailable()).thenReturn(false)
+        whenever(ordersRepository.getOrderFromId(selectedSite, 1L)).thenReturn(null)
+        whenever(ordersRepository.getOrderRefunds(selectedSite, 1L)).thenReturn(emptyList())
 
-        val result = sut.invoke(selectedSite, 1L).first()
+        val result = sut.invoke(selectedSite, 1L).last()
 
         assertThat(result).isEqualTo(OrderProductsRequest.Error)
     }
