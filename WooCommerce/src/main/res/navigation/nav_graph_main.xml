@@ -325,6 +325,9 @@
         <action
             android:id="@+id/action_moreMenu_to_blazeCampaignListFragment"
             app:destination="@id/blazeCampaignListFragment" />
+        <action
+            android:id="@+id/action_moreMenu_to_customerListFragment"
+            app:destination="@id/menuCustomerListFragment" />
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"
@@ -787,4 +790,8 @@
         android:id="@+id/dashboardWidgetEditorFragment"
         android:name="com.woocommerce.android.ui.dashboard.widgeteditor.DashboardWidgetEditorFragment"
         android:label="DashboardWidgetEditorFragment" />
+    <fragment
+        android:id="@+id/menuCustomerListFragment"
+        android:name="com.woocommerce.android.ui.customer.MenuCustomerListFragment"
+        android:label="CustomerListFragment" />
 </navigation>

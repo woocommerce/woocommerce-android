@@ -10,6 +10,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_OPTION
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_ADMIN_MENU
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_COUPONS
+import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_CUSTOMERS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_INBOX
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_MORE_MENU_PAYMENTS_BADGE_VISIBLE
@@ -158,6 +159,12 @@ class MoreMenuViewModel @Inject constructor(
                 onClick = ::onReviewsButtonClick
             ),
             MoreMenuItemButton(
+                title = R.string.more_menu_button_customers,
+                description = R.string.more_menu_button_customers_description,
+                icon = R.drawable.ic_more_menu_coupons,
+                onClick = ::onCustomersButtonClick
+            ),
+            MoreMenuItemButton(
                 title = R.string.more_menu_button_inbox,
                 description = R.string.more_menu_button_inbox_description,
                 icon = R.drawable.ic_more_menu_inbox,
@@ -284,6 +291,11 @@ class MoreMenuViewModel @Inject constructor(
         triggerEvent(MoreMenuEvent.ViewCouponsEvent)
     }
 
+    private fun onCustomersButtonClick() {
+        trackMoreMenuOptionSelected(VALUE_MORE_MENU_CUSTOMERS)
+        triggerEvent(MoreMenuEvent.ViewCustomersEvent)
+    }
+
     private fun onReviewsButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_REVIEWS)
         triggerEvent(MoreMenuEvent.ViewReviewsEvent)
@@ -347,6 +359,8 @@ class MoreMenuViewModel @Inject constructor(
         object ViewReviewsEvent : MoreMenuEvent()
         object ViewInboxEvent : MoreMenuEvent()
         object ViewCouponsEvent : MoreMenuEvent()
+
+        object ViewCustomersEvent : MoreMenuEvent()
         object NavigateToWooPosEvent : MoreMenuEvent()
     }
 }
