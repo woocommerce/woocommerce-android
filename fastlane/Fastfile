@@ -247,7 +247,7 @@ platform :android do
       play_store_screenshot_5: File.join(app_metadata_source_path, 'promo_screenshot_5.txt')
     }
 
-    po_path = File.join(app_metadata_source_path, 'PlayStoreStrings.pot')
+    po_path = File.join('fastlane', 'metadata', 'PlayStoreStrings.pot')
 
     an_update_metadata_source(
       po_file_path: po_path,
