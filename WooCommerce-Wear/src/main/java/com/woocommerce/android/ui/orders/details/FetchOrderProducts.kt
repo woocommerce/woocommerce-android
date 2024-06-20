@@ -15,9 +15,9 @@ import com.woocommerce.commons.MessagePath.REQUEST_ORDER_PRODUCTS
 import com.woocommerce.commons.WearOrderedProduct
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
-import kotlinx.coroutines.flow.flow
 
 class FetchOrderProducts @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
@@ -68,10 +68,10 @@ class FetchOrderProducts @Inject constructor(
     private suspend fun retrieveOrderLineItems(
         selectedSite: SiteModel,
         orderId: Long
-    ) = (ordersRepository.getOrderFromId(selectedSite, orderId)
+    ) = ordersRepository.getOrderFromId(selectedSite, orderId)
         ?.getLineItemList()
         ?.map { it.toAppModel() }
-        ?: emptyList())
+        ?: emptyList()
 
     private fun List<Refund>.asWearOrderedProducts(
         orderItems: List<OrderItem>

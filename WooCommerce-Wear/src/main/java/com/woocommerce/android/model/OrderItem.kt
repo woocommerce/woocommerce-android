@@ -1,9 +1,7 @@
 package com.woocommerce.android.model
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import java.math.BigDecimal
 import org.wordpress.android.fluxc.model.order.LineItem
+import java.math.BigDecimal
 
 data class OrderItem(
     val itemId: Long,
@@ -22,9 +20,3 @@ fun LineItem.toAppModel() = OrderItem(
     price = price?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
     total = total?.toBigDecimalOrNull() ?: BigDecimal.ZERO
 )
-
-fun String.fromJson(gson: Gson): List<OrderItem> {
-    val responseType = object : TypeToken<List<LineItem>>() {}.type
-    val items = gson.fromJson(this, responseType) as? List<LineItem> ?: emptyList()
-    return items.map { it.toAppModel() }
-}

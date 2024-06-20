@@ -1,11 +1,11 @@
 package com.woocommerce.android.model
 
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.Date
-import kotlinx.parcelize.Parcelize
-import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 
 @Parcelize
 data class Refund(
