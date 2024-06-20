@@ -12,7 +12,7 @@ class GetWearableOrderProducts @Inject constructor(
         orderId: Long
     ): List<WearOrderedProduct> {
         val orderItems = orderDetailRepository
-            .fetchOrderById(orderId)?.items
+            .getOrderById(orderId)?.items
             ?: return emptyList()
 
         return orderDetailRepository.getOrderRefunds(orderId)
