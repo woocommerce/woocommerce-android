@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WooPosTotalsState(
-    val orderId: Long?,
+    val orderId: Long? = null,
     val isCollectPaymentButtonEnabled: Boolean,
     var orderSubtotalText: String,
     var orderTaxText: String,

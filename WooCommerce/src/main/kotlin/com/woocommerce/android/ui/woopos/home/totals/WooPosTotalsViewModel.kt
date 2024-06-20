@@ -5,8 +5,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -29,7 +30,6 @@ class WooPosTotalsViewModel @Inject constructor(
     private val _state = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = WooPosTotalsState(
-            orderId = null,
             isCollectPaymentButtonEnabled = false,
             orderSubtotalText = "",
             orderTaxText = "",
