@@ -8,28 +8,40 @@ UI.user_error!('Please run fastlane via `bundle exec`') unless FastlaneCore::Hel
 ########################################################################
 # Constants
 ########################################################################
+# The valid values for `app:` parameter, i.e. the two possible top-level modules we can build (mobile and wear app)
+MOBILE_APP = 'WooCommerce'
+WEAR_APP = 'WooCommerce-Wear'
+
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 BUILD_GRADLE_PATH = File.join(PROJECT_ROOT_FOLDER, 'build.gradle')
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
 PROTOTYPE_BUILD_DOMAIN = 'https://d2twmm2nzpx3bg.cloudfront.net'
-ORIGINALS_METADATA_DIR_PATH = File.join(PROJECT_ROOT_FOLDER, 'WooCommerce', 'metadata')
-RELEASE_NOTES_SOURCE_PATH = File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES.txt')
-RELEASE_NOTES_PATH = File.join(ORIGINALS_METADATA_DIR_PATH, 'release_notes.txt')
 # The `android_download_translations` action joins the `RES_DIR_PATH` with `PROJECT_ROOT_FOLDER`, so we don't want to
 # add `PROJECT_ROOT_FOLDER` to the beginning of this path
 RES_DIR_PATH = File.join('WooCommerce', 'src', 'main', 'res')
 MAIN_STRINGS_PATH = File.join(PROJECT_ROOT_FOLDER, RES_DIR_PATH, 'values', 'strings.xml')
 VERSION_PROPERTIES_PATH = File.join(PROJECT_ROOT_FOLDER, 'version.properties')
 # The metadata for the Play Store live in the Fastlane folder, hence the `Dir.pwd`
-PLAY_STORE_METADATA_DIR_PATH = File.join(Dir.pwd, 'metadata', 'android')
-# Currently, the strings to use for the screenshots live in yet another metadata folder.
-# This is suboptimal and could lead to confusion.
-# See suggestions for how to improve at: https://github.com/woocommerce/woocommerce-android/pull/6907#discussion_r918144990
-SCREENSHOTS_METADATA_DIR_PATH = File.join(Dir.pwd, 'playstoreres', 'metadata')
+METADATA_DIR_PATH = {
+  MOBILE_APP => File.join(Dir.pwd, 'metadata', 'android'),
+  WEAR_APP => File.join(Dir.pwd, 'metadata', 'wear')
+}.freeze
+METADATA_SOURCE_DIR_PATH = {
+  MOBILE_APP => File.join(METADATA_DIR_PATH[MOBILE_APP], 'en-US'),
+  WEAR_APP => File.join(METADATA_DIR_PATH[WEAR_APP], 'en-US')
+}.freeze
+METADATA_SOURCE_CHANGELOG_FILE_PATH = {
+  MOBILE_APP => File.join(METADATA_SOURCE_DIR_PATH[MOBILE_APP], 'changelogs', 'default.txt'),
+  WEAR_APP => File.join(METADATA_SOURCE_DIR_PATH[WEAR_APP], 'changelogs', 'default.txt')
+}.freeze
+DEV_RELEASE_NOTES_PATH = {
+  MOBILE_APP => File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES.txt'),
+  WEAR_APP => File.join(PROJECT_ROOT_FOLDER, 'RELEASE-NOTES-WEAR.txt')
+}.freeze
 RAW_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'raw')
 RAW_SCREENSHOTS_PROCESSING_DIR = File.join(Dir.pwd, 'screenshots', 'raw_tmp')
 PROMO_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'promo_screenshots')
-FROZEN_STRINGS_DIR_PATH = './fastlane/resources/values/'
+FROZEN_STRINGS_DIR_PATH = File.join(Dir.pwd, 'resources', 'values')
 REMOTE_LIBRARIES_STRINGS_PATHS = [
   {
     name: 'Login Library',
@@ -61,10 +73,6 @@ VERSION_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::RCNotationVersionFo
 BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeFormatter.new
 BUILD_CODE_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeCalculator.new
 VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(version_properties_path: VERSION_PROPERTIES_PATH)
-
-# The valid values for `app:` parameter, i.e. the two possible top-level modules we can build (mobile and wear app)
-MOBILE_APP = 'WooCommerce'
-WEAR_APP = 'WooCommerce-Wear'
 
 ########################################################################
 # Environment
@@ -101,21 +109,14 @@ platform :android do
   # Release Lanes
   ########################################################################
 
-  #####################################################################################
-  # start_code_freeze
-  # -----------------------------------------------------------------------------------
-  # This lane executes the steps planned on code freeze
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # bundle exec fastlane start_code_freeze codefreeze_version:<version> [update_release_branch_version:<update flag>] [skip_confirm:<skip confirm>]
+  # This lane executes the steps planned on code freeze, creating new release branch from the current trunk.
   #
-  # Example:
-  # bundle exec fastlane start_code_freeze
-  # bundle exec fastlane start_code_freeze skip_confirm:true
-  #####################################################################################
-  desc 'Creates a new release branch from the current trunk'
-  lane :start_code_freeze do |options|
-    # Verify that there's nothing in progress in the working copy
+  # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
+  #
+  # @example Running the lane
+  #          bundle exec fastlane start_code_freeze skip_confirm:true
+  #
+  lane :start_code_freeze do |skip_confirm: false|
     ensure_git_status_clean
 
     # Check out the up-to-date default branch, the designated starting point for the code freeze
@@ -131,9 +132,7 @@ platform :android do
     MESSAGE
 
     UI.important(message)
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     # Create the release branch
     UI.message 'Creating release branch...'
@@ -151,20 +150,20 @@ platform :android do
 
     new_version = release_version_current
 
-    extract_release_notes_for_version(
-      version: new_version,
-      release_notes_file_path: RELEASE_NOTES_SOURCE_PATH,
-      extracted_notes_file_path: RELEASE_NOTES_PATH
-    )
-    android_update_release_notes(
-      new_version: new_version,
-      release_notes_file_path: RELEASE_NOTES_SOURCE_PATH
-    )
+    [MOBILE_APP, WEAR_APP].each do |app|
+      extract_release_notes_for_version(
+        version: new_version,
+        release_notes_file_path: DEV_RELEASE_NOTES_PATH[app],
+        extracted_notes_file_path: METADATA_SOURCE_CHANGELOG_FILE_PATH[app]
+      )
+      android_update_release_notes(
+        new_version: new_version,
+        release_notes_file_path: DEV_RELEASE_NOTES_PATH[app]
+      )
+    end
 
     UI.important('Pushing changes to remote and configuring the release on GitHub')
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     push_to_git_remote(tags: false)
 
@@ -180,17 +179,15 @@ platform :android do
     )
   end
 
-  #####################################################################################
-  # complete_code_freeze
+  # This lane executes the last steps planned on code freeze, creating a new release branch from the current trunk
   #
-  # This lane executes the last steps planned on code freeze
+  # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
+  # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
   #
-  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
-  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
+  # @example Running the lane
+  #          bundle exec fastlane complete_code_freeze skip_confirm:true include_wear_app:true
   #
-  desc 'Creates a new release branch from the current trunk'
-  lane :complete_code_freeze do |options|
-    # Ensure we use the latest version of the toolkit
+  lane :complete_code_freeze do |skip_confirm: false, include_wear_app: false|
     check_for_toolkit_updates unless is_ci || ENV['FASTLANE_SKIP_TOOLKIT_UPDATE_CHECK']
 
     # Verify that there's nothing in progress in the working copy
@@ -199,9 +196,7 @@ platform :android do
     ensure_git_branch_is_release_branch
 
     UI.important("Completing code freeze for: #{release_version_current}")
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     update_play_store_strings
     localize_libs
@@ -209,7 +204,6 @@ platform :android do
 
     push_to_git_remote(tags: false)
 
-    include_wear_app = options.fetch(:include_wear_app, false)
     trigger_release_build(branch_to_build: "release/#{release_version_current}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
@@ -227,27 +221,31 @@ platform :android do
 
   # Updates the `PlayStoreStrings.pot` file with the latest content from the `release_notes.txt` files and the other text sources.
   #
-  # @option [String] version The current `x.y` version of the app. Optional. Used to derive the `release_notes_xy` key to use in the `.pot` file.
+  # @param [String] version The current `x.y` version of the app. Optional. Used to derive the `release_notes_xy` key to use in the `.pot` file.
   #
-  desc 'Updates the PlayStoreStrings.pot file'
-  lane :update_play_store_strings do |options|
+  # @example Running the lane
+  #          bundle exec fastlane update_play_store_strings version:10.3
+  #
+  lane :update_play_store_strings do |version: nil|
     ensure_git_status_clean
 
-    version = options.fetch(:version, release_version_current)
+    version ||= release_version_current
 
+    app_metadata_source_path = METADATA_SOURCE_DIR_PATH[MOBILE_APP]
     files = {
-      release_note: RELEASE_NOTES_PATH,
-      play_store_promo: File.join(ORIGINALS_METADATA_DIR_PATH, 'short_description.txt'),
-      play_store_desc: File.join(ORIGINALS_METADATA_DIR_PATH, 'full_description.txt'),
-      play_store_app_title: File.join(ORIGINALS_METADATA_DIR_PATH, 'title.txt'),
-      play_store_screenshot_1: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_1.txt'),
-      play_store_screenshot_2: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_2.txt'),
-      play_store_screenshot_3: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_3.txt'),
-      play_store_screenshot_4: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_4.txt'),
-      play_store_screenshot_5: File.join(ORIGINALS_METADATA_DIR_PATH, 'promo_screenshot_5.txt')
+      release_note: METADATA_SOURCE_CHANGELOG_FILE_PATH[MOBILE_APP],
+      wear_release_note: METADATA_SOURCE_CHANGELOG_FILE_PATH[WEAR_APP],
+      play_store_promo: File.join(app_metadata_source_path, 'short_description.txt'),
+      play_store_desc: File.join(app_metadata_source_path, 'full_description.txt'),
+      play_store_app_title: File.join(app_metadata_source_path, 'title.txt'),
+      play_store_screenshot_1: File.join(app_metadata_source_path, 'promo_screenshot_1.txt'),
+      play_store_screenshot_2: File.join(app_metadata_source_path, 'promo_screenshot_2.txt'),
+      play_store_screenshot_3: File.join(app_metadata_source_path, 'promo_screenshot_3.txt'),
+      play_store_screenshot_4: File.join(app_metadata_source_path, 'promo_screenshot_4.txt'),
+      play_store_screenshot_5: File.join(app_metadata_source_path, 'promo_screenshot_5.txt')
     }
 
-    po_path = File.join(ORIGINALS_METADATA_DIR_PATH, 'PlayStoreStrings.pot')
+    po_path = File.join('fastlane', 'metadata', 'PlayStoreStrings.pot')
 
     an_update_metadata_source(
       po_file_path: po_path,
@@ -255,9 +253,11 @@ platform :android do
       release_version: version
     )
 
-    git_add(path: po_path)
+    deleted_files = delete_old_changelogs
+
+    git_add(path: [po_path, *deleted_files])
     git_commit(
-      path: po_path,
+      path: [po_path, *deleted_files],
       message: "Update `PlayStoreStrings.po` for #{version}",
       allow_nothing_to_commit: true
     )
@@ -392,17 +392,15 @@ platform :android do
     push_to_git_remote(tags: false)
   end
 
-  #####################################################################################
-  # finalize_hotfix_release
+  # This lane finalizes the hotfix branch, triggering a release build.
   #
-  # This lane finalizes the hotfix branch.
+  # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
+  # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
   #
-  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
-  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
+  # @example Running the lane
+  #          bundle exec fastlane finalize_hotfix_release skip_confirm:true include_wear_app:true
   #
-  desc 'Finalizes a hotfix release by triggering a release build'
-  lane :finalize_hotfix_release do |options|
-    # Verify that there's nothing in progress in the working copy
+  lane :finalize_hotfix_release do |skip_confirm: false, include_wear_app: false|
     ensure_git_status_clean
 
     ensure_git_branch_is_release_branch
@@ -410,11 +408,8 @@ platform :android do
     hotfix_version = release_version_current
 
     UI.important("Triggering hotfix build for version: #{hotfix_version}")
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
-    include_wear_app = options.fetch(:include_wear_app, false)
     trigger_release_build(branch_to_build: "release/#{hotfix_version}", include_wear_app: include_wear_app)
 
     # Retrieve the current non-hotfix release version
@@ -453,16 +448,15 @@ platform :android do
     )
   end
 
-  #####################################################################################
-  # finalize_release
+  # This lane finalizes a release: updates store metadata and runs the release checks.
   #
-  # This lane finalize a release: updates store metadata and runs the release checks
+  # @param [Boolean] skip_confirm (default: false) If set, will skip the confirmation prompt before running the rest of the lane
+  # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
   #
-  # @param [Boolean] skip_confirm Skip the confirmation prompt if set to true
-  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
+  # @example Running the lane
+  #          bundle exec fastlane finalize_release skip_confirm:true include_wear_app:true
   #
-  desc 'Updates store metadata and runs the release checks'
-  lane :finalize_release do |options|
+  lane :finalize_release do |skip_confirm: false, include_wear_app: false|
     UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix(version_properties_path: VERSION_PROPERTIES_PATH)
 
     # Verify that there's nothing in progress in the working copy
@@ -471,9 +465,7 @@ platform :android do
     ensure_git_branch_is_release_branch
 
     UI.important("Finalizing release: #{release_version_current}")
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     configure_apply(force: is_ci)
 
@@ -492,41 +484,42 @@ platform :android do
 
     version = release_version_current
 
-    download_metadata_strings(
-      version: version,
-      build_number: build_code_current
-    )
+    download_metadata_strings(version: version, app: MOBILE_APP)
+    download_metadata_strings(version: version, app: WEAR_APP) if include_wear_app
 
     # Wrap up
-    remove_branch_protection(
-      repository: GITHUB_REPO,
-      branch: "release/#{version}"
-    )
-    set_milestone_frozen_marker(
-      repository: GITHUB_REPO,
-      milestone: version,
-      freeze: false
-    )
-    create_new_milestone(
-      repository: GITHUB_REPO,
-      need_appstore_submission: true,
-      milestone_duration: 7,
-      number_of_days_from_code_freeze_to_release: 10
-    )
-    close_milestone(
-      repository: GITHUB_REPO,
-      milestone: version
-    )
+    begin
+      remove_branch_protection(
+        repository: GITHUB_REPO,
+        branch: "release/#{version}"
+      )
+      set_milestone_frozen_marker(
+        repository: GITHUB_REPO,
+        milestone: version,
+        freeze: false
+      )
+      close_milestone(
+        repository: GITHUB_REPO,
+        milestone: version
+      )
+    rescue StandardError => e
+      error_message = <<-MESSAGE
+        Error closing milestone `#{app_version}`: #{e.message}
+        - If this is a retry of the lane, the milestone might have already been closed and this error is expected.
+        - If this is the first run of the lane, please investigate the error.
+      MESSAGE
+
+      UI.error(error_message)
+
+      buildkite_annotate(style: 'warning', context: 'finalize-release-error-milestone', message: error_message) if is_ci
+    end
 
     # Start the build
     UI.important('Pushing changes to remote and triggering the release build')
-    unless options[:skip_confirm] || UI.confirm('Do you want to continue?')
-      UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.")
-    end
+    UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     push_to_git_remote(tags: false)
 
-    include_wear_app = options.fetch(:include_wear_app, false)
     trigger_release_build(branch_to_build: "release/#{version}", include_wear_app: include_wear_app)
 
     # Create an intermediate branch
@@ -631,7 +624,10 @@ platform :android do
       track: track(app: app, track_name: 'production'),
       release_status: 'inProgress',
       rollout: '0.1', # Start the production rollout at 10%
-      skip_upload_metadata: false,
+      metadata_path: METADATA_DIR_PATH[app],
+      # Skip uploading Play Store listing metadata for the Wear app, as these are shared with the Mobile app and
+      # stored in its metadata folder. The Wear app only has separate changelogs.
+      skip_upload_metadata: app == WEAR_APP,
       skip_upload_changelogs: false,
       skip_upload_images: true,
       skip_upload_screenshots: true,
@@ -682,6 +678,7 @@ platform :android do
       track: track(app: app, track_name: 'beta'),
       release_status: 'completed',
       rollout: '1.0', # Rollout to 100% of testers on the beta track
+      metadata_path: METADATA_DIR_PATH[app],
       skip_upload_metadata: true,
       skip_upload_changelogs: true,
       skip_upload_images: true,
@@ -692,26 +689,27 @@ platform :android do
     create_gh_release(version: version, prerelease: true) if options[:create_release]
   end
 
-  #####################################################################################
-  # trigger_release_build
+  # This lane triggers a stable release build on CI.
   #
-  # This lane triggers a stable release build on CI
+  # @param [String] branch_to_build The git branch the CI build should run on. Defaults to the current branch at the time of calling the lane.
+  # @param [Boolean] include_wear_app (default: false) If true, the CI build will also include a job to build the WEAR_APP
   #
-  # @param [String] branch_to_build The git branch the CI build should run on. Defaults to the current branch at the time of calling that lane.
-  # @param [Boolean] include_wear_app If true, the CI build will also include a job to build the WEAR_APP. Defaults to false.
+  # @example Running the lane
+  #          bundle exec fastlane trigger_release_build branch_to_build:main include_wear_app:true
   #
-  desc 'Tell Buildkite to trigger a release build'
-  lane :trigger_release_build do |options|
-    branch = options.fetch(:branch_to_build, git_branch)
-    include_wear_app = options.fetch(:include_wear_app)
+  lane :trigger_release_build do |branch_to_build: nil, include_wear_app: false|
+    branch = branch_to_build || git_branch
 
-    buildkite_trigger_build(
+    build_url = buildkite_trigger_build(
       buildkite_organization: 'automattic',
       buildkite_pipeline: 'woocommerce-android',
       branch: branch,
       pipeline_file: 'release-builds.yml',
       environment: { INCLUDE_WEAR_APP: include_wear_app }
     )
+
+    message = "This build triggered a release build on <code>#{branch}</code>:<br>- #{build_url}"
+    buildkite_annotate(style: 'info', context: 'trigger-release-build-doandroid', message: message) if is_ci
   end
 
   #####################################################################################
@@ -762,20 +760,29 @@ platform :android do
   # This lane downloads the translated metadata (release notes, app store strings, title, etc.) from GlotPress and updates the local files.
   #
   # @param [String] version the version for which to download metadata
+  # @param [String] app (default: WooCommerce) The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
   #
   # @example Running the lane
-  #          fastlane download_metadata_strings version:10.3 build_number:573
+  #          bundle exec fastlane download_metadata_strings version:10.3 app:'WooCommerce-Wear'
   #
-  lane :download_metadata_strings do |version:, build_number:|
+  lane :download_metadata_strings do |version:, app: MOBILE_APP|
     values = version.split('.')
-    files = {
-      "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: 'changelogs/default.txt', max_size: 0 },
-      play_store_promo: { desc: 'short_description.txt', max_size: 80 },
-      play_store_desc: { desc: 'full_description.txt', max_size: 0 },
-      play_store_app_title: { desc: 'title.txt', max_size: 50 }
-    }
 
-    download_path = PLAY_STORE_METADATA_DIR_PATH
+    files = case app
+            when MOBILE_APP
+              {
+                "release_note_#{values[0].to_s.rjust(2, '0')}#{values[1]}" => { desc: 'changelogs/default.txt', max_size: 500 },
+                play_store_promo: { desc: 'short_description.txt', max_size: 80 },
+                play_store_desc: { desc: 'full_description.txt', max_size: 0 },
+                play_store_app_title: { desc: 'title.txt', max_size: 50 }
+              }
+            when WEAR_APP
+              { wear_release_note: { desc: 'changelogs/default.txt', max_size: 500 } }
+            else
+              UI.user_error!("Unknown app parameter: #{app}. Must me one of #{MOBILE_APP} or #{WEAR_APP}")
+            end
+
+    download_path = METADATA_DIR_PATH[app]
     gp_downloadmetadata(
       project_url: GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL,
       target_files: files,
@@ -783,29 +790,12 @@ platform :android do
       download_path: download_path
     )
 
-    # Copy the source `.txt` files (used as source of truth when we generated the `.po`) to the `fastlane/*metadata/android/en-US` dir,
-    # as `en-US` is the source language, and isn't exported from GlotPress during `gp_downloadmetadata`
-    files.each do |key, h|
-      source_file = key.to_s.start_with?('release_note_') ? 'release_notes.txt' : h[:desc]
-      FileUtils.cp(File.join(ORIGINALS_METADATA_DIR_PATH, source_file), File.join(download_path, 'en-US', h[:desc]))
-    end
-
-    android_create_xml_release_notes(
-      download_path: download_path,
-      build_number: build_number.to_s,
-      locales: SUPPORTED_LOCALES.to_h { |hsh| [hsh[:glotpress], hsh[:google_play]] }
-    )
-    add_us_release_notes(
-      release_notes_path: File.join(download_path, 'release_notes.xml'),
-      version_name: version
-    )
-
     # We need to explicitly call `git_add`, despite the path being passed to `git_commit` as well.
     # That's because we might have new files, that the commit command would otherwise miss.
     git_add(path: download_path)
     git_commit(
       path: download_path,
-      message: "Update metadata translations for #{version}",
+      message: "Update metadata translations for #{app} #{version}",
       allow_nothing_to_commit: true
     )
 
@@ -946,19 +936,9 @@ platform :android do
     )
   end
 
-  #####################################################################################
-  # download_promo_strings
-  # -----------------------------------------------------------------------------------
-  # This lane download the translated promo strings from the translation system
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # fastlane download_promo_strings
+  # This lane downloads the translated promo strings from the translation system.
   #
-  # Example:
-  # fastlane download_promo_strings
-  #####################################################################################
-  desc 'Downloads translated promo strings from the translation system'
-  lane :download_promo_strings do |_options|
+  lane :download_promo_strings do
     # "<key in .po file>" => { desc: "<name of txt file>" }
     files = {
       play_store_screenshot_1: { desc: 'promo_screenshot_1.txt' },
@@ -976,23 +956,7 @@ platform :android do
                         target_files: files,
                         locales: locales,
                         source_locale: 'en-US',
-                        download_path: SCREENSHOTS_METADATA_DIR_PATH)
-
-    # Copy metadata (screenshot-related) txt files into `en-US`
-    en_us_path = File.join(SCREENSHOTS_METADATA_DIR_PATH, 'en-US')
-    FileUtils.mkdir_p(en_us_path)
-
-    [
-      'promo_screenshot_1.txt',
-      'promo_screenshot_2.txt',
-      'promo_screenshot_3.txt',
-      'promo_screenshot_4.txt',
-      'promo_screenshot_5.txt'
-    ].each do |filename|
-      source = File.join(ORIGINALS_METADATA_DIR_PATH, filename)
-      destination = File.join(en_us_path, filename)
-      FileUtils.cp(source, destination)
-    end
+                        download_path: METADATA_DIR_PATH[MOBILE_APP])
   end
 
   #####################################################################################
@@ -1092,7 +1056,7 @@ platform :android do
     # Run screenshots generator tool
     promo_screenshots(
       orig_folder: RAW_SCREENSHOTS_PROCESSING_DIR,
-      metadata_folder: SCREENSHOTS_METADATA_DIR_PATH,
+      metadata_folder: METADATA_DIR_PATH[MOBILE_APP], # not considering wear app
       output_folder: PROMO_SCREENSHOTS_DIR,
       force: options[:force]
     )
@@ -1130,7 +1094,7 @@ platform :android do
     )
 
     install_url = "#{PROTOTYPE_BUILD_DOMAIN}/#{upload_path}"
-    platform_name = app == WEAR_APP ? '⌚️ Wear OS' : app == MOBILE_APP ? '📱 Mobile' : '_(Unknown)_'
+    platform_name = { WEAR_APP => '⌚️ Wear OS', MOBILE_APP => '📱 Mobile' }.fetch(app, '_(Unknown)_')
     comment_body = prototype_build_details_comment(
       app_display_name: "#{app} Android",
       download_url: install_url,
@@ -1155,15 +1119,6 @@ platform :android do
   #####################################################################################
   # Private lanes
   #####################################################################################
-  private_lane :add_us_release_notes do |options|
-    en_release_notes_path = RELEASE_NOTES_PATH
-    File.open(options[:release_notes_path], 'a') do |f|
-      f.puts('<en-US>')
-      f.puts("#{options[:version_name]}:")
-      f.puts(File.read(en_release_notes_path))
-      f.puts('</en-US>')
-    end
-  end
 
   # Creates a new GitHub Release for the given version
   #
@@ -1176,7 +1131,7 @@ platform :android do
     version = options[:version]
     prerelease = options[:prerelease] || false
 
-    universal_apk_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name(version))
+    universal_apk_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name(app, version))
 
     download_universal_apk_from_google_play(
       package_name: APP_PACKAGE_NAME,
@@ -1190,8 +1145,9 @@ platform :android do
 
     create_release(
       repository: GITHUB_REPO,
-      version: version,
-      release_notes_file_path: RELEASE_NOTES_PATH,
+      # 'version' is used for the release name as well as the tag that's going to be created for the release
+      version: app == WEAR_APP ? "wear-#{version}" : version,
+      release_notes_file_path: METADATA_SOURCE_CHANGELOG_FILE_PATH[app],
       prerelease: prerelease,
       release_assets: release_assets.join(',')
     )
@@ -1215,11 +1171,11 @@ platform :android do
   end
 
   def aab_file_name(app, version)
-    "wcandroid-#{app}-#{version}.aab"
+    "#{app}-#{version}.aab"
   end
 
-  def universal_apk_name(version)
-    "wcandroid-#{version}-universal.apk"
+  def universal_apk_name(app, version)
+    "#{app}-#{version}-universal.apk"
   end
 
   # @param [String] app The type of app (`MOBILE_APP` or `WEAR_APP`)
@@ -1255,6 +1211,20 @@ platform :android do
 
       "#{branch}-#{commit}"
     end
+  end
+
+  # Remove old `changelogs/default.txt` files for every locale except en-US.
+  # After updating the en-US copy for a new version and sending it for translation,
+  # we want to avoid having outdated translations in git in the meantime.
+  #
+  # @return [Array<String>] A list of file paths that were deleted.
+  def delete_old_changelogs
+    obsolete_changelogs = [MOBILE_APP, WEAR_APP].flat_map do |app|
+      Dir.glob(File.join(METADATA_DIR_PATH[app], '*', 'changelogs', 'default.txt'))
+         .reject { |file| File.dirname(file, 2) == 'en-US' }
+    end
+    FileUtils.rm_f(obsolete_changelogs)
+    obsolete_changelogs
   end
 
   #####################################################################################
