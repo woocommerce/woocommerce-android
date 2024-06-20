@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.extensions.combineWithTimeout
+import com.woocommerce.android.model.OrderItem
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.getNonRefundedProducts
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.phone.PhoneConnectionRepository
@@ -13,7 +15,6 @@ import com.woocommerce.commons.MessagePath.REQUEST_ORDER_PRODUCTS
 import com.woocommerce.commons.WearOrderedProduct
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.flow
@@ -42,7 +43,11 @@ class FetchOrderProducts @Inject constructor(
         orderId: Long
     ): Flow<List<WearOrderedProduct>> {
         return when {
-            networkStatus.isConnected() -> fetchOrderedProducts(selectedSite, orderId)
+            networkStatus.isConnected() -> flow {
+                ordersRepository.fetchOrderRefunds(selectedSite, orderId)
+                    .asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
+            }
+
             phoneRepository.isPhoneConnectionAvailable() -> {
                 phoneRepository.sendMessage(
                     REQUEST_ORDER_PRODUCTS,
@@ -50,28 +55,30 @@ class FetchOrderProducts @Inject constructor(
                 )
                 ordersRepository.observeOrderProductsDataChanges(orderId, selectedSite.siteId)
             }
-            else -> flowOf(emptyList()) // Retrieve stored data instead
+
+            else -> flow {
+                ordersRepository.getOrderRefunds(selectedSite, orderId)
+                    .asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
+            }
         }
     }
 
-    private suspend fun fetchOrderedProducts(
+    private suspend fun retrieveOrderLineItems(
         selectedSite: SiteModel,
         orderId: Long
-    ) = flow<List<WearOrderedProduct>> {
-        val orderItems = ordersRepository.getOrderFromId(selectedSite, orderId)
-            ?.getLineItemList()
-            ?.map { it.toAppModel() }
-            ?: emptyList()
+    ) = (ordersRepository.getOrderFromId(selectedSite, orderId)
+        ?.getLineItemList()
+        ?.map { it.toAppModel() }
+        ?: emptyList())
 
-        ordersRepository.fetchOrderRefunds(selectedSite, orderId)
-            .getNonRefundedProducts(orderItems)
-            .map {
-                WearOrderedProduct(
-                    amount = it.quantity.toString(),
-                    total = it.total.toString(),
-                    name = it.name
-                )
-            }
+    private fun List<Refund>.asWearOrderedProducts(
+        orderItems: List<OrderItem>
+    ) = getNonRefundedProducts(orderItems).map {
+        WearOrderedProduct(
+            amount = it.quantity.toString(),
+            total = it.total.toString(),
+            name = it.name
+        )
     }
 
     sealed class OrderProductsRequest {
