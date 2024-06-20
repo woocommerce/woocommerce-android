@@ -705,6 +705,9 @@
         <argument
             android:name="quantityRules"
             app:argType="com.woocommerce.android.ui.products.models.QuantityRules" />
+        <argument
+            android:name="exitAnalyticsEvent"
+            app:argType="com.woocommerce.android.analytics.AnalyticsEvent" />
     </fragment>
     <fragment
         android:id="@+id/productBundleFragment"
