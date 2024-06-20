@@ -27,7 +27,8 @@ fun WearOrder.toOrderEntity() = OrderEntity(
     total = total,
     status = status,
     billingFirstName = billingFirstName,
-    billingLastName = billingLastName
+    billingLastName = billingLastName,
+    lineItems = lineItemsJson
 )
 
 fun OrderAddress.Billing.toWearOrderAddress() = WearOrderAddress(

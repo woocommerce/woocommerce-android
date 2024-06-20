@@ -52,13 +52,6 @@ class OrdersRepository @Inject constructor(
         ?.map { it.toAppModel() }
         ?: emptyList()
 
-    suspend fun fetchSingleOrder(
-        selectedSite: SiteModel,
-        orderId: Long
-    ) = orderStore.fetchSingleOrder(selectedSite, orderId)
-        .takeUnless { it.isError }
-        ?.let { getOrderFromId(selectedSite, orderId) }
-
     suspend fun getStoredOrders(
         selectedSite: SiteModel
     ) = orderStore.getOrdersForSite(selectedSite)
