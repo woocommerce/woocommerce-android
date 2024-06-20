@@ -1130,7 +1130,13 @@ platform :android do
     )
 
     install_url = "#{PROTOTYPE_BUILD_DOMAIN}/#{upload_path}"
-    platform_name = app == WEAR_APP ? '⌚️ Wear OS' : app == MOBILE_APP ? '📱 Mobile' : '_(Unknown)_'
+    platform_name = if app == WEAR_APP
+                      '⌚️ Wear OS'
+                    elsif app == MOBILE_APP
+                      '📱 Mobile'
+                    else
+                      '_(Unknown)_'
+                    end
     comment_body = prototype_build_details_comment(
       app_display_name: "#{app} Android",
       download_url: install_url,
