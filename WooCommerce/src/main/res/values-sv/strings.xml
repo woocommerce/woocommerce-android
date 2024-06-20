@@ -334,7 +334,6 @@ Language: sv_SE
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Få tillgång till en stor publik</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">\"Vårt verktyg presenterar din produkt där intresserade shoppare kan hitta den.\"</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Global räckvidd på ett enkelt sätt</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Lansera annonser på några minuter – varken erfarenhet eller en stor budget behövs, och det kostar bara från 5 USD och uppåt.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Snabb start, stor påverkan</string>
     <string name="order_creation_coupon_button">Rabattkod</string>
     <string name="order_creation_gift_card_text_field_hint">Ange kod</string>
