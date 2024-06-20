@@ -259,7 +259,7 @@ platform :android do
 
     git_add(path: [po_path, *deleted_files])
     git_commit(
-      path: po_path,
+      path: [po_path, *deleted_files],
       message: "Update `PlayStoreStrings.po` for #{version}",
       allow_nothing_to_commit: true
     )
