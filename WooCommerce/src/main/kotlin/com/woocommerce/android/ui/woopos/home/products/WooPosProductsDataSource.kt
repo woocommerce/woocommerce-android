@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface WooPosProductsDataSource {
     val products: Flow<List<Product>>
-    suspend fun loadProducts()
+    suspend fun loadSimpleProducts()
     suspend fun loadMore()
 }
