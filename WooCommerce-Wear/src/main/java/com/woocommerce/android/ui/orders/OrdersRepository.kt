@@ -64,6 +64,12 @@ class OrdersRepository @Inject constructor(
         orderId = orderId
     )
 
+    fun getOrderRefunds(
+        selectedSite: SiteModel,
+        orderId: Long
+    ) = refundStore.getAllRefunds(selectedSite, orderId)
+        .map { it.toAppModel() }
+
     fun observeOrdersDataChanges(
         selectedSite: SiteModel
     ) = orderStore.observeOrdersForSite(selectedSite)
