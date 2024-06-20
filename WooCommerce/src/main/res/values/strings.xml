@@ -3700,6 +3700,9 @@
     <string name="more_menu_button_coupons">Coupons</string>
     <string name="more_menu_button_coupons_description">Boost sales with special offers</string>
 
+    <string name="more_menu_button_customers">Customers</string>
+    <string name="more_menu_button_customers_description">Get customer insights</string>
+
     <string name="more_menu_button_reviews">Reviews</string>
     <string name="more_menu_button_reviews_description">Capture reviews for your store</string>
 
@@ -4133,4 +4136,7 @@
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
     <string name="woopos_exit_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
+
+    <string name="menu_customers_title">Customers</string>
+
 </resources>
