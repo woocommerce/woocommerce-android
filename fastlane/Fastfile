@@ -1133,7 +1133,7 @@ platform :android do
     version = options[:version]
     prerelease = options[:prerelease] || false
 
-    universal_apk_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name(version))
+    universal_apk_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name(app, version))
 
     download_universal_apk_from_google_play(
       package_name: APP_PACKAGE_NAME,
@@ -1147,7 +1147,8 @@ platform :android do
 
     create_release(
       repository: GITHUB_REPO,
-      version: version,
+      # 'version' is used for the release name as well as the tag that's going to be created for the release
+      version: app == WEAR_APP ? "wear-#{version}" : version,
       release_notes_file_path: METADATA_SOURCE_CHANGELOG_FILE_PATH[app],
       prerelease: prerelease,
       release_assets: release_assets.join(',')
@@ -1172,11 +1173,11 @@ platform :android do
   end
 
   def aab_file_name(app, version)
-    "wcandroid-#{app}-#{version}.aab"
+    "#{app}-#{version}.aab"
   end
 
-  def universal_apk_name(version)
-    "wcandroid-#{version}-universal.apk"
+  def universal_apk_name(app, version)
+    "#{app}-#{version}-universal.apk"
   end
 
   # @param [String] app The type of app (`MOBILE_APP` or `WEAR_APP`)
