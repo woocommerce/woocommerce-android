@@ -46,6 +46,7 @@ class FetchOrderProducts @Inject constructor(
             networkStatus.isConnected() -> flow {
                 ordersRepository.fetchOrderRefunds(selectedSite, orderId)
                     .asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
+                    .let { emit(it) }
             }
 
             phoneRepository.isPhoneConnectionAvailable() -> {
@@ -59,6 +60,7 @@ class FetchOrderProducts @Inject constructor(
             else -> flow {
                 ordersRepository.getOrderRefunds(selectedSite, orderId)
                     .asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
+                    .let { emit(it) }
             }
         }
     }
@@ -88,6 +90,6 @@ class FetchOrderProducts @Inject constructor(
     }
 
     companion object {
-        const val TIMEOUT_FOR_ORDER_PRODUCTS = 5000L
+        const val TIMEOUT_FOR_ORDER_PRODUCTS = 10000L
     }
 }
