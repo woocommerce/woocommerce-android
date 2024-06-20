@@ -505,7 +505,11 @@ platform :android do
         milestone: version
       )
     rescue StandardError => e
-      error_message = "Error finalizing release milestone `#{version}`: #{e.message}"
+      error_message = <<-MESSAGE
+        Error closing milestone `#{app_version}`: #{e.message}
+        - If this is a retry of the lane, the milestone might have already been closed and this error is expected.
+        - If this is the first run of the lane, please investigate the error.
+      MESSAGE
 
       UI.error(error_message)
 
