@@ -54,7 +54,6 @@ import com.woocommerce.android.ui.products.AddProductSource.STORE_ONBOARDING
 import com.woocommerce.android.ui.products.DuplicateProduct
 import com.woocommerce.android.ui.products.GetBundledProductsCount
 import com.woocommerce.android.ui.products.GetComponentProducts
-import com.woocommerce.android.ui.products.GetProductQuantityRules
 import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductHelper
@@ -70,7 +69,6 @@ import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.details.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
-import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.settings.ProductCatalogVisibility
 import com.woocommerce.android.ui.products.settings.ProductVisibility
@@ -151,7 +149,6 @@ class ProductDetailViewModel @Inject constructor(
     private val duplicateProduct: DuplicateProduct,
     private val tracker: AnalyticsTrackerWrapper,
     private val selectedSite: SelectedSite,
-    private val getProductQuantityRules: GetProductQuantityRules,
     private val getBundledProductsCount: GetBundledProductsCount,
     private val getComponentProducts: GetComponentProducts,
     private val productListRepository: ProductListRepository,
@@ -1247,7 +1244,10 @@ class ProductDetailViewModel @Inject constructor(
         downloadExpiry: Int? = null,
         isDownloadable: Boolean? = null,
         attributes: List<ProductAttribute>? = null,
-        numVariation: Int? = null
+        numVariation: Int? = null,
+        minAllowedQuantity: Int? = null,
+        maxAllowedQuantity: Int? = null,
+        groupOfQuantity: Int? = null
     ) {
         viewState.productDraft?.let { product ->
             val updatedProduct = product.copy(
@@ -1303,7 +1303,10 @@ class ProductDetailViewModel @Inject constructor(
                 downloadExpiry = downloadExpiry ?: product.downloadExpiry,
                 isDownloadable = isDownloadable ?: product.isDownloadable,
                 attributes = attributes ?: product.attributes,
-                numVariations = numVariation ?: product.numVariations
+                numVariations = numVariation ?: product.numVariations,
+                minAllowedQuantity = minAllowedQuantity ?: product.minAllowedQuantity,
+                maxAllowedQuantity = maxAllowedQuantity ?: product.maxAllowedQuantity,
+                groupOfQuantity = groupOfQuantity ?: product.groupOfQuantity,
             )
             viewState = viewState.copy(productDraft = updatedProduct)
         }
@@ -1436,10 +1439,9 @@ class ProductDetailViewModel @Inject constructor(
         if (hasTrackedProductDetailLoaded.not()) {
             storedProduct.value?.let { product ->
                 launch {
-                    val hasQuantityRules = getProductQuantityRules(product.remoteId) != null
                     val properties = mapOf(
                         AnalyticsTracker.KEY_HAS_LINKED_PRODUCTS to product.hasLinkedProducts(),
-                        AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to hasQuantityRules,
+                        AnalyticsTracker.KEY_HAS_MIN_MAX_QUANTITY_RULES to product.hasQuantityRules(),
                         AnalyticsTracker.KEY_HORIZONTAL_SIZE_CLASS to
                             IsScreenLargerThanCompactValue(isWindowClassLargeThanCompact()).deviceTypeToAnalyticsString,
                     )
@@ -2511,10 +2513,6 @@ class ProductDetailViewModel @Inject constructor(
             isLoadingMore = false,
             isRefreshing = false
         )
-    }
-
-    suspend fun getQuantityRules(productRemoteID: Long): QuantityRules? {
-        return getProductQuantityRules(productRemoteID)
     }
 
     suspend fun getBundledProductsSize(remoteId: Long): Int {

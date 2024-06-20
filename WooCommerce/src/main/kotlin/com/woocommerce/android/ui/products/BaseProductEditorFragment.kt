@@ -30,6 +30,7 @@ abstract class BaseProductEditorFragment(@LayoutRes private val layoutRes: Int) 
         const val KEY_PRICING_DIALOG_RESULT = "key_pricing_dialog_result"
         const val KEY_INVENTORY_DIALOG_RESULT = "key_inventory_dialog_result"
         const val KEY_IMAGES_DIALOG_RESULT = "key_images_dialog_result"
+        const val KEY_QUANTITY_RULES_DIALOG_RESULT = "key_quantity_rules_dialog_result"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

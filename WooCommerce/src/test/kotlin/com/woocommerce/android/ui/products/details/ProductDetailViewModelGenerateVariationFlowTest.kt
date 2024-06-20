@@ -118,7 +118,6 @@ class ProductDetailViewModelGenerateVariationFlowTest : BaseUnitTest() {
                 duplicateProduct = mock(),
                 tracker = tracker,
                 selectedSite = selectedSite,
-                getProductQuantityRules = mock(),
                 getBundledProductsCount = mock(),
                 getComponentProducts = mock(),
                 productListRepository = mock(),
