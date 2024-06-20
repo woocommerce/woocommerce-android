@@ -9,7 +9,8 @@ data class WearOrder(
     val status: String,
     val billingFirstName: String,
     val billingLastName: String,
-    val address: WearOrderAddress
+    val address: WearOrderAddress,
+    val lineItemsJson: String
 )
 
 data class WearOrderedProduct(

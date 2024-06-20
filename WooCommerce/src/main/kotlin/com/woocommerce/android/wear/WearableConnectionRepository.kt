@@ -124,7 +124,8 @@ class WearableConnectionRepository @Inject constructor(
                 total = it.total,
                 billingFirstName = it.billingFirstName,
                 billingLastName = it.billingLastName,
-                address = orderAddress
+                address = orderAddress,
+                lineItemsJson = it.lineItems
             )
         }
 
