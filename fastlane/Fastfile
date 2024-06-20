@@ -1221,22 +1221,12 @@ platform :android do
   #
   # @return [Array<String>] A list of file paths that were deleted.
   def delete_old_changelogs
-    deleted_files = []
-
-    [MOBILE_APP, WEAR_APP].each do |app|
-      Dir.glob(File.join(METADATA_DIR_PATH[app], '*'))
-         .select { |dir| File.directory?(dir) && File.basename(dir) != 'en-US' }
-         .each do |locale_dir|
-        changelog_path = File.join(locale_dir, 'changelogs', 'default.txt')
-
-        if File.exist?(changelog_path)
-          FileUtils.rm_f(changelog_path)
-          deleted_files << changelog_path
-        end
-      end
+    obsolete_changelogs = [MOBILE_APP, WEAR_APP].flat_map do |app|
+      Dir.glob(File.join(METADATA_DIR_PATH[app], '*', 'changelogs', 'default.txt'))
+         .reject { |file| File.dirname(file, 2) == 'en-US' }
     end
-
-    deleted_files
+    FileUtils.rm_f(obsolete_changelogs)
+    obsolete_changelogs
   end
 
   #####################################################################################
