@@ -15,7 +15,8 @@ fun OrderEntity.toWearOrder() = WearOrder(
     status = status,
     billingFirstName = billingFirstName,
     billingLastName = billingLastName,
-    address = getBillingAddress().toWearOrderAddress()
+    address = getBillingAddress().toWearOrderAddress(),
+    lineItemsJson = lineItems
 )
 
 fun WearOrder.toOrderEntity() = OrderEntity(
@@ -26,7 +27,8 @@ fun WearOrder.toOrderEntity() = OrderEntity(
     total = total,
     status = status,
     billingFirstName = billingFirstName,
-    billingLastName = billingLastName
+    billingLastName = billingLastName,
+    lineItems = lineItemsJson
 )
 
 fun OrderAddress.Billing.toWearOrderAddress() = WearOrderAddress(

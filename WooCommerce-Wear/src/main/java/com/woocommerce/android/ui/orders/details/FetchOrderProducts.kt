@@ -1,7 +1,12 @@
 package com.woocommerce.android.ui.orders.details
 
 import com.woocommerce.android.extensions.combineWithTimeout
+import com.woocommerce.android.model.OrderItem
+import com.woocommerce.android.model.Refund
+import com.woocommerce.android.model.getNonRefundedProducts
+import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.phone.PhoneConnectionRepository
+import com.woocommerce.android.system.NetworkStatus
 import com.woocommerce.android.ui.orders.OrdersRepository
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Error
 import com.woocommerce.android.ui.orders.details.FetchOrderProducts.OrderProductsRequest.Finished
@@ -10,28 +15,20 @@ import com.woocommerce.commons.MessagePath.REQUEST_ORDER_PRODUCTS
 import com.woocommerce.commons.WearOrderedProduct
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 
 class FetchOrderProducts @Inject constructor(
     private val phoneRepository: PhoneConnectionRepository,
-    private val ordersRepository: OrdersRepository
+    private val ordersRepository: OrdersRepository,
+    private val networkStatus: NetworkStatus
 ) {
     suspend operator fun invoke(
         selectedSite: SiteModel,
         orderId: Long
     ): Flow<OrderProductsRequest> {
-        if (phoneRepository.isPhoneConnectionAvailable().not()) {
-            return flowOf(Error)
-        }
-
-        phoneRepository.sendMessage(
-            REQUEST_ORDER_PRODUCTS,
-            orderId.toString().toByteArray()
-        )
-
-        return ordersRepository.observeOrderProductsDataChanges(orderId, selectedSite.siteId)
+        return selectDataSource(selectedSite, orderId)
             .combineWithTimeout(TIMEOUT_FOR_ORDER_PRODUCTS) { orderProducts, isTimeout ->
                 when {
                     orderProducts.isNotEmpty() -> Finished(orderProducts)
@@ -41,6 +38,51 @@ class FetchOrderProducts @Inject constructor(
             }.filterNotNull()
     }
 
+    private suspend fun selectDataSource(
+        selectedSite: SiteModel,
+        orderId: Long
+    ): Flow<List<WearOrderedProduct>> {
+        return when {
+            networkStatus.isConnected() -> flow {
+                ordersRepository.fetchOrderRefunds(selectedSite, orderId)
+                    .asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
+                    .let { emit(it) }
+            }
+
+            phoneRepository.isPhoneConnectionAvailable() -> {
+                phoneRepository.sendMessage(
+                    REQUEST_ORDER_PRODUCTS,
+                    orderId.toString().toByteArray()
+                )
+                ordersRepository.observeOrderProductsDataChanges(orderId, selectedSite.siteId)
+            }
+
+            else -> flow {
+                ordersRepository.getOrderRefunds(selectedSite, orderId)
+                    .asWearOrderedProducts(retrieveOrderLineItems(selectedSite, orderId))
+                    .let { emit(it) }
+            }
+        }
+    }
+
+    private suspend fun retrieveOrderLineItems(
+        selectedSite: SiteModel,
+        orderId: Long
+    ) = ordersRepository.getOrderFromId(selectedSite, orderId)
+        ?.getLineItemList()
+        ?.map { it.toAppModel() }
+        ?: emptyList()
+
+    private fun List<Refund>.asWearOrderedProducts(
+        orderItems: List<OrderItem>
+    ) = getNonRefundedProducts(orderItems).map {
+        WearOrderedProduct(
+            amount = it.quantity.toString(),
+            total = it.total.toString(),
+            name = it.name
+        )
+    }
+
     sealed class OrderProductsRequest {
         data object Error : OrderProductsRequest()
         data object Waiting : OrderProductsRequest()
@@ -48,6 +90,6 @@ class FetchOrderProducts @Inject constructor(
     }
 
     companion object {
-        const val TIMEOUT_FOR_ORDER_PRODUCTS = 5000L
+        const val TIMEOUT_FOR_ORDER_PRODUCTS = 10000L
     }
 }
