@@ -1217,7 +1217,7 @@ platform :android do
   # Remove old `changelogs/default.txt` files for every locale except en-US.
   # After updating the en-US copy for a new version and sending it for translation,
   # we want to avoid having outdated translations in git in the meantime.
-  # 
+  #
   # @return [Array<String>] A list of file paths that were deleted.
   def delete_old_changelogs
     deleted_files = []
@@ -1227,7 +1227,7 @@ platform :android do
          .select { |dir| File.directory?(dir) && File.basename(dir) != 'en-US' }
          .each do |locale_dir|
         changelog_path = File.join(locale_dir, 'changelogs', 'default.txt')
-        
+
         if File.exist?(changelog_path)
           FileUtils.rm_f(changelog_path)
           deleted_files << changelog_path
