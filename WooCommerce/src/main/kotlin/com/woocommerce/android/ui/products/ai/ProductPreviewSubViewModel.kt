@@ -90,7 +90,7 @@ class ProductPreviewSubViewModel(
         _state.update { (it as State.Success).copy(shouldShowFeedbackView = false) }
     }
 
-    private fun onEditPrice(suggestedPrice: BigDecimal){
+    private fun onEditPrice(suggestedPrice: BigDecimal) {
         _events.tryEmit(EditPrice(suggestedPrice))
     }
 
@@ -192,10 +192,22 @@ class ProductPreviewSubViewModel(
             )
     }
 
+    fun updatePrice(regularPrice: BigDecimal) {
+        val currentProduct = (state.value as? State.Success)?.product ?: return
+        val updatedProduct = currentProduct.copy(regularPrice = regularPrice)
+        val updatedPropertyGroups = buildProductPreviewProperties(updatedProduct, onEditPrice = ::onEditPrice)
+        _state.update {
+            (it as State.Success).copy(
+                product = updatedProduct,
+                propertyGroups = updatedPropertyGroups
+            )
+        }
+    }
+
     sealed interface State {
         object Loading : State
         data class Success(
-            private val product: Product,
+            val product: Product,
             val propertyGroups: List<List<ProductPropertyCard>>,
             val shouldShowFeedbackView: Boolean = true
         ) : State {

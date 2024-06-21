@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
             app:destination="@id/packagePhotoBottomSheetFragment" />
+        <action
+            android:id="@+id/action_addProductWithAIFragment_to_productPricingFragment"
+            app:destination="@id/productPricingFragment" />
     </fragment>
 
     <dialog
@@ -33,4 +36,15 @@
             android:name="imageUrl"
             app:argType="string" />
     </dialog>
+
+    <fragment
+        android:id="@+id/productPricingFragment"
+        android:name="com.woocommerce.android.ui.products.price.ProductPricingFragment">
+        <argument
+            android:name="requestCode"
+            app:argType="integer" />
+        <argument
+            android:name="pricingData"
+            app:argType="com.woocommerce.android.ui.products.price.ProductPricingViewModel$PricingData" />
+    </fragment>
 </navigation>

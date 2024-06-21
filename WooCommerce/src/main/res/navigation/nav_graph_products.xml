@@ -584,9 +584,6 @@
     <action
         android:id="@+id/action_global_addProductDownloadBottomSheetFragment"
         app:destination="@id/addProductDownloadBottomSheetFragment" />
-    <action
-        android:id="@+id/action_global_productPricingFragment"
-        app:destination="@id/productPricingFragment" />
     <fragment
         android:id="@+id/variationDetailFragment"
         android:name="com.woocommerce.android.ui.products.variations.VariationDetailFragment"

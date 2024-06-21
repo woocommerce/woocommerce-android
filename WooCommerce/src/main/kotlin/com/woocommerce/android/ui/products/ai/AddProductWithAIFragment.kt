@@ -14,6 +14,7 @@ import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.extensions.handleDialogResult
+import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.mediapicker.MediaPickerHelper
 import com.woocommerce.android.mediapicker.MediaPickerHelper.MediaPickerResultHandler
@@ -22,13 +23,13 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.EditPrice
 import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.NavigateToProductDetailScreen
 import com.woocommerce.android.ui.products.ai.PackagePhotoViewModel.PackagePhotoData
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.NavigateToAIProductNameBottomSheet
 import com.woocommerce.android.ui.products.ai.ProductNameSubViewModel.ShowMediaLibrary
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
-import com.woocommerce.android.ui.products.details.ProductDetailFragmentDirections
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -81,15 +82,7 @@ class AddProductWithAIFragment : BaseFragment(), MediaPickerResultHandler {
                     }
                 )
 
-                is EditPrice -> {
-                    findNavController().setGraph(R.navigation.nav_graph_products)
-                    findNavController().navigate(
-                        ProductDetailFragmentDirections.actionGlobalProductPricingFragment(
-                            RequestCodes.PRODUCT_DETAIL_PRICING,
-                            PricingData(regularPrice = event.suggestedPrice)
-                        )
-                    )
-                }
+                is EditPrice -> navigateToProductPricingFragment(event)
 
                 is ShowMediaLibrary -> mediaPickerHelper.showMediaPicker(event.source)
 
@@ -98,6 +91,15 @@ class AddProductWithAIFragment : BaseFragment(), MediaPickerResultHandler {
                 Exit -> findNavController().navigateUp()
             }
         }
+    }
+
+    private fun navigateToProductPricingFragment(event: EditPrice) {
+        findNavController().navigate(
+            AddProductWithAIFragmentDirections.actionAddProductWithAIFragmentToProductPricingFragment(
+                RequestCodes.PRODUCT_DETAIL_PRICING,
+                PricingData(regularPrice = event.suggestedPrice)
+            )
+        )
     }
 
     private fun handleResults() {
@@ -113,6 +115,9 @@ class AddProductWithAIFragment : BaseFragment(), MediaPickerResultHandler {
             entryId = R.id.addProductWithAIFragment
         ) { data ->
             viewModel.onProductPackageScanned(data.title, data.description, data.keywords)
+        }
+        handleResult<PricingData>(BaseProductEditorFragment.KEY_PRICING_DIALOG_RESULT) {
+            viewModel.updateProductPreview(regularPrice = it.regularPrice!!)
         }
     }
 

@@ -211,6 +211,10 @@ class AddProductWithAIViewModel @Inject constructor(
         nameSubViewModel.onProductNameChanged(productName)
     }
 
+    fun updateProductPreview(regularPrice: BigDecimal) {
+        previewSubViewModel.updatePrice(regularPrice)
+    }
+
     data class State(
         val progress: Float,
         val subViewModel: AddProductWithAISubViewModel<*>,
