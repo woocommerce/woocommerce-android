@@ -64,7 +64,11 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             WooPosCartUIEvent.BackClicked -> {
-                _state.value = _state.value.copy(cartStatus = WooPosCartStatus.IN_PROGRESS)
+                val currentState = _state.value
+                if (currentState.isOrderCreationInProgress || currentState.cartStatus == WooPosCartStatus.IN_PROGRESS) {
+                    return
+                }
+                _state.value = currentState.copy(cartStatus = WooPosCartStatus.IN_PROGRESS)
 
                 sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
             }
