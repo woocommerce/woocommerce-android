@@ -345,10 +345,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     source = AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
                     flow = cardReaderPaymentFlowParam.toAnalyticsFlowName(),
                 )
-                if (cardReaderPaymentFlowParam.paymentType == WOO_POS) {
-                    triggerEvent(ReturnResultToWooPos.Failure)
-                }
+                handleWooPosPaymentFailure()
             }
+        }
+    }
+
+    private fun handleWooPosPaymentFailure() {
+        // In case payment was initiated from the Woo POS mode, we need to propagate the payment
+        // result back, to close the SelectPaymentMethodFragment and handle failure on the Woo POS end.
+        if (cardReaderPaymentFlowParam.paymentType == WOO_POS) {
+            triggerEvent(ReturnResultToWooPos.Failure)
         }
     }
 
