@@ -86,3 +86,10 @@ private fun getInStockText(
         else -> getString(R.string.product_stock_status_instock, null)
     }
 }
+
+fun OrderCreationProduct.getVariationAttributesAndStockText(context: Context): String {
+    return buildString {
+        append(item.attributesDescription.takeIf { it.isNotEmpty() }?.let { "$it \u2981 " } ?: StringUtils.EMPTY)
+        append(getStockText(context))
+    }
+}
