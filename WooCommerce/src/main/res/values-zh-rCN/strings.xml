@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-11 09:54:07+0000
+Translation-Revision-Date: 2024-06-18 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_CN
 -->
 <resources>
+    <string name="woopos_exit_confirmation_dismiss_button">取消</string>
+    <string name="woopos_exit_confirmation_confirm_button">退出</string>
+    <string name="woopos_exit_confirmation_message">是否确定要退出 POS 机？</string>
+    <string name="woopos_exit_confirmation_title">退出 POS 机</string>
+    <string name="woo_pos_car_pane_title">购物车</string>
+    <string name="woo_pos_remove_item_from_cart_content_description">将商品从购物车中移除</string>
+    <string name="woo_pos_checkout_button">结账</string>
     <string name="woopos_reader_unknown">读卡器状态未知</string>
     <string name="woopos_checkout">结账</string>
     <string name="woopos_reader_disconnected">读卡器已断开连接</string>
@@ -294,8 +301,8 @@ Language: zh_CN
     <string name="blaze_campaign_budget_impressions_title">展示次数</string>
     <string name="blaze_campaign_budget_update_button">更新</string>
     <string name="blaze_campaign_budget_edit_duration_button">编辑</string>
-    <string name="blaze_campaign_budget_impressions_info">展示次数反映了您的广告出现在潜在客户面前的频率。\n\n\n        由于在线流量的波动和用户行为的差异，我们无法确保确切的数字，但我们将致力于使您广告的实际展示次数尽可能接近目标次数。\n\n\n        请记住，展示次数关乎可见性，而非查看者的操作。</string>
     <string name="blaze_campaign_budget_duration_section_title">时长</string>
+    <string name="blaze_campaign_budget_impressions_info">展示次数反映了您的广告出现在潜在客户面前的频率。\n\n\n        由于在线流量的波动和用户行为的差异，我们无法确保确切的数字，但我们将致力于使您广告的实际展示次数尽可能接近目标次数。\n\n\n        请记住，展示次数关乎可见性，而非查看者的操作。</string>
     <string name="blaze_campaign_budget_reach_forecast">每天的预计受众人数</string>
     <string name="blaze_campaign_budget_daily_spend">%1$s 每天</string>
     <string name="blaze_campaign_budget_days_duration">共计 %1$s 天</string>
@@ -333,7 +340,6 @@ Language: zh_CN
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">接触广大受众</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">“我们的工具会在感兴趣的购物者可以找到的地方呈现您的产品。”</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">轻松简单实现全球覆盖</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">几分钟内发布广告 — 无需经验或高额预算，起价仅为 5 美元。</string>
     <string name="blaze_campaign_creation_new_intro_learn_more">了解 Blaze 的运作机制</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">起步快，影响大</string>
     <string name="blaze_campaign_creation_new_intro_description">我们的工具旨在助力商家快速简单地进行广告活动设置，以最大限度地提高流量。</string>

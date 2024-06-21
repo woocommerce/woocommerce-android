@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-11 09:54:04+0000
+Translation-Revision-Date: 2024-06-18 09:54:03+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources>
+    <string name="woopos_exit_confirmation_dismiss_button">キャンセル</string>
+    <string name="woopos_exit_confirmation_confirm_button">終了</string>
+    <string name="woopos_exit_confirmation_message">POS を終了してもよいですか ?</string>
+    <string name="woopos_exit_confirmation_title">POS を終了</string>
+    <string name="woo_pos_car_pane_title">お買い物カゴ</string>
+    <string name="woo_pos_remove_item_from_cart_content_description">お買い物カゴからアイテムを削除</string>
+    <string name="woo_pos_checkout_button">購入手続き</string>
     <string name="woopos_reader_unknown">Reader ステータス不明</string>
     <string name="woopos_checkout">購入手続き</string>
     <string name="woopos_reader_disconnected">Reader 切断済み</string>
@@ -334,7 +341,6 @@ Language: ja_JP
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">多数の読者にアクセス</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">「ツールを使えば、関心を持っている買い物客の目に入る場所に商品を表示できます」</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">世界規模のリーチをシンプルに</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">数分で広告を開始 – 経験も多額の予算も必要ありません。わずか5ドルから始められます。</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">すばやいスタートで大きなインパクト</string>
     <string name="blaze_campaign_creation_new_intro_description">当社のツールは、マーチャントがシンプルですばやい広告キャンペーン設定でトラフィックを最大化できるよう支援するために設計されています。</string>
     <string name="blaze_campaign_creation_product_selector_cta_button">宣伝</string>
