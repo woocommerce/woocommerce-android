@@ -48,6 +48,14 @@ class WooPosCartViewModel @Inject constructor(
 
                 _state.value = currentState.copy(itemsInCart = currentState.itemsInCart - event.item)
             }
+
+            WooPosCartUIEvent.BackClicked -> sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+            WooPosCartUIEvent.ClearAllClicked -> {
+                val currentState = _state.value
+                if (currentState.isOrderCreationInProgress) return
+
+                _state.value = currentState.copy(itemsInCart = emptyList())
+            }
         }
     }
 
