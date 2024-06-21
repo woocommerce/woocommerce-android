@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -20,6 +21,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val repository: WooPosCartRepository = mock()
+    private val resourceProvider: ResourceProvider = mock()
 
     private val savedState: SavedStateHandle = SavedStateHandle()
 
@@ -67,6 +69,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             childrenToParentEventSender,
             parentToChildrenEventReceiver,
             repository,
+            resourceProvider,
             savedState
         )
     }
