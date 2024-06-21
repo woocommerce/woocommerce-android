@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.WooWearNavHost
+import com.woocommerce.android.wear.analytics.AnalyticsTracker
+import com.woocommerce.android.wear.ui.WooWearNavHost
 import com.woocommerce.commons.WearAnalyticsEvent.WATCH_APP_OPENED
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
