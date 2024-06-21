@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -22,14 +21,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
-import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
-import com.woocommerce.android.ui.woopos.home.products.WooPosProductsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
