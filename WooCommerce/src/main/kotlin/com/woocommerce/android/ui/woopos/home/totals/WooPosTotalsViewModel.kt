@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -51,7 +50,6 @@ class WooPosTotalsViewModel @Inject constructor(
                 viewModelScope.launch {
                     val orderId = state.value.orderId!!
                     val result = cardReaderFacade.collectPayment(orderId)
-                    Log.d("WooPosTotalsViewModel", "Payment result: $result")
                     if (result is WooPosCardReaderPaymentResult.Success) {
                         // navigate to success screen
                     } else {
