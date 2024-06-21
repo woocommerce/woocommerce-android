@@ -4,11 +4,11 @@ import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.wear.extensions.toWearOrder
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
 import com.woocommerce.android.wear.system.NetworkStatus
-import com.woocommerce.android.ui.orders.OrdersRepository
-import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest
-import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Error
-import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Finished
-import com.woocommerce.android.ui.orders.list.FetchOrders.OrdersRequest.Waiting
+import com.woocommerce.android.wear.ui.orders.OrdersRepository
+import com.woocommerce.android.wear.ui.orders.list.FetchOrders.OrdersRequest
+import com.woocommerce.android.wear.ui.orders.list.FetchOrders.OrdersRequest.Error
+import com.woocommerce.android.wear.ui.orders.list.FetchOrders.OrdersRequest.Finished
+import com.woocommerce.android.wear.ui.orders.list.FetchOrders.OrdersRequest.Waiting
 import com.woocommerce.commons.WearOrder
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf

@@ -2,8 +2,8 @@ package com.woocommerce.android.wear.ui.stats
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.BaseUnitTest
-import com.woocommerce.android.ui.login.LoginRepository
-import com.woocommerce.android.ui.stats.datasource.FetchStats
+import com.woocommerce.android.wear.ui.login.LoginRepository
+import com.woocommerce.android.wear.ui.stats.datasource.FetchStats
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat

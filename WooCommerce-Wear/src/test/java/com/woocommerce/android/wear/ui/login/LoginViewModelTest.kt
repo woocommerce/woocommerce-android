@@ -3,9 +3,9 @@ package com.woocommerce.android.wear.ui.login
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavHostController
 import com.woocommerce.android.BaseUnitTest
-import com.woocommerce.android.ui.NavRoutes
-import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Logged
-import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
+import com.woocommerce.android.wear.ui.NavRoutes
+import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Logged
+import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Timeout
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
@@ -13,7 +13,6 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 

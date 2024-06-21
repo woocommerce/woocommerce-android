@@ -2,10 +2,10 @@ package com.woocommerce.android.wear.ui.login
 
 import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
-import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState
-import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Logged
-import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Timeout
-import com.woocommerce.android.ui.login.FetchSiteData.LoginRequestState.Waiting
+import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState
+import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Logged
+import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Timeout
+import com.woocommerce.android.wear.ui.login.FetchSiteData.LoginRequestState.Waiting
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn

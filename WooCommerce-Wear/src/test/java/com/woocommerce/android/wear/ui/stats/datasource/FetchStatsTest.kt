@@ -4,9 +4,9 @@ import com.woocommerce.android.BaseUnitTest
 import com.woocommerce.android.wear.analytics.AnalyticsTracker
 import com.woocommerce.android.wear.phone.PhoneConnectionRepository
 import com.woocommerce.android.wear.system.NetworkStatus
-import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest
-import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
-import com.woocommerce.android.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
+import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest
+import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest.Finished
+import com.woocommerce.android.wear.ui.stats.datasource.FetchStats.StoreStatsRequest.Waiting
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
