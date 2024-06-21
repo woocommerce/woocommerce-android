@@ -436,7 +436,8 @@ class ProductNavigator @Inject constructor() {
 
             is ProductNavigationTarget.ViewProductQuantityRules -> {
                 val action = ProductDetailFragmentDirections.actionProductDetailFragmentToProductQuantityRulesFragment(
-                    target.quantityRules
+                    target.quantityRules,
+                    target.exitAnalyticsEvent
                 )
                 fragment.findNavController().navigateSafely(action)
             }

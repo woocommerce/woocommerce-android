@@ -183,7 +183,6 @@ class ProductDetailViewModel_AddFlowTest : BaseUnitTest() {
                 duplicateProduct = mock(),
                 tracker = tracker,
                 selectedSite = selectedSite,
-                getProductQuantityRules = mock(),
                 getBundledProductsCount = mock(),
                 getComponentProducts = mock(),
                 productListRepository = mock(),

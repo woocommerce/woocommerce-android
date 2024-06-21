@@ -1,16 +1,18 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaid
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
@@ -22,11 +24,20 @@ class WooPosTotalsViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val cardReaderFacade: WooPosCardReaderFacade,
+    private val orderDetailRepository: OrderDetailRepository,
+    private val currencyFormatter: CurrencyFormatter,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = WooPosTotalsState(orderId = null, isCollectPaymentButtonEnabled = false),
+        initialValue = WooPosTotalsState(
+            orderId = null,
+            isCollectPaymentButtonEnabled = false,
+            orderSubtotalText = "",
+            orderTaxText = "",
+            orderTotalText = "",
+            isLoading = true,
+        ),
         key = "totalsViewState"
     )
     val state: StateFlow<WooPosTotalsState> = _state
@@ -62,17 +73,25 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun listenUpEvents() {
         viewModelScope.launch {
-            Log.d("WooPos", "WooPosTotalsViewModel.listenEventsFromParent() $this")
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.OrderDraftCreated -> {
                         _state.value = state.value.copy(
                             orderId = event.orderId,
-                            isCollectPaymentButtonEnabled = true
+                            isCollectPaymentButtonEnabled = false,
+                            isLoading = true
                         )
+                        loadOrderDraft(event.orderId)
                     }
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
-                        _state.value = WooPosTotalsState(orderId = null, isCollectPaymentButtonEnabled = false)
+                        _state.value = WooPosTotalsState(
+                            orderId = null,
+                            isCollectPaymentButtonEnabled = false,
+                            orderSubtotalText = "",
+                            orderTaxText = "",
+                            orderTotalText = "",
+                            isLoading = true,
+                        )
                     }
                     else -> Unit
                 }
@@ -80,7 +99,31 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
-    override fun onCleared() {
-        Log.d("WooPos", "WooPosTotalsViewModel.onCleared() $this")
+    private fun loadOrderDraft(orderId: Long) {
+        viewModelScope.launch {
+            val order = orderDetailRepository.getOrderById(orderId)
+            check(order != null) { "Order must not be null" }
+            check(order.items.isNotEmpty()) { "Order must have at least one item" }
+            calculateTotals(order)
+        }
+    }
+
+    private fun calculateTotals(order: Order) {
+        val subtotalAmount = order.items.sumOf { it.subtotal }
+        val taxAmount = order.totalTax
+        val totalAmount = subtotalAmount + taxAmount
+
+        val updatedOrder = order.copy(
+            total = totalAmount,
+        )
+
+        _state.value = _state.value.copy(
+            orderId = updatedOrder.id,
+            orderSubtotalText = currencyFormatter.formatCurrency(subtotalAmount.toPlainString()),
+            orderTaxText = currencyFormatter.formatCurrency(taxAmount.toPlainString()),
+            orderTotalText = currencyFormatter.formatCurrency(updatedOrder.total.toPlainString()),
+            isCollectPaymentButtonEnabled = true,
+            isLoading = false,
+        )
     }
 }

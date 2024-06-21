@@ -986,6 +986,16 @@ object AppPrefs {
             value = value
         )
 
+    var isNotificationsPermissionBarDismissed: Boolean
+        get() = getBoolean(
+            key = DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR,
+            default = false
+        )
+        set(value) = setBoolean(
+            key = DeletablePrefKey.NOTIFICATIONS_PERMISSION_BAR,
+            value = value
+        )
+
     var aiContentGenerationTone: AiTone
         get() = AiTone.fromString(getString(key = DeletablePrefKey.AI_CONTENT_GENERATION_TONE))
         set(value) = setString(

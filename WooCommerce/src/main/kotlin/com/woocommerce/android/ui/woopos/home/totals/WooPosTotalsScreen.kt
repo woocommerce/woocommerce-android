@@ -1,12 +1,21 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
@@ -21,65 +30,169 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun WooPosTotalsScreen(viewModelStoreOwner: ViewModelStoreOwner) {
     val viewModel: WooPosTotalsViewModel = hiltViewModel(viewModelStoreOwner)
-    val state = viewModel.state.collectAsState()
+    val state = viewModel.state
+
+    WooPosTotalsScreen(
+        state = state,
+        onCollectPaymentClick = { viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
+        onSnackbarDismissed = {viewModel.onUIEvent(WooPosTotalsUIEvent.SnackbarDismissed)}
+    )
+}
+
+@Composable
+fun WooPosTotalsScreen(
+    state: StateFlow<WooPosTotalsState>,
+    onCollectPaymentClick: () -> Unit,
+    onSnackbarDismissed: () -> Unit
+) {
+    val totalsState = state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         }
     ) { padding ->
+        if (totalsState.value.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
         Card(
             shape = RoundedCornerShape(16.dp),
             backgroundColor = MaterialTheme.colors.surface,
             elevation = 4.dp,
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(padding)
         ) {
-            Column(
-                modifier = Modifier.padding(padding).fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = "Totals",
-                    style = MaterialTheme.typography.h3,
-                    color = MaterialTheme.colors.primary,
-                )
+                Card(
+                    shape = RoundedCornerShape(8.dp),
+                    backgroundColor = MaterialTheme.colors.surface,
+                    elevation = 4.dp,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .wrapContentSize()
+                        .border(
+                            width = dimensionResource(id = R.dimen.minor_10),
+                            color = colorResource(id = R.color.woo_gray_5),
+                            shape = RoundedCornerShape(8.dp)
 
-                if (state.value.orderId != null) {
-                    Text(
-                        text = "Order ID: ${state.value.orderId}",
-                        style = MaterialTheme.typography.h4,
-                        color = MaterialTheme.colors.primary,
-                    )
-                }
-
-                Button(
-                    onClick = { viewModel.onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-                    enabled = state.value.isCollectPaymentButtonEnabled
+                        )
+                        .widthIn(min = 128.dp, max = 256.dp)
                 ) {
-                    Text("Collect Card Payment")
+                    Column(
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        if (totalsState.value.orderId != null) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Subtotal: ",
+                                    style = MaterialTheme.typography.h6,
+                                    color = MaterialTheme.colors.primary
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = totalsState.value.orderSubtotalText,
+                                    style = MaterialTheme.typography.h6,
+                                    color = MaterialTheme.colors.primary
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Divider()
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Taxes: ",
+                                    style = MaterialTheme.typography.h6,
+                                    color = MaterialTheme.colors.primary
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = totalsState.value.orderTaxText,
+                                    style = MaterialTheme.typography.h6,
+                                    color = MaterialTheme.colors.primary
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Divider()
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Total: ",
+                                    style = MaterialTheme.typography.h6,
+                                    color = MaterialTheme.colors.primary
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = totalsState.value.orderTotalText,
+                                    style = MaterialTheme.typography.h4,
+                                    color = MaterialTheme.colors.primary
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Divider()
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Button(
+                            onClick = { onCollectPaymentClick() },
+                            enabled = totalsState.value.isCollectPaymentButtonEnabled,
+                        ) {
+                            Text("Collect Card Payment")
+                        }
+                    }
                 }
             }
         }
-    }
-    SnackbarHandler(state, snackbarHostState, viewModel)
+
+        SnackbarHandler(totalsState, snackbarHostState, onSnackbarDismissed)
+        }
 }
+
 
 @Composable
 private fun SnackbarHandler(
     state: State<WooPosTotalsState>,
     snackbarHostState: SnackbarHostState,
-    viewModel: WooPosTotalsViewModel
+    onSnacbarDismissed: ()->Unit,
 ) {
     val snackbarState = state.value.snackbarMessage
     if (snackbarState is SnackbarMessage.Triggered) {
@@ -91,7 +204,7 @@ private fun SnackbarHandler(
             )
             when (result) {
                 SnackbarResult.Dismissed -> {
-                    viewModel.onUIEvent(WooPosTotalsUIEvent.SnackbarDismissed)
+                    onSnacbarDismissed()
                 }
 
                 SnackbarResult.ActionPerformed -> Unit
@@ -102,6 +215,21 @@ private fun SnackbarHandler(
 
 @Composable
 @WooPosPreview
-fun WooPosCartScreenPreview() {
-    WooPosTotalsScreen(LocalViewModelStoreOwner.current!!)
+fun WooPosTotalsScreenPreview() {
+    val totalsState = MutableStateFlow(
+        WooPosTotalsState(
+            orderId = 1234L,
+            orderSubtotalText = "$420.00",
+            orderTotalText = "$462.00",
+            orderTaxText = "$42.00",
+            isCollectPaymentButtonEnabled = true,
+            isLoading = false
+        )
+    )
+
+    WooPosTotalsScreen(
+        state = totalsState,
+        onCollectPaymentClick = {},
+        onSnackbarDismissed = {},
+    )
 }

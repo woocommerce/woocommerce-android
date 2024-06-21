@@ -46,6 +46,7 @@ import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.extensions.formatToMMMddYYYY
+import com.woocommerce.android.ui.blaze.creation.budget.BlazeCampaignBudgetViewModel.Companion.MAX_DATE_LIMIT_IN_DAYS
 import com.woocommerce.android.ui.compose.component.BottomSheetHandle
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -338,6 +339,7 @@ private fun EditDurationBottomSheet(
         DatePickerDialog(
             currentDate = Date(budgetUiState.confirmedCampaignStartDateMillis),
             minDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time,
+            maxDate = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, MAX_DATE_LIMIT_IN_DAYS) }.time,
             onDateSelected = {
                 onStartDateChanged(it.time)
                 showDatePicker = false
