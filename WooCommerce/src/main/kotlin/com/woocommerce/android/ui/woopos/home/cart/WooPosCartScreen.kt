@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -32,6 +31,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 
 @Composable
 fun WooPosCartScreen() {
@@ -83,13 +83,12 @@ private fun WooPosCartScreen(
             }
 
             if (state.isCheckoutButtonVisible) {
-                Button(
+                WooPosButton(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = state.itemsInCart.isNotEmpty() && !state.isOrderCreationInProgress,
+                    text = stringResource(R.string.woo_pos_checkout_button),
                     onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
-                ) {
-                    Text(stringResource(R.string.woo_pos_checkout_button))
-                }
+                )
             }
         }
     }

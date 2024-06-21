@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 import com.woocommerce.android.ui.compose.theme.WooTypography
 
 private val DarkColorPalette = darkColors(
-    primary = Color(0xFFBB86FC),
+    primary = Color(0xFF9C70D3),
     primaryVariant = Color(0xFF3700B3),
     onPrimary = Color.White,
     secondary = Color(0xFF03DAC5),
@@ -24,7 +24,7 @@ private val DarkColorPalette = darkColors(
 )
 
 private val LightColorPalette = lightColors(
-    primary = Color(0xFF6200EA),
+    primary = Color(0xFF7F54B3),
     primaryVariant = Color(0xFF3700B3),
     onPrimary = Color.White,
     secondary = Color(0xFF004B3E),

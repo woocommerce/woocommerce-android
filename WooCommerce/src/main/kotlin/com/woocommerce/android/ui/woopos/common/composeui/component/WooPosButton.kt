@@ -19,20 +19,23 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 
 @Composable
 fun WooPosButton(
+    modifier: Modifier = Modifier,
     text: String,
-    onClick: () -> Unit
+    enabled: Boolean = true,
+    onClick: () -> Unit,
 ) {
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier
+        enabled = enabled,
+        modifier = modifier
             .fillMaxWidth()
             .height(72.dp)
     ) {
         Text(
             text = text,
             color = MaterialTheme.colors.onPrimary,
-            style = MaterialTheme.typography.h4,
+            style = MaterialTheme.typography.h6,
             fontWeight = FontWeight.Bold,
         )
     }
@@ -48,7 +51,10 @@ fun WooPosButtonPreview() {
                 .padding(32.dp),
             contentAlignment = Alignment.Center
         ) {
-            WooPosButton(text = "Button", onClick = {})
+            WooPosButton(
+                text = "Button",
+                onClick = {},
+            )
         }
     }
 }
