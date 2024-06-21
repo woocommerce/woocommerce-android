@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2024-06-10 12:54:03+0000
+Translation-Revision-Date: 2024-06-20 11:54:03+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources>
+    <string name="woopos_exit_confirmation_dismiss_button">İptal Et</string>
+    <string name="woopos_exit_confirmation_confirm_button">Çıkış</string>
+    <string name="woopos_exit_confirmation_message">POS\'tan çıkmak istediğinizden emin misiniz?</string>
+    <string name="woopos_exit_confirmation_title">POS\'tan çık</string>
+    <string name="woo_pos_car_pane_title">Sepet</string>
+    <string name="woo_pos_remove_item_from_cart_content_description">Ürünü sepetten çıkarın</string>
+    <string name="woo_pos_checkout_button">Ödeme</string>
     <string name="woopos_reader_unknown">Okuyucu Durumu Bilinmiyor</string>
     <string name="woopos_checkout">Ödeme</string>
     <string name="woopos_reader_disconnected">Okuyucu Bağlantısı Kesildi</string>
