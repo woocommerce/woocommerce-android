@@ -2,13 +2,14 @@ package com.woocommerce.android.wear.complications
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType
+import androidx.wear.watchface.complications.data.MonochromaticImage
+import androidx.wear.watchface.complications.data.MonochromaticImageComplicationData
 import androidx.wear.watchface.complications.data.PlainComplicationText
 import androidx.wear.watchface.complications.data.ShortTextComplicationData
-import androidx.wear.watchface.complications.data.SmallImage
-import androidx.wear.watchface.complications.data.SmallImageComplicationData
 import androidx.wear.watchface.complications.datasource.ComplicationRequest
 import androidx.wear.watchface.complications.datasource.SuspendingComplicationDataSourceService
 import com.woocommerce.android.R
@@ -19,13 +20,12 @@ class OrdersComplicationService : SuspendingComplicationDataSourceService() {
 
         return when (type) {
             ComplicationType.SHORT_TEXT -> {
-                createComplicationData(
-                    text = getString(R.string.orders_complication_preview_data),
+                createImageComplicationData(
                     contentDescription = getString(R.string.orders_complication_preview_description)
                 )
             }
 
-            ComplicationType.SMALL_IMAGE -> createImageComplicationData(
+            ComplicationType.MONOCHROMATIC_IMAGE -> createImageComplicationData(
                 contentDescription = getString(R.string.icon_complication_preview_description)
             )
 
@@ -54,8 +54,10 @@ class OrdersComplicationService : SuspendingComplicationDataSourceService() {
 
     private fun createImageComplicationData(
         contentDescription: String
-    ) = SmallImageComplicationData.Builder(
-        smallImage = SmallImage.PLACEHOLDER,
+    ) = MonochromaticImageComplicationData.Builder(
+        monochromaticImage = MonochromaticImage.Builder(
+            Icon.createWithResource(applicationContext, R.drawable.img_woo_bubble_white),
+        ).build(),
         contentDescription = PlainComplicationText.Builder(contentDescription).build()
     ).setTapAction(createAppPendingIntent()).build()
 
