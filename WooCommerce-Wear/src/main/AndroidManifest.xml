@@ -30,7 +30,7 @@
             android:value="@integer/google_play_services_version" />
 
         <service
-            android:name=".wear.complications.OrdersComplicationService"
+            android:name=".wear.complications.WooWearComplicationService"
             android:exported="true"
             android:label="@string/orders_complication_label"
             android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">

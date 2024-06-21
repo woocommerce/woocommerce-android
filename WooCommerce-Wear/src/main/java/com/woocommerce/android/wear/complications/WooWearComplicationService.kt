@@ -15,7 +15,7 @@ import androidx.wear.watchface.complications.datasource.SuspendingComplicationDa
 import com.woocommerce.android.R
 import com.woocommerce.android.app.WearMainActivity
 
-class OrdersComplicationService : SuspendingComplicationDataSourceService() {
+class WooWearComplicationService : SuspendingComplicationDataSourceService() {
     override fun getPreviewData(type: ComplicationType): ComplicationData? {
 
         return when (type) {
