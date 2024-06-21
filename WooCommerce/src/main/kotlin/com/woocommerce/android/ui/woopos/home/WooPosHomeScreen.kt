@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -139,10 +138,7 @@ fun WooPosHomeCartScreenPreview() {
         state = WooPosHomeState.Cart,
         onHomeUIEvent = { true },
         onNavigationEvent = {},
-        viewModelStoreOwner = object : ViewModelStoreOwner {
-            override val viewModelStore: ViewModelStore
-                get() = TODO("Not yet implemented")
-        },
+        viewModelStoreOwner = LocalViewModelStoreOwner.current!!
     )
 }
 
