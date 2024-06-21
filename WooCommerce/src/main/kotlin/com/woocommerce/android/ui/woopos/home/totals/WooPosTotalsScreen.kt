@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.SnackbarHandler
 
 @Composable
 fun WooPosTotalsScreen() {
@@ -151,31 +152,6 @@ private fun Totals(
                 enabled = state.isCollectPaymentButtonEnabled,
             ) {
                 Text("Collect Card Payment")
-            }
-        }
-    }
-}
-
-@Composable
-private fun SnackbarHandler(
-    state: WooPosTotalsState,
-    snackbarHostState: SnackbarHostState,
-    onUIEvent: (WooPosTotalsUIEvent) -> Unit
-) {
-    val snackbarState = state.snackbarMessage
-    if (snackbarState is SnackbarMessage.Triggered) {
-        val message = stringResource(snackbarState.message)
-        LaunchedEffect(state.snackbarMessage) {
-            val result = snackbarHostState.showSnackbar(
-                message = message,
-                duration = SnackbarDuration.Long,
-            )
-            when (result) {
-                SnackbarResult.Dismissed -> {
-                    onUIEvent(WooPosTotalsUIEvent.SnackbarDismissed)
-                }
-
-                SnackbarResult.ActionPerformed -> Unit
             }
         }
     }
