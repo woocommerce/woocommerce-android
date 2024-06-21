@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.variations
 
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.model.Product.Image
 import com.woocommerce.android.model.SubscriptionDetails
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
@@ -29,7 +30,10 @@ sealed class VariationNavigationTarget : Event() {
         val subscription: SubscriptionDetails
     ) : VariationNavigationTarget()
 
-    data class ViewProductQuantityRules(val quantityRules: QuantityRules) : VariationNavigationTarget()
+    data class ViewProductQuantityRules(
+        val quantityRules: QuantityRules,
+        val exitAnalyticsEvent: AnalyticsEvent
+    ) : VariationNavigationTarget()
     data class ViewAttributes(
         val remoteProductId: Long,
         val remoteVariationId: Long

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Woo Colors -->
+    <color name="woo_purple_0">#F2EDFF</color>
+    <color name="woo_purple_10">#F7EDF7</color>
+    <color name="woo_purple_15">#E5CFE8</color>
+    <color name="woo_purple_20">#C792E0</color>
+    <color name="woo_purple_30">#B17FD4</color>
+    <color name="woo_purple_40">#AF7DD1</color>
+    <color name="woo_purple_50">#7F54B3</color>
+    <color name="woo_purple_60">#674399</color>
+    <color name="woo_purple_60_alpha_33">#33674399</color>
+    <color name="woo_purple_80">#3C2861</color>
+    <color name="woo_purple_90">#271B3D</color>
+    <color name="woo_purple_dark_secondary">#99EBEBF5</color>
+
+    <color name="woo_pink_10">#ED9BB8</color>
+    <color name="woo_pink_30">#EB6594</color>
+    <color name="woo_pink_50">#C9356E</color>
+    <color name="woo_pink_70">#880E4F</color>
+    <color name="woo_pink_90">#5C0935</color>
+
+    <color name="woo_red_5">#FACFD2</color>
+    <color name="woo_red_10">#FFA6AB</color>
+    <color name="woo_red_20">#FF8085</color>
+    <color name="woo_red_30">#F86368</color>
+    <color name="woo_red_50">#D63638</color>
+    <color name="woo_red_60">#B32D2E</color>
+    <color name="woo_red_70">#8A2424</color>
+
+    <color name="woo_blue_5">#BBE0FA</color>
+    <color name="woo_blue_30">#5198D9</color>
+    <color name="woo_blue_40">#1689DB</color>
+    <color name="woo_blue_50">#2271B1</color>
+
+    <color name="woo_orange_5">#F7DCC6</color>
+    <color name="woo_orange_10">#FFBF86</color>
+    <color name="woo_orange_30">#E68B28</color>
+    <color name="woo_orange_50">#B26200</color>
+    <color name="woo_orange_70">#351F04</color>
+
+    <color name="woo_yellow_10">#F2CF75</color>
+    <color name="woo_yellow_20">#F0C443</color>
+    <color name="woo_yellow_30">#DBAE17</color>
+    <color name="woo_yellow_50">#907300</color>
+    <color name="woo_yellow_70">#5C4B00</color>
+
+    <color name="woo_celadon_0">#ECF7F4</color>
+    <color name="woo_celadon_5">#A7E8D4</color>
+    <color name="woo_celadon_10">#65D9B9</color>
+    <color name="woo_celadon_20">#2FC39E</color>
+    <color name="woo_celadon_40">#009172</color>
+
+    <color name="woo_green_0">#EBF7F1</color>
+    <color name="woo_green_5">#A4F5C8</color>
+    <color name="woo_green_10">#59E38F</color>
+    <color name="woo_green_20">#1ED15A</color>
+    <color name="woo_green_50">#008A20</color>
+
+    <color name="woo_white">#FFFFFF</color>
+    <color name="woo_white_alpha_005">#0DFFFFFF</color>
+    <color name="woo_white_alpha_008">#14FFFFFF</color>
+    <color name="woo_white_alpha_009">#17FFFFFF</color>
+    <color name="woo_white_alpha_012">#1FFFFFFF</color>
+    <color name="woo_white_alpha_038">#61FFFFFF</color>
+    <color name="woo_white_alpha_060">#99FFFFFF</color>
+    <color name="woo_white_alpha_087">#DEFFFFFF</color>
+
+    <color name="woo_gray_0">#F6F7F7</color>
+    <color name="woo_gray_5">#DCDCDE</color>
+    <color name="woo_gray_6">#F2F2F7</color>
+    <color name="woo_gray_20">#B4B1B8</color>
+    <color name="woo_gray_40">#787C82</color>
+    <color name="woo_gray_60">#51565F</color>
+    <color name="woo_gray_70">#3D444B</color>
+    <color name="woo_gray_80">#2C3338</color>
+    <color name="woo_gray_80_alpha_012">#1F2C3338</color>
+    <color name="woo_gray_80_alpha_030">#4D3C3C43</color>
+    <color name="woo_gray_900">#F7F7F7</color>
+
+    <color name="woo_black">#FF000000</color>
+    <color name="woo_black_90">#121212</color>
+    <color name="woo_black_90_alpha_004">#0A000000</color>
+    <color name="woo_black_90_alpha_012">#1F121212</color>
+    <color name="woo_black_90_alpha_020">#33121212</color>
+    <color name="woo_black_90_alpha_038">#61121212</color>
+    <color name="woo_black_90_alpha_060">#99121212</color>
+    <color name="woo_black_90_alpha_087">#DE121212</color>
+    <color name="woo_black_900">#272727</color>
+    <color name="woo_black_60">#6A6A6A</color>
+    <color name="woo_black_80">#363636</color>
+    <color name="woo_black_alpha_008">#14212121</color>
+
+    <!-- General colors -->
+    <color name="color_primary">@color/woo_purple_60</color>
+    <color name="color_primary_surface">@color/woo_purple_60</color>
+    <color name="color_primary_variant">@color/woo_purple_80</color>
+    <color name="color_secondary">@color/woo_pink_50</color>
+    <color name="color_secondary_variant">@color/woo_pink_70</color>
+    <color name="color_surface">@color/woo_white</color>
+    <color name="color_surface_variant">@color/woo_gray_40</color>
+    <color name="color_surface_elevated">@color/woo_white</color>
+    <color name="color_error">@color/woo_red_50</color>
+    <color name="color_alert">@color/woo_yellow_50</color>
+    <color name="color_info">@color/woo_green_50</color>
+
+    <!-- App colors -->
+    <color name="color_status_bar">@color/color_surface</color>
+    <color name="default_window_background">#F2F2F2</color>
+    <color name="divider_color">@color/woo_black_90_alpha_012</color>
+    <color name="color_ripple_overlay">@color/woo_black_90_alpha_012</color>
+    <color name="image_border_color">@color/woo_black_90_alpha_012</color>
+    <color name="splash_background">@color/woo_purple_60</color>
+    <color name="color_toolbar">@color/woo_white</color>
+    <color name="bottom_sheet_background">@color/color_surface</color>
+</resources>

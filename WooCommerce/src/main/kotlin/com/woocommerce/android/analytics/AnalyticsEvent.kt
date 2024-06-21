@@ -1,5 +1,7 @@
 package com.woocommerce.android.analytics
 
+import com.woocommerce.commons.WearAnalyticsEvent
+
 interface IAnalyticsEvent {
     val siteless: Boolean
     val name: String
@@ -932,6 +934,9 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     PRODUCT_DETAIL_VIEW_QUANTITY_RULES_TAPPED,
     PRODUCT_VARIATION_VIEW_QUANTITY_RULES_TAPPED,
 
+    PRODUCT_DETAIL_QUANTITY_RULES_DONE_BUTTON_TAPPED,
+    PRODUCT_VARIATION_QUANTITY_RULES_DONE_BUTTON_TAPPED,
+
     // Bundled products
     PRODUCT_DETAIL_VIEW_BUNDLED_PRODUCTS_TAPPED,
 
@@ -1062,7 +1067,46 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     // Connectivity Tool
     CONNECTIVITY_TOOL_REQUEST_RESPONSE,
     CONNECTIVITY_TOOL_READ_MORE_TAPPED,
-    CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED;
+    CONNECTIVITY_TOOL_CONTACT_SUPPORT_TAPPED,
+
+    // Woo Wear App
+    WATCH_STORE_DATA_REQUESTED,
+    WATCH_STORE_DATA_SUCCEEDED,
+    WATCH_STORE_DATA_FAILED,
+    WATCH_STATS_DATA_REQUESTED,
+    WATCH_STATS_DATA_SUCCEEDED,
+    WATCH_STATS_DATA_FAILED,
+    WATCH_ORDERS_LIST_DATA_REQUESTED,
+    WATCH_ORDERS_LIST_DATA_SUCCEEDED,
+    WATCH_ORDERS_LIST_DATA_FAILED,
+    WATCH_ORDER_DETAILS_DATA_REQUESTED,
+    WATCH_ORDER_DETAILS_DATA_SUCCEEDED,
+    WATCH_ORDER_DETAILS_DATA_FAILED,
+    WATCH_APP_OPENED,
+    WATCH_ORDERS_LIST_OPENED,
+    WATCH_ORDER_DETAILS_OPENED;
 
     override val isPosEvent: Boolean = false
+}
+
+@Suppress("CyclomaticComplexMethod")
+fun WearAnalyticsEvent.toAnalyticsEvent(): AnalyticsEvent? {
+    return when (this) {
+        WearAnalyticsEvent.WATCH_STORE_DATA_REQUESTED -> AnalyticsEvent.WATCH_STORE_DATA_REQUESTED
+        WearAnalyticsEvent.WATCH_STORE_DATA_SUCCEEDED -> AnalyticsEvent.WATCH_STORE_DATA_SUCCEEDED
+        WearAnalyticsEvent.WATCH_STORE_DATA_FAILED -> AnalyticsEvent.WATCH_STORE_DATA_FAILED
+        WearAnalyticsEvent.WATCH_STATS_DATA_REQUESTED -> AnalyticsEvent.WATCH_STATS_DATA_REQUESTED
+        WearAnalyticsEvent.WATCH_STATS_DATA_SUCCEEDED -> AnalyticsEvent.WATCH_STATS_DATA_SUCCEEDED
+        WearAnalyticsEvent.WATCH_STATS_DATA_FAILED -> AnalyticsEvent.WATCH_STATS_DATA_FAILED
+        WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_REQUESTED -> AnalyticsEvent.WATCH_ORDERS_LIST_DATA_REQUESTED
+        WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_SUCCEEDED -> AnalyticsEvent.WATCH_ORDERS_LIST_DATA_SUCCEEDED
+        WearAnalyticsEvent.WATCH_ORDERS_LIST_DATA_FAILED -> AnalyticsEvent.WATCH_ORDERS_LIST_DATA_FAILED
+        WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_REQUESTED -> AnalyticsEvent.WATCH_ORDER_DETAILS_DATA_REQUESTED
+        WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_SUCCEEDED -> AnalyticsEvent.WATCH_ORDER_DETAILS_DATA_SUCCEEDED
+        WearAnalyticsEvent.WATCH_ORDER_DETAILS_DATA_FAILED -> AnalyticsEvent.WATCH_ORDER_DETAILS_DATA_FAILED
+        WearAnalyticsEvent.WATCH_APP_OPENED -> AnalyticsEvent.WATCH_APP_OPENED
+        WearAnalyticsEvent.WATCH_ORDERS_LIST_OPENED -> AnalyticsEvent.WATCH_ORDERS_LIST_OPENED
+        WearAnalyticsEvent.WATCH_ORDER_DETAILS_OPENED -> AnalyticsEvent.WATCH_ORDER_DETAILS_OPENED
+        else -> null
+    }
 }

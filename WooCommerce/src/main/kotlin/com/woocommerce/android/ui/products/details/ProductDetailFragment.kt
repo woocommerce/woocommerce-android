@@ -69,6 +69,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailViewModel.ShowLi
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel.TrashProduct
 import com.woocommerce.android.ui.products.grouped.GroupedProductListType
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
+import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.reviews.ProductReviewsFragment
 import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
@@ -280,6 +281,13 @@ class ProductDetailFragment :
                     oneTimeShipping = it.subscriptionShippingData.oneTimeShipping
                 )
             }
+        }
+        handleResult<QuantityRules>(BaseProductEditorFragment.KEY_QUANTITY_RULES_DIALOG_RESULT) {
+            viewModel.updateProductDraft(
+                minAllowedQuantity = it.min,
+                maxAllowedQuantity = it.max,
+                groupOfQuantity = it.groupOf
+            )
         }
         handleResult<List<Image>>(BaseProductEditorFragment.KEY_IMAGES_DIALOG_RESULT) {
             viewModel.updateProductDraft(images = it)

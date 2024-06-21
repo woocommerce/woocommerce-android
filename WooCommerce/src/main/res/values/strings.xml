@@ -3658,7 +3658,6 @@
     <string name="min_quantity">Minimum quantity</string>
     <string name="max_quantity">Maximum quantity</string>
     <string name="group_of">Group of</string>
-    <string name="quantity_rules_info_notice">You can edit product\'s quantity rules in the web dashboard.</string>
 
     <string name="empty_min_quantity">No minimum</string>
     <string name="empty_max_quantity">No maximum</string>
@@ -3850,6 +3849,7 @@
     <string name="blaze_campaign_preview_edit_ad">Edit ad</string>
     <string name="blaze_campaign_preview_shop_now_button">Shop now</string>
     <string name="blaze_campaign_preview_details_section_title">Details</string>
+    <string name="blaze_campaign_preview_audience_section_title">Audience</string>
     <string name="blaze_campaign_preview_details_budget">Budget</string>
     <string name="blaze_campaign_preview_details_language">Language</string>
     <string name="blaze_campaign_preview_details_devices">Devices</string>
@@ -4061,7 +4061,7 @@
     <string name="product_variation_picker_title">Select a variation</string>
     <string name="blaze_campaign_creation_new_intro_description">Our tool is designed to empower merchants with fast, simple ad campaign setups for maximum traffic boost.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_1_title">Quick start, big impact</string>
-    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle">Launch ads in minutes – no experience or big budget needed, starting at just $5 USD.</string>
+    <string name="blaze_campaign_creation_new_intro_benefit_1_subtitle_updated">Launch ads in minutes – no experience or big budget needed, starting at just $5 USD daily.</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_title">Global reach made simple</string>
     <string name="blaze_campaign_creation_new_intro_benefit_2_subtitle">"Our tool presents your product where interested shoppers can find it. "</string>
     <string name="blaze_campaign_creation_new_intro_benefit_3_title">Access a vast audience</string>

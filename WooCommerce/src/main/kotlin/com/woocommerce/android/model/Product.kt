@@ -86,7 +86,11 @@ data class Product(
     val subscription: SubscriptionDetails?,
     val isSampleProduct: Boolean,
     val specialStockStatus: ProductStockStatus? = null,
-    val isConfigurable: Boolean = false
+    val isConfigurable: Boolean = false,
+    val minAllowedQuantity: Int?,
+    val maxAllowedQuantity: Int?,
+    val groupOfQuantity: Int?,
+    val combineVariationQuantities: Boolean?
 ) : Parcelable, IProduct {
     companion object {
         const val TAX_CLASS_DEFAULT = "standard"
@@ -147,7 +151,11 @@ data class Product(
             isDownloadable == product.isDownloadable &&
             attributes == product.attributes &&
             subscription == product.subscription &&
-            specialStockStatus == product.specialStockStatus
+            specialStockStatus == product.specialStockStatus &&
+            minAllowedQuantity == product.minAllowedQuantity &&
+            maxAllowedQuantity == product.maxAllowedQuantity &&
+            groupOfQuantity == product.groupOfQuantity &&
+            combineVariationQuantities == product.combineVariationQuantities
     }
 
     val hasCategories get() = categories.isNotEmpty()
@@ -228,6 +236,10 @@ data class Product(
     }
 
     fun hasLinkedProducts() = crossSellProductIds.size > 0 || upsellProductIds.size > 0
+
+    fun hasQuantityRules() = (minAllowedQuantity ?: -1) > 0 ||
+        (maxAllowedQuantity ?: -1) > 0 ||
+        (groupOfQuantity ?: -1) > 0
 
     /**
      * Compares this product's categories with the passed list, returns true only if both lists contain
@@ -319,7 +331,11 @@ data class Product(
                 downloadLimit = updatedProduct.downloadLimit,
                 downloadExpiry = updatedProduct.downloadExpiry,
                 subscription = updatedProduct.subscription,
-                specialStockStatus = specialStockStatus
+                specialStockStatus = specialStockStatus,
+                minAllowedQuantity = updatedProduct.minAllowedQuantity,
+                maxAllowedQuantity = updatedProduct.maxAllowedQuantity,
+                groupOfQuantity = updatedProduct.groupOfQuantity,
+                combineVariationQuantities = updatedProduct.combineVariationQuantities
             )
         } ?: this.copy()
     }
@@ -457,6 +473,10 @@ fun Product.toDataModel(storedProductModel: WCProductModel? = null): WCProductMo
         it.downloadable = isDownloadable
         it.attributes = attributesToJson()
         it.purchasable = isPurchasable
+        it.minAllowedQuantity = minAllowedQuantity ?: -1
+        it.maxAllowedQuantity = maxAllowedQuantity ?: -1
+        it.groupOfQuantity = groupOfQuantity ?: -1
+        it.combineVariationQuantities = combineVariationQuantities ?: false
         // Subscription details are currently the only editable metadata fields from the app.
         it.metadata = subscription?.toMetadataJson().toString()
     }
@@ -562,9 +582,17 @@ fun WCProductModel.toAppModel(): Product {
         } else {
             null
         },
-        isConfigurable = isConfigurable
+        isConfigurable = isConfigurable,
+        minAllowedQuantity = this.getMinAllowedQuantity(),
+        maxAllowedQuantity = this.maxAllowedQuantity(),
+        groupOfQuantity = this.groupOfQuantity(),
+        combineVariationQuantities = this.combineVariationQuantities
     )
 }
+
+private fun WCProductModel.getMinAllowedQuantity() = if (this.minAllowedQuantity >= 0) this.minAllowedQuantity else null
+private fun WCProductModel.maxAllowedQuantity() = if (this.maxAllowedQuantity >= 0) this.maxAllowedQuantity else null
+private fun WCProductModel.groupOfQuantity() = if (this.groupOfQuantity >= 0) this.groupOfQuantity else null
 
 fun MediaModel.toAppModel(): Product.Image {
     return Product.Image(

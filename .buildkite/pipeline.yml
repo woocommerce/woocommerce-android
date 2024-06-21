@@ -21,69 +21,88 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
-  - label: "☢️ Danger - PR Check"
-    command: danger
-    key: danger
-    if: "build.pull_request.id != null"
-    retry:
-      manual:
-        permit_on_passed: true
-    agents:
-      queue: "linter"
+  ########################################
+  - group: "🕵️ Linters"
+    steps:
 
-  - label: "detekt"
-    command: |
-      echo "--- 🧹 Linting"
-      cp gradle.properties-example gradle.properties
-      ./gradlew detektAll
-    plugins: [*ci_toolkit]
-    artifact_paths:
-      - "**/build/reports/detekt/detekt.html"
+      - label: "☢️ Danger - PR Check"
+        command: danger
+        key: danger
+        if: "build.pull_request.id != null"
+        retry:
+          manual:
+            permit_on_passed: true
+        agents:
+          queue: "linter"
 
-  - label: "lint"
-    command: |
-      echo "--- 🧹 Linting"
-      cp gradle.properties-example gradle.properties
-      ./gradlew lintJalapenoDebug
-    plugins: [*ci_toolkit]
-    artifact_paths:
-      - "**/build/reports/lint-results*.*"
+      - label: "detekt"
+        command: |
+          echo "--- 🧹 Linting"
+          cp gradle.properties-example gradle.properties
+          ./gradlew detektAll
+        plugins: [*ci_toolkit]
+        artifact_paths:
+          - "**/build/reports/detekt/detekt.html"
 
-  - label: "Dependency Tree Diff"
-    command: |
-      cp gradle.properties-example gradle.properties
-      .buildkite/commands/dependency-tree-diff.sh
-    if: build.pull_request.id != null
-    plugins: [*ci_toolkit]
+      - label: "lint"
+        command: |
+          echo "--- 🧹 Linting"
+          cp gradle.properties-example gradle.properties
+          ./gradlew lintJalapenoDebug
+        plugins: [*ci_toolkit]
+        artifact_paths:
+          - "**/build/reports/lint-results*.*"
 
-  - label: "Unit tests"
-    command: .buildkite/commands/run-unit-tests.sh
-    plugins:
-      - *ci_toolkit
-      - *test_collector :
-          <<: *test_collector_common_params
-          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
-    artifact_paths:
-      - "**/build/test-results/*/*.xml"
+      - label: "Dependency Tree Diff"
+        command: |
+          cp gradle.properties-example gradle.properties
+          .buildkite/commands/dependency-tree-diff.sh
+        if: build.pull_request.id != null
+        plugins: [*ci_toolkit]
 
-  - label: "Ensure Screenshot Tests Build"
-    command: |
-      echo "--- ⚒️ Building"
-      cp gradle.properties-example gradle.properties
-      ./gradlew assembleJalapenoDebugAndroidTest
-    plugins: [*ci_toolkit]
+  ########################################
+  - group: "🛠 Prototype Builds"
+    steps:
 
-  - label: "🛠 Prototype Build"
-    command: ".buildkite/commands/prototype-build.sh"
-    if: build.pull_request.id != null
-    plugins: [*ci_toolkit]
+      - label: "🛠 Prototype Build: Mobile App"
+        command: |
+          ".buildkite/commands/prototype-build.sh" "WooCommerce"
+        if: build.pull_request.id != null
+        plugins: [*ci_toolkit]
 
-  - label: "Instrumented tests"
-    command: .buildkite/commands/run-instrumented-tests.sh
-    plugins:
-      - *ci_toolkit
-      - *test_collector :
-          <<: *test_collector_common_params
-          api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
-    artifact_paths:
-      - "**/build/instrumented-tests/**/*"
+      - label: "🛠 Prototype Build: Wear App"
+        command: |
+          ".buildkite/commands/prototype-build.sh" "WooCommerce-Wear"
+        if: build.pull_request.id != null
+        plugins: [*ci_toolkit]
+
+  ########################################
+  - group: "🔬 Tests"
+    steps:
+
+      - label: "Unit tests"
+        command: .buildkite/commands/run-unit-tests.sh
+        plugins:
+          - *ci_toolkit
+          - *test_collector :
+              <<: *test_collector_common_params
+              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
+        artifact_paths:
+          - "**/build/test-results/*/*.xml"
+
+      - label: "Ensure Screenshot Tests Build"
+        command: |
+          echo "--- ⚒️ Building"
+          cp gradle.properties-example gradle.properties
+          ./gradlew assembleJalapenoDebugAndroidTest
+        plugins: [*ci_toolkit]
+
+      - label: "Instrumented tests"
+        command: .buildkite/commands/run-instrumented-tests.sh
+        plugins:
+          - *ci_toolkit
+          - *test_collector :
+              <<: *test_collector_common_params
+              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
+        artifact_paths:
+          - "**/build/instrumented-tests/**/*"

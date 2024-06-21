@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.products.models.ProductProperty.Warning
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.PRIMARY
 import com.woocommerce.android.ui.products.models.ProductPropertyCard.Type.SECONDARY
+import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData
 import com.woocommerce.android.ui.products.shipping.ProductShippingViewModel.ShippingData
@@ -334,7 +335,7 @@ class VariationDetailCardBuilder(
     }
 
     private suspend fun ProductVariation.quantityRules(): ProductProperty? {
-        val rules = viewModel.getQuantityRules(this.remoteProductId, this.remoteVariationId) ?: return null
+        val rules = QuantityRules(this.minAllowedQuantity, this.maxAllowedQuantity, this.groupOfQuantity)
 
         val properties = buildMap {
             putIfNotNull(resources.getString(string.min_quantity) to rules.min?.toString())
@@ -349,7 +350,7 @@ class VariationDetailCardBuilder(
             showTitle = true,
             onClick = {
                 viewModel.onEditVariationCardClicked(
-                    ViewProductQuantityRules(rules),
+                    ViewProductQuantityRules(rules, AnalyticsEvent.PRODUCT_VARIATION_QUANTITY_RULES_DONE_BUTTON_TAPPED),
                     AnalyticsEvent.PRODUCT_VARIATION_VIEW_QUANTITY_RULES_TAPPED
                 )
             }
