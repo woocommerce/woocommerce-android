@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,6 +54,7 @@ fun WooPosTotalsScreen(viewModelStoreOwner: ViewModelStoreOwner) {
     )
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun WooPosTotalsScreen(
     state: StateFlow<WooPosTotalsState>,
@@ -65,7 +67,7 @@ fun WooPosTotalsScreen(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         }
-    ) { padding ->
+    ) {
         if (totalsState.value.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -79,7 +81,7 @@ fun WooPosTotalsScreen(
             shape = RoundedCornerShape(16.dp),
             backgroundColor = MaterialTheme.colors.surface,
             elevation = 4.dp,
-            modifier = Modifier.padding(padding)
+            modifier = Modifier.padding(16.dp)
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
