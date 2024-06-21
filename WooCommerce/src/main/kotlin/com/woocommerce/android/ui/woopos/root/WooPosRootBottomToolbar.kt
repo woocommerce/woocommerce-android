@@ -18,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -47,14 +46,14 @@ fun WooPosBottomToolbar(
             TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }) {
                 Text(
                     text = stringResource(id = R.string.woopos_exit_pos),
-                    color = Color.White,
+                    color = MaterialTheme.colors.secondaryVariant,
                     style = MaterialTheme.typography.button
                 )
             }
             TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ConnectToAReaderClicked) }) {
                 Text(
                     text = stringResource(id = state.value.cardReaderStatus.title),
-                    color = MaterialTheme.colors.secondaryVariant,
+                    color = MaterialTheme.colors.secondary,
                     style = MaterialTheme.typography.button
                 )
             }
