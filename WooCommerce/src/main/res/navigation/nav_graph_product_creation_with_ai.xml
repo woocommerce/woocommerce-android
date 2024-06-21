@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph_product_creation_with_ai"
+    app:startDestination="@+id/addProductWithAIFragment">
+    <fragment
+        android:id="@+id/addProductWithAIFragment"
+        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIFragment"
+        android:label="AddProductWithAIFragment">
+        <action
+            android:id="@+id/action_addProductWithAIFragment_to_AIProductNameBottomSheetFragment"
+            app:destination="@id/aiProductNameBottomSheetFragment" />
+        <action
+            android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
+            app:destination="@id/packagePhotoBottomSheetFragment" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/aiProductNameBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ai.AIProductNameBottomSheetFragment"
+        android:label="AIProductNameBottomSheetFragment">
+        <argument
+            android:name="initialName"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </dialog>
+    <dialog
+        android:id="@+id/packagePhotoBottomSheetFragment"
+        android:name="com.woocommerce.android.ui.products.ai.PackagePhotoBottomSheetFragment"
+        android:label="PackagePhotoBottomSheetFragment">
+        <argument
+            android:name="imageUrl"
+            app:argType="string" />
+    </dialog>
+</navigation>

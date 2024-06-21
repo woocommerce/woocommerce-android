@@ -16,7 +16,7 @@
     <include app:graph="@navigation/nav_graph_site_picker" />
     <include app:graph="@navigation/nav_graph_domain_change" />
     <include app:graph="@navigation/nav_graph_blaze_campaign_creation" />
-    <include app:graph="@navigation/nav_graph_order_creations" />
+    <include app:graph="@navigation/nav_graph_product_creation_with_ai" />
 
     <fragment
         android:id="@+id/dashboard"
@@ -738,37 +738,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_addProductWithAIBottomSheet_to_addProductWithAIFragment"
-            app:destination="@id/addProductWithAIFragment" />
-    </dialog>
-    <fragment
-        android:id="@+id/addProductWithAIFragment"
-        android:name="com.woocommerce.android.ui.products.ai.AddProductWithAIFragment"
-        android:label="AddProductWithAIFragment">
-        <action
-            android:id="@+id/action_addProductWithAIFragment_to_AIProductNameBottomSheetFragment"
-            app:destination="@id/aiProductNameBottomSheetFragment" />
-        <action
-            android:id="@+id/action_addProductWithAIFragment_to_packagePhotoBottomSheetFragment"
-            app:destination="@id/packagePhotoBottomSheetFragment" />
-    </fragment>
-
-    <dialog
-        android:id="@+id/aiProductNameBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ai.AIProductNameBottomSheetFragment"
-        android:label="AIProductNameBottomSheetFragment">
-        <argument
-            android:name="initialName"
-            android:defaultValue="@null"
-            app:argType="string"
-            app:nullable="true" />
-    </dialog>
-    <dialog
-        android:id="@+id/packagePhotoBottomSheetFragment"
-        android:name="com.woocommerce.android.ui.products.ai.PackagePhotoBottomSheetFragment"
-        android:label="PackagePhotoBottomSheetFragment">
-        <argument
-            android:name="imageUrl"
-            app:argType="string" />
+            app:destination="@id/nav_graph_product_creation_with_ai" />
     </dialog>
     <fragment
         android:id="@+id/blazeCampaignListFragment"
