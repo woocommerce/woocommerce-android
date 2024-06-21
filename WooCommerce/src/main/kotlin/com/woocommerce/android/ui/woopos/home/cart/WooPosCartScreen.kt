@@ -21,13 +21,14 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -64,7 +65,11 @@ private fun WooPosCartScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            CartToolbar(state.toolbar)
+            CartToolbar(
+                toolbar = state.toolbar,
+                onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
+                onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -97,18 +102,25 @@ private fun WooPosCartScreen(
 }
 
 @Composable
-private fun CartToolbar(toolbar: WooPosToolbar) {
+private fun CartToolbar(
+    toolbar: WooPosToolbar,
+    onClearAllClicked: () -> Unit,
+    onBackClicked: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = Icons.Default.ShoppingCart,
-            contentDescription = "Cart",
-            tint = MaterialTheme.colors.onBackground,
-            modifier = Modifier.height(24.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
+        IconButton(onClick = { onBackClicked() }) {
+            Icon(
+                imageVector = ImageVector.vectorResource(toolbar.icon),
+                contentDescription = "cart icon",
+                tint = MaterialTheme.colors.onBackground,
+                modifier = Modifier.height(24.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
 
         Text(
             text = stringResource(R.string.woo_pos_car_pane_title),
@@ -120,21 +132,23 @@ private fun CartToolbar(toolbar: WooPosToolbar) {
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = "2 items",
+            text = toolbar.itemsCount,
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.secondaryVariant,
             fontWeight = FontWeight.SemiBold,
         )
 
-        Spacer(modifier = Modifier.width(16.dp))
+        if (toolbar.isClearAllButtonVisible) {
+            Spacer(modifier = Modifier.width(16.dp))
 
-        TextButton(onClick = { /*TODO*/ }) {
-            Text(
-                text = stringResource(R.string.woo_pos_clear_cart_button),
-                style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.secondaryVariant,
-                fontWeight = FontWeight.SemiBold,
-            )
+            TextButton(onClick = { onClearAllClicked() }) {
+                Text(
+                    text = stringResource(R.string.woo_pos_clear_cart_button),
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.primary,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
         }
     }
 }
@@ -199,7 +213,7 @@ fun WooPosCartScreenPreview() {
             state = WooPosCartState(
                 toolbar = WooPosToolbar(
                     icon = R.drawable.ic_shopping_cart,
-                    items = 2,
+                    itemsCount = "3 items",
                     isClearAllButtonVisible = true
                 ),
                 itemsInCart = listOf(

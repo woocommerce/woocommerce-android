@@ -22,6 +22,6 @@ data class WooPosCartListItem(
 @Parcelize
 data class WooPosToolbar(
     @DrawableRes val icon: Int,
-    val items: Int,
+    val itemsCount: String,
     val isClearAllButtonVisible: Boolean,
 ) : Parcelable
