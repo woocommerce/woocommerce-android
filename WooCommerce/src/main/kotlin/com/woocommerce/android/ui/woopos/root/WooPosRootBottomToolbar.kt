@@ -17,14 +17,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -40,13 +34,13 @@ fun WooPosBottomToolbar(
             .height(60.dp)
             .fillMaxWidth(),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 1.dp,
+        elevation = 8.dp,
+        shape = RectangleShape
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .shadow(elevation = 2.dp, shape = TopEdgeShape(), clip = false)
                 .padding(horizontal = 24.dp)
         ) {
             TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }) {
@@ -64,12 +58,6 @@ fun WooPosBottomToolbar(
                 )
             }
         }
-    }
-}
-
-private class TopEdgeShape : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        return Outline.Rectangle(Rect(top = 1.dp.value, left = 0f, right = 0f, bottom = 0f))
     }
 }
 

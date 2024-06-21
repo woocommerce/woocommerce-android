@@ -35,7 +35,7 @@ fun WooPosButton(
         Text(
             text = text,
             color = MaterialTheme.colors.onPrimary,
-            style = MaterialTheme.typography.h6,
+            style = MaterialTheme.typography.h5,
             fontWeight = FontWeight.Bold,
         )
     }
