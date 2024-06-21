@@ -7,9 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -18,7 +17,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -29,19 +35,19 @@ fun WooPosBottomToolbar(
     state: State<WooPosRootScreenState>,
     onUIEvent: (WooPosRootUIEvent) -> Unit,
 ) {
-    Surface(
+    Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        color = MaterialTheme.colors.background
+            .height(60.dp)
+            .fillMaxWidth(),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 1.dp,
     ) {
         Row(
-            modifier = Modifier
-                .height(64.dp)
-                .fillMaxWidth()
-                .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .shadow(elevation = 2.dp, shape = TopEdgeShape(), clip = false)
+                .padding(horizontal = 24.dp)
         ) {
             TextButton(onClick = { onUIEvent(WooPosRootUIEvent.ExitPOSClicked) }) {
                 Text(
@@ -61,6 +67,12 @@ fun WooPosBottomToolbar(
     }
 }
 
+private class TopEdgeShape : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        return Outline.Rectangle(Rect(top = 1.dp.value, left = 0f, right = 0f, bottom = 0f))
+    }
+}
+
 @WooPosPreview
 @Composable
 fun PreviewWooPosBottomToolbar() {
@@ -75,7 +87,7 @@ fun PreviewWooPosBottomToolbar() {
     WooPosTheme {
         Column {
             Spacer(modifier = Modifier.weight(1f))
-            WooPosBottomToolbar(state, {})
+            WooPosBottomToolbar(state) {}
         }
     }
 }
