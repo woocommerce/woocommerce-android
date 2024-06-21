@@ -9,4 +9,4 @@ steps:
       .buildkite/commands/checkout-release-branch.sh
 
       echo '--- :shipit: New Beta Release'
-      bundle exec fastlane new_beta_release skip_confirm:true
+      bundle exec fastlane new_beta_release skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"

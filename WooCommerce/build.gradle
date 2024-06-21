@@ -278,6 +278,7 @@ dependencies {
 
     implementation("com.gravatar:gravatar:$gravatarVersion")
 
+    implementation project(":libs:commons")
     implementation project(":libs:cardreader")
     debugImplementation project(":libs:iap")
 
@@ -311,6 +312,7 @@ dependencies {
     implementation "com.google.mlkit:barcode-scanning:$mlkitBarcodeScanningVersion"
 
     implementation "com.google.zxing:core:3.5.3"
+    implementation "com.google.android.gms:play-services-wearable:$googlePlayWearableVersion"
 
     // Debug dependencies
     debugImplementation "com.facebook.flipper:flipper:$flipperVersion"
