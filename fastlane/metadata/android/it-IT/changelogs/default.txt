@@ -1,1 +1,3 @@
-Scopri gli ultimi miglioramenti della nostra app per dispositivi mobili di WooCommerce! Abbiamo migliorato le finestre di pagamento per una migliore esperienza su schermi più grandi, abbiamo risolto i problemi con le notifiche push e abbiamo risolto un bug di login che impediva la visualizzazione dei messaggi di errore. In più, le nuove schede della bacheca offrono ai venditori una panoramica più approfondita dei loro negozi. Aggiorna ora per un'esperienza più fluida e ricca di informazioni!
+19.1:
+Questa versione si concentra su correzioni di bug e miglioramenti per aiutarti ad avviare la tua attività. Continua a inviarci il tuo feedback; ci aiuta a capire su cosa lavorare in futuro.
+
