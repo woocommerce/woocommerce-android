@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailCardBuilder
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
+import java.math.BigDecimal
 import javax.inject.Inject
 
 /**
@@ -24,14 +25,17 @@ class BuildProductPreviewProperties @Inject constructor(
 ) {
     private val siteParameters by lazy { parameterRepository.getParameters() }
 
-    operator fun invoke(product: Product): List<List<ProductPropertyCard>> = buildList {
+    operator fun invoke(
+        product: Product,
+        onEditPrice: (BigDecimal) -> Unit
+    ): List<List<ProductPropertyCard>> = buildList {
         add(
             listOf(product.productType())
         )
 
         add(
             buildList {
-                add(product.price())
+                add(product.price(onEditPrice))
 
                 add(product.inventory())
 
@@ -77,14 +81,15 @@ class BuildProductPreviewProperties @Inject constructor(
         )
     }
 
-    private fun Product.price() = ProductPropertyCard(
+    private fun Product.price(onClick: (BigDecimal) -> Unit) = ProductPropertyCard(
         icon = R.drawable.ic_gridicons_money,
         title = R.string.product_price,
         content = PriceUtils.formatCurrency(
             regularPrice,
             siteParameters.currencyCode,
             currencyFormatter
-        )
+        ),
+        onClick = { onClick(regularPrice!!) }
     )
 
     @Suppress("UnusedReceiverParameter")

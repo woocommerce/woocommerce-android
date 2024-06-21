@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
 import javax.inject.Inject
 
 @HiltViewModel
@@ -222,6 +223,7 @@ class AddProductWithAIViewModel @Inject constructor(
     }
 
     data class NavigateToProductDetailScreen(val productId: Long) : MultiLiveEvent.Event()
+    data class EditPrice (val suggestedPrice: BigDecimal) : MultiLiveEvent.Event()
 
     @Suppress("MagicNumber")
     private enum class Step(val order: Int) {

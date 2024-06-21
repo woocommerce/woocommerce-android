@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -199,6 +200,7 @@ private fun ProductProperties(
         properties.forEachIndexed { index, property ->
             Row(
                 Modifier
+                    .clickable { property.onClick() }
                     .padding(dimensionResource(id = R.dimen.major_100))
             ) {
                 Icon(

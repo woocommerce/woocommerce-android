@@ -12,6 +12,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.ui.products.ai.AboutProductSubViewModel.AiTone
+import com.woocommerce.android.ui.products.ai.AddProductWithAIViewModel.EditPrice
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCProductStore.ProductError
+import java.math.BigDecimal
 
 @Suppress("LongParameterList")
 class ProductPreviewSubViewModel(
@@ -88,6 +90,10 @@ class ProductPreviewSubViewModel(
         _state.update { (it as State.Success).copy(shouldShowFeedbackView = false) }
     }
 
+    private fun onEditPrice(suggestedPrice: BigDecimal){
+        _events.tryEmit(EditPrice(suggestedPrice))
+    }
+
     override fun close() {
         viewModelScope.cancel()
     }
@@ -130,7 +136,7 @@ class ProductPreviewSubViewModel(
                     AnalyticsTracker.track(AnalyticsEvent.PRODUCT_CREATION_AI_GENERATE_PRODUCT_DETAILS_SUCCESS)
                     _state.value = State.Success(
                         product = product,
-                        propertyGroups = buildProductPreviewProperties(product)
+                        propertyGroups = buildProductPreviewProperties(product, onEditPrice = ::onEditPrice)
                     )
                     onDone(product)
                 },
@@ -210,6 +216,7 @@ class ProductPreviewSubViewModel(
     data class ProductPropertyCard(
         @DrawableRes val icon: Int,
         @StringRes val title: Int,
-        val content: String
+        val content: String,
+        val onClick: () -> Unit = {}
     )
 }
