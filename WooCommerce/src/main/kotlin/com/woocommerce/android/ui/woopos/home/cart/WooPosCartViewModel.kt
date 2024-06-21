@@ -49,6 +49,7 @@ class WooPosCartViewModel @Inject constructor(
         listenEventsFromParent()
     }
 
+    @Suppress("ReturnCount")
     fun onUIEvent(event: WooPosCartUIEvent) {
         when (event) {
             is WooPosCartUIEvent.CheckoutClicked -> {
