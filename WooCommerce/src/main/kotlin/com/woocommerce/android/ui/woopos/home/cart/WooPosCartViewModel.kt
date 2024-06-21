@@ -122,10 +122,6 @@ class WooPosCartViewModel @Inject constructor(
             childrenToParentEventSender.sendToParent(event)
         }
     }
-
-    override fun onCleared() {
-        Log.d("WooPos", "WooPosCartViewModel.onCleared()  $this")
-    }
 }
 
 private fun Product.toCartListItem(): WooPosCartListItem =
