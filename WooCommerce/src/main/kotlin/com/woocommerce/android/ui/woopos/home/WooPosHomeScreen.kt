@@ -18,8 +18,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
@@ -138,18 +138,10 @@ fun WooPosHomeCartScreenPreview() {
         state = WooPosHomeState.Cart,
         onHomeUIEvent = { true },
         onNavigationEvent = {},
-        viewModelStoreOwner = LocalViewModelStoreOwner.current!!
-    )
-}
-
-@Composable
-@WooPosPreview
-fun WooPosHomeCartWithExitPOSConfirmationScreenPreview() {
-    WooPosHomeScreen(
-        state = WooPosHomeState.Cart,
-        onHomeUIEvent = { true },
-        onNavigationEvent = {},
-        viewModelStoreOwner = LocalViewModelStoreOwner.current!!
+        viewModelStoreOwner = object: ViewModelStoreOwner {
+            override val viewModelStore: ViewModelStore
+                get() = ViewModelStore()
+        }
     )
 }
 
@@ -160,6 +152,9 @@ fun WooPosHomeCheckoutScreenPreview() {
         state = WooPosHomeState.Checkout,
         onHomeUIEvent = { true },
         onNavigationEvent = {},
-        viewModelStoreOwner = LocalViewModelStoreOwner.current!!
+        viewModelStoreOwner = object: ViewModelStoreOwner {
+            override val viewModelStore: ViewModelStore
+                get() = ViewModelStore()
+        }
     )
 }
