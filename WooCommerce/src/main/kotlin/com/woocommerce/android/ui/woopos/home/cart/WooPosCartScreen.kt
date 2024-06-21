@@ -64,7 +64,7 @@ private fun WooPosCartScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            CartToolbar()
+            CartToolbar(state.toolbar)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -97,7 +97,7 @@ private fun WooPosCartScreen(
 }
 
 @Composable
-private fun CartToolbar() {
+private fun CartToolbar(toolbar: WooPosToolbar) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -197,6 +197,11 @@ fun WooPosCartScreenPreview() {
     WooPosTheme {
         WooPosCartScreen(
             state = WooPosCartState(
+                toolbar = WooPosToolbar(
+                    icon = R.drawable.ic_shopping_cart,
+                    items = 2,
+                    isClearAllButtonVisible = true
+                ),
                 itemsInCart = listOf(
                     WooPosCartListItem(1L, "VW California"),
                     WooPosCartListItem(2L, "VW Multivan"),
