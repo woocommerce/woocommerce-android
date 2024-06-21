@@ -20,6 +20,6 @@ fun WooPosRootHost(
         popEnterTransition = { screenFadeIn() },
         popExitTransition = { screenSlideOut() },
     ) {
-        mainGraph(onNavigationEvent = onNavigationEvent)
+        mainGraph(navController = rootController, onNavigationEvent = onNavigationEvent)
     }
 }

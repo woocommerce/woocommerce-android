@@ -24,11 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
 @Composable
-fun WooPosTotalsScreen() {
-    val viewModel: WooPosTotalsViewModel = hiltViewModel()
+fun WooPosTotalsScreen(viewModelStoreOwner: ViewModelStoreOwner) {
+    val viewModel: WooPosTotalsViewModel = hiltViewModel(viewModelStoreOwner)
     val state = viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
@@ -101,5 +103,5 @@ private fun SnackbarHandler(
 @Composable
 @WooPosPreview
 fun WooPosCartScreenPreview() {
-    WooPosTotalsScreen()
+    WooPosTotalsScreen(LocalViewModelStoreOwner.current!!)
 }

@@ -30,12 +30,13 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 
 @Composable
-fun WooPosCartScreen() {
-    val viewModel: WooPosCartViewModel = hiltViewModel()
+fun WooPosCartScreen(viewModelStoreOwner: ViewModelStoreOwner) {
+    val viewModel: WooPosCartViewModel = hiltViewModel(viewModelStoreOwner)
     WooPosCartScreen(
         state = viewModel.state.collectAsState().value,
         viewModel::onUIEvent

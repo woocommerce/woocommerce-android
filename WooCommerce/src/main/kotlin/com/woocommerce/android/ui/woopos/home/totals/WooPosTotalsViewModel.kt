@@ -41,7 +41,6 @@ class WooPosTotalsViewModel @Inject constructor(
                 viewModelScope.launch {
                     val orderId = state.value.orderId!!
                     val result = cardReaderFacade.collectPayment(orderId)
-                    Log.d("WooPosTotalsViewModel", "Payment result: $result")
                     if (result is WooPosCardReaderPaymentResult.Success) {
                         // navigate to success screen
                         childrenToParentEventSender.sendToParent(OrderSuccessfullyPaid(orderId))
@@ -63,6 +62,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun listenUpEvents() {
         viewModelScope.launch {
+            Log.d("WooPos", "WooPosTotalsViewModel.listenEventsFromParent() $this")
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.OrderDraftCreated -> {
@@ -78,5 +78,9 @@ class WooPosTotalsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun onCleared() {
+        Log.d("WooPos", "WooPosTotalsViewModel.onCleared() $this")
     }
 }

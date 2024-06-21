@@ -86,6 +86,7 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun listenEventsFromParent() {
         viewModelScope.launch {
+            Log.d("WooPos", "WooPosCartViewModel.listenEventsFromParent() $this")
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
@@ -120,6 +121,10 @@ class WooPosCartViewModel @Inject constructor(
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(event)
         }
+    }
+
+    override fun onCleared() {
+        Log.d("WooPos", "WooPosCartViewModel.onCleared()  $this")
     }
 }
 

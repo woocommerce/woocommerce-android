@@ -12,28 +12,41 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
+import com.woocommerce.android.ui.woopos.home.cart.WooPosCartViewModel
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
+import com.woocommerce.android.ui.woopos.home.products.WooPosProductsViewModel
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsScreen
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewModel
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
-fun WooPosHomeScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
-    val viewModel: WooPosHomeViewModel = hiltViewModel()
+fun WooPosHomeScreen(
+    viewModelStoreOwner: ViewModelStoreOwner,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+) {
+    val homeViewModel: WooPosHomeViewModel = hiltViewModel(viewModelStoreOwner)
+
     WooPosHomeScreen(
-        viewModel.state.collectAsState().value,
+        homeViewModel.state.collectAsState().value,
         onNavigationEvent,
-        viewModel::onUIEvent
+        homeViewModel::onUIEvent,
+        viewModelStoreOwner
     )
-    LaunchedEffect(viewModel.events) {
-        viewModel.events.collect {
+    LaunchedEffect(homeViewModel.events) {
+        homeViewModel.events.collect {
             when (it) {
                 is WooPosHomeEvent.OrderSuccessfullyPaid ->
                     onNavigationEvent(WooPosNavigationEvent.NavigateToPaymentSuccess(it.orderId))
@@ -47,6 +60,7 @@ private fun WooPosHomeScreen(
     state: WooPosHomeState,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Boolean,
+    viewModelStoreOwner: ViewModelStoreOwner,
 ) {
     BackHandler {
         val result = onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
@@ -83,8 +97,19 @@ private fun WooPosHomeScreen(
     }
 
     when (state) {
-        is WooPosHomeState.Cart -> WooPosHomeScreen(scrollState, totalsProductsWidth, cartWidth)
-        WooPosHomeState.Checkout -> WooPosHomeScreen(scrollState, totalsProductsWidth, cartWidth)
+        is WooPosHomeState.Cart -> WooPosHomeScreen(
+            scrollState,
+            totalsProductsWidth,
+            cartWidth,
+            viewModelStoreOwner
+        )
+
+        WooPosHomeState.Checkout -> WooPosHomeScreen(
+            scrollState,
+            totalsProductsWidth,
+            cartWidth,
+            viewModelStoreOwner
+        )
     }
 }
 
@@ -92,7 +117,8 @@ private fun WooPosHomeScreen(
 private fun WooPosHomeScreen(
     scrollState: ScrollState,
     totalsProductsWidth: Dp,
-    cartWidth: Dp
+    cartWidth: Dp,
+    viewModelStoreOwner: ViewModelStoreOwner,
 ) {
     Row(
         modifier = Modifier
@@ -100,13 +126,13 @@ private fun WooPosHomeScreen(
             .fillMaxWidth()
     ) {
         Box(modifier = Modifier.width(totalsProductsWidth)) {
-            WooPosProductsScreen()
+            WooPosProductsScreen(viewModelStoreOwner)
         }
         Box(modifier = Modifier.width(cartWidth)) {
-            WooPosCartScreen()
+            WooPosCartScreen(viewModelStoreOwner)
         }
         Box(modifier = Modifier.width(totalsProductsWidth)) {
-            WooPosTotalsScreen()
+            WooPosTotalsScreen(viewModelStoreOwner)
         }
     }
 }
@@ -118,6 +144,10 @@ fun WooPosHomeCartScreenPreview() {
         state = WooPosHomeState.Cart,
         onHomeUIEvent = { true },
         onNavigationEvent = {},
+        viewModelStoreOwner = object : ViewModelStoreOwner {
+            override val viewModelStore: ViewModelStore
+                get() = TODO("Not yet implemented")
+        },
     )
 }
 
@@ -128,6 +158,7 @@ fun WooPosHomeCartWithExitPOSConfirmationScreenPreview() {
         state = WooPosHomeState.Cart,
         onHomeUIEvent = { true },
         onNavigationEvent = {},
+        viewModelStoreOwner = LocalViewModelStoreOwner.current!!
     )
 }
 
@@ -138,5 +169,6 @@ fun WooPosHomeCheckoutScreenPreview() {
         state = WooPosHomeState.Checkout,
         onHomeUIEvent = { true },
         onNavigationEvent = {},
+        viewModelStoreOwner = LocalViewModelStoreOwner.current!!
     )
 }
