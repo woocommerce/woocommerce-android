@@ -33,4 +33,5 @@
     <string name="orders_complication_label">Today\'s Orders</string>
     <string name="orders_complication_preview_data">$42k</string>
     <string name="orders_complication_preview_description">Today\'s Orders</string>
+    <string name="icon_complication_preview_description">Woo Wear</string>
 </resources>
