@@ -1154,7 +1154,7 @@ platform :android do
   end
 
   private_lane :send_strings_for_translation do
-    sh("cd .. && mkdir -p #{FROZEN_STRINGS_DIR_PATH} && cp #{MAIN_STRINGS_PATH} #{FROZEN_STRINGS_DIR_PATH} && git add #{FROZEN_STRINGS_DIR_PATH}strings.xml")
+    sh("cd .. && mkdir -p #{FROZEN_STRINGS_DIR_PATH} && cp #{MAIN_STRINGS_PATH} #{FROZEN_STRINGS_DIR_PATH} && git add #{FROZEN_STRINGS_DIR_PATH}/strings.xml")
     sh('git diff-index --quiet HEAD || git commit -m "Send strings to translation."')
     sh('git push origin HEAD')
   end
