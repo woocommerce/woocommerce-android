@@ -1,5 +1,1 @@
-- [***] Add support for the app to support and sync with the WearOS app. [https://github.com/woocommerce/woocommerce-android/pull/11557]
-- [**] Adds edit support for the Min/Max Quantities extension in product details. [https://github.com/woocommerce/woocommerce-android/pull/11753]
-
-
-
+Now, seamlessly sync with our new WearOS app for instant updates on store data and orders. Plus, enjoy added flexibility with edit support for Min/Max Quantities directly from product details. Update your WooCommerce app now for a seamless and enhanced experience!
