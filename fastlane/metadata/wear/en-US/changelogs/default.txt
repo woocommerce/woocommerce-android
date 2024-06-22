@@ -1,0 +1,1 @@
+- [***] Introduces the WearOS app with Store stats, Orders list and details. [https://github.com/woocommerce/woocommerce-android/pull/11557]
