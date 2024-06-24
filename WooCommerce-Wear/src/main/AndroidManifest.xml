@@ -30,6 +30,24 @@
             android:value="@integer/google_play_services_version" />
 
         <service
+            android:name=".wear.complications.OrderCountComplicationService"
+            android:exported="true"
+            android:icon="@drawable/img_woo_bubble_white_background"
+            android:label="@string/orders_complication_label"
+            android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
+            <intent-filter>
+                <action android:name="android.support.wearable.complications.ACTION_COMPLICATION_UPDATE_REQUEST" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.support.wearable.complications.SUPPORTED_TYPES"
+                android:value="SHORT_TEXT" />
+            <meta-data
+                android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
+                android:value="1800" />
+        </service>
+
+        <service
             android:name=".wear.complications.AppShortcutComplicationService"
             android:exported="true"
             android:icon="@drawable/img_woo_bubble_white_background"
