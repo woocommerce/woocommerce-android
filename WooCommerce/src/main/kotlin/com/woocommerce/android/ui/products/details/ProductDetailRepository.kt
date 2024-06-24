@@ -60,7 +60,7 @@ class ProductDetailRepository @Inject constructor(
     private val coroutineDispatchers: CoroutineDispatchers,
     private val gson: Gson
 ) {
-    private var continuationUpdateProduct: Continuation<Pair<Boolean, String?>>? = null
+    private var continuationUpdateProduct: Continuation<Pair<Boolean, WCProductStore.ProductError?>>? = null
     private var continuationFetchProductPassword = ContinuationWrapper<String?>(PRODUCTS)
     private var continuationUpdateProductPassword = ContinuationWrapper<Boolean>(PRODUCTS)
     private var continuationFetchProductShippingClass = ContinuationWrapper<Boolean>(PRODUCTS)
@@ -109,9 +109,9 @@ class ProductDetailRepository @Inject constructor(
      *
      * @return the result of the action as a [Boolean]
      */
-    suspend fun updateProduct(updatedProduct: Product): Pair<Boolean, String?> {
+    suspend fun updateProduct(updatedProduct: Product): Pair<Boolean, WCProductStore.ProductError?> {
         return try {
-            suspendCoroutineWithTimeout<Pair<Boolean, String?>>(AppConstants.REQUEST_TIMEOUT) {
+            suspendCoroutineWithTimeout<Pair<Boolean, WCProductStore.ProductError?>>(AppConstants.REQUEST_TIMEOUT) {
                 continuationUpdateProduct = it
 
                 val cachedProduct = getCachedWCProductModel(updatedProduct.remoteId)
@@ -343,12 +343,7 @@ class ProductDetailRepository @Inject constructor(
                     )
                 )
 
-                val productErrorTypesWithDisplayableMessages = arrayOf(ProductErrorType.INVALID_MIN_MAX_QUANTITY)
-                val message = if (productErrorTypesWithDisplayableMessages.contains(event.error?.type))
-                    event.error?.message
-                else
-                    null
-                val pair = Pair(false, message)
+                val pair = Pair(false, event.error)
                 continuationUpdateProduct?.resume(pair)
             } else {
                 AnalyticsTracker.track(PRODUCT_DETAIL_UPDATE_SUCCESS)

@@ -1935,9 +1935,12 @@ class ProductDetailViewModel @Inject constructor(
             loadRemoteProduct(product.remoteId)
         } else {
             result.second?.let {
-                triggerEvent(ShowUpdateProductError(it))
-            } ?: run {
-                triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
+                val productErrorTypesWithDisplayableMessages = arrayOf(ProductErrorType.INVALID_MIN_MAX_QUANTITY)
+                if (productErrorTypesWithDisplayableMessages.contains(it.type) || it.message.isNotEmpty()) {
+                    triggerEvent(ShowUpdateProductError(it.message))
+                } else {
+                    triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
+                }
             }
         }
 
