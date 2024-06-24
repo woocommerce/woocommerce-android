@@ -30,7 +30,7 @@
             android:value="@integer/google_play_services_version" />
 
         <service
-            android:name=".wear.complications.WooWearComplicationService"
+            android:name=".wear.complications.OrderCountComplicationService"
             android:exported="true"
             android:label="@string/orders_complication_label"
             android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
@@ -40,7 +40,7 @@
 
             <meta-data
                 android:name="android.support.wearable.complications.SUPPORTED_TYPES"
-                android:value="SHORT_TEXT,ICON" />
+                android:value="SHORT_TEXT" />
             <meta-data
                 android:name="android.support.wearable.complications.UPDATE_PERIOD_SECONDS"
                 android:value="1800" />
