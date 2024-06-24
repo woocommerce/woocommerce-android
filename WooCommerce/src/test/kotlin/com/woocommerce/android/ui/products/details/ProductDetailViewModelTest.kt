@@ -514,7 +514,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Display error message on update product error`() = testBlocking {
+    fun `Display error message on generic update product error`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(Pair(false, WCProductStore.ProductError())).whenever(productRepository).updateProduct(any())
 
@@ -533,6 +533,35 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         verify(productRepository, times(1)).updateProduct(any())
         Assertions.assertThat(snackbar)
             .isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.product_detail_update_product_error))
+        Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
+    }
+
+    @Test
+    fun `Display error message on min-max quantities update product error`() = testBlocking {
+        val displayErrorMessage = "This is an error message"
+        doReturn(product).whenever(productRepository).getProductAsync(any())
+        doReturn(
+            Pair(false, WCProductStore.ProductError(
+                type = WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY,
+                message = displayErrorMessage)))
+            .whenever(productRepository).updateProduct(any()
+            )
+
+        var showUpdateProductError: ProductDetailViewModel.ShowUpdateProductError? = null
+        viewModel.event.observeForever {
+            if (it is ProductDetailViewModel.ShowUpdateProductError) showUpdateProductError = it
+        }
+
+        var productData: ProductDetailViewModel.ProductDetailViewState? = null
+        viewModel.productDetailViewStateData.observeForever { _, new -> productData = new }
+
+        viewModel.start()
+
+        viewModel.onSaveButtonClicked()
+
+        verify(productRepository, times(1)).updateProduct(any())
+        Assertions.assertThat(showUpdateProductError)
+            .isEqualTo(ProductDetailViewModel.ShowUpdateProductError(displayErrorMessage))
         Assertions.assertThat(productData?.isProgressDialogShown).isFalse()
     }
 
