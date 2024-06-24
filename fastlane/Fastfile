@@ -41,7 +41,7 @@ DEV_RELEASE_NOTES_PATH = {
 RAW_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'raw')
 RAW_SCREENSHOTS_PROCESSING_DIR = File.join(Dir.pwd, 'screenshots', 'raw_tmp')
 PROMO_SCREENSHOTS_DIR = File.join(Dir.pwd, 'screenshots', 'promo_screenshots')
-FROZEN_STRINGS_DIR_PATH = File.join(Dir.pwd, 'resources', 'values')
+FROZEN_STRINGS_PATH = File.join(Dir.pwd, 'resources', 'values', 'strings.xml')
 REMOTE_LIBRARIES_STRINGS_PATHS = [
   {
     name: 'Login Library',
@@ -1153,9 +1153,19 @@ platform :android do
   end
 
   private_lane :send_strings_for_translation do
-    sh("cd .. && mkdir -p #{FROZEN_STRINGS_DIR_PATH} && cp #{MAIN_STRINGS_PATH} #{FROZEN_STRINGS_DIR_PATH} && git add #{FROZEN_STRINGS_DIR_PATH}/strings.xml")
-    sh('git diff-index --quiet HEAD || git commit -m "Send strings to translation."')
-    sh('git push origin HEAD')
+    # A WPCOM job is responsible to import the file at path `FROZEN_STRINGS_PATH` into GlotPress
+    # If you decide to change the path to `FROZEN_STRINGS_PATH` at some point, ensure you also update
+    # https://opengrok.a8c.com/source/xref/wpcom/bin/i18n/import-github-originals.php?r=accd6334#33
+
+    FileUtils.mkdir_p(File.dirname(FROZEN_STRINGS_PATH))
+    FileUtils.cp(MAIN_STRINGS_PATH, FROZEN_STRINGS_PATH)
+    git_add(path: FROZEN_STRINGS_PATH)
+    git_commit(
+      path: FROZEN_STRINGS_PATH,
+      message: 'Send strings to translation.',
+      allow_nothing_to_commit: true
+    )
+    push_to_git_remote(tags: false)
   end
 
   #####################################################################################
