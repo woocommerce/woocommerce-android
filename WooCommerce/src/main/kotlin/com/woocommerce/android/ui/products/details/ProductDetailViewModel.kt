@@ -1936,7 +1936,7 @@ class ProductDetailViewModel @Inject constructor(
         } else {
             result.second?.let {
                 val productErrorTypesWithDisplayableMessages = arrayOf(ProductErrorType.INVALID_MIN_MAX_QUANTITY)
-                if (productErrorTypesWithDisplayableMessages.contains(it.type) || it.message.isNotEmpty()) {
+                if (productErrorTypesWithDisplayableMessages.contains(it.type) && it.message.isNotEmpty()) {
                     triggerEvent(ShowUpdateProductError(it.message))
                 } else {
                     triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
