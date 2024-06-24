@@ -1911,7 +1911,8 @@ class ProductDetailViewModel @Inject constructor(
             viewState = viewState.copy(isProgressDialogShown = false)
             return
         }
-        if (productRepository.updateProduct(product)) {
+        val result = productRepository.updateProduct(product)
+        if (result.first) {
             val successMsg = pickProductUpdateSuccessText(isPublish)
             if (viewState.isPasswordChanged) {
                 val password = viewState.draftPassword
@@ -1933,7 +1934,11 @@ class ProductDetailViewModel @Inject constructor(
             triggerEvent(ProductUpdated)
             loadRemoteProduct(product.remoteId)
         } else {
-            triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
+            result.second?.let {
+                triggerEvent(ShowUpdateProductError(it))
+            } ?: run {
+                triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
+            }
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)
@@ -2619,6 +2624,8 @@ class ProductDetailViewModel @Inject constructor(
     object ShowAiProductCreationSurveyBottomSheet : Event()
 
     object ProductUpdated : Event()
+
+    data class ShowUpdateProductError(val message: String) : Event()
 
     data class TrashProduct(val productId: Long) : Event()
 

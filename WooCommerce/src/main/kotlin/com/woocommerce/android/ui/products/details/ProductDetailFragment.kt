@@ -416,6 +416,7 @@ class ProductDetailFragment :
                 is ProductUpdated -> productsCommunicationViewModel.pushEvent(
                     ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated
                 )
+                is ProductDetailViewModel.ShowUpdateProductError -> uiMessageResolver.showSnack(event.message)
                 else -> event.isHandled = false
             }
         }
