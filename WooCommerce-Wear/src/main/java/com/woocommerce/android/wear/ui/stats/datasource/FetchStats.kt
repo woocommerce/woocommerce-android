@@ -65,7 +65,13 @@ class FetchStats @Inject constructor(
             StoreStatsData(revenue, visitors)
         }.combineWithTimeout { data, isTimeout ->
             when {
-                data.isComplete -> Finished(data)
+                data.isComplete -> {
+                    statsRepository.storeStatsIntoDataStore(
+                        siteId = selectedSite.siteId,
+                        stats = data
+                    )
+                    Finished(data)
+                }
                 isTimeout.not() -> Waiting
                 else -> Error
             }

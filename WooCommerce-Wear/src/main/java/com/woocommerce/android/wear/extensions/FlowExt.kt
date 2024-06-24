@@ -26,7 +26,7 @@ private fun createTimeoutFlow(
 
 fun <T, R> Flow<T>.combineWithTimeout(
     timeoutMillis: Long = DEFAULT_TIMEOUT_MILLIS,
-    transform: (data: T, isTimeout: Boolean) -> R
+    transform: suspend (data: T, isTimeout: Boolean) -> R
 ) = combine(this, createTimeoutFlow(timeoutMillis), transform)
 
 /**
