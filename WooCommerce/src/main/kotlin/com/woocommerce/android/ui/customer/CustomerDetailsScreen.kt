@@ -333,7 +333,7 @@ fun SectionValue(
     title: String,
     modifier: Modifier = Modifier,
     action: (() -> Unit)? = null,
-    value: @Composable RowScope. () -> Unit
+    value: @Composable RowScope.() -> Unit
 ) {
     val rowModifier = action?.let {
         modifier.clickable { it() }
@@ -401,5 +401,3 @@ fun SectionValueNoValuePreview() {
         SectionValue(title = "Name", value = null)
     }
 }
-
-

@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomerDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle
-):  ScopedViewModel(savedState) {
+) : ScopedViewModel(savedState) {
 
     private val navArgs: CustomerDetailsFragmentArgs by savedState.navArgs()
 
@@ -36,4 +36,4 @@ class CustomerDetailsViewModel @Inject constructor(
 data class CustomerViewState(
     val customerWithAnalytics: CustomerWithAnalytics,
     val isLoadingAnalytics: Boolean
-): Parcelable
+) : Parcelable

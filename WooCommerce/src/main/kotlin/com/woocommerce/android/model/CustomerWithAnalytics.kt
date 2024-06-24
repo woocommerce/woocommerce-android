@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import java.math.BigDecimal
 
 @Parcelize
-data class CustomerWithAnalytics (
+data class CustomerWithAnalytics(
     val firstName: String,
     val lastName: String,
     val username: String,
@@ -22,7 +22,7 @@ data class CustomerWithAnalytics (
     val registeredDate: String,
     val billingAddress: Address,
     val shippingAddress: Address
-): Parcelable {
+) : Parcelable {
     fun getFullName() = "$firstName $lastName"
     fun getShippingAddress(): String {
         val shippingName = "$firstName $lastName"

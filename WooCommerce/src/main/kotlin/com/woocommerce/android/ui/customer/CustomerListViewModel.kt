@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
-
+@Suppress("LongParameterList")
 abstract class CustomerListViewModel(
     savedState: SavedStateHandle,
     private val repository: CustomerListRepository,
@@ -54,6 +54,7 @@ abstract class CustomerListViewModel(
             savedState[SEARCH_MODE_KEY] = value
         }
 
+    @Suppress("PropertyName", "VariableNaming")
     protected val _viewState = MutableLiveData<CustomerListViewState>()
     val viewState: LiveData<CustomerListViewState> = _viewState
 
@@ -269,8 +270,10 @@ abstract class CustomerListViewModel(
     private fun searchParamToSearchType(searchParam: String) =
         when (searchParam) {
             CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_NAME -> CustomerListDisplayTextHandler.SearchType.NAME
-            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_EMAIL -> CustomerListDisplayTextHandler.SearchType.EMAIL
-            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_USERNAME -> CustomerListDisplayTextHandler.SearchType.USERNAME
+            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_EMAIL ->
+                CustomerListDisplayTextHandler.SearchType.EMAIL
+            CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_USERNAME ->
+                CustomerListDisplayTextHandler.SearchType.USERNAME
             CustomerListGetSupportedSearchModes.SEARCH_MODE_VALUE_ALL -> CustomerListDisplayTextHandler.SearchType.ALL
             else -> error("Unknown search param: $searchParam")
         }
