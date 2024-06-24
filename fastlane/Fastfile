@@ -1225,7 +1225,7 @@ platform :android do
   def delete_old_changelogs
     obsolete_changelogs = [MOBILE_APP, WEAR_APP].flat_map do |app|
       Dir.glob(File.join(METADATA_DIR_PATH[app], '*', 'changelogs', 'default.txt'))
-         .reject { |file| File.dirname(file, 2) == 'en-US' }
+         .reject { |file| File.basename(File.dirname(file, 2)) == 'en-US' }
     end
     FileUtils.rm_f(obsolete_changelogs)
     obsolete_changelogs
