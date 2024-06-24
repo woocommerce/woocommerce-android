@@ -636,7 +636,7 @@ platform :android do
       version_codes_to_retain: [480]
     )
 
-    create_gh_release(version: version) if options[:create_release]
+    create_gh_release(app: app, version: version) if options[:create_release]
   end
 
   #####################################################################################
@@ -686,7 +686,7 @@ platform :android do
       json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
 
-    create_gh_release(version: version, prerelease: true) if options[:create_release]
+    create_gh_release(app: app, version: version, prerelease: true) if options[:create_release]
   end
 
   # This lane triggers a stable release build on CI.
@@ -1120,17 +1120,16 @@ platform :android do
   # Private lanes
   #####################################################################################
 
-  # Creates a new GitHub Release for the given version
+  # Creates a new GitHub Release for the given version.
   #
   # @param [String] app The Android app to create the release for (`MOBILE_APP` or `WEAR_APP`)
   # @param [String] version The version of the app.
-  # @param [Bool] prerelease If true, the GitHub Release will have the prerelease flag
+  # @param [Boolean] prerelease If true, the GitHub Release will have the prerelease flag
   #
-  private_lane :create_gh_release do |options|
-    app = get_app_param!(options)
-    version = options[:version]
-    prerelease = options[:prerelease] || false
-
+  # @example Running the lane
+  #          bundle exec fastlane create_gh_release app:WEAR_APP version:1.0.0 prerelease:true
+  #
+  private_lane :create_gh_release do |app:, version:, prerelease: false|
     universal_apk_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name(app, version))
 
     download_universal_apk_from_google_play(
