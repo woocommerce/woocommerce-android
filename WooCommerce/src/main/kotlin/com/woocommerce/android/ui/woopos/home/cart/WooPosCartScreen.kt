@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +26,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -63,40 +65,49 @@ private fun WooPosCartScreen(
         elevation = 4.dp,
         modifier = Modifier.padding(16.dp)
     ) {
-        Column(
+        Box(
             Modifier
                 .fillMaxSize()
                 .padding(24.dp)
         ) {
-            CartToolbar(
-                toolbar = state.toolbar,
-                onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
-                onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
-            )
+            Column {
+                CartToolbar(
+                    toolbar = state.toolbar,
+                    onClearAllClicked = { onUIEvent(WooPosCartUIEvent.ClearAllClicked) },
+                    onBackClicked = { onUIEvent(WooPosCartUIEvent.BackClicked) }
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                items(
-                    state.itemsInCart,
-                    key = { item -> item.id }
-                ) { item ->
-                    ProductItem(
-                        item,
-                        state.areItemsRemovable
-                    ) { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) }
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    items(
+                        state.itemsInCart,
+                        key = { item -> item.id }
+                    ) { item ->
+                        ProductItem(
+                            item,
+                            state.areItemsRemovable
+                        ) { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) }
+                    }
+                    if (state.isCheckoutButtonVisible) {
+                        item {
+                            Spacer(modifier = Modifier.height(88.dp))
+                        }
+                    }
                 }
             }
 
             if (state.isCheckoutButtonVisible) {
                 WooPosButton(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
                     enabled = state.itemsInCart.isNotEmpty() && !state.isOrderCreationInProgress,
                     text = stringResource(R.string.woo_pos_checkout_button),
                     onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) }
@@ -173,14 +184,15 @@ private fun ProductItem(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        val fallbackColor = Color.LightGray
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(item.imageUrl)
                 .crossfade(true)
                 .build(),
-            fallback = ColorPainter(color = MaterialTheme.colors.secondaryVariant),
-            error = ColorPainter(color = MaterialTheme.colors.secondaryVariant),
-            placeholder = ColorPainter(color = MaterialTheme.colors.secondaryVariant),
+            fallback = ColorPainter(color = fallbackColor),
+            error = ColorPainter(color = fallbackColor),
+            placeholder = ColorPainter(color = fallbackColor),
             contentDescription = "Product Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -210,9 +222,8 @@ private fun ProductItem(
             Text(text = item.price, style = MaterialTheme.typography.body1)
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
-
         if (canRemoveItems) {
+            Spacer(modifier = Modifier.width(8.dp))
             IconButton(
                 onClick = { onRemoveClicked(item) },
                 modifier = Modifier
@@ -220,10 +231,12 @@ private fun ProductItem(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
-                    contentDescription = null
+                    tint = MaterialTheme.colors.onBackground,
+                    contentDescription = "Remove item",
                 )
             }
         }
+        Spacer(modifier = Modifier.width(16.dp))
     }
 }
 
