@@ -20,7 +20,9 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosCartViewModelTest : BaseUnitTest() {
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
-    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
+    private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+        on { events }.thenReturn(MutableSharedFlow())
+    }
     private val repository: WooPosCartRepository = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(eq(R.string.woo_pos_items_in_cart), eq(1)) }.thenReturn("Items in cart: 1")
@@ -76,6 +78,76 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             // THEN
             val itemsInCartAfterRemoveClicked = states.last().itemsInCart
             assertEquals(0, itemsInCartAfterRemoveClicked.size)
+        }
+
+    @Test
+    fun `given empty cart in_progress, when vm created, then toolbar state should contain shopping cart empty itemsCart and no clear all button`() =
+        testBlocking {
+            // WHEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            // THEN
+            val toolbar = states.last().toolbar
+            assertEquals(R.drawable.ic_shopping_cart, toolbar.icon)
+            assertEquals("", toolbar.itemsCount)
+            assertEquals(false, toolbar.isClearAllButtonVisible)
+        }
+
+    @Test
+    fun `given non empty cart in_progress, when vm created, then toolbar state should contain shopping cart itemsCart title and no clear all`() =
+        testBlocking {
+            // GIVEN
+            val product = WooPosCartListItem(productId = 23L, title = "title")
+
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(repository.getProductById(eq(product.productId))).thenReturn(
+                ProductTestUtils.generateProduct(productId = product.productId, productName = "title")
+            )
+
+            // WHEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.productId)
+            )
+
+            // THEN
+            val toolbar = states.last().toolbar
+            assertEquals(R.drawable.ic_shopping_cart, toolbar.icon)
+            assertEquals("Items in cart: 1", toolbar.itemsCount)
+            assertEquals(true, toolbar.isClearAllButtonVisible)
+        }
+
+    @Test
+    fun `given non empty cart checkout, when vm created, then toolbar state should contain back icon itemsCart title and no clear all`() =
+        testBlocking {
+            // GIVEN
+            val product = WooPosCartListItem(productId = 23L, title = "title")
+
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(repository.getProductById(eq(product.productId))).thenReturn(
+                ProductTestUtils.generateProduct(productId = product.productId, productName = "title")
+            )
+
+            // WHEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.productId)
+            )
+
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+            // THEN
+            val toolbar = states.last().toolbar
+            assertEquals(R.drawable.ic_back_24dp, toolbar.icon)
+            assertEquals("Items in cart: 1", toolbar.itemsCount)
+            assertEquals(false, toolbar.isClearAllButtonVisible)
         }
 
     private fun createSut(): WooPosCartViewModel {
