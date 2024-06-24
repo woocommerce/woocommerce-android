@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.customer
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.model.CustomerWithAnalytics
+import com.woocommerce.android.model.toCustomerWithAnalytics
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListGetSupportedSearchModes
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListIsAdvancedSearchSupported
 import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
@@ -11,11 +13,12 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import javax.inject.Inject
+
 @HiltViewModel
 class CustomerListDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    repository: CustomerListRepository,
-    mapper: CustomerListViewModelMapper,
+    private val repository: CustomerListRepository,
+    private val mapper: CustomerListViewModelMapper,
     isAdvancedSearchSupported: CustomerListIsAdvancedSearchSupported,
     getSupportedSearchModes: CustomerListGetSupportedSearchModes,
     analyticsTracker: AnalyticsTrackerWrapper,
@@ -30,8 +33,8 @@ class CustomerListDetailsViewModel @Inject constructor(
     stringUtils
 ) {
     override fun onCustomerSelected(customerModel: WCCustomerModel) {
-      triggerEvent(CustomerSelected(customerModel.remoteCustomerId))
+        triggerEvent(CustomerSelected(customerModel.toCustomerWithAnalytics(repository, mapper)))
     }
 }
 
-data class CustomerSelected(val remoteCustomerId: Long) : MultiLiveEvent.Event()
+data class CustomerSelected(val customer: CustomerWithAnalytics) : MultiLiveEvent.Event()

@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -42,7 +43,11 @@ class MenuCustomerListFragment : BaseFragment() {
         ) { event ->
             when (event) {
                 is CustomerSelected -> {
-                    Toast.makeText(requireContext(), "Customer ${event.remoteCustomerId}", Toast.LENGTH_LONG).show()
+                    findNavController().navigateSafely(
+                        MenuCustomerListFragmentDirections.actionMenuCustomerListFragmentToCustomerDetailsFragment(
+                            event.customer
+                        )
+                    )
                 }
 
                 is MultiLiveEvent.Event.Exit -> {
