@@ -64,6 +64,7 @@ import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductTaxStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.addons.AddonRepository
+import com.woocommerce.android.ui.products.canDisplayMessage
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
 import com.woocommerce.android.ui.products.categories.ProductCategoryItemUiModel
 import com.woocommerce.android.ui.products.details.ProductDetailBottomSheetBuilder.ProductDetailBottomSheetUiItem
@@ -1935,8 +1936,7 @@ class ProductDetailViewModel @Inject constructor(
             loadRemoteProduct(product.remoteId)
         } else {
             result.second?.let {
-                val productErrorTypesWithDisplayableMessages = arrayOf(ProductErrorType.INVALID_MIN_MAX_QUANTITY)
-                if (productErrorTypesWithDisplayableMessages.contains(it.type) && it.message.isNotEmpty()) {
+                if (it.canDisplayMessage) {
                     triggerEvent(ShowUpdateProductError(it.message))
                 } else {
                     triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))

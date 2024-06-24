@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.canDisplayMessage
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.details.ProductDetailViewModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
@@ -323,11 +324,7 @@ class VariationDetailViewModel @Inject constructor(
                 ) {
                     triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_image_error))
                 } else {
-                    val productErrorTypesWithDisplayableMessages = arrayOf(ProductErrorType.INVALID_MIN_MAX_QUANTITY)
-                    if (
-                        productErrorTypesWithDisplayableMessages.contains(result.error.type) &&
-                        result.error.message.isNotEmpty()
-                    ) {
+                    if (result.error.canDisplayMessage) {
                         triggerEvent(ShowUpdateProductError(result.error.message))
                     } else {
                         triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_error))
