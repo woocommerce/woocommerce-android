@@ -1,0 +1,1 @@
+Introduces the new Woo WearOS app featuring instant updates on store data and orders at glance!
