@@ -174,8 +174,8 @@ private fun ProductItem(
 ) {
     Row(
         modifier = Modifier
-            .background(MaterialTheme.colors.background)
             .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colors.background)
             .fillMaxWidth()
             .height(64.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -192,16 +192,7 @@ private fun ProductItem(
             placeholder = ColorPainter(color = fallbackColor),
             contentDescription = "Product Image",
             contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(64.dp)
-                .clip(
-                    RoundedCornerShape(
-                        topStart = 8.dp,
-                        topEnd = 0.dp,
-                        bottomStart = 8.dp,
-                        bottomEnd = 0.dp
-                    )
-                )
+            modifier = Modifier.size(64.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
 
