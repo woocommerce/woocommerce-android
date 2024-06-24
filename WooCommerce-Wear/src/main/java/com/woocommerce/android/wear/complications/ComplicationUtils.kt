@@ -28,14 +28,14 @@ fun createImageComplicationData(
     contentDescription = PlainComplicationText.Builder(contentDescription).build()
 ).setTapAction(createAppPendingIntent(context)).build()
 
-fun createAppPendingIntent(context: Context): PendingIntent {
+private fun createAppPendingIntent(context: Context): PendingIntent {
     val intent = Intent(context, WearMainActivity::class.java)
     val flags = PendingIntent.FLAG_IMMUTABLE
     return PendingIntent.getActivity(context, 0, intent, flags)
 }
 
-fun createIcon(context: Context) = MonochromaticImage.Builder(
+private fun createIcon(context: Context) = MonochromaticImage.Builder(
     Icon.createWithResource(context, R.drawable.img_woo_bubble_white),
 ).build()
 
-fun String.toComplicationText() = PlainComplicationText.Builder(this).build()
+private fun String.toComplicationText() = PlainComplicationText.Builder(this).build()
