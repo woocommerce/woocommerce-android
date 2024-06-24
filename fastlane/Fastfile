@@ -1135,6 +1135,7 @@ platform :android do
     universal_apk_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name(app, version))
 
     # We have a convention that the Wear app's version code is offset by 50000 from the Mobile app's one
+    # See https://github.com/woocommerce/woocommerce-android/blob/11ae376f2922e4b2eac3f87971b8c2246e56b37b/WooCommerce-Wear/build.gradle#L29
     version_code_offset = { MOBILE_APP: 0, WEAR_APP: 50_000 }.fetch(app, 0)
     download_universal_apk_from_google_play(
       package_name: APP_PACKAGE_NAME,
