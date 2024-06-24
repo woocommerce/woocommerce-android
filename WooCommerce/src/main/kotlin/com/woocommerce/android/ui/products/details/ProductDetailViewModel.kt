@@ -1941,7 +1941,7 @@ class ProductDetailViewModel @Inject constructor(
                 } else {
                     triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
                 }
-            }
+            } ?: triggerEvent(ShowSnackbar(R.string.product_detail_update_product_error))
         }
 
         viewState = viewState.copy(isProgressDialogShown = false)
