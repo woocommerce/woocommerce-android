@@ -1129,12 +1129,14 @@ platform :android do
   # @example Running the lane
   #          bundle exec fastlane create_gh_release app:WEAR_APP version:1.0.0 prerelease:true
   #
-  private_lane :create_gh_release do |app:, version:, prerelease: false|
+  lane :create_gh_release do |app:, version:, prerelease: false|
     universal_apk_path = File.join(PROJECT_ROOT_FOLDER, 'artifacts', universal_apk_name(app, version))
 
+    # We have a convention that the Wear app's version code is incremented by 50000
+    build_code_to_download = app == MOBILE_APP ? build_code_current : (build_code_current.to_i + 50_000).to_s
     download_universal_apk_from_google_play(
       package_name: APP_PACKAGE_NAME,
-      version_code: build_code_current,
+      version_code: build_code_to_download,
       destination: universal_apk_path,
       json_key: UPLOAD_TO_PLAY_STORE_JSON_KEY
     )
