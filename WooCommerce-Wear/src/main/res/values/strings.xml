@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">WooCommerce</string>
+    <string name="loading_text">Loading</string>
+    <string name="retry_text">Retry</string>
+
+    <!-- Login Screen -->
+    <string name="login_screen_loading_text">Connecting</string>
+    <string name="login_screen_error_title">Log in</string>
+    <string name="login_screen_error_caption">Log in to Woo on your phone and hold your Watch nearby</string>
+    <string name="login_screen_action_button">It\'s not working</string>
+
+    <!-- Stats Screen -->
+    <string name="stats_screen_revenue_title">Revenue</string>
+    <string name="stats_screen_time_description">Today • As of %1$s</string>
+    <string name="stats_screen_time_unavailable">No stats available</string>
+    <string name="stats_screen_error_message">Failed to load the store stats, make sure your Watch is connected to the Internet or your phone is nearby.</string>
+
+    <!-- Orders List Screen -->
+    <string name="orders_list_screen_title">Orders</string>
+    <string name="orders_list_guest_customer">Guest</string>
+    <string name="orders_list_failed_to_load">Failed to load orders, make sure your Watch is connected to the Internet or your phone is nearby.</string>
+
+    <!-- Order Details Screen -->
+    <string name="order_details_single_product_amount">1 product</string>
+    <string name="order_details_multiple_products_amount">%1$d products</string>
+    <string name="order_details_loading_order_products">Loading the order products</string>
+    <string name="order_details_failed_to_load">Failed to load order details, make sure your Watch is connected to the Internet or your phone is nearby.</string>
+    <string name="order_details_products_failed">We couldn\'t retrieve the Order products, make sure your phone is nearby.</string>
+    <string name="order_details_no_products_found">No products found for this order.</string>
+    <string name="order_details_order_address">Customer Address</string>
+
+    <!-- Complications -->
+    <string name="shortcut_complication_label">App Shortcut</string>
+    <string name="shortcut_complication_preview_description">App Shortcut</string>
+</resources>

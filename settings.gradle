@@ -54,6 +54,7 @@ plugins {
 rootProject.name = 'WCAndroid'
 
 include ':quicklogin'
+include ':libs:commons'
 include ':libs:cardreader'
 include ':libs:iap'
 include ':WooCommerce'
@@ -76,3 +77,4 @@ gradle.ext {
 
 apply from: './config/gradle/include_builds.gradle'
 apply from: './config/gradle/gradle_build_cache.gradle'
+include ':WooCommerce-Wear'
