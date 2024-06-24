@@ -33,43 +33,43 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = testBlocking {
         // GIVEN
-        val product = WooPosCartListItem(productId = 23L, title = "title")
+        val product = WooPosCartListItem(id = 23L, name = "title")
 
         val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
         whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-        whenever(repository.getProductById(eq(product.productId))).thenReturn(
-            ProductTestUtils.generateProduct(product.productId)
+        whenever(repository.getProductById(eq(product.id))).thenReturn(
+            ProductTestUtils.generateProduct(product.id)
         )
         val sut = createSut()
         val states = sut.state.captureValues()
 
         // WHEN
         parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(product.productId)
+            ParentToChildrenEvent.ItemClickedInProductSelector(product.id)
         )
 
         // THEN
         val itemsInCart = states.last().itemsInCart
         assertEquals(1, itemsInCart.size)
-        assertEquals(product.productId, itemsInCart.first().productId)
+        assertEquals(product.id, itemsInCart.first().id)
     }
 
     @Test
     fun `given items in cart, when item remove button clicked in cart, then should remove item from cart`() =
         testBlocking {
             // GIVEN
-            val product = WooPosCartListItem(productId = 23L, title = "title")
+            val product = WooPosCartListItem(id = 23L, name = "title")
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.productId))).thenReturn(
-                ProductTestUtils.generateProduct(productId = product.productId, productName = "title")
+            whenever(repository.getProductById(eq(product.id))).thenReturn(
+                ProductTestUtils.generateProduct(productId = product.id, productName = "title")
             )
             val sut = createSut()
             val states = sut.state.captureValues()
 
             parentToChildrenEventsMutableFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(product.productId)
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.id)
             )
 
             // WHEN
@@ -98,12 +98,12 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     fun `given non empty cart in_progress, when vm created, then toolbar state should contain shopping cart itemsCart title and no clear all`() =
         testBlocking {
             // GIVEN
-            val product = WooPosCartListItem(productId = 23L, title = "title")
+            val product = WooPosCartListItem(id = 23L, name = "title")
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.productId))).thenReturn(
-                ProductTestUtils.generateProduct(productId = product.productId, productName = "title")
+            whenever(repository.getProductById(eq(product.id))).thenReturn(
+                ProductTestUtils.generateProduct(productId = product.id, productName = "title")
             )
 
             // WHEN
@@ -111,7 +111,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             val states = sut.state.captureValues()
 
             parentToChildrenEventsMutableFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(product.productId)
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.id)
             )
 
             // THEN
@@ -125,12 +125,12 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     fun `given non empty cart checkout, when vm created, then toolbar state should contain back icon itemsCart title and no clear all`() =
         testBlocking {
             // GIVEN
-            val product = WooPosCartListItem(productId = 23L, title = "title")
+            val product = WooPosCartListItem(id = 23L, name = "title")
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.productId))).thenReturn(
-                ProductTestUtils.generateProduct(productId = product.productId, productName = "title")
+            whenever(repository.getProductById(eq(product.id))).thenReturn(
+                ProductTestUtils.generateProduct(productId = product.id, productName = "title")
             )
 
             // WHEN
@@ -138,7 +138,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             val states = sut.state.captureValues()
 
             parentToChildrenEventsMutableFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(product.productId)
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.id)
             )
 
             sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)

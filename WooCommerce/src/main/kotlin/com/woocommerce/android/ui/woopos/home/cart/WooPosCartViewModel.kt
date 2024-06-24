@@ -92,7 +92,7 @@ class WooPosCartViewModel @Inject constructor(
 
             val result = repository.createOrderWithProducts(
                 productIds = currentState.itemsInCart.map {
-                    it.productId
+                    it.id
                 }
             )
 
@@ -192,6 +192,6 @@ class WooPosCartViewModel @Inject constructor(
 
 private fun Product.toCartListItem(): WooPosCartListItem =
     WooPosCartListItem(
-        productId = remoteId,
-        title = name
+        id = remoteId,
+        name = name
     )
