@@ -99,23 +99,15 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun receiveStatsDataFromPhone(data: DataMap) {
-        val statsData = StoreStatsData(
+        val statsJson = StoreStatsData(
             revenueData = RevenueData(
                 totalRevenue = data.getString(TOTAL_REVENUE.value, ""),
                 orderCount = data.getInt(ORDERS_COUNT.value, 0)
             ),
             visitorData = data.getInt(VISITORS_TOTAL.value, 0),
-        )
+        ).let { gson.toJson(it) }
         val siteId = data.getSiteId(loginRepository.selectedSite)
 
-        storeStatsIntoDataStore(siteId, statsData)
-    }
-
-    suspend fun storeStatsIntoDataStore(
-        siteId: Long,
-        stats: StoreStatsData
-    ) {
-        val statsJson = gson.toJson(stats)
         statsDataStore.edit { prefs ->
             prefs[stringPreferencesKey(generateStatsKey(siteId))] = statsJson
         }
