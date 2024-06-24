@@ -14,6 +14,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderDraftCreat
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,7 @@ class WooPosCartViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val repository: WooPosCartRepository,
     private val resourceProvider: ResourceProvider,
+    private val wooPosFormatPrice: WooPosFormatPrice,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -91,9 +93,7 @@ class WooPosCartViewModel @Inject constructor(
             _state.value = currentState.copy(isOrderCreationInProgress = true)
 
             val result = repository.createOrderWithProducts(
-                productIds = currentState.itemsInCart.map {
-                    it.id
-                }
+                productIds = currentState.itemsInCart.map { it.id }
             )
 
             _state.value = _state.value.copy(isOrderCreationInProgress = false)
@@ -188,12 +188,12 @@ class WooPosCartViewModel @Inject constructor(
             childrenToParentEventSender.sendToParent(event)
         }
     }
-}
 
-private fun Product.toCartListItem(): WooPosCartListItem =
-    WooPosCartListItem(
-        id = remoteId,
-        name = name,
-        price = price.toString(),
-        imageUrl = firstImageUrl
-    )
+    private suspend fun Product.toCartListItem(): WooPosCartListItem =
+        WooPosCartListItem(
+            id = remoteId,
+            name = name,
+            price = wooPosFormatPrice(price),
+            imageUrl = firstImageUrl
+        )
+}
