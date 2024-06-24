@@ -4139,4 +4139,25 @@
 
     <string name="menu_customers_title">Customers</string>
 
+    <string name="customers_details_customer_section">Customer</string>
+    <string name="customers_details_orders_section">Orders</string>
+    <string name="customers_details_registration_section">Registration</string>
+    <string name="customers_details_billing_address_section">Billing Address</string>
+    <string name="customers_details_shipping_address_section">Shipping Address</string>
+    <string name="customers_details_shipping_location_section">Location</string>
+
+    <string name="customers_details_last_active_value_title">Last active</string>
+    <string name="customers_details_orders_value_title">Orders</string>
+    <string name="customers_details_total_spend_value_title">Total spend</string>
+    <string name="customers_details_average_order_value_title">Average order value</string>
+    <string name="customers_details_username_value_title">Username</string>
+    <string name="customers_details_date_registered_value_title">Date registered</string>
+    <string name="customers_details_country_value_title">Country</string>
+    <string name="customers_details_region_value_title">Region</string>
+    <string name="customers_details_city_value_title">City</string>
+    <string name="customers_details_postal_code_value_title">Postal code</string>
+
+    <string name="customers_details_no_phone_hint">No phone number</string>
+    <string name="customers_details_none_hint">None</string>
+
 </resources>
