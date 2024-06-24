@@ -9,7 +9,7 @@ import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
 import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbarState
-import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaid
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
@@ -29,16 +29,20 @@ class WooPosTotalsViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     savedState: SavedStateHandle,
 ) : ViewModel() {
-
-    private val _state = savedState.getStateFlow(
-        scope = viewModelScope,
-        initialValue = WooPosTotalsState(
+    private companion object {
+        private val InitialState = WooPosTotalsState.Totals(
+            orderId = null,
             isCollectPaymentButtonEnabled = false,
             orderSubtotalText = "",
             orderTaxText = "",
             orderTotalText = "",
             isLoading = true,
-        ),
+        )
+    }
+
+    private val _state = savedState.getStateFlow<WooPosTotalsState>(
+        scope = viewModelScope,
+        initialValue = InitialState,
         key = "totalsViewState"
     )
 
@@ -56,25 +60,39 @@ class WooPosTotalsViewModel @Inject constructor(
                     val result = cardReaderFacade.collectPayment(orderId)
                     when (result) {
                         is WooPosCardReaderPaymentResult.Success -> {
-                            childrenToParentEventSender.sendToParent(OrderSuccessfullyPaid(orderId))
+                            val state = _state.value
+                            check(state is WooPosTotalsState.Totals)
+                            _state.value = state.toPaymentSuccessState()
                         }
                         is WooPosCardReaderPaymentResult.Failure -> {
-                            _state.value = state.value.copy(
-                                snackbar = WooPosSnackbarState.Triggered(
-                                    R.string.woopos_payment_failed_please_try_again
-                                )
-                            )
+                             when (val state = state.value) {
+                                is WooPosTotalsState.Totals -> {
+                                    _state.value = state.copy(
+                                        snackbar = WooPosSnackbarState.Triggered(
+                                            R.string.woopos_payment_failed_please_try_again
+                                        )
+                                    )
+                                }
+                                else -> Unit
+                            }
                         }
                     }
                 }
             }
             WooPosTotalsUIEvent.SnackbarDismissed -> {
-                _state.value = state.value.copy(snackbar = WooPosSnackbarState.Hidden)
+                when (val state = state.value) {
+                        is WooPosTotalsState.Totals -> _state.value = state.copy(snackbar = WooPosSnackbarState.Hidden)
+                        else -> Unit
+                }
             }
 
-            WooPosTotalsUIEvent.SnackbarDismissed ->
-                _state.value =
-                    state.value.copy(snackbar = WooPosSnackbarState.Hidden)
+            WooPosTotalsUIEvent.OnNewTransactionClicked -> {
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(
+                        ChildToParentEvent.OrderSuccessfullyPaid(state.value.orderId!!)
+                    )
+                }
+            }
         }
     }
 
@@ -83,22 +101,20 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.OrderDraftCreated -> {
-                        _state.value = state.value.copy(
-                            orderId = event.orderId,
-                            isCollectPaymentButtonEnabled = false,
-                            isLoading = true
-                        )
+                        when (val state = state.value) {
+                            is WooPosTotalsState.Totals -> {
+                                _state.value = state.copy(
+                                    orderId = event.orderId,
+                                    isCollectPaymentButtonEnabled = false,
+                                    isLoading = true
+                                )
+                            }
+                            else -> Unit
+                        }
                         loadOrderDraft(event.orderId)
                     }
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
-                        _state.value = WooPosTotalsState(
-                            orderId = null,
-                            isCollectPaymentButtonEnabled = false,
-                            orderSubtotalText = "",
-                            orderTaxText = "",
-                            orderTotalText = "",
-                            isLoading = true,
-                        )
+                        _state.value = InitialState
                     }
                     else -> Unit
                 }
@@ -124,13 +140,21 @@ class WooPosTotalsViewModel @Inject constructor(
             total = totalAmount,
         )
 
-        _state.value = _state.value.copy(
-            orderId = updatedOrder.id,
-            orderSubtotalText = currencyFormatter.formatCurrency(subtotalAmount.toPlainString()),
-            orderTaxText = currencyFormatter.formatCurrency(taxAmount.toPlainString()),
-            orderTotalText = currencyFormatter.formatCurrency(updatedOrder.total.toPlainString()),
-            isCollectPaymentButtonEnabled = true,
-            isLoading = false,
-        )
+        when (val state = state.value) {
+            is WooPosTotalsState.Totals -> {
+                _state.value = state.copy(
+                    orderId = updatedOrder.id,
+                    orderSubtotalText = currencyFormatter.formatCurrency(subtotalAmount.toPlainString()),
+                    orderTaxText = currencyFormatter.formatCurrency(taxAmount.toPlainString()),
+                    orderTotalText = currencyFormatter.formatCurrency(updatedOrder.total.toPlainString()),
+                    isCollectPaymentButtonEnabled = true,
+                    isLoading = false,
+                )
+            }
+            else -> Unit
+        }
     }
 }
+
+private fun WooPosTotalsState.Totals.toPaymentSuccessState(): WooPosTotalsState.PaymentSuccess =
+    WooPosTotalsState.PaymentSuccess(orderId, orderSubtotalText, orderTaxText, orderTotalText)

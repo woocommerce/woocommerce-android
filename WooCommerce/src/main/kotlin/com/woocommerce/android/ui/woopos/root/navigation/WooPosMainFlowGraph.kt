@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigation
 import com.woocommerce.android.ui.woopos.home.HOME_ROUTE
 import com.woocommerce.android.ui.woopos.home.homeScreen
-import com.woocommerce.android.ui.woopos.payment.success.paymentSuccessScreen
 
 const val MAIN_GRAPH_ROUTE = "main-graph"
 
@@ -18,8 +17,5 @@ fun NavGraphBuilder.mainGraph(
         route = MAIN_GRAPH_ROUTE,
     ) {
         homeScreen(navController = navController, onNavigationEvent = onNavigationEvent)
-        paymentSuccessScreen {
-            onNavigationEvent(WooPosNavigationEvent.NewTransactionClicked)
-        }
     }
 }

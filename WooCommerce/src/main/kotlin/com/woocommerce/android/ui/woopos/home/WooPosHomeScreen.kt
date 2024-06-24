@@ -39,14 +39,6 @@ fun WooPosHomeScreen(
         homeViewModel::onUIEvent,
         viewModelStoreOwner
     )
-    LaunchedEffect(homeViewModel.events) {
-        homeViewModel.events.collect {
-            when (it) {
-                is WooPosHomeEvent.OrderSuccessfullyPaid ->
-                    onNavigationEvent(WooPosNavigationEvent.NavigateToPaymentSuccess(it.orderId))
-            }
-        }
-    }
 }
 
 @Composable
@@ -91,19 +83,14 @@ private fun WooPosHomeScreen(
     }
 
     when (state) {
-        is WooPosHomeState.Cart -> WooPosHomeScreen(
-            scrollState,
-            totalsProductsWidth,
-            cartWidth,
-            viewModelStoreOwner
-        )
-
-        WooPosHomeState.Checkout -> WooPosHomeScreen(
-            scrollState,
-            totalsProductsWidth,
-            cartWidth,
-            viewModelStoreOwner
-        )
+        is WooPosHomeState.Cart,
+        WooPosHomeState.Checkout ->
+            WooPosHomeScreen(
+                scrollState,
+                totalsProductsWidth,
+                cartWidth,
+                viewModelStoreOwner
+            )
     }
 }
 

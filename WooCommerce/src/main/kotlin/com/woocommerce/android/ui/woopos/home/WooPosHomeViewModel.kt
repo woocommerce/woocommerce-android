@@ -18,9 +18,6 @@ class WooPosHomeViewModel @Inject constructor(
     private val _state = MutableStateFlow<WooPosHomeState>(WooPosHomeState.Cart)
     val state: StateFlow<WooPosHomeState> = _state
 
-    private val _events = MutableSharedFlow<WooPosHomeEvent>()
-    val events: Flow<WooPosHomeEvent> = _events
-
     init {
         listenBottomEvents()
     }
@@ -65,7 +62,6 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.OrderSuccessfullyPaid -> {
-                        _events.emit(WooPosHomeEvent.OrderSuccessfullyPaid(event.orderId))
                         sendEventToChildren(ParentToChildrenEvent.OrderSuccessfullyPaid)
                         _state.value = WooPosHomeState.Cart
                     }

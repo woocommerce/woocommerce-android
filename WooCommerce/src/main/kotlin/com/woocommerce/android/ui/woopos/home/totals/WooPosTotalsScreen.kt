@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelStoreOwner
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbar
+import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
 
 @Composable
 fun WooPosTotalsScreen(viewModelStoreOwner: ViewModelStoreOwner) {
@@ -44,28 +45,35 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
             SnackbarHost(hostState = snackbarHostState)
         }
     ) { padding ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+        when(state) {
+            is WooPosTotalsState.Totals -> {
+                if (state.isLoading) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    Totals(
+                        modifier = Modifier.padding(padding),
+                        state = state,
+                        onUIEvent = onUIEvent
+                    )
+                }
+                WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
             }
-        } else {
-            Totals(
-                modifier = Modifier.padding(padding),
-                state = state,
-                onUIEvent = onUIEvent
-            )
+            is WooPosTotalsState.PaymentSuccess -> {
+                WooPosPaymentSuccessScreen { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
+            }
         }
-        WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
     }
 }
 
 @Composable
 private fun Totals(
     modifier: Modifier = Modifier,
-    state: WooPosTotalsState,
+    state: WooPosTotalsState.Totals,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Card(
@@ -158,7 +166,7 @@ private fun Totals(
 @WooPosPreview
 fun WooPosTotalsScreenPreview() {
     WooPosTotalsScreen(
-        state = WooPosTotalsState(
+        state = WooPosTotalsState.Totals(
             orderSubtotalText = "$420.00",
             orderTotalText = "$462.00",
             orderTaxText = "$42.00",

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.payment.success
+package com.woocommerce.android.ui.woopos.home.totals.payment.success
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
