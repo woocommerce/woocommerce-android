@@ -1,6 +1,12 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+19.3
+-----
+
+
 19.2
 -----
+- [***] Introduces the WearOS app with Store stats, Orders list and details. [https://github.com/woocommerce/woocommerce-android/pull/11557]
+- [***] Add support for the app to support and sync with the WearOS app. [https://github.com/woocommerce/woocommerce-android/pull/11557]
 - [**] Adds edit support for the Min/Max Quantities extension in product details. [https://github.com/woocommerce/woocommerce-android/pull/11753]
 
 
