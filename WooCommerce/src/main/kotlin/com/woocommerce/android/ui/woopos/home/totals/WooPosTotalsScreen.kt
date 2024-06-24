@@ -15,22 +15,18 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.SnackbarResult
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.SnackbarHandler
+import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbar
 
 @Composable
 fun WooPosTotalsScreen() {
@@ -61,7 +57,7 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
                 onUIEvent = onUIEvent
             )
         }
-        SnackbarHandler(state, snackbarHostState, onUIEvent)
+        WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
     }
 }
 

@@ -8,6 +8,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
+import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbarState
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.util.CurrencyFormatter
@@ -54,7 +55,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         // navigate to success screen
                     } else {
                         _state.value = state.value.copy(
-                            snackbarMessage = SnackbarMessage.Triggered(
+                            snackbar = WooPosSnackbarState.Triggered(
                                 R.string.woopos_payment_failed_please_try_again
                             )
                         )
@@ -64,7 +65,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.SnackbarDismissed ->
                 _state.value =
-                    state.value.copy(snackbarMessage = SnackbarMessage.Hidden)
+                    state.value.copy(snackbar = WooPosSnackbarState.Hidden)
         }
     }
 
