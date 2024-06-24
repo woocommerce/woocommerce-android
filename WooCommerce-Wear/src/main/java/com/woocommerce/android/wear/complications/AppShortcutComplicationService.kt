@@ -28,6 +28,4 @@ class AppShortcutComplicationService : SuspendingComplicationDataSourceService()
             else -> null
         }
     }
-
-
 }
