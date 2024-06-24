@@ -86,10 +86,7 @@ private fun WooPosCartScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(
-                        state.itemsInCart,
-                        key = { item -> item.id }
-                    ) { item ->
+                    items(state.itemsInCart) { item ->
                         ProductItem(
                             item,
                             state.areItemsRemovable
