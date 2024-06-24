@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
 import com.woocommerce.android.ui.products.ParameterRepository
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel
 import com.woocommerce.android.ui.products.generateVariation
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
@@ -18,6 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -26,8 +28,11 @@ import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.OnVariationChanged
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -161,6 +166,28 @@ class VariationDetailViewModelTest : BaseUnitTest() {
             it is ShowActionSnackbar &&
                 it.message == errorMessage
         }
+    }
+
+    @Test
+    fun `Display error message on min-max quantities update product error`() = testBlocking {
+        val displayErrorMessage = "This is an error message"
+        var result = WCProductStore.OnVariationUpdated(1, 1, 2)
+        result.error = WCProductStore.ProductError(
+            type = WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY,
+            message = displayErrorMessage)
+        doReturn(result).whenever(variationRepository).updateVariation(any())
+
+        setup()
+
+        var showUpdateProductError: VariationDetailViewModel.ShowUpdateProductError? = null
+        sut.event.observeForever {
+            if (it is VariationDetailViewModel.ShowUpdateProductError) showUpdateProductError = it
+        }
+        
+        sut.onUpdateButtonClicked()
+
+        Assertions.assertThat(showUpdateProductError?.message)
+            .isEqualTo(displayErrorMessage)
     }
 
     @Test
