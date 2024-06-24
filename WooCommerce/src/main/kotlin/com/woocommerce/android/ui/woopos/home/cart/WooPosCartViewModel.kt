@@ -37,11 +37,8 @@ class WooPosCartViewModel @Inject constructor(
 
     val state: LiveData<WooPosCartState> = _state
         .asLiveData()
-        .map {
-            updateToolbarState(it).apply {
-                updateStateDependingOnCartStatus(it)
-            }
-        }
+        .map { updateToolbarState(it) }
+        .map { updateStateDependingOnCartStatus(it) }
 
     init {
         listenEventsFromParent()
