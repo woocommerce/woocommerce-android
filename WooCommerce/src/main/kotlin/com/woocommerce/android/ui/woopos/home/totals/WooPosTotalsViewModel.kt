@@ -51,14 +51,17 @@ class WooPosTotalsViewModel @Inject constructor(
                 viewModelScope.launch {
                     val orderId = state.value.orderId!!
                     val result = cardReaderFacade.collectPayment(orderId)
-                    if (result is WooPosCardReaderPaymentResult.Success) {
-                        // navigate to success screen
-                    } else {
-                        _state.value = state.value.copy(
-                            snackbar = WooPosSnackbarState.Triggered(
-                                R.string.woopos_payment_failed_please_try_again
+                    when (result) {
+                        is WooPosCardReaderPaymentResult.Success -> {
+                            // navigate to success screen
+                        }
+                        is WooPosCardReaderPaymentResult.Failure-> {
+                            _state.value = state.value.copy(
+                                snackbar = WooPosSnackbarState.Triggered(
+                                    R.string.woopos_payment_failed_please_try_again
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
