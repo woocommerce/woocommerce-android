@@ -32,7 +32,7 @@
         <service
             android:name=".wear.complications.OrderCountComplicationService"
             android:exported="true"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/img_woo_bubble_white_background"
             android:label="@string/orders_complication_label"
             android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
             <intent-filter>
@@ -50,7 +50,7 @@
         <service
             android:name=".wear.complications.AppShortcutComplicationService"
             android:exported="true"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/img_woo_bubble_white_background"
             android:label="@string/shortcut_complication_label"
             android:permission="com.google.android.wearable.permission.BIND_COMPLICATION_PROVIDER">
             <intent-filter>
