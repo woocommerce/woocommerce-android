@@ -475,7 +475,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Displays progress dialog when product is edited`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(false).whenever(productRepository).updateProduct(any())
+        doReturn(Pair(false, null)).whenever(productRepository).updateProduct(any())
 
         val isProgressDialogShown = ArrayList<Boolean>()
         viewModel.productDetailViewStateData.observeForever { old, new ->
@@ -516,7 +516,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Display error message on update product error`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(false).whenever(productRepository).updateProduct(any())
+        doReturn(Pair(false, WCProductStore.ProductError())).whenever(productRepository).updateProduct(any())
 
         var snackbar: MultiLiveEvent.Event.ShowSnackbar? = null
         viewModel.event.observeForever {
@@ -539,7 +539,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     @Test
     fun `Display success message on update product success`() = testBlocking {
         doReturn(product).whenever(productRepository).getProductAsync(any())
-        doReturn(true).whenever(productRepository).updateProduct(any())
+        doReturn(Pair(true, null)).whenever(productRepository).updateProduct(any())
 
         var successSnackbarShown = false
         viewModel.event.observeForever {
@@ -1053,7 +1053,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     fun `given product updated successfuly, when onPublishButtonClicked, then ProductUpdated event emitted`() = testBlocking {
         // GIVEN
         whenever(productRepository.getProductAsync(any())).thenReturn(product)
-        whenever(productRepository.updateProduct(any())).thenReturn(true)
+        whenever(productRepository.updateProduct(any())).thenReturn(Pair(true, null))
         viewModel.start()
 
         // WHEN

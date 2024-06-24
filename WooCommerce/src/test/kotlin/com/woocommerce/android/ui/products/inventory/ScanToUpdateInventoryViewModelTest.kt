@@ -214,7 +214,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
             )
-            whenever(productRepo.updateProduct(any())).thenReturn(true)
+            whenever(productRepo.updateProduct(any())).thenReturn(Pair(true, null))
             whenever(
                 resourceProvider.getString(
                     R.string.scan_to_update_inventory_success_snackbar,
@@ -248,7 +248,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
                     GoogleBarcodeFormatMapper.BarcodeFormat.FormatEAN8
                 )
             )
-            whenever(productRepo.updateProduct(any())).thenReturn(true)
+            whenever(productRepo.updateProduct(any())).thenReturn(Pair(true, null))
             whenever(
                 resourceProvider.getString(
                     R.string.scan_to_update_inventory_success_snackbar,
@@ -280,7 +280,7 @@ class ScanToUpdateInventoryViewModelTest : BaseUnitTest() {
 
             whenever(fetchProductBySKU(any(), any())).thenReturn(Result.success(product))
             whenever(productRepo.getProduct(productId)).thenReturn(product)
-            whenever(productRepo.updateProduct(any())).thenReturn(true)
+            whenever(productRepo.updateProduct(any())).thenReturn(Pair(true, null))
             whenever(
                 resourceProvider.getString(
                     eq(R.string.scan_to_update_inventory_success_snackbar),
