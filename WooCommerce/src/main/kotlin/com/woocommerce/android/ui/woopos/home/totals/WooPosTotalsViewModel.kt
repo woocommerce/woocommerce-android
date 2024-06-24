@@ -8,6 +8,7 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.details.OrderDetailRepository
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderPaymentResult
+import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbarState
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.OrderSuccessfullyPaid
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -28,10 +29,10 @@ class WooPosTotalsViewModel @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
     savedState: SavedStateHandle,
 ) : ViewModel() {
+
     private val _state = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = WooPosTotalsState(
-            orderId = null,
             isCollectPaymentButtonEnabled = false,
             orderSubtotalText = "",
             orderTaxText = "",
@@ -40,6 +41,7 @@ class WooPosTotalsViewModel @Inject constructor(
         ),
         key = "totalsViewState"
     )
+
     val state: StateFlow<WooPosTotalsState> = _state
 
     init {
@@ -52,22 +54,27 @@ class WooPosTotalsViewModel @Inject constructor(
                 viewModelScope.launch {
                     val orderId = state.value.orderId!!
                     val result = cardReaderFacade.collectPayment(orderId)
-                    if (result is WooPosCardReaderPaymentResult.Success) {
-                        // navigate to success screen
-                        childrenToParentEventSender.sendToParent(OrderSuccessfullyPaid(orderId))
-                    } else {
-                        _state.value = state.value.copy(
-                            snackbarMessage = SnackbarMessage.Triggered(
-                                R.string.woopos_payment_failed_please_try_again
+                    when (result) {
+                        is WooPosCardReaderPaymentResult.Success -> {
+                            childrenToParentEventSender.sendToParent(OrderSuccessfullyPaid(orderId))
+                        }
+                        is WooPosCardReaderPaymentResult.Failure -> {
+                            _state.value = state.value.copy(
+                                snackbar = WooPosSnackbarState.Triggered(
+                                    R.string.woopos_payment_failed_please_try_again
+                                )
                             )
-                        )
+                        }
                     }
                 }
+            }
+            WooPosTotalsUIEvent.SnackbarDismissed -> {
+                _state.value = state.value.copy(snackbar = WooPosSnackbarState.Hidden)
             }
 
             WooPosTotalsUIEvent.SnackbarDismissed ->
                 _state.value =
-                    state.value.copy(snackbarMessage = SnackbarMessage.Hidden)
+                    state.value.copy(snackbar = WooPosSnackbarState.Hidden)
         }
     }
 

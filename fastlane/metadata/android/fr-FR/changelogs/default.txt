@@ -1,1 +1,3 @@
-Découvrez les nouvelles améliorations de notre application mobile WooCommerce! Nous avons amélioré les boîtes de dialogue de paiement pour un meilleur rendu sur les grands écrans, résolu des problèmes de notification push et corrigé un bug de connexion empêchant l’affichage des messages d’erreur. De plus, les encarts de notre nouveau tableau de bord renseignent plus précisément les commerçants sur leur boutique. Mettez à jour dès maintenant pour une expérience plus informative et fluide!
+19.1 :
+Pour cette version, nous nous sommes concentrés sur des résolutions de bugs et des améliorations pour vous aider à lancer votre activité. Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer.
+

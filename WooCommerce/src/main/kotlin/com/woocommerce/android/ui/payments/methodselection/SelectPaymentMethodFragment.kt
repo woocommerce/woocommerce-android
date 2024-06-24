@@ -297,10 +297,9 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
     }
 
     private fun ReturnResultToWooPos.asWooPosCardReaderPaymentResult() =
-        if (this is ReturnResultToWooPos.Success) {
-            WooPosCardReaderPaymentResult.Success
-        } else {
-            WooPosCardReaderPaymentResult.Failure
+        when (this) {
+            is ReturnResultToWooPos.Success -> WooPosCardReaderPaymentResult.Success
+            else -> WooPosCardReaderPaymentResult.Failure
         }
 
     private fun setupResultHandlers() {

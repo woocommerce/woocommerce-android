@@ -138,7 +138,7 @@ fun WooPosHomeCartScreenPreview() {
         state = WooPosHomeState.Cart,
         onHomeUIEvent = { true },
         onNavigationEvent = {},
-        viewModelStoreOwner = object: ViewModelStoreOwner {
+        viewModelStoreOwner = object : ViewModelStoreOwner {
             override val viewModelStore: ViewModelStore
                 get() = ViewModelStore()
         }
@@ -152,7 +152,7 @@ fun WooPosHomeCheckoutScreenPreview() {
         state = WooPosHomeState.Checkout,
         onHomeUIEvent = { true },
         onNavigationEvent = {},
-        viewModelStoreOwner = object: ViewModelStoreOwner {
+        viewModelStoreOwner = object : ViewModelStoreOwner {
             override val viewModelStore: ViewModelStore
                 get() = ViewModelStore()
         }

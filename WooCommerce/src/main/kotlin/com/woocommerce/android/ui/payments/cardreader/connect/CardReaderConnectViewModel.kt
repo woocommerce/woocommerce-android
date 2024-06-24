@@ -525,8 +525,9 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun exitFlow(connected: Boolean) {
         if (!connected) {
             when (val param = arguments.cardReaderFlowParam) {
-                is CardReadersHub, is Payment, is Refund -> {
-                    if (param is Payment && param.paymentType == Payment.PaymentType.WOO_POS) {
+                is CardReadersHub, is Refund -> triggerEvent(ExitWithResult(false))
+                is Payment -> {
+                    if (param.paymentType == Payment.PaymentType.WOO_POS) {
                         returnToWooPos()
                     } else {
                         triggerEvent(ExitWithResult(false))
