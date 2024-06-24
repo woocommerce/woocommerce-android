@@ -214,6 +214,7 @@ private fun ProductItem(
 
         if (canRemoveItems) {
             Spacer(modifier = Modifier.width(8.dp))
+
             IconButton(
                 onClick = { onRemoveClicked(item) },
                 modifier = Modifier
@@ -245,7 +246,8 @@ fun WooPosCartScreenPreview() {
                     WooPosCartListItem(
                         id = 1L,
                         imageUrl = "",
-                        name = "VW California, VW California VW California, VW California VW California ,VW California VW California, VW California,VW California",
+                        name = "VW California, VW California VW California, VW California VW California, " +
+                            "VW California VW California, VW California,VW California",
                         price = "€50,000"
                     ),
                     WooPosCartListItem(id = 2L, imageUrl = "", name = "VW California", price = "$150,000"),
