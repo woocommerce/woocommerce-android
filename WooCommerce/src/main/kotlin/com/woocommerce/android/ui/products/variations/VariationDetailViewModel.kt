@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
+import com.woocommerce.android.ui.products.details.ProductDetailViewModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.subscriptions.resetSubscriptionLengthIfThePeriodOrIntervalChanged
@@ -322,7 +323,15 @@ class VariationDetailViewModel @Inject constructor(
                 ) {
                     triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_image_error))
                 } else {
-                    triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_error))
+                    val productErrorTypesWithDisplayableMessages = arrayOf(ProductErrorType.INVALID_MIN_MAX_QUANTITY)
+                    if (
+                        productErrorTypesWithDisplayableMessages.contains(result.error.type) &&
+                        result.error.message.isNotEmpty()
+                    ) {
+                        triggerEvent(ShowUpdateProductError(result.error.message))
+                    } else {
+                        triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_error))
+                    }
                 }
             }
         } else {
@@ -473,6 +482,8 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     object HideImageUploadErrorSnackbar : Event()
+
+    data class ShowUpdateProductError(val message: String) : Event()
 
     @Parcelize
     data class VariationViewState(
