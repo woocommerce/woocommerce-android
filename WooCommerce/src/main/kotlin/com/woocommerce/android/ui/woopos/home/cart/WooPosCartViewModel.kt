@@ -1,8 +1,11 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Product
@@ -15,10 +18,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,14 +35,13 @@ class WooPosCartViewModel @Inject constructor(
         key = "cartViewState"
     )
 
-    val state: StateFlow<WooPosCartState> = _state
-        .map { updateToolbarState(it) }
-        .map { updateStateDependingOnCartStatus(it) }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = _state.value
-        )
+    val state: LiveData<WooPosCartState> = _state
+        .asLiveData()
+        .map {
+            updateToolbarState(it).apply {
+                updateStateDependingOnCartStatus(it)
+            }
+        }
 
     init {
         listenEventsFromParent()
@@ -124,7 +122,7 @@ class WooPosCartViewModel @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
-                        if (state.value.isOrderCreationInProgress) return@collect
+                        if (_state.value.isOrderCreationInProgress) return@collect
 
                         val itemClicked = viewModelScope.async {
                             repository.getProductById(event.productId)?.toCartListItem()!!
