@@ -1161,12 +1161,15 @@ platform :android do
   #####################################################################################
   # Utils
   #####################################################################################
+  def validate_app_param!(app)
+    return if [MOBILE_APP, WEAR_APP].include?(app)
+
+    UI.user_error!("Invalid or missing `app` parameter. Please provide one of `#{MOBILE_APP}` or `#{WEAR_APP}`")
+  end
+
   def get_app_param!(options)
-    if [MOBILE_APP, WEAR_APP].include?(options[:app])
-      options[:app]
-    else
-      UI.user_error!("Invalid or missing `app:`. Please provide one of `app:#{MOBILE_APP}` or `app:#{WEAR_APP}`")
-    end
+    validate_app_param!(options[:app])
+    options[:app]
   end
 
   def aab_file_name(app, version)
@@ -1180,7 +1183,9 @@ platform :android do
   # @param [String] app The type of app (`MOBILE_APP` or `WEAR_APP`)
   # @param [String] track_name The track name, e.g. `'beta'` or `'production'`
   def track(app:, track_name:)
-    prefix = { WEAR_APP => 'wear:', MOBILE_APP => '' }.fetch(app, 'unknown')
+    validate_app_param!(app)
+
+    prefix = { WEAR_APP => 'wear:', MOBILE_APP => '' }.fetch(app, nil)
     "#{prefix}#{track_name}"
   end
 
