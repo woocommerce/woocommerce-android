@@ -754,7 +754,7 @@ platform :android do
     end
 
     is_repo_clean = `git status --porcelain`.empty?
-    commit_strings(options) unless is_repo_clean
+    commit_strings(auto_commit: options[:auto_commit]) unless is_repo_clean
   end
 
   # This lane downloads the translated metadata (release notes, app store strings, title, etc.) from GlotPress and updates the local files.
@@ -808,19 +808,6 @@ platform :android do
   ########################################################################
   # Helper Lanes
   ########################################################################
-  private_lane :commit_strings do |options|
-    if options[:auto_commit]
-      git_add(path: MAIN_STRINGS_PATH)
-      git_commit(
-        path: MAIN_STRINGS_PATH,
-        message: 'Update strings for translation',
-        allow_nothing_to_commit: true
-      )
-    else
-      UI.important("Your #{MAIN_STRINGS_PATH} has changed.")
-      UI.input('Please, review the changes, commit them and press return to continue.')
-    end
-  end
 
   #####################################################################################
   # build_bundle
@@ -858,6 +845,7 @@ platform :android do
     end
     artifact_final_path
   end
+
   #####################################################################################
   # screenshots
   # -----------------------------------------------------------------------------------
@@ -1155,11 +1143,37 @@ platform :android do
     )
   end
 
-  private_lane :freeze_strings_for_translation do
-    # A WPCOM job is responsible to import the file at path `FROZEN_STRINGS_PATH` into GlotPress
-    # If you decide to change the path to `FROZEN_STRINGS_PATH` at some point, ensure you also update
-    # https://opengrok.a8c.com/source/xref/wpcom/bin/i18n/import-github-originals.php?r=accd6334#33
+  # Commits the changes to the original English `strings.xml` file,
+  # typically after having called `localize_libs` to include translations from libraries in it
+  #
+  # @param [Boolean] auto_commit If true, will actually create the git commit.
+  #                              If false, will simply print a message suggesting to review changes
+  #
+  private_lane :commit_strings do |auto_commit: true|
+    if auto_commit
+      git_add(path: MAIN_STRINGS_PATH)
+      git_commit(
+        path: MAIN_STRINGS_PATH,
+        message: 'Update strings for translation',
+        allow_nothing_to_commit: true
+      )
+    else
+      UI.important("Your #{MAIN_STRINGS_PATH} has changed.")
+      UI.input('Please, review the changes, commit them and press return to continue.')
+    end
+  end
 
+  # Copy the original English `strings.xml` file into the location from where the WPCOM job will pick them
+  #
+  # The reason for the WPCOM job to import the file from `FROZEN_STRINGS_PATH` and not `MAIN_STRINGS_PATH` is so
+  # that it picks the file's content as it was at the time of code freeze, and does not risk picking up changes
+  # that could be made to the `MAIN_STRINGS_PATH` file on `trunk` _after_ code freeze, by devs working on features.
+  #
+  # A WPCOM job is responsible to import the `FROZEN_STRINGS_PATH` file into GlotPress (as opposed to e.g. us sending them via API).
+  # Note: If you decide to change the path to `FROZEN_STRINGS_PATH` at some point, ensure you also update it in the WPCOM job:
+  #       https://opengrok.a8c.com/source/xref/wpcom/bin/i18n/import-github-originals.php?r=accd6334#33
+  #
+  private_lane :freeze_strings_for_translation do
     FileUtils.mkdir_p(File.dirname(FROZEN_STRINGS_PATH))
     FileUtils.cp(MAIN_STRINGS_PATH, FROZEN_STRINGS_PATH)
     git_add(path: FROZEN_STRINGS_PATH)
