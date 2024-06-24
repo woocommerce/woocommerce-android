@@ -23,6 +23,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +44,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 @Composable
 fun WooPosCartScreen() {
     val viewModel: WooPosCartViewModel = hiltViewModel()
-    viewModel.state.value?.let {
+
+    viewModel.state.observeAsState().value?.let {
         WooPosCartScreen(it, viewModel::onUIEvent)
     }
 }
