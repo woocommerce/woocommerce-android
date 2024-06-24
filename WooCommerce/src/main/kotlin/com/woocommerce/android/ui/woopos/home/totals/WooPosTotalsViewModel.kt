@@ -55,7 +55,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         is WooPosCardReaderPaymentResult.Success -> {
                             // navigate to success screen
                         }
-                        is WooPosCardReaderPaymentResult.Failure-> {
+                        is WooPosCardReaderPaymentResult.Failure -> {
                             _state.value = state.value.copy(
                                 snackbar = WooPosSnackbarState.Triggered(
                                     R.string.woopos_payment_failed_please_try_again
