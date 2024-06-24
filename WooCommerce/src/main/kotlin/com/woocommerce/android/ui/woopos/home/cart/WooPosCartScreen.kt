@@ -94,7 +94,7 @@ private fun WooPosCartScreen(
                     }
                     if (state.isCheckoutButtonVisible) {
                         item {
-                            Spacer(modifier = Modifier.height(88.dp))
+                            Spacer(modifier = Modifier.height(72.dp))
                         }
                     }
                 }
