@@ -193,5 +193,7 @@ class WooPosCartViewModel @Inject constructor(
 private fun Product.toCartListItem(): WooPosCartListItem =
     WooPosCartListItem(
         id = remoteId,
-        name = name
+        name = name,
+        price = price.toString(),
+        imageUrl = firstImageUrl
     )

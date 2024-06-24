@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.cart
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -25,14 +25,19 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
@@ -155,52 +160,71 @@ private fun CartToolbar(
 
 @Composable
 private fun ProductItem(
-    product: WooPosCartListItem,
+    item: WooPosCartListItem,
     canRemoveItems: Boolean,
     onRemoveClicked: (item: WooPosCartListItem) -> Unit
 ) {
     Row(
         modifier = Modifier
+            .background(MaterialTheme.colors.background)
+            .clip(RoundedCornerShape(8.dp))
             .fillMaxWidth()
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+            .height(64.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.your_image_placeholder), // Replace with actual image loading logic
-            contentDescription = null,
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(item.imageUrl)
+                .crossfade(true)
+                .build(),
+            fallback = ColorPainter(color = MaterialTheme.colors.secondaryVariant),
+            error = ColorPainter(color = MaterialTheme.colors.secondaryVariant),
+            placeholder = ColorPainter(color = MaterialTheme.colors.secondaryVariant),
+            contentDescription = "Product Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
+                .size(64.dp)
+                .clip(
+                    RoundedCornerShape(
+                        topStart = 8.dp,
+                        topEnd = 0.dp,
+                        bottomStart = 8.dp,
+                        bottomEnd = 0.dp
+                    )
+                )
         )
         Spacer(modifier = Modifier.width(8.dp))
+
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .alignByBaseline()
+            modifier = Modifier.weight(1f)
         ) {
-            Text(text = productName, style = MaterialTheme.typography.subtitle1)
-            Text(text = productPrice, style = MaterialTheme.typography.body2)
-        }
-        IconButton(
-            onClick = { onRemoveClicked() },
-            modifier = Modifier
-                .alignByBaseline()
-                .size(24.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_close),
-                contentDescription = null
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.body1,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = item.price, style = MaterialTheme.typography.body1)
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        if (canRemoveItems) {
+            IconButton(
+                onClick = { onRemoveClicked(item) },
+                modifier = Modifier
+                    .size(24.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_pos_remove_cart_item),
+                    contentDescription = null
+                )
+            }
         }
     }
-}
-
-@Composable
-@WooPosPreview
-fun ProductItemPreview() {
-    val item = WooPosCartListItem(1L, "VW California")
-    ProductItem(item, true) {}
 }
 
 @Composable
@@ -215,9 +239,14 @@ fun WooPosCartScreenPreview() {
                     isClearAllButtonVisible = true
                 ),
                 itemsInCart = listOf(
-                    WooPosCartListItem(1L, "VW California"),
-                    WooPosCartListItem(2L, "VW Multivan"),
-                    WooPosCartListItem(3L, "VW Transporter")
+                    WooPosCartListItem(
+                        id = 1L,
+                        imageUrl = "",
+                        name = "VW California, VW California VW California, VW California VW California ,VW California VW California, VW California,VW California",
+                        price = "€50,000"
+                    ),
+                    WooPosCartListItem(id = 2L, imageUrl = "", name = "VW California", price = "$150,000"),
+                    WooPosCartListItem(id = 3L, imageUrl = "", name = "VW California", price = "€250,000")
                 ),
                 areItemsRemovable = true,
                 isOrderCreationInProgress = true,
