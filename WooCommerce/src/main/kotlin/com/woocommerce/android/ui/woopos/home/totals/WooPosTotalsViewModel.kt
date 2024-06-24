@@ -63,6 +63,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             val state = _state.value
                             check(state is WooPosTotalsState.Totals)
                             _state.value = state.toPaymentSuccessState()
+                            childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
                         }
                         is WooPosCardReaderPaymentResult.Failure -> {
                              when (val state = state.value) {
@@ -89,8 +90,9 @@ class WooPosTotalsViewModel @Inject constructor(
             WooPosTotalsUIEvent.OnNewTransactionClicked -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(
-                        ChildToParentEvent.OrderSuccessfullyPaid(state.value.orderId!!)
+                        ChildToParentEvent.NavigatedHomeToMakeNewTransactionClicked(state.value.orderId!!)
                     )
+                    _state.value = InitialState
                 }
             }
         }
@@ -113,7 +115,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         }
                         loadOrderDraft(event.orderId)
                     }
-                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
+                    is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = InitialState
                     }
                     else -> Unit
