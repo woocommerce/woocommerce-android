@@ -3,7 +3,7 @@ package com.woocommerce.android.wear.complications
 import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.drawable.Icon
-import android.os.Build
+import android.util.Log
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType
 import androidx.wear.watchface.complications.data.MonochromaticImage
@@ -17,10 +17,11 @@ import com.woocommerce.android.app.WearMainActivity
 
 class WooWearComplicationService : SuspendingComplicationDataSourceService() {
     override fun getPreviewData(type: ComplicationType): ComplicationData? {
-
+        Log.d("WooWearComplicationService", "getPreviewData: $type")
         return when (type) {
             ComplicationType.SHORT_TEXT -> {
-                createImageComplicationData(
+                createTextComplicationData(
+                    text = "5",
                     contentDescription = getString(R.string.orders_complication_preview_description)
                 )
             }
@@ -33,41 +34,45 @@ class WooWearComplicationService : SuspendingComplicationDataSourceService() {
         }
     }
 
-    override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData {
+    override suspend fun onComplicationRequest(request: ComplicationRequest): ComplicationData? {
+        Log.d("WooWearComplicationService", "onComplicationRequest: ${request.complicationType}")
         return when (request.complicationType) {
-            ComplicationType.SHORT_TEXT -> createComplicationData(
-                text = "Test",
+            ComplicationType.SHORT_TEXT -> createTextComplicationData(
+                text = "10", // get Today's Orders count
                 contentDescription = getString(R.string.orders_complication_preview_description)
             )
 
-            else -> createImageComplicationData(
+            ComplicationType.MONOCHROMATIC_IMAGE -> createImageComplicationData(
                 contentDescription = getString(R.string.icon_complication_preview_description)
             )
+
+            else -> null
         }
     }
 
-    private fun createComplicationData(text: String, contentDescription: String) =
+    private fun createTextComplicationData(text: String, contentDescription: String) =
         ShortTextComplicationData.Builder(
             text = PlainComplicationText.Builder(text).build(),
             contentDescription = PlainComplicationText.Builder(contentDescription).build()
-        ).setTapAction(createAppPendingIntent()).build()
+        )
+            .setMonochromaticImage(createIcon())
+            .setTapAction(createAppPendingIntent())
+            .build()
 
     private fun createImageComplicationData(
         contentDescription: String
     ) = MonochromaticImageComplicationData.Builder(
-        monochromaticImage = MonochromaticImage.Builder(
-            Icon.createWithResource(applicationContext, R.drawable.img_woo_bubble_white),
-        ).build(),
+        monochromaticImage = createIcon(),
         contentDescription = PlainComplicationText.Builder(contentDescription).build()
     ).setTapAction(createAppPendingIntent()).build()
 
     private fun createAppPendingIntent(): PendingIntent {
         val intent = Intent(applicationContext, WearMainActivity::class.java)
-        val flags = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        } else {
-            PendingIntent.FLAG_UPDATE_CURRENT
-        }
+        val flags = PendingIntent.FLAG_IMMUTABLE
         return PendingIntent.getActivity(applicationContext, 0, intent, flags)
     }
+
+    private fun createIcon() = MonochromaticImage.Builder(
+        Icon.createWithResource(applicationContext, R.drawable.img_woo_bubble_white),
+    ).build()
 }
