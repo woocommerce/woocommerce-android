@@ -74,7 +74,6 @@ class WooPosCartViewModel @Inject constructor(
 
             result.fold(
                 onSuccess = { order ->
-                    Log.d("WooPosCartViewModel", "Order created successfully - $order")
                     childrenToParentEventSender.sendToParent(OrderDraftCreated(order.id))
                 },
                 onFailure = { error ->
@@ -86,7 +85,6 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun listenEventsFromParent() {
         viewModelScope.launch {
-            Log.d("WooPos", "WooPosCartViewModel.listenEventsFromParent() $this")
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
