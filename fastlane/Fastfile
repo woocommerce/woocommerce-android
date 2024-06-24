@@ -200,7 +200,7 @@ platform :android do
 
     update_play_store_strings
     localize_libs
-    send_strings_for_translation
+    freeze_strings_for_translation
 
     push_to_git_remote(tags: false)
 
@@ -816,7 +816,6 @@ platform :android do
         message: 'Update strings for translation',
         allow_nothing_to_commit: true
       )
-      push_to_git_remote
     else
       UI.important("Your #{MAIN_STRINGS_PATH} has changed.")
       UI.input('Please, review the changes, commit them and press return to continue.')
@@ -1156,7 +1155,7 @@ platform :android do
     )
   end
 
-  private_lane :send_strings_for_translation do
+  private_lane :freeze_strings_for_translation do
     # A WPCOM job is responsible to import the file at path `FROZEN_STRINGS_PATH` into GlotPress
     # If you decide to change the path to `FROZEN_STRINGS_PATH` at some point, ensure you also update
     # https://opengrok.a8c.com/source/xref/wpcom/bin/i18n/import-github-originals.php?r=accd6334#33
@@ -1169,7 +1168,6 @@ platform :android do
       message: 'Send strings to translation.',
       allow_nothing_to_commit: true
     )
-    push_to_git_remote(tags: false)
   end
 
   #####################################################################################
