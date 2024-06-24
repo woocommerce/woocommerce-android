@@ -1180,7 +1180,7 @@ platform :android do
   # @param [String] app The type of app (`MOBILE_APP` or `WEAR_APP`)
   # @param [String] track_name The track name, e.g. `'beta'` or `'production'`
   def track(app:, track_name:)
-    prefix = app == MOBILE_APP ? '' : "#{app}:"
+    prefix = { WEAR_APP => 'wear:', MOBILE_APP => '' }.fetch(app, 'unknown')
     "#{prefix}#{track_name}"
   end
 
