@@ -810,9 +810,13 @@ platform :android do
   ########################################################################
   private_lane :commit_strings do |options|
     if options[:auto_commit]
-      sh("cd .. && git add #{MAIN_STRINGS_PATH}")
-      sh("git commit -m 'Update strings for translation'")
-      sh('git push origin HEAD')
+      git_add(path: MAIN_STRINGS_PATH)
+      git_commit(
+        path: MAIN_STRINGS_PATH,
+        message: 'Update strings for translation',
+        allow_nothing_to_commit: true
+      )
+      push_to_git_remote
     else
       UI.important("Your #{MAIN_STRINGS_PATH} has changed.")
       UI.input('Please, review the changes, commit them and press return to continue.')
