@@ -23,7 +23,7 @@ data class WooPosCartListItem(
     val imageUrl: String?,
 ) : Parcelable {
     @Parcelize
-    data class Id(val productId: Long, val orderNumber: Int) : Parcelable
+    data class Id(val productId: Long, val itemNumber: Int) : Parcelable
 }
 
 @Parcelize

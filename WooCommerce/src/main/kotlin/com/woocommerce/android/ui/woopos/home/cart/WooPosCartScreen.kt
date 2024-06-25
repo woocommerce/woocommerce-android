@@ -100,7 +100,7 @@ private fun WooPosCartScreen(
                 ) {
                     items(
                         state.itemsInCart,
-                        key = { item -> item.id.orderNumber }
+                        key = { item -> item.id.itemNumber }
                     ) { item ->
                         ProductItem(
                             modifier = Modifier.animateItemPlacement(),
@@ -274,20 +274,20 @@ fun WooPosCartScreenPreview() {
                 ),
                 itemsInCart = listOf(
                     WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 1L, orderNumber = 1),
+                        id = WooPosCartListItem.Id(productId = 1L, itemNumber = 1),
                         imageUrl = "",
                         name = "VW California, VW California VW California, VW California VW California, " +
                             "VW California VW California, VW California,VW California",
                         price = "€50,000"
                     ),
                     WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 2L, orderNumber = 2),
+                        id = WooPosCartListItem.Id(productId = 2L, itemNumber = 2),
                         imageUrl = "",
                         name = "VW California",
                         price = "$150,000"
                     ),
                     WooPosCartListItem(
-                        id = WooPosCartListItem.Id(productId = 3L, orderNumber = 3),
+                        id = WooPosCartListItem.Id(productId = 3L, itemNumber = 3),
                         imageUrl = "",
                         name = "VW California",
                         price = "€250,000"

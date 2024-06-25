@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -27,25 +29,33 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock {
         on { getString(eq(R.string.woo_pos_items_in_cart), eq(1)) }.thenReturn("Items in cart: 1")
     }
+    private val formatPrice: WooPosFormatPrice = mock {
+        onBlocking { invoke(eq(BigDecimal("10.0"))) }.thenReturn("10.0$")
+    }
 
     private val savedState: SavedStateHandle = SavedStateHandle()
 
     @Test
     fun `given empty cart, when product clicked in product selector, then should add product to cart`() = testBlocking {
         // GIVEN
-        val product = WooPosCartListItem(id = 23L, name = "title")
+        val product = WooPosCartListItem(
+            id = WooPosCartListItem.Id(23L, 1),
+            name = "title",
+            price = "10.0$",
+            imageUrl = "url"
+        )
 
         val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
         whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-        whenever(repository.getProductById(eq(product.id))).thenReturn(
-            ProductTestUtils.generateProduct(product.id)
+        whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+            generateProductWithFirstImage(product.id.productId)
         )
         val sut = createSut()
         val states = sut.state.captureValues()
 
         // WHEN
         parentToChildrenEventsMutableFlow.emit(
-            ParentToChildrenEvent.ItemClickedInProductSelector(product.id)
+            ParentToChildrenEvent.ItemClickedInProductSelector(product.id.productId)
         )
 
         // THEN
@@ -58,18 +68,23 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     fun `given items in cart, when item remove button clicked in cart, then should remove item from cart`() =
         testBlocking {
             // GIVEN
-            val product = WooPosCartListItem(id = 23L, name = "title")
+            val product = WooPosCartListItem(
+                id = WooPosCartListItem.Id(23L, 1),
+                name = "title",
+                price = "10.0$",
+                imageUrl = "url"
+            )
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.id))).thenReturn(
-                ProductTestUtils.generateProduct(productId = product.id, productName = "title")
+            whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+                generateProductWithFirstImage(product.id.productId)
             )
             val sut = createSut()
             val states = sut.state.captureValues()
 
             parentToChildrenEventsMutableFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(product.id)
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.id.productId)
             )
 
             // WHEN
@@ -98,12 +113,17 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     fun `given non empty cart in_progress, when vm created, then toolbar state should contain shopping cart itemsCart title and no clear all`() =
         testBlocking {
             // GIVEN
-            val product = WooPosCartListItem(id = 23L, name = "title")
+            val product = WooPosCartListItem(
+                id = WooPosCartListItem.Id(23L, 1),
+                name = "title",
+                price = "10.0$",
+                imageUrl = "url"
+            )
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.id))).thenReturn(
-                ProductTestUtils.generateProduct(productId = product.id, productName = "title")
+            whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+                generateProductWithFirstImage(product.id.productId)
             )
 
             // WHEN
@@ -111,7 +131,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             val states = sut.state.captureValues()
 
             parentToChildrenEventsMutableFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(product.id)
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.id.productId)
             )
 
             // THEN
@@ -125,12 +145,17 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     fun `given non empty cart checkout, when vm created, then toolbar state should contain back icon itemsCart title and no clear all`() =
         testBlocking {
             // GIVEN
-            val product = WooPosCartListItem(id = 23L, name = "title")
+            val product = WooPosCartListItem(
+                id = WooPosCartListItem.Id(23L, 1),
+                name = "title",
+                price = "10.0$",
+                imageUrl = "url"
+            )
 
             val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
             whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
-            whenever(repository.getProductById(eq(product.id))).thenReturn(
-                ProductTestUtils.generateProduct(productId = product.id, productName = "title")
+            whenever(repository.getProductById(eq(product.id.productId))).thenReturn(
+                generateProductWithFirstImage(product.id.productId)
             )
 
             // WHEN
@@ -138,7 +163,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             val states = sut.state.captureValues()
 
             parentToChildrenEventsMutableFlow.emit(
-                ParentToChildrenEvent.ItemClickedInProductSelector(product.id)
+                ParentToChildrenEvent.ItemClickedInProductSelector(product.id.productId)
             )
 
             sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
@@ -156,7 +181,17 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             parentToChildrenEventReceiver,
             repository,
             resourceProvider,
+            formatPrice,
             savedState
         )
     }
+
+    private fun generateProductWithFirstImage(productId: Long) =
+        ProductTestUtils.generateProduct(
+            productId = productId,
+            productName = "title",
+            amount = "10.0"
+        ).copy(
+            firstImageUrl = "url"
+        )
 }

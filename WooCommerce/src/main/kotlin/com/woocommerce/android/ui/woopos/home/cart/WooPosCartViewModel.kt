@@ -122,9 +122,9 @@ class WooPosCartViewModel @Inject constructor(
                         if (_state.value.isOrderCreationInProgress) return@collect
 
                         val itemClicked = viewModelScope.async {
-                            repository.getProductById(event.productId)?.toCartListItem(
-                                orderNumber = (_state.value.itemsInCart.maxOfOrNull { it.id.orderNumber } ?: 0) + 1
-                            )!!
+                            val product = repository.getProductById(event.productId)!!
+                            val itemNumber = (_state.value.itemsInCart.maxOfOrNull { it.id.itemNumber } ?: 0) + 1
+                            product.toCartListItem(itemNumber)
                         }
 
                         val currentState = _state.value
@@ -191,9 +191,9 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
-    private suspend fun Product.toCartListItem(orderNumber: Int): WooPosCartListItem =
+    private suspend fun Product.toCartListItem(itemNumber: Int): WooPosCartListItem =
         WooPosCartListItem(
-            id = WooPosCartListItem.Id(productId = remoteId, orderNumber = orderNumber),
+            id = WooPosCartListItem.Id(productId = remoteId, itemNumber = itemNumber),
             name = name,
             price = formatPrice(price),
             imageUrl = firstImageUrl
