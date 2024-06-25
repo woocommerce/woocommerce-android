@@ -60,7 +60,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationProduct
 import com.woocommerce.android.ui.orders.creation.ProductInfo
 import com.woocommerce.android.ui.products.ProductStockStatus
 import com.woocommerce.android.ui.products.ProductType
-import com.woocommerce.android.util.getStockText
+import com.woocommerce.android.util.getVariationAttributesAndStockText
 import java.math.BigDecimal
 
 @Composable
@@ -290,7 +290,7 @@ fun ExpandableChildrenProductCard(
             color = MaterialTheme.colors.onSurface
         )
         Text(
-            text = product.getStockText(LocalContext.current),
+            text = product.getVariationAttributesAndStockText(LocalContext.current),
             modifier = Modifier
                 .constrainAs(stock) {
                     start.linkTo(name.start)
