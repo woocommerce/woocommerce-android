@@ -59,7 +59,7 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(ParentToChildrenEvent.OrderDraftCreated(event.orderId))
                     }
 
-                    is ChildToParentEvent.NavigatedHomeToMakeNewTransactionClicked -> {
+                    is ChildToParentEvent.NewTransactionClicked -> {
                         _state.value = WooPosHomeState.Cart
                     }
                     is ChildToParentEvent.OrderSuccessfullyPaid -> {

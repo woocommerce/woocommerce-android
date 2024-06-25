@@ -90,7 +90,7 @@ class WooPosTotalsViewModel @Inject constructor(
             WooPosTotalsUIEvent.OnNewTransactionClicked -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(
-                        ChildToParentEvent.NavigatedHomeToMakeNewTransactionClicked(state.value.orderId!!)
+                        ChildToParentEvent.NewTransactionClicked(state.value.orderId!!)
                     )
                     _state.value = InitialState
                 }
