@@ -66,7 +66,7 @@ class WooPosTotalsViewModel @Inject constructor(
                             childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
                         }
                         is WooPosCardReaderPaymentResult.Failure -> {
-                             when (val state = state.value) {
+                            when (val state = state.value) {
                                 is WooPosTotalsState.Totals -> {
                                     _state.value = state.copy(
                                         snackbar = WooPosSnackbarState.Triggered(
@@ -82,8 +82,8 @@ class WooPosTotalsViewModel @Inject constructor(
             }
             WooPosTotalsUIEvent.SnackbarDismissed -> {
                 when (val state = state.value) {
-                        is WooPosTotalsState.Totals -> _state.value = state.copy(snackbar = WooPosSnackbarState.Hidden)
-                        else -> Unit
+                    is WooPosTotalsState.Totals -> _state.value = state.copy(snackbar = WooPosSnackbarState.Hidden)
+                    else -> Unit
                 }
             }
 

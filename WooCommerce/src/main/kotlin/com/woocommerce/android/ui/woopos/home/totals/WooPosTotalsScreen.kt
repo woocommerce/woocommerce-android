@@ -45,7 +45,7 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
             SnackbarHost(hostState = snackbarHostState)
         }
     ) { padding ->
-        when(state) {
+        when (state) {
             is WooPosTotalsState.Totals -> {
                 if (state.isLoading) {
                     Box(
