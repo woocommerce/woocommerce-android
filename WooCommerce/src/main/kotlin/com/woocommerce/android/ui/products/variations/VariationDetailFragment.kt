@@ -37,7 +37,6 @@ import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.products.BaseProductEditorFragment
 import com.woocommerce.android.ui.products.ProductInventoryViewModel.InventoryData
 import com.woocommerce.android.ui.products.adapters.ProductPropertyCardsAdapter
-import com.woocommerce.android.ui.products.details.ProductDetailViewModel
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.QuantityRules
 import com.woocommerce.android.ui.products.price.ProductPricingViewModel.PricingData

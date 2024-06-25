@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.media.MediaFileUploadHandler
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.ProductImageUploadData
 import com.woocommerce.android.ui.media.MediaFileUploadHandler.UploadStatus
 import com.woocommerce.android.ui.products.ParameterRepository
-import com.woocommerce.android.ui.products.details.ProductDetailViewModel
 import com.woocommerce.android.ui.products.generateVariation
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.variations.VariationDetailViewModel.HideImageUploadErrorSnackbar
@@ -28,8 +27,6 @@ import org.mockito.kotlin.anyVararg
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -174,7 +171,8 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         var result = WCProductStore.OnVariationUpdated(1, 1, 2)
         result.error = WCProductStore.ProductError(
             type = WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY,
-            message = displayErrorMessage)
+            message = displayErrorMessage
+        )
         doReturn(result).whenever(variationRepository).updateVariation(any())
 
         setup()
@@ -183,7 +181,7 @@ class VariationDetailViewModelTest : BaseUnitTest() {
         sut.event.observeForever {
             if (it is VariationDetailViewModel.ShowUpdateProductError) showUpdateProductError = it
         }
-        
+
         sut.onUpdateButtonClicked()
 
         Assertions.assertThat(showUpdateProductError?.message)

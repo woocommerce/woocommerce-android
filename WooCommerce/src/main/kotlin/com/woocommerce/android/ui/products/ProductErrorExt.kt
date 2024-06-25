@@ -7,4 +7,3 @@ import org.wordpress.android.fluxc.store.WCProductStore
 val WCProductStore.ProductError.canDisplayMessage: Boolean
     get() = this.type == WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY &&
         this.message.isNotEmpty()
-

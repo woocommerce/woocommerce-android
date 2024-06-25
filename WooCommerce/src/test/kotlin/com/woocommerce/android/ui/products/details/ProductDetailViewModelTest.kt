@@ -541,11 +541,15 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         val displayErrorMessage = "This is an error message"
         doReturn(product).whenever(productRepository).getProductAsync(any())
         doReturn(
-            Pair(false, WCProductStore.ProductError(
-                type = WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY,
-                message = displayErrorMessage)))
-            .whenever(productRepository).updateProduct(any()
+            Pair(
+                false,
+                WCProductStore.ProductError(
+                    type = WCProductStore.ProductErrorType.INVALID_MIN_MAX_QUANTITY,
+                    message = displayErrorMessage
+                )
             )
+        )
+            .whenever(productRepository).updateProduct(any())
 
         var showUpdateProductError: ProductDetailViewModel.ShowUpdateProductError? = null
         viewModel.event.observeForever {
