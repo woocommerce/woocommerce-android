@@ -2,7 +2,7 @@
 common_params:
   # Common plugin settings to use with the `plugins` key.
   - &ci_toolkit
-    automattic/a8c-ci-toolkit#3.0.1
+    automattic/a8c-ci-toolkit#aa02379764f57fc4f1c6498248a72565db2c5ab4
   - &test_collector
     test-collector#v1.10.0
   - &test_collector_common_params
@@ -11,6 +11,9 @@ common_params:
 
 agents:
   queue: "android"
+
+env:
+  GRADLE_DEPENDENCY_CACHE_PROJECT_PREFIX: "WOOCOMMERCE_"
 
 steps:
   - label: "Gradle Wrapper Validation"
