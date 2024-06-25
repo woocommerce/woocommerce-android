@@ -319,7 +319,7 @@ class VariationDetailViewModel @Inject constructor(
             } else if (variation.image?.id == 0L && result.error.type == ProductErrorType.INVALID_VARIATION_IMAGE_ID) {
                 triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_image_error))
             } else if (result.error.canDisplayMessage) {
-                triggerEvent(ShowUpdateProductError(result.error.message))
+                triggerEvent(ShowUpdateVariationError(result.error.message))
             } else {
                 triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_error))
             }
@@ -472,7 +472,7 @@ class VariationDetailViewModel @Inject constructor(
 
     object HideImageUploadErrorSnackbar : Event()
 
-    data class ShowUpdateProductError(val message: String) : Event()
+    data class ShowUpdateVariationError(val message: String) : Event()
 
     @Parcelize
     data class VariationViewState(

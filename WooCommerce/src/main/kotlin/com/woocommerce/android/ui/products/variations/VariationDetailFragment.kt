@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -317,7 +318,7 @@ class VariationDetailFragment :
                 is ShowDialog -> event.showDialog()
                 is ShowDialogFragment -> event.showIn(parentFragmentManager, this)
                 is Exit -> requireActivity().onBackPressedDispatcher.onBackPressed()
-                is VariationDetailViewModel.ShowUpdateProductError -> uiMessageResolver.showSnack(event.message)
+                is VariationDetailViewModel.ShowUpdateVariationError -> showUpdateVariationError(event.message)
                 else -> event.isHandled = false
             }
         }
@@ -350,6 +351,14 @@ class VariationDetailFragment :
                 binding.imageGallery.showProductImage(it, this)
             }
         }
+    }
+
+    private fun showUpdateVariationError(message: String) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.variation_detail_update_variation_error)
+            .setMessage(message)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
     }
 
     override fun onGalleryImageClicked(image: Image) {

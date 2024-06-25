@@ -416,7 +416,7 @@ class ProductDetailFragment :
                 is ProductUpdated -> productsCommunicationViewModel.pushEvent(
                     ProductsCommunicationViewModel.CommunicationEvent.ProductUpdated
                 )
-                is ProductDetailViewModel.ShowUpdateProductError -> uiMessageResolver.showSnack(event.message)
+                is ProductDetailViewModel.ShowUpdateProductError -> showUpdateProductError(event.message)
                 else -> event.isHandled = false
             }
         }
@@ -451,6 +451,14 @@ class ProductDetailFragment :
         MaterialAlertDialogBuilder(requireActivity())
             .setTitle(R.string.error_generic)
             .setMessage(R.string.product_duplicate_error)
+            .setPositiveButton(android.R.string.ok, null)
+            .show()
+    }
+
+    private fun showUpdateProductError(message: String) {
+        MaterialAlertDialogBuilder(requireActivity())
+            .setTitle(R.string.product_detail_update_product_error)
+            .setMessage(message)
             .setPositiveButton(android.R.string.ok, null)
             .show()
     }

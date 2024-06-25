@@ -177,9 +177,9 @@ class VariationDetailViewModelTest : BaseUnitTest() {
 
         setup()
 
-        var showUpdateProductError: VariationDetailViewModel.ShowUpdateProductError? = null
+        var showUpdateProductError: VariationDetailViewModel.ShowUpdateVariationError? = null
         sut.event.observeForever {
-            if (it is VariationDetailViewModel.ShowUpdateProductError) showUpdateProductError = it
+            if (it is VariationDetailViewModel.ShowUpdateVariationError) showUpdateProductError = it
         }
 
         sut.onUpdateButtonClicked()
