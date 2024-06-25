@@ -6,19 +6,19 @@ import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListViewM
 import com.woocommerce.android.util.AddressUtils
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
-import java.math.BigDecimal
 
 @Parcelize
 data class CustomerWithAnalytics(
+    val remoteCustomerId: Long,
     val firstName: String,
     val lastName: String,
     val username: String,
     val email: String,
     val phone: String,
     val lastActive: String?,
-    val ordersCount: Long?,
-    val totalSpend: BigDecimal?,
-    val averageOrderValue: BigDecimal?,
+    val ordersCount: Int?,
+    val totalSpend: String?,
+    val averageOrderValue: String?,
     val registeredDate: String,
     val billingAddress: Address,
     val shippingAddress: Address
@@ -61,6 +61,7 @@ fun WCCustomerModel.toCustomerWithAnalytics(
     val billingState = repository.getState(billingAddress.country, billingAddress.state)
 
     return CustomerWithAnalytics(
+        remoteCustomerId = this.remoteCustomerId,
         firstName = this.firstName,
         lastName = this.lastName,
         username = this.username,
