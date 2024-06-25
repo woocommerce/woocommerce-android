@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class ProductListToolbarHelper @Inject constructor(
     private val activity: Activity,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
+    private val crashLogging: CrashLogging,
 ) : DefaultLifecycleObserver,
     MenuItem.OnActionExpandListener,
     SearchView.OnQueryTextListener,
@@ -216,6 +218,10 @@ class ProductListToolbarHelper @Inject constructor(
         } catch (e: IllegalStateException) {
             // as we don't know the reason why this happens and the worst case scenario is that the search
             // won't be shown, we workaround this crash
+            crashLogging.recordException(
+                e,
+                "ProductListToolbarHelper.shouldShowSearchMenuItem: IllegalStateException"
+            )
             return false
         }
     }
