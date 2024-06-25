@@ -103,7 +103,7 @@ private fun WooPosCartScreen(
 
 @Composable
 private fun CartToolbar(
-    toolbar: WooPosToolbar,
+    toolbar: WooPosCartToolbar,
     onClearAllClicked: () -> Unit,
     onBackClicked: () -> Unit
 ) {
@@ -211,7 +211,7 @@ fun WooPosCartScreenPreview() {
     WooPosTheme {
         WooPosCartScreen(
             state = WooPosCartState(
-                toolbar = WooPosToolbar(
+                toolbar = WooPosCartToolbar(
                     icon = R.drawable.ic_shopping_cart,
                     itemsCount = "3 items",
                     isClearAllButtonVisible = true

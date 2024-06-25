@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class WooPosCartState(
     val cartStatus: WooPosCartStatus = WooPosCartStatus.EDITABLE,
-    val toolbar: WooPosToolbar = WooPosToolbar(),
+    val toolbar: WooPosCartToolbar = WooPosCartToolbar(),
     val itemsInCart: List<WooPosCartListItem> = emptyList(),
     val areItemsRemovable: Boolean = true,
     val isOrderCreationInProgress: Boolean = false,
@@ -22,7 +22,7 @@ data class WooPosCartListItem(
 ) : Parcelable
 
 @Parcelize
-data class WooPosToolbar(
+data class WooPosCartToolbar(
     @DrawableRes val icon: Int = R.drawable.ic_shopping_cart,
     val itemsCount: String = "",
     val isClearAllButtonVisible: Boolean = false,

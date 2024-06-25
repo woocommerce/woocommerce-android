@@ -148,7 +148,7 @@ class WooPosCartViewModel @Inject constructor(
         }
         val newToolbar = when (newState.cartStatus) {
             WooPosCartStatus.EDITABLE -> {
-                WooPosToolbar(
+                WooPosCartToolbar(
                     icon = R.drawable.ic_shopping_cart,
                     itemsCount = itemsCount,
                     isClearAllButtonVisible = newState.itemsInCart.isNotEmpty()
@@ -156,7 +156,7 @@ class WooPosCartViewModel @Inject constructor(
             }
 
             WooPosCartStatus.CHECKOUT -> {
-                WooPosToolbar(
+                WooPosCartToolbar(
                     icon = R.drawable.ic_back_24dp,
                     itemsCount = itemsCount,
                     isClearAllButtonVisible = false
