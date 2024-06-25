@@ -1,3 +1,0 @@
-19.1 :
-Pour cette version, nous nous sommes concentrés sur des résolutions de bugs et des améliorations pour vous aider à lancer votre activité. Continuez à nous faire part de vos commentaires ; ils nous aident à nous améliorer.
-

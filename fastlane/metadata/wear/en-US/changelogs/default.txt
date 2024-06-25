@@ -1,2 +1,1 @@
-19.1:
-First version of our Wear App!
+Introduces the new Woo WearOS app featuring instant updates on store data and orders at glance!
