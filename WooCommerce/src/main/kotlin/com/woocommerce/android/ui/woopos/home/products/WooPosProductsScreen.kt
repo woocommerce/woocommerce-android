@@ -83,7 +83,7 @@ fun ProductSelector(
                 ProductItem(item = product, onItemClicked = onItemClicked)
             }
         }
-        InfiniteGridHandler(listState) {
+        InfiniteListHandler(listState) {
             onEndOfProductsGridReached()
         }
     }
@@ -123,7 +123,7 @@ private fun ProductItem(
 }
 
 @Composable
-private fun InfiniteGridHandler(
+private fun InfiniteListHandler(
     listState: LazyListState,
     buffer: Int = 1,
     onEndOfProductsGridReached: () -> Unit
