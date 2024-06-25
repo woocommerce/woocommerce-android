@@ -1,6 +1,7 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 19.3
 -----
+- [Internal] Workaround for the crash on the product's list screen. [https://github.com/woocommerce/woocommerce-android/pull/11803]
 
 
 19.2
