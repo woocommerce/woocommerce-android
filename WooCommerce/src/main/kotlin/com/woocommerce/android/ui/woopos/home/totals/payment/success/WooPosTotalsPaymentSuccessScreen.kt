@@ -31,9 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsState
 
 @Composable
 fun WooPosPaymentSuccessScreen(
+    state: WooPosTotalsState.PaymentSuccess,
     onNewTransactionClicked: () -> Unit,
 ) {
     Card(
@@ -73,9 +75,37 @@ fun WooPosPaymentSuccessScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = stringResource(R.string.woopos_payment_succesful_label),
+                    text = stringResource(R.string.woopos_payment_successful_label),
                     style = TextStyle(
                         fontSize = 48.sp,
+                        fontWeight = FontWeight(700),
+                        textAlign = TextAlign.Center,
+                    ),
+                    color = MaterialTheme.colors.onSurface,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Subtotal: ${state.orderSubtotalText}",
+                    style = TextStyle(
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight(700),
+                        textAlign = TextAlign.Center,
+                    ),
+                    color = MaterialTheme.colors.onSurface,
+                )
+                Text(
+                    text = "Tax: ${state.orderTaxText}",
+                    style = TextStyle(
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight(700),
+                        textAlign = TextAlign.Center,
+                    ),
+                    color = MaterialTheme.colors.onSurface,
+                )
+                Text(
+                    text = "Total: ${state.orderTotalText}",
+                    style = TextStyle(
+                        fontSize = 28.sp,
                         fontWeight = FontWeight(700),
                         textAlign = TextAlign.Center,
                     ),
@@ -102,13 +132,10 @@ fun WooPosPaymentSuccessScreen(
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = "New transaction",
-                        style = TextStyle(
-                            fontSize = 32.sp,
-                            lineHeight = 35.2.sp,
-                            fontWeight = FontWeight(590),
-                            textAlign = TextAlign.Center,
-                        )
+                        text = stringResource(id = R.string.new_transaction_button),
+                        style = MaterialTheme.typography.h4,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
                     )
                 }
             }
@@ -116,8 +143,15 @@ fun WooPosPaymentSuccessScreen(
     }
 }
 
-@WooPosPreview
 @Composable
+@WooPosPreview
 fun WooPosPaymentSuccessScreenPreview() {
-    WooPosPaymentSuccessScreen {}
+    WooPosPaymentSuccessScreen(
+        state = WooPosTotalsState.PaymentSuccess(
+            orderSubtotalText = "$420.00",
+            orderTotalText = "$462.00",
+            orderTaxText = "$42.00"
+        ),
+        onNewTransactionClicked = { /* No-Op */ }
+    )
 }

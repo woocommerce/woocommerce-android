@@ -64,7 +64,7 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
                 WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
             }
             is WooPosTotalsState.PaymentSuccess -> {
-                WooPosPaymentSuccessScreen { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
+                WooPosPaymentSuccessScreen(state) { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
             }
         }
     }

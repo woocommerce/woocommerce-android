@@ -138,17 +138,13 @@ class WooPosTotalsViewModel @Inject constructor(
         val taxAmount = order.totalTax
         val totalAmount = subtotalAmount + taxAmount
 
-        val updatedOrder = order.copy(
-            total = totalAmount,
-        )
-
-        when (val state = state.value) {
+        when (val state = this.state.value) {
             is WooPosTotalsState.Totals -> {
                 _state.value = state.copy(
-                    orderId = updatedOrder.id,
+                    orderId = order.id,
                     orderSubtotalText = currencyFormatter.formatCurrency(subtotalAmount.toPlainString()),
                     orderTaxText = currencyFormatter.formatCurrency(taxAmount.toPlainString()),
-                    orderTotalText = currencyFormatter.formatCurrency(updatedOrder.total.toPlainString()),
+                    orderTotalText = currencyFormatter.formatCurrency(totalAmount.toPlainString()),
                     isCollectPaymentButtonEnabled = true,
                     isLoading = false,
                 )
@@ -156,6 +152,14 @@ class WooPosTotalsViewModel @Inject constructor(
             else -> Unit
         }
     }
+
+    private fun WooPosTotalsState.Totals.toPaymentSuccessState(): WooPosTotalsState.PaymentSuccess =
+        WooPosTotalsState.PaymentSuccess(
+            orderId = this.orderId,
+            orderSubtotalText = this.orderSubtotalText,
+            orderTaxText = this.orderTaxText,
+            orderTotalText = this.orderTotalText
+        )
 }
 
 private fun WooPosTotalsState.Totals.toPaymentSuccessState(): WooPosTotalsState.PaymentSuccess =
