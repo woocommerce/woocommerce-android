@@ -214,7 +214,7 @@ class ProductListToolbarHelper @Inject constructor(
      */
     private fun shouldShowSearchMenuItem(): Boolean {
         return try {
-            (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
+            !((activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false)
         } catch (e: IllegalStateException) {
             // As we don't know the reason why this happens and the worst case scenario is that the search
             // will be shown when it not needed, we workaround this crash
