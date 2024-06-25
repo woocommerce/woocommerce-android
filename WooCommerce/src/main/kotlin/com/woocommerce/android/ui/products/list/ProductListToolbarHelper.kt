@@ -211,8 +211,13 @@ class ProductListToolbarHelper @Inject constructor(
      * Prevent search from appearing when a child fragment is active
      */
     private fun shouldShowSearchMenuItem(): Boolean {
-        val isChildShowing = (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
-        return !isChildShowing
+        return try {
+            (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
+        } catch (e: IllegalStateException) {
+            // as we don't know the reason why this happens and the worst case scenario is that the search
+            // won't be shown, we workaround this crash
+            return false
+        }
     }
 
     fun disableSearchListeners() {
