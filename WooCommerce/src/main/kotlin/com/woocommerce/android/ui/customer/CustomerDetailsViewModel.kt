@@ -11,12 +11,14 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
 @HiltViewModel
 class CustomerDetailsViewModel @Inject constructor(
-    savedState: SavedStateHandle
+    savedState: SavedStateHandle,
+    private val getCustomerWithStats: GetCustomerWithStats,
 ) : ScopedViewModel(savedState) {
 
     private val navArgs: CustomerDetailsFragmentArgs by savedState.navArgs()
@@ -26,6 +28,23 @@ class CustomerDetailsViewModel @Inject constructor(
         initialValue = CustomerViewState(navArgs.customer, true)
     )
     val viewState: LiveData<CustomerViewState> = _viewState.asLiveData()
+
+    init {
+        launch {
+            val customer = navArgs.customer
+            getCustomerWithStats(customer.remoteCustomerId).fold(
+                onSuccess = { refreshedCustomer ->
+                    _viewState.value = CustomerViewState(
+                        customerWithAnalytics = refreshedCustomer,
+                        isLoadingAnalytics = false
+                    )
+                },
+                onFailure = {
+                    _viewState.value = _viewState.value.copy(isLoadingAnalytics = false)
+                }
+            )
+        }
+    }
 
     fun onNavigateBack() {
         triggerEvent(MultiLiveEvent.Event.Exit)
