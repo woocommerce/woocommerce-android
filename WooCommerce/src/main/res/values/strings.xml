@@ -4136,4 +4136,5 @@
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
     <string name="woo_pos_items_in_cart">%d items</string>
     <string name="woo_pos_cart_back_content_description">Cart icon</string>
+    <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
 </resources>

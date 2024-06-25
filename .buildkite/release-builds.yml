@@ -17,9 +17,19 @@ steps:
   # Wait for Gradle Wrapper to be validated before running any other jobs
   - wait
 
-  - label: "🛠 Release Build"
-    command: ".buildkite/commands/release-build.sh"
+  - label: "🛠 Release Build (Mobile App)"
+    command: |
+      ".buildkite/commands/release-build.sh" "WooCommerce"
     priority: 1
     plugins: *common_plugins
+    notify:
+      - slack: "#build-and-ship"
+
+  - label: "🛠 Release Build (Wear App)"
+    command: |
+      ".buildkite/commands/release-build.sh" "WooCommerce-Wear"
+    priority: 1
+    plugins: *common_plugins
+    if: build.env('INCLUDE_WEAR_APP') == "true"
     notify:
       - slack: "#build-and-ship"

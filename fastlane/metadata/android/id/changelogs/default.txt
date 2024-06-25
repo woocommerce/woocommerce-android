@@ -1,2 +1,0 @@
-19.0:
-Temukan pembaruan terkini di aplikasi seluler WooCommerce! Kami menyempurnakan dialog pembayaran untuk pengalaman lebih baik di layar yang lebih besar, menyelesaikan isu pemberitahuan push, dan memperbaiki bug login yang memuat pesan error tidak muncul. Selain itu, kartu dasbor baru menampikan data toko yang lebih lengkap untuk penjual. Perbarui sekarang untuk rasakan pengalaman yang lebih mulus dan informatif!
