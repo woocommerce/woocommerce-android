@@ -10,14 +10,13 @@ agents:
 steps:
   - label: "dependency analysis"
     command: |
+      buildkite-agent meta-data set "scheduled-build" "dependency-analysis"
       echo "--- 📊 Analyzing"
       cp gradle.properties-example gradle.properties
       ./gradlew buildHealth
     plugins: [*ci_toolkit]
     artifact_paths:
       - "build/reports/dependency-analysis/build-health-report.*"
-    meta_data:
-      scheduled-build: "dependency-analysis"
     notify:
       - slack: "#android-core-notifs"
         if: build.state == "failed"
