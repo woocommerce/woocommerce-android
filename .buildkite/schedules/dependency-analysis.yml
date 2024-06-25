@@ -16,6 +16,8 @@ steps:
     plugins: [*ci_toolkit]
     artifact_paths:
       - "build/reports/dependency-analysis/build-health-report.*"
+    meta_data:
+      scheduled-build: "dependency-analysis"
     notify:
       - slack: "#android-core-notifs"
         if: build.state == "failed"
