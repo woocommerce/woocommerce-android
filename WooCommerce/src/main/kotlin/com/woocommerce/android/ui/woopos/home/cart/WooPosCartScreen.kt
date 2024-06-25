@@ -95,7 +95,10 @@ private fun WooPosCartScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    items(state.itemsInCart) { item ->
+                    items(
+                        state.itemsInCart,
+                        key = { item -> item.id.orderNumber }
+                    ) { item ->
                         ProductItem(
                             item,
                             state.areItemsRemovable
@@ -266,14 +269,24 @@ fun WooPosCartScreenPreview() {
                 ),
                 itemsInCart = listOf(
                     WooPosCartListItem(
-                        id = 1L,
+                        id = WooPosCartListItem.Id(productId = 1L, orderNumber = 1),
                         imageUrl = "",
                         name = "VW California, VW California VW California, VW California VW California, " +
                             "VW California VW California, VW California,VW California",
                         price = "€50,000"
                     ),
-                    WooPosCartListItem(id = 2L, imageUrl = "", name = "VW California", price = "$150,000"),
-                    WooPosCartListItem(id = 3L, imageUrl = "", name = "VW California", price = "€250,000")
+                    WooPosCartListItem(
+                        id = WooPosCartListItem.Id(productId = 2L, orderNumber = 2),
+                        imageUrl = "",
+                        name = "VW California",
+                        price = "$150,000"
+                    ),
+                    WooPosCartListItem(
+                        id = WooPosCartListItem.Id(productId = 3L, orderNumber = 3),
+                        imageUrl = "",
+                        name = "VW California",
+                        price = "€250,000"
+                    )
                 ),
                 areItemsRemovable = true,
                 isOrderCreationInProgress = true,

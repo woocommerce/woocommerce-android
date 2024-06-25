@@ -17,11 +17,14 @@ data class WooPosCartState(
 
 @Parcelize
 data class WooPosCartListItem(
-    val id: Long,
+    val id: Id,
     val name: String,
     val price: String,
     val imageUrl: String?,
-) : Parcelable
+) : Parcelable {
+    @Parcelize
+    data class Id(val productId: Long, val orderNumber: Int) : Parcelable
+}
 
 @Parcelize
 data class WooPosToolbar(
