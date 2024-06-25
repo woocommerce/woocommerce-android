@@ -1,4 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+
+19.3
+-----
+- [*] Shows meaningful errors from the backend when editing Min/Max Quantities in products and variations. [https://github.com/woocommerce/woocommerce-android/pull/11801]
+
 19.2
 -----
 - [**] Adds edit support for the Min/Max Quantities extension in product details. [https://github.com/woocommerce/woocommerce-android/pull/11753]
