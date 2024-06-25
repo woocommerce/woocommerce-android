@@ -59,6 +59,9 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectV
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.MultipleExternalReadersFoundState
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectViewState.ScanningFailedState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.CardReadersHub
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment
+import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Refund
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.BUILT_IN
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
@@ -521,16 +524,24 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun exitFlow(connected: Boolean) {
         if (!connected) {
-            when (arguments.cardReaderFlowParam) {
-                is CardReaderFlowParam.CardReadersHub,
-                is CardReaderFlowParam.PaymentOrRefund.Payment,
-                is CardReaderFlowParam.PaymentOrRefund.Refund -> triggerEvent(ExitWithResult(false))
-
-                CardReaderFlowParam.WooPosConnection -> triggerEvent(PopBackStackForWooPOS)
+            when (val param = arguments.cardReaderFlowParam) {
+                is CardReadersHub, is Refund -> triggerEvent(ExitWithResult(false))
+                is Payment -> {
+                    if (param.paymentType == Payment.PaymentType.WOO_POS) {
+                        returnToWooPos()
+                    } else {
+                        triggerEvent(ExitWithResult(false))
+                    }
+                }
+                CardReaderFlowParam.WooPosConnection -> returnToWooPos()
             }
         } else {
             triggerEvent(ShowCardReaderTutorial(arguments.cardReaderFlowParam, arguments.cardReaderType))
         }
+    }
+
+    private fun returnToWooPos() {
+        triggerEvent(PopBackStackForWooPOS)
     }
 
     private fun storeConnectedReader(cardReader: CardReader) {

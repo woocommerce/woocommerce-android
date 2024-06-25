@@ -28,4 +28,8 @@
     <string name="order_details_products_failed">We couldn\'t retrieve the Order products, make sure your phone is nearby.</string>
     <string name="order_details_no_products_found">No products found for this order.</string>
     <string name="order_details_order_address">Customer Address</string>
+
+    <!-- Complications -->
+    <string name="shortcut_complication_label">App Shortcut</string>
+    <string name="shortcut_complication_preview_description">App Shortcut</string>
 </resources>
