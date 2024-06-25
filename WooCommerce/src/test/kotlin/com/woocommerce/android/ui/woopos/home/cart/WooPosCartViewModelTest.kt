@@ -28,6 +28,7 @@ class WooPosCartViewModelTest : BaseUnitTest() {
     private val repository: WooPosCartRepository = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getString(eq(R.string.woo_pos_items_in_cart), eq(1)) }.thenReturn("Items in cart: 1")
+        on { getString(eq(R.string.woo_pos_items_in_cart), eq(2)) }.thenReturn("Items in cart: 2")
     }
     private val formatPrice: WooPosFormatPrice = mock {
         onBlocking { invoke(eq(BigDecimal("10.0"))) }.thenReturn("10.0$")
@@ -173,6 +174,59 @@ class WooPosCartViewModelTest : BaseUnitTest() {
             assertEquals(R.drawable.ic_back_24dp, toolbar.icon)
             assertEquals("Items in cart: 1", toolbar.itemsCount)
             assertEquals(false, toolbar.isClearAllButtonVisible)
+        }
+
+    @Test
+    fun `given non empty cart in process, when 2 items added and the first removed and third item added, then third will have item number 3`() =
+        testBlocking {
+            // GIVEN
+            val product1Id = 1L
+            val product2Id = 2L
+            val product3Id = 3L
+
+            val parentToChildrenEventsMutableFlow = MutableSharedFlow<ParentToChildrenEvent>()
+            whenever(parentToChildrenEventReceiver.events).thenReturn(parentToChildrenEventsMutableFlow)
+            whenever(repository.getProductById(eq(product1Id))).thenReturn(
+                generateProductWithFirstImage(product1Id)
+            )
+            whenever(repository.getProductById(eq(product2Id))).thenReturn(
+                generateProductWithFirstImage(product3Id)
+            )
+            whenever(repository.getProductById(eq(product3Id))).thenReturn(
+                generateProductWithFirstImage(product3Id)
+            )
+
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            // WHEN
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product1Id)
+            )
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product2Id)
+            )
+
+            sut.onUIEvent(
+                WooPosCartUIEvent.ItemRemovedFromCart(
+                    WooPosCartListItem(
+                        id = WooPosCartListItem.Id(product1Id, 1),
+                        name = "title",
+                        price = "10.0$",
+                        imageUrl = "url"
+                    )
+                )
+            )
+
+            parentToChildrenEventsMutableFlow.emit(
+                ParentToChildrenEvent.ItemClickedInProductSelector(product3Id)
+            )
+
+            // THEN
+            val itemsInCart = states.last().itemsInCart
+            assertEquals(2, itemsInCart.size)
+            assertEquals(2, itemsInCart[0].id.itemNumber)
+            assertEquals(3, itemsInCart[1].id.itemNumber)
         }
 
     private fun createSut(): WooPosCartViewModel {
