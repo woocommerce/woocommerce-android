@@ -96,13 +96,15 @@ fun WooPosPaymentSuccessScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
-                        modifier = Modifier.width(29.dp).height(29.dp),
+                        modifier = Modifier
+                            .width(29.dp)
+                            .height(29.dp),
                         painter = painterResource(id = R.drawable.woo_pos_ic_return_home),
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = "New transaction",
+                        text = stringResource(R.string.woo_pos_new_transaction_button),
                         style = TextStyle(
                             fontSize = 32.sp,
                             lineHeight = 35.2.sp,
