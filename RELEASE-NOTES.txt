@@ -3,9 +3,6 @@
 19.3
 -----
 - [*] Shows meaningful errors from the backend when editing Min/Max Quantities in products and variations. [https://github.com/woocommerce/woocommerce-android/pull/11801]
-19.3
------
-
 
 19.2
 -----
