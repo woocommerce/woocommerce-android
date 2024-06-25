@@ -123,7 +123,7 @@ class WooPosCartViewModel @Inject constructor(
 
                         val itemClicked = viewModelScope.async {
                             repository.getProductById(event.productId)?.toCartListItem(
-                                orderNumber = _state.value.itemsInCart.size + 1
+                                orderNumber = (_state.value.itemsInCart.maxOfOrNull { it.id.orderNumber } ?: 0) + 1
                             )!!
                         }
 
