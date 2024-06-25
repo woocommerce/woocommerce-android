@@ -61,10 +61,10 @@ class WooPosCartViewModel @Inject constructor(
 
             WooPosCartUIEvent.BackClicked -> {
                 val currentState = _state.value
-                if (currentState.cartStatus == WooPosCartStatus.IN_PROGRESS) {
+                if (currentState.cartStatus == WooPosCartStatus.EDITABLE) {
                     return
                 }
-                _state.value = currentState.copy(cartStatus = WooPosCartStatus.IN_PROGRESS)
+                _state.value = currentState.copy(cartStatus = WooPosCartStatus.EDITABLE)
 
                 sendEventToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
             }
@@ -115,7 +115,7 @@ class WooPosCartViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
-                        _state.value = _state.value.copy(cartStatus = WooPosCartStatus.IN_PROGRESS)
+                        _state.value = _state.value.copy(cartStatus = WooPosCartStatus.EDITABLE)
                     }
 
                     is ParentToChildrenEvent.ItemClickedInProductSelector -> {
@@ -147,7 +147,7 @@ class WooPosCartViewModel @Inject constructor(
             ""
         }
         val newToolbar = when (newState.cartStatus) {
-            WooPosCartStatus.IN_PROGRESS -> {
+            WooPosCartStatus.EDITABLE -> {
                 WooPosToolbar(
                     icon = R.drawable.ic_shopping_cart,
                     itemsCount = itemsCount,
@@ -168,7 +168,7 @@ class WooPosCartViewModel @Inject constructor(
 
     private fun updateStateDependingOnCartStatus(newState: WooPosCartState) =
         when (newState.cartStatus) {
-            WooPosCartStatus.IN_PROGRESS -> {
+            WooPosCartStatus.EDITABLE -> {
                 newState.copy(
                     areItemsRemovable = true,
                     isCheckoutButtonVisible = true,
