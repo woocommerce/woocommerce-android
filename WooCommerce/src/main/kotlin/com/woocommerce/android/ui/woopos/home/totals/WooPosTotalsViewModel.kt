@@ -161,6 +161,3 @@ class WooPosTotalsViewModel @Inject constructor(
             orderTotalText = this.orderTotalText
         )
 }
-
-private fun WooPosTotalsState.Totals.toPaymentSuccessState(): WooPosTotalsState.PaymentSuccess =
-    WooPosTotalsState.PaymentSuccess(orderId, orderSubtotalText, orderTaxText, orderTotalText)
