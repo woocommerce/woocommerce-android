@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.woocommerce.android.ui.woopos.home.cart
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -100,6 +103,7 @@ private fun WooPosCartScreen(
                         key = { item -> item.id.orderNumber }
                     ) { item ->
                         ProductItem(
+                            modifier = Modifier.animateItemPlacement(),
                             item,
                             state.areItemsRemovable
                         ) { onUIEvent(WooPosCartUIEvent.ItemRemovedFromCart(item)) }
@@ -195,12 +199,13 @@ private fun CartToolbar(
 
 @Composable
 private fun ProductItem(
+    modifier: Modifier = Modifier,
     item: WooPosCartListItem,
     canRemoveItems: Boolean,
     onRemoveClicked: (item: WooPosCartListItem) -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .background(MaterialTheme.colors.background)
             .fillMaxWidth()
