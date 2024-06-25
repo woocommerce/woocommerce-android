@@ -216,13 +216,13 @@ class ProductListToolbarHelper @Inject constructor(
         return try {
             (activity as? MainNavigationRouter)?.isChildFragmentShowing() ?: false
         } catch (e: IllegalStateException) {
-            // as we don't know the reason why this happens and the worst case scenario is that the search
-            // won't be shown, we workaround this crash
+            // As we don't know the reason why this happens and the worst case scenario is that the search
+            // will be shown when it not needed, we workaround this crash
             crashLogging.recordException(
                 e,
                 "ProductListToolbarHelper.shouldShowSearchMenuItem: IllegalStateException"
             )
-            return false
+            return true
         }
     }
 
