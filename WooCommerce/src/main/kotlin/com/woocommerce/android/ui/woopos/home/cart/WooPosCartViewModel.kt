@@ -28,7 +28,7 @@ class WooPosCartViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val repository: WooPosCartRepository,
     private val resourceProvider: ResourceProvider,
-    private val wooPosFormatPrice: WooPosFormatPrice,
+    private val formatPrice: WooPosFormatPrice,
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedState.getStateFlow(
@@ -195,7 +195,7 @@ class WooPosCartViewModel @Inject constructor(
         WooPosCartListItem(
             id = WooPosCartListItem.Id(productId = remoteId, orderNumber = orderNumber),
             name = name,
-            price = wooPosFormatPrice(price),
+            price = formatPrice(price),
             imageUrl = firstImageUrl
         )
 }
