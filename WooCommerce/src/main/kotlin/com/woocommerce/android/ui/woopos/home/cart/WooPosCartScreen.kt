@@ -114,7 +114,7 @@ private fun CartToolbar(
         IconButton(onClick = { onBackClicked() }) {
             Icon(
                 imageVector = ImageVector.vectorResource(toolbar.icon),
-                contentDescription = "cart icon",
+                contentDescription = stringResource(R.string.woo_pos_cart_back_content_description),
                 tint = MaterialTheme.colors.onBackground,
                 modifier = Modifier.size(28.dp)
             )
