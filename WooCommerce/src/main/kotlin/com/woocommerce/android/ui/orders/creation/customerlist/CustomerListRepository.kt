@@ -6,6 +6,7 @@ import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.customer.WCCustomerFromAnalytics
 import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCCustomerStore
@@ -80,6 +81,11 @@ class CustomerListRepository @Inject constructor(
     suspend fun fetchCustomerByRemoteId(remoteId: Long): WooResult<WCCustomerModel> = withContext(dispatchers.io) {
         customerStore.fetchSingleCustomer(selectedSite.get(), remoteId)
     }
+
+    suspend fun fetchCustomerFromAnalyticsByRemoteId(remoteId: Long): WooResult<WCCustomerFromAnalytics> =
+        withContext(dispatchers.io) {
+            customerStore.fetchSingleCustomerFromAnalytics(selectedSite.get(), remoteId)
+        }
 
     private companion object {
         const val FILTER_EMPTY_PARAM = "email"
