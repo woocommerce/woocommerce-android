@@ -4,12 +4,13 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 data class WooPosProductsViewState(
-    val products: List<WooPosProductsListItem>,
+    val products: List<WooPosProductsListItem> = emptyList()
 )
 
 @Parcelize
 data class WooPosProductsListItem(
-    val productId: Long,
-    val title: String,
-    val imageUrl: String? = null,
+    val id: Long,
+    val name: String,
+    val price: String,
+    val imageUrl: String?,
 ) : Parcelable
