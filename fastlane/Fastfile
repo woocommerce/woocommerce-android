@@ -1179,7 +1179,7 @@ platform :android do
     git_add(path: FROZEN_STRINGS_PATH)
     git_commit(
       path: FROZEN_STRINGS_PATH,
-      message: 'Send strings to translation.',
+      message: 'Freeze strings for translation.',
       allow_nothing_to_commit: true
     )
   end
