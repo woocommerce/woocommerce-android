@@ -6,14 +6,13 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 sealed class WooPosTotalsState : Parcelable {
-    data object Loading: WooPosTotalsState()
+    data object Loading : WooPosTotalsState()
 
     data class Totals(
         var orderSubtotalText: String,
         var orderTaxText: String,
         var orderTotalText: String,
         val snackbar: WooPosSnackbarState = WooPosSnackbarState.Hidden,
-        val isCollectPaymentButtonEnabled: Boolean,
     ) : WooPosTotalsState()
 
     data object PaymentSuccess : WooPosTotalsState()

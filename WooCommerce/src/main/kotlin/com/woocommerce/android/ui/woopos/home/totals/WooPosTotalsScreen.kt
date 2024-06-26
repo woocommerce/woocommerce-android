@@ -47,11 +47,11 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
     ) { padding ->
         when (state) {
             is WooPosTotalsState.Totals -> {
-                    Totals(
-                        modifier = Modifier.padding(padding),
-                        state = state,
-                        onUIEvent = onUIEvent
-                    )
+                Totals(
+                    modifier = Modifier.padding(padding),
+                    state = state,
+                    onUIEvent = onUIEvent
+                )
                 WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
             }
             is WooPosTotalsState.PaymentSuccess -> {
@@ -154,7 +154,6 @@ private fun Totals(
 
             Button(
                 onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-                enabled = state.isCollectPaymentButtonEnabled,
             ) {
                 Text("Collect Card Payment")
             }
@@ -170,7 +169,6 @@ fun WooPosTotalsScreenPreview() {
             orderSubtotalText = "$420.00",
             orderTotalText = "$462.00",
             orderTaxText = "$42.00",
-            isCollectPaymentButtonEnabled = true,
         ),
         onUIEvent = {}
     )
