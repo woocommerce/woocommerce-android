@@ -30,7 +30,7 @@ class CustomerListDetailsViewModel @Inject constructor(
     stringUtils
 ) {
     override fun onCustomerSelected(customerModel: WCCustomerModel) {
-      triggerEvent(CustomerSelected(customerModel.remoteCustomerId))
+        triggerEvent(CustomerSelected(customerModel.remoteCustomerId))
     }
 }
 
