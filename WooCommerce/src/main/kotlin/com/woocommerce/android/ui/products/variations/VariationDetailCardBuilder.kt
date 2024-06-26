@@ -336,6 +336,13 @@ class VariationDetailCardBuilder(
     }
 
     private suspend fun ProductVariation.quantityRules(): ProductProperty? {
+        val rulesAreApplicable = this.overrideProductQuantities == true ||
+            parentProduct?.combineVariationQuantities == false
+
+        if (!rulesAreApplicable) {
+            return null
+        }
+
         val rules = QuantityRules(this.minAllowedQuantity, this.maxAllowedQuantity, this.groupOfQuantity)
         val onClick = {
             viewModel.onEditVariationCardClicked(
