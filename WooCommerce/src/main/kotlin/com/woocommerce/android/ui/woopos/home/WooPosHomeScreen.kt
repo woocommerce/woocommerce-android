@@ -31,12 +31,12 @@ fun WooPosHomeScreen(
     viewModelStoreOwner: ViewModelStoreOwner,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
-    val homeViewModel: WooPosHomeViewModel = hiltViewModel(viewModelStoreOwner)
+    val viewModel: WooPosHomeViewModel = hiltViewModel(viewModelStoreOwner)
 
     WooPosHomeScreen(
-        homeViewModel.state.collectAsState().value,
+        viewModel.state.collectAsState().value,
         onNavigationEvent,
-        homeViewModel::onUIEvent,
+        viewModel::onUIEvent,
         viewModelStoreOwner
     )
 }
