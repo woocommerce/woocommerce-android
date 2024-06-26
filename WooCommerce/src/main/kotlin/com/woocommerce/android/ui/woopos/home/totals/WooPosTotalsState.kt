@@ -15,5 +15,8 @@ sealed class WooPosTotalsState : Parcelable {
         val snackbar: WooPosSnackbarState = WooPosSnackbarState.Hidden,
     ) : WooPosTotalsState()
 
-    data object PaymentSuccess : WooPosTotalsState()
-}
+    data class PaymentSuccess(
+        var orderSubtotalText: String,
+        var orderTaxText: String,
+        var orderTotalText: String
+    ) : WooPosTotalsState()}

@@ -64,7 +64,7 @@ class WooPosTotalsViewModel @Inject constructor(
                         is WooPosCardReaderPaymentResult.Success -> {
                             val state = _state.value
                             check(state is WooPosTotalsState.Totals)
-                            _state.value = WooPosTotalsState.PaymentSuccess
+                            _state.value = WooPosTotalsState.PaymentSuccess(state.orderSubtotalText, state.orderTaxText, state.orderTotalText)
                             childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
                         }
                         is WooPosCardReaderPaymentResult.Failure -> {
@@ -142,12 +142,4 @@ class WooPosTotalsViewModel @Inject constructor(
             orderTotalText = currencyFormatter.formatCurrency(updatedOrder.total.toPlainString()),
         )
     }
-
-    private fun WooPosTotalsState.Totals.toPaymentSuccessState(): WooPosTotalsState.PaymentSuccess =
-        WooPosTotalsState.PaymentSuccess(
-            orderId = this.orderId,
-            orderSubtotalText = this.orderSubtotalText,
-            orderTaxText = this.orderTaxText,
-            orderTotalText = this.orderTotalText
-        )
 }

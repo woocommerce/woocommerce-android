@@ -82,29 +82,17 @@ fun WooPosPaymentSuccessScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Subtotal: ${state.orderSubtotalText}",
-                    style = TextStyle(
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight(700),
-                        textAlign = TextAlign.Center,
-                    ),
+                    style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.onSurface,
                 )
                 Text(
                     text = "Tax: ${state.orderTaxText}",
-                    style = TextStyle(
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight(700),
-                        textAlign = TextAlign.Center,
-                    ),
+                    style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.onSurface,
                 )
                 Text(
                     text = "Total: ${state.orderTotalText}",
-                    style = TextStyle(
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight(700),
-                        textAlign = TextAlign.Center,
-                    ),
+                    style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.onSurface,
                 )
             }
