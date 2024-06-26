@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home.products
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -26,7 +25,7 @@ class WooPosProductsViewModel @Inject constructor(
     val viewState: StateFlow<WooPosProductsViewState> =
         productsDataSource.products
             .map {
-                it.filter { product -> product.productType == ProductType.SIMPLE && product.price != null }
+                it.filter { product -> product.price != null }
             }
             .map { products ->
                 calculateViewState(products)
