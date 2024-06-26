@@ -47,24 +47,24 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
     ) { padding ->
         when (state) {
             is WooPosTotalsState.Totals -> {
-                if (state.isLoading) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
                     Totals(
                         modifier = Modifier.padding(padding),
                         state = state,
                         onUIEvent = onUIEvent
                     )
-                }
                 WooPosSnackbar(state.snackbar, snackbarHostState, onUIEvent)
             }
             is WooPosTotalsState.PaymentSuccess -> {
                 WooPosPaymentSuccessScreen { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
+            }
+
+            WooPosTotalsState.Loading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }
@@ -171,7 +171,6 @@ fun WooPosTotalsScreenPreview() {
             orderTotalText = "$462.00",
             orderTaxText = "$42.00",
             isCollectPaymentButtonEnabled = true,
-            isLoading = false
         ),
         onUIEvent = {}
     )
