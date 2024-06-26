@@ -18,7 +18,7 @@ Track sales and bestselling products
 See which products are winning at a glance. Keep tabs on your overall revenue, order count, and visitor data by week, month, and year. Knowledge = power.
 
 WooCommerce on your watch
-Effortlessly view today’s store data and track your orders right from your wrist with our WooCommerce WearOS App.
+Effortlessly view today’s store data and track your orders right from your wrist with our WooCommerce Wear OS App.
 
 WooCommerce is the world’s most customizable open-source eCommerce platform. Whether you’re launching a business, taking brick-and-mortar retail online, or developing sites for clients, use WooCommerce for a store that powerfully blends content and commerce.
 
