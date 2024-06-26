@@ -19,4 +19,5 @@ sealed class WooPosTotalsState : Parcelable {
         var orderSubtotalText: String,
         var orderTaxText: String,
         var orderTotalText: String
-    ) : WooPosTotalsState()}
+    ) : WooPosTotalsState()
+}

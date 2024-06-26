@@ -64,9 +64,14 @@ class WooPosTotalsViewModel @Inject constructor(
                         is WooPosCardReaderPaymentResult.Success -> {
                             val state = _state.value
                             check(state is WooPosTotalsState.Totals)
-                            _state.value = WooPosTotalsState.PaymentSuccess(state.orderSubtotalText, state.orderTaxText, state.orderTotalText)
+                            _state.value = WooPosTotalsState.PaymentSuccess(
+                                state.orderSubtotalText,
+                                state.orderTaxText,
+                                state.orderTotalText
+                            )
                             childrenToParentEventSender.sendToParent(ChildToParentEvent.OrderSuccessfullyPaid)
                         }
+
                         is WooPosCardReaderPaymentResult.Failure -> {
                             when (val state = state.value) {
                                 is WooPosTotalsState.Totals -> {
@@ -76,12 +81,14 @@ class WooPosTotalsViewModel @Inject constructor(
                                         )
                                     )
                                 }
+
                                 else -> Unit
                             }
                         }
                     }
                 }
             }
+
             WooPosTotalsUIEvent.SnackbarDismissed -> {
                 when (val state = state.value) {
                     is WooPosTotalsState.Totals -> _state.value = state.copy(snackbar = WooPosSnackbarState.Hidden)
@@ -109,9 +116,11 @@ class WooPosTotalsViewModel @Inject constructor(
                         _state.value = InitialState
                         loadOrderDraft(event.orderId)
                     }
+
                     is ParentToChildrenEvent.BackFromCheckoutToCartClicked -> {
                         _state.value = InitialState
                     }
+
                     else -> Unit
                 }
             }
