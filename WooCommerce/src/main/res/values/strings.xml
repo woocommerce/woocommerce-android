@@ -4150,4 +4150,8 @@
     <string name="woopos_payment_total_label">Total</string>
     <string name="woopos_payment_collect_payment_label">Collect Card Payment</string>
     <string name="new_transaction_button">New transaction</string>
+    <string name="woopos_payment_subtotal_label">Subtotal:</string>
+    <string name="woopos_payment_tax_label">Tax:</string>
+    <string name="woopos_payment_total_label">Total:</string>
+
 </resources>
