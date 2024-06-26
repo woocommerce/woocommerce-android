@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 @Parcelize
 data class CustomerWithAnalytics(
     val remoteCustomerId: Long,
+    val analyticsCustomerId: Long?,
     val firstName: String,
     val lastName: String,
     val username: String,
@@ -62,6 +63,7 @@ fun WCCustomerModel.toCustomerWithAnalytics(
 
     return CustomerWithAnalytics(
         remoteCustomerId = this.remoteCustomerId,
+        analyticsCustomerId = this.analyticsCustomerId,
         firstName = this.firstName,
         lastName = this.lastName,
         username = this.username,
