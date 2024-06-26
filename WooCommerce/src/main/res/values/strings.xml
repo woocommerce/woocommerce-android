@@ -4133,6 +4133,6 @@
     <string name="woopos_exit_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
-    <string name="woopos_payment_succesful_label">Payment successful</string>
+    <string name="woopos_payment_successful_label">Payment successful</string>
     <string name="woo_pos_new_transaction_button">New transaction</string>
 </resources>

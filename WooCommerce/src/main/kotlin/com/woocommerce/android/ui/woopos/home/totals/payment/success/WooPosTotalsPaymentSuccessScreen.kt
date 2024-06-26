@@ -73,7 +73,7 @@ fun WooPosPaymentSuccessScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = stringResource(R.string.woopos_payment_succesful_label),
+                    text = stringResource(R.string.woopos_payment_successful_label),
                     style = TextStyle(
                         fontSize = 48.sp,
                         fontWeight = FontWeight(700),
