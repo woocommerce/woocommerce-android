@@ -1,2 +1,0 @@
-19.0:
-Conheça as mais novas melhorias no aplicativo móvel do WooCommerce. Aprimoramos as caixas de diálogo de pagamentos para telas maiores, solucionamos problemas nas notificações por push e corrigimos um bug de login que impedia a exibição de mensagens de erro. Além disso, nossos novos cartões do painel oferecem aos comerciantes informações mais detalhadas sobre suas lojas. Atualize agora e tenha uma experiência mais tranquila e informada.

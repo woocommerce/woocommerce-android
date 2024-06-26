@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.products.ParameterRepository
 import com.woocommerce.android.ui.products.ProductBackorderStatus
 import com.woocommerce.android.ui.products.ProductHelper
 import com.woocommerce.android.ui.products.ProductStockStatus
+import com.woocommerce.android.ui.products.canDisplayMessage
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.products.models.ProductPropertyCard
 import com.woocommerce.android.ui.products.models.SiteParameters
@@ -315,15 +316,12 @@ class VariationDetailViewModel @Inject constructor(
                 showVariation(variation)
                 loadVariation(variation.remoteProductId, variation.remoteVariationId)
                 triggerEvent(Event.ShowSnackbar(string.variation_detail_update_product_success))
+            } else if (variation.image?.id == 0L && result.error.type == ProductErrorType.INVALID_VARIATION_IMAGE_ID) {
+                triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_image_error))
+            } else if (result.error.canDisplayMessage) {
+                triggerEvent(ShowUpdateVariationError(result.error.message))
             } else {
-                if (
-                    variation.image?.id == 0L &&
-                    result.error.type == ProductErrorType.INVALID_VARIATION_IMAGE_ID
-                ) {
-                    triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_image_error))
-                } else {
-                    triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_error))
-                }
+                triggerEvent(Event.ShowSnackbar(string.variation_detail_update_variation_error))
             }
         } else {
             triggerEvent(Event.ShowSnackbar(string.offline_error))
@@ -473,6 +471,8 @@ class VariationDetailViewModel @Inject constructor(
     }
 
     object HideImageUploadErrorSnackbar : Event()
+
+    data class ShowUpdateVariationError(val message: String) : Event()
 
     @Parcelize
     data class VariationViewState(
