@@ -40,7 +40,8 @@ fun WooPosShimmerBox(
                 easing = LinearOutSlowInEasing
             ),
             repeatMode = RepeatMode.Restart
-        ), label = "shimmer"
+        ),
+        label = "shimmer"
     )
 
     val brush = Brush.linearGradient(

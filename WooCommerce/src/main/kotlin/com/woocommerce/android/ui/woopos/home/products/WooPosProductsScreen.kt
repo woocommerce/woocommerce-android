@@ -99,20 +99,6 @@ private fun WooPosProductsScreen(
 }
 
 @Composable
-fun ProductsLoadingIndicator() {
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(2.dp),
-    ) {
-        (0..10).forEach { _ ->
-            item {
-                ProductLoadingItem()
-            }
-        }
-    }
-}
-
-@Composable
 private fun ProductsList(
     state: WooPosProductsViewState.Content,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
@@ -131,13 +117,33 @@ private fun ProductsList(
             ProductItem(item = product, onItemClicked = onItemClicked)
         }
 
+        if (state.loadingMore) {
+            item {
+                ProductLoadingItem()
+            }
+        }
         item {
-            ProductLoadingItem()
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
     InfiniteGridHandler(listState) {
         onEndOfProductsGridReached()
+    }
+}
+
+@Composable
+fun ProductsLoadingIndicator() {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(2.dp),
+    ) {
+        items(10) {
+            ProductLoadingItem()
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 
@@ -286,7 +292,8 @@ fun WooPosHomeScreenPreview() {
                     price = "1.0$",
                     imageUrl = null,
                 ),
-            )
+            ),
+            loadingMore = true,
         )
     )
     WooPosTheme {

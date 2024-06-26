@@ -65,11 +65,13 @@ class WooPosProductsViewModel @Inject constructor(
                 price = priceFormat(product.price),
                 imageUrl = product.firstImageUrl,
             )
-        }
+        },
+        loadingMore = false,
     )
 
     private fun onEndOfProductsGridReached() {
         loadMoreProductsJob?.cancel()
+
         loadMoreProductsJob = viewModelScope.launch {
             productsDataSource.loadMore()
         }
