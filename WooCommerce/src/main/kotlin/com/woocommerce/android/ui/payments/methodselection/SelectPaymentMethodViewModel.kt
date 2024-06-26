@@ -41,7 +41,6 @@ import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.CurrencyFormatter
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -130,7 +129,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun handleIsOrderPaid(paid: Boolean) {
-        if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled() && paid) {
+        if (paid) {
             onCashPaymentConfirmed()
         }
     }
@@ -245,29 +244,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     }
 
     fun onCashPaymentClicked() {
-        if (FeatureFlag.OTHER_PAYMENT_METHODS.isEnabled()) {
-            handleCashPaymentClick()
-        } else {
-            launch {
-                trackPaymentMethodSelection(VALUE_SIMPLE_PAYMENTS_COLLECT_CASH)
-                val messageIdForPaymentType = when (cardReaderPaymentFlowParam.paymentType) {
-                    SIMPLE, TRY_TAP_TO_PAY -> R.string.simple_payments_cash_dlg_message
-                    ORDER, ORDER_CREATION -> R.string.existing_order_cash_dlg_message
-                    WOO_POS -> error("Unsupported card reader flow param: $cardReaderPaymentFlowParam")
-                }
-                triggerEvent(
-                    MultiLiveEvent.Event.ShowDialog(
-                        titleId = R.string.simple_payments_cash_dlg_title,
-                        messageId = messageIdForPaymentType,
-                        positiveButtonId = R.string.simple_payments_cash_dlg_button,
-                        positiveBtnAction = { _, _ ->
-                            onCashPaymentConfirmed()
-                        },
-                        negativeButtonId = R.string.cancel
-                    )
-                )
-            }
-        }
+        handleCashPaymentClick()
     }
 
     private fun handleCashPaymentClick() {
@@ -345,7 +322,16 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     source = AnalyticsTracker.VALUE_SIMPLE_PAYMENTS_SOURCE_PAYMENT_METHOD,
                     flow = cardReaderPaymentFlowParam.toAnalyticsFlowName(),
                 )
+                handleWooPosPaymentFailure()
             }
+        }
+    }
+
+    private fun handleWooPosPaymentFailure() {
+        // In case payment was initiated from the Woo POS mode, we need to propagate the payment
+        // result back, to close the SelectPaymentMethodFragment and handle failure on the Woo POS end.
+        if (cardReaderPaymentFlowParam.paymentType == WOO_POS) {
+            triggerEvent(ReturnResultToWooPos.Failure)
         }
     }
 
@@ -453,7 +439,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
                 SIMPLE -> NavigateBackToHub(CardReadersHub())
                 TRY_TAP_TO_PAY -> NavigateToTapToPaySummary(order.first())
                 ORDER, ORDER_CREATION -> NavigateBackToOrderList(order.first())
-                WOO_POS -> ReturnResultToWooPos
+                WOO_POS -> ReturnResultToWooPos.Success
             }
         )
     }

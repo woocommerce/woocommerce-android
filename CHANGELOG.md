@@ -1,6 +1,8 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 19.2
+Now, seamlessly sync with our new WearOS app for instant updates on store data and orders. Plus, enjoy added flexibility with edit support for Min/Max Quantities directly from product details. Update your WooCommerce app now for a seamless and enhanced experience!
 
 ## 19.1
 This release focuses on bug fixes and improvements to help you get your business started. Keep your feedback rolling in; it helps us figure out what to work on next.

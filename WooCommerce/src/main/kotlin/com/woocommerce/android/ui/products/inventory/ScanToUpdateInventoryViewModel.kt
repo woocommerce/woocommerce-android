@@ -203,7 +203,7 @@ class ScanToUpdateInventoryViewModel @Inject constructor(
             stockQuantity = updatedProductInfo.quantity.toDouble(),
             isStockManaged = updatedProductInfo.isStockManaged,
         )
-        val result: Boolean = productRepository.updateProduct(updatedProduct)
+        val result: Boolean = productRepository.updateProduct(updatedProduct).first
         return if (result) {
             Result.success(Unit)
         } else {

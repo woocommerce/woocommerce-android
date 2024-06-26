@@ -87,6 +87,7 @@ private fun HandleEvents(event: LiveData<MultiLiveEvent.Event>) {
                 is DashboardReviewsViewModel.OpenReviewsList -> navController.navigateSafely(
                     DashboardFragmentDirections.actionDashboardToReviews()
                 )
+
                 is DashboardReviewsViewModel.OpenReviewDetail -> {
                     // Open the review list screen first as it's responsible for handling review status changes
                     navController.navigateSafely(
@@ -176,10 +177,9 @@ private fun ProductReviewsCardContent(
         if (viewState.reviews.isEmpty()) {
             EmptyView(selectedFilter = viewState.selectedFilter)
         } else {
-            viewState.reviews.forEachIndexed { index, productReview ->
+            viewState.reviews.forEach { productReview ->
                 ReviewListItem(
                     review = productReview,
-                    showDivider = index < viewState.reviews.size - 1,
                     onClicked = { onReviewClicked(productReview) }
                 )
             }
@@ -190,7 +190,6 @@ private fun ProductReviewsCardContent(
 @Composable
 private fun ReviewListItem(
     review: ProductReview,
-    showDivider: Boolean,
     onClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -259,10 +258,7 @@ private fun ReviewListItem(
             }
 
             Spacer(modifier = Modifier)
-
-            if (showDivider) {
-                Divider()
-            }
+            Divider()
         }
     }
 }

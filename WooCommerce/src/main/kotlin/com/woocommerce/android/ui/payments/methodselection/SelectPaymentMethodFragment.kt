@@ -287,7 +287,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
                         Bundle().apply {
                             putParcelable(
                                 WooPosCardReaderActivity.WOO_POS_CARD_PAYMENT_RESULT_KEY,
-                                WooPosCardReaderPaymentResult.Success,
+                                event.asWooPosCardReaderPaymentResult(),
                             )
                         }
                     )
@@ -295,6 +295,12 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
             }
         }
     }
+
+    private fun ReturnResultToWooPos.asWooPosCardReaderPaymentResult() =
+        when (this) {
+            is ReturnResultToWooPos.Success -> WooPosCardReaderPaymentResult.Success
+            else -> WooPosCardReaderPaymentResult.Failure
+        }
 
     private fun setupResultHandlers() {
         handleDialogResult<Boolean>(

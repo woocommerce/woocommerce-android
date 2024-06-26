@@ -1,0 +1,15 @@
+*** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+
+
+19.3
+-----
+
+
+19.1
+-----
+- [**] Shipping: brand new wear app. [https://github.com/woocommerce/woocommerce-android/pull/TODO]
+
+19.0
+-----
+
+

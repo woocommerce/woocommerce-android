@@ -10,7 +10,6 @@ enum class FeatureFlag {
     DB_DOWNGRADE,
     INBOX,
     WC_SHIPPING_BANNER,
-    OTHER_PAYMENT_METHODS,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     CONNECTIVITY_TOOL,
@@ -33,7 +32,6 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE -> PackageUtils.isDebugBuild()
 
             DYNAMIC_DASHBOARD_M2,
-            OTHER_PAYMENT_METHODS,
             CONNECTIVITY_TOOL,
             NEW_SHIPPING_SUPPORT,
             APP_PASSWORD_TUTORIAL,

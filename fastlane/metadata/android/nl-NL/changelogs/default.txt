@@ -1,2 +1,0 @@
-19.0:
-Ontdek de nieuwste updates in onze WooCommerce-app! We hebben de dialoogvensters voor betalingen verbeterd voor een betere ervaring op grotere schermen, problemen met pushberichten opgelost en een inlogbug verholpen die ervoor zorgde dat foutmeldingen niet zichtbaar waren. Verder geven de nieuwe dashboardkaarten verkopers diepere inzichten in hun winkels. Update nu voor een soepelere en meer informatieve ervaring!
