@@ -34,7 +34,7 @@ class WooPosProductsViewModel @Inject constructor(
             .map { products -> calculateViewState(products) }.stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
-                initialValue = WooPosProductsViewState()
+                initialValue = WooPosProductsViewState.Loading
             )
 
     init {
@@ -57,7 +57,7 @@ class WooPosProductsViewModel @Inject constructor(
 
     private suspend fun calculateViewState(
         products: List<Product>
-    ) = WooPosProductsViewState(
+    ) = WooPosProductsViewState.Content(
         products = products.map { product ->
             WooPosProductsListItem(
                 id = product.remoteId,

@@ -56,7 +56,7 @@ import kotlinx.coroutines.flow.filter
 fun WooPosProductsScreen() {
     val productsViewModel: WooPosProductsViewModel = hiltViewModel()
     WooPosProductsScreen(
-        productsState = productsViewModel.viewState,
+        productsStateFlow = productsViewModel.viewState,
         onItemClicked = { productsViewModel.onUIEvent(ItemClicked(it)) },
         onEndOfProductsGridReached = { productsViewModel.onUIEvent(EndOfProductsGridReached) },
     )
@@ -64,7 +64,7 @@ fun WooPosProductsScreen() {
 
 @Composable
 private fun WooPosProductsScreen(
-    productsState: StateFlow<WooPosProductsViewState>,
+    productsStateFlow: StateFlow<WooPosProductsViewState>,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
 ) {
@@ -81,17 +81,43 @@ private fun WooPosProductsScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        ProductsList(productsState, onItemClicked, onEndOfProductsGridReached)
+        val state = productsStateFlow.collectAsState()
+
+        when (val productsState = state.value) {
+            is WooPosProductsViewState.Content -> {
+                ProductsList(productsState, onItemClicked, onEndOfProductsGridReached)
+            }
+
+            WooPosProductsViewState.Loading -> {
+                ProductsLoadingIndicator()
+            }
+
+            WooPosProductsViewState.Empty -> TODO()
+            WooPosProductsViewState.Error -> TODO()
+        }
+    }
+}
+
+@Composable
+fun ProductsLoadingIndicator() {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(2.dp),
+    ) {
+        (0..10).forEach { _ ->
+            item {
+                ProductLoadingItem()
+            }
+        }
     }
 }
 
 @Composable
 private fun ProductsList(
-    productsState: StateFlow<WooPosProductsViewState>,
+    state: WooPosProductsViewState.Content,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
 ) {
-    val state = productsState.collectAsState()
     val listState = rememberLazyListState()
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -99,7 +125,7 @@ private fun ProductsList(
         state = listState
     ) {
         items(
-            state.value.products,
+            state.products,
             key = { product -> product.id }
         ) { product ->
             ProductItem(item = product, onItemClicked = onItemClicked)
@@ -107,6 +133,7 @@ private fun ProductsList(
 
         item {
             ProductLoadingItem()
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
     InfiniteGridHandler(listState) {
@@ -119,7 +146,6 @@ private fun ProductLoadingItem() {
     Card(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 0.dp,
     ) {
         Row(
             modifier = Modifier
@@ -164,7 +190,6 @@ private fun ProductItem(
     Card(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 0.dp,
     ) {
         Row(
             modifier = Modifier
@@ -239,7 +264,7 @@ private fun InfiniteGridHandler(
 @WooPosPreview
 fun WooPosHomeScreenPreview() {
     val productState = MutableStateFlow(
-        WooPosProductsViewState(
+        WooPosProductsViewState.Content(
             products = listOf(
                 WooPosProductsListItem(
                     1,
@@ -266,7 +291,20 @@ fun WooPosHomeScreenPreview() {
     )
     WooPosTheme {
         WooPosProductsScreen(
-            productsState = productState,
+            productsStateFlow = productState,
+            onItemClicked = {},
+            onEndOfProductsGridReached = {}
+        )
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosHomeScreenLoadingPreview() {
+    val productState = MutableStateFlow(WooPosProductsViewState.Loading)
+    WooPosTheme {
+        WooPosProductsScreen(
+            productsStateFlow = productState,
             onItemClicked = {},
             onEndOfProductsGridReached = {}
         )
