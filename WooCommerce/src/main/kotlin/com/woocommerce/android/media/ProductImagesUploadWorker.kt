@@ -255,7 +255,7 @@ class ProductImagesUploadWorker @Inject constructor(
             var retries = 0
             while (retries < PRODUCT_UPDATE_RETRIES) {
                 val result = productDetailRepository.updateProduct(product)
-                if (result) {
+                if (result.first) {
                     return true
                 }
                 retries++
