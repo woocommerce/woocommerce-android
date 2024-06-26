@@ -9,10 +9,9 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,20 +23,24 @@ class WooPosProductsViewModel @Inject constructor(
 ) : ViewModel() {
     private var loadMoreProductsJob: Job? = null
 
-    val viewState: StateFlow<WooPosProductsViewState> =
-        productsDataSource.products
-            .map {
-                it.filter { product ->
-                    product.productType == ProductType.SIMPLE && product.price != null
-                }
-            }
-            .map { products -> calculateViewState(products) }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(),
-                initialValue = WooPosProductsViewState.Loading
-            )
+    private val _viewState = MutableStateFlow<WooPosProductsViewState>(WooPosProductsViewState.Loading)
+    val viewState: StateFlow<WooPosProductsViewState> = _viewState
 
     init {
+        loadProducts()
+    }
+
+    private fun loadProducts() {
+        viewModelScope.launch {
+            productsDataSource.products
+                .map {
+                    it.filter { product ->
+                        product.productType == ProductType.SIMPLE && product.price != null
+                    }
+                }
+                .map { products -> calculateViewState(products) }
+                .collect { _viewState.value = it }
+        }
         viewModelScope.launch {
             productsDataSource.loadProducts()
         }
@@ -70,8 +73,14 @@ class WooPosProductsViewModel @Inject constructor(
     )
 
     private fun onEndOfProductsGridReached() {
-        loadMoreProductsJob?.cancel()
+        val currentState = _viewState.value
+        if (currentState !is WooPosProductsViewState.Content) {
+            return
+        }
 
+        _viewState.value = currentState.copy(loadingMore = true)
+
+        loadMoreProductsJob?.cancel()
         loadMoreProductsJob = viewModelScope.launch {
             productsDataSource.loadMore()
         }
