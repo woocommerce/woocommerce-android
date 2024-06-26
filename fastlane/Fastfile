@@ -753,8 +753,11 @@ platform :android do
       end
     end
 
-    is_repo_clean = `git status --porcelain`.empty?
-    commit_strings(auto_commit: options[:auto_commit]) unless is_repo_clean
+    git_commit(
+      path: MAIN_STRINGS_PATH,
+      message: 'Include lib strings for translation',
+      allow_nothing_to_commit: true
+    )
   end
 
   # This lane downloads the translated metadata (release notes, app store strings, title, etc.) from GlotPress and updates the local files.
@@ -1143,26 +1146,6 @@ platform :android do
     )
   end
 
-  # Commits the changes to the original English `strings.xml` file,
-  # typically after having called `localize_libs` to include translations from libraries in it
-  #
-  # @param [Boolean] auto_commit If true, will actually create the git commit.
-  #                              If false, will simply print a message suggesting to review changes
-  #
-  private_lane :commit_strings do |auto_commit: true|
-    if auto_commit
-      git_add(path: MAIN_STRINGS_PATH)
-      git_commit(
-        path: MAIN_STRINGS_PATH,
-        message: 'Update strings for translation',
-        allow_nothing_to_commit: true
-      )
-    else
-      UI.important("Your #{MAIN_STRINGS_PATH} has changed.")
-      UI.input('Please, review the changes, commit them and press return to continue.')
-    end
-  end
-
   # Copy the original English `strings.xml` file into the location from where the WPCOM job will pick them
   #
   # The reason for the WPCOM job to import the file from `FROZEN_STRINGS_PATH` and not `MAIN_STRINGS_PATH` is so
@@ -1179,7 +1162,7 @@ platform :android do
     git_add(path: FROZEN_STRINGS_PATH)
     git_commit(
       path: FROZEN_STRINGS_PATH,
-      message: 'Freeze strings for translation.',
+      message: 'Freeze strings for translation',
       allow_nothing_to_commit: true
     )
   end
