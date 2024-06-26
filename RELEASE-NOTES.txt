@@ -1,7 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
+
 19.3
 -----
 - [*] Fix a crash on the Receipt Preview screen. [https://github.com/woocommerce/woocommerce-android/pull/11804]
+- [*] Shows meaningful errors from the backend when editing Min/Max Quantities in products and variations. [https://github.com/woocommerce/woocommerce-android/pull/11801]
 
 19.2
 -----
