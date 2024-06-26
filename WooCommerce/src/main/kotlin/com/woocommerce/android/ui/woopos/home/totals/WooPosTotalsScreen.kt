@@ -23,8 +23,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbar
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
@@ -91,7 +93,7 @@ private fun Totals(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Subtotal: ",
+                    text = stringResource(R.string.woopos_payment_subtotal_label),
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.primary
                 )
@@ -112,7 +114,7 @@ private fun Totals(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Taxes: ",
+                    text = stringResource(R.string.woopos_payment_tax_label),
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.primary
                 )
@@ -133,7 +135,7 @@ private fun Totals(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Total: ",
+                    text = stringResource(R.string.woopos_payment_total_label),
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.primary
                 )
@@ -154,7 +156,7 @@ private fun Totals(
             Button(
                 onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
             ) {
-                Text("Collect Card Payment")
+                Text(stringResource(R.string.woopos_payment_collect_payment_label))
             }
         }
     }
