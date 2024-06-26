@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.customer
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -20,6 +22,9 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -60,38 +65,53 @@ fun CustomerDetailsScreen(viewModel: CustomerDetailsViewModel) {
                 )
             }
         ) { padding ->
-            CustomerDetailsScreen(state = currentState, modifier = Modifier.padding(padding))
+            CustomerDetailsScreen(
+                state = currentState,
+                onRefresh = viewModel::refresh,
+                modifier = Modifier.padding(padding)
+            )
         }
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CustomerDetailsScreen(
     state: CustomerViewState,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
-        CustomerSection(
-            customer = state.customerWithAnalytics,
-            isLoadingAnalytics = state.isLoadingAnalytics
-        )
-        OrdersSection(
-            customer = state.customerWithAnalytics,
-            isLoadingAnalytics = state.isLoadingAnalytics
-        )
-        RegistrationSection(customer = state.customerWithAnalytics)
-
-        val hasBillingAddress = state.customerWithAnalytics.billingAddress.address1.isNotEmpty()
-
-        if (hasBillingAddress && state.isLoadingAnalytics.not()) {
-            BillingAddressSection(customer = state.customerWithAnalytics)
-            ShippingAddressSection(customer = state.customerWithAnalytics)
-        } else {
-            LocationSection(
+    val pullRefreshState = rememberPullRefreshState(state.isRefreshingData, { onRefresh() })
+    Box(modifier = modifier.pullRefresh(pullRefreshState)) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            CustomerSection(
                 customer = state.customerWithAnalytics,
                 isLoadingAnalytics = state.isLoadingAnalytics
             )
+            OrdersSection(
+                customer = state.customerWithAnalytics,
+                isLoadingAnalytics = state.isLoadingAnalytics
+            )
+            RegistrationSection(customer = state.customerWithAnalytics)
+
+            val hasBillingAddress = state.customerWithAnalytics.billingAddress.address1.isNotEmpty()
+
+            if (hasBillingAddress && state.isLoadingAnalytics.not()) {
+                BillingAddressSection(customer = state.customerWithAnalytics)
+                ShippingAddressSection(customer = state.customerWithAnalytics)
+            } else {
+                LocationSection(
+                    customer = state.customerWithAnalytics,
+                    isLoadingAnalytics = state.isLoadingAnalytics
+                )
+            }
         }
+        PullRefreshIndicator(
+            refreshing = state.isRefreshingData,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+            contentColor = MaterialTheme.colors.primary,
+        )
     }
 }
 
@@ -176,10 +196,12 @@ fun OrdersSection(
             title = stringResource(id = R.string.customers_details_orders_value_title),
             value = customer.ordersCount.toString()
         )
+        Divider()
         SectionValue(
             title = stringResource(id = R.string.customers_details_total_spend_value_title),
             value = customer.totalSpend.toString()
         )
+        Divider()
         SectionValue(
             title = stringResource(id = R.string.customers_details_average_order_value_title),
             value = customer.averageOrderValue.toString()
