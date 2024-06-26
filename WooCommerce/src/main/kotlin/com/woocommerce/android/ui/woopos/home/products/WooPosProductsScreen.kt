@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.woopos.home.products
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,8 +23,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,39 +53,42 @@ private fun WooPosProductsScreen(
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
 ) {
-    Box(
-        Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(top = 36.dp, start = 40.dp, end = 40.dp, bottom = 0.dp)
     ) {
-        ProductSelector(productsState, onItemClicked, onEndOfProductsGridReached)
+        Text(
+            text = "Products",
+            style = MaterialTheme.typography.h3,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        ProductsList(productsState, onItemClicked, onEndOfProductsGridReached)
     }
 }
 
 @Composable
-fun ProductSelector(
+private fun ProductsList(
     productsState: StateFlow<WooPosProductsViewState>,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
     onEndOfProductsGridReached: () -> Unit,
 ) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxHeight()
-            .padding(16.dp)
+    val state = productsState.collectAsState()
+    val listState = rememberLazyListState()
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(2.dp),
+        state = listState
     ) {
-        val state = productsState.collectAsState()
-        val listState = rememberLazyListState()
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(2.dp),
-            state = listState
-        ) {
-            itemsIndexed(state.value.products) { _, product ->
-                ProductItem(item = product, onItemClicked = onItemClicked)
-            }
+        itemsIndexed(state.value.products) { _, product ->
+            ProductItem(item = product, onItemClicked = onItemClicked)
         }
-        InfiniteGridHandler(listState) {
-            onEndOfProductsGridReached()
-        }
+    }
+    InfiniteGridHandler(listState) {
+        onEndOfProductsGridReached()
     }
 }
 
@@ -125,9 +128,9 @@ private fun ProductItem(
 @Composable
 private fun InfiniteGridHandler(
     listState: LazyListState,
-    buffer: Int = 1,
     onEndOfProductsGridReached: () -> Unit
 ) {
+    val buffer = 5
     val loadMore = remember {
         derivedStateOf {
             val layoutInfo = listState.layoutInfo
