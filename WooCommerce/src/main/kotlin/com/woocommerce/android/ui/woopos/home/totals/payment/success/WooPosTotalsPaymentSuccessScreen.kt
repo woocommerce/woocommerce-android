@@ -81,17 +81,17 @@ fun WooPosPaymentSuccessScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Subtotal: ${state.orderSubtotalText}",
+                    text = "${stringResource(R.string.woopos_payment_subtotal_label)} ${state.orderSubtotalText}",
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.onSurface,
                 )
                 Text(
-                    text = "Tax: ${state.orderTaxText}",
+                    text = "${stringResource(R.string.woopos_payment_tax_label)} ${state.orderTaxText}",
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.onSurface,
                 )
                 Text(
-                    text = "Total: ${state.orderTotalText}",
+                    text = "${stringResource(R.string.woopos_payment_total_label)} ${state.orderTotalText}",
                     style = MaterialTheme.typography.h6,
                     color = MaterialTheme.colors.onSurface,
                 )

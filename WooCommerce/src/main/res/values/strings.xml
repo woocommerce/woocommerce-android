@@ -4139,4 +4139,8 @@
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
     <string name="woopos_payment_successful_label">Payment successful</string>
     <string name="woo_pos_new_transaction_button">New transaction</string>
+    <string name="woopos_payment_subtotal_label">Subtotal:</string>
+    <string name="woopos_payment_tax_label">Tax:</string>
+    <string name="woopos_payment_total_label">Total:</string>
+
 </resources>
