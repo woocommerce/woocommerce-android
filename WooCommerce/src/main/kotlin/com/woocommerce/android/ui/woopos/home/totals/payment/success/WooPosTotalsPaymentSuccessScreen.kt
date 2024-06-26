@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
@@ -24,11 +25,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsState
@@ -59,8 +58,8 @@ fun WooPosPaymentSuccessScreen(
                     .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
-                                Color(0x0098F179),
-                                Color(0x1A98F179)
+                                Color(152, 241, 121, 0),
+                                Color(152, 241, 121, 0x1A)
                             )
                         ),
                         shape = RoundedCornerShape(16.dp),
@@ -76,11 +75,8 @@ fun WooPosPaymentSuccessScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.woopos_payment_successful_label),
-                    style = TextStyle(
-                        fontSize = 48.sp,
-                        fontWeight = FontWeight(700),
-                        textAlign = TextAlign.Center,
-                    ),
+                    style = MaterialTheme.typography.h3,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colors.onSurface,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -126,13 +122,13 @@ fun WooPosPaymentSuccessScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
-                        modifier = Modifier.width(29.dp).height(29.dp),
+                        modifier = Modifier.size(24.dp),
                         painter = painterResource(id = R.drawable.woo_pos_ic_return_home),
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = stringResource(id = R.string.new_transaction_button),
+                        text = stringResource(R.string.woo_pos_new_transaction_button),
                         style = MaterialTheme.typography.h4,
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center,
@@ -143,8 +139,8 @@ fun WooPosPaymentSuccessScreen(
     }
 }
 
-@Composable
 @WooPosPreview
+@Composable
 fun WooPosPaymentSuccessScreenPreview() {
     WooPosPaymentSuccessScreen(
         state = WooPosTotalsState.PaymentSuccess(

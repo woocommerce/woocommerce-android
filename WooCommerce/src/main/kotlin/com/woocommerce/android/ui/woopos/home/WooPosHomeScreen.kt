@@ -18,8 +18,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsScreen
@@ -28,16 +26,14 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
 fun WooPosHomeScreen(
-    viewModelStoreOwner: ViewModelStoreOwner,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
-    val homeViewModel: WooPosHomeViewModel = hiltViewModel(viewModelStoreOwner)
+    val viewModel: WooPosHomeViewModel = hiltViewModel()
 
     WooPosHomeScreen(
-        homeViewModel.state.collectAsState().value,
+        viewModel.state.collectAsState().value,
         onNavigationEvent,
-        homeViewModel::onUIEvent,
-        viewModelStoreOwner
+        viewModel::onUIEvent,
     )
 }
 
@@ -46,7 +42,6 @@ private fun WooPosHomeScreen(
     state: WooPosHomeState,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Boolean,
-    viewModelStoreOwner: ViewModelStoreOwner,
 ) {
     BackHandler {
         val result = onHomeUIEvent(WooPosHomeUIEvent.SystemBackClicked)
@@ -89,7 +84,6 @@ private fun WooPosHomeScreen(
                 scrollState,
                 totalsProductsWidth,
                 cartWidth,
-                viewModelStoreOwner
             )
     }
 }
@@ -99,7 +93,6 @@ private fun WooPosHomeScreen(
     scrollState: ScrollState,
     totalsProductsWidth: Dp,
     cartWidth: Dp,
-    viewModelStoreOwner: ViewModelStoreOwner,
 ) {
     Row(
         modifier = Modifier
@@ -107,13 +100,13 @@ private fun WooPosHomeScreen(
             .fillMaxWidth()
     ) {
         Box(modifier = Modifier.width(totalsProductsWidth)) {
-            WooPosProductsScreen(viewModelStoreOwner)
+            WooPosProductsScreen()
         }
         Box(modifier = Modifier.width(cartWidth)) {
-            WooPosCartScreen(viewModelStoreOwner)
+            WooPosCartScreen()
         }
         Box(modifier = Modifier.width(totalsProductsWidth)) {
-            WooPosTotalsScreen(viewModelStoreOwner)
+            WooPosTotalsScreen()
         }
     }
 }
@@ -125,10 +118,6 @@ fun WooPosHomeCartScreenPreview() {
         state = WooPosHomeState.Cart,
         onHomeUIEvent = { true },
         onNavigationEvent = {},
-        viewModelStoreOwner = object : ViewModelStoreOwner {
-            override val viewModelStore: ViewModelStore
-                get() = ViewModelStore()
-        }
     )
 }
 
@@ -139,9 +128,5 @@ fun WooPosHomeCheckoutScreenPreview() {
         state = WooPosHomeState.Checkout,
         onHomeUIEvent = { true },
         onNavigationEvent = {},
-        viewModelStoreOwner = object : ViewModelStoreOwner {
-            override val viewModelStore: ViewModelStore
-                get() = ViewModelStore()
-        }
     )
 }

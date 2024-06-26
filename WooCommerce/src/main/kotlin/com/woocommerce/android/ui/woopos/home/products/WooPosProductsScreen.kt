@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductsGridReached
@@ -39,8 +38,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
 @Composable
-fun WooPosProductsScreen(viewModelStoreOwner: ViewModelStoreOwner) {
-    val viewModel: WooPosProductsViewModel = hiltViewModel(viewModelStoreOwner)
+fun WooPosProductsScreen() {
+    val viewModel: WooPosProductsViewModel = hiltViewModel()
     WooPosProductsScreen(
         productsState = viewModel.viewState,
         onItemClicked = { viewModel.onUIEvent(ItemClicked(it)) },
