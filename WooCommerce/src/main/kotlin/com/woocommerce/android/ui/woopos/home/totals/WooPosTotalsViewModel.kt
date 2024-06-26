@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceive
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,7 +43,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     val state: StateFlow<WooPosTotalsState> = _state
 
-    private var orderId: StateFlow<Long> = savedState.getStateFlow(
+    private var orderId: MutableStateFlow<Long> = savedState.getStateFlow(
         scope = viewModelScope,
         initialValue = EMPTY_ORDER_ID,
         key = "orderId",
@@ -104,6 +105,7 @@ class WooPosTotalsViewModel @Inject constructor(
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
                     is ParentToChildrenEvent.OrderDraftCreated -> {
+                        orderId.value = event.orderId
                         _state.value = InitialState
                         loadOrderDraft(event.orderId)
                     }
