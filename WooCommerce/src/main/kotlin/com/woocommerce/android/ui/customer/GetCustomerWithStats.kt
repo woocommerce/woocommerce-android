@@ -60,8 +60,14 @@ class GetCustomerWithStats @Inject constructor(
         customer: WCCustomerModel,
         analyticsCustomer: WCCustomerFromAnalytics
     ): CustomerWithAnalytics {
-        val (billingCountry, billingState) = getLocations(customer.billingCountry, customer.billingState)
-        val (shippingCountry, shippingState) = getLocations(customer.shippingCountry, customer.shippingState)
+        val (billingCountry, billingState) = getLocations(
+            customer.billingCountry.ifEmpty { analyticsCustomer.country },
+            customer.billingState.ifEmpty { analyticsCustomer.state }
+        )
+        val (shippingCountry, shippingState) = getLocations(
+            customer.shippingCountry.ifEmpty { analyticsCustomer.country },
+            customer.shippingState.ifEmpty { analyticsCustomer.state }
+        )
         return CustomerWithAnalytics(
             remoteCustomerId = customer.remoteCustomerId,
             firstName = customer.firstName,
@@ -85,9 +91,9 @@ class GetCustomerWithStats @Inject constructor(
                 state = billingState,
                 address1 = customer.billingAddress1,
                 address2 = customer.billingAddress2,
-                city = customer.billingCity,
-                postcode = customer.billingPostcode,
-                email = customer.billingEmail
+                city = customer.billingCity.ifEmpty { analyticsCustomer.city },
+                postcode = customer.billingPostcode.ifEmpty { analyticsCustomer.postcode },
+                email = customer.billingEmail.ifEmpty { analyticsCustomer.email }
             ),
             shippingAddress = Address(
                 company = customer.shippingCompany,
@@ -98,8 +104,8 @@ class GetCustomerWithStats @Inject constructor(
                 state = shippingState,
                 address1 = customer.shippingAddress1,
                 address2 = customer.shippingAddress2,
-                city = customer.shippingCity,
-                postcode = customer.shippingPostcode,
+                city = customer.shippingCity.ifEmpty { analyticsCustomer.city },
+                postcode = customer.shippingPostcode.ifEmpty { analyticsCustomer.postcode },
                 email = ""
             ),
             analyticsCustomerId = analyticsCustomer.id
