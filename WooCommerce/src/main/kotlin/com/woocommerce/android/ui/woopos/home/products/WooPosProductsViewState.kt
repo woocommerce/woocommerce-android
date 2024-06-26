@@ -4,7 +4,10 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 sealed class WooPosProductsViewState {
-    data class Content(val products: List<WooPosProductsListItem>) : WooPosProductsViewState()
+    data class Content(
+        val products: List<WooPosProductsListItem>,
+        val loadingMore: Boolean,
+    ) : WooPosProductsViewState()
     data object Loading : WooPosProductsViewState()
     data object Error : WooPosProductsViewState()
     data object Empty : WooPosProductsViewState()
