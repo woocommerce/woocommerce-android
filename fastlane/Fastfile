@@ -714,17 +714,14 @@ platform :android do
 
   #####################################################################################
   # localize_libs
-  # -----------------------------------------------------------------------------------
-  # This lane gets the data from the dependencies and updates the main strings.xml file
-  # -----------------------------------------------------------------------------------
-  # Usage:
-  # fastlane localize_libs
   #
-  # Example:
-  # fastlane localize_libs
-  #####################################################################################
+  # This lane gets the data from the dependencies and updates the main `strings.xml` file,
+  # so that they are included when that file is sent to GlotPress for translation.
+  #
+  # @example fastlane localize_libs
+  #
   desc 'Merge libraries strings files into the main app one'
-  lane :localize_libs do |options|
+  lane :localize_libs do
     REMOTE_LIBRARIES_STRINGS_PATHS.each do |lib|
       download_path = android_download_file_by_version(
         library_name: lib[:name],
