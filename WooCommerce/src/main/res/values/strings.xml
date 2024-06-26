@@ -3658,10 +3658,13 @@
     <string name="min_quantity">Minimum quantity</string>
     <string name="max_quantity">Maximum quantity</string>
     <string name="group_of">Group of</string>
+    <string name="no_quantity_rules">No Quantity Rules</string>
 
     <string name="empty_min_quantity">No minimum</string>
     <string name="empty_max_quantity">No maximum</string>
     <string name="empty_group_of">Not grouped</string>
+
+
 
     <!--
     Bundled products
