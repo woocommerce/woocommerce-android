@@ -36,15 +36,14 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 
 @Composable
-fun WooPosCartScreen(viewModelStoreOwner: ViewModelStoreOwner) {
-    val viewModel: WooPosCartViewModel = hiltViewModel(viewModelStoreOwner)
+fun WooPosCartScreen() {
+    val viewModel: WooPosCartViewModel = hiltViewModel()
 
     viewModel.state.observeAsState().value?.let {
         WooPosCartScreen(it, viewModel::onUIEvent)

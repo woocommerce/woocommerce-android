@@ -25,14 +25,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbar
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
 
 @Composable
-fun WooPosTotalsScreen(viewModelStoreOwner: ViewModelStoreOwner) {
-    val viewModel: WooPosTotalsViewModel = hiltViewModel(viewModelStoreOwner)
+fun WooPosTotalsScreen() {
+    val viewModel: WooPosTotalsViewModel = hiltViewModel()
     val state = viewModel.state.collectAsState().value
     WooPosTotalsScreen(state, viewModel::onUIEvent)
 }
