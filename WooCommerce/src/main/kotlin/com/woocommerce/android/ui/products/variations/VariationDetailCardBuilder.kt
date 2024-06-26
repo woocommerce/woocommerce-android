@@ -47,7 +47,6 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
-import org.wordpress.android.fluxc.utils.putIfNotNull
 
 class VariationDetailCardBuilder(
     private val viewModel: VariationDetailViewModel,

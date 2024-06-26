@@ -10,7 +10,7 @@ data class QuantityRules(
     val groupOf: Int? = null
 ) : Parcelable {
     val hasAtLeastOneValidRule: Boolean
-        get() = min?.let { it > 0 } ?: false || max?.let { it > 0 } ?: false || groupOf?.let { it > 0} ?: false
+        get() = (min ?: 0) > 0 || (max ?: 0) > 0 || (groupOf ?: 0) > 0
     val allRulesAreNull: Boolean
         get() = min == null && max == null && groupOf == null
 }
