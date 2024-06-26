@@ -18,6 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CustomerDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
+    private val refreshCustomerData: RefreshCustomerData,
     private val getCustomerWithStats: GetCustomerWithStats,
 ) : ScopedViewModel(savedState) {
 
@@ -25,25 +26,34 @@ class CustomerDetailsViewModel @Inject constructor(
 
     private val _viewState = savedState.getStateFlow(
         scope = viewModelScope,
-        initialValue = CustomerViewState(navArgs.customer, true)
+        initialValue = CustomerViewState(navArgs.customer, true, false)
     )
     val viewState: LiveData<CustomerViewState> = _viewState.asLiveData()
 
     init {
+        refreshAndUpdateData()
+    }
+
+    private fun refreshAndUpdateData() {
         launch {
             val customer = navArgs.customer
-            getCustomerWithStats(customer.remoteCustomerId).fold(
+            refreshCustomerData(customer.remoteCustomerId, customer.analyticsCustomerId)
+            getCustomerWithStats(customer.remoteCustomerId, customer.analyticsCustomerId).fold(
                 onSuccess = { refreshedCustomer ->
                     _viewState.value = CustomerViewState(
                         customerWithAnalytics = refreshedCustomer,
-                        isLoadingAnalytics = false
+                        isLoadingAnalytics = false,
+                        isRefreshingData = false
                     )
                 },
-                onFailure = {
-                    _viewState.value = _viewState.value.copy(isLoadingAnalytics = false)
-                }
+                onFailure = { }
             )
         }
+    }
+
+    fun refresh() {
+        _viewState.value = _viewState.value.copy(isRefreshingData = true)
+        refreshAndUpdateData()
     }
 
     fun onNavigateBack() {
@@ -54,5 +64,6 @@ class CustomerDetailsViewModel @Inject constructor(
 @Parcelize
 data class CustomerViewState(
     val customerWithAnalytics: CustomerWithAnalytics,
-    val isLoadingAnalytics: Boolean
+    val isLoadingAnalytics: Boolean,
+    val isRefreshingData: Boolean
 ) : Parcelable
