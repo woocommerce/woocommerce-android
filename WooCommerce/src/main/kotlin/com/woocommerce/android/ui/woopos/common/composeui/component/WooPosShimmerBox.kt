@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -21,9 +21,11 @@ fun WooPosShimmerBox(
     color: Color = WooPosTheme.colors.loadingSkeleton,
 ) {
     val shimmerColors = listOf(
-        color.copy(alpha = 0.8f),
-        color.copy(alpha = 0.3f),
-        color.copy(alpha = 0.8f)
+        color.copy(),
+        color.copy(alpha = 0.7f),
+        color.copy(alpha = 0.6f),
+        color.copy(alpha = 0.7f),
+        color.copy()
     )
 
     val transition = rememberInfiniteTransition(
@@ -35,7 +37,7 @@ fun WooPosShimmerBox(
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = 1000,
-                easing = FastOutSlowInEasing
+                easing = LinearOutSlowInEasing
             ),
             repeatMode = RepeatMode.Restart
         ), label = "shimmer"
@@ -44,7 +46,7 @@ fun WooPosShimmerBox(
     val brush = Brush.linearGradient(
         colors = shimmerColors,
         start = Offset(0f, 0f),
-        end = Offset(10f, translateAnim.value)
+        end = Offset(translateAnim.value, 0f)
     )
 
     Box(

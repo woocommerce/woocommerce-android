@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.woopos.home.products
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,7 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +44,7 @@ import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.EndOfProductsGridReached
 import com.woocommerce.android.ui.woopos.home.products.WooPosProductsUIEvent.ItemClicked
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -101,9 +104,55 @@ private fun ProductsList(
         ) { product ->
             ProductItem(item = product, onItemClicked = onItemClicked)
         }
+
+        item {
+            ProductLoadingItem()
+        }
     }
     InfiniteGridHandler(listState) {
         onEndOfProductsGridReached()
+    }
+}
+
+@Composable
+private fun ProductLoadingItem() {
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        backgroundColor = MaterialTheme.colors.surface,
+        elevation = 0.dp,
+    ) {
+        Row(
+            modifier = Modifier
+                .height(112.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(112.dp)
+                    .background(WooPosTheme.colors.loadingSkeleton)
+            )
+
+            Spacer(modifier = Modifier.width(32.dp))
+
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(30.dp)
+                    .clip(RoundedCornerShape(4.dp))
+            )
+
+            Spacer(modifier = Modifier.width(184.dp))
+
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .height(30.dp)
+                    .width(76.dp)
+                    .clip(RoundedCornerShape(4.dp))
+            )
+
+            Spacer(modifier = Modifier.width(24.dp))
+        }
     }
 }
 
@@ -115,7 +164,7 @@ private fun ProductItem(
     Card(
         shape = RoundedCornerShape(8.dp),
         backgroundColor = MaterialTheme.colors.surface,
-        elevation = 2.dp,
+        elevation = 0.dp,
     ) {
         Row(
             modifier = Modifier
@@ -124,15 +173,14 @@ private fun ProductItem(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val fallbackColor = Color.LightGray
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(item.imageUrl)
                     .crossfade(true)
                     .build(),
-                fallback = ColorPainter(color = fallbackColor),
-                error = ColorPainter(color = fallbackColor),
-                placeholder = ColorPainter(color = fallbackColor),
+                fallback = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                error = ColorPainter(WooPosTheme.colors.loadingSkeleton),
+                placeholder = ColorPainter(WooPosTheme.colors.loadingSkeleton),
                 contentDescription = stringResource(id = R.string.woopos_product_image_description),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.size(112.dp)
