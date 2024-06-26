@@ -82,10 +82,24 @@ class CustomerListRepository @Inject constructor(
         customerStore.fetchSingleCustomer(selectedSite.get(), remoteId)
     }
 
-    suspend fun fetchCustomerFromAnalyticsByRemoteId(remoteId: Long): WooResult<WCCustomerFromAnalytics> =
+    suspend fun fetchCustomerFromAnalyticsByUserId(remoteId: Long): WooResult<WCCustomerFromAnalytics> =
         withContext(dispatchers.io) {
-            customerStore.fetchSingleCustomerFromAnalytics(selectedSite.get(), remoteId)
+            customerStore.fetchSingleCustomerFromAnalyticsByUserId(selectedSite.get(), remoteId)
         }
+
+    suspend fun fetchCustomerFromAnalyticsByAnalyticsCustomerId(
+        analyticsCustomerId: Long
+    ): WooResult<WCCustomerFromAnalytics> = withContext(dispatchers.io) {
+        customerStore.fetchSingleCustomerFromAnalyticsByAnalyticsCustomerId(selectedSite.get(), analyticsCustomerId)
+    }
+
+    suspend fun getCustomerByRemoteId(remoteId: Long) = withContext(dispatchers.io) {
+        customerStore.getCustomerByRemoteId(selectedSite.get(), remoteId)
+    }
+
+    suspend fun getCustomerByAnalyticsCustomerId(customerId: Long) = withContext(dispatchers.io) {
+        customerStore.getCustomerFromAnalyticsByAnalyticsId(selectedSite.get(), customerId)
+    }
 
     private companion object {
         const val FILTER_EMPTY_PARAM = "email"
