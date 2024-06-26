@@ -222,7 +222,7 @@ private fun ProductItem(
             fallback = ColorPainter(color = fallbackColor),
             error = ColorPainter(color = fallbackColor),
             placeholder = ColorPainter(color = fallbackColor),
-            contentDescription = "Product Image",
+            contentDescription = stringResource(R.string.woopos_product_image_description),
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(64.dp)
         )
