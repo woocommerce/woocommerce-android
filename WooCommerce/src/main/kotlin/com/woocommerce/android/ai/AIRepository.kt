@@ -7,7 +7,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.JetpackAICompletionsResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIQueryResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.jetpackai.JetpackAIRestClient.ResponseFormat
 import org.wordpress.android.fluxc.store.jetpackai.JetpackAIStore
 import javax.inject.Inject
@@ -39,7 +39,7 @@ class AIRepository @Inject constructor(
             productDescription.orEmpty(),
             languageISOCode
         )
-        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_SHARING_FEATURE)
+        return fetchJetpackAIQuery(prompt, PRODUCT_SHARING_FEATURE)
     }
 
     suspend fun generateProductDescription(
@@ -52,7 +52,7 @@ class AIRepository @Inject constructor(
             features,
             languageISOCode
         )
-        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_DESCRIPTION_FEATURE)
+        return fetchJetpackAIQuery(prompt, PRODUCT_DESCRIPTION_FEATURE)
     }
 
     suspend fun generateProductName(
@@ -64,7 +64,7 @@ class AIRepository @Inject constructor(
             languageISOCode
         )
 
-        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_NAME_FEATURE)
+        return fetchJetpackAIQuery(prompt, PRODUCT_NAME_FEATURE)
     }
 
     suspend fun generateProductNameAndDescription(
@@ -76,7 +76,7 @@ class AIRepository @Inject constructor(
             languageISOCode
         )
 
-        return fetchJetpackAICompletionsForSite(prompt, PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE, ResponseFormat.JSON)
+        return fetchJetpackAIQuery(prompt, PRODUCT_DETAILS_FROM_SCANNED_TEXT_FEATURE, ResponseFormat.JSON)
             .mapCatching { json ->
                 Gson().fromJson(json, AIProductDetailsResult::class.java)
             }
@@ -94,7 +94,7 @@ class AIRepository @Inject constructor(
         existingTags: List<ProductTag>,
         languageISOCode: String
     ): Result<String> {
-        return fetchJetpackAICompletionsForSite(
+        return fetchJetpackAIQuery(
             prompt = AIPrompts.generateProductCreationPrompt(
                 name = productName,
                 keywords = productKeyWords,
@@ -123,30 +123,35 @@ class AIRepository @Inject constructor(
             productDescription = productDescription.orEmpty(),
             languageISOCode = languageISOCode
         )
-        return fetchJetpackAICompletionsForSite(prompt, ORDER_DETAIL_THANK_YOU_NOTE)
+        return fetchJetpackAIQuery(prompt, ORDER_DETAIL_THANK_YOU_NOTE)
     }
 
     suspend fun identifyISOLanguageCode(text: String, feature: String): Result<String> {
         val prompt = AIPrompts.generateLanguageIdentificationPrompt(text)
-        return fetchJetpackAICompletionsForSite(prompt, feature)
+        return fetchJetpackAIQuery(prompt, feature)
     }
 
-    private suspend fun fetchJetpackAICompletionsForSite(
+    private suspend fun fetchJetpackAIQuery(
         prompt: String,
         feature: String,
-        format: ResponseFormat? = null,
-        model: String? = "gpt-3.5-turbo-1106"
+        format: ResponseFormat = ResponseFormat.TEXT,
     ): Result<String> = withContext(Dispatchers.IO) {
-        jetpackAIStore.fetchJetpackAICompletions(selectedSite.get(), prompt, feature, format, model).run {
+        jetpackAIStore.fetchJetpackAIQuery(
+            site = selectedSite.get(),
+            question = prompt,
+            feature = feature,
+            format = format,
+            stream = false
+        ).run {
             when (this) {
-                is JetpackAICompletionsResponse.Success -> {
-                    WooLog.d(WooLog.T.AI, "Fetching Jetpack AI completions succeeded")
-                    Result.success(completion)
+                is JetpackAIQueryResponse.Success -> {
+                    WooLog.d(WooLog.T.AI, "Fetching Jetpack AI query succeeded")
+                    Result.success(choices[0].message?.content ?: "")
                 }
 
-                is JetpackAICompletionsResponse.Error -> {
-                    WooLog.w(WooLog.T.AI, "Fetching Jetpack AI completions failed: $message")
-                    Result.failure(this.mapToException())
+                is JetpackAIQueryResponse.Error -> {
+                    WooLog.w(WooLog.T.AI, "Fetching Jetpack AI query failed: $message")
+                    Result.failure(mapToException())
                 }
             }
         }
@@ -162,7 +167,7 @@ class AIRepository @Inject constructor(
         val description: String
     )
 
-    private fun JetpackAICompletionsResponse.Error.mapToException() =
+    private fun JetpackAIQueryResponse.Error.mapToException() =
         JetpackAICompletionsException(
             errorMessage = message ?: "Unable to fetch AI completions",
             errorType = type.name
