@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.totals
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
@@ -17,12 +22,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -87,69 +94,85 @@ private fun Totals(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+
+            Surface(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .wrapContentWidth()
+                    .wrapContentHeight()
+                    .background(Color.Transparent),
+                shape = RoundedCornerShape(8.dp),
+                border = BorderStroke(1.dp, Color(0xFFBDBDBD))
             ) {
-                Text(
-                    text = "Subtotal: ",
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = state.orderSubtotalText,
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.primary
-                )
+
+                Column(
+                    modifier = modifier
+                        .widthIn(max = 420.dp)
+                        .wrapContentHeight()
+                        .padding(12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Subtotal: ",
+                            style = MaterialTheme.typography.h6,
+                            color = MaterialTheme.colors.primary
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            text = state.orderSubtotalText,
+                            style = MaterialTheme.typography.h6,
+                            color = MaterialTheme.colors.primary
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Divider()
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Taxes: ",
+                            style = MaterialTheme.typography.h6,
+                            color = MaterialTheme.colors.primary
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            text = state.orderTaxText,
+                            style = MaterialTheme.typography.h6,
+                            color = MaterialTheme.colors.primary
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Divider()
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Total: ",
+                            style = MaterialTheme.typography.h6,
+                            color = MaterialTheme.colors.primary
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            text = state.orderTotalText,
+                            style = MaterialTheme.typography.h4,
+                            color = MaterialTheme.colors.primary
+                        )
+                    }
+                }
+
             }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Divider()
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Taxes: ",
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = state.orderTaxText,
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.primary
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Divider()
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Total: ",
-                    style = MaterialTheme.typography.h6,
-                    color = MaterialTheme.colors.primary
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = state.orderTotalText,
-                    style = MaterialTheme.typography.h4,
-                    color = MaterialTheme.colors.primary
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Divider()
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
