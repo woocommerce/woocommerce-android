@@ -335,7 +335,7 @@ class VariationDetailCardBuilder(
     }
 
     private suspend fun ProductVariation.quantityRules(): ProductProperty? {
-        val rulesAreApplicable = this.overrideProductQuantities == true ||
+        val rulesAreApplicable = this.overrideProductQuantities == true &&
             parentProduct?.combineVariationQuantities == false
 
         if (!rulesAreApplicable) {
