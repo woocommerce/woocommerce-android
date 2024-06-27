@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home.products
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.Product
-import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -33,11 +32,6 @@ class WooPosProductsViewModel @Inject constructor(
     private fun loadProducts() {
         viewModelScope.launch {
             productsDataSource.products
-                .map {
-                    it.filter { product ->
-                        product.productType == ProductType.SIMPLE && product.price != null
-                    }
-                }
                 .map { products -> calculateViewState(products) }
                 .collect { _viewState.value = it }
         }
@@ -75,6 +69,10 @@ class WooPosProductsViewModel @Inject constructor(
     private fun onEndOfProductsGridReached() {
         val currentState = _viewState.value
         if (currentState !is WooPosProductsViewState.Content) {
+            return
+        }
+
+        if (!productsDataSource.hasMorePages.get()) {
             return
         }
 
