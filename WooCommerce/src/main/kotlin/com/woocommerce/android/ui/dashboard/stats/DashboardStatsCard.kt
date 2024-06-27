@@ -84,7 +84,7 @@ fun DashboardStatsCard(
             is DashboardStatsViewModel.RevenueStatsViewState.GenericError -> {
                 WidgetError(
                     onContactSupportClicked = parentViewModel::onContactSupportClicked,
-                    onRetryClicked = viewModel::onRetry
+                    onRetryClicked = viewModel::onRefresh
                 )
             }
 
