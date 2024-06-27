@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.products.selector.ProductListHandler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import org.wordpress.android.fluxc.store.WCProductStore
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -16,14 +17,13 @@ class WooPosProductsDataSource @Inject constructor(private val handler: ProductL
 
     val products: Flow<List<Product>> = handler.productsFlow
         .onEach { hasMorePages.set(it.size % PAGE_SIZE == 0) }
-        .map {
-            it.filter { product ->
-                product.productType == ProductType.SIMPLE && product.price != null
-            }
-        }
+        .map { it.filter { product -> product.price != null } }
 
     suspend fun loadSimpleProducts() {
-        handler.loadFromCacheAndFetch(searchType = ProductListHandler.SearchType.DEFAULT)
+        handler.loadFromCacheAndFetch(
+            searchType = ProductListHandler.SearchType.DEFAULT,
+            filters = mapOf(WCProductStore.ProductFilterOption.TYPE to ProductType.SIMPLE.value)
+        )
     }
 
     suspend fun loadMore() {

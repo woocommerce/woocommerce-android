@@ -102,7 +102,7 @@ private fun WooPosProductsScreen(
 private fun ProductsList(
     state: WooPosProductsViewState.Content,
     onItemClicked: (item: WooPosProductsListItem) -> Unit,
-    onEndOfProductsGridReached: () -> Unit,
+    onEndOfProductsListReached: () -> Unit,
 ) {
     val listState = rememberLazyListState()
     LazyColumn(
@@ -243,7 +243,7 @@ private fun ProductItem(
 @Composable
 private fun InfiniteListHandler(
     listState: LazyListState,
-    onEndOfProductsGridReached: () -> Unit
+    onEndOfProductsListReached: () -> Unit
 ) {
     val buffer = 5
     val loadMore = remember {
@@ -261,7 +261,7 @@ private fun InfiniteListHandler(
             .distinctUntilChanged()
             .filter { it }
             .collect {
-                onEndOfProductsGridReached()
+                onEndOfProductsListReached()
             }
     }
 }
