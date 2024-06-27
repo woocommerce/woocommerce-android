@@ -10,6 +10,7 @@ agents:
 steps:
   - label: "dependency analysis"
     command: |
+      buildkite-agent meta-data set "scheduled-build" "dependency-analysis"
       echo "--- 📊 Analyzing"
       cp gradle.properties-example gradle.properties
       ./gradlew buildHealth

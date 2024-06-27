@@ -4125,12 +4125,18 @@
     <string name="woopos_reader_disconnected">Reader Disconnected</string>
     <string name="woopos_checkout">Checkout</string>
     <string name="woopos_reader_unknown">Reader Status Unknown</string>
-    <string name="woo_pos_checkout_button">Checkout</string>
+    <string name="woo_pos_checkout_button">Check out</string>
     <string name="woo_pos_remove_item_from_cart_content_description">Remove item from cart</string>
     <string name="woo_pos_car_pane_title">Cart</string>
+    <string name="woo_pos_clear_cart_button">Clear all</string>
+
     <string name="woopos_exit_confirmation_title">Exit POS</string>
     <string name="woopos_exit_confirmation_message">Are you sure you want to exit POS?</string>
     <string name="woopos_exit_confirmation_confirm_button">Exit</string>
     <string name="woopos_exit_confirmation_dismiss_button">Cancel</string>
+    <string name="woo_pos_items_in_cart">%d items</string>
+    <string name="woo_pos_cart_back_content_description">Cart icon</string>
     <string name="woopos_payment_failed_please_try_again">Payment failed. Please try again.</string>
+    <string name="woopos_payment_successful_label">Payment successful</string>
+    <string name="woo_pos_new_transaction_button">New transaction</string>
 </resources>
