@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -96,6 +97,10 @@ private fun Totals(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+
+            Spacer(modifier = Modifier.weight(1f))
+
+
             Surface(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -178,10 +183,20 @@ private fun Totals(
                 }
             }
 
+            Spacer(modifier = Modifier.weight(1f))
+
+
             Button(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(16.dp),
                 onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
             ) {
-                Text("Collect Card Payment")
+                Text(
+                    text = "Collect Card Payment",
+                    style = MaterialTheme.typography.h4
+                )
             }
         }
     }
