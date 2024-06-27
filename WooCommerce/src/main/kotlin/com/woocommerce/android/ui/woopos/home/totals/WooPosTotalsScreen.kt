@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.home.totals
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -68,17 +67,12 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
                 WooPosPaymentSuccessScreen { onUIEvent(WooPosTotalsUIEvent.OnNewTransactionClicked) }
             }
 
-            WooPosTotalsState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    WooPosShimmerBox(
-                        modifier = Modifier
-                            .height(30.dp)
-                            .width(200.dp)
-                    )
-                }
+            is WooPosTotalsState.Loading -> {
+                Totals(
+                    modifier = Modifier.padding(padding),
+                    state = state,
+                    onUIEvent = onUIEvent
+                )
             }
         }
     }
@@ -87,7 +81,7 @@ private fun WooPosTotalsScreen(state: WooPosTotalsState, onUIEvent: (WooPosTotal
 @Composable
 private fun Totals(
     modifier: Modifier = Modifier,
-    state: WooPosTotalsState.Totals,
+    state: WooPosTotalsState,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     Card(
@@ -129,11 +123,19 @@ private fun Totals(
                             color = MaterialTheme.colors.primary
                         )
                         Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            text = state.orderSubtotalText,
-                            style = MaterialTheme.typography.h6,
-                            color = MaterialTheme.colors.primary
-                        )
+                        if (state is WooPosTotalsState.Totals) {
+                            Text(
+                                text = state.orderSubtotalText,
+                                style = MaterialTheme.typography.h6,
+                                color = MaterialTheme.colors.primary
+                            )
+                        } else {
+                            WooPosShimmerBox(
+                                modifier = Modifier
+                                    .height(30.dp)
+                                    .width(100.dp)
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -150,11 +152,21 @@ private fun Totals(
                             color = MaterialTheme.colors.primary
                         )
                         Spacer(modifier = Modifier.weight(1f))
-                        Text(
-                            text = state.orderTaxText,
-                            style = MaterialTheme.typography.h6,
-                            color = MaterialTheme.colors.primary
-                        )
+                        if (state is WooPosTotalsState.Totals) {
+                            Text(
+                                text = state.orderTaxText,
+                                style = MaterialTheme.typography.h6,
+                                color = MaterialTheme.colors.primary
+                            )
+                        } else {
+
+
+                            WooPosShimmerBox(
+                                modifier = Modifier
+                                    .height(30.dp)
+                                    .width(100.dp)
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -175,11 +187,21 @@ private fun Totals(
                             color = MaterialTheme.colors.primary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = state.orderTotalText,
-                            style = MaterialTheme.typography.h4,
-                            color = MaterialTheme.colors.primary
-                        )
+                        if (state is WooPosTotalsState.Totals) {
+                            Text(
+                                text = state.orderTotalText,
+                                style = MaterialTheme.typography.h4,
+                                color = MaterialTheme.colors.primary
+                            )
+                        } else {
+
+
+                            WooPosShimmerBox(
+                                modifier = Modifier
+                                    .height(30.dp)
+                                    .width(150.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -195,6 +217,7 @@ private fun Totals(
         }
     }
 }
+
 
 @Composable
 @WooPosPreview
