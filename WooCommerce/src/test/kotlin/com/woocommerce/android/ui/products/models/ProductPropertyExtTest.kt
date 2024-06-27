@@ -41,13 +41,11 @@ class ProductPropertyExtTest : BaseUnitTest() {
     @Test
     fun `given quantity rules with all valid values, then generateQuantityRulesProductProperty returns a PropertyGroup with two properties`() =
         testBlocking {
-            val value = "value"
             val minQuantityPropertyValue = "min"
             val maxQuantityPropertyValue = "max"
             val rules = QuantityRules(2, 12, 2)
 
             val resourceProvider: ResourceProvider = mock {
-                on { getString(R.string.no_quantity_rules) } doAnswer { value }
                 on { getString(R.string.min_quantity) } doAnswer { minQuantityPropertyValue }
                 on { getString(R.string.max_quantity) } doAnswer { maxQuantityPropertyValue }
             }
