@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
@@ -35,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.snackbar.WooPosSnackbar
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
 
@@ -180,18 +180,14 @@ private fun Totals(
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
-            Button(
+            WooPosButton(
                 modifier = modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .padding(16.dp),
                 onClick = { onUIEvent(WooPosTotalsUIEvent.CollectPaymentClicked) },
-            ) {
-                Text(
-                    text = "Collect Card Payment",
-                    style = MaterialTheme.typography.h4
-                )
-            }
+                text = "Collect Card Payment",
+            )
         }
     }
 }
