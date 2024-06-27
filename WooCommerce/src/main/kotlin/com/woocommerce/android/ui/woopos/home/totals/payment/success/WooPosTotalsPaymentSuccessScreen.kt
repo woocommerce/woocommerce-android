@@ -127,9 +127,7 @@ fun WooPosPaymentSuccessScreen(
                             )
                         }
 
-
                         Divider()
-
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -153,9 +151,7 @@ fun WooPosPaymentSuccessScreen(
                             )
                         }
 
-
                         Divider()
-
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
