@@ -100,7 +100,6 @@ class WooPosCartViewModel @Inject constructor(
 
             result.fold(
                 onSuccess = { order ->
-                    Log.d("WooPosCartViewModel", "Order created successfully - $order")
                     childrenToParentEventSender.sendToParent(OrderDraftCreated(order.id))
                 },
                 onFailure = { error ->
@@ -133,6 +132,9 @@ class WooPosCartViewModel @Inject constructor(
                         )
                     }
 
+                    is ParentToChildrenEvent.OrderSuccessfullyPaid -> {
+                        _state.value = WooPosCartState()
+                    }
                     else -> Unit
                 }
             }

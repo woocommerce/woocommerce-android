@@ -46,7 +46,13 @@ private fun WooPosRootScreen(
                 confirmButtonText = stringResource(id = it.confirmButton),
                 dismissButtonText = stringResource(id = it.dismissButton),
                 onDismiss = { onUIEvent(WooPosRootUIEvent.ExitConfirmationDialogDismissed) },
-                onConfirm = { rootController.handleNavigationEvent(WooPosNavigationEvent.ExitPosClicked, activity) }
+                onConfirm = {
+                    rootController.handleNavigationEvent(
+                        WooPosNavigationEvent.ExitPosClicked,
+                        activity,
+                        onUIEvent
+                    )
+                }
             )
         }
 
@@ -55,7 +61,7 @@ private fun WooPosRootScreen(
                 modifier = Modifier.weight(1f),
                 rootController = rootController,
                 onNavigationEvent = { event ->
-                    rootController.handleNavigationEvent(event, activity)
+                    rootController.handleNavigationEvent(event, activity, onUIEvent)
                 }
             )
             WooPosBottomToolbar(
