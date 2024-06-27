@@ -975,7 +975,7 @@ platform :android do
       key_file: GOOGLE_FIREBASE_SECRETS_PATH,
       model: options[:device],
       version: options[:version],
-      orientation: options[:orientation]
+      orientation: options[:orientation],
       test_apk_path: File.join(apk_dir, 'androidTest', 'vanilla', 'debug', 'WooCommerce-vanilla-debug-androidTest.apk'),
       apk_path: File.join(apk_dir, 'vanilla', 'debug', 'WooCommerce-vanilla-debug.apk'),
       test_targets: 'notPackage com.woocommerce.android.e2e.tests.screenshot',
