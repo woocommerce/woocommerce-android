@@ -1,5 +1,6 @@
 package com.woocommerce.android.e2e.screens.moremenu
 
+import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -22,9 +23,30 @@ class MoreMenuScreen : Screen(R.id.more_menu_compose_view) {
     }
 
     fun openSettings(composeTestRule: ComposeTestRule): SettingsScreen {
+        // Tests are failing randomly here depending on how fast this screen is displayed after tapping on the More button
+        // Adding this retry to wait for the settings icon to be displayed, retrying up to a max time
+        val maxAttempts = 25
+        var currentAttempt = 0
+        while (currentAttempt < maxAttempts) {
+            try {
+                composeTestRule.onNodeWithContentDescription(getTranslatedString(R.string.settings))
+                    .assertIsDisplayed()
+                    .assertHasClickAction()
+                break // Exit loop if node is displayed and clickable
+            } catch (e: AssertionError) {
+                Thread.sleep(100) // Wait 100ms before retrying
+                currentAttempt++
+            }
+        }
+
+        if (currentAttempt == maxAttempts) {
+            throw Exception("Settings icon not found or not clickable after waiting.")
+        }
+
         composeTestRule.onNodeWithContentDescription(
             getTranslatedString(R.string.settings)
-        ).performClick()
+        ).assertHasClickAction().performClick()
+
         return SettingsScreen()
     }
 
