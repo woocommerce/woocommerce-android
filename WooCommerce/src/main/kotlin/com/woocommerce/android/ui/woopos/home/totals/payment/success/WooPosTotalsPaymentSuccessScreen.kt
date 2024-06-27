@@ -54,6 +54,10 @@ fun WooPosPaymentSuccessScreen(
                     .weight(1f)
                     .fillMaxWidth()
                     .background(
+                        color = MaterialTheme.colors.background,
+                        shape = RoundedCornerShape(16.dp),
+                    )
+                    .background(
                         brush = Brush.verticalGradient(
                             colors = listOf(
                                 Color(152, 241, 121, 0),
