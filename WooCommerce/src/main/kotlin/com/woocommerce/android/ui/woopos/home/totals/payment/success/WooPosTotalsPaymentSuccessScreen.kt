@@ -50,7 +50,7 @@ fun WooPosPaymentSuccessScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 0.dp)
                     .weight(1f)
                     .fillMaxWidth()
                     .background(
@@ -82,9 +82,12 @@ fun WooPosPaymentSuccessScreen(
                     color = MaterialTheme.colors.onSurface,
                 )
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             OutlinedButton(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(top = 0.dp, start = 24.dp, end = 24.dp, bottom = 24.dp)
                     .fillMaxWidth(),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colors.onSurface,
@@ -100,7 +103,7 @@ fun WooPosPaymentSuccessScreen(
                         painter = painterResource(id = R.drawable.woo_pos_ic_return_home),
                         contentDescription = null
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = stringResource(R.string.woo_pos_new_transaction_button),
                         style = MaterialTheme.typography.h4,
